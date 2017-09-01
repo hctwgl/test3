@@ -324,6 +324,13 @@ public class APPH5GGShareController extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 			logger.info("resultStr = {}", resultStr);
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("resultStr = {}", resultStr);
 			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", e, resultStr);
@@ -515,6 +522,13 @@ public class APPH5GGShareController extends BaseController {
 			}
 
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "抱歉你暂时没有可以赠送的卡片", "", e.getErrorCode().getDesc())
 					.toString();
 			logger.error("sendItems" + context, e);
@@ -559,6 +573,13 @@ public class APPH5GGShareController extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("doSendItems" + context, e);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
@@ -638,6 +659,13 @@ public class APPH5GGShareController extends BaseController {
 
 			// }
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("ggSendItems error", e);
 		} catch (Exception e) {
@@ -724,6 +752,13 @@ public class APPH5GGShareController extends BaseController {
 				}
 			}
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("pickUpItems" + context, e);
 		} catch (Exception e) {
@@ -765,6 +800,13 @@ public class APPH5GGShareController extends BaseController {
 			data.put("userName", userName);
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("lightItems" + context, e);
 		} catch (Exception e) {
@@ -810,6 +852,13 @@ public class APPH5GGShareController extends BaseController {
 			data.put("itemsList", itemsList);
 			resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功", "", data).toString();
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("askForItems" + context, e);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
@@ -891,6 +940,13 @@ public class APPH5GGShareController extends BaseController {
 				}
 			}
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("sendToFriend" + context, e);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
@@ -955,6 +1011,13 @@ public class APPH5GGShareController extends BaseController {
 			}
 
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("ggAskForItems error", e);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
@@ -1018,6 +1081,13 @@ public class APPH5GGShareController extends BaseController {
 				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data).toString();
 			}
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("listRank", e);
 		} catch (Exception e) {
@@ -1138,6 +1208,13 @@ public class APPH5GGShareController extends BaseController {
 				}
 			}
 		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("pickUpSuperPrize" + context, e);
 		} catch (Exception e) {
