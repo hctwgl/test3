@@ -488,8 +488,8 @@ public class RiskUtil extends AbstractThird {
 		
 		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),SecSence);
 		eventObj.put("dealAmount", dealAmount);
-		eventObj.put("SecSence", codeForSecond);
-		eventObj.put("ThirdSence", codeForThird);
+		eventObj.put("SecSence", codeForSecond  == null? "":codeForThird);
+		eventObj.put("ThirdSence", codeForThird == null? "":codeForThird);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
