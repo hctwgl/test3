@@ -142,8 +142,8 @@ public class LoginApi implements ApiHandle {
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
 		loginDo.setResult("true");
-		int userCount = afUserLoginLogService.getCountByUserName(userName);
-		//当用户登录日志为1的时候，发送推送
+
+		
 
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// reset fail count to 0 and record login ip phone msg
@@ -186,9 +186,7 @@ public class LoginApi implements ApiHandle {
 		}
 
 		resp.setResponseData(jo);
-		if(userCount == 0){
-			jpushService.jPushCoupon("COUPON_POPUPS",userName);
-		}
+
 		return resp;
 	}
 
