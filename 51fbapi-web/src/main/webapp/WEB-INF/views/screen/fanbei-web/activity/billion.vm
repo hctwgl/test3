@@ -20,7 +20,7 @@
         <div id="money">
             <div class="imgOne">
                <img class="totalMoney" src="$commonUrl/billion_06.gif" alt="">
-               <span class="numOne">1</span>
+               <!--<span class="numOne">1</span>
                <span class="numTwo">2</span>
                <span class="numThree">3</span>
                <span class="numFour">4</span>
@@ -28,8 +28,9 @@
                <span class="numSix">6</span>
                <span class="numSeven">7</span>
                <span class="numEight">8</span>
-               <span class="numNine">9</span>
+               <span class="numNine">9</span>!-->
                <!--<span class="numTen">0</span>!-->
+               <span class="number">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
             </div>
             <div class="imgTwo">
                 <p class="circle">
