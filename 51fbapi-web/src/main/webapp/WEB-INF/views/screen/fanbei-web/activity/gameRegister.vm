@@ -37,7 +37,7 @@
 		<img src="$commonUrl/gameRegister7.png">
 		<img class="gou" src="$commonUrl/gou.png">
         <input type="checkbox" id="input_check" checked="checked" onclick="gou()">
-	    <a class="protocol" href="/app/sys/registerProtocol"></a>
+	    <a class="protocol" href="/fanbei-web/app/protocolRegister"></a>
 	</div>
     <div class="imgWrap">
 		<img src="$commonUrl/gameRegister8.png">

@@ -110,11 +110,10 @@
                     <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBrwPlatform">《借钱平台用户注册协议》</a>
                     </p>
                 #elseif( $!{style}==17 )
-                    <p class="clearfix" style="color:#949494;"><span>阅读并同意</span><a href="/app/sys/registerProtocol"
-                                                                                    style="color:#949494;">《51返呗用户注册协议》</a>
+                    <p class="clearfix" style="color:#949494;"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" style="color:#949494;">《51返呗用户注册协议》</a>
                     </p>
                 #else
-                    <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+                    <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a></p>
                 #end
             </div>
             #if( $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
