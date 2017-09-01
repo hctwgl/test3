@@ -13,98 +13,24 @@ import com.ald.fanbei.api.common.AbstractSerial;
  */
 public class RiskTrustReqBo extends HashMap<String, String> {
 
-	/**
-	 * 用户手机号
-	 */
-	private String phone;
 	
 	/**
-	 * 同盾指纹
+	 * 订单号	
 	 */
-	private String blackBox;
+	private String orderNo;
 	
-	/**
-	 * 手机硬件序列号
-	 */
-	private String imei;
+	private String eventType;
 	
-	private String ip;
+	private String consumerNo;
 	
-	/**
-	 * 手机型号
-	 */
-	private String phoneType;
+	private String details;
 	
-	/**
-	 * 网络类型
-	 */
-	private String networkType;
-	
-	/**
-	 * 网络类型
-	 */
-	private String osType;
 	
 	/**
 	 * 签名信息
 	 */
 	private String signInfo;
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getBlackBox() {
-		return blackBox;
-	}
-
-	public void setBlackBox(String blackBox) {
-		this.blackBox = blackBox;
-	}
-
-	public String getImei() {
-		return imei;
-	}
-
-	public void setImei(String imei) {
-		this.imei = imei;
-	}
-
-	public String getIp() {
-		return ip;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public String getPhoneType() {
-		return phoneType;
-	}
-
-	public void setPhoneType(String phoneType) {
-		this.phoneType = phoneType;
-	}
-
-	public String getNetworkType() {
-		return networkType;
-	}
-
-	public void setNetworkType(String networkType) {
-		this.networkType = networkType;
-	}
-
-	public String getOsType() {
-		return osType;
-	}
-
-	public void setOsType(String osType) {
-		this.osType = osType;
-	}
 
 	public String getSignInfo() {
 		return signInfo;
@@ -112,5 +38,37 @@ public class RiskTrustReqBo extends HashMap<String, String> {
 
 	public void setSignInfo(String signInfo) {
 		this.signInfo = signInfo;
+	}
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	public String getEventType() {
+		return eventType;
+	}
+
+	public void setEventType(String eventType) {
+		this.eventType = eventType;
+	}
+
+	public String getConsumerNo() {
+		return consumerNo;
+	}
+
+	public void setConsumerNo(String consumerNo) {
+		this.consumerNo = consumerNo;
+	}
+
+	public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
 	}
 }

@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -43,11 +44,15 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
+import com.ald.fanbei.api.biz.bo.risk.RiskSynLoginReqBo;
+import com.ald.fanbei.api.biz.bo.risk.RiskTrustReqBo;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.AsyLoginService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -167,6 +172,10 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	AsyLoginService asyLoginService;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -1770,17 +1779,34 @@ public class RiskUtil extends AbstractThird {
 	 * @param device
 	 * @return
 	 */
-	public boolean verifyLogin(String userName,String device){
+	public boolean verifySynLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
+			String ip,String phoneType,String networkType,String osType){
 		
-		Map<String,String> reqBo = new HashMap<String, String>();
+		RiskTrustReqBo reqBo = new RiskTrustReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setEventType(Constants.EVENT_LOGIN_SYN);
+		reqBo.setOrderNo(generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("loginType", loginType);
+		obj.put("loginTime", loginTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		//Map<String,String> reqBo = new HashMap<String, String>();
 		reqBo.put("signInfo", SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
+		String url = getUrl() + "/modules/api/event/syn/login.htm";
 		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
-		logThird(reqResult, "verifyLogin", reqBo);
+		logThird(reqResult, "verifySynLogin", reqBo);
 		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.RISK_SYN_LOGIN_VERIFY_ERROR);
 		}
 
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
@@ -1791,6 +1817,44 @@ public class RiskUtil extends AbstractThird {
 //			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			return false;
 		}
+	}
+	
+	/**
+	 * 风控异步登录
+	 * @param consumerNo
+	 * @param phone
+	 * @param blackBox
+	 * @param deviceUuid
+	 * @param loginType
+	 * @param loginTime
+	 * @param ip
+	 * @param phoneType
+	 * @param networkType
+	 * @param osType
+	 * @return
+	 */
+	public void verifyASyLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
+			String ip,String phoneType,String networkType,String osType,String result){
+		
+		RiskTrustReqBo reqBo = new RiskTrustReqBo();
+		reqBo.setConsumerNo(consumerNo);
+		reqBo.setEventType(Constants.EVENT_LOGIN_ASY);
+		reqBo.setOrderNo(generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("result",result);
+		obj.put("loginType", loginType);
+		obj.put("loginTime", loginTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
+		String url = getUrl() + "/modules/api/event/asy/login.htm";
+		asyLoginService.excute(reqBo, url);
 	}
 	
 }

@@ -9,4 +9,5 @@ package com.ald.fanbei.api.biz.bo.risk;
  */
 public class RiskAsyLoginReqBo extends RiskTrustReqBo {
 
+	
 }

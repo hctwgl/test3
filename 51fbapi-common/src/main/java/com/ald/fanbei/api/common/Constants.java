@@ -164,6 +164,8 @@ public class Constants {
 	public static final String EVENT_FINANCE_LIMIT = "event_finance_limit";
 	public static final String EVENT_FINANCE_COUNT = "event_finance_count";
 	public static final String EVENT_FINANCE_LIMIT_WEAK = "event_finance_limit_weak";
+	public static final String EVENT_LOGIN_SYN = "event_login_syn";
+	public static final String EVENT_LOGIN_ASY = "event_login_syn";
 	
 	public static final String RES_GAME_AWARD_COUNT_LIMIT           = "GAME_AWARD_COUNT_LIMIT";//游戏中奖数量总限制
 	//续期天数限制
@@ -233,6 +235,8 @@ public class Constants {
 	public static final String CACHEKEY_BORROWCASHNO = "fbapi_borrow_cash_no";
 	public static final String CACHEKEY_REPAYCASHNO_LOCK = "fbapi_repay_cash_no_lock";
 	public static final String CACHEKEY_REPAYCASHNO = "fbapi_repay_cash_no";
+	public static final String CACHEKEY_RISKLOGIN_LOCK = "fbapi_risk_login_no_lock";
+	public static final String CACHEKEY_RISKLOGIN = "fbapi_risk_login_no";
 	public static final String CACHEKEY_ORDERNO_LOCK = "ala_order_lock";
 	public static final String CACHEKEY_ORDERNO = "ala_order";
 	public static final String CACHEKEY_BORROWNO_LOCK = "ala_borrow_no_lock";

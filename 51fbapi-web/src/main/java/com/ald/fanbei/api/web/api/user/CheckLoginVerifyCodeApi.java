@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
@@ -58,16 +60,21 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfSmsRecordService afSmsRecordService;
+	@Resource
+	RiskUtil riskUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		
+		String SUCC = "1";
+		String FAIL = "0";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		String userName = context.getUserName();
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String ip = CommonUtil.getIpAddr(request);
 
+		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
+		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
@@ -106,16 +113,21 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		}
 		
 		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.LOGIN.getCode());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
         if(smsDo == null){
+        	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,FAIL);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         //判断验证码是否一致并且验证码是否已经做过验证
         String realCode = smsDo.getVerifyCode();
         if(!StringUtils.equals(verifyCode, realCode)|| smsDo.getIsCheck() == 1){
+        	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,FAIL);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         //判断验证码是否过期
         if(DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))){
+        	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,FAIL);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
         }
         // 更新为已经验证
@@ -152,7 +164,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		}
 
 		resp.setResponseData(jo);
-
+		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", loginTime, ip, phoneType, networkType, osType,SUCC);
 		return resp;
 	}
 	
@@ -166,5 +178,6 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		vo.setFailCount(afUserDo.getFailCount());
 		return vo;
 	}
+	
 
 }

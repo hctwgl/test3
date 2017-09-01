@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -9,10 +10,12 @@ import com.ald.fanbei.api.biz.service.*;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.bo.risk.RiskSynLoginReqBo;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -23,6 +26,7 @@ import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -31,6 +35,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfUserVo;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -66,6 +71,7 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	RiskUtil riskUtil;
 	
+	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -78,7 +84,9 @@ public class LoginApi implements ApiHandle {
 
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
-		
+		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
+		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
+		loginType = "1".equals(loginType)?"1":"2";
 		if (StringUtils.isBlank(inputPassSrc)) {
 			logger.error("inputPassSrc can't be empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -150,8 +158,11 @@ public class LoginApi implements ApiHandle {
 		temp.setUserName(userName);
 		afUserService.updateUser(temp);
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 		//调用风控可信接口
-		boolean riskSucc = riskUtil.verifyLogin(userName, requestDataVo.getId());
+		boolean riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
+				loginType,loginTime,ip,phoneType,networkType,osType);
 		if(!riskSucc){
 			loginDo.setResult("false:需要验证登录短信");
 			afUserLoginLogService.addUserLoginLog(loginDo);
@@ -235,4 +246,5 @@ public class LoginApi implements ApiHandle {
 	public static void main(String[] args) {
 		System.out.println(UserUtil.getPassword(MD5.digest("123456"), "d229b3462c0b8a94"));
 	}
+	
 }
