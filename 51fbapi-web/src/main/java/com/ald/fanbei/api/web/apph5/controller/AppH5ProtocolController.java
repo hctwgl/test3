@@ -80,9 +80,8 @@ public class AppH5ProtocolController extends BaseController {
 	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
 	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
-		String loginUserName = webContext.getUserName();
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(loginUserName != null && !loginUserName.equals(userName)) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
 		}
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
@@ -140,10 +139,8 @@ public class AppH5ProtocolController extends BaseController {
 	@RequestMapping(value = { "protocolCashLoan" }, method = RequestMethod.GET)
 	public void protocolCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
-		String loginUserName = webContext.getUserName();
-		
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(loginUserName != null && !loginUserName.equals(userName)) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
 		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
@@ -215,9 +212,8 @@ public class AppH5ProtocolController extends BaseController {
 	@RequestMapping(value = { "protocolRenewal" }, method = RequestMethod.GET)
 	public void protocolRenewal(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
-		String loginUserName = webContext.getUserName();
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(loginUserName != null && !loginUserName.equals(userName)) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
 		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
