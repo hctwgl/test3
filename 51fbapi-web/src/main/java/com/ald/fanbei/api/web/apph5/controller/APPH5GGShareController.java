@@ -245,6 +245,10 @@ public class APPH5GGShareController extends BaseController {
 			if (StringUtil.isBlank(userName)) {
 				userName = request.getParameter("userName");
 			}
+			
+			//定义终极大奖的初始状态（只有有资格领取并且未领取的状态是）
+			String superPrizeStatus = "N";//用户没登陆的时候默认是只灰色状态（已经领取过了）
+			// String userName = request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
@@ -254,7 +258,50 @@ public class APPH5GGShareController extends BaseController {
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(useritemsDo);
 					data.put("userItemsList", userItemsList);
-
+					
+				
+					// 判断是否已经领取红包
+					AfBoluomeActivityResultDo conditionDo = new AfBoluomeActivityResultDo();
+					conditionDo.setBoluomeActivityId(activityId);
+					conditionDo.setUserId(userId);
+					List<AfBoluomeActivityResultDo> isHave = afBoluomeActivityResultService
+							.getListByCommonCondition(conditionDo);
+					if (isHave != null && isHave.size() > 0) {//用户已经领取终极大奖,暗的
+						superPrizeStatus = "N";
+					}else{
+						
+						//是否已经有资格领取
+						// all userItmes list to be deleted later
+						List<AfBoluomeActivityUserItemsDo> userList = new ArrayList<>();
+						// TODO:判断用户是否有活动配置的所有的卡片
+						if (itemsList != null && itemsList.size() > 0) {
+							//默认是亮的，只要有一个是没有的则为暗的
+							superPrizeStatus = "Y";
+							for (AfBoluomeActivityItemsDo uDo : itemsList) {
+								Long itemsId = uDo.getRid();
+								// 查到用户活动卡片
+								AfBoluomeActivityUserItemsDo useritemsdoo = new AfBoluomeActivityUserItemsDo();
+								useritemsdoo.setBoluomeActivityId(activityId);
+								useritemsdoo.setUserId(userId);
+								useritemsdoo.setStatus("NORMAL");
+								useritemsdoo.setItemsId(itemsId);
+								List<AfBoluomeActivityUserItemsDo> useritemsList = afBoluomeActivityUserItemsService
+										.getListByCommonCondition(useritemsdoo);
+								if (useritemsList == null || useritemsList.size() <= 0) {
+									superPrizeStatus = "N";
+									break;
+								}
+								userList.add(useritemsList.get(0));
+							
+							}
+							//最终用userList 和应该得到的卡片数量对比 是否一样最最后一层拦截
+							if (userList != null && userList.size() == itemsList.size()) {
+								superPrizeStatus = "Y";
+							}
+						}
+					}
+					
+					
 					// 修改itemsList内容，把num统计上去
 					itemsList = addNumber(activityId, userId);
 					// 吧用户名传给页面，进行下一步操作。
@@ -265,6 +312,8 @@ public class APPH5GGShareController extends BaseController {
 					}
 				}
 			}
+			
+			data.put("superPrizeStatus", superPrizeStatus);
 			data.put("bannerList", bannerList);
 			data.put("fakeFinal", fakeFinal);
 			data.put("fakeJoin", fakeJoin);
