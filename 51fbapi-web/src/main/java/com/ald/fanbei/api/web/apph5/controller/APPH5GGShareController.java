@@ -122,11 +122,12 @@ public class APPH5GGShareController extends BaseController {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = " ";
 		FanbeiWebContext context = new FanbeiWebContext();
-		context = doWebCheck(request, false);
+		
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try {
 
+			context = doWebCheck(request, false);
 			// TODO:banner轮播图后台增加一个类型，和配置。GG_TOP_BANNER.根据类型和活动id去取。
 			// List<Object> bannerList = new ArrayList<>();
 			List<AfResourceDo> bannerList = afResourceService
