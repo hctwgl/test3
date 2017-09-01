@@ -5,7 +5,7 @@
 		id
 		rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,
 		overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close,rish_order_no,
-		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num
+		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate
 	</sql>
 
 	<insert id="addBorrowCash" parameterType="AfBorrowCashDo"

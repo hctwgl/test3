@@ -620,7 +620,7 @@ public abstract class BaseController {
      * @param respData
      * @param exeT
      */
-    protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData) {
+    protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData, String ...extInfo) {
         try {
             JSONObject param = new JSONObject();
             Enumeration<String> enu = request.getParameterNames();
@@ -672,6 +672,19 @@ public abstract class BaseController {
      					"	reqD=", param.toString(), 
      					"	resD=",respData==null?"null":respData.toString()));
             }else{
+            	// 获取可变参数
+            	String ext1 = "";
+            	String ext2 = "";
+            	String ext3 = "";
+            	String ext4 = "";
+            	try{
+            		ext1 = extInfo[0];
+            		ext2 = extInfo[1];
+            		ext3 = extInfo[2];
+            		ext4 = extInfo[3];
+            	} catch(Exception e) { 
+            		// ignore error
+            	}
             	maidianLog.info(StringUtil.appendStrs(
      					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
      					"	", "h",
@@ -682,10 +695,10 @@ public abstract class BaseController {
      					"	result=",respData == null?false:respData.getSuccess(), 
      					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
      					"	", "md", 
-     					"	", "",
-     					"	", "",
-     					"	", "",
-     					"	", "",
+     					"	", ext1,
+     					"	", ext2,
+     					"	", ext3,
+     					"	", ext4,
      					"	reqD=", param.toString(), 
      					"	resD=",respData==null?"null":respData.toString()));
             }
@@ -817,6 +830,9 @@ public abstract class BaseController {
     }
 
     private static String getTestUser(String url) {
+    	if(StringUtils.isBlank(url)) {
+    		return null;
+    	}
         String result = "";
         try {
             Map<String, List<String>> params = new HashMap<String, List<String>>();

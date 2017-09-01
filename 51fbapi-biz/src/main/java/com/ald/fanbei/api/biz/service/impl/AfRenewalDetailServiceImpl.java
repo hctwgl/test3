@@ -268,14 +268,13 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
-		AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
+		/*AfResourceDo poundageResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_POUNDAGE);
 		BigDecimal borrowCashPoundage = new BigDecimal(poundageResource.getValue());// 借钱手续费率（日）
-		
 		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
 			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
-		}
-		
+		}*/
+		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
 		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
 

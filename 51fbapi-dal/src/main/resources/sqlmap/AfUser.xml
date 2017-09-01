@@ -25,6 +25,9 @@
 			recommend_id,
 			register_channel_id,
 			register_channel_point_id
+			<if test="majiabaoName != null">
+				,majiabao_name
+			</if>
 		)
 		VALUES
 		(
@@ -38,6 +41,9 @@
 			#{recommendId},
 			#{registerChannelId},
 			#{registerChannelPointId}
+			<if test="majiabaoName != null">
+				,#{majiabaoName}
+			</if>
 		)
 	</insert>
 	
@@ -160,6 +166,9 @@
 		</if>
 		<if test="recommendCode != null">
 			,recommend_code = #{recommendCode}
+		</if>
+		<if test="majiabaoName != null">
+			,majiabao_name = #{majiabaoName}
 		</if>
 		WHERE
 			id = #{rid}
