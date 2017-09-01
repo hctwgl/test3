@@ -107,6 +107,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			Map<String,Object> activityData = new HashMap<String,Object> ();
 			activityData.put("titleName", afActivityDo.getName());
 			activityData.put("imageUrl", afActivityDo.getIconUrl());
+			activityData.put("type", "H5_URL");
+			activityData.put("content", "www.baidu.com");
 			// 活动商品
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			// 获取活动商品
