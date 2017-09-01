@@ -62,7 +62,8 @@ public class LoginApi implements ApiHandle {
 //	JpushService jpushService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
-	
+	@Resource
+	JpushService jpushService;
 	
 
 	@Override
@@ -141,6 +142,9 @@ public class LoginApi implements ApiHandle {
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
 		loginDo.setResult("true");
+
+		
+
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// reset fail count to 0 and record login ip phone msg
 		AfUserDo temp = new AfUserDo();

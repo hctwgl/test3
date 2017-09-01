@@ -18,6 +18,7 @@
 	<mvc:default-servlet-handler />
 
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.rebate" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.listener" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.api" />

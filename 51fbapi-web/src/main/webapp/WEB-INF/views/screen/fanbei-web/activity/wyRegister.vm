@@ -4,19 +4,27 @@
 	#set($version="2017061505")
     #set($commonUrl="https://img.51fanbei.com/h5/app/activity/wy")
 	<meta charset="UTF-8">
-	<title>51返呗</title>
+	<title>51返呗邀您领红包</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
 </head>
 <body>
 <div class="loadingMask"><i class="loading"></i></div>
-<img class="first" src="$commonUrl/c1.png">
-<img class="first" src="$commonUrl/c2.png">
-<img class="first" src="$commonUrl/c3.png">
-<img class="first" src="$commonUrl/c4.png">
-<img class="first" src="$commonUrl/c5.png">
-<img class="first" src="$commonUrl/c6.png">
-<img class="first" src="$commonUrl/c7.png">
-<img class="first" src="$commonUrl/c8.png">
+<img class="first" src="$commonUrl/c11.png">
+<img class="first" src="$commonUrl/c12.png">
+<img class="first" src="$commonUrl/c13.png">
+<img class="first" src="$commonUrl/c14.png">
+<img class="first" src="$commonUrl/c15.png">
+<img class="first" src="$commonUrl/c16.png">
+<img class="first" src="$commonUrl/c17.png">
+<img class="first" src="$commonUrl/c18.png">
+<img class="sPic" src="$commonUrl/c1.png">
+<img class="sPic" src="$commonUrl/c2.png">
+<img class="sPic" src="$commonUrl/c3.png">
+<img class="sPic" src="$commonUrl/c4.png">
+<img class="sPic" src="$commonUrl/c5.png">
+<img class="sPic" src="$commonUrl/c6.png">
+<img class="sPic" src="$commonUrl/c7.png">
+<img class="sPic" src="$commonUrl/c8.png">
 <img class="lazy" id="more" data-original="$commonUrl/c9.png">
 <img class="lazy" data-original="$commonUrl/d1.png">
 <img class="lazy" data-original="$commonUrl/d2.png">
