@@ -79,7 +79,8 @@ $(".submit").click(function(){
                                 channelCode: channelCode,
                                 pointCode: pointCode,
                                 smsCode: register_verification,
-                                password: password_md5
+                                password: password_md5,
+                                token:token
                             },
                             success: function(returnData){
                                 if (returnData.success) {
