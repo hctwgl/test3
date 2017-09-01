@@ -157,6 +157,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ORDER_HAVE_CLOSED("ORDER_HAVE_CLOSED",1576,"order have closed","订单已完结"),
     AFTERSALE_APPLY_NOT_EXIST("AFTERSALE_APPLY_NOT_EXIST",1577,"aftersale apply not exist","售后申请记录不存在"),
     FUNCTION_REPAIRING_ERROR("FUNCTION_REPAIRING_ERROR",1578,"function repairing error","此功能正在维护中，请耐心等待！"),
+    ORDER_HAS_CLOSED("ORDER_HAS_CLOSED",1579,"order has closed","订单已经关闭,请重新下单"),
     
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),

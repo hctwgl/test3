@@ -102,6 +102,10 @@ public class PayOrderV1Api implements ApiHandle {
 		if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
 		}
+		
+		if (orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
+		}
 
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		if (payId >= 0) {
