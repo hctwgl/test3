@@ -58,7 +58,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/fanbei-web/")
+@RequestMapping("/fanbei-web/app/")
 public class AppH5ProtocolController extends BaseController {
 
 	@Resource
@@ -77,9 +77,9 @@ public class AppH5ProtocolController extends BaseController {
 	AfRescourceLogService afRescourceLogService;
 
 
-	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
-	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheck(request, false);
+	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
+	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String loginUserName = webContext.getUserName();
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		if(loginUserName != null && !loginUserName.equals(userName)) {
@@ -137,9 +137,9 @@ public class AppH5ProtocolController extends BaseController {
 		logger.info(JSON.toJSONString(model));
 	}
 
-	@RequestMapping(value = { "cashLoanProtocol" }, method = RequestMethod.GET)
-	public void cashLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheck(request, false);
+	@RequestMapping(value = { "protocolCashLoan" }, method = RequestMethod.GET)
+	public void protocolCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String loginUserName = webContext.getUserName();
 		
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
@@ -212,9 +212,9 @@ public class AppH5ProtocolController extends BaseController {
 		logger.info(JSON.toJSONString(model));
 	}
 
-	@RequestMapping(value = { "renewalProtocol" }, method = RequestMethod.GET)
-	public void renewalLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheck(request, false);
+	@RequestMapping(value = { "protocolRenewal" }, method = RequestMethod.GET)
+	public void protocolRenewal(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String loginUserName = webContext.getUserName();
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		if(loginUserName != null && !loginUserName.equals(userName)) {
