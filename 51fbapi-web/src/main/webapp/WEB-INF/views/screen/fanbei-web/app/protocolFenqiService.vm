@@ -22,14 +22,14 @@
 	</style>
 </head>
 <body style="background-color: #fff;">
-	<div class="protocol fenqiServiceProtocol">
+	<div class="protocol" id="fenqiServiceProtocol">
         <h2>分期服务协议</h2>
         <p>
-            甲方（借款人）：$!{realName}<br>
-            身份证号：$!{idNumber}<br>
-            联系方式：$!{mobile}<br><br>
+            甲方（借款人）：{{realName}}<br>
+            身份证号：{{idNumber}}<br>
+            联系方式：{{mobile}<br><br>
 
-            乙方（出借人）：$!{lender}<br>
+            乙方（出借人）：{{lender}}<br>
             丙方：浙江阿拉丁电子商务股份有限公司<br><br>
 
             <span>鉴于：</span><br>
@@ -40,13 +40,9 @@
 
             <span>第一条 借款基本信息</span><br>
 			<ul>
-				<li><i>借款本金</i><i>￥$!{amountLower}</i></li>
-				<li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
-		        <!-- <li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li> -->
-				<!-- <li><i>年利率</i><i>0%</i></li> -->
-				<li><i>利息和手续费</i><i>¥$!{poundage}</i></li>
-				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")至$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
-				<!-- <li><i>还款方式</i><i>等本等息</i></li> -->
+				<li><i>借款本金</i><i>￥{{amountLower}}</i></li>
+				<li><i>大写金额</i><i>人民币{{amountCapital}</i></li>
+				<li><i>利息和手续费</i><i>¥{{poundage}}</i></li>
 				<li><i>还款日</i><i>每月20日</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
 
@@ -128,9 +124,40 @@
         </p>
     </div>
     <script type="text/javascript">
+			var userName=getUrl("userName");
+            var nper=getUrl('nper');
+            var amount=getUrl('amount');
+            var poundage=getUrl('poundage');
+
             new Vue({
-                el:'.fenqiServiceProtocol',
+                el:'#fenqiServiceProtocol',
+                data:{
+                    content: []
+                },
+                created:function () {
+                    this.init();
+                },
                 methods:{
+                    init(){
+                        var self=this;
+                        $.ajax({  // 优惠券请求
+                            type: 'post',
+                            url: "/fanbei-web/fenqiServiceProtocol",
+                            data:{
+                                userName: userName,
+                                nper: nper,
+                                amount: amount,
+                                poundage: poundage
+                            },
+                            success: function (res) {
+                                self.content=(JSON.parse(res)).data;
+                                console.log(self.content);
+                            },
+                            error: function () {
+                                requestMsg("请求失败");
+                            }
+                        });
+					},
                     changeRate: function(num){ // 利率截取最后两位小数
                         var rate=num;
                         rate = rate*100;   //截取小数点后4位
