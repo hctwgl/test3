@@ -25,7 +25,7 @@ $(function(){
                 url: "/H5GG/sendItems",
                 data:{'activityId':activityId},
                 success: function (returnData) {
-                   returnData = eval('(' + returnData + ')');
+                    returnData = eval('(' + returnData + ')');
                     console.log(returnData)
                     if(returnData.data.loginUrl){
                         location.href = returnData.data.loginUrl;
@@ -44,19 +44,20 @@ $(function(){
                             var str='';
 
                             for(var j=0;j<presentCardList.length;j++){//判断终极大奖蒙版
-                                if(presentCardList[j].num>=2){
+                                /*if(presentCardList[j].num>=2){
                                     str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
                                 }else{
                                     str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
+                                }*/
+                                if(presentCardList[j].num>=2){
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="cardBlur" src="'+presentCardList[j].iconUrl+'"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
+                                }else{
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
                                 }
                             }//判断终极大奖蒙版
                             $('.imgList').append(str);
                             slideNub = $(".imgList .img").size();//获取轮播图片数量
                             getData(slideNub);
-                            numClick02=$('.img.img3').attr('numClick');
-                            if(numClick02>=2){
-                                $('.img.img3').find('.garyCard').css('display','none');
-                            }
                             $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
                             $('.img').click(function(){
                                 var index=$(this).index();
@@ -66,7 +67,6 @@ $(function(){
                                     $('.surePresent').css('background','#B3B3B3');
                                 }else{
                                     $('.surePresent').css('background','#fb9659');
-                                    $(this).find('.garyCard').css('display','none');
                                 }
                             })
                         }else{
@@ -164,12 +164,12 @@ function right(){
     }
     imgClickFy();
     numClick03=$('.img.img3').attr('numClick');
+    $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
     //alert(numClick03)//可知img3卡片数量
     if(numClick03<2){
         $('.surePresent').css('background','#B3B3B3');
     }else{
         $('.surePresent').css('background','#fb9659');
-        $('.img.img3').find('.garyCard').css('display','none');
     }
 }
 //左滑动
@@ -187,12 +187,12 @@ function left(){
     }
     imgClickFy();
     numClick03=$('.img.img3').attr('numClick');
+    $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
     //alert(numClick03)//可知img3卡片数量
     if(numClick03<2){
         $('.surePresent').css('background','#B3B3B3');
     }else{
         $('.surePresent').css('background','#fb9659');
-        $('.img.img3').find('.garyCard').css('display','none');
     }
 }
 //轮播图片左右图片点击翻页
