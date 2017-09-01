@@ -12,7 +12,7 @@
     <div id="billion">
         <!--顶部文字滚动 !-->
          <div class="box" id="scroll_div">
-                <div class="personAmount" id="scroll_begin"><p>恭喜用户<span class="light"></span>获得万元现金大奖</p>></div>
+                <div class="personAmount" id="scroll_begin"><p>恭喜用户<span class="light"></span>获得万元现金大奖</p></div>
                 <div class="personAmount" id="scroll_end"></div>     
                 <!--<div class="personAmount"><p>已有<span class="light"></span>22222222222</p></div>!-->
         </div>
@@ -30,7 +30,7 @@
                <span class="numEight">8</span>
                <span class="numNine">9</span>!-->
                <!--<span class="numTen">0</span>!-->
-               <span class="number">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</span>
+               <span class="number">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;</span>
             </div>
             <div class="imgTwo">
                 <p class="circle">
