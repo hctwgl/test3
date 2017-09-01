@@ -17,23 +17,23 @@
             <div class="imgTwo">
                 <p class="circle">
                     <span class="circleOne">
-                        <i class="date">9月4日</i><br/>
+                        <i class="date">${date1}</i><br/>
                         <i class="circleMoney">600元</i>
                     </span>
                     <span class="circleTwo">
-                        <i class="date change">9月5日</i><br/>
+                        <i class="date change">${date2}</i><br/>
                         <i class="circleMoney change">700元</i>
                     </span>
                     <span class="circleThree">
-                        <i class="date">9月6日</i><br/>
+                        <i class="date">${date3}</i><br/>
                         <i class="circleMoney">800元</i>
                     </span>
                     <span class="circleFour">
-                        <i class="date">9月7日</i><br/>
+                        <i class="date">${date4}</i><br/>
                         <i class="circleMoney">900元</i>
                     </span>
                     <span class="circleFive">
-                        <i class="date">9月8日</i><br/>
+                        <i class="date">${date5}</i><br/>
                         <i class="circleMoney">1000元</i>
                     </span>
                     <!--<span class="circleSix">
