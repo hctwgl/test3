@@ -158,7 +158,7 @@ public class GeneratorClusterNo {
 	public String getRiskLoginNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("dl");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getRiskLoginSequenceNum()));
+		orderSb.append(dateStr).append(this.getRiskLoginSequenceNum());
 		return orderSb.toString();
 	}
 	
@@ -439,10 +439,20 @@ public class GeneratorClusterNo {
         return channelNum;
     }
   	
-  	private int getRiskLoginSequenceNum() {// 加锁，防止并发
-		String lockKey = Constants.CACHEKEY_RISKLOGIN_LOCK;
+  	private String getRiskLoginSequenceNum() {// 加锁，防止并发
 		String cacheKey = Constants.CACHEKEY_RISKLOGIN;
 		int num = TokenCacheUtil.incr(cacheKey);
-		return num;
+		if(num==900000){
+			TokenCacheUtil.saveObject(cacheKey, 0);
+			num = 0;
+		}
+		String numString = String.valueOf(num);
+		int length = 6-numString.length();
+		StringBuilder sb = new StringBuilder();
+		for(int i=0;i<length;i++){
+			sb.append(0);
+		}
+		sb.append(num);
+		return sb.toString();
 	}
 }

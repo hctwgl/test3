@@ -236,7 +236,6 @@ public class Constants {
 	public static final String CACHEKEY_BORROWCASHNO = "fbapi_borrow_cash_no";
 	public static final String CACHEKEY_REPAYCASHNO_LOCK = "fbapi_repay_cash_no_lock";
 	public static final String CACHEKEY_REPAYCASHNO = "fbapi_repay_cash_no";
-	public static final String CACHEKEY_RISKLOGIN_LOCK = "fbapi_risk_login_no_lock";
 	public static final String CACHEKEY_RISKLOGIN = "fbapi_risk_login_no";
 	public static final String CACHEKEY_ORDERNO_LOCK = "ala_order_lock";
 	public static final String CACHEKEY_ORDERNO = "ala_order";
