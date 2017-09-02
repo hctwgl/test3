@@ -164,7 +164,7 @@ public class LoginApi implements ApiHandle {
 			Date gmtCreateDate = afUserDo.getGmtCreate();
 			Date date = new Date();
 			long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
-			if(hours<=24){
+			if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口
 				isNeedRisk = false;
 			}
 		}

@@ -128,6 +128,8 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
         			loginTime, ip, phoneType, networkType, osType,FAIL,Constants.EVENT_LOGIN_ASY);
         	// 更新为已经验证
          	afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+         	loginDo.setResult("false:可信登录短信验证码不正确");
+			afUserLoginLogService.addUserLoginLog(loginDo);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_SMS_WRONG_ERROR);
         }
         //判断验证码是否过期
@@ -136,6 +138,9 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
         }
         // 更新为已经验证
      	afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+     	
+     	loginDo.setResult("true:验证短信验证码通过");
+		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
 		TokenBo tokenBo = new TokenBo();
