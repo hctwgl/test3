@@ -97,6 +97,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		loginDo.setOsType(osType);
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
+		loginDo.setUuid(uuid);
 		
 		String inputPassword = UserUtil.getPassword(inputPassSrc, afUserDo.getSalt());
 		if (!StringUtils.equals(inputPassword, afUserDo.getPassword())) {
