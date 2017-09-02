@@ -41,7 +41,7 @@
             <span>第一条 借款基本信息</span><br>
 			<ul>
 				<li><i>借款本金</i><i>#if($!{amountLower})￥$!{amountLower}#end</i></li>
-				<li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
+				<li><i>大写金额</i><i>#if($!{amountCapital})人民币$!{amountCapital}#end</i></li>
 				<!-- <li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li> -->
 				<!-- <li><i>年利率</i><i>0%</i></li> -->
 				<li><i>利息和手续费</i><i>#if($!{poundage})¥$!{poundage}#end</i></li>
@@ -77,9 +77,8 @@
 			<span>第五条 逾期还款</span><br>
 			1、如果甲方未按照本合同履行还款义务，应立即偿还拖欠款项，并按本条规定向乙方支付违约金，乙方有权要求甲方立即偿还拖欠款项和逾期费用。<br>
 			2、逾期费用按照逾期天数分期计算，逾期天数是指每一期未全额支付的款项已逾期的天数。<br>
-			3、每期逾期费用计算方式：<br>
-			【逾期费用=[逾期天数]×[当期借款剩余应还本息] ×逾期利率（<span>{{changeRate($!{overdueRate})}}</span>）+滞纳金（若有）】。<br>
-			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>{{changeRate($!{lateFeeRate})}}</span> 收取滞纳金。<br>
+			3、每期逾期费用计算方式：【逾期费用=[逾期天数]×[当期借款剩余应还本息] ×逾期利率（<span>#if($!{overdueRate}){{changeRate($!{overdueRate})}}#else 0 #end</span>）+滞纳金（若有）】。<br>
+			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>#if($!{lateFeeRate}){{changeRate($!{lateFeeRate})}}#end</span> 收取滞纳金。<br>
 			5、还款顺序：甲方同意按下列顺序清偿债务：（1）乙方实现债权的费用；（2）违约金；（3）利息；（4）本金。乙方有权根据甲方实际还款情况变更上述顺序。<br><br>
 
 			<span>第六条 甲方权利和义务</span><br>
