@@ -95,6 +95,7 @@
 				<value>/user/setRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
+				<value>/user/checkLoginVerifyCode</value>
 				<value>/goods/getHomeInfo</value>
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
