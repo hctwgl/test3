@@ -12,7 +12,7 @@
 <input type="hidden" id="style" value="$!{style}">
 
 <div class="channelRegister_wrap">
-    #if( $!{style}==9 || $!{style}==11 || $!{style}==12 || $!{style}==15 || $!{style}==16 || $!{style}==18 || $!{style}==22 )
+    #if( $!{style}==9 || $!{style}==11 || $!{style}==12 || $!{style}==15 || $!{style}==16 || $!{style}==18 || $!{style}==22|| $!{style}==23 )
         <img src="$commonUrl/channel$!{style}_01.png">
     #elseif( $!{style}==14 )
         <img src="$commonUrl/channel7_01.jpg">
@@ -20,7 +20,7 @@
         <img src="$commonUrl/channel17_0001.png">
     #elseif( $!{style}==19 )
         <img src="$commonUrl/channel19_01.png">
-    #elseif( $!{style}==20 || $!{style}==23 )
+    #elseif( $!{style}==20  )
         <img src="$commonUrl/channel17_01.jpg">
     #elseif( $!{style}==21 )
         <img src="$commonUrl/channel21_01.jpg">

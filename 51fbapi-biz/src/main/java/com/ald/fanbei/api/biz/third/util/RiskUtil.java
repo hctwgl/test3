@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -137,6 +138,8 @@ public class RiskUtil extends AbstractThird {
 	UpsUtil upsUtil;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	RebateContext rebateContext;
 	@Resource
 	TongdunUtil tongdunUtil;
 	@Resource
@@ -493,8 +496,8 @@ public class RiskUtil extends AbstractThird {
 		
 		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),SecSence);
 		eventObj.put("dealAmount", dealAmount);
-		eventObj.put("SecSence", codeForSecond);
-		eventObj.put("ThirdSence", codeForThird);
+		eventObj.put("SecSence", codeForSecond  == null? "":codeForThird);
+		eventObj.put("ThirdSence", codeForThird == null? "":codeForThird);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -725,6 +728,12 @@ public class RiskUtil extends AbstractThird {
 		
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
+		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+			logger.error("TRADE Rebate process");
+			//商圈订单付款后直接进行返利,并且将订单修改集中
+			rebateContext.rebate(orderInfo);
+		}
+
 		resultMap.put("success", true);
 		return resultMap;
 	}
@@ -1298,7 +1307,11 @@ public class RiskUtil extends AbstractThird {
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
-						
+						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+							logger.error("TRADE Rebate process");
+							//商圈订单付款后直接进行返利,并且将订单修改集中
+							rebateContext.rebate(orderInfo);
+						}
 						if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 						}
@@ -1812,7 +1825,6 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
 		}
 	}
-	
 	/**
 	 * 登录可信验证码
 	 * @param userName
@@ -1941,5 +1953,4 @@ public class RiskUtil extends AbstractThird {
 		String url = getUrl() + "/modules/api/event/asy/register.htm";
 		asyLoginService.excute(map, url,"asyRegisterVerify");
 	}
-	
 }
