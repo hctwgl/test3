@@ -45,6 +45,21 @@ import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
 import com.ald.fanbei.api.biz.bo.risk.RiskLoginRespBo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfAuthContactsService;
+import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.AsyLoginService;
@@ -60,6 +75,8 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
@@ -98,7 +115,6 @@ import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 
 /**
  * 
@@ -433,12 +449,15 @@ public class RiskUtil extends AbstractThird {
 	 * @param time 时间
 	 * @param productName 商品名称
 	 * @param virtualCode 商品编号
+	 *增加里那个字段 
+	 *@param SecSence 二级场景
+	 *@param ThirdSencem 三级场景
 	 * @return
 	 */
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
 			String scene, String cardNo, String appName, String ipAddress, 
 			String blackBox, String orderNo, String phone, BigDecimal amount, 
-			BigDecimal poundage, String time,String productName,String virtualCode) {
+			BigDecimal poundage, String time,String productName,String virtualCode,String SecSence,String ThirdSence) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -466,6 +485,16 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("time", time);
 		eventObj.put("virtualCode", virtualCode);
 		eventObj.put("productName", productName);
+		//增加3个参数，配合风控策略的改变
+		String codeForSecond = null;
+		String codeForThird = null;
+		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
+		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		
+		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),SecSence);
+		eventObj.put("dealAmount", dealAmount);
+		eventObj.put("SecSence", codeForSecond);
+		eventObj.put("ThirdSence", codeForThird);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -473,7 +502,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
-//		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
+		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -497,6 +526,18 @@ public class RiskUtil extends AbstractThird {
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
+	}
+	/**
+	 * @author qiaopan
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	private Integer getDealAmount(Long userId,String orderType){
+		Integer result = afOrderService.getDealAmount(userId,orderType);
+		if (result == null) {
+			result = 0 ;
+		}
+		return result;
 	}
 
 	/**
@@ -842,7 +883,6 @@ public class RiskUtil extends AbstractThird {
 					}
 	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
 	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
-
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
@@ -967,7 +1007,7 @@ public class RiskUtil extends AbstractThird {
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
-			if (StringUtil.equals("50", result)) {
+			if (StringUtil.equals("50", result)) {//50是定时任务 推送超时
 				//不做任何更新
 				return 0;
 			}

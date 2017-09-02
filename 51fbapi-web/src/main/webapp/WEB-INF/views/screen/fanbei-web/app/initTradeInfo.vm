@@ -30,7 +30,7 @@
         </div>
         <div class="fukuan clearfix">
             <div class="fukuan-one">
-                <img src="https://fs.51fanbei.com/h5/app/images/user/slience.png" alt="">
+                <img src="http://f.51fanbei.com/h5/app/images/user/slience.png" alt="">
                 <span class="xinyong">51信用分期</span>
                 <p onclick="identification()" class="pro-word">提升额度</p>
             </div>

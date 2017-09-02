@@ -2,6 +2,9 @@ package com.ald.fanbei.api.web.api.user;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +13,6 @@ import com.ald.fanbei.api.biz.service.*;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
 import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +27,6 @@ import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -34,7 +35,6 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfUserVo;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -68,6 +68,8 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Resource
+	JpushService jpushService;
+	@Resource
 	RiskUtil riskUtil;
 	
 
@@ -75,7 +77,7 @@ public class LoginApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		String SUCC = "1";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		String userName = context.getUserName();
+		final String userName = context.getUserName();
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
@@ -85,17 +87,22 @@ public class LoginApi implements ApiHandle {
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
+		
 		if (StringUtils.isBlank(inputPassSrc)) {
 			logger.error("inputPassSrc can't be empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+
+		
+
 		if (afUserDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
+		Integer failCount = afUserDo.getFailCount();
 		// add user login record
 		AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
 		loginDo.setAppVersion(Integer.parseInt(ObjectUtils.toString(requestDataVo.getSystem().get("appVersion"))));
@@ -148,14 +155,14 @@ public class LoginApi implements ApiHandle {
 //			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
-		
 		// reset fail count to 0 and record login ip phone msg
+		
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
 		temp.setRid(afUserDo.getRid());
 		temp.setUserName(userName);
 		afUserService.updateUser(temp);
-		
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 		
@@ -168,7 +175,6 @@ public class LoginApi implements ApiHandle {
 				isNeedRisk = false;
 			}
 		}
-		
 		//调用风控可信接口
 		if (context.getAppVersion() >= 381 &&isNeedRisk) {
 				
@@ -185,6 +191,7 @@ public class LoginApi implements ApiHandle {
 			}
 			loginType = "2"; //可信登录验证通过，变可信
 		}
+		
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
@@ -219,11 +226,20 @@ public class LoginApi implements ApiHandle {
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
 		}
 		if (context.getAppVersion() >= 381) {
-		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
-				phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
+			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
+					phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
 		}
+
 		resp.setResponseData(jo);
 		
+		if(failCount == -1){
+			new	Timer().schedule(new TimerTask(){
+				public void run(){
+					jpushService.jPushCoupon("COUPON_POPUPS",userName);
+					this.cancel();
+				}
+			},1000 * 5);//一分钟
+		}
 		return resp;
 	}
 
@@ -261,5 +277,4 @@ public class LoginApi implements ApiHandle {
 	public static void main(String[] args) {
 		System.out.println(UserUtil.getPassword(MD5.digest("123456"), "d229b3462c0b8a94"));
 	}
-	
 }

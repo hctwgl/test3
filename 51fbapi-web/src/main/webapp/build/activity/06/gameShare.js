@@ -67,7 +67,7 @@ class game{
     }
     reset(){
         $('#scroll').animate({marginLeft:this.init.num+'rem'},0,'linear');
-        $('#claw').css('backgroundImage','url(https://fs.51fanbei.com/h5/app/activity/06/ni_claw1.png)');  //还原钩子
+        $('#claw').css('backgroundImage','url(http://f.51fanbei.com/h5/app/activity/06/ni_claw1.png)');  //还原钩子
         this.num=this.init.num;
         this.time=this.init.time;
         clearInterval(this.timeStart);
@@ -80,7 +80,7 @@ class game{
         let dollNum=[1,2,3,4,5,1,2,3,4,5];
         let con='';
         for(let i=0;i<dollNum.length;i++){
-            con+=`<span data-prop="${dollNum[i]}" class="doll"><div class="doll-main" style="background-image: url('https://fs.51fanbei.com/h5/app/activity/06/ni_boll${dollNum[i]}.png')"></div></span>`
+            con+=`<span data-prop="${dollNum[i]}" class="doll"><div class="doll-main" style="background-image: url('http://f.51fanbei.com/h5/app/activity/06/ni_boll${dollNum[i]}.png')"></div></span>`
         }
         $('#scroll').html(con)
     }
@@ -120,7 +120,7 @@ class game{
                 if(dollLeft>(clawLeft-10) && dollLeft<(clawLeft+35)){          //判断钩子与娃娃是否重合，减的越大越偏右
                     let dataProp=doll.attr('data-prop');
                     // if(Math.floor(Math.random()*100+1)<clientRate){                 //随机能否抓到娃娃
-                        $('#claw').css('backgroundImage','url(https://fs.51fanbei.com/h5/app/activity/06/ni_claw2.png)'); //钩子变为收缩样式
+                        $('#claw').css('backgroundImage','url(http://f.51fanbei.com/h5/app/activity/06/ni_claw2.png)'); //钩子变为收缩样式
                         doll.find('.doll-main').css({position:'absolute',left:'2.47rem'})       //娃娃脱离文档流并跟着上升
                             .animate({top:'-2.2rem'},800,function () {
                                 $('.doll[data-prop='+dataProp+']').css('visibility','hidden');

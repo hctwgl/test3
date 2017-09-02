@@ -38,6 +38,7 @@ public class AfUserDo extends AbstractSerial {
 
 	private Long registerChannelId; // 注册渠道
 	private Long registerChannelPointId;// 注册渠道位置
+	private String majiabaoName;//马甲包名称www为APP,其余的为马甲包名称
 
 	public Long getRid() {
 		return rid;
@@ -228,6 +229,20 @@ public class AfUserDo extends AbstractSerial {
 
 	public void setRegisterChannelPointId(Long registerChannelPointId) {
 		this.registerChannelPointId = registerChannelPointId;
+	}
+
+	/**
+	 * @return the majiabaoName
+	 */
+	public String getMajiabaoName() {
+		return majiabaoName;
+	}
+
+	/**
+	 * @param majiabaoName the majiabaoName to set
+	 */
+	public void setMajiabaoName(String majiabaoName) {
+		this.majiabaoName = majiabaoName;
 	}
 
 	

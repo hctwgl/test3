@@ -36,13 +36,13 @@ public class AfAppUpgradeServiceImpl implements AfAppUpgradeService {
 	}
 
 	@Override
-	public AfAppUpgradeDo getNewestAppUpgradeVersion(Integer versionCode) {
-		String cacheKey = Constants.CACHEKEY_APK_NEWEST_VERSION + versionCode;
+	public AfAppUpgradeDo getNewestAppUpgradeVersion(Integer versionCode,String channelCode,String type) {
+		String cacheKey = Constants.CACHEKEY_APK_NEWEST_VERSION + versionCode+channelCode+type;
 		AfAppUpgradeDo result = (AfAppUpgradeDo)bizCacheUtil.getObject(cacheKey);
         if(result != null){
             return result;
         }
-        result = afAppUpgradeDao.getNewestVersionBySpecify(versionCode);
+        result = afAppUpgradeDao.getNewestVersionBySpecify(versionCode,channelCode,type);
         if(result == null){
             result = afAppUpgradeDao.getMaxAppUpgradeVersion();
         } else {
