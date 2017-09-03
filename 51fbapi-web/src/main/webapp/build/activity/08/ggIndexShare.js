@@ -28,7 +28,7 @@ let vm = new Vue({
                     $('.positionImg').fadeOut(4000);
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
-                    console.log(self.content.superPrizeStatus);
+                    //console.log(self.content.superPrizeStatus);
                     self.$nextTick(function () {
                         for(var k=0;k<self.content.boluomeCouponList.length;k++){
                             //console.log(self.content.boluomeCouponList[k].isHas)
