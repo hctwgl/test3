@@ -25,34 +25,41 @@ let vm = new Vue({
                 url: "/H5GG/initHomePage",
                 data:{'activityId':activityId},
                 success: function (data) {
-                    self.content = eval('(' + data + ')').data;
-                    console.log(self.content);
-                    console.log(self.content.superPrizeStatus);
-                    self.$nextTick(function () {
-                        for(var k=0;k<self.content.boluomeCouponList.length;k++){
-                            //console.log(self.content.boluomeCouponList[k].isHas)
-                            if(self.content.boluomeCouponList[k].isHas=='Y'){
-                                $('.coupon').eq(k).addClass('changeGray');
+                    data = eval('(' + data + ')');
+                    console.log(data);
+                    if(data.success){
+                        self.content = data.data;
+                        console.log(self.content);
+                        //console.log(self.content.superPrizeStatus);
+                        self.$nextTick(function () {
+                            for(var k=0;k<self.content.boluomeCouponList.length;k++){
+                                //console.log(self.content.boluomeCouponList[k].isHas)
+                                if(self.content.boluomeCouponList[k].isHas=='Y'){
+                                    $('.coupon').eq(k).addClass('changeGray');
+                                }
                             }
-                        }
-                    })
-                    self.$nextTick(function () {
-                        var cont = $(".cont1").html();
-                        $(".cont2").html(cont);
-                        wordMove();//左右移动动画
-                    })
-                    self.$nextTick(function () {
-                        self.imgSwiper();//首页轮播
-                        //判断蒙版
-                        for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
-                            num=self.content.itemsList[j].num;
-                            if(num>=2){
-                                $('.card').eq(j).find('.num').css('display','block');
-                                $('.presentCard').attr('present','Y');
+                        })
+                        self.$nextTick(function () {
+                            var cont = $(".cont1").html();
+                            $(".cont2").html(cont);
+                            wordMove();//左右移动动画
+                        })
+                        self.$nextTick(function () {
+                            self.imgSwiper();//首页轮播
+                            //判断蒙版
+                            for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
+                                num=self.content.itemsList[j].num;
+                                if(num>=2){
+                                    $('.card').eq(j).find('.num').css('display','block');
+                                    $('.presentCard').attr('present','Y');
+                                }
                             }
-                        }
 
-                    })
+                        })
+                    }else{
+                        window.location.href=data.url;//未登录
+                    }
+
                 }
             })
         },

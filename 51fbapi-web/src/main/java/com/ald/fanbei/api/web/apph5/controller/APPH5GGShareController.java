@@ -330,7 +330,7 @@ public class APPH5GGShareController extends BaseController {
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
+				return H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 			}
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("resultStr = {}", resultStr);
