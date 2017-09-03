@@ -108,7 +108,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		return "fanbei-web/activity/billion";
 	}
 
-	@RequestMapping(value = "/borrowCashActivities", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/borrowCashActivities", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String borrowCashActivities() {
 		bizCacheUtil.delCache("winAmount");
@@ -190,7 +190,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 		return jsonString;
 	}
 
-	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/getWinUser",  produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public void getWinUser(Model model) {
 		try {
 			String users = (String) bizCacheUtil.getObject("600_Win_User");
