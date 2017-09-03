@@ -4,7 +4,7 @@ body{
     color:white;
     position:relative;
 }
-.clearFix:after {
+.clearFix::after {
     display: block;
     clear: both;
     content: "";
@@ -173,6 +173,13 @@ body{
 #time .oneLine .right i:first-child{
     margin-left:0;
 }
+#time .cash{
+    width:3rem;
+    float:left;
+}
+#time .clearFix{
+    padding-top:0.2rem;
+}
 #time .timeMoney{
     margin-bottom: 0.26rem;
     font-size: 0.36rem;
@@ -197,6 +204,7 @@ body{
     background-color: #ff3844;
     padding-top: 0.27rem;
     text-align: center;
+    float:left;
 }
 .winningUser h3{
     margin-bottom: 0.51rem;

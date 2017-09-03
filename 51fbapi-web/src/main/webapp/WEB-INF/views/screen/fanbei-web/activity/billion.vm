@@ -69,21 +69,27 @@
                 <i class="right"><i>.</i><i>.</i><i>.</i></i>
             </div>
             <div class="twoLine"></div>
-            <div class="cash clearFix">
+         <div class='clearFix'>
+            <div class="cash">
                 <p class="timeMoney">600元现金</p>
                 <p class="award">开奖倒计时</p>
                 <p class="countDown">05:55:55</p>
             </div>
             <!--现金中奖用户!-->  
-    <!--<div class="winningUser clearFix">
+            <div class="winningUser">
                 <ul>
                     <h3>600元现金中奖用户</h3>
                     <li>
                         <span class="left">18898789989</span><span class="right">17898898898</span>
+                        <span class="left">18898789989</span><span class="right">17898898898</span>
+                        <span class="left">18898789989</span><span class="right">17898898898</span>
+                        <span class="left">18898789989</span><span class="right">17898898898</span>
+                        <span class="left">18898789989</span><span class="right">17898898898</span>
                     </li>
                     <button>查看更多</button>
                 </ul> 
-            </div>!-->
+            </div>
+            </div>
         </div>
         <!--活动规则部分!-->
         <div id="rule">
