@@ -25,12 +25,11 @@
                </div>
             </div>
             <div class="imgTwo">
-            <!-- 进度条 !-->
+                <!-- 进度条 !-->
                 <p class="progress">
                     <div class="progressOne"></div>
                     <div class="point"></div>
-                    <div class="progressTwo"></div>
-                    
+                    <div class="progressTwo"></div> 
                 </p>
                 <p class="circle">
                     <span class="circleOne">
