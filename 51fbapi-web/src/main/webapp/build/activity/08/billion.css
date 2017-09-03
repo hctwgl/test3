@@ -15,6 +15,7 @@ body {
 }
 #money {
   text-align: center;
+  position:relative;
 }
 #money .imgOne {
   width: 100%;
@@ -80,6 +81,17 @@ body {
   background-image: url("http://f.51fanbei.com/h5/app/activity/08/billion_02.png");
   background-size: cover;
   position: relative;
+}
+#money .fireWorks{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+#money .imgTwo .fireWorks img{
+    width: 100%;
+    height: 100%;
 }
 /* 进度条 */
 .progress{

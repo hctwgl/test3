@@ -59,6 +59,10 @@
                     </span>!-->
                 </p>
             </div>
+            <!--烟花特效 !-->
+            <div class="fireWorks">
+                <img src="$commonUrl/billion_04.gif" alt="">
+            </div>
         </div>
         <!--开奖倒计时!-->
         <div id="time">
