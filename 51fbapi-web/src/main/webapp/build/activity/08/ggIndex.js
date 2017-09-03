@@ -33,7 +33,7 @@ let vm = new Vue({
                         //console.log(self.content.superPrizeStatus);
                         self.$nextTick(function () {
                             for(var k=0;k<self.content.boluomeCouponList.length;k++){
-                                //console.log(self.content.boluomeCouponList[k].isHas)
+                                //alert(self.content.boluomeCouponList[k].isHas)
                                 if(self.content.boluomeCouponList[k].isHas=='Y'){
                                     $('.coupon').eq(k).addClass('changeGray');
                                 }
@@ -56,13 +56,12 @@ let vm = new Vue({
                             }
 
                         })
-                    }else{
+                    }/*else{
                         //alert(0)
                         //alert(data.data.loginUrl);
                         //window.location.href="https://www.baidu.com/";
                         window.location.href=data.data.loginUrl;//未登录
-                    }
-
+                    }*/
                 }
             })
         },
