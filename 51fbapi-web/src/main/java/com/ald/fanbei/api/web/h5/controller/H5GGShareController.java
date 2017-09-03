@@ -1148,7 +1148,7 @@ public class H5GGShareController extends H5Controller {
 						List<AfBoluomeActivityUserItemsDo> useritemsList = afBoluomeActivityUserItemsService
 								.getListByCommonCondition(useritemsdoo);
 						if (useritemsList == null || useritemsList.size() <= 0) {
-							return H5CommonResponse.getNewInstance(false, "红包领取失败：缺少没有" + uDo.getName() + "卡片")
+							return H5CommonResponse.getNewInstance(false, "您还没有集齐卡片不能领取终极大奖")
 									.toString();
 						}
 						deleteList.add(useritemsList.get(0));
