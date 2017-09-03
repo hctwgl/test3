@@ -79,12 +79,15 @@ $(".submit").click(function(){
                                 channelCode: channelCode,
                                 pointCode: pointCode,
                                 smsCode: register_verification,
-                                password: password_md5
+                                password: password_md5,
+                                token:token
                             },
                             success: function(returnData){
                                 if (returnData.success) {
                                     $('.success').show();
+                                    $('.first').hide();
                                     $('#more').hide();
+                                    $('.sPic').show();
                                     $.ajax({
                                         url:'/fanbei-web/postMaidianInfo',
                                         type:'post',
