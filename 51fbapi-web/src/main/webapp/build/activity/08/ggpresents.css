@@ -91,7 +91,9 @@ body {
     font-size: .4rem;
     position: absolute;
     top: -.25rem;
-    left: 13.5%;
+    left: 50%;
+    width: 6rem;
+    transform: translateX(-50%);
 }
 
 .money p:nth-child(2) {
