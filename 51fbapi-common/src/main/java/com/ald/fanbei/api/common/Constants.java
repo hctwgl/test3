@@ -275,6 +275,8 @@ public class Constants {
 	public static final String CONFKEY_BOLUOME_APPKEY = "fbapi.boluome.appkey";
 	public static final String CONFKEY_BOLUOME_SECRET = "fbapi.boluome.secret";
 	public static final String CONFKEY_BOLUOME_API_URL = "fbapi.boluome.api.url";
+	public static final String CONFKEY_BOLUOME_SERVER_API_URL = "fbapi.boluome.server.api.url";
+	
 	public static final String CONFKEY_BOLUOME_PUSH_PAY_URL = "fbapi.boluome.push.pay.url";
 	public static final String CONFKEY_BOLUOME_PUSH_REFUND_URL = "fbapi.boluome.push.refund.url";
 	public static final String CONFKEY_BOLUOME_ORDER_SEARCH_URL = "fbapi.boluome.order.search.url";

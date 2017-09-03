@@ -15,14 +15,15 @@ public class BrandCouponResponseBo extends AbstractSerial{
 	private String id;   //平台活动id
 	private String title;//平台活动title
 	private String subtitle;//平台活动subtitle
+	private Long activityCouponId;//优惠券唯一id
 	private Float threshold;   //优惠券使用阈值, 期含义跟type 类型有关 type = 1,2是表示满足的金额, type = 3.4表示满足的数量
 	private Float value;   //优惠券抵用的新近价值或折扣时可抵用的最大现金价值
 	private Float discount ;   //折扣
 	private String[] channels;//优惠券适用的服务
 	private Integer mutex; //互斥
 	private Integer type;//类型
-	private Float sts;//开始时间
-	private Float ets;//结束时间
+	private Long sts;//开始时间
+	private Long ets;//结束时间
 	/**
 	 * @return the id
 	 */
@@ -122,38 +123,42 @@ public class BrandCouponResponseBo extends AbstractSerial{
 	/**
 	 * @return the sts
 	 */
-	public Float getSts() {
-		return sts;
-	}
-	/**
-	 * @param sts the sts to set
-	 */
-	public void setSts(Float sts) {
-		this.sts = sts;
-	}
-	/**
-	 * @return the ets
-	 */
-	public Float getEts() {
-		return ets;
-	}
-	/**
-	 * @param ets the ets to set
-	 */
-	public void setEts(Float ets) {
-		this.ets = ets;
-	}
+	
 	/**
 	 * @return the value
 	 */
 	public Float getValue() {
 		return value;
 	}
+	public Long getSts() {
+	    return sts;
+	}
+	public void setSts(Long sts) {
+	    this.sts = sts;
+	}
+	public Long getEts() {
+	    return ets;
+	}
+	public void setEts(Long ets) {
+	    this.ets = ets;
+	}
 	/**
 	 * @param value the value to set
 	 */
 	public void setValue(Float value) {
 		this.value = value;
+	}
+	/**
+	 * @return the activityCouponId
+	 */
+	public Long getActivityCouponId() {
+		return activityCouponId;
+	}
+	/**
+	 * @param activityCouponId the activityCouponId to set
+	 */
+	public void setActivityCouponId(Long activityCouponId) {
+		this.activityCouponId = activityCouponId;
 	}
 	
 	
