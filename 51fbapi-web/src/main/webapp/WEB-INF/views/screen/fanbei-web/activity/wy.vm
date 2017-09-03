@@ -4,7 +4,7 @@
 	#set($version="2017061505")
     #set($commonUrl="https://img.51fanbei.com/h5/app/activity/wy")
 	<meta charset="UTF-8">
-	<title>51返呗</title>
+	<title>51返呗邀您领红包</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
 </head>
 <body>

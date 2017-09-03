@@ -943,7 +943,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
 						codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
 						// 通过弱风控后才进行后续操作
-						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap),codeForSecond,codeForThird);
+						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap),orderInfo.getOrderType(),orderInfo.getSecType());
 						if (verybo.isSuccess()) {
 							logger.info("combination_pay result is true");
 							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
