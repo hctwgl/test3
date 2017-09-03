@@ -57,7 +57,10 @@ let vm = new Vue({
 
                         })
                     }else{
-                        window.location.href=data.url;//未登录
+                        //alert(0)
+                        //alert(data.data.loginUrl);
+                        //window.location.href="https://www.baidu.com/";
+                        window.location.href=data.data.loginUrl;//未登录
                     }
 
                 }
