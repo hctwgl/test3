@@ -95,6 +95,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 				date.put("date3", date3);
 				date.put("date4", date4);
 				date.put("date5", date5);
+				date.put("dates", resource.getValue());
 				bizCacheUtil.saveObject("Start_Time", JsonUtil.toJSONString(date), 60 * 60 * 24);
 				model.addAllAttributes(date);
 			}
@@ -116,7 +117,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		try {
 			sumAmount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
 			if (sumAmount != null) {
-				char[] split = (sumAmount+"").toCharArray();
+				char[] split = (sumAmount.stripTrailingZeros()+"").toCharArray();
 				String jsonString = JsonUtil.toJSONString(split);
 				H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
 				return JsonUtil.toJSONString(response);
@@ -131,7 +132,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
-		char[] split = (sumAmount+"").toCharArray();
+		char[] split = (sumAmount.stripTrailingZeros()+"").toCharArray();
 		String jsonString = JsonUtil.toJSONString(split);
 		H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
 		return JsonUtil.toJSONString(response);
