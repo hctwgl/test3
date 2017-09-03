@@ -12,6 +12,7 @@ var vm = new Vue({
     methods: {
         initial() {
             let _this = this;
+            //实时显示小额现金贷总交易额。(每五分钟调一次)
             $.ajax({
                 url: '/app/activity/borrowCashActivities',
                 dataType: 'json',
@@ -54,6 +55,16 @@ var vm = new Vue({
                             MyMar = setInterval(Marquee, speed);　　　　　　　　　
                         }
                     }
+
+                }
+            })
+            //十亿中奖用户(每五分钟调一次)
+            $.ajax({
+                url: '/app/activity/getBillionWinUser',
+                dataType: 'json',
+                type: 'post',
+                success: function (data) {
+                    console.log(data);
 
                 }
             })
@@ -101,6 +112,17 @@ var vm = new Vue({
         list() {
             $('.mask').show();
             $(".alertRule").show();
+
+            $.ajax({
+                url: '/app/activity/getWinUser',
+                dataType: 'json',
+                type: 'post',
+                success: function (data) {
+                    console.log(data);
+
+                }
+            })
+
         },
         //点击遮罩和叉叉隐藏
         noShow() {

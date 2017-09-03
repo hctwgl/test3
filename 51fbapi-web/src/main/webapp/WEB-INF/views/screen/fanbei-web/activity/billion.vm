@@ -25,7 +25,7 @@
                </div>
             </div>
             <div class="imgTwo">
-                <!-- 进度条 !-->
+            <!-- 进度条 !-->
                 <p class="progress">
                     <div class="progressOne"></div>
                     <div class="point"></div>
