@@ -16,23 +16,22 @@
                 <div class="personAmount" id="scroll_end"></div>     
                 <!--<div class="personAmount"><p>已有<span class="light"></span>22222222222</p></div>!-->
         </div>
-        <!--破15亿!-->
+        <!--破15亿总金额!-->
         <div id="money">
             <div class="imgOne">
                <img class="totalMoney" src="$commonUrl/billion_06.gif" alt="">
-               <!--<span class="numOne">1</span>
-               <span class="numTwo">2</span>
-               <span class="numThree">3</span>
-               <span class="numFour">4</span>
-               <span class="numFive">5</span>
-               <span class="numSix">6</span>
-               <span class="numSeven">7</span>
-               <span class="numEight">8</span>
-               <span class="numNine">9</span>!-->
-               <!--<span class="numTen">0</span>!-->
-               <span class="number">1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;</span>
+               <div class="num">
+                    <span class="numOne" v-for="item in num">{{item}}</span>
+               </div>
             </div>
             <div class="imgTwo">
+            <!-- 进度条 !-->
+                <p class="progress">
+                    <div class="progressOne"></div>
+                    <div class="point"></div>
+                    <div class="progressTwo"></div>
+                    
+                </p>
                 <p class="circle">
                     <span class="circleOne">
                         <i class="date">9月4号</i><br/>
@@ -86,7 +85,7 @@
                         <span class="left">18898789989</span><span class="right">17898898898</span>
                         <span class="left">18898789989</span><span class="right">17898898898</span>
                     </li>
-                    <button>查看更多</button>
+                    <button v-on:click="list">查看更多</button>
                 </ul> 
             </div>
             </div>
@@ -99,13 +98,13 @@
             <p>3. 本次活动现金红包均发放至“我的-返现”；</p>
             <p>4. 活动期间禁止任何作弊行为，包括但并不限于通过软件进行批量操作、刷单等行为，一经发现平台将有权取消其奖励；</p>
             <p>5. 本活动最终解释权归51返呗所有，如有疑问，请拨打客服热线400-002-5151或联系在线客服咨询。</p> 
-            <p class="btn" onclick="goBorrowMoney()">
+            <p class="btn" v-on:click="goBorrowMoney">
                 <img src="$commonUrl/billion_03.png" alt="">
                 <!--<span>立即借钱</span>!-->
             </p>                      
         </div>
         <!--弹窗部分 !-->
-        <div class="mask">
+        <div class="mask" v-on:click="noShow">
             <div class="alertRule">
                 <!--<p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
                 <p class="ruleCont"></p>!-->
@@ -131,7 +130,7 @@
                         </div>
                     </li>
                 </ul>
-                <p class="close">X</p>
+                <p class="close" v-on:click="noShow">X</p>
             </div>
         </div>
     </div>
