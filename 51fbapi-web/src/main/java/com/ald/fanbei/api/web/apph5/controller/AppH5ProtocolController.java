@@ -129,7 +129,7 @@ public class AppH5ProtocolController extends BaseController {
 		}
 		for (NperDo nperDo : overduelist) {
 			if (nperDo.getNper() == nper) {
-				model.put("overdueRate", nperDo.getRate());
+				model.put("overdueRate", nperDo.getRate() != null?nperDo.getRate():"");
 			}
 		}
 
