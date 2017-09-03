@@ -605,7 +605,7 @@ public class H5GGShareController extends H5Controller {
 				t.setStatus("NORMAL");
 				List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 						.getListByCommonCondition(t);
-				if (userItemsList != null && userItemsList.size() > 1) {
+				if (userItemsList != null && userItemsList.size() > 0) {
 					AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();
 					resourceDo.setRid(userItemsId);
 					resourceDo.setStatus(status);
