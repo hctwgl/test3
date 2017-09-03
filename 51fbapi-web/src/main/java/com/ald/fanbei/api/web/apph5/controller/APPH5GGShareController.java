@@ -200,11 +200,14 @@ public class APPH5GGShareController extends BaseController {
 											BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 											if (userName != null) {
 												Long userId = convertUserNameToUserId(userName);
-												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
-														|| bo.getDistributed() >= bo.getTotal()) {
-													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
-												} else {
-													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
+												if (userId != null) {
+													//判断用户是否拥有该优惠券
+													if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
+															|| bo.getDistributed() >= bo.getTotal()) {
+														BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
+													} else {
+														BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
+													}
 												}
 											}
 											boluomeCouponList.add(BoluomeCouponResponseBo);
