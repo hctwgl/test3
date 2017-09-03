@@ -17,7 +17,18 @@ var vm=new Vue({
                 type: 'post',
                 success:function (data) {
                     console.log(data);
-                    // _this.returnData=data.data;
+                    var str=data.data;//获取返回的破十五亿金额
+                    console.log(str);
+                    var s = str;//将字符串转换成数组
+                    var num = s.split("");// 在每个逗号(,)处进行分解。
+                    console.log(num);
+                    for(var i=0;i<num.length;i++){//对返回的狂送十亿金额进行遍历
+                        var index=num.index;
+                        num[i]=index;
+                        if(num[i]=='.'){
+                            num[i]=="";
+                        }
+                    }
                     
                     ScrollImgLeft();
                     //文字轮播
