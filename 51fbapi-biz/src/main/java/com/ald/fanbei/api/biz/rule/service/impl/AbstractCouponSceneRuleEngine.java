@@ -171,7 +171,7 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			}
 			
 			Long totalCount = couponDo.getQuota();
-			if(totalCount!=0&&totalCount<=couponDo.getQuotaAlready()){
+			if(totalCount!=0&&(totalCount<=couponDo.getQuotaAlready()&&totalCount!= -1)){
 				logger.error(" coupon over");
 				return ;
 			}
