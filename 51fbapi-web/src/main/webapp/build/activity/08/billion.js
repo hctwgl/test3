@@ -142,7 +142,8 @@ var vm = new Vue({
         noShow() {
             $('.mask').hide();
             $(".alertRule").hide();
-        }
+        },
+        //开奖倒计时
 
     }
 
