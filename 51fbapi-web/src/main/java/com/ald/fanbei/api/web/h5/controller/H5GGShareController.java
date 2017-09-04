@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -619,7 +621,29 @@ public class H5GGShareController extends H5Controller {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * @说明：扫描二维码的时候，进行的业务逻辑（卡片冻结），然后重定向
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/submitShareCode", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
+	public void submitShareCode(HttpServletRequest request , HttpServletResponse response){
+		try{
+			String shareAppUrl = request.getParameter("shareAppUrl");
+			if (StringUtil.isNotBlank(shareAppUrl)) {
+				
+				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
+				
+				afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+				 response.sendRedirect(shareAppUrl);
+			}	
+		}catch(Exception exception){
+			exception.printStackTrace();
+			logger.error(exception.getMessage());
+		}
+		
+	}
 	/**
 	 * 
 	 * @说明：卡片赠送(专享初始化页面,无需登录) @param: @param request
