@@ -125,7 +125,9 @@ body {
   margin-bottom: 1.5rem;
   position: absolute;
   top: -1rem;
-  left: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7rem;
 }
 .change {
   color: #ffdb00;
