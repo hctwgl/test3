@@ -29,6 +29,8 @@ public class AfActivityDo extends AbstractSerial{
 	private String bgColor;
 	private String btnColor;
 	private String tag;
+	private String linkType;
+	private String linkContent;
 	
 	public Long getId() {
 		return id;
@@ -125,6 +127,18 @@ public class AfActivityDo extends AbstractSerial{
 	}
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+	public String getLinkType() {
+		return linkType;
+	}
+	public void setLinkType(String linkType) {
+		this.linkType = linkType;
+	}
+	public String getLinkContent() {
+		return linkContent;
+	}
+	public void setLinkContent(String linkContent) {
+		this.linkContent = linkContent;
 	}
 	
 }

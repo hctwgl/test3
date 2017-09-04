@@ -94,8 +94,6 @@ public class GetHomeInfoApi implements ApiHandle {
 		data.put("navigationList", navigationList);
 		data.put("one2TwoList2",one2TwoList2);
 		
-		
-
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -107,6 +105,11 @@ public class GetHomeInfoApi implements ApiHandle {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
 			data.put("titleName", afResourceDo.getName());
+			
+			if(AfResourceSecType.NAVIGATION_BACKGROUND.getCode()
+					.equals(afResourceDo.getSecType())) {
+				continue;
+			}
 			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
 				data.put("type", afResourceDo.getSecType());
 				// 对首页充值的版本兼容修改

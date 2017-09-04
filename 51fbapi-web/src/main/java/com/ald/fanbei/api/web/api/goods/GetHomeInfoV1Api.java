@@ -82,8 +82,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()));
 		}
 		// 快速导航信息
-		List<Object> navigationList = getObjectWithResourceDolist(
+		Map<String,Object> navigationInfo = getNavigationInfoWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
+		
 		// 1大左2小右
 		List<Object> one2TwoInfoList = getOne2TwoObjectWithResourceDolist(
 				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
@@ -107,8 +108,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			Map<String,Object> activityData = new HashMap<String,Object> ();
 			activityData.put("titleName", afActivityDo.getName());
 			activityData.put("imageUrl", afActivityDo.getIconUrl());
-			activityData.put("type", "H5_URL");
-			activityData.put("content", "www.baidu.com");
+			activityData.put("type", afActivityDo.getLinkType());
+			activityData.put("content", afActivityDo.getLinkContent());
 			// 活动商品
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			// 获取活动商品
@@ -208,7 +209,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		// 顶部轮播
 		data.put("topBannerList", topBannerList);
 		// 快速导航
-		data.put("navigationList", navigationList);
+		data.put("navigationInfo", navigationInfo);
 		// 1大左2小右
 		data.put("one2TwoInfoList", one2TwoInfoList);
 		// 轮播+N
@@ -219,6 +220,44 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		data.put("moreGoodsInfo", moreGoodsInfo);
 		resp.setResponseData(data);
 		return resp;
+	}
+
+	private Map<String,Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> bannerResclist) {
+		Map<String,Object> navigationInfo = new HashMap<String,Object> ();
+		
+		List<Object> navigationList = new ArrayList<Object>();
+		
+		Map<String,Object> backgroundInfo = new HashMap<String,Object> ();
+		// 查询快速导航背景图信息
+		List<AfResourceDo> bgRescList = afResourceService.getConfigByTypes(ResourceType.HOME_NAVIGATION_BACKGROUND.getCode());
+		if(bgRescList != null && !bgRescList.isEmpty()){
+			AfResourceDo afResourceDo = bgRescList.get(0);
+			backgroundInfo.put("imageUrl", afResourceDo.getValue());
+			backgroundInfo.put("type", AfResourceSecType.NAVIGATION_BACKGROUND.getCode());
+		}
+		
+		for (AfResourceDo afResourceDo : bannerResclist) {
+			String secType = afResourceDo.getSecType();
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
+				data.put("type", secType);
+				// 对首页充值的版本兼容修改
+				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
+					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
+				}
+			}else{
+				data.put("type", afResourceDo.getValue1());
+			}
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getSort());
+			navigationList.add(data);
+			
+		}
+		navigationInfo.put("navigationList",navigationList);
+		navigationInfo.put("backgroundInfo",backgroundInfo);
+		return navigationInfo;
 	}
 
 	private Map<String,Object> getCarouselToManyWithResourceDoList(List<AfResourceDo> rescList) {
