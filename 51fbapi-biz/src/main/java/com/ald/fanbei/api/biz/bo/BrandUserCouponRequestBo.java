@@ -4,11 +4,11 @@ import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
  * 
- * @类描述：
- * @author xiaotianjian 2017年3月29日上午12:44:36
+ * @类描述：用户优惠券列表
+ * @author xiaotianjian 2017年8月30日下午11:41:43
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class BrandCouponRequestBo extends AbstractSerial{
+public class BrandUserCouponRequestBo extends AbstractSerial{
 	
 	private static final long serialVersionUID = 8833336567301068866L;
 	

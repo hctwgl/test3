@@ -22,7 +22,7 @@
 	</style>
 </head>
 <body style="background-color: #fff;">
-	<div class="protocol fenqiServiceProtocol">
+	<div class="protocol" id="fenqiServiceProtocol">
         <h2>分期服务协议</h2>
         <p>
             甲方（借款人）：$!{realName}<br>
@@ -40,16 +40,15 @@
 
             <span>第一条 借款基本信息</span><br>
 			<ul>
-				<li><i>借款本金</i><i>￥$!{amountLower}</i></li>
-				<li><i>大写金额</i><i>人民币$!{amountCapital}</i></li>
-		        <!-- <li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li> -->
+				<li><i>借款本金</i><i>#if($!{amountLower})￥$!{amountLower}#end</i></li>
+				<li><i>大写金额</i><i>#if($!{amountCapital})人民币$!{amountCapital}#end</i></li>
+				<!-- <li><i>年利率</i><i>{{changeRate($!{yearRate})}}</i></li> -->
 				<!-- <li><i>年利率</i><i>0%</i></li> -->
-				<li><i>利息和手续费</i><i>¥$!{poundage}</i></li>
-				<li><i>借款期限</i><i>$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")至$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
+				<li><i>利息和手续费</i><i>#if($!{poundage})¥$!{poundage}#end</i></li>
+				<li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")#end</i></li>
 				<!-- <li><i>还款方式</i><i>等本等息</i></li> -->
 				<li><i>还款日</i><i>每月20日</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
-
 			</ul><br>
 
 			<span>第二条 借款发放</span><br>
@@ -78,9 +77,8 @@
 			<span>第五条 逾期还款</span><br>
 			1、如果甲方未按照本合同履行还款义务，应立即偿还拖欠款项，并按本条规定向乙方支付违约金，乙方有权要求甲方立即偿还拖欠款项和逾期费用。<br>
 			2、逾期费用按照逾期天数分期计算，逾期天数是指每一期未全额支付的款项已逾期的天数。<br>
-			3、每期逾期费用计算方式：<br>
-			【逾期费用=[逾期天数]×[当期借款剩余应还本息] ×逾期利率（<span>{{changeRate($!{overdueRate})}}</span>）+滞纳金（若有）】。<br>
-			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>{{changeRate($!{lateFeeRate})}}</span> 收取滞纳金。<br>
+			3、每期逾期费用计算方式：【逾期费用=[逾期天数]×[当期借款剩余应还本息] ×逾期利率（<span>#if($!{overdueRate}){{changeRate($!{overdueRate})}}#else 0 #end</span>）+滞纳金（若有）】。<br>
+			4、滞纳金：甲方逾期还款超过7日，乙方每日按当期借款剩余应还本息的 <span>#if($!{lateFeeRate}){{changeRate($!{lateFeeRate})}}#end</span> 收取滞纳金。<br>
 			5、还款顺序：甲方同意按下列顺序清偿债务：（1）乙方实现债权的费用；（2）违约金；（3）利息；（4）本金。乙方有权根据甲方实际还款情况变更上述顺序。<br><br>
 
 			<span>第六条 甲方权利和义务</span><br>
@@ -128,32 +126,32 @@
         </p>
     </div>
     <script type="text/javascript">
-            new Vue({
-                el:'.fenqiServiceProtocol',
-                methods:{
-                    changeRate: function(num){ // 利率截取最后两位小数
-                        var rate=num;
-                        rate = rate*100;   //截取小数点后4位
-                        // rate = parseFloat(rate);
-                        rate = rate+'%';
-                        return rate;
-                    },
-                    changePrincipal: function(principalNum){ // 本金金额保留二位小数
+        new Vue({
+            el:'#fenqiServiceProtocol',
+            methods:{
+                changeRate: function(num){ // 利率截取最后两位小数
+                    var rate=num;
+                    rate = rate*100;   //截取小数点后4位
+                    // rate = parseFloat(rate);
+                    rate = rate+'%';
+                    return rate;
+                },
+                changePrincipal: function(principalNum){ // 本金金额保留二位小数
 
-                        principalNum = parseFloat(principalNum);
-                        principalNum = principalNum.toFixed(2);     //截取小数点后2位
-                        return principalNum;
-                    },
-                    changeDailyRate: function(dailyRate){ // 日利率/365
+                    principalNum = parseFloat(principalNum);
+                    principalNum = principalNum.toFixed(2);     //截取小数点后2位
+                    return principalNum;
+                },
+                changeDailyRate: function(dailyRate){ // 日利率/365
 
-                        dailyRate = dailyRate/360; // 日利率
-                        dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
-                        dailyRate = parseFloat(dailyRate);
-                        dailyRate = dailyRate+'%';
-                        return dailyRate;
-                    }
+                    dailyRate = dailyRate/360; // 日利率
+                    dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
+                    dailyRate = parseFloat(dailyRate);
+                    dailyRate = dailyRate+'%';
+                    return dailyRate;
                 }
-            });
-        </script>
+            }
+        });
+	</script>
 </body>
 </html>

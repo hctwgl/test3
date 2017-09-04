@@ -82,6 +82,11 @@ $(function () {
         $('.alertRule').hide();
     })
 
+    //点击参与人数进入排行榜
+    $('.joinAmount').click(function(){
+        window.location.href='ggrankingList?activityId='+activityId;
+    })
+
     //点击我要赠送卡片(领走卡片)
     $('.presentCard').click(function () {
         var word=$(this).html();

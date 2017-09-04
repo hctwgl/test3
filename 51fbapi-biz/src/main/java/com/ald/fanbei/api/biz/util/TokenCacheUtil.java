@@ -365,5 +365,28 @@ public class TokenCacheUtil extends AbstractThird{
     		return null;
     	}
     }
+
+    /**
+     * 自增
+     * @param cacheKey
+     * @return
+     */
+	public int incr(final String cacheKey) {
+		try{
+	        return cacheRedisTemplate.execute(new RedisCallback<Integer>() {
+	            @Override
+	            public Integer doInRedis(RedisConnection connection) throws DataAccessException {
+	            	Long result = connection.incr(cacheRedisTemplate.getStringSerializer().serialize(cacheKey));
+	            	if(result == null){
+	            		return 0;
+	            	}
+	                return  result.intValue();
+	            }
+	        });
+        }catch(Exception e){
+        	logger.error("incr error",e);
+        	return 0;
+        }
+	}
     
 }

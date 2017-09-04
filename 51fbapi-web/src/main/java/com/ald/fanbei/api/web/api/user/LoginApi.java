@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +17,7 @@ import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
@@ -64,12 +69,15 @@ public class LoginApi implements ApiHandle {
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	JpushService jpushService;
+	@Resource
+	RiskUtil riskUtil;
 	
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		String SUCC = "1";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		String userName = context.getUserName();
+		final String userName = context.getUserName();
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
@@ -77,18 +85,24 @@ public class LoginApi implements ApiHandle {
 
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
+		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
 		
 		if (StringUtils.isBlank(inputPassSrc)) {
 			logger.error("inputPassSrc can't be empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+
+		
+
 		if (afUserDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
+		Integer failCount = afUserDo.getFailCount();
 		// add user login record
 		AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
 		loginDo.setAppVersion(Integer.parseInt(ObjectUtils.toString(requestDataVo.getSystem().get("appVersion"))));
@@ -141,18 +155,45 @@ public class LoginApi implements ApiHandle {
 //			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
-		loginDo.setResult("true");
-
-		
-
-		afUserLoginLogService.addUserLoginLog(loginDo);
 		// reset fail count to 0 and record login ip phone msg
+		
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
 		temp.setRid(afUserDo.getRid());
 		temp.setUserName(userName);
 		afUserService.updateUser(temp);
 
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
+		
+		boolean isNeedRisk = true;
+		if("1".equals(loginType)){
+			Date gmtCreateDate = afUserDo.getGmtCreate();
+			Date date = new Date();
+			long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
+			if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口
+				isNeedRisk = false;
+			}
+		}
+		//调用风控可信接口
+		if (context.getAppVersion() >= 381 &&isNeedRisk) {
+				
+			boolean riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
+					loginType,loginTime,ip,phoneType,networkType,osType);
+			if(!riskSucc){
+				loginDo.setResult("false:需要验证登录短信");
+				afUserLoginLogService.addUserLoginLog(loginDo);
+				JSONObject jo = new JSONObject();
+				jo.put("needVerify","Y");
+				resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
+				resp.setResponseData(jo); //失败了返回需要短信验证
+				return resp;
+			}
+			loginType = "2"; //可信登录验证通过，变可信
+		}
+		
+		loginDo.setResult("true");
+		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
 		TokenBo tokenBo = new TokenBo();
@@ -184,9 +225,21 @@ public class LoginApi implements ApiHandle {
 			}
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
 		}
+		if (context.getAppVersion() >= 381) {
+			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
+					phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
+		}
 
 		resp.setResponseData(jo);
-
+		
+		if(failCount == -1){
+			new	Timer().schedule(new TimerTask(){
+				public void run(){
+					jpushService.jPushCoupon("COUPON_POPUPS",userName);
+					this.cancel();
+				}
+			},1000 * 5);//一分钟
+		}
 		return resp;
 	}
 
