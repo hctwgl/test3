@@ -2,7 +2,8 @@ var vm = new Vue({
     el: '#billion',
     data: {
         returnData: [],
-        num: ''
+        num: '',
+        list:[]
     },
     created: function () {
         let _this = this;
@@ -133,6 +134,7 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
+                    var list = data;
                     
                 }
             })

@@ -112,7 +112,7 @@
                 <!--<p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
                 <p class="ruleCont"></p>!-->
                 <ul class="winningDetail">
-                    <li>
+                    <li v-for="(key,value) in list">
                         <p class="title">600元现金中奖用户</p>
                         <div class="number">
                             <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
