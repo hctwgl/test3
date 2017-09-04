@@ -73,7 +73,7 @@
             <div class="twoLine"></div>
          <div class='clearFix'>
             <div class="cash">
-                <p class="timeMoney">${winAmount}元现金</p>
+                <p class="timeMoney"><i class="RMB">${winAmount}</i>元现金</p>
                 <p class="award">开奖倒计时</p>
                 <p class="countDown">${dates}</p>
             </div>
@@ -112,8 +112,8 @@
                 <!--<p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
                 <p class="ruleCont"></p>!-->
                 <ul class="winningDetail">
-                    <li v-for="(key,value) in list">
-                        <p class="title">600元现金中奖用户</p>
+                    <li  v-for="(key,value) in list">
+                        <p class="title">元现金中奖用户</p>
                         <div class="number">
                             <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
                             <div><span class="left">188890988889</span><span class="right">188890988880</span></div>

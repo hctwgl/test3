@@ -3,7 +3,7 @@ var vm = new Vue({
     data: {
         returnData: [],
         num: '',
-        list:[]
+        list:{}
     },
     created: function () {
         let _this = this;
@@ -135,6 +135,7 @@ var vm = new Vue({
                 success: function (data) {
                     console.log(data);
                     var list = data;
+                    console.log(list);
                     
                 }
             })
@@ -146,6 +147,16 @@ var vm = new Vue({
             $(".alertRule").hide();
         },
         //开奖倒计时
+
+
+        //当开奖金额大于600时显示中奖用户列表
+        if($(".RMB")>600){
+            $(".winningUser").show();
+            $(".cash").float=="left";
+            $(".cash").width=="3rem";
+        }
+
+
 
     }
 
