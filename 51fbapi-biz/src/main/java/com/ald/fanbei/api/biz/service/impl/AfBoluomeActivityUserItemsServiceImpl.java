@@ -75,7 +75,7 @@ public class AfBoluomeActivityUserItemsServiceImpl extends ParentServiceImpl<AfB
 						t.setStatus("NORMAL");
 						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsDao
 								.getListByCommonCondition(t);
-						if (userItemsList != null && userItemsList.size() > 1) {
+						if (userItemsList != null && userItemsList.size() > 0) {
 							AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();
 							resourceDo.setRid(userItemsId);
 							resourceDo.setStatus(status);
