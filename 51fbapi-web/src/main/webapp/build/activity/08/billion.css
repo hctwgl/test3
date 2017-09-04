@@ -15,7 +15,7 @@ body {
 }
 #money {
   text-align: center;
-  position:relative;
+  position: relative;
 }
 #money .imgOne {
   width: 100%;
@@ -33,42 +33,42 @@ body {
   left: 0.95rem;
 }
 /*破十五亿现金  */
-#money .imgOne .numOne:nth-child(1){
-    bottom:1.5rem;
-    left:0.95rem;
+#money .imgOne .numOne:nth-child(1) {
+  bottom: 1.5rem;
+  left: 0.95rem;
 }
-#money .imgOne .numOne:nth-child(2){
-    bottom:1.5rem;
-    left:1.6rem;
+#money .imgOne .numOne:nth-child(2) {
+  bottom: 1.5rem;
+  left: 1.6rem;
 }
-#money .imgOne .numOne:nth-child(3){
-    bottom:1.5rem;
-    left:2.25rem;
+#money .imgOne .numOne:nth-child(3) {
+  bottom: 1.5rem;
+  left: 2.25rem;
 }
-#money .imgOne .numOne:nth-child(4){
-    bottom:1.5rem;
-    left:2.95rem;
+#money .imgOne .numOne:nth-child(4) {
+  bottom: 1.5rem;
+  left: 2.95rem;
 }
-#money .imgOne .numOne:nth-child(5){
-    bottom:1.5rem;
-    left:3.6rem;
+#money .imgOne .numOne:nth-child(5) {
+  bottom: 1.5rem;
+  left: 3.6rem;
 }
-#money .imgOne .numOne:nth-child(6){
-    bottom:1.5rem;
-    left:4.3rem;
+#money .imgOne .numOne:nth-child(6) {
+  bottom: 1.5rem;
+  left: 4.3rem;
 }
-#money .imgOne .numOne:nth-child(7){
-    bottom:1.5rem;
-    left:5rem;
+#money .imgOne .numOne:nth-child(7) {
+  bottom: 1.5rem;
+  left: 5rem;
 }
-#money .imgOne .numOne:nth-child(8){
-    bottom:1.5rem;
-    left:5.6rem;    
+#money .imgOne .numOne:nth-child(8) {
+  bottom: 1.5rem;
+  left: 5.6rem;
 }
-#money .imgOne .numOne:nth-child(9){
-    bottom:1.5rem;
-    left:6.3rem;     
-} 
+#money .imgOne .numOne:nth-child(9) {
+  bottom: 1.5rem;
+  left: 6.3rem;
+}
 #money .imgOne .totalMoney {
   width: 100%;
   height: 0.9rem;
@@ -82,20 +82,20 @@ body {
   background-size: cover;
   position: relative;
 }
-#money .fireWorks{
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
+#money .fireWorks {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
-#money .imgTwo .fireWorks img{
-    width: 100%;
-    height: 100%;
+#money .imgTwo .fireWorks img {
+  width: 100%;
+  height: 100%;
 }
 /* 进度条 */
-.progress{
-  position:absolute;
+.progress {
+  position: absolute;
   width: 5.87rem;
   height: 0.31rem;
   background-color: pink;
@@ -103,16 +103,16 @@ body {
   top: -0.3rem;
   transform: translateX(-50%);
 }
-.progress .progressOne{
-    width:0.42rem;
-    height:0.09rem;
-    background-color: #b7000a;
+.progress .progressOne {
+  width: 0.42rem;
+  height: 0.09rem;
+  background-color: #b7000a;
 }
-  .progress .point{
-    width:0.22rem;
-    height:0.22rem;
-    background-color:yellow;
-  }
+.progress .point {
+  width: 0.22rem;
+  height: 0.22rem;
+  background-color: yellow;
+}
 #money .tenThousand {
   font-size: 0.8rem;
   margin: 0.7rem 0;
