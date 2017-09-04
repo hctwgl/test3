@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017090410")
+    #set($version="2017090411")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <title>逛逛专享区</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/swiper-3.4.2.min.css">
