@@ -919,7 +919,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	}
 
 	@Override
-	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType) {
+	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType,final String orderType) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -932,11 +932,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
-					
-					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
-					
-					afBorrowDao.addBorrowBill(billList);
 
+					if(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode())){
+						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
+						afBorrowDao.addBorrowBill(billList);
+					}
 					return borrow.getRid();
 
 				} catch (Exception e) {
