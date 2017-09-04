@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	#set($version="20170616")
-    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/06")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/06")
 	<meta charset="UTF-8">
 	<title>签到</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/06/sign.css?version=$version"">

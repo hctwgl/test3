@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -57,4 +58,36 @@ public class AfBoluomeActivityUserItemsServiceImpl extends ParentServiceImpl<AfB
 		public Integer getFakeFinal(Long activityId) {
 			return afBoluomeActivityUserItemsDao.getFakeFinal(activityId);
 		}
+
+		@Override
+		
+			public void updateUserItemsStatus(Long userItemsId, String status) throws Exception{
+				try{
+					// 检测是否有这个userItemsId的卡片，若有，则更新状态
+					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsDao.getById(userItemsId);
+					if (prevousDo != null) {
+
+						//验证这个用户是否拥有多余1张的此卡片
+						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
+						t.setUserId(prevousDo.getUserId());
+						t.setBoluomeActivityId(prevousDo.getBoluomeActivityId());
+						t.setItemsId(prevousDo.getItemsId());
+						t.setStatus("NORMAL");
+						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsDao
+								.getListByCommonCondition(t);
+						if (userItemsList != null && userItemsList.size() > 0) {
+							AfBoluomeActivityUserItemsDo resourceDo = new AfBoluomeActivityUserItemsDo();
+							resourceDo.setRid(userItemsId);
+							resourceDo.setStatus(status);
+							resourceDo.setGmtModified(new Date());
+							afBoluomeActivityUserItemsDao.updateById(resourceDo);
+						}
+					}
+				
+				}catch (Exception e) {
+					logger.error("update userItems status erro");
+					e.printStackTrace();
+				}
+			}
+		
 }

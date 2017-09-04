@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-    	#set($commonUrl="https://fs.51fanbei.com/h5/app/images/sys")
+    	#set($commonUrl="http://f.51fanbei.com/h5/app/images/sys")
 		<title>详细教程</title>
     </head>
     <body>

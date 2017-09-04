@@ -18,7 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.BrandCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.BrandUserCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
@@ -68,7 +68,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		BrandCouponRequestBo bo = new BrandCouponRequestBo();
+		BrandUserCouponRequestBo bo = new BrandUserCouponRequestBo();
 		bo.setUserId(context.getUserId() + StringUtils.EMPTY);
 		bo.setType(type);
 		bo.setPageIndex(pageNo);

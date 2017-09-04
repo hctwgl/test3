@@ -66,8 +66,8 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
         vo.setMobile(context.getUserName());
         vo.setGmtPayStart(new Date());
         vo.setGmtPayEnd(DateUtil.addHoures(order.getGmtCreate(), Constants.ORDER_PAY_TIME_LIMIT));
-        //订单状态
-        vo.setOrderStatus(order.getStatus());
+        //订单状态,FIXME为了让前端不用修改返利状态的订单展示，暂时这样改 FIXME
+        vo.setOrderStatus(order.getStatus().equals(OrderStatus.REBATED.getCode())?OrderStatus.PAID.getCode():order.getStatus());
         if (OrderStatus.CLOSED.getCode().equals(order.getStatus())) {
             //查询退款表
             AfOrderRefundDo afOrderRefundDo = afOrderRefundService.getOrderRefundByOrderId(order.getRid());

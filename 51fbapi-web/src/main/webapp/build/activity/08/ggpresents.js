@@ -11,12 +11,14 @@ $(function () {
     var userName = param['userName'];
     var word = param['loginSource'];
     var itemsId = param['itemsId'];
+    // var showCode = param['showCode'];
     $.ajax({
         url: "/H5GGShare/ggSendItems",
         type: 'GET',
         dataType: 'JSON',
         data: {
-            userItemsId:userItemsId
+            userItemsId:userItemsId,
+            // showCode:showCode
         },
         success: function (data) {
             console.log(data)
@@ -80,6 +82,11 @@ $(function () {
     $('.mask').click(function(){
         $('.mask').hide();
         $('.alertRule').hide();
+    })
+
+    //点击参与人数进入排行榜
+    $('.joinAmount').click(function(){
+        window.location.href='ggrankingList?activityId='+activityId;
     })
 
     //点击我要赠送卡片(领走卡片)

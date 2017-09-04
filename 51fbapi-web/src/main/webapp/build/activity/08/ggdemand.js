@@ -134,6 +134,11 @@ $(function(){
         $('.alertRule').hide();
     })
 
+    //点击参与人数进入排行榜
+    $('.joinAmount').click(function(){
+        window.location.href='ggrankingList?activityId='+activityId;
+    })
+
 })
 
 //截取字符串方法
