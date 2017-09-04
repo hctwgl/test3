@@ -795,7 +795,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							logger.info("refAccountInfo ",refAccountInfo);
 							//add log
 							AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userLoginRecord.getRefUserId());
-							accountInfo.setRebateAmount(BigDecimalUtil.add(accountInfo.getRebateAmount(), afOrder.getRebateAmount()));
 							AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userLoginRecord.getRefUserId(), afOrder.getRid(), AccountLogType.REBATE);
 							afUserAccountLogDao.addUserAccountLog(accountLog);
 						}
