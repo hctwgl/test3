@@ -138,7 +138,7 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
         FROM af_boluome_activity_user_login
         WHERE is_delete = 0 
         AND
-        ref_user_id = #{userId}
+        user_id = #{userId}
         order by gmt_create desc
         limit 0, 1
     </select> 
