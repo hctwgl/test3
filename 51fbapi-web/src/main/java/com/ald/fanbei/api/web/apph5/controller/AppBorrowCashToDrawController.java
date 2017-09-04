@@ -65,7 +65,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 	
 	@RequestMapping(value = "/toActivitiesPage", produces = "text/html;charset=UTF-8")
 	public String toActivitiesPage(Model model) {
-		bizCacheUtil.delCache("Start_Time");
+		//bizCacheUtil.delCache("Start_Time");
 		String Time = (String) bizCacheUtil.getObject("Start_Time");
 		 String winAmount =(String) bizCacheUtil.getObject("winAmount");
 		if(StringUtil.isBlank(Time)){
@@ -105,6 +105,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		Map<String,String> date = JSONObject.parseObject(Time, Map.class);
 		model.addAllAttributes(date);
 		model.addAttribute("winAmount", winAmount);
+		model.addAttribute("winAmounts",Integer.parseInt(winAmount)-100);
 		return "fanbei-web/activity/billion";
 	}
 
@@ -181,58 +182,39 @@ public class AppBorrowCashToDrawController extends BaseController {
 		}
 		bizCacheUtil.saveObject("winAmount",amount+100+"", 60);
 		// 中奖用户存入缓存
-		try {
-			bizCacheUtil.saveObject(winAmount + "_Win_User", jsonString, 60 * 60 * 24 * 7);
-		} catch (Exception e) {
-			logger.info("randomUser redis save is fail," + jsonString + "" + e);
+		String userJson = (String)bizCacheUtil.getObject("winAmount_Win_User");
+		if(StringUtil.isBlank(userJson)){
+			try {
+				Map<String, Object> map=new HashMap();
+				map.put(winAmount, jsonString);
+				bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 7);
+			} catch (Exception e) {
+				logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
+			}
+			return jsonString;
 		}
-		
+		try {
+			Map<String, Object> map=new HashMap();
+			map = JSONObject.parseObject(userJson);
+			map.put(winAmount, jsonString);
+			bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 7);
+		} catch (Exception e) {
+			logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
+		}
 		return jsonString;
+
 	}
 
-	@RequestMapping(value = "/getWinUser",  produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public void getWinUser(Model model) {
-		try {
-			String users = (String) bizCacheUtil.getObject("600_Win_User");
-			List<String> list = JSONObject.parseObject(users, List.class);
-			model.addAttribute("Six_Hundred", list);
-		} catch (Exception e) {
-			logger.error("600_Win_User get is fail");
+	public String getWinUser(Model model) {
+		String users=null;
+		try{
+			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
+		}catch(Exception e){
+			logger.info("getWinUser redis get is fail"+e);
 		}
-
-		try {
-			String users = (String) bizCacheUtil.getObject("700_Win_User");
-			List<String> list = JSONObject.parseObject(users, List.class);
-			model.addAttribute("Seven_Hundred", list);
-		} catch (Exception e) {
-			logger.error("700_Win_User get is fail");
-		}
-
-		try {
-			String users = (String) bizCacheUtil.getObject("800_Win_User");
-			List<String> list = JSONObject.parseObject(users, List.class);
-			model.addAttribute("Eight_Hundred", list);
-		} catch (Exception e) {
-			logger.error("800_Win_User get is fail");
-		}
-
-		try {
-			String users = (String) bizCacheUtil.getObject("900_Win_User");
-			List<String> list = JSONObject.parseObject(users, List.class);
-			model.addAttribute("Nine_Hundred", list);
-		} catch (Exception e) {
-			logger.error("900_Win_User get is fail");
-		}
-
-		try {
-			String users = (String) bizCacheUtil.getObject("1000_Win_User");
-			List<String> list = JSONObject.parseObject(users, List.class);
-			model.addAttribute("Thousand", list);
-		} catch (Exception e) {
-			logger.error("1000_Win_User get is fail");
-		}
-
+			return users;
 	}
 
 	@RequestMapping(value = "/getBillionWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -242,7 +224,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		try {
 			amount = (String) bizCacheUtil.getObject("Billion_Win_User");
 		} catch (Exception e) {
-			logger.error("Billion_Win_User get is fail");
+			logger.error("getBillionWinUser redis get is fail");
 		}
 		return amount;
 	}
