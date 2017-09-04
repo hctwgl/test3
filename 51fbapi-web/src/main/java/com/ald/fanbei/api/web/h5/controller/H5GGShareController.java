@@ -633,12 +633,12 @@ public class H5GGShareController extends H5Controller {
 		try{
 			String shareAppUrl = request.getParameter("shareAppUrl");
 			if (StringUtil.isNotBlank(shareAppUrl)) {
-				shareAppUrl = new String(Base64.decode(shareAppUrl));
-				
+				//shareAppUrl = new String(Base64.decode(shareAppUrl));
+				String newUrl = shareAppUrl.replace("_", "&");
 				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 				
 				afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
-				 response.sendRedirect(shareAppUrl);
+				 response.sendRedirect(newUrl);
 			}	
 		}catch(Exception exception){
 			exception.printStackTrace();
