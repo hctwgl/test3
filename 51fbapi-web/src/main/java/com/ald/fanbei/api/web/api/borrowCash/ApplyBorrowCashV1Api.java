@@ -217,7 +217,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 
 		}
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
-		boolean isGetLock = bizCacheUtil.getLock(lockKey, "1");
+		boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
 		
 		if (!isGetLock) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);

@@ -43,11 +43,9 @@ public class AfAppUpgradeServiceImpl implements AfAppUpgradeService {
             return result;
         }
         result = afAppUpgradeDao.getNewestVersionBySpecify(versionCode,channelCode,type);
-        if(result == null){
-            result = afAppUpgradeDao.getMaxAppUpgradeVersion();
-        } else {
-        	bizCacheUtil.saveObject(cacheKey, result, Constants.SECOND_OF_TEN_MINITS);
-        }
+		if(result != null){
+			bizCacheUtil.saveObject(cacheKey, result, Constants.SECOND_OF_TEN_MINITS);
+		}
         return result;
 	}
 

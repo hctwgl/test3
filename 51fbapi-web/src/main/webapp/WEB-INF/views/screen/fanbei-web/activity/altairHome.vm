@@ -4,7 +4,7 @@
     #set($version="2017083001")
     #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
-    <title>七夕让爱加倍，不一样の套路</title>
+    <title>零距离放肆爱，不一样の套路</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/altairHome.css?version=$version">
 </head>
 <body>
