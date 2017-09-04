@@ -7,12 +7,14 @@ var vm = new Vue({
     created: function () {
         let _this = this;
         _this.initial();
+        //setInterver(_this.initial(),1000);//五分钟执行一次
         // loading();
+        (function(){setInterval(_this.initial,5*60*1000)})();//a让initial中的请求五分钟执行一次
     },
     methods: {
         initial() {
             let _this = this;
-            //实时显示小额现金贷总交易额。(每五分钟调一次)
+            //实时显示小额现金贷总交易额。
             $.ajax({
                 url: '/app/activity/borrowCashActivities',
                 dataType: 'json',
@@ -54,21 +56,33 @@ var vm = new Vue({
                         scroll_div.onmouseout = function () {　　　　　　　
                             MyMar = setInterval(Marquee, speed);　　　　　　　　　
                         }
-                    }
-
+                    } 
+                    
                 }
+                
             })
+
             //十亿中奖用户(每五分钟调一次)
-            $.ajax({
-                url: '/app/activity/getBillionWinUser',
-                dataType: 'json',
-                type: 'post',
-                success: function (data) {
-                    console.log(data);
+             //判断小额现金贷是否达到十亿
+                    if($(".num").length=="10"){
+                        
+                             $.ajax({
+                                url: '/app/activity/getBillionWinUser',
+                                dataType: 'json',
+                                type: 'post',
+                                success: function (data) {
+                                    console.log(data);
+                                    //让顶部轮播显示
+                                    $(".box").show();
+                                }
 
-                }
-            })
+                            })
+                    }
+           
+
         },
+
+
         //点击立即借钱
         goBorrowMoney() {
             $.ajax({
@@ -119,7 +133,7 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-
+                    
                 }
             })
 

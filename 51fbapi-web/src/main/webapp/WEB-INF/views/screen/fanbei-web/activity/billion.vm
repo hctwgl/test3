@@ -73,14 +73,14 @@
             <div class="twoLine"></div>
          <div class='clearFix'>
             <div class="cash">
-                <p class="timeMoney">600元现金</p>
+                <p class="timeMoney">${winAmount}元现金</p>
                 <p class="award">开奖倒计时</p>
                 <p class="countDown">${dates}</p>
             </div>
             <!--现金中奖用户!-->  
             <div class="winningUser">
                 <ul>
-                    <h3>600元现金中奖用户</h3>
+                    <h3>${winAmounts}元现金中奖用户</h3>
                     <li>
                         <span class="left">18898789989</span><span class="right">17898898898</span>
                         <span class="left">18898789989</span><span class="right">17898898898</span>
