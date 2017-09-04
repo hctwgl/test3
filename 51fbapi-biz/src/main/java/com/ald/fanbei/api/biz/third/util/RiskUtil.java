@@ -1289,7 +1289,7 @@ public class RiskUtil extends AbstractThird {
 						
 						// 在风控审批通过后额度不变生成账单
 						afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
-								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),false);
 
 
 						// 审批通过时

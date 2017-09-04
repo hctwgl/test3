@@ -700,7 +700,7 @@ public class TestController {
 			// 新增借款信息
 			afBorrowDao.addBorrow(borrow);
 			// 在风控审批通过后额度不变生成账单
-			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode());
+			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),orderInfo.getOrderType());
 			// 修改用户账户信息
 			AfUserAccountDo account = new AfUserAccountDo();
 			account.setUsedAmount(orderInfo.getActualAmount());
