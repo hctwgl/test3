@@ -11,12 +11,14 @@ $(function () {
     var userName = param['userName'];
     var word = param['loginSource'];
     var itemsId = param['itemsId'];
+    var showCode = param['showCode'];
     $.ajax({
         url: "/H5GGShare/ggSendItems",
         type: 'GET',
         dataType: 'JSON',
         data: {
-            userItemsId:userItemsId
+            userItemsId:userItemsId,
+            showCode:showCode
         },
         success: function (data) {
             console.log(data)
