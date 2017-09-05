@@ -16,6 +16,11 @@ public enum FanbeiThirdRespCode {
     REQUEST_INVALID_SIGN_ERROR( "102", "sign is invalid", "非法请求"),
     SYSTEM_ERROR("103","system error","系统错误"),
 	
+    //COLLECTION_CODE
+    COLLECTION_REQUEST("303","request is null","请求参数为空"),
+    //COLLECTION_RESPONSE("303","request is null","请求参数为空"),
+    COLLECTION_REQUEST_SIGN("304","sign is fail","验签失败"),
+    
 	// BORROW_CASH_CODE 201-299
     BORROW_CASH_HAVE_FINISHED("201", "borrowcash have finished", "借款已还款完成"),
 	BORROW_CASH_NOT_EXISTS("202", "borrowcash not exists", "借款记录不存在");

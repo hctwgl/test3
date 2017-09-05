@@ -135,4 +135,12 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	List<String> getBorrowedUserIds();
+	
+	/**
+	 * 催收平账更新数据
+	 * @param
+	 * @return 
+	 * 
+	 * **/
+	int updateBalancedDate(AfBorrowCashDo afBorrowCashDo);
 }
