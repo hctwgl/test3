@@ -35,8 +35,8 @@
                 <p class="progress">
                     <span class="progressOne"></span>
                     <span class="pointOne"></span>
-                    <span class="progressTwo yellow"></span>
-                    <span class="pointTwo yellow"></span>
+                    <span class="progressTwo" id="yellow"></span>
+                    <span class="pointTwo" id="yellow"></span>
                     <span class="progressThree"></span>
                     <span class="pointThree"></span>
                     <span class="progressFour"></span>
