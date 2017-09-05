@@ -58,7 +58,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/fanbei-web/")
+@RequestMapping("/fanbei-web/app/")
 public class AppH5ProtocolController extends BaseController {
 
 	@Resource
@@ -77,12 +77,11 @@ public class AppH5ProtocolController extends BaseController {
 	AfRescourceLogService afRescourceLogService;
 
 
-	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
-	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheck(request, false);
-		String loginUserName = webContext.getUserName();
+	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
+	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(loginUserName != null && !loginUserName.equals(userName)) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
 		}
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
@@ -130,20 +129,18 @@ public class AppH5ProtocolController extends BaseController {
 		}
 		for (NperDo nperDo : overduelist) {
 			if (nperDo.getNper() == nper) {
-				model.put("overdueRate", nperDo.getRate());
+				model.put("overdueRate", nperDo.getRate() != null?nperDo.getRate():"");
 			}
 		}
 
 		logger.info(JSON.toJSONString(model));
 	}
 
-	@RequestMapping(value = { "cashLoanProtocol" }, method = RequestMethod.GET)
-	public void cashLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheck(request, false);
-		String loginUserName = webContext.getUserName();
-		
+	@RequestMapping(value = { "protocolCashLoan" }, method = RequestMethod.GET)
+	public void protocolCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(loginUserName != null && !loginUserName.equals(userName)) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
 		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
@@ -212,12 +209,11 @@ public class AppH5ProtocolController extends BaseController {
 		logger.info(JSON.toJSONString(model));
 	}
 
-	@RequestMapping(value = { "renewalProtocol" }, method = RequestMethod.GET)
-	public void renewalLoanProtocol(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheck(request, false);
-		String loginUserName = webContext.getUserName();
+	@RequestMapping(value = { "protocolRenewal" }, method = RequestMethod.GET)
+	public void protocolRenewal(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(loginUserName != null && !loginUserName.equals(userName)) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
 		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
@@ -295,6 +291,8 @@ public class AppH5ProtocolController extends BaseController {
 				}
 				model.put("renewalAmountLower", afRenewalDetailDo.getRenewalAmount());//续借金额小写
 				model.put("renewalAmountCapital", toCapital(afRenewalDetailDo.getRenewalAmount().doubleValue()));//续借金额大写	
+				model.put("repayAmountLower", afRenewalDetailDo.getCapital());//续借金额小写
+				model.put("repayAmountCapital", toCapital(afRenewalDetailDo.getCapital().doubleValue()));//续借金额大写	
 //				Date gmtRenewalBegin = afRenewalDetailDo.getGmtCreate();
 //				Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay());
 			} else {
@@ -316,6 +314,11 @@ public class AppH5ProtocolController extends BaseController {
 				}
 				model.put("renewalAmountLower", renewalAmount);//续借金额小写
 				model.put("renewalAmountCapital", toCapital(renewalAmount.doubleValue()));//续借金额大写	
+				AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+				BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
+				BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+				model.put("repayAmountLower", capital);//续借金额小写
+				model.put("repayAmountCapital", toCapital(capital.doubleValue()));//续借金额大写	
 			}
 		}
 		
