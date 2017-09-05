@@ -16,6 +16,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -61,7 +62,10 @@ public class SubmitShareActionApi implements ApiHandle {
 				Long userItemsId = Long.parseLong(strUserItemsId);
 				//进行冻结卡片
 				try {
-					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+						afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+					}
 				} catch (Exception e) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 					

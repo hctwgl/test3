@@ -567,7 +567,11 @@ public class H5GGShareController extends H5Controller {
 			}
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			// 改变用户卡片的中见状态
-			updateUserItemsStatus(userItemsId, "FROZEN");
+			AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+			if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+				updateUserItemsStatus(userItemsId, "FROZEN");
+			}
+			
 			// 埋点
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
 			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
@@ -598,7 +602,7 @@ public class H5GGShareController extends H5Controller {
 		try{
 			// 检测是否有这个userItemsId的卡片，若有，则更新状态
 			AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
-			if (prevousDo != null) {
+			if (prevousDo != null ) {
 
 				//验证这个用户是否拥有多余1张的此卡片
 				AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
@@ -637,8 +641,11 @@ public class H5GGShareController extends H5Controller {
 				shareAppUrl = shareAppUrl.replace("_", "&");
 				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 				
-				afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
-				 response.sendRedirect(shareAppUrl);
+				AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+				if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+				}
+				 response.sendRedirect(shareAppUrl); 
 			}	
 		}catch(Exception exception){
 			exception.printStackTrace();
@@ -649,6 +656,7 @@ public class H5GGShareController extends H5Controller {
 	/**
 	 * 
 	 * @说明：卡片赠送(专享初始化页面,无需登录) @param: @param request
+	 * 
 	 * @param: @param
 	 *             response
 	 * @param: @return
@@ -799,7 +807,10 @@ public class H5GGShareController extends H5Controller {
 						insertDo.setGmtSended(new Date());
 						afBoluomeActivityUserItemsService.saveRecord(insertDo);
 
-						updateUserItemsStatus(resourceUserItemsId, "SENT");
+						AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(resourceUserItemsId);
+						if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+							updateUserItemsStatus(resourceUserItemsId, "SENT");
+						}
 						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();
 					} else {
 						return H5CommonResponse.getNewInstance(true, "你已领走卡片，无需重复领取").toString();
@@ -955,7 +966,12 @@ public class H5GGShareController extends H5Controller {
 					// 若大于一张则，
 					// 登录用户卡片选一张，然后赠状态设为已经赠送
 					AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
-					updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
+					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(resourceUserItemsDo.getRid());
+					if (prevousDo != null && "FROZEN".equals(prevousDo.getStatus())) {
+						updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
+					}
+					
+					
 
 					// 朋友的userItems表中增加一条卡片记录
 					AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
