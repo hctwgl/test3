@@ -19,9 +19,15 @@
         <!--破15亿总金额!-->
         <div id="money">
             <div class="imgOne">
+               <!-- 小额现金贷为9位数时 !-->
                <img class="totalMoney" src="$commonUrl/billion_06.gif" alt="">
-               <div class="num">
+               <div class="num">                   
                     <span class="numOne" v-for="item in num">{{item}}</span>
+               </div>
+               <!-- 小额现金贷为10位数时 !-->
+               <img class="totalMoney1" src="$commonUrl/billion_07.gif" alt="">
+               <div class="num1">                   
+                    <span class="numOne1" v-for="item in num">{{item}}</span>
                </div>
             </div>
             <div class="imgTwo">
@@ -88,7 +94,7 @@
                         <span class="left">18898789989</span><span class="right">17898898898</span>
                         <span class="left">18898789989</span><span class="right">17898898898</span>
                     </li>
-                    <button v-on:click="list">查看更多</button>
+                    <button v-on:click="lists()">查看更多</button>
                 </ul> 
             </div>
             </div>
@@ -113,7 +119,7 @@
                 <p class="ruleCont"></p>!-->
                 <ul class="winningDetail">
                     <li  v-for="(key,value) in list">
-                        <p class="title">元现金中奖用户</p>
+                        <p class="title">{{value.list}}元现金中奖用户</p>
                         <div class="number">
                             <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
                             <div><span class="left">188890988889</span><span class="right">188890988880</span></div>

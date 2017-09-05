@@ -66,7 +66,6 @@ var vm = new Vue({
             //十亿中奖用户(每五分钟调一次)
              //判断小额现金贷是否达到十亿
                     if($(".num").length=="10"){
-                        
                              $.ajax({
                                 url: '/app/activity/getBillionWinUser',
                                 dataType: 'json',
@@ -75,6 +74,12 @@ var vm = new Vue({
                                     console.log(data);
                                     //让顶部轮播显示
                                     $(".box").show();
+                                    //隐藏9位数的背景和样式
+                                    $(".totalMoney").hide();
+                                    $('..num').hide();
+                                    //让10位数的背景和样式显示
+                                    $('.totalMoney1').show();
+                                    $('.num1').show();
                                 }
 
                             })
@@ -82,7 +87,6 @@ var vm = new Vue({
            
 
         },
-
 
         //点击立即借钱
         goBorrowMoney() {
@@ -124,7 +128,7 @@ var vm = new Vue({
             });
         },
         //点击查看更多弹出弹窗
-        list() {
+        lists() {
             $('.mask').show();
             $(".alertRule").show();
 
@@ -150,11 +154,11 @@ var vm = new Vue({
 
 
         //当开奖金额大于600时显示中奖用户列表
-        if($(".RMB")>600){
+        /* if((".RMB")>600){
             $(".winningUser").show();
             $(".cash").float=="left";
             $(".cash").width=="3rem";
-        }
+        } */
 
 
 
