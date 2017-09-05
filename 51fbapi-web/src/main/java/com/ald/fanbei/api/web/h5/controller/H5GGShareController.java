@@ -645,7 +645,10 @@ public class H5GGShareController extends H5Controller {
 				if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
 					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
 				}
-				 response.sendRedirect(shareAppUrl); 
+				String userName =  request.getParameter("userName");
+				String activityId =  request.getParameter("activityId");
+				String redirectShareAppUrl = shareAppUrl+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId;
+			        response.sendRedirect(redirectShareAppUrl); 
 			}	
 		}catch(Exception exception){
 			exception.printStackTrace();
