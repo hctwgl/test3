@@ -12,17 +12,18 @@
     <div id="billion">
         <!--顶部文字滚动 !-->
          <div class="box" id="scroll_div">
-                <div class="personAmount" id="scroll_begin"><p>恭喜17839218825用户<span class="light"></span>获得万元现金大奖</p></div>
+                <div class="personAmount" id="scroll_begin"><p>恭喜{{data}}用户<span class="light"></span>获得万元现金大奖</p></div>
                 <div class="personAmount" id="scroll_end"></div>     
                 <!--<div class="personAmount"><p>已有<span class="light"></span>22222222222</p></div>!-->
         </div>
         <!--破15亿总金额!-->
-        <div id="money">
+        <div id="money" class="money">
             <div class="imgOne">
                <!-- 小额现金贷为9位数时 !-->
                <img class="totalMoney" src="$commonUrl/billion_06.gif" alt="">
                <div class="num compare">                   
                     <span class="numOne" v-for="item in num">{{item}}</span>
+                 
                </div>
                <!-- 小额现金贷为10位数时 !-->
                <img class="totalMoney1" src="$commonUrl/billion_07.gif" alt="">
@@ -33,38 +34,38 @@
             <div class="imgTwo">
             <!-- 进度条 !-->
                 <p class="progress">
-                    <span class="progressOne"></span>
-                    <span class="pointOne"></span>
-                    <span class="progressTwo" id="yellow"></span>
-                    <span class="pointTwo" id="yellow"></span>
-                    <span class="progressThree"></span>
-                    <span class="pointThree"></span>
-                    <span class="progressFour"></span>
-                    <span class="pointFour"></span>
-                    <span class="progressFive"></span>
-                    <span class="pointFive"></span>
-                    <span class="progressSeven"></span>
+                    <span class="progressOne" :class="{'yellow':active==0}"></span>
+                    <span class="pointOne" :class="{'yellow':active==0}"></span>
+                    <span class="progressTwo" :class="{'yellow':active==1}"></span>
+                    <span class="pointTwo" :class="{'yellow':active==1}"></span>
+                    <span class="progressThree" :class="{'yellow':active==2}"></span>
+                    <span class="pointThree" :class="{'yellow':active==2}"></span>
+                    <span class="progressFour" :class="{'yellow':active==3}"></span>
+                    <span class="pointFour" :class="{'yellow':active==3}"></span>
+                    <span class="progressFive" :class="{'yellow':active==4}"></span>
+                    <span class="pointFive" :class="{'yellow':active==4}"></span>
+                    <span class="progressSeven" :class="{'yellow':active==4}"></span>
                 </p>
                 <p class="circle">
-                    <span class="circleOne">
-                        <i class="date">${date1}</i><br/>
-                        <i class="circleMoney">600元</i>
+                    <span >
+                        <i :class="{'date':true,'change':active==0}">${date1}</i><br/>
+                         <i :class="{'circleMoney':true,'change':active==0}">{{active}}600元</i>
                     </span>
-                    <span class="circleTwo">
-                        <i class="date change">${date2}</i><br/>
-                        <i class="circleMoney change">700元</i>
+                   <span >
+                        <i  :class="{'date':true,'change':active==1}">${date2}</i><br/>
+                        <i :class="{'circleMoney':true,'change':active==1}">700元</i>
                     </span>
-                    <span class="circleThree">
-                        <i class="date">${date3}</i><br/>
-                        <i class="circleMoney">800元</i>
+                    <span >
+                        <i  :class="{'date':true,'change':active==2}">${date3}</i><br/>
+                        <i :class="{'circleMoney':true,'change':active==2}">800元</i>
                     </span>
-                    <span class="circleFour">
-                        <i class="date">${date5}</i><br/>
-                        <i class="circleMoney">900元</i>
+                    <span >
+                        <i  :class="{'date':true,'change':active==3}">${date5}</i><br/>
+                        <i :class="{'circleMoney':true,'change':active==3}">900元</i>
                     </span>
-                    <span class="circleFive">
-                        <i class="date">${date5}</i><br/>
-                        <i class="circleMoney">1000元</i>
+                    <span >
+                        <i  :class="{'date':true,'change':active==4}">${date5}</i><br/>
+                        <i :class="{'circleMoney':true,'change':active==4}">1000元</i>
                     </span>
                     <!--<span class="circleSix">
                         <i class="date">9.9</i><br/>
@@ -87,9 +88,12 @@
             <div class="twoLine"></div>
          <div class='clearFix'>
             <div class="cash">
-                <p class="timeMoney"><i class="RMB">${winAmount}</i>元现金</p>
+                <p class="timeMoney"><i class="RMB" id="RMB">${winAmount}</i>元现金</p>
                 <p class="award">开奖倒计时</p>
-                <p class="countDown">${dates}</p>
+                <!--<p class="countDown">${dates}</p>-->  
+                <p class="countDown"> <span id="hour">00时</span>
+		    <span id="minute">00分</span>
+		    <span id="second">00秒</span></p>
             </div>
             <!--现金中奖用户!-->  
             <div class="winningUser">
@@ -126,26 +130,37 @@
                 <!--<p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
                 <p class="ruleCont"></p>!-->
                 <ul class="winningDetail">
-                    <li  v-for="(key,value) in list">
-                        <p class="title">{{value.list}}元现金中奖用户</p>
+                    <li v-show='list600.length!=0'>
+                        <p class="title">600元现金中奖用户</p>
                         <div class="number">
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
+                            <div><span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in list600" :key="index">{{it}}</span></div>
                         </div>
                     </li>
-                    <li>
+                    <li v-show='list700.length!=0'>
                         <p class="title">700元现金中奖用户</p>
                         <div class="number">
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
-                            <div><span class="left">188890988889</span><span class="right">188890988880</span></div>
+                      <div><span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in list700" :key="index">{{it}}</span></div>
                         </div>
                     </li>
+                     <li v-show='list800.length!=0'>
+                        <p class="title">800元现金中奖用户</p>
+                        <div class="number">
+                      <div><span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in list800" :key="index">{{it}}</span></div>
+                        </div>
+                    </li>
+                     <li v-show='list900.length!=0'>
+                        <p class="title7">900元现金中奖用户</p>
+                        <div class="number">
+                      <div><span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in list900" :key="index">{{it}}</span></div>
+                        </div>
+                    </li>
+                     <li v-show='list1000.length!=0'>
+                        <p class="title">1000元现金中奖用户</p>
+                        <div class="number">
+                      <div><span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in list1000" :key="index">{{it}}</span></div>
+                        </div>
+                    </li>
+               
                 </ul>
                 <p class="close" v-on:click="noShow">X</p>
             </div>
