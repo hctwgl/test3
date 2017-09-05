@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -16,7 +17,9 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
@@ -75,8 +78,14 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
 				logger.info("borrowSuccess--begin");
+				Date currDate = new Date(System.currentTimeMillis());
+				afBorrowCashDo.setGmtArrival(currDate);
+				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+				Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
+				Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+				afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
-				logger.info("user_id="+ afBorrowCashDo.getUserId());
+				
 				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
 				logger.info("updateRecommendUser="+ rr);
 				logger.info("borrowSuccess--end");
