@@ -28,10 +28,17 @@ var vm = new Vue({
                     str = str.replace(/\./g, ""); //替换掉返回字符串中的点
                     _this.num = str.split(""); //将字符串转化成数组
                     console.log(_this.num);
-
-                    var num = document.getElementsByClassName("num"); //获取十五亿的总金额长度
-                    if (num.length >= 10) {
-                        element.src = "$commonUrl/billion_07.gif"; //当到达十亿金额的时候img替换成另一张图片
+                    var num=_this.num;
+                    //判断小额现金贷是否为10位
+                    if( num.length>=10){
+                            console.log($.compare.length);
+                            console.log(111111111111111111111)
+                                    //隐藏9位数的背景和样式
+                                    $(".totalMoney").hide();
+                                    $('..num').hide();
+                                    //让10位数的背景和样式显示
+                                    $('.totalMoney1').show();
+                                    $('.num1').show();
                     }
 
                     ScrollImgLeft();
@@ -58,32 +65,68 @@ var vm = new Vue({
                             MyMar = setInterval(Marquee, speed);　　　　　　　　　
                         }
                     } 
+
+                    //开奖倒计时
+                    //第一次开奖前没有开奖名单 只是显示第一次开奖倒计时
+                    //第一次开奖后 左侧显示下一次倒计时 右侧显示最新的开奖结果
+                    //从上线开始时间开始倒计时 一直到次日上午10点开始
                     
+                    function GetRTime(){
+                        var Day=0;
+                        var Hour=0;
+                        var Minute=0;
+                        var Second=0;
+                        var Start=document.getElementById("start");
+
+        //		        var startTime=new Date('2017/09/10 09:26:21');
+        //			    var EndTime= new Date('2017/09/11 10:00:00');
+                        // var NowTime = new Date();
+                        var NowTime = Start;
+                        // var EndTime= new Date('2017/09/05 10:00:00');
+                        var EndTime= new Date('10:00:00');
+                        var t =EndTime.getTime() - NowTime.getTime();
+                        if(t>=0){
+                            Day=Math.floor(t/1000/60/60/24);
+                            Hour=Math.floor(t/1000/60/60%24);
+                            Minute=Math.floor(t/1000/60%60);
+                            Second=Math.floor(t/1000%60);
+                        }else{
+                            t+=1000*60*60*24;
+                            Day=Math.floor(t/1000/60/60/24);
+                            Hour=Math.floor(t/1000/60/60%24);
+                            Minute=Math.floor(t/1000/60%60);
+                            Second=Math.floor(t/1000%60);
+                        }
+                         Start=Hour + "时"+Minute + "分"+Second + "秒";
+                        /* document.getElementById("day").innerHTML = Day + "天";
+                        document.getElementById("hour").innerHTML = Hour + "时";
+                        document.getElementById("minute").innerHTML = Minute + "分";
+                        document.getElementById("second").innerHTML = Second + "秒"; */
+                    }
+                    var time1=setInterval(GetRTime,0);
+                    GetRTime();
+                                
+            
                 }
                 
+                            
             })
 
             //十亿中奖用户(每五分钟调一次)
              //判断小额现金贷是否达到十亿
-                    if($(".num").length=="10"){
-                             $.ajax({
-                                url: '/app/activity/getBillionWinUser',
-                                dataType: 'json',
-                                type: 'post',
-                                success: function (data) {
-                                    console.log(data);
-                                    //让顶部轮播显示
-                                    $(".box").show();
-                                    //隐藏9位数的背景和样式
-                                    $(".totalMoney").hide();
-                                    $('..num').hide();
-                                    //让10位数的背景和样式显示
-                                    $('.totalMoney1').show();
-                                    $('.num1').show();
-                                }
+            $.ajax({
+                 url: '/app/activity/getBillionWinUser',
+                 dataType: 'json',
+                 type: 'post',
+                 success: function (data) {
+                 console.log(data);
+                            if(data!=""){
+                                //破十亿时让顶部轮播显示并显示实时中奖用户
+                                $("#scroll_div").show();
+                            }           
+                 }
 
-                            })
-                    }
+            })
            
 
         },
@@ -150,7 +193,6 @@ var vm = new Vue({
             $('.mask').hide();
             $(".alertRule").hide();
         },
-        //开奖倒计时
 
 
         //当开奖金额大于600时显示中奖用户列表
