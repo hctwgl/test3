@@ -76,10 +76,10 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		//正式环境和预发布环境区分
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			topBannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
+					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerNew.getCode()));
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
 			topBannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBanner.getCode()));
+					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBannerNew.getCode()));
 		}
 		// 快速导航信息
 		Map<String,Object> navigationInfo = getNavigationInfoWithResourceDolist(

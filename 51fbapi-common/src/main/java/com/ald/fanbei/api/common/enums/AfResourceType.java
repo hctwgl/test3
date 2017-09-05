@@ -10,6 +10,7 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfResourceType {
 	HomeBanner("HOME_BANNER", "轮播图"),
+	HomeBannerNew("HOME_BANNER_NEW", "轮播图（新版）"),
 	HomeNavigation("HOME_NAVIGATION", "四个导航"),
 	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
