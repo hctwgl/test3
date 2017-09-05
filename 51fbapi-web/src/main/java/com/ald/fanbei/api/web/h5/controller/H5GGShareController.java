@@ -743,7 +743,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/pickUpItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pickUpItems(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+  		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -808,7 +808,7 @@ public class H5GGShareController extends H5Controller {
 						afBoluomeActivityUserItemsService.saveRecord(insertDo);
 
 						AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(resourceUserItemsId);
-						if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+						if (prevousDo != null && "FROZEN".equals(prevousDo.getStatus())) {
 							updateUserItemsStatus(resourceUserItemsId, "SENT");
 						}
 						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();

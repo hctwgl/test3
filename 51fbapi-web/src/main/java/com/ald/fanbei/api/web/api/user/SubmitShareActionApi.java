@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -55,8 +58,9 @@ public class SubmitShareActionApi implements ApiHandle {
 		
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
 		String[] strings = sharePage.split("_");
+		String preSharePage = sharePage.substring(0, sharePage.lastIndexOf("?"));
+		String sharePagee   =preSharePage.substring(preSharePage.lastIndexOf("/")+1,preSharePage.length());
 		if (strings != null && strings.length == 3) {
-			String sharePagee = strings[0];
 			if ("ggpresents".equals(sharePagee)) {
 				String strUserItemsId = strings[2];
 				Long userItemsId = Long.parseLong(strUserItemsId);
