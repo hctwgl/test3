@@ -49,7 +49,7 @@
                 <p class="circle">
                     <span >
                         <i :class="{'date':true,'change':active==0}">${date1}</i><br/>
-                         <i :class="{'circleMoney':true,'change':active==0}">{{active}}600元</i>
+                         <i :class="{'circleMoney':true,'change':active==0}">600元</i>
                     </span>
                    <span >
                         <i  :class="{'date':true,'change':active==1}">${date2}</i><br/>

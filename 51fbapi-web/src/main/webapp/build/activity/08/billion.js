@@ -94,7 +94,8 @@ var vm = new Vue({
                         var y = time.getFullYear();
                         var m = time.getMonth() + 1;
                         var d = time.getDate();
-                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        // var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        var t = y + "-" + m + "-" + d + " " + "12:50:00";
                         var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
                         tDate = +tDate + 24 * 60 * 60 * 1000;
                         tDate = new Date(tDate);
@@ -102,7 +103,7 @@ var vm = new Vue({
                     }
 
                     function GetRTime() {
-                        //			    var EndTime= new Date('2017/09/11 10:00:00');
+                        //var EndTime= new Date('2017/09/11 10:00:00');
                         var NowTime = new Date();
                         var EndTime = GetNextDate(NowTime);
 
@@ -124,8 +125,10 @@ var vm = new Vue({
                         document.getElementById("minute").innerHTML = Minute + "分";
                         document.getElementById("second").innerHTML = Second + "秒";
                         // if (Day == 0 && Hour == 0 && Minute == 0 && Second == 0) {
+
                         if (true) {
-                            clearTimeout(time1);
+                            //clearTimeout(time1);
+                            //setTimeout(time1);
                             // Start.style = "opacity:1;"
                             //获取到中奖金额
                             _this.$nextTick(function () {
@@ -147,10 +150,11 @@ var vm = new Vue({
 
                                 }
                                  //_this.active = 0;//默认显示第一个
-                                if (RMB >= 600) {
+
+
+                                /* if (RMB >= 600) {
                                     $(".winningUser").hide();
                                     $(".cash").css({
-                                        
                                         'width': '100%',
                                         'float': 'none'
                                     });
@@ -160,7 +164,7 @@ var vm = new Vue({
                                         'width': '3rem',
                                         'float': 'left'
                                     });
-                                }
+                                } */
                                 console.log(RMB);
                                 $.ajax({
                                     url: '/app/activity/randomUser',
@@ -176,15 +180,19 @@ var vm = new Vue({
                                         //当开奖金额大于600时显示中奖用户列表
                                         console.log(RMB);
                                         console.log('RMB');
-                                        /* if (RMB > 600) {
+                                         if (RMB > 600) {
                                             $(".winningUser").show();
-                                            $(".cash").float == "left";
-                                            $(".cash").width == "3rem";
+                                            $(".cash").css({
+                                                'width': '3rem',
+                                                'float': 'left'
+                                            });
                                         } else { //小于隐藏中奖用户列表
                                             $(".winningUser").hide();
-                                            $(".cash").float == "none";
-                                            $(".cash").width == "0";
-                                        } */
+                                            $(".cash").css({
+                                                'width': '100%',
+                                                'float': 'none'
+                                            });
+                                        } 
 
 
                                     }
@@ -192,25 +200,10 @@ var vm = new Vue({
                                 })
                             })
 
-                        } else {
-                            /* $.ajax({
-                                url: '/app/activity/randomUser',
-                                dataType: 'json',
-                                type: 'post',
-                                data:{winAmount:'RMB'},//将开奖金额传给后台
-                                success: function (data) {
-                                    console.log(data);
-                                    console.log('data111');
-                                 
-                                }
-
-                            }) */
-                            // Start.style = "";
-                        }
+                        } 
                     }
                     var time1 = setInterval(GetRTime, 0);
-
-
+                    //setTimeout(time1)
                 }
 
 
@@ -224,10 +217,10 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-                    /* if (data !== "") {
+                     if (data !== "") {
                         //破十亿时让顶部轮播显示并显示实时中奖用户
                         $("#scroll_div").show();
-                    } */
+                    } 
                 }
 
             })
