@@ -245,6 +245,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 
 	@Override
 	public int updateBorrowCashActivity(int money, List<String> userId) {
+		//af_user_account_log添加记录
 		for (String string : userId) {
 			AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
 			userAccountLog.setAmount(new BigDecimal(money));

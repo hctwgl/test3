@@ -95,42 +95,50 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				logger.info("borrowSuccess--begin");
 				//fmf 借钱抽奖活动借款金额加入缓存
 				BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
-				if(amount.compareTo(new BigDecimal(1500000000)) == -1 || amount.compareTo(new BigDecimal(1500000000)) == 0) {
+				//String user = (String) bizCacheUtil.getObject("Billion_Win_User");
+				//if(user == null){
+					if(amount.compareTo(new BigDecimal(1500000000)) == -1 || amount.compareTo(new BigDecimal(1500000000)) == 0) {
+						amount=amount.add(afBorrowCashDo.getAmount());
+						if(amount.compareTo(new BigDecimal(1500000000)) == 1){
+							List<String> users=new ArrayList<String>();
+							users.add(afBorrowCashDo.getUserId()+"");
+							List<String> userName = afUserService.getUserNameByUserId(users);
+							//发送短信
+							try{
+								smsUtil.sendBorrowCashActivitys(userName.get(0),"恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回T退订");
+							}catch(Exception e){
+								logger.info("sendBorrowCashActivitys Billion_Win_User is fail,"+e);
+							}
+							//推送消息
+							try{
+								jpushService.pushBorrowCashActivitys(userName.get(0), "10000","One");
+							}catch(Exception e){
+								logger.info("pushBorrowCashActivitys Billion_Win_User is fail,"+e);
+							}
+							// 给用户账号打钱
+							afUserAccountService.updateBorrowCashActivity(10000, users);
+							//af_user_account_log添加记录
+							AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
+							userAccountLog.setAmount(afBorrowCashDo.getAmount());
+							userAccountLog.setUserId(afBorrowCashDo.getUserId());
+							userAccountLog.setType("borrow_Activitys");
+							userAccountLog.setRefId(" ");
+							try{
+								afUserAccountLogDao.addUserAccountLog(userAccountLog);
+							}catch(Exception e){
+								throw new FanbeiException("addUserAccountLog "+afBorrowCashDo.getUserId()+" is fail,"+e);
+							}
+							//保存破十亿中奖用户
+							bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60*60*24*7);
+							
+							bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60*60*24*7);
+						} else {
+							bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60*60*24*7);
+						}
+					//}
+				} else {
 					amount=amount.add(afBorrowCashDo.getAmount());
-					if(amount.compareTo(new BigDecimal(1500000000)) == 1){
-						List<String> users=new ArrayList<String>();
-						users.add(afBorrowCashDo.getUserId()+"");
-						List<String> userName = afUserService.getUserNameByUserId(users);
-						//发送短信
-						try{
-							smsUtil.sendBorrowCashActivitys(userName.get(0),"恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回T退订");
-						}catch(Exception e){
-							logger.info("sendBorrowCashActivitys Billion_Win_User is fail,"+e);
-						}
-						//推送消息
-						try{
-							jpushService.pushBorrowCashActivitys(userName.get(0), "10000","One");
-						}catch(Exception e){
-							logger.info("pushBorrowCashActivitys Billion_Win_User is fail,"+e);
-						}
-						// 给用户账号打钱
-						afUserAccountService.updateBorrowCashActivity(10000, users);
-						//af_user_account_log添加记录
-						AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
-						userAccountLog.setAmount(afBorrowCashDo.getAmount());
-						userAccountLog.setUserId(afBorrowCashDo.getUserId());
-						userAccountLog.setType("borrow_Activitys");
-						userAccountLog.setRefId(" ");
-						try{
-							afUserAccountLogDao.addUserAccountLog(userAccountLog);
-						}catch(Exception e){
-							throw new FanbeiException("addUserAccountLog "+afBorrowCashDo.getUserId()+" is fail,"+e);
-						}
-						//保存破十亿中奖用户
-						bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60*60*24*7);
-					} else {
-						bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60*60*24*7);
-					}
+					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60*60*24*7);
 				}
 				
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);

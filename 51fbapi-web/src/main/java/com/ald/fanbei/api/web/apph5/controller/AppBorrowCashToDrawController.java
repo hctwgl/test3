@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -100,6 +101,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 				model.addAllAttributes(date);
 			}
 			model.addAttribute("winAmount", winAmount);
+			model.addAttribute("winAmounts",Integer.parseInt(winAmount)-100);
 			return "fanbei-web/activity/billion";
 		}
 		Map<String,String> date = JSONObject.parseObject(Time, Map.class);
@@ -112,13 +114,14 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/borrowCashActivities", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String borrowCashActivities() {
-		bizCacheUtil.delCache("winAmount");
+	//	bizCacheUtil.delCache("winAmount");
 		bizCacheUtil.saveObject("winAmount","600", 60 * 60 * 24*30);
 		BigDecimal sumAmount=null;
+		DecimalFormat df = new DecimalFormat("0");
 		try {
 			sumAmount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
 			if (sumAmount != null) {
-				char[] split = (sumAmount.stripTrailingZeros()+"").toCharArray();
+				char[] split = (df.format(sumAmount)+"").toCharArray();
 				String jsonString = JsonUtil.toJSONString(split);
 				H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
 				return JsonUtil.toJSONString(response);
@@ -133,7 +136,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
-		char[] split = (sumAmount.stripTrailingZeros()+"").toCharArray();
+		char[] split = (df.format(sumAmount)+"").toCharArray();
 		String jsonString = JsonUtil.toJSONString(split);
 		H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
 		return JsonUtil.toJSONString(response);
@@ -141,13 +144,13 @@ public class AppBorrowCashToDrawController extends BaseController {
 
 	@RequestMapping(value = "/randomUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String randomUser(HttpServletRequest request, ModelMap model) {
+	public String randomUser(HttpServletRequest request) {
 		String winAmount = request.getParameter("winAmount");
 		
 		List<String> users = afBorrowCashService.getRandomUser(); // 得到中奖用户id
 		List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
 		List<String> userNames = afUserService.getUserNameByUserId(users); // 得到中奖用户user_name
-		List<String> list2 = afUserService.getUserNameByUserId(list1);
+		List<String> list2 = afUserService.getUserNameByUserId(list1); //得到未中奖用户user_name
 		String jsonString = JsonUtil.toJSONString(userNames);
 		// 每日中奖用户推送
 		for (String userName : userNames) {
@@ -180,6 +183,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (FanbeiException e) {
 			logger.info("sendBorrowCashActivitys is fails," + e);
 		}
+		//传给前端一个开奖金额
 		bizCacheUtil.saveObject("winAmount",amount+100+"", 60);
 		// 中奖用户存入缓存
 		String userJson = (String)bizCacheUtil.getObject("winAmount_Win_User");
@@ -207,7 +211,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 
 	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String getWinUser(Model model) {
+	public String getWinUser() {
 		String users=null;
 		try{
 			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
