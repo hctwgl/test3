@@ -18,12 +18,6 @@
             <div class="rightLine"></div>
                 <div class="discountWrap" style="background-color: white; border:0.01rem solid #DFDBE1;">
                     <div class="bannerUrl">
-##                        <span class="center">
-##                            <i class="centerBig">
-##                                <img src="$commonUrl/heartF.png" alt="" class="left" class="lazy">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right" class="lazy">
-##                            </i><br/>
-##                            <i class="centerSmall">七夕送给心爱的她一份心意</i>
-##                        </span>
                     <img src="$commonUrl/oppoHome01.png">
                     </div>
                     <ul class="discount clearfix" style="background-color: white;">
@@ -31,11 +25,11 @@
                             <img :data-original="item.goodsIcon" class="lazy">
                             <div class="discountRight">
                                 <p class="discountRightTitle">{{item.goodName}}</p>
-                                <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
                                 <div class="priceWrap">
                                     <span class="saleAmount">¥{{item.saleAmount}}</span>
                                     <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
                                 </div>
+                                <p class="priceAmount">月供<span>¥520起</span></p>
                                 <span class="goBuyBtn">立即抢购</span>
                             </div>
                         </li>
@@ -49,12 +43,6 @@
                 <div class="r-bottomLine"></div>
                 <div class="r-rightLine"></div>
                 <div class="bannerUrl" style="background-color: white;">
-##                    <span class="center">
-##                        <i class="centerBig">
-##                            <img src="$commonUrl/heartF.png" alt="" class="left" class="lazy">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right" class="lazy">
-##                        </i><br/>
-##                        <i class="centerSmall">七夕送给心爱的她一份心意</i>
-##                    </span>
                     <img src="$commonUrl/oppoHome01.png">
 
                 </div>
@@ -63,11 +51,12 @@
                         <img :data-original="item.goodsIcon" class="lazy">
                         <div class="rebateRight">
                             <p class="rebateRightTitle">{{item.goodName}}</p>
-                            <p class="remark">{{item.remark}}</p>
+                            <!--<p class="remark">{{item.remark}}</p>!-->
                             <div class="priceWrap">
                                 <span class="saleAmount">¥{{item.saleAmount}}</span>
                                 <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
                             </div>
+                            <p class="monthPay">月供<span>¥520起</span></p>
                         </div>
                     </li>
                 </ul>

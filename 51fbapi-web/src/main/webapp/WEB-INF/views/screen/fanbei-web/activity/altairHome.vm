@@ -28,8 +28,8 @@
                     <div class="txtContent">
                         <p>{{txtFix(item.goodName,16)}}</p>
                         <p class="price">活动价:￥{{item.saleAmount}}</p>
-                        <s>原价:￥{{item.priceAmount}}</s>
-                        <button class="button">返利:￥{{item.rebateAmount/2}}x2倍</button>
+                        <s>返利:￥{{item.rebateAmount}}</s>
+                        <button class="button">月供￥{{item.rebateAmount}}起</button>
                     </div>
                 </li>
             </ul>
@@ -41,8 +41,8 @@
                     <p class="goodImg"><img :lazy-src="item.goodsIcon"></p>
                     <p class="goodDes">{{txtFix(item.goodName,16)}}</p>
                     <p class="fanPrice">￥{{item.saleAmount}}</p>
-                    <p class="originPrice">￥{{item.priceAmount}}</p>
-                    <p class="monthPrice">返利:￥{{item.rebateAmount/2}}x2倍</p>
+                    <p class="originPrice"><i></i>￥{{item.rebateAmount}}</p>
+                    <p class="monthPrice">月供￥{{item.rebateAmount}}起</p>
                 </li>
             </ul>
         </div>
