@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -45,6 +47,7 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -564,7 +567,11 @@ public class H5GGShareController extends H5Controller {
 			}
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			// 改变用户卡片的中见状态
-			updateUserItemsStatus(userItemsId, "FROZEN");
+			AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+			if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+				updateUserItemsStatus(userItemsId, "FROZEN");
+			}
+			
 			// 埋点
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
 			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
@@ -595,7 +602,7 @@ public class H5GGShareController extends H5Controller {
 		try{
 			// 检测是否有这个userItemsId的卡片，若有，则更新状态
 			AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
-			if (prevousDo != null) {
+			if (prevousDo != null ) {
 
 				//验证这个用户是否拥有多余1张的此卡片
 				AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
@@ -619,10 +626,37 @@ public class H5GGShareController extends H5Controller {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * @说明：扫描二维码的时候，进行的业务逻辑（卡片冻结），然后重定向
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "/submitShareCode", method = RequestMethod.GET,produces = "text/html;charset=UTF-8")
+	public void submitShareCode(HttpServletRequest request , HttpServletResponse response){
+		try{
+			String shareAppUrl = request.getParameter("shareAppUrl");
+			if (StringUtil.isNotBlank(shareAppUrl)) {
+				//shareAppUrl = new String(Base64.decode(shareAppUrl));
+				shareAppUrl = shareAppUrl.replace("_", "&");
+				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
+				
+				AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+				if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+				}
+				 response.sendRedirect(shareAppUrl); 
+			}	
+		}catch(Exception exception){
+			exception.printStackTrace();
+			logger.error(exception.getMessage());
+		}
+		
+	}
 	/**
 	 * 
 	 * @说明：卡片赠送(专享初始化页面,无需登录) @param: @param request
+	 * 
 	 * @param: @param
 	 *             response
 	 * @param: @return
@@ -773,7 +807,10 @@ public class H5GGShareController extends H5Controller {
 						insertDo.setGmtSended(new Date());
 						afBoluomeActivityUserItemsService.saveRecord(insertDo);
 
-						updateUserItemsStatus(resourceUserItemsId, "SENT");
+						AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(resourceUserItemsId);
+						if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+							updateUserItemsStatus(resourceUserItemsId, "SENT");
+						}
 						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();
 					} else {
 						return H5CommonResponse.getNewInstance(true, "你已领走卡片，无需重复领取").toString();
@@ -929,7 +966,12 @@ public class H5GGShareController extends H5Controller {
 					// 若大于一张则，
 					// 登录用户卡片选一张，然后赠状态设为已经赠送
 					AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
-					updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
+					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(resourceUserItemsDo.getRid());
+					if (prevousDo != null && "FROZEN".equals(prevousDo.getStatus())) {
+						updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
+					}
+					
+					
 
 					// 朋友的userItems表中增加一条卡片记录
 					AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
