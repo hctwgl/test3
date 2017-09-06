@@ -3,14 +3,23 @@ var vm = new Vue({
     data: {
         returnData: [],
         num: '',
-        list:[]
+        list600: [],
+        list700: [],
+        list800: [],
+        list900: [],
+        list1000: [],
+        list: {},
+        data: null,
+        active: 0
     },
     created: function () {
         let _this = this;
         _this.initial();
         //setInterver(_this.initial(),1000);//五分钟执行一次
         // loading();
-        (function(){setInterval(_this.initial,5*60*1000)})();//a让initial中的请求五分钟执行一次
+        (function () {
+            setInterval(_this.initial, 5 * 60 * 1000)
+        })(); //a让initial中的请求五分钟执行一次
     },
     methods: {
         initial() {
@@ -24,14 +33,21 @@ var vm = new Vue({
                     console.log(data);
                     var str = data.data; //获取返回的破十五亿金额
                     console.log(str);
-                    str = str.replace(/"/g, ""); //替换掉返回字符串中的引号
-                    str = str.replace(/\./g, ""); //替换掉返回字符串中的点
-                    _this.num = str.split(""); //将字符串转化成数组
+                    // str = str.replace(/"/g, ""); //替换掉返回字符串中的引号
+                    // str = str.replace(/\./g, ""); //替换掉返回字符串中的点
+                    // _this.num = str.split(""); //将字符串转化成数组
+                    _this.num = JSON.parse(str);
                     console.log(_this.num);
-
-                    var num = document.getElementsByClassName("num"); //获取十五亿的总金额长度
-                    if (num.length >= 10) {
-                        element.src = "$commonUrl/billion_07.gif"; //当到达十亿金额的时候img替换成另一张图片
+                    var num = _this.num;
+                    //判断小额现金贷是否为10位
+                    if (num.length >= 7) {
+                        //隐藏9位数的背景和样式
+                        $(".totalMoney").hide();
+                        $('.num').hide();
+                        //让10位数的背景和样式显示
+                        $('.totalMoney1').show();
+                        $('.num1').show();
+                        //  $("#scroll_div").show();
                     }
 
                     ScrollImgLeft();
@@ -57,32 +73,163 @@ var vm = new Vue({
                         scroll_div.onmouseout = function () {　　　　　　　
                             MyMar = setInterval(Marquee, speed);　　　　　　　　　
                         }
-                    } 
-                    
+                    }
+
+                    //开奖倒计时
+                    //第一次开奖前没有开奖名单 只是显示第一次开奖倒计时
+                    //第一次开奖后 左侧显示下一次倒计时 右侧显示最新的开奖结果
+                    //从上线开始时间开始倒计时 一直到次日上午10点开始
+
+                    var Day = 0;
+                    var Hour = 0;
+                    var Minute = 0;
+                    var Second = 0;
+                    var Start = document.getElementById("start");
+
+                    //		    var startTime=new Date('2017/09/10 09:26:21');
+                    function GetNextDate(time) {
+                        //获取当前时间年月日
+                        var y = time.getFullYear();
+                        var m = time.getMonth() + 1;
+                        var d = time.getDate();
+                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
+                        tDate = +tDate + 24 * 60 * 60 * 1000;
+                        tDate = new Date(tDate);
+                        return tDate;
+                    }
+
+                    function GetRTime() {
+                        //			    var EndTime= new Date('2017/09/11 10:00:00');
+                        var NowTime = new Date();
+                        var EndTime = GetNextDate(NowTime);
+
+                        var t = EndTime.getTime() - NowTime.getTime();
+                        if (t >= 0) {
+                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
+                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+                            Minute = Math.floor(t / 1000 / 60 % 60);
+                            Second = Math.floor(t / 1000 % 60);
+                        } else {
+                            t += 1000 * 60 * 60 * 24;
+                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
+                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+                            Minute = Math.floor(t / 1000 / 60 % 60);
+                            Second = Math.floor(t / 1000 % 60);
+                        }
+                        // document.getElementById("day").innerHTML = Day + "天";
+                        document.getElementById("hour").innerHTML = Hour + "时";
+                        document.getElementById("minute").innerHTML = Minute + "分";
+                        document.getElementById("second").innerHTML = Second + "秒";
+                        // if (Day == 0 && Hour == 0 && Minute == 0 && Second == 0) {
+                        if (true) {
+                            clearTimeout(time1);
+                            // Start.style = "opacity:1;"
+                            //获取到中奖金额
+                            _this.$nextTick(function () {
+                                var RMB = document.getElementById('RMB').innerHTML;
+                                // if (RMB == 600) {
+                                //     _this.active = 0;
+                                // } else if (RMB == 700) {
+                                //     _this.active = 1;
+
+                                // }else if (RMB == 800) {
+                                //     _this.active = 2;
+
+                                // }else if (RMB == 900) {
+                                //     _this.active = 3;
+
+                                // }else if (RMB == 1000) {
+                                //     _this.active = 4;
+
+                                // }
+                                 _this.active = 4;
+                                if (RMB >= 600) {
+                                    $(".winningUser").show();
+                                    $(".cash").css({
+                                        'width': '3rem',
+                                        'float': 'left'
+                                    });
+                                } else { //小于隐藏中奖用户列表
+                                    $(".winningUser").hide();
+                                    $(".cash").css({
+                                        'width': '100%',
+                                        'float': 'none'
+                                    });
+                                }
+                                console.log(RMB);
+                                $.ajax({
+                                    url: '/app/activity/randomUser',
+                                    dataType: 'json',
+                                    type: 'post',
+                                    data: {
+                                        winAmount: RMB
+                                    }, //将开奖金额传给后台
+                                    success: function (data) {
+                                        console.log(data);
+                                        console.log('data111');
+
+                                        //当开奖金额大于600时显示中奖用户列表
+                                        console.log(RMB);
+                                        console.log('RMB');
+                                        if (RMB > 600) {
+                                            $(".winningUser").show();
+                                            $(".cash").float == "left";
+                                            $(".cash").width == "3rem";
+                                        } else { //小于隐藏中奖用户列表
+                                            $(".winningUser").hide();
+                                            $(".cash").float == "none";
+                                            $(".cash").width == "0";
+                                        }
+
+
+                                    }
+
+                                })
+                            })
+
+                        } else {
+                            /* $.ajax({
+                                url: '/app/activity/randomUser',
+                                dataType: 'json',
+                                type: 'post',
+                                data:{winAmount:'RMB'},//将开奖金额传给后台
+                                success: function (data) {
+                                    console.log(data);
+                                    console.log('data111');
+                                 
+                                }
+
+                            }) */
+                            // Start.style = "";
+                        }
+                    }
+                    var time1 = setInterval(GetRTime, 0);
+
+
                 }
-                
+
+
             })
 
             //十亿中奖用户(每五分钟调一次)
-             //判断小额现金贷是否达到十亿
-                    if($(".num").length=="10"){
-                        
-                             $.ajax({
-                                url: '/app/activity/getBillionWinUser',
-                                dataType: 'json',
-                                type: 'post',
-                                success: function (data) {
-                                    console.log(data);
-                                    //让顶部轮播显示
-                                    $(".box").show();
-                                }
-
-                            })
+            //判断小额现金贷是否达到十亿
+            $.ajax({
+                url: '/app/activity/getBillionWinUser',
+                dataType: 'json',
+                type: 'post',
+                success: function (data) {
+                    console.log(data);
+                    if (data != "") {
+                        //破十亿时让顶部轮播显示并显示实时中奖用户
+                        $("#scroll_div").show();
                     }
-           
+                }
+
+            })
+
 
         },
-
 
         //点击立即借钱
         goBorrowMoney() {
@@ -100,7 +247,7 @@ var vm = new Vue({
                         var status = data.data.status;
                         var idNumber = data.data.idNumber;
                         var realName = data.data.realName;
- 
+
                         if (appVersion <= "374") {
                             window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY'; // 老版本全部跳借钱
                         } else {
@@ -115,7 +262,7 @@ var vm = new Vue({
                             } else if (status == 'C') {
                                 window.location.href = '/fanbei-web/opennative?name=DO_PROMOTE_EXTRA'; // 去提升信用补充认证
                             }
-                        } 
+                        }
                     }
                 },
                 error: function () {
@@ -124,7 +271,8 @@ var vm = new Vue({
             });
         },
         //点击查看更多弹出弹窗
-        list() {
+        lists() {
+            var t = this;
             $('.mask').show();
             $(".alertRule").show();
 
@@ -134,8 +282,17 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-                    var list = data;
-                    
+                    for (var key in data) {
+                        var a = 'list' + key;
+                        // console.log(JSON.parse(data[key]));
+                        t[a] = JSON.parse(data[key]);
+                    }
+                    //   console.log(600,t.list600);
+                    //   console.log(700,t.list700);
+                    //   console.log(800,t.list800);
+                    //   console.log(900,t.list900);
+                    //   console.log(1000,t.list1000);
+
                 }
             })
 
@@ -145,7 +302,8 @@ var vm = new Vue({
             $('.mask').hide();
             $(".alertRule").hide();
         },
-        //开奖倒计时
+
+
 
     }
 

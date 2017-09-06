@@ -13,115 +13,276 @@ body {
 .clearFix {
   zoom: 1;
 }
-#money {
-  text-align: center;
+.money {
+  text-align: center !important;
   position: relative;
 }
-#money .imgOne {
+.money .imgOne {
   width: 100%;
   height: 5.1rem;
   background-image: url("http://f.51fanbei.com/h5/app/activity/08/billion_01.png");
   background-size: cover;
   position: relative;
 }
-#money .imgOne span {
+.money .imgOne span {
   position: absolute;
   font-size: 0.33rem;
 }
-#money .imgOne .number {
+.money .imgOne .number {
   bottom: 1.5rem;
   left: 0.95rem;
 }
-/*破十五亿现金  */
-#money .imgOne .numOne:nth-child(1) {
+/*小额现金贷9位数  */
+.money .imgOne .numOne:nth-child(1) {
   bottom: 1.5rem;
-  left: 0.95rem;
+  left: 1.3rem;
 }
-#money .imgOne .numOne:nth-child(2) {
+.money .imgOne .numOne:nth-child(2) {
   bottom: 1.5rem;
-  left: 1.6rem;
+  left: 1.85rem;
 }
-#money .imgOne .numOne:nth-child(3) {
+.money .imgOne .numOne:nth-child(3) {
   bottom: 1.5rem;
-  left: 2.25rem;
+  left: 2.45rem;
 }
-#money .imgOne .numOne:nth-child(4) {
+.money .imgOne .numOne:nth-child(4) {
   bottom: 1.5rem;
-  left: 2.95rem;
+  left: 3.05rem;
 }
-#money .imgOne .numOne:nth-child(5) {
+.money .imgOne .numOne:nth-child(5) {
   bottom: 1.5rem;
   left: 3.6rem;
 }
-#money .imgOne .numOne:nth-child(6) {
+.money .imgOne .numOne:nth-child(6) {
   bottom: 1.5rem;
-  left: 4.3rem;
+  left: 4.2rem;
 }
-#money .imgOne .numOne:nth-child(7) {
+.money .imgOne .numOne:nth-child(7) {
   bottom: 1.5rem;
-  left: 5rem;
+  left: 4.8rem;
 }
-#money .imgOne .numOne:nth-child(8) {
+.money .imgOne .numOne:nth-child(8) {
   bottom: 1.5rem;
-  left: 5.6rem;
+  left: 5.35rem;
 }
-#money .imgOne .numOne:nth-child(9) {
+.money .imgOne .numOne:nth-child(9) {
   bottom: 1.5rem;
-  left: 6.3rem;
+  left: 5.95rem;
 }
-#money .imgOne .totalMoney {
-  width: 100%;
+.money .imgOne .totalMoney {
+  width: 6.55rem;
   height: 0.9rem;
   position: absolute;
   bottom: 1.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: block;
 }
-#money .imgTwo {
+.money .imgOne .num {
+  display: block;
+}
+/* 小额现金贷9位数的时候 end*/
+/* start 小额现金贷10位数的时候 */
+.money .imgOne .totalMoney1 {
+  width: 6.55rem;
+  height: 0.9rem;
+  position: absolute;
+  bottom: 1.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+}
+.money .imgOne .num1 {
+  display: none;
+}
+.money .imgOne .numOne1:nth-child(1) {
+  bottom: 1.5rem;
+  left: 1.05rem;
+}
+.money .imgOne .numOne1:nth-child(2) {
+  bottom: 1.5rem;
+  left: 1.6rem;
+}
+.money .imgOne .numOne1:nth-child(3) {
+  bottom: 1.5rem;
+  left: 2.2rem;
+}
+.money .imgOne .numOne1:nth-child(4) {
+  bottom: 1.5rem;
+  left: 2.8rem;
+}
+.money .imgOne .numOne1:nth-child(5) {
+  bottom: 1.5rem;
+  left: 3.35rem;
+}
+.money .imgOne .numOne1:nth-child(6) {
+  bottom: 1.5rem;
+  left: 3.95rem;
+}
+.money .imgOne .numOne1:nth-child(7) {
+  bottom: 1.5rem;
+  left: 4.55rem;
+}
+.money .imgOne .numOne1:nth-child(8) {
+  bottom: 1.5rem;
+  left: 5.15rem;
+}
+.money .imgOne .numOne1:nth-child(9) {
+  bottom: 1.5rem;
+  left: 5.7rem;
+}
+.money .imgOne .numOne1:nth-child(10) {
+  bottom: 1.5rem;
+  left: 6.3rem;
+}
+/* 小额现金贷10位数的时候 end */
+.money .imgTwo {
   width: 100%;
   height: 5.1rem;
   background-image: url("http://f.51fanbei.com/h5/app/activity/08/billion_02.png");
   background-size: cover;
   position: relative;
 }
-#money .fireWorks {
+.money .fireWorks {
   width: 100%;
   height: 100%;
   position: absolute;
   left: 0;
   top: 0;
 }
-#money .imgTwo .fireWorks img {
+.money .imgTwo .fireWorks img {
   width: 100%;
   height: 100%;
 }
-/* 进度条 */
+/*start 进度条 */
 .progress {
   position: absolute;
-  width: 5.87rem;
+  width: 6.4rem;
   height: 0.31rem;
-  background-color: pink;
   left: 50%;
   top: -0.3rem;
   transform: translateX(-50%);
 }
 .progress .progressOne {
-  width: 0.42rem;
+  width: 0.3rem;
   height: 0.09rem;
   background-color: #b7000a;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
-.progress .point {
+.progress .pointOne {
   width: 0.22rem;
   height: 0.22rem;
-  background-color: yellow;
+  border-radius: 50%;
+  background-color: #b7000a;
+  position: absolute;
+  left: 4%;
+  top: 50%;
+  transform: translateY(-50%);
 }
-#money .tenThousand {
+.progress .progressTwo {
+  width: 1.3rem;
+  height: 0.09rem;
+  background-color: #b7000a;
+  position: absolute;
+  left: 7.5%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .pointTwo {
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 50%;
+  background-color: #b7000a;
+  position: absolute;
+  left: 27%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .progressThree {
+  width: 1.28rem;
+  height: 0.09rem;
+  background-color: #b7000a;
+  position: absolute;
+  left: 30.3%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .pointThree {
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 50%;
+  background-color: #b7000a;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .progressFour {
+  width: 1rem;
+  height: 0.09rem;
+  background-color: #b7000a;
+  position: absolute;
+  left: 53%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .pointFour {
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 50%;
+  background-color: #b7000a;
+  position: absolute;
+  left: 68%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .progressFive {
+  width: 1.3rem;
+  height: 0.09rem;
+  background-color: #b7000a;
+  position: absolute;
+  left: 71%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .pointFive {
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 50%;
+  background-color: #b7000a;
+  position: absolute;
+  left: 91%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.progress .progressSeven {
+  width: 0.38rem;
+  height: 0.09rem;
+  background-color: #b7000a;
+  position: absolute;
+  left: 94%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.imgTwo #yellow {
+  background-color: #ffdb00;
+}
+.yellow {
+  background-color: #ffdb00 !important;
+}
+/*end 进度条 */
+.money .tenThousand {
   font-size: 0.8rem;
   margin: 0.7rem 0;
 }
-#money .tenMillion {
+.money .tenMillion {
   font-size: 0.4rem;
   margin-bottom: 2rem;
 }
-#money .circle {
+.money .circle {
   margin-bottom: 1.5rem;
   position: absolute;
   top: -1rem;
@@ -129,27 +290,25 @@ body {
   transform: translateX(-50%);
   width: 7rem;
 }
-.change {
-  color: #ffdb00;
-}
-#money .circle span {
+.money .circle span {
   margin-left: 0.2rem;
 }
-#money .circle span .circleMoney {
-  font-size: 0.3rem;
-  color: #ff4f38;
-}
-#money .circle span .date {
-  font-size: 0.24rem;
-  color: #ff4f38;
-}
-#money .circle span:first-child {
+.money .circle span:first-child {
   margin-left: 0;
 }
-#money .circle span .date {
-  text-align: center;
-  line-height: 0.8rem;
-  margin-bottom: 0.2rem;
+.date {
+  font-size: 0.24rem !important;
+  text-align: center !important;
+  line-height: 0.8rem !important;
+  margin-bottom: 0.2rem !important;
+  color: #ff4f38 !important;
+}
+.circleMoney {
+  font-size: 0.3rem !important;
+  color: #ff4f38 !important;
+}
+.change {
+  color: #ffdb00 !important;
 }
 #time {
   text-align: center;
