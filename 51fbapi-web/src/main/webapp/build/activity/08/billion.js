@@ -128,33 +128,34 @@ var vm = new Vue({
                             //获取到中奖金额
                             _this.$nextTick(function () {
                                 var RMB = document.getElementById('RMB').innerHTML;
-                                // if (RMB == 600) {
-                                //     _this.active = 0;
-                                // } else if (RMB == 700) {
-                                //     _this.active = 1;
+                                if (RMB == 600) {
+                                    _this.active = 0;
+                                } else if (RMB == 700) {
+                                    _this.active = 1;
 
-                                // }else if (RMB == 800) {
-                                //     _this.active = 2;
+                                }else if (RMB == 800) {
+                                    _this.active = 2;
 
-                                // }else if (RMB == 900) {
-                                //     _this.active = 3;
+                                }else if (RMB == 900) {
+                                    _this.active = 3;
 
-                                // }else if (RMB == 1000) {
-                                //     _this.active = 4;
+                                }else if (RMB == 1000) {
+                                    _this.active = 4;
 
-                                // }
-                                 _this.active = 4;
+                                }
+                                 //_this.active = 0;//默认显示第一个
                                 if (RMB >= 600) {
+                                    $(".winningUser").hide();
+                                    $(".cash").css({
+                                        
+                                        'width': '100%',
+                                        'float': 'none'
+                                    });
+                                } else { //小于隐藏中奖用户列表
                                     $(".winningUser").show();
                                     $(".cash").css({
                                         'width': '3rem',
                                         'float': 'left'
-                                    });
-                                } else { //小于隐藏中奖用户列表
-                                    $(".winningUser").hide();
-                                    $(".cash").css({
-                                        'width': '100%',
-                                        'float': 'none'
                                     });
                                 }
                                 console.log(RMB);
@@ -172,7 +173,7 @@ var vm = new Vue({
                                         //当开奖金额大于600时显示中奖用户列表
                                         console.log(RMB);
                                         console.log('RMB');
-                                        if (RMB > 600) {
+                                        /* if (RMB > 600) {
                                             $(".winningUser").show();
                                             $(".cash").float == "left";
                                             $(".cash").width == "3rem";
@@ -180,7 +181,7 @@ var vm = new Vue({
                                             $(".winningUser").hide();
                                             $(".cash").float == "none";
                                             $(".cash").width == "0";
-                                        }
+                                        } */
 
 
                                     }
