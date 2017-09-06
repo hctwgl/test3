@@ -84,7 +84,7 @@ var vm = new Vue({
                     //第一次开奖后 左侧显示下一次倒计时 右侧显示最新的开奖结果
                     //从上线开始时间开始倒计时 一直到次日上午10点开始
                     var Day = 0;
-                    var Hour = 0;
+                    var Hour = 1;
                     var Minute = 0;
                     var Second = 0;
                     var Start = document.getElementById("start");
@@ -134,7 +134,9 @@ var vm = new Vue({
 
                     //倒计时为0的时候去请求接口
                     if(Hour==0 && Minute==0 && Second==0){
-                        $.ajax({
+                        RMB = document.getElementById('RMB').innerHTML;
+                        console.log(RMB);
+                         $.ajax({
                                 url: '/app/activity/randomUser',
                                 dataType: 'json',
                                 type: 'post',
@@ -146,7 +148,7 @@ var vm = new Vue({
                                         var detail= JSON.parse(str);
                                         console.log(detail);   
                                 }           
-                        })  
+                        })   
                     }
 
                 }
