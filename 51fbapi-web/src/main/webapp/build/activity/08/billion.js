@@ -131,6 +131,24 @@ var vm = new Vue({
                     var time1 = setInterval(GetRTime, 0);
                     //clearTimeout(time1);
                     setTimeout(time1)
+
+                    //倒计时为0的时候去请求接口
+                    if(Hour==0 && Minute==0 && Second==0){
+                        $.ajax({
+                                url: '/app/activity/randomUser',
+                                dataType: 'json',
+                                type: 'post',
+                                data: {
+                                        winAmount: RMB //将开奖金额传给后台
+                                }, 
+                                success: function (data) {
+                                    console.log(data)
+                                        var detail= JSON.parse(str);
+                                        console.log(detail);   
+                                }           
+                        })  
+                    }
+
                 }
 
 
@@ -166,20 +184,6 @@ var vm = new Vue({
                 //_this.active = 0;//默认显示第一个
 
             })
-            //倒计时为0的时候
-            if(t==0){
-                $.ajax({
-                        url: '/app/activity/randomUser',
-                        dataType: 'json',
-                        type: 'post',
-                        data: {
-                                winAmount: RMB
-                         }, //将开奖金额传给后台
-                        success: function (data) {
-                               console.log(data)       
-                        }           
-                })  
-            }
                                   
             //十亿中奖用户(每五分钟调一次)
             //判断小额现金贷是否达到十亿
