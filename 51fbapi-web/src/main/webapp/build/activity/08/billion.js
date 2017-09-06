@@ -1,5 +1,5 @@
-var RMB=0;
-var t =0;
+var RMB = 0;
+var t = 0;
 var vm = new Vue({
     el: '#billion',
     data: {
@@ -12,7 +12,8 @@ var vm = new Vue({
         list1000: [],
         list: {},
         data: null,
-        active: 0
+        active: 0,
+        famen: true
     },
     created: function () {
         let _this = this;
@@ -21,7 +22,7 @@ var vm = new Vue({
         // loading();
         (function () {
             setInterval(_this.initial, 5 * 60 * 1000) //a让initial中的请求五分钟执行一次
-        })(); 
+        })();
     },
     methods: {
         initial() {
@@ -49,9 +50,9 @@ var vm = new Vue({
                         //让10位数的背景和样式显示
                         $('.totalMoney1').show();
                         $('.num1').show();
-                        
-                    }else if(num==1500000000){//到达15亿的时候
-                        $("#scroll_div").show();//显示顶部轮播
+
+                    } else if (num == 1500000000) { //到达15亿的时候
+                        $("#scroll_div").show(); //显示顶部轮播
                     }
 
                     ScrollImgLeft();
@@ -84,7 +85,7 @@ var vm = new Vue({
                     //第一次开奖后 左侧显示下一次倒计时 右侧显示最新的开奖结果
                     //从上线开始时间开始倒计时 一直到次日上午10点开始
                     var Day = 0;
-                    var Hour = 1;
+                    var Hour = 0;
                     var Minute = 0;
                     var Second = 0;
                     var Start = document.getElementById("start");
@@ -95,8 +96,8 @@ var vm = new Vue({
                         var y = time.getFullYear();
                         var m = time.getMonth() + 1;
                         var d = time.getDate();
-                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        // var t = y + "-" + m + "-" + d + " " + "13:38:00";
+                        // var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        var t = y + "-" + m + "-" + d + " " + "18:28:00";
                         var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
                         tDate = +tDate + 24 * 60 * 60 * 1000;
                         tDate = new Date(tDate);
@@ -125,30 +126,38 @@ var vm = new Vue({
                         document.getElementById("hour").innerHTML = Hour + "时";
                         document.getElementById("minute").innerHTML = Minute + "分";
                         document.getElementById("second").innerHTML = Second + "秒";
-                               
-
-                    }
-                    var time1 = setInterval(GetRTime, 0);
-                    //clearTimeout(time1);
-                    setTimeout(time1)
-
-                    //倒计时为0的时候去请求接口
-                    if(Hour==0 && Minute==0 && Second==0){
-                        RMB = document.getElementById('RMB').innerHTML;
-                        console.log(RMB);
-                         $.ajax({
+                        if (Hour == 0 & Minute == 0 & Second == 0&_this.famen ) { //当倒计时为0时   这里已经做过判断 且再异步下实时判断才行 下面判断只判断一次所以没用
+                            _this.famen = false;
+                            clearTimeout(time1)
+                           setTimeout(function(){
+                                _this.famen = true;
+                           },1000)//设置定时器干嘛
+                            RMB = document.getElementById('RMB').innerHTML;
+                            console.log(RMB);
+                            $.ajax({
                                 url: '/app/activity/randomUser',
                                 dataType: 'json',
                                 type: 'post',
                                 data: {
-                                        winAmount: RMB //将开奖金额传给后台
-                                }, 
+                                    winAmount: RMB //将开奖金额传给后台
+                                },
                                 success: function (data) {
                                     console.log(data)
-                                        var detail= JSON.parse(str);
-                                        console.log(detail);   
-                                }           
-                        })   
+                                    var detail = JSON.parse(str);
+                                    console.log(detail);
+                                    
+                                }
+                            })
+                             _this.initial();//
+                        }
+
+
+                    }
+                    var time1 = setInterval(GetRTime, 0);
+                    //clearTimeout(time1);
+                    //倒计时为0的时候去请求接口
+                    if (_this.famen) {
+
                     }
 
                 }
@@ -159,34 +168,40 @@ var vm = new Vue({
             _this.$nextTick(function () {
                 RMB = document.getElementById('RMB').innerHTML;
                 //判断开奖金额大于600时显示右侧中奖用户列表
-                if (RMB > 600) {
-                            $(".winningUser").show();
-                            $(".cash").css({'width': '3rem','float': 'left' });
+                if (RMB = 600) {
+                    $(".winningUser").show();
+                    $(".cash").css({
+                        'width': '3rem',
+                        'float': 'left'
+                    });
                 } else {
-                            $(".winningUser").hide();
-                            $(".cash").css({'width': '100%','float': 'none'});
-                        }
-                                
+                    $(".winningUser").hide();
+                    $(".cash").css({
+                        'width': '100%',
+                        'float': 'none'
+                    });
+                }
+
                 //判断进度条的亮度
                 if (RMB == 600) {
-                            _this.active = 0;
+                    _this.active = 0;
                 } else if (RMB == 700) {
-                            _this.active = 1;
+                    _this.active = 1;
 
-                }else if (RMB == 800) {
-                            _this.active = 2;
+                } else if (RMB == 800) {
+                    _this.active = 2;
 
-                }else if (RMB == 900) {
-                            _this.active = 3;
+                } else if (RMB == 900) {
+                    _this.active = 3;
 
-                }else if (RMB == 1000) {
-                            _this.active = 4;
+                } else if (RMB == 1000) {
+                    _this.active = 4;
 
                 }
                 //_this.active = 0;//默认显示第一个
 
             })
-                                  
+
             //十亿中奖用户(每五分钟调一次)
             //判断小额现金贷是否达到十亿
             $.ajax({
@@ -195,10 +210,10 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-                     if (data !== "") {
+                    if (data !== "") {
                         //破十亿时让顶部轮播显示并显示实时中奖用户
                         $("#scroll_div").show();
-                    } 
+                    }
                 }
 
             })

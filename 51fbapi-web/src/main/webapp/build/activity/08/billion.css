@@ -508,6 +508,7 @@ body {
 }
 .winningDetail li {
   margin-bottom: 0.9rem;
+  height: 1rem;
 }
 .winningDetail .title {
   font-size: 0.3rem;
