@@ -71,6 +71,13 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		contextApp = context;
 		Map<String, Object> data = new HashMap<String, Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		// 搜索框背景图
+		List<AfResourceDo> serchBoxRescList = afResourceService.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
+		if(serchBoxRescList != null && !serchBoxRescList.isEmpty()) {
+			AfResourceDo serchBoxInfo = serchBoxRescList.get(0);
+			String searchBoxBgImage = serchBoxInfo.getValue();
+			data.put("searchBoxBgImage", searchBoxBgImage);
+		}
 		// 顶部导航信息
 		List<Object> topBannerList = new ArrayList<Object>();
 		//正式环境和预发布环境区分
@@ -101,7 +108,6 @@ public class GetHomeInfoV1Api implements ApiHandle {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
         removeSecondNper(array);
-		// FIXME
 		List<AfActivityDo> activityList = afActivityService.listAllHomeActivity();
 		List<Map<String,Object>> activityInfoList = new ArrayList<Map<String,Object>>();
 		for(AfActivityDo afActivityDo : activityList) {

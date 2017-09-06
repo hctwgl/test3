@@ -16,7 +16,7 @@ public enum ResourceType {
 	HOME_ONE_TO_MANY("HOME_ONE_TO_MANY", "首页1+n模块"),
 	HOME_ONE_TO_TWO("HOME_ONE_TO_TWO", "首页一对二模块"),
 	HOME_ONE_IMAGE("HOME_ONE_IMAGE", "首页平铺模块"),
-	
+	SEARCH_BOX_BACKGROUND("SEARCH_BOX_BACKGROUND","搜索框背景图"),
 	
 	HOME_NAVIGATION("HOME_NAVIGATION", "导航条"),
 	BRAND_SHOP("BRAND_SHOP", "品牌特卖,品牌"), 
