@@ -1,3 +1,5 @@
+var RMB=0;
+var t =0;
 var vm = new Vue({
     el: '#billion',
     data: {
@@ -18,8 +20,8 @@ var vm = new Vue({
         //setInterver(_this.initial(),1000);//五分钟执行一次
         // loading();
         (function () {
-            setInterval(_this.initial, 5 * 60 * 1000)
-        })(); //a让initial中的请求五分钟执行一次
+            setInterval(_this.initial, 5 * 60 * 1000) //a让initial中的请求五分钟执行一次
+        })(); 
     },
     methods: {
         initial() {
@@ -81,7 +83,6 @@ var vm = new Vue({
                     //第一次开奖前没有开奖名单 只是显示第一次开奖倒计时
                     //第一次开奖后 左侧显示下一次倒计时 右侧显示最新的开奖结果
                     //从上线开始时间开始倒计时 一直到次日上午10点开始
-
                     var Day = 0;
                     var Hour = 0;
                     var Minute = 0;
@@ -94,8 +95,8 @@ var vm = new Vue({
                         var y = time.getFullYear();
                         var m = time.getMonth() + 1;
                         var d = time.getDate();
-                        // var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        var t = y + "-" + m + "-" + d + " " + "12:50:00";
+                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        // var t = y + "-" + m + "-" + d + " " + "13:38:00";
                         var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
                         tDate = +tDate + 24 * 60 * 60 * 1000;
                         tDate = new Date(tDate);
@@ -107,7 +108,7 @@ var vm = new Vue({
                         var NowTime = new Date();
                         var EndTime = GetNextDate(NowTime);
 
-                        var t = EndTime.getTime() - NowTime.getTime();
+                        t = EndTime.getTime() - NowTime.getTime();
                         if (t >= 0) {
                             Day = Math.floor(t / 1000 / 60 / 60 / 24);
                             Hour = Math.floor(t / 1000 / 60 / 60 % 24);
@@ -124,91 +125,62 @@ var vm = new Vue({
                         document.getElementById("hour").innerHTML = Hour + "时";
                         document.getElementById("minute").innerHTML = Minute + "分";
                         document.getElementById("second").innerHTML = Second + "秒";
-                        // if (Day == 0 && Hour == 0 && Minute == 0 && Second == 0) {
+                               
 
-                        if (true) {
-                            //clearTimeout(time1);
-                            //setTimeout(time1);
-                            // Start.style = "opacity:1;"
-                            //获取到中奖金额
-                            _this.$nextTick(function () {
-                                var RMB = document.getElementById('RMB').innerHTML;
-                                //判断进度条的亮度
-                                if (RMB == 600) {
-                                    _this.active = 0;
-                                } else if (RMB == 700) {
-                                    _this.active = 1;
-
-                                }else if (RMB == 800) {
-                                    _this.active = 2;
-
-                                }else if (RMB == 900) {
-                                    _this.active = 3;
-
-                                }else if (RMB == 1000) {
-                                    _this.active = 4;
-
-                                }
-                                 //_this.active = 0;//默认显示第一个
-
-
-                                /* if (RMB >= 600) {
-                                    $(".winningUser").hide();
-                                    $(".cash").css({
-                                        'width': '100%',
-                                        'float': 'none'
-                                    });
-                                } else { //小于隐藏中奖用户列表
-                                    $(".winningUser").show();
-                                    $(".cash").css({
-                                        'width': '3rem',
-                                        'float': 'left'
-                                    });
-                                } */
-                                console.log(RMB);
-                                $.ajax({
-                                    url: '/app/activity/randomUser',
-                                    dataType: 'json',
-                                    type: 'post',
-                                    data: {
-                                        winAmount: RMB
-                                    }, //将开奖金额传给后台
-                                    success: function (data) {
-                                        console.log(data);
-                                        console.log('data111');
-
-                                        //当开奖金额大于600时显示中奖用户列表
-                                        console.log(RMB);
-                                        console.log('RMB');
-                                         if (RMB > 600) {
-                                            $(".winningUser").show();
-                                            $(".cash").css({
-                                                'width': '3rem',
-                                                'float': 'left'
-                                            });
-                                        } else { //小于隐藏中奖用户列表
-                                            $(".winningUser").hide();
-                                            $(".cash").css({
-                                                'width': '100%',
-                                                'float': 'none'
-                                            });
-                                        } 
-
-
-                                    }
-
-                                })
-                            })
-
-                        } 
                     }
                     var time1 = setInterval(GetRTime, 0);
-                    //setTimeout(time1)
+                    //clearTimeout(time1);
+                    setTimeout(time1)
                 }
 
 
             })
 
+            _this.$nextTick(function () {
+                RMB = document.getElementById('RMB').innerHTML;
+                //判断开奖金额大于600时显示右侧中奖用户列表
+                if (RMB > 600) {
+                            $(".winningUser").show();
+                            $(".cash").css({'width': '3rem','float': 'left' });
+                } else {
+                            $(".winningUser").hide();
+                            $(".cash").css({'width': '100%','float': 'none'});
+                        }
+                                
+                //判断进度条的亮度
+                if (RMB == 600) {
+                            _this.active = 0;
+                } else if (RMB == 700) {
+                            _this.active = 1;
+
+                }else if (RMB == 800) {
+                            _this.active = 2;
+
+                }else if (RMB == 900) {
+                            _this.active = 3;
+
+                }else if (RMB == 1000) {
+                            _this.active = 4;
+
+                }
+                //_this.active = 0;//默认显示第一个
+
+            })
+            //倒计时为0的时候
+            if(t==0){
+                $.ajax({
+                        url: '/app/activity/randomUser',
+                        dataType: 'json',
+                        type: 'post',
+                        data: {
+                                winAmount: RMB
+                         }, //将开奖金额传给后台
+                        success: function (data) {
+                               console.log(data)       
+                        }           
+                })  
+            }
+                                  
             //十亿中奖用户(每五分钟调一次)
             //判断小额现金贷是否达到十亿
             $.ajax({
