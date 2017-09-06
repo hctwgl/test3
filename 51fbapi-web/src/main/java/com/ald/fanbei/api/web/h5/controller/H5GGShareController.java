@@ -971,7 +971,7 @@ public class H5GGShareController extends H5Controller {
 					// 登录用户卡片选一张，然后赠状态设为已经赠送
 					AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
 					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(resourceUserItemsDo.getRid());
-					if (prevousDo != null && "FROZEN".equals(prevousDo.getStatus())) {
+					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
 						updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
 					}
 					
