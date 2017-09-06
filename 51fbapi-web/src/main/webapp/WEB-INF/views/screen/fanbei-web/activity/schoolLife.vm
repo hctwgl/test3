@@ -4,7 +4,7 @@
     #set($version="20170904")
     #set($src="http://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
-    <title>apple开学季</title>
+    <title>校园生活</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/schoolLife.css">
 </head>
 <body>
