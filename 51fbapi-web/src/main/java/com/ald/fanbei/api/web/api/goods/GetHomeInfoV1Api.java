@@ -326,8 +326,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				for(AfResourceDo secResDo : rescList) {
 					if(value4.equals(secResDo.getValue4())) {
 						Map<String, Object> data = new HashMap<String, Object>();
-						data.put("imageUrl", afResourceDo.getValue());
-						data.put("titleName", afResourceDo.getName());
+						data.put("imageUrl", secResDo.getValue());
+						data.put("titleName", secResDo.getName());
 						String descs = secResDo.getDescription();
 						if(!StringUtils.isEmpty(descs)) {
 							String[] levelTitles = descs.split("\\|");
@@ -337,17 +337,17 @@ public class GetHomeInfoV1Api implements ApiHandle {
 							}
 						}
 						
-						if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
-							data.put("type", afResourceDo.getSecType());
+						if(secResDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
+							data.put("type", secResDo.getSecType());
 							// 对首页充值的版本兼容修改
-							if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
+							if (contextApp.getAppVersion() <= 365 && secResDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
 								data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
 							}
 						}else{
-							data.put("type", afResourceDo.getValue1());
+							data.put("type", secResDo.getValue1());
 						}
-						data.put("content", afResourceDo.getValue2());
-						data.put("sort", afResourceDo.getSort());
+						data.put("content", secResDo.getValue2());
+						data.put("sort", secResDo.getSort());
 						bannerList.add(data);
 						
 					}
