@@ -59,7 +59,7 @@ public class SubmitShareActionApi implements ApiHandle {
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
 		String[] strings = sharePage.split("_");
 		if (strings != null && strings.length == 3) {
-			if ("ggpresents".equals(sharePage)) {
+			if ("ggpresents".equals(strings[0])) {
 				String strUserItemsId = strings[2];
 				Long userItemsId = Long.parseLong(strUserItemsId);
 				//进行冻结卡片
