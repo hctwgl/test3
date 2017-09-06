@@ -40,14 +40,16 @@ var vm = new Vue({
                     console.log(_this.num);
                     var num = _this.num;
                     //判断小额现金贷是否为10位
-                    if (num.length >= 7) {
+                    if (num.length >= 10) {
                         //隐藏9位数的背景和样式
                         $(".totalMoney").hide();
                         $('.num').hide();
                         //让10位数的背景和样式显示
                         $('.totalMoney1').show();
                         $('.num1').show();
-                        //  $("#scroll_div").show();
+                        
+                    }else if(num==1500000000){//到达15亿的时候
+                        $("#scroll_div").show();//显示顶部轮播
                     }
 
                     ScrollImgLeft();
@@ -86,7 +88,7 @@ var vm = new Vue({
                     var Second = 0;
                     var Start = document.getElementById("start");
 
-                    //		    var startTime=new Date('2017/09/10 09:26:21');
+                    //var startTime=new Date('2017/09/10 09:26:21');
                     function GetNextDate(time) {
                         //获取当前时间年月日
                         var y = time.getFullYear();
@@ -128,6 +130,7 @@ var vm = new Vue({
                             //获取到中奖金额
                             _this.$nextTick(function () {
                                 var RMB = document.getElementById('RMB').innerHTML;
+                                //判断进度条的亮度
                                 if (RMB == 600) {
                                     _this.active = 0;
                                 } else if (RMB == 700) {
@@ -221,10 +224,10 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-                    if (data != "") {
+                    /* if (data !== "") {
                         //破十亿时让顶部轮播显示并显示实时中奖用户
                         $("#scroll_div").show();
-                    }
+                    } */
                 }
 
             })
