@@ -13,7 +13,8 @@ var vm = new Vue({
         list: {},
         data: null,
         active: 0,
-        famen: true
+        famen: true,
+        timeoutdata:[]
     },
     created: function () {
         let _this = this;
@@ -96,8 +97,8 @@ var vm = new Vue({
                         var y = time.getFullYear();
                         var m = time.getMonth() + 1;
                         var d = time.getDate();
-                        // var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        var t = y + "-" + m + "-" + d + " " + "18:28:00";
+                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        // var t = y + "-" + m + "-" + d + " " + "23:05:00";
                         var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
                         tDate = +tDate + 24 * 60 * 60 * 1000;
                         tDate = new Date(tDate);
@@ -143,8 +144,9 @@ var vm = new Vue({
                                 },
                                 success: function (data) {
                                     console.log(data)
-                                    var detail = JSON.parse(str);
-                                    console.log(detail);
+                                    _this.timeoutdata=data;
+                                    // var detail = JSON.parse(str);
+                                    // console.log(detail);
                                     
                                 }
                             })
@@ -168,7 +170,7 @@ var vm = new Vue({
             _this.$nextTick(function () {
                 RMB = document.getElementById('RMB').innerHTML;
                 //判断开奖金额大于600时显示右侧中奖用户列表
-                if (RMB = 600) {
+                if (RMB > 600) {
                     $(".winningUser").show();
                     $(".cash").css({
                         'width': '3rem',

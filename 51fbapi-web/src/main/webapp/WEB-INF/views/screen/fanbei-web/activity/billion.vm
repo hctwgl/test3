@@ -100,11 +100,7 @@
                 <ul>
                     <h3>${winAmounts}元现金中奖用户</h3>
                     <li>
-                        <span class="left">18898789989</span><span class="right">17898898898</span>
-                        <span class="left">18898789989</span><span class="right">17898898898</span>
-                        <span class="left">18898789989</span><span class="right">17898898898</span>
-                        <span class="left">18898789989</span><span class="right">17898898898</span>
-                        <span class="left">18898789989</span><span class="right">17898898898</span>
+                        <span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in timeoutdata" :key='index'>{{it}}</span>
                     </li>
                     <button v-on:click="lists()">查看更多</button>
                 </ul> 
