@@ -17,8 +17,7 @@ public enum FanbeiThirdRespCode {
     SYSTEM_ERROR("103","system error","系统错误"),
 	
     //COLLECTION_CODE
-    COLLECTION_REQUEST("303","request is null","请求参数为空"),
-    //COLLECTION_RESPONSE("303","request is null","请求参数为空"),
+    COLLECTION_REQUEST("303","Date is not find","没有找到数据"),
     COLLECTION_REQUEST_SIGN("304","sign is fail","验签失败"),
     
 	// BORROW_CASH_CODE 201-299

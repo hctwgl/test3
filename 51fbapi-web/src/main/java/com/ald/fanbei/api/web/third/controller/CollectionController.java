@@ -141,7 +141,7 @@ public class CollectionController {
 		String sign = ObjectUtils.toString(request.getParameter("sign"));
 		
 		logger.info("updateBalancedDate data="+borrowNo+",timestamp="+timestamp+",sign1="+sign+"");
-		
+		System.out.println("updateBalancedDate data="+borrowNo+",timestamp="+timestamp+",sign1="+sign+"");
 		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
 		if(afBorrowCashDo==null) {
