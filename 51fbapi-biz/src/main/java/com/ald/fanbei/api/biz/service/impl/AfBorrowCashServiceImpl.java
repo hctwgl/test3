@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -184,5 +185,18 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public List<String> getBorrowedUserIds() {
 		return afBorrowCashDao.getBorrowedUserIds();
 	}
+	@Override
+	public BigDecimal getBorrowCashSumAmount() {
+		return afBorrowCashDao.getBorrowCashSumAmount();
+	}
+	
+	@Override
+	public List<String> getRandomUser() {
+		return afBorrowCashDao.getRandomUser();
+	}
 
+	@Override
+	public List<String> getNotRandomUser(List<String> userId) {
+		return afBorrowCashDao.getNotRandomUser(userId);
+	}
 }

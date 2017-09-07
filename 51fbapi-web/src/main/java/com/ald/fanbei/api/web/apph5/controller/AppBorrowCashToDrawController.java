@@ -46,7 +46,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/app/activity/")
+@RequestMapping("/fanbei-web/activity/")
 public class AppBorrowCashToDrawController extends BaseController {
 
 	@Resource
@@ -66,7 +66,6 @@ public class AppBorrowCashToDrawController extends BaseController {
 	
 	@RequestMapping(value = "/toActivitiesPage", produces = "text/html;charset=UTF-8")
 	public String toActivitiesPage(Model model) {
-		//bizCacheUtil.delCache("winAmount");
 		//从缓存中取数据
 		String Time = (String) bizCacheUtil.getObject("Start_Time");
 		 String winAmount =(String) bizCacheUtil.getObject("winAmount");
@@ -119,23 +118,16 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/borrowCashActivities", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String borrowCashActivities() {
-	//	bizCacheUtil.delCache("winAmount");
-		System.out.println("123");
 		BigDecimal sumAmount=null;
 		DecimalFormat df = new DecimalFormat("0");
 		try {
 			sumAmount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
-			if (sumAmount != null) {
-				char[] split = (df.format(sumAmount)+"").toCharArray();
-				String jsonString = JsonUtil.toJSONString(split);
-				H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
-				return JsonUtil.toJSONString(response);
-				
-			}
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis get is fail" + e);
 		}
-		sumAmount = afBorrowCashService.getBorrowCashSumAmount();
+		if (sumAmount == null) {
+			sumAmount = afBorrowCashService.getBorrowCashSumAmount();
+		}
 		try {
 			bizCacheUtil.saveObject("BorrowCash_Sum_Amount", sumAmount, 60 * 60 * 24 * 7);
 		} catch (Exception e) {
@@ -150,72 +142,74 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/randomUser",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String randomUser(HttpServletRequest request) {
+		String winAmount = request.getParameter("winAmount");
 		
-		List<String> userNames= (List<String>) bizCacheUtil.getObject("WIN_USER_NAME");
-		List<String> list2=(List<String>) bizCacheUtil.getObject("NOT-WIN_USER_NAME");
-		if(userNames != null && userNames.size()!= 0){
-			String jsonString = JsonUtil.toJSONString(userNames);
-			//传给前端一个开奖金额
-			Integer winAmount =(Integer) bizCacheUtil.getObject("winAmount");
-			bizCacheUtil.saveObject("winAmount",(winAmount+100)+"", 60*60*24*5);
-			// 每日中奖用户推送
-			for (String userName : userNames) {
-				try {
-					jpushService.pushBorrowCashActivitys(userName, winAmount+"", "Win");
-				} catch (Exception e) {
-					logger.info(userName + "pushBorrowCashActivitys is fail," + e);
-				}
+		List<String> users = afBorrowCashService.getRandomUser(); // 得到中奖用户id
+		List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
+		List<String> userNames = afUserService.getUserNameByUserId(users); // 得到中奖用户user_name
+		List<String> list2 = afUserService.getUserNameByUserId(list1); //得到未中奖用户user_name
+		String jsonString = JsonUtil.toJSONString(userNames);
+		// 每日中奖用户推送
+		for (String userName : userNames) {
+			try {
+				jpushService.pushBorrowCashActivitys(userName, winAmount, "Win");
+			} catch (Exception e) {
+				logger.info(userName + "pushBorrowCashActivitys is fail," + e);
 			}
-			// 每日除中奖用户外全部用户推送
-			for (String userName : list2) {
-				try {
-					jpushService.pushBorrowCashActivitys(userName, winAmount+"", "notWin");
-				} catch (Exception e) {
-					logger.info(userName + "pushBorrowCashActivitys is fail," + e);
-				}
+		}
+		// 每日除中奖用户外全部用户推送
+		for (String userName : list2) {
+			try {
+				jpushService.pushBorrowCashActivitys(userName, winAmount, "notWin");
+			} catch (Exception e) {
+				logger.info(userName + "pushBorrowCashActivitys is fail," + e);
 			}
-			// 发送短信
-			for (String userName : userNames) {
-				try {
-					smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得" + winAmount + "元现金红包，快去查收惊喜吧。回T退订");
-				} catch (Exception e) {
-					logger.info("sendBorrowCashActivitys " + userName + " is fails," + e);
-				}
+		}
+		// 发送短信
+		for (String userName : userNames) {
+			try {
+				smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得" + winAmount + "元现金红包，快去查收惊喜吧。回T退订");
+			} catch (Exception e) {
+				logger.info("sendBorrowCashActivitys " + userName + " is fails," + e);
 			}
-		
-		
-			// 中奖用户存入缓存
-			String userJson = (String)bizCacheUtil.getObject("winAmount_Win_User");
-			if(StringUtil.isBlank(userJson)){
-				try {
-					Map<String, Object> map=new HashMap();
-					map.put(winAmount+"", jsonString);
-					bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 7);
-				} catch (Exception e) {
-					logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
-				}
-				return jsonString;
-			}
+		}
+		// 给用户账号打钱*
+		int amount = Integer.parseInt(winAmount);
+		/*try {
+			afUserAccountService.updateBorrowCashActivity(amount, users);
+		} catch (FanbeiException e) {
+			logger.info("sendBorrowCashActivitys is fails," + e);
+		}*/
+		//传给前端一个开奖金额
+		String winamount =(String) bizCacheUtil.getObject("winAmount");
+		bizCacheUtil.saveObject("winAmount",Integer.parseInt(winamount)+100+"", 60*60*24*10);
+		// 中奖用户存入缓存
+		String userJson = (String)bizCacheUtil.getObject("winAmount_Win_User");
+		if(StringUtil.isBlank(userJson)){
 			try {
 				Map<String, Object> map=new HashMap();
-				map = JSONObject.parseObject(userJson);
-				map.put(winAmount+"", jsonString);
+				map.put(winAmount, jsonString);
 				bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 7);
 			} catch (Exception e) {
 				logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
 			}
 			return jsonString;
 		}
-		return null;
+		try {
+			Map<String, Object> map=new HashMap();
+			map = JSONObject.parseObject(userJson);
+			map.put(winAmount, jsonString);
+			bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 7);
+		} catch (Exception e) {
+			logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
+		}
+		return jsonString;
 
 	}
 
 	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getWinUser() {
-		//bizCacheUtil.delCache("winAmount");
-		//bizCacheUtil.delCache("BorrowCash_Sum_Amount");
-		//bizCacheUtil.delCache("winAmount_Win_User");
 		String users=null;
 		try{
 			users = (String) bizCacheUtil.getObject("winAmount_Win_User");

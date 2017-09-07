@@ -373,6 +373,16 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
+     * 借钱抽奖中奖消息通知
+     * @param mobile
+     * 
+     * @return 
+     * **/
+    public  boolean sendBorrowCashActivitys(String mobile,String content){
+      SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
+      return smsResult.isSucc();
+    }
+    /**
      * 对单个手机号发送普通短信
      *
      * @param mobile  手机号
