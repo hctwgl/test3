@@ -244,5 +244,6 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	AfBorrowBillDo getOverduedAndNotRepayBill(@Param("borrowId") Long borrowId, @Param("billId")Long billId);
-	
+
+	List<AfBorrowBillDo> getNoPayBorrowBillByUserId(@Param("userId") long userId);
 }
