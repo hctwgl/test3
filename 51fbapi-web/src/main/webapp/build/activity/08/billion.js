@@ -127,6 +127,8 @@ var vm = new Vue({
                         document.getElementById("hour").innerHTML = Hour + "时";
                         document.getElementById("minute").innerHTML = Minute + "分";
                         document.getElementById("second").innerHTML = Second + "秒";
+
+                         //倒计时为0的时候去请求接口
                         if (Hour == 0 & Minute == 0 & Second == 0&_this.famen ) { //当倒计时为0时   这里已经做过判断 且再异步下实时判断才行 下面判断只判断一次所以没用
                             _this.famen = false;
                             clearTimeout(time1)
@@ -157,10 +159,7 @@ var vm = new Vue({
                     }
                     var time1 = setInterval(GetRTime, 0);
                     //clearTimeout(time1);
-                    //倒计时为0的时候去请求接口
-                    if (_this.famen) {
-
-                    }
+                   
 
                 }
 
