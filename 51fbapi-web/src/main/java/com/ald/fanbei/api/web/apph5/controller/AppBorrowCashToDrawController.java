@@ -32,6 +32,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -137,6 +138,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis get is fail" + e);
 		}
+		System.out.println(sumAmount);
 		if (sumAmount == null) {
 			sumAmount = afBorrowCashService.getBorrowCashSumAmount();
 		}
@@ -145,7 +147,6 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
-		//char[] split = (df.format(sumAmount)+"").toCharArray();
 		map.put("amount", Integer.parseInt(df.format(sumAmount)));
 		String jsonString = JsonUtil.toJSONString(map);
 		H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
