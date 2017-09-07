@@ -111,6 +111,7 @@ public class AppH5CouponController extends BaseController {
         			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
         			String couponId = (String)arrayAll.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			if(afCouponDo == null) continue;
         			couponInfoMap.put("shopUrl", couponCategoryAll.getUrl());
         			couponInfoMap.put("couponId", afCouponDo.getRid());
         			couponInfoMap.put("name", afCouponDo.getName());
@@ -174,6 +175,7 @@ public class AppH5CouponController extends BaseController {
         			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
         			String couponId = (String)array.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			if(afCouponDo == null) continue;
         			couponInfoMap.put("shopUrl", afCouponCategoryDo.getUrl());
         			couponInfoMap.put("couponId", afCouponDo.getRid());
         			couponInfoMap.put("name", afCouponDo.getName());
