@@ -45,7 +45,7 @@ import java.util.Map;
 
 /**
  * @author huangqiujun 2017/9/4 下午1:46
- * @类描述: ToutianController
+ * @类描述: ToutiaoController
  * @注意:本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 
@@ -81,14 +81,12 @@ public class ToutiaoController extends BaseController {
 
 
             thirdLog.info(sb.toString());
-            //Map<String, Object> map = buildParamMap(request);
-            JSONObject requestParams = JSON.parseObject(requestData);
-            String mac = request.getParameter("mac").toString().trim();
-            String imei = request.getParameter("imei").toString().trim();
-            String os =  request.getParameter("os").toString().trim();
-            String callbackUrl = request.getParameter("callback_url").toString().trim();
+            String mac = ObjectUtils.toString(request.getParameter("mac"), null);
+            String imei = ObjectUtils.toString(request.getParameter("imei"), null);
+            //String os = ObjectUtils.toString(request.getParameter("os"), null);
+            String callbackUrl = ObjectUtils.toString(request.getParameter("callback_url"), null);
             thirdLog.info(callbackUrl);
-            if(StringUtil.isNotEmpty(imei)&&StringUtil.isNotEmpty(os)&&StringUtil.isNotEmpty(callbackUrl)&&StringUtil.isNotEmpty(mac)){
+            if(StringUtil.isNotEmpty(imei)||StringUtil.isNotEmpty(mac)){
                 if(afUserToutiaoService.getUserCount(imei,mac)==0){
                     Map<String, Object> map = buildParamMap(request);
                     AfUserToutiaoDo afUserToutiaoDo = (AfUserToutiaoDo)map.get("afUserToutiaoDo");
@@ -126,8 +124,6 @@ public class ToutiaoController extends BaseController {
 
     private Map<String, Object> buildParamMap( HttpServletRequest request) {
         Map<String, Object> map = new HashMap<String, Object>();
-        String q = request.getParameter("ctype");
-        String q1 = request.getParameter("os");
         String aid = ObjectUtils.toString(request.getParameter("aid"), null);
         String cid = ObjectUtils.toString(request.getParameter("cid"), null);
         String cSite = ObjectUtils.toString(request.getParameter("csite"), null);
