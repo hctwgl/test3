@@ -124,8 +124,7 @@ public class ThirdController extends AbstractThird{
     			|| StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP)) || StringUtils.isEmpty(params.get(ThirdCore.USER_ID)))) {
     		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
     	}
-    	if ("getDidiRiskInfo".equals(method) && (StringUtils.isEmpty(params.get(ThirdCore.ORDER_ID)) 
-    			|| StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP))
+    	if ("getDidiRiskInfo".equals(method) && (StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP))
     		    || StringUtils.isEmpty(params.get(ThirdCore.SIGN))
     		    || StringUtils.isEmpty(params.get(ThirdCore.USER_ID))
     			)) {
