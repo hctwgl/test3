@@ -187,6 +187,12 @@ public class YeepayService {
 
 		YopRequest request = new YopRequest("OPR:"+merchantNo,"",BASE_URL);
 
+		for (int i = 0; i < paramSign.length; i ++) {
+			String key = paramSign[i];
+			request.addParam(key, params.get(key));
+		}
+
+
 		YopResponse response = YiBaoClient.postRsa(uri,request);
 //		YopResponse response = YopClient3.postRsa(uri, request);
 		
@@ -200,7 +206,6 @@ public class YeepayService {
 		if (response.getStringResult() != null) {
 			result = parseResponse(response.getStringResult());
 		}
-		
 		return result;
 	}
 

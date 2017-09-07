@@ -152,15 +152,19 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
             resp.addResponseData("refId", map.get("refId"));
             resp.addResponseData("type", map.get("type"));
         }else if(cardId==-1){//微信支付
-//            map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
+            map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
 //            resp.setResponseData(map);
             //todo hzp
 
 
 
         }
-        else if(cardId ==-3){  //支付宝支付
+        else if(cardId ==-2){  //支付宝支付
                 //todo hzp
+
+
+        }
+        else if(cardId ==-3){
 
         }
         else if(cardId>0){//银行卡支付

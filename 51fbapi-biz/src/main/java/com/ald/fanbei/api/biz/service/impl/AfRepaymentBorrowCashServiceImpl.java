@@ -204,11 +204,43 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 		return map;
 	}
-	public Map<String, String> createRepaymentYiBao(BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount,
+	public Map<String, Object> createRepaymentYiBao(BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount,
 											   Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo){
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-		return YiBaoUtility.createOrder(actualAmount,repayNo);
+
+		final String payTradeNo = repayNo;
+		// 新增还款记录
+		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+
+		final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
+				userId);
+		Map<String, Object> map = new HashMap<String, Object>();
+		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+		if (cardId == -1) {// 微信支付
+//			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
+
+		}else if (cardId ==-2){
+			Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
+		}
+
+		else if (cardId > 0) {// 银行卡支付
+			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+			dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
+			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
+					bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
+			if (!respBo.isSuccess()) {
+				dealRepaymentFail(payTradeNo, "");
+				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
+			map.put("resp", respBo);
+		} else if (cardId == -2) {// 余额支付
+			dealRepaymentSucess(repayment.getPayTradeNo(), "");
+		}
+		map.put("refId", repayment.getRid());
+		map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
+
+		return map;
 	}
 
 

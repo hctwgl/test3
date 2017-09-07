@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service.yibaopay;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.yeepay.g3.sdk.yop.enums.FormatType;
+import com.yeepay.g3.sdk.yop.unmarshaller.JacksonJsonMarshaller;
+import com.yeepay.g3.sdk.yop.unmarshaller.YopMarshaller;
 import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
@@ -9,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author honghzengpei 2017/9/7 19:32
+ * @author honghzengpei 2017/9/7 20:46
  * @类描述：订单支付
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -50,6 +52,5 @@ public class YopMarshallerUtils {
 
     static {
         marshallers.put(FormatType.json, new JacksonJsonMarshaller());
-        marshallers.put(FormatType.xml, new JacksonXmlMarshaller());
     }
 }
