@@ -181,7 +181,8 @@
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
-				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
+				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
+				<entry key="/goods/getThirdShopsList" value-ref="getThirdShopsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
 				<entry key="/good/deleteHistory" value-ref="deleteHistoryApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />

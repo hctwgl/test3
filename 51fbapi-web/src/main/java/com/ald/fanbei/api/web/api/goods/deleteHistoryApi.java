@@ -12,7 +12,12 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-
+/**
+ * @date 2017-9-7 17:35:31
+ * @author qiaopan
+ * @description 删除用户搜索历史
+ *
+ */
 @Component("deleteHistoryApi")
 public class deleteHistoryApi implements ApiHandle {
 

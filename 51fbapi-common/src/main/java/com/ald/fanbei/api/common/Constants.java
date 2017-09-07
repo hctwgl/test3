@@ -229,6 +229,7 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_LIANMENG_SECRET = "fbapi.taobao.lianmeng.secret";
 	public static final String CONFKEY_SMS_DHST_PASSWORD = "fbapi.sms.dhst.password";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS = "taobao.tbk.item.get.fields";
+	public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET = "taobao.tbk.item.info.get";
 
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS = "taobao.tae.item.list.fields";
