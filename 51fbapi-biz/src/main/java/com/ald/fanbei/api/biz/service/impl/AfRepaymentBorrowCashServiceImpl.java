@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.yibaopay.YiBaoUtility;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -203,6 +204,14 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 		return map;
 	}
+	public Map<String, String> createRepaymentYiBao(BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, AfUserCouponDto coupon, BigDecimal rebateAmount,
+											   Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo){
+		Date now = new Date();
+		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+		return YiBaoUtility.createOrder(actualAmount,repayNo);
+	}
+
+
 
 	@Override
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {

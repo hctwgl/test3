@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -33,16 +34,6 @@ import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAuthContactsService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfContactsOldService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -810,6 +801,16 @@ public class TestController {
 		borrow.setFreeNper(freeNper);
 		return borrow;
 	}
-	
+
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+
+	/**
+	 *
+	 */
+	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
+	public void testAddYiBao(){
+		afRepaymentBorrowCashService.createRepaymentYiBao(BigDecimal.ZERO,BigDecimal.ONE,BigDecimal.TEN,null,null,null,null,null,null,null);
+	}
 	
 }
