@@ -94,7 +94,8 @@
 		<!-- 菠萝觅 -->
 		<property name="fbapi.boluome.appkey" defaultValue="6aSsbSMMhKBe8+bH5wmhBw==" description="菠萝觅 key" />
 		<property name="fbapi.boluome.secret" defaultValue="OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B" description="菠萝觅 certpath" />
-		<property name="fbapi.boluome.api.url" defaultValue="http://91ala.test.otosaas.com" description="菠萝觅 certpath" />
+		<property name="fbapi.boluome.api.url" defaultValue="http://91ala.test.otosaas.com" description="菠萝觅 前端交互" />
+		<property name="fbapi.boluome.server.api.url" defaultValue="https://dev-api.otosaas.com/91ala" description="菠萝觅服务端" />
 		<property name="fbapi.boluome.order.cancel.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/cancel" description="菠萝觅 订单取消订单" />
 		<property name="fbapi.boluome.order.search.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/info" description="菠萝觅 订单补偿查询" />
 		<property name="fbapi.boluome.coupon.url" defaultValue="https://dev-api.otosaas.com/bss/v1/apps/campaigns/coupons" description="菠萝觅 用户优惠券获取"/>

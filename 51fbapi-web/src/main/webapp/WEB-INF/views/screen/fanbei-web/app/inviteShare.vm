@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082501")
+    #set($version="2017082701")
     #set($commonUrl="http://f.51fanbei.com/h5/app/images/user")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/inviteShare.css?version=$version">
 </head>
 <body>
     <div id="inviteShare" class="inviteShare">
-        <img src="$commonUrl/inviteShare01.png">
+        <img src="$commonUrl/inviteShare001.png">
         <div class="inviteShareContWrap">
             <img src="$commonUrl/inviteShare02.png">
             <ul class="inviteShareCont">
@@ -22,7 +22,7 @@
                 <div class="checkbox clearfix">
                     <input type="checkbox" class="inputCheck" id="inputCheck" checked="checked">
                     <label for="inputCheck"></label>
-                    <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+                    <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a></p>
                 </div>
                 <p class="registered clearfix">
                     <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>

@@ -1,3 +1,40 @@
+
+
+var token=formatDateTime()+Math.random().toString(36).substr(2);
+// 防止风控被拒
+function formatDateTime() {
+    var date = new Date();
+    var y = date.getFullYear();
+    var m = date.getMonth() + 1;
+    m = m < 10 ? ('0' + m) : m;
+    var d = date.getDate();
+    d = d < 10 ? ('0' + d) : d;
+    var h = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    return y +  m +  d +h +minute+second;
+};
+
+// 同盾校验编号的sessionId
+var _fmOpt;
+(function() {
+    _fmOpt = {
+        partner: 'alading',
+        appName: 'alading_web',
+        token: token
+    };
+    var cimg = new Image(1,1);
+    cimg.onload = function() {
+        _fmOpt.imgLoaded = true;
+    };
+    cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
+    var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
+    fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+    // alert(json.msg);
+})();
+
+
 $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
@@ -11,40 +48,6 @@ $(function () {
     var loginSource = param['loginSource'];
     console.log(param)
     
-    var token=formatDateTime()+Math.random().toString(36).substr(2);
-    // 防止风控被拒
-    function formatDateTime() {
-        var date = new Date();
-        var y = date.getFullYear();
-        var m = date.getMonth() + 1;
-        m = m < 10 ? ('0' + m) : m;
-        var d = date.getDate();
-        d = d < 10 ? ('0' + d) : d;
-        var h = date.getHours();
-        var minute = date.getMinutes();
-        var second = date.getSeconds();
-        return y +  m +  d +h +minute+second;
-    };
-
-    // 同盾校验编号的sessionId
-    var _fmOpt;
-    (function() {
-        _fmOpt = {
-            partner: 'alading',
-            appName: 'alading_web',
-            token: token
-        };
-        var cimg = new Image(1,1);
-        cimg.onload = function() {
-            _fmOpt.imgLoaded = true;
-        };
-        cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
-        var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
-        fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
-        // alert(json.msg);
-    })();
-
     //用戶名叉叉點擊清楚所有文字
     $('.yhicon').click(function () {
         $("#yhinp").val('');

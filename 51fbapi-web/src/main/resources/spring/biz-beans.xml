@@ -58,7 +58,7 @@
     	<property name="minIdle" value="8" />
         <property name="maxIdle" value="200" />  
         <property name="maxTotal" value="300" />  
-        <property name="maxWaitMillis" value="1000" />  
+        <property name="maxWaitMillis" value="10000" />  
         <property name="testOnBorrow" value="true" />  
     </bean> 
 	<!-- redis 192.168.11.118 foobared -->

@@ -141,7 +141,7 @@ let vm=new Vue({
             'type': 'share', // 此页面的类型
             'shareAppTitle': '特卖会',  // 分享的title
             'shareAppContent': '51返呗返场加购，精选好货抄低价！爆款精品仅在“特卖会”，拼的就是手速，赶紧来围观~',  // 分享的内容
-            'shareAppImage': 'https://fs.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
+            'shareAppImage': 'http://f.51fanbei.com/h5/common/icon/midyearCorner.png',  // 分享右边小图
             'shareAppUrl': ipUrl+'/fanbei-web/activity/superGoods?superGoodsShare=superGoodsShare&activityId='+activityId,  // 分享后的链接
             'isSubmit': 'N', // 是否需要向后台提交数据，Y需要，N不需要
             'sharePage': 'superGoods' // 分享的页面

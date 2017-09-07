@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017082301")
+    #set($version="2017090412")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <title>逛逛专享区</title>
+    <link rel="stylesheet" type="text/css" href="/dist/css/swiper-3.4.2.min.css">
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
 </head>
 <body>
@@ -22,21 +23,21 @@
         <p class="joinAmount" @click="joinAmountClick()"><span>{{content.fakeJoin}}</span>人参与</p>
     </div>
     <div class="money">
-        <p>消费有返利</p>
-        <p>还可以领取<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
+        <p>领取<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
     </div>
     <!--首页轮播图-->
     <div class="banner">
-        <ul class="bannerList">
-            <div class="positionImg"><img src="$src/gg22.png"></div>
-            <li v-for="item in content.bannerList"><img :src="item.value" @click="bannerClick(item)"></li>
-        </ul>
-        <ul class="num"></ul>
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item of content.bannerList">
+                <img :src="item.value" @click="bannerClick(item)">
+            </div>
+        </div>
     </div>
     <!--首页轮播图--end-->
+    <div class="highPrize">高额红包及返利，消费更划算</div>
     <!--优惠券--start-->
     <div class="couponList clearFix">
-        <div class="coupon"  v-for="item in content.boluomeCouponList" @click="couponClick(item)">
+        <div class="coupon" v-for="(item,index) in content.boluomeCouponList" @click="couponClick(index)">
             <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
             <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">饿了么</p>
             <p class="name" v-for="a in item.channels" v-if="a==='dianying_kou'">抠电影</p>
@@ -59,12 +60,17 @@
             <p class="num" style="display: none">x{{item.num}}</p>
         </div>
     </div>
-    <div class="finalPrize finalPrize01" @click="finalPrize()" v-show="!finalPrizeMask">
+    <!--终极大奖-->
+    <div class="finalPrize finalPrize01" @click="finalPrize()" v-if="content.superPrizeStatus==='YY'">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
-    <div class="finalPrize finalPrize02" v-show="finalPrizeMask">
+    <div class="finalPrize finalPrize02" @click="finalPrize()" v-if="content.superPrizeStatus==='N'">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
+    <div class="finalPrize finalPrize03" @click="finalPrize()" v-if="content.superPrizeStatus==='YN'">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
+    </div>
+    <!--领取终极大奖提示弹窗-->
     <div class="alertFinalPrize">
         <img src="$src/gg19.jpg">
         <p class="prizeWord01">恭喜红包领取成功！</p>
@@ -75,8 +81,8 @@
     <div class="presentCard ask">我要赠送卡片</div>
     <div class="demandCard ask">我要索要卡片</div>
     <div class="progress">
-       <div class="left"></div>
-        <p class="p01">完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利</p>
+        <div class="left"></div>
+        <p class="p01">每个场景完成1笔订单，且消费满足限制条件时，均可得到1张该场景的专属卡片，更有高额返利<span>(消费可选择直接支付或分期)</span></p>
         <p class="p02">向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你</p>
         <p>集齐全部专属卡片，即可领取终极大奖<span v-for="item in content.normalCouponList">{{item.amount}}</span>元现金红包</p>
     </div>
@@ -103,14 +109,12 @@
         <p class="next" onclick="right()"></p>
         <p class="sure surePresent">确定赠送</p>
         <p class="sure sureDemand">确定索要</p>
-        #*<p class="close" @click="close()">X</p>*#
     </div>
 </div>
-#*<script type="text/javascript" src="/dist/activity/08/ggIndexAnimate.js?version=$version"></script>*#
 <script type="text/javascript" src="/dist/js/base64.js"></script>
-<script type="text/javascript" src="/dist/activity/08/ggIndexPresent.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/08/ggIndexDemand.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/ggIndexPresent.js?version=$version"></script>
+<script type="text/javascript" src="/dist/js/swiper-3.4.2.jquery.min.js"></script>
 <script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
-
 </body>
 </html>

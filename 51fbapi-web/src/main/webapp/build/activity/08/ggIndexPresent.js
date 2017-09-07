@@ -3,7 +3,6 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 //赠送卡片弹窗动画
-var touch = true;           //touch=true为开启触摸滑动
 var slideNub;               //轮播图片数量
 // var domainName = domainName();//域名
 var protocol = window.location.protocol;
@@ -17,6 +16,8 @@ var itemsId;
 var userItemsList;
 var numClick01;
 var numClick02;
+var numClick03;//左右滑动时img3卡片数量
+var hasTouchInit=false;//是否初始化过滑动事件监听
 $(function(){
     $('.presentCard').click(function(){
             $.ajax({
@@ -24,7 +25,7 @@ $(function(){
                 url: "/H5GG/sendItems",
                 data:{'activityId':activityId},
                 success: function (returnData) {
-                   returnData = eval('(' + returnData + ')');
+                    returnData = eval('(' + returnData + ')');
                     console.log(returnData)
                     if(returnData.data.loginUrl){
                         location.href = returnData.data.loginUrl;
@@ -44,20 +45,14 @@ $(function(){
 
                             for(var j=0;j<presentCardList.length;j++){//判断终极大奖蒙版
                                 if(presentCardList[j].num>=2){
-                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="cardBlur" src="'+presentCardList[j].iconUrl+'"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
                                 }else{
-                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
+                                    str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
                                 }
-
-                                //console.log(num)
                             }//判断终极大奖蒙版
                             $('.imgList').append(str);
                             slideNub = $(".imgList .img").size();//获取轮播图片数量
                             getData(slideNub);
-                            numClick02=$('.img.img3').attr('numClick');
-                            if(numClick02>=2){
-                                $('.img.img3').find('.garyCard').css('display','none');
-                            }
                             $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
                             $('.img').click(function(){
                                 var index=$(this).index();
@@ -67,7 +62,6 @@ $(function(){
                                     $('.surePresent').css('background','#B3B3B3');
                                 }else{
                                     $('.surePresent').css('background','#fb9659');
-                                    $(this).find('.garyCard').css('display','none');
                                 }
                             })
                         }else{
@@ -98,25 +92,13 @@ $(function(){
                 }
             }
             cardRid=arr[0];
-            if(cardRid&&cardRid!=''){
-                $.ajax({
-                    type: 'get',
-                    url: "/H5GG/doSendItems",
-                    data:{'userItemsId':cardRid},
-                    success: function (returnData) {
-                        returnData = eval('(' + returnData + ')');
-                        if(returnData.success){
-                            var dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友赠送了一张'+name+'卡给你，助你赢得51元现金大奖，速来领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"'+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents"}';
-                            var base64 = BASE64.encoder(dat);
-                            //console.log(base64)
-                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
-                        }
-                    },
-                    error:function(){
-                        requestMsg('请求失败');
-                    }
-                })
-            }
+
+            // let shareCodeUrlAppUrl=domainName+'/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid;
+            // let shareCodeUrlAppUrlBase64=BASE64.encoder(shareCodeUrlAppUrl); // shareCodeUrl中的shareAppUrl加密
+
+            let dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友赠送了一张'+name+'卡给你，助你赢得51元大奖，速来领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/gg31.png","shareAppUrl":"'+ domainName + '/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'&sharePage=ggpresents_userItemsId_'+cardRid+'","shareCodeUrl":"'+domainName+'/H5GGShare/submitShareCode?userItemsId='+cardRid+'&shareAppUrl='+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z_userName='+userName+'_activityId='+activityId+'_userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents_userItemsId_'+cardRid+'"}';
+            let base64 = BASE64.encoder(dat);
+            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
         }
 
     })
@@ -161,7 +143,7 @@ function getData(slideNub){
             }
         }
     }
-    if(touch){
+    if(!hasTouchInit){
         k_touch();
     }
     imgClickFy();
@@ -180,10 +162,17 @@ function right(){
         }
     }
     imgClickFy();
+    numClick03=$('.img.img3').attr('numClick');
+    $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
+    //alert(numClick03)//可知img3卡片数量
+    if(numClick03<2){
+        $('.surePresent').css('background','#B3B3B3');
+    }else{
+        $('.surePresent').css('background','#fb9659');
+    }
 }
 //左滑动
 function left(){
-
     var fy = new Array();
     for(var i=0;i<slideNub;i++){
         fy[i]=$(".imgList .img[data-slide-imgId="+i+"]").attr("class");
@@ -196,6 +185,14 @@ function left(){
         }
     }
     imgClickFy();
+    numClick03=$('.img.img3').attr('numClick');
+    $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
+    //alert(numClick03)//可知img3卡片数量
+    if(numClick03<2){
+        $('.surePresent').css('background','#B3B3B3');
+    }else{
+        $('.surePresent').css('background','#fb9659');
+    }
 }
 //轮播图片左右图片点击翻页
 function imgClickFy(){
@@ -217,16 +214,14 @@ function k_touch() {
         var touch = event.targetTouches[0];
         _end = (_start - touch.pageX);
     }
-    function touchEnd(event) {
-        if (_end < -100) {
-            //left();
+    function touchEnd() {
+        if (_end < -50) {
+            left();
             _end=0;
-        }else if(_end > 100){
-            //right();
+        }else if(_end > 50){
+            right();
             _end=0;
         }
     }
+    hasTouchInit=true;
 }
-
-
-

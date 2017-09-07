@@ -240,9 +240,9 @@ public class StringUtil extends StringUtils {
 			return null;
 		}
 		if(flagStr.startsWith("i_")){
-			return ClientTypeEnum.ANDROID;
-		}else if(flagStr.startsWith("a_")){
 			return ClientTypeEnum.IOS;
+		}else if(flagStr.startsWith("a_")){
+			return ClientTypeEnum.ANDROID;
 		}
 		return null;
 	}

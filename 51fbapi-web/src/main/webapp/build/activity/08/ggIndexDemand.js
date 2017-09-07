@@ -1,5 +1,4 @@
 //索要卡片弹窗动画
-var touch = true;           //touch=true为开启触摸滑动
 var slideNub;               //轮播图片数量
 var protocol = window.location.protocol;//域名
 var host = window.location.host;
@@ -7,6 +6,7 @@ var domainName = protocol+'//'+host;
 var itemsId;//索要的卡片主键
 var activityId=getUrl("activityId");//获取活动Id
 var userName = "";//获取用户名
+var hasTouchInit=false;//是否初始化过滑动事件监听
 if(getInfo().userName){
   userName=getInfo().userName;
 };
@@ -54,7 +54,7 @@ $(function() {
         itemsId = $('.img.img3').attr('rid');
         name=$('.img.img3').attr('name');
         if (itemsId && itemsId != '') {
-            var dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友向你索要一张'+name+'卡，赠张专属卡送份心意，快赠送给Ta吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/ggShare.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
+            var dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友向你索要一张'+name+'卡，赠张专属卡送份心意，快赠送给Ta吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/gg31.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggdemand?loginSource=S&activityId='+activityId+'&userName='+userName+'&itemsId=' + itemsId + '","isSubmit":"Y","sharePage":"ggdemand"}';
             var base64 = BASE64.encoder(dat);
             //console.log(base64)
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
@@ -102,7 +102,7 @@ function getData(slideNub){
             }
         }
     }
-    if(touch){
+    if(!hasTouchInit){
         k_touch();
     }
     imgClickFy();
@@ -158,12 +158,13 @@ function k_touch() {
         _end = (_start - touch.pageX);
     }
     function touchEnd(event) {
-        if (_end < -100) {
-           // left();
+        if (_end < -50) {
+            left();
             _end=0;
-        }else if(_end > 100){
-            //right();
+        }else if(_end > 50){
+            right();
             _end=0;
         }
     }
+    hasTouchInit=true;
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($src="https://fs.51fanbei.com/h5/app/activity/04")
+	#set($src="http://f.51fanbei.com/h5/app/activity/04")
 	<title>观影攻略</title>
 </head>
 <body>

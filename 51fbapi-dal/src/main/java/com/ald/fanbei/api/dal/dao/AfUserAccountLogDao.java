@@ -6,6 +6,7 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfLimitDetailDto;
 import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @类现描述：用户账户日志
@@ -31,4 +32,6 @@ public interface AfUserAccountLogDao {
 	List<AfLimitDetailDto> getLimitDetailList(AfLimitDetailQuery query);
 	
 	BigDecimal getUserAmountByType(AfUserAccountLogDo userAccountLogDo);
+
+	AfUserAccountLogDo getByRefAndType(@Param("rid") Long rid,@Param("type")  String type);
 }

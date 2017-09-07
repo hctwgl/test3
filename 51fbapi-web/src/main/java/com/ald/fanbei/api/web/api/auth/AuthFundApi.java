@@ -6,10 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.SupplyCertifyStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -26,6 +29,8 @@ public class AuthFundApi implements ApiHandle {
 	@Resource
 	RiskUtil riskUtil;
 	@Resource
+	AfUserAuthService afUserAuthService;
+	@Resource
 	AfUserAccountService afUserAccountService;
 	
 	@Override
@@ -35,6 +40,11 @@ public class AuthFundApi implements ApiHandle {
 //		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
 		
 		Long userId = context.getUserId();
+		
+		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		if (afUserAuthDo != null && afUserAuthDo.getFundStatus().equals(SupplyCertifyStatus.WAIT.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+		}
 		
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 		
