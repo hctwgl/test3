@@ -141,7 +141,7 @@ public class CollectionController {
 		String sign = ObjectUtils.toString(request.getParameter("sign"));
 		
 		logger.info("updateBalancedDate data="+borrowNo+",timestamp="+timestamp+",sign1="+sign+"");
-		System.out.println("updateBalancedDate data="+borrowNo+",timestamp="+timestamp+",sign1="+sign+"");
+
 		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
 		if(afBorrowCashDo==null) {
@@ -168,8 +168,8 @@ public class CollectionController {
 				} else {
 					//还款金额小于借款金额，不能平账
 					logger.info("repayAmount<(amount+rate_amount+sum_rate) Balanced is fail");
-					updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
-					updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
+					updteBo.setCode(FanbeiThirdRespCode.COLLECTION_NOT_Balanced.getCode());
+					updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_NOT_Balanced.getMsg());
 					return updteBo;
 				}
 		  } else {

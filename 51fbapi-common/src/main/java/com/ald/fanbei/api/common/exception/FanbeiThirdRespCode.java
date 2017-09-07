@@ -18,6 +18,7 @@ public enum FanbeiThirdRespCode {
 	
     //COLLECTION_CODE
     COLLECTION_REQUEST("303","Date is not find","没有找到数据"),
+    COLLECTION_NOT_Balanced("302","Balanced is fail","平账失败"),
     COLLECTION_REQUEST_SIGN("304","sign is fail","验签失败"),
     
 	// BORROW_CASH_CODE 201-299
