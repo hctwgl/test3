@@ -79,7 +79,6 @@ public class ToutiaoController extends BaseController {
             }
             sb.append("---kdnotify end");
 
-
             thirdLog.info(sb.toString());
             String mac = ObjectUtils.toString(request.getParameter("mac"), null);
             String imei = ObjectUtils.toString(request.getParameter("imei"), null);
@@ -96,7 +95,7 @@ public class ToutiaoController extends BaseController {
                         int active = afUserToutiaoService.getUserActive(imei,mac);
                         if(active!=0){
                            String result= HttpUtil.doPost(callbackUrl,"");
-                           logger.error(result);
+                           logger.error("toutiaoresult:"+result);
                         }else{
                             logger.error(imei+"__"+mac);
                         }
@@ -124,7 +123,7 @@ public class ToutiaoController extends BaseController {
 
     private Map<String, Object> buildParamMap( HttpServletRequest request) {
         Map<String, Object> map = new HashMap<String, Object>();
-        String aid = ObjectUtils.toString(request.getParameter("aid"), null);
+        String aid = ObjectUtils.toString(request.getParameter("adid"), null);
         String cid = ObjectUtils.toString(request.getParameter("cid"), null);
         String cSite = ObjectUtils.toString(request.getParameter("csite"), null);
         Integer cType = NumberUtil.objToIntDefault(request.getParameter("ctype"), null);
