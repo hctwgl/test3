@@ -118,6 +118,18 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/borrowCashActivities", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String borrowCashActivities() {
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
+		 SimpleDateFormat simpleDateFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	     Date date = null;
+		try {
+			date = simpleDateFormat .parse(resource.getValue2());
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+	     long timeStemp = date.getTime();
+	     Map<String, Object> map=new HashMap();
+	     map.put("timeStemp", timeStemp);
+	    
 		BigDecimal sumAmount=null;
 		DecimalFormat df = new DecimalFormat("0");
 		try {
@@ -134,7 +146,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
 		char[] split = (df.format(sumAmount)+"").toCharArray();
-		String jsonString = JsonUtil.toJSONString(split);
+		map.put("amount", JsonUtil.toJSONString(split));
+		String jsonString = JsonUtil.toJSONString(map);
 		H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
 		return JsonUtil.toJSONString(response);
 	}
@@ -145,10 +158,12 @@ public class AppBorrowCashToDrawController extends BaseController {
 		String winAmount = request.getParameter("winAmount");
 		
 		List<String> users = afBorrowCashService.getRandomUser(); // 得到中奖用户id
-		List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
 		List<String> userNames = afUserService.getUserNameByUserId(users); // 得到中奖用户user_name
+		List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
 		List<String> list2 = afUserService.getUserNameByUserId(list1); //得到未中奖用户user_name
 		String jsonString = JsonUtil.toJSONString(userNames);
+		
+	
 		// 每日中奖用户推送
 		for (String userName : userNames) {
 			try {
@@ -175,11 +190,11 @@ public class AppBorrowCashToDrawController extends BaseController {
 		}
 		// 给用户账号打钱*
 		int amount = Integer.parseInt(winAmount);
-		/*try {
+		try {
 			afUserAccountService.updateBorrowCashActivity(amount, users);
 		} catch (FanbeiException e) {
 			logger.info("sendBorrowCashActivitys is fails," + e);
-		}*/
+		}
 		//传给前端一个开奖金额
 		String winamount =(String) bizCacheUtil.getObject("winAmount");
 		bizCacheUtil.saveObject("winAmount",Integer.parseInt(winamount)+100+"", 60*60*24*10);
