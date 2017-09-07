@@ -55,6 +55,16 @@ var vm = new Vue({
                     } else if (num == 1500000000) { //到达15亿的时候
                         $("#scroll_div").show(); //显示顶部轮播
                     }
+                    
+                    //烟花特效
+                    /* $('.fireWorks').fireworks({
+                         sound: true, // 声音效果
+                          opacity: 0.8, 
+                          width: '50%', 
+                          height: '50%',
+                          
+                    }) */
+                          
 
                     ScrollImgLeft();
                     //文字轮播
@@ -234,25 +244,23 @@ var vm = new Vue({
                     if (data.data.loginUrl) {
                         location.href = data.data.loginUrl;
                     } else {
-                        var appVersion = getInfo().appVersion.replace(/\./g, "");
+                        // var appVersion = getInfo().appVersion.replace(/\./g, "");
                         var status = data.data.status;
                         var idNumber = data.data.idNumber;
                         var realName = data.data.realName;
+                        console.log(status);
+                        alert(status);
 
-                        if (appVersion <= "374") {
-                            window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY'; // 老版本全部跳借钱
-                        } else {
-                            if (status == 'A1') {
-                                window.location.href = '/fanbei-web/opennative?name=DO_SCAN_ID'; // 去扫描身份证、人脸识别
-                            } else if (status == 'A2') {
-                                window.location.href = '/fanbei-web/opennative?name=DO_BIND_CARD&params={"idNumber":"' + idNumber + '","realName":"' + realName + '"}'; // 去绑定银行卡
-                            } else if (status == 'A3' || status == 'A4') {
-                                window.location.href = '/fanbei-web/opennative?name=DO_PROMOTE_BASIC'; // 去提升信用基础认证
-                            } else if (status == 'B' || status == 'D') {
-                                window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY'; // 去借钱、进入借贷超市页面
-                            } else if (status == 'C') {
-                                window.location.href = '/fanbei-web/opennative?name=DO_PROMOTE_EXTRA'; // 去提升信用补充认证
-                            }
+                        if (status == 'A1') {
+                            window.location.href = '/fanbei-web/opennative?name=DO_SCAN_ID'; // 去扫描身份证、人脸识别
+                        } else if (status == 'A2') {
+                            window.location.href = '/fanbei-web/opennative?name=DO_BIND_CARD&params={"idNumber":"' + idNumber + '","realName":"' + realName + '"}'; // 去绑定银行卡
+                        } else if (status == 'A3' || status == 'A4') {
+                            window.location.href = '/fanbei-web/opennative?name=DO_PROMOTE_BASIC'; // 去提升信用基础认证
+                        } else if (status == 'B' || status == 'D') {
+                            window.location.href = '/fanbei-web/opennative?name=BORROW_MONEY'; // 去借钱、进入借贷超市页面
+                        } else if (status == 'C') {
+                            window.location.href = '/fanbei-web/opennative?name=DO_PROMOTE_EXTRA'; // 去提升信用补充认证
                         }
                     }
                 },

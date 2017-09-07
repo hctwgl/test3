@@ -163,5 +163,6 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="/dist/activity/08/jquery.fireworks.js"></script>
 <script type="text/javascript" src="/dist/activity/08/billion.js?version=$version"></script>
 </html>
