@@ -30,7 +30,7 @@ var vm = new Vue({
             let _this = this;
             //实时显示小额现金贷总交易额。
             $.ajax({
-                url: '/app/activity/borrowCashActivities',
+                url: '/fanbei-web/activity/borrowCashActivities',
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
@@ -108,7 +108,7 @@ var vm = new Vue({
                         var m = time.getMonth() + 1;
                         var d = time.getDate();
                         var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        // var t = y + "-" + m + "-" + d + " " + "23:05:00";
+                        // var t = y + "-" + m + "-" + d + " " + "16:30:00";
                         var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
                         tDate = +tDate + 24 * 60 * 60 * 1000;
                         tDate = new Date(tDate);
@@ -148,7 +148,7 @@ var vm = new Vue({
                             RMB = document.getElementById('RMB').innerHTML;
                             console.log(RMB);
                             $.ajax({
-                                url: '/app/activity/randomUser',
+                                url: '/fanbei-web/activity/randomUser',
                                 dataType: 'json',
                                 type: 'post',
                                 data: {
@@ -216,7 +216,7 @@ var vm = new Vue({
             //十亿中奖用户(每五分钟调一次)
             //判断小额现金贷是否达到十亿
             $.ajax({
-                url: '/app/activity/getBillionWinUser',
+                url: '/fanbei-web/activity/getBillionWinUser',
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
@@ -249,7 +249,7 @@ var vm = new Vue({
                         var idNumber = data.data.idNumber;
                         var realName = data.data.realName;
                         console.log(status);
-                        alert(status);
+                        // alert(status);
 
                         if (status == 'A1') {
                             window.location.href = '/fanbei-web/opennative?name=DO_SCAN_ID'; // 去扫描身份证、人脸识别
@@ -276,7 +276,7 @@ var vm = new Vue({
             $(".alertRule").show();
 
             $.ajax({
-                url: '/app/activity/getWinUser',
+                url: '/fanbei-web/activity/getWinUser',
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
