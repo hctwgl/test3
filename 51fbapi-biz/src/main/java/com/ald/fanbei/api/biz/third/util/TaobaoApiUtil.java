@@ -95,7 +95,7 @@ public class TaobaoApiUtil extends AbstractThird {
 		if (pageNo != null) {
 			req.setPageNo(pageNo);
 		}
-		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS));
+		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS));
 		req.setPageSize(PAGE_SIZE);
 		req.setIsTmall(isTmall);
 		logger.info("executeTaobaokeSearch complete");

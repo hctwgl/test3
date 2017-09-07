@@ -9,6 +9,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * @类描述：
  * @author hexin 2017年2月18日上午11:21:35
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @modifier : maqiaopan 2017-9-7 18:01:05 增加销量字段
  */
 public class AfSearchGoodsVo extends AbstractSerial {
 
@@ -22,6 +23,14 @@ public class AfSearchGoodsVo extends AbstractSerial {
 	private String goodsIcon;//商品图片
 	private String thumbnailIcon;//商品缩略图
 	private String goodsUrl;//商品链接
+	private Long volume;//销量
+	
+	public Long getVolume() {
+		return volume;
+	}
+	public void setVolume(Long volume) {
+		this.volume = volume;
+	}
 	public String getNumId() {
 		return numId;
 	}

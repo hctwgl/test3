@@ -80,6 +80,7 @@ public enum AfResourceType {
 	
 	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商"),
 	VirtualGoodsKeywords("VIRTUAL_GOODS_KEYWORDS", "虚拟商品关键字"),
+	VirtualShopsKeywords("VIRTUAL_SHOPS_KEYWORDS", "虚拟店铺关键字"),
 
 	SMS_TEMPLATE("SMS_TEMPLATE","短信模板"),
 	SMS_LIMIT("SMS_LIMIT","短信限制"),
