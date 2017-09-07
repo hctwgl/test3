@@ -94,7 +94,7 @@ public class BoluomeCore extends AbstractThird{
 
         for (String key : sArray.keySet()) {
             String value = sArray.get(key);
-            if (StringUtils.isEmpty(value) || key.equalsIgnoreCase(SIGN) || key.equalsIgnoreCase(APP_KEY)) {
+            if (StringUtils.isEmpty(value) || key.equalsIgnoreCase(SIGN)) {
                 continue;
             }
             result.put(key, value);

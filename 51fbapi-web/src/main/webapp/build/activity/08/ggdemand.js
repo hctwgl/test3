@@ -90,7 +90,7 @@ $(function(){
                             window.location.href = "gglogin?word=S"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName + "&activityId=" + activityId; 
                             
                         }else{
-                            var userName = outputData.data.userName;
+                            userName = outputData.data.userName;
                             window.location.href = "ggIndexShare?userName="+userName+"&activityId=" + activityId;
                         }
                     }

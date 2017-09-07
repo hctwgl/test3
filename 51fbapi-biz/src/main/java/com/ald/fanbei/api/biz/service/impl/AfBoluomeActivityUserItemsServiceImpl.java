@@ -65,7 +65,7 @@ public class AfBoluomeActivityUserItemsServiceImpl extends ParentServiceImpl<AfB
 				try{
 					// 检测是否有这个userItemsId的卡片，若有，则更新状态
 					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsDao.getById(userItemsId);
-					if (prevousDo != null) {
+					if (prevousDo != null ) {
 
 						//验证这个用户是否拥有多余1张的此卡片
 						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();

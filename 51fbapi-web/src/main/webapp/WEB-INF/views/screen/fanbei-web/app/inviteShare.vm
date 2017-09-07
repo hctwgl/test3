@@ -22,7 +22,7 @@
                 <div class="checkbox clearfix">
                     <input type="checkbox" class="inputCheck" id="inputCheck" checked="checked">
                     <label for="inputCheck"></label>
-                    <p class="clearfix"><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+                    <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a></p>
                 </div>
                 <p class="registered clearfix">
                     <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>

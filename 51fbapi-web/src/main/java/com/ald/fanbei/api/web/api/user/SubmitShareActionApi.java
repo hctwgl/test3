@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,6 +19,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -55,13 +59,15 @@ public class SubmitShareActionApi implements ApiHandle {
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
 		String[] strings = sharePage.split("_");
 		if (strings != null && strings.length == 3) {
-			String sharePagee = strings[0];
-			if ("ggpresents".equals(sharePagee)) {
+			if ("ggpresents".equals(strings[0])) {
 				String strUserItemsId = strings[2];
 				Long userItemsId = Long.parseLong(strUserItemsId);
 				//进行冻结卡片
 				try {
-					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+						afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+					}
 				} catch (Exception e) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 					
