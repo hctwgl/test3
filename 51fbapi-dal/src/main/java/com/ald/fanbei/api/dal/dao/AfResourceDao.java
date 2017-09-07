@@ -127,6 +127,11 @@ public interface AfResourceDao {
 	List<AfResourceDo> selectActivityConfig();
 
 	List<AfResourceDo> getScrollbarByType();
+
+	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
+
+	//List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code);
+	
 	List<AfResourceDo> getActivieResourceByType(@Param("type") String type);
 	List<AfResourceDo> getFakePersonByActivityId(@Param("activityId")String activityId);
 
