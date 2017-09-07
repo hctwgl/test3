@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.JSONSerializer;
 
 /**
  * 
@@ -40,6 +42,7 @@ public class AfOrderListVo extends AbstractSerial {
 	private String numId;
 	private int showLogistics;
 	private int count;
+	private Date rebateTime;
 	public String getBusinessName() {
 		return businessName;
 	}
@@ -211,5 +214,13 @@ public class AfOrderListVo extends AbstractSerial {
 
 	public void setCount(int count) {
 		this.count = count;
+	}
+	@JSONField(format="yyyy-MM-dd HH:mm:ss")
+	public Date getRebateTime() {
+		return rebateTime;
+	}
+
+	public void setRebateTime(Date rebateTime) {
+		this.rebateTime = rebateTime;
 	}
 }

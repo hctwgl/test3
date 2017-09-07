@@ -131,5 +131,7 @@ public interface AfResourceDao {
 	List<AfResourceDo> getFakePersonByActivityId(@Param("activityId")String activityId);
 
 	AfResourceDo getGGSpecificBanner(@Param("value2")String value2);
+	
+	List<AfResourceDo> getCarouselToManyResourceOrderByType(@Param("type")String type);
 
 }
