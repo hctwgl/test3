@@ -22,7 +22,7 @@
                <!-- 小额现金贷为9位数时 !-->
                <img class="totalMoney" src="$commonUrl/billion_06.gif" alt="">
                <div class="num compare">                   
-                    <span class="numOne" v-for="item in num">{{item}}</span>
+                    <span class="numOne" v-for="item in num.amount">{{item}}</span>
                  
                </div>
                <!-- 小额现金贷为10位数时 !-->

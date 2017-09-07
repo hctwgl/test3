@@ -14,7 +14,8 @@ var vm = new Vue({
         data: null,
         active: 0,
         famen: true,
-        timeoutdata:[]
+        timeoutdata:[],
+        str:{}
     },
     created: function () {
         let _this = this;
@@ -35,9 +36,13 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
-                    var overTime=data.timeStemp;//活动结束时间戳
+                    var str = data.data; //获取返回的破十五亿金额
+                    _this.num = JSON.parse(str);//转成json字符串
+                    var num = _this.num;
+                    console.log(num)
+                    var overTime=num.timeStemp;//活动结束时间戳
+                    console.log(overTime)
                     overTime = +overTime + 24 * 60 * 60 * 1000;//活动结束时间
-                    console.log(overTime);
                     //倒计时时间为活动结束时间是 倒计时显示都为0
                     var time=document.getElementsByClassName('countDown').innerHTML;//获取倒计时
                     if(time==overTime){
@@ -45,14 +50,8 @@ var vm = new Vue({
                         document.getElementById("minute").innerHTML = 0 + "分";
                         document.getElementById("second").innerHTML = 0 + "秒";
                     }
-                    var str = data.data; //获取返回的破十五亿金额
-                    console.log(str);
-                    // str = str.replace(/"/g, ""); //替换掉返回字符串中的引号
-                    // str = str.replace(/\./g, ""); //替换掉返回字符串中的点
-                    // _this.num = str.split(""); //将字符串转化成数组
-                    _this.num = JSON.parse(str);
-                    console.log(_this.num);
-                    var num = _this.num;
+
+                    
                     //判断小额现金贷是否为10位
                     if (num.length >= 10) {
                         //隐藏9位数的背景和样式
@@ -117,8 +116,8 @@ var vm = new Vue({
                         var y = time.getFullYear();
                         var m = time.getMonth() + 1;
                         var d = time.getDate();
-                        // var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        var t = y + "-" + m + "-" + d + " " + "17:42:00";
+                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        // var t = y + "-" + m + "-" + d + " " + "17:42:00";
                         var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
                         tDate = +tDate + 24 * 60 * 60 * 1000;
                         tDate = new Date(tDate);
