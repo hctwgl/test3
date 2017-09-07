@@ -5,6 +5,8 @@ import java.util.Map;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.taobao.TbkShopGetRequest;
+import com.ald.fanbei.api.biz.bo.taobao.TbkShopGetResponse;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.AesUtil;
@@ -27,12 +29,16 @@ import com.taobao.api.response.TbkItemRecommendGetResponse;
 /**
  *@类描述：
  *@author xiaotianjian 2017年2月8日下午3:30:25
+ *@modifier: maqiaopan 2017-9-7 15:42:43
+ *@description 之前一直是百川，现在加上淘宝客的接口
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("taobaoApiUtil")
 public class TaobaoApiUtil extends AbstractThird {
 	
 	private static TaobaoClient client = null;
+	private static TaobaoClient tbkclient = null;
+	
 	private static final Long PAGE_SIZE = 50L;
 	
 	public static final String NUM_IID = "numIid";
@@ -47,6 +53,15 @@ public class TaobaoApiUtil extends AbstractThird {
 		}
 		return client;
 	}
+	
+	//淘宝客专用链接
+	private static TaobaoClient getTaobaoKeClient() {
+		if (tbkclient  == null) {
+			tbkclient  = new DefaultTaobaoClient("http://gw.api.taobao.com/router/rest", "23660684", "eec176f11477373ddc8691090b03744d");
+			return tbkclient ;
+		}
+		return tbkclient ;
+	}
 //	private static TaobaoClient getTaobaoLianMengClient() {
 //		if (client == null) {
 //			client = new DefaultTaobaoClient(AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_TAOBAO_LIANMENG_URL), ConfigProperties.get(Constants.CONFKEY_AES_KEY)),
@@ -56,6 +71,39 @@ public class TaobaoApiUtil extends AbstractThird {
 //		}
 //		return client;
 //	}
+	/**
+	 * @description 查询商铺
+	 * @author qiaopan
+	 * @param params
+	 * @return
+	 * @throws ApiException
+	 */
+	public TbkShopGetResponse geTbkShopGet(Map<String, Object> params) throws ApiException{
+		logger.info("executeTbkApi begin, param = {}", params);
+		TaobaoClient client = getTaobaoKeClient();
+		TbkShopGetRequest req = new TbkShopGetRequest();
+		String q = ObjectUtils.toString(params.get("q"), null);
+		String sort = ObjectUtils.toString(params.get("sort"), null);
+		Boolean isTmall = NumberUtil.objToBooleanDefault(params.get("isTmall"), false);
+		Long pageNo = NumberUtil.objToPageLongDefault(params.get("pageNo"), 1L);
+		if (q != null) {
+			req.setQ(q);
+		}
+		if (sort != null) {
+			req.setSort(sort);
+		}
+		if (pageNo != null) {
+			req.setPageNo(pageNo);
+		}
+		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS));
+		req.setPageSize(PAGE_SIZE);
+		req.setIsTmall(isTmall);
+		logger.info("executeTaobaokeSearch complete");
+		return client.execute(req);
+		
+	}
+	
+	
 	
 	/**
 	 * 搜索淘宝客商品，没有返利 taobao.tbk.item.get接口

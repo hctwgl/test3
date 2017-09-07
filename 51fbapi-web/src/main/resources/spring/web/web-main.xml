@@ -183,6 +183,7 @@
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
+				<entry key="/good/deleteHistory" value-ref="deleteHistoryApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
 				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
 				<entry key="/good/getRecommendGoods" value-ref="getRecommendGoodsApi" />

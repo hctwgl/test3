@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 
 /**
@@ -16,4 +20,8 @@ public interface AfUserSearchDao {
     * @return
     */
     int addUserSearch(AfUserSearchDo afUserSearchDo);
+
+	List<AfUserSearchDo> getHistoryByUserId(@Param("userId") Long userId);
+
+	void deleteHistory(@Param("userId")Long userId);
 }

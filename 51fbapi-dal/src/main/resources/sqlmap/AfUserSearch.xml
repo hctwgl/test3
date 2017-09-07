@@ -13,5 +13,12 @@
     		#{keyword}
 		)
 	</insert>
+	<select id = "getHistoryByUserId" parameterType="java.lang.Long" resultType="AfUserSearchDo">
+	 	SELECT * FROM af_user_search where is_delete = 0 and user_id = #{userId} LIMIT 10;
+	</select>
+	<update id="deleteHistory" parameterType="java.lang.Long">
+		UPDATE  af_user_search SET is_delete = 1 ,gmt_create = NOW() WHERE user_id = #{userId} AND is_delete = 0;
+	</update>
+	
 	
 </mapper>
