@@ -12,7 +12,9 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -43,11 +45,29 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
+import com.ald.fanbei.api.biz.bo.risk.RiskLoginRespBo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfAuthContactsService;
+import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.AsyLoginService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -56,6 +76,8 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
+import com.ald.fanbei.api.common.enums.OrderTypeThirdSence;
 import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.enums.PushStatus;
@@ -117,6 +139,8 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	RiskUtil riskUtil;
 	@Resource
+	RebateContext rebateContext;
+	@Resource
 	TongdunUtil tongdunUtil;
 	@Resource
 	JpushService jpushService;
@@ -167,6 +191,10 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	AsyLoginService asyLoginService;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -424,12 +452,15 @@ public class RiskUtil extends AbstractThird {
 	 * @param time 时间
 	 * @param productName 商品名称
 	 * @param virtualCode 商品编号
+	 *增加里那个字段 
+	 *@param SecSence 二级场景
+	 *@param ThirdSencem 三级场景
 	 * @return
 	 */
 	public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType, 
 			String scene, String cardNo, String appName, String ipAddress, 
 			String blackBox, String orderNo, String phone, BigDecimal amount, 
-			BigDecimal poundage, String time,String productName,String virtualCode) {
+			BigDecimal poundage, String time,String productName,String virtualCode,String SecSence,String ThirdSence) {
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if(!"Y".equals(userAuth.getRiskStatus())){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -457,6 +488,16 @@ public class RiskUtil extends AbstractThird {
 		eventObj.put("time", time);
 		eventObj.put("virtualCode", virtualCode);
 		eventObj.put("productName", productName);
+		//增加3个参数，配合风控策略的改变
+		String codeForSecond = null;
+		String codeForThird = null;
+		codeForSecond = OrderTypeSecSence.getCodeByNickName(SecSence);
+		codeForThird = OrderTypeThirdSence.getCodeByNickName(ThirdSence);
+		
+		Integer dealAmount = getDealAmount(Long.parseLong(consumerNo),SecSence);
+		eventObj.put("dealAmount", dealAmount);
+		eventObj.put("SecSence", codeForSecond  == null? "":codeForThird);
+		eventObj.put("ThirdSence", codeForThird == null? "":codeForThird);
 		reqBo.setEventInfo(JSON.toJSONString(eventObj));
 		
 		reqBo.setReqExt("");
@@ -464,7 +505,7 @@ public class RiskUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 		String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
-//		String url = "http://192.168.110.22:80" + "/modules/api/risk/weakRiskVerify.htm";
+		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
 		String reqResult = HttpUtil.post(url, reqBo);
 
 		logThird(reqResult, "weakRiskVerify", reqBo);
@@ -488,6 +529,18 @@ public class RiskUtil extends AbstractThird {
 		} else {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 		}
+	}
+	/**
+	 * @author qiaopan
+	 * 获得当天有效借款订单数
+	 * @return
+	 */
+	private Integer getDealAmount(Long userId,String orderType){
+		Integer result = afOrderService.getDealAmount(userId,orderType);
+		if (result == null) {
+			result = 0 ;
+		}
+		return result;
 	}
 
 	/**
@@ -675,6 +728,12 @@ public class RiskUtil extends AbstractThird {
 		
 		logger.info("updateOrder orderInfo = {}", orderInfo);
 		orderDao.updateOrder(orderInfo);
+		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+			logger.error("TRADE Rebate process");
+			//商圈订单付款后直接进行返利,并且将订单修改集中
+			rebateContext.rebate(orderInfo);
+		}
+
 		resultMap.put("success", true);
 		return resultMap;
 	}
@@ -833,7 +892,6 @@ public class RiskUtil extends AbstractThird {
 					}
 	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
 	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
-
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
@@ -958,7 +1016,7 @@ public class RiskUtil extends AbstractThird {
 			JSONObject obj = JSON.parseObject(data);
 			String consumerNo = obj.getString("consumerNo");
 			String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
-			if (StringUtil.equals("50", result)) {
+			if (StringUtil.equals("50", result)) {//50是定时任务 推送超时
 				//不做任何更新
 				return 0;
 			}
@@ -1249,7 +1307,11 @@ public class RiskUtil extends AbstractThird {
 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 						orderDao.updateOrder(orderInfo);
-						
+						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+							logger.error("TRADE Rebate process");
+							//商圈订单付款后直接进行返利,并且将订单修改集中
+							rebateContext.rebate(orderInfo);
+						}
 						if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
 							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
 						}
@@ -1763,5 +1825,132 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
 		}
 	}
+	/**
+	 * 登录可信验证码
+	 * @param userName
+	 * @param device
+	 * @return
+	 */
+	public boolean verifySynLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
+			String ip,String phoneType,String networkType,String osType){
+		
+//		RiskTrustReqBo reqBo = new RiskTrustReqBo();
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",Constants.EVENT_LOGIN_SYN);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("loginType", loginType);
+		obj.put("loginTime", loginTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		//Map<String,String> reqBo = new HashMap<String, String>();
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/event/syn/login.htm";
+		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
+		String reqResult = HttpUtil.post(url, map);
+
+		logThird(reqResult, "verifySynLogin", map);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_SYN_LOGIN_VERIFY_ERROR);
+		}
+
+		RiskLoginRespBo riskResp = JSONObject.parseObject(reqResult, RiskLoginRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			JSONObject jsonObj = JSON.parseObject(riskResp.getData());
+			if("1".equals(jsonObj.getString("isTrust")))
+			{
+				return true;
+			}else{
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 	
+	/**
+	 * 风控异步登录
+	 * @param consumerNo
+	 * @param phone
+	 * @param blackBox
+	 * @param deviceUuid
+	 * @param loginType
+	 * @param loginTime
+	 * @param ip
+	 * @param phoneType
+	 * @param networkType
+	 * @param osType
+	 * @return
+	 */
+	public void verifyASyLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
+			String ip,String phoneType,String networkType,String osType,String result,String event){
+		
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",event);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("loginResult",result);
+		obj.put("loginType", loginType);
+		obj.put("loginTime", loginTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/event/asy/login.htm";
+		asyLoginService.excute(map, url,"asyLoginVerify");
+	}
+	
+	/**
+	 * 风控异步注册通知
+	 * @param consumerNo
+	 * @param phone
+	 * @param blackBox
+	 * @param deviceUuid
+	 * @param loginType
+	 * @param loginTime
+	 * @param ip
+	 * @param phoneType
+	 * @param networkType
+	 * @param osType
+	 * @param result
+	 * @param event
+	 */
+	public void verifyASyRegister(String consumerNo,String phone,String blackBox,String deviceUuid,String registerTime,
+			String ip,String phoneType,String networkType,String osType,String event){
+		
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",event);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("registerResult","1");
+		obj.put("registerTime", registerTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/event/asy/register.htm";
+		asyLoginService.excute(map, url,"asyRegisterVerify");
+	}
 }

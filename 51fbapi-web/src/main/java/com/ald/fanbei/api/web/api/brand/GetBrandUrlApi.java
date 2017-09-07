@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -60,7 +61,8 @@ public class GetBrandUrlApi implements ApiHandle {
 			logger.error("shopId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		String shopUrl = shopInfo.getShopUrl() + "?";
+		
+		String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl());
 		
 		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
 		buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());
@@ -72,6 +74,12 @@ public class GetBrandUrlApi implements ApiHandle {
 		
 		resp.addResponseData("shopUrl", shopUrl + paramsStr);
 		return resp;
+	}
+	
+	//根据测试，线上环境区别地址
+	private String parseBoluomeUrl(String baseUrl) {
+		String type = baseUrl.substring(baseUrl.lastIndexOf("/") + 1, baseUrl.length());
+		return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/"+ type + "?";
 	}
 
 }

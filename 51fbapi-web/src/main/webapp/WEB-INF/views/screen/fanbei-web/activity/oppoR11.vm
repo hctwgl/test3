@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017071402")
-    #set($commonUrl="https://fs.51fanbei.com/h5/app/activity/07")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/07")
     <title>oppoR11 Plus 新品上市</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/07/oppoR11.css?version=$version">
 </head>

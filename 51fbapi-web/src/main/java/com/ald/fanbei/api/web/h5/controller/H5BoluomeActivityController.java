@@ -96,6 +96,8 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		String password = ObjectUtils.toString(request.getParameter("password"),"").toString();
 		Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 		String refUseraName = ObjectUtils.toString(request.getParameter("refUserName"),"").toString();
+		String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
+		
 		AfUserDo UserDo = afUserService.getUserByUserName(userName);
 		AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
 		if(loginSource == null ||"".equals(loginSource)){
@@ -122,6 +124,12 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 		}
 		if (StringUtils.equals(UserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_FROZEN_ERROR.getDesc(), "Login", "").toString();
+		}
+		try {
+			tongdunUtil.getPromotionLoginResult(tongduanToken,null,null,CommonUtil.getIpAddr(request),userName, userName, "");
+		} catch (Exception e) {
+			return  H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_LOGIN_ERROR.getDesc(), "Login", null).toString();
+			
 		}
 		// check password
 		String inputPassword = UserUtil.getPassword(password, UserDo.getSalt());
@@ -310,19 +318,37 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
 
 	}
 	
-	//菠萝觅活动忘记密码获取验证码
+	//菠萝觅活动忘记密码获取短信验证码
 	@ResponseBody
 	@RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String boluomeActivityForgetPwd(HttpServletRequest request, ModelMap model) throws IOException {
 		String resultStr = "";
 		try{
 		String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+		String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
+		String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+		
 		AfUserDo afUserDo = new AfUserDo(); 
 		afUserDo = afUserService.getUserByUserName(mobile);
 	
 		if (afUserDo == null) {
 			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "ForgetPwd", null).toString();
 		}
+		try {
+			tongdunUtil.getPromotionForgetPwdSmsResult(token,null,null,CommonUtil.getIpAddr(request),mobile, mobile, "");
+		} catch (Exception e) {
+			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGISTER_PWD_ERROR.getDesc(), "Register", null).toString();
+			return resultStr;
+		}
+		//发送短信前,加入图片验证码验证
+		String realCode=bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile).toString();
+
+		if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码不正确
+
+			resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null).toString();
+			return resultStr;
+		}
+		bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
 		if (afUserDo != null) {
 			boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
 		if (!resultForget) {
@@ -389,6 +415,7 @@ AfH5BoluomeActivityService afH5BoluomeActivityService;
     		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "ResetPwd", null).toString();
     		return resultStr;
         }
+        
         //判断验证码是否一致并且验证码是否已经做过验证
         String realCode = smsDo.getVerifyCode();
         if(!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1){

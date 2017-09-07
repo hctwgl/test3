@@ -1,4 +1,4 @@
-@url: "https://fs.51fanbei.com/h5/app/activity/08";
+@url: "http://f.51fanbei.com/h5/app/activity/08";
 .clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
 .clearFix{zoom:1}
 body{
@@ -57,76 +57,40 @@ body{
   right:0;
 }
 .ggIndex .money{
-  width:6.81rem;
-  height:.83rem;
-  background:url("@{url}/gg08.jpg") no-repeat;
+  width:100%;
+  height:1.8rem;
+  background:url("@{url}/gg30.png") no-repeat;
   background-size: contain;
-  margin:.6rem auto .45rem auto;
+  margin:.43rem auto 0 auto;
   text-align:center;
-  color:#000000;
+  color:#525252;
   position:relative;
 }
-.ggIndex .money p:nth-child(1){
-  font-size:.5rem;
-  position:absolute;
-  top:-.25rem;
-  left:31.5%;
-}
-.ggIndex .money p:nth-child(2){
+.ggIndex .money p{
   font-size:.4rem;
-  padding-top: .45rem;
+  padding-top:1rem;
 }
-.ggIndex .money p:nth-child(2) span{
+.ggIndex .money p span{
   color:#fe963b;
 }
 /*首页轮播*/
 .ggIndex .banner {
   width:7.5rem;
   height:6.2rem;
-  margin:.34rem auto .43rem auto;
+  margin:.14rem auto .43rem auto;
   position:relative;
   overflow:hidden;
 }
-.ggIndex .banner .bannerList{
-  /*width:25rem;*/
-  position:absolute;
-  left:0;
-  top:0;
+.swiper-slide{
+  width: 83.33% !important;
+  margin: 0 8.33%;
 }
-.ggIndex .banner .bannerList .positionImg{
-  width:6.25rem;
-  height:6.2rem;
-  margin:0 .625rem;
-}
-.ggIndex .banner .bannerList li{
-  height:6.2rem;
-  float:left;
-  opacity: 0;
-  transition: all 2.5s ease;
-  margin:0 .625rem;
-}
-.ggIndex .banner .bannerList li:nth-child(1){
-  opacity: 1;
-}
-.ggIndex .banner .num {
-  position:absolute;
-  width:100%;
-  bottom:.1rem;
-  left:0;
-  text-align:center;
-  font-size:0;
-  display: none;
-}
-.ggIndex .banner .num li {
-  width:.1rem;
-  height:.1rem;
-  background-color:#888;
-  border-radius:50%;
-  display:inline-block;
-  margin:0 .15rem;
-  cursor:pointer;}
-.ggIndex .banner .num li.on {
-  background-color: #fff;
+.ggIndex .highPrize{
+  font-size:.32rem;
+  color:#646464;
+  width: 100%;
+  text-align: center;
+  padding-bottom: .42rem;
 }
 .ggIndex .couponList{
   width:7.14rem;
@@ -214,6 +178,10 @@ body{
   background:url("@{url}/gg017.png") no-repeat;
   background-size: contain;
 }
+.ggIndex .finalPrize03{
+  background:url("@{url}/gg38.png") no-repeat;
+  background-size: contain;
+}
 .ggIndex .finalPrize .amount{
   padding: 13% 0 0 33%;
   font-size: .42rem;
@@ -257,9 +225,12 @@ body{
 .ggIndex .progress .p01{
   padding-top:.09rem;
 }
+.ggIndex .progress .p01 span{
+  font-size: .28rem;
+}
 .ggIndex .progress .p02{
-  padding-top:.46rem;
-  padding-bottom:.46rem;
+  padding-top:.3rem;
+  padding-bottom:.3rem;
 }
 .ggIndex .ruleInfo{
   width:25%;
@@ -267,7 +238,7 @@ body{
   font-size:.28rem;
   color:#5cb4e2;
   text-decoration: underline;
-  margin: .4rem auto 0;
+  margin: .8rem auto 0;
 }
 .ggIndex .kong{
   width:100%;
@@ -404,6 +375,7 @@ body{
   top:4.35rem;
   left:0.24rem;
   z-index:200;
+  display:none;
 }
 .ggIndex .alertPresent .next{
   width:.13rem;
@@ -414,6 +386,7 @@ body{
   top:4.35rem;
   right:0.24rem;
   z-index:200;
+  display:none;
 }
 .ggIndex .alertPresent .imgList{
   width: 100%;
@@ -451,10 +424,10 @@ body{
    left:-.3%;
    top: 0;
    filter: url(blur.svg#blur);
-    -webkit-filter: blur(.01rem);
-    -moz-filter: blur(.01rem);
-    -ms-filter: blur(.01rem);
-    filter: blur(.01rem);
+    -webkit-filter: blur(.02rem);
+    -moz-filter: blur(.02rem);
+    -ms-filter: blur(.02rem);
+    filter: blur(.02rem);
     filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=3, MakeShadow=false);
 }
 .ggIndex .alertPresent .imgList .img .num{
@@ -594,4 +567,13 @@ display: none;
   width: 0;
   height:0;
 }
+.changeGray{
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
 
+  filter: grayscale(100%);
+
+  filter: gray;
+}

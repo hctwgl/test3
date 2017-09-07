@@ -280,6 +280,8 @@ public class AppH5SysController extends BaseController {
 				}
 				model.put("renewalAmountLower", afRenewalDetailDo.getRenewalAmount());//续借金额小写
 				model.put("renewalAmountCapital", toCapital(afRenewalDetailDo.getRenewalAmount().doubleValue()));//续借金额大写	
+				model.put("repayAmountLower", afRenewalDetailDo.getCapital());//续借金额小写
+				model.put("repayAmountCapital", toCapital(afRenewalDetailDo.getCapital().doubleValue()));//续借金额大写	
 //				Date gmtRenewalBegin = afRenewalDetailDo.getGmtCreate();
 //				Date gmtRenewalEnd = DateUtil.addDays(gmtRenewalBegin, afRenewalDetailDo.getRenewalDay());
 			} else {
@@ -301,6 +303,11 @@ public class AppH5SysController extends BaseController {
 				}
 				model.put("renewalAmountLower", renewalAmount);//续借金额小写
 				model.put("renewalAmountCapital", toCapital(renewalAmount.doubleValue()));//续借金额大写	
+				AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+				BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
+				BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+				model.put("repayAmountLower", capital);//续借金额小写
+				model.put("repayAmountCapital", toCapital(capital.doubleValue()));//续借金额大写	
 			}
 		}
 		

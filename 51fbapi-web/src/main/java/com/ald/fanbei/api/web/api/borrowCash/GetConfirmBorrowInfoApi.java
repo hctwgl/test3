@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +14,14 @@ import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -29,6 +32,7 @@ import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -48,7 +52,9 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  */
 @Component("getConfirmBorrowInfoApi")
 public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHandle {
-
+	
+	@Resource
+	RiskUtil riskUtil;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Resource
@@ -140,7 +146,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 			// BigDecimal serviceRate =bankService.add(poundageRate);
 			// BigDecimal serviceAmountDay = serviceRate.multiply(amount);
-			Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+			Object poundageRateCash = getUserPoundageRate(userId);
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
@@ -178,6 +184,25 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		resp.setResponseData(data);
 		return resp;
 	}
+	
+	private Object getUserPoundageRate(Long userId) {
+		Date saveRateDate =  (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
+		if (saveRateDate==null || DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
+			try {
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				String poundageRate = riskResp.getPoundageRate();
+				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
+					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
+					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
+					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);				
+				}
+			} catch (Exception e) {
+				logger.info(userId + "从风控获取分层用户额度失败："  + e);
+			}
+		}
+		return bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+	}
+	
 	/**
 	 * 计算最多能计算多少额度 150取100 250.37 取200
 	 * @param usableAmount

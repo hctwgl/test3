@@ -2,7 +2,7 @@
 <html>
 <head>
     #set($version="2017050301")
-    #set($commonUrl="https://fs.51fanbei.com/h5")
+    #set($commonUrl="http://f.51fanbei.com/h5")
     <meta charset="UTF-8">
     <title>激情4月 大片来袭</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/04/movieShare.css?version=$version">

@@ -57,9 +57,9 @@ public class GetRenewalDetailApi implements ApiHandle {
 		data.put("tradeNo", afRenewalDetailDo.getTradeNo());//支付编号
 		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());//创建时间
 		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());//续借编号
+		data.put("capital", afRenewalDetailDo.getCapital());//续借本金
 		
 		return data;
-
 	}
 
 }

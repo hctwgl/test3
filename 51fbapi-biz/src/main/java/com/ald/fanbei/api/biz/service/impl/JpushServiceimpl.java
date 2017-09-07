@@ -331,7 +331,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void strongRiskFail(String userName) {
 		try {
-			String msgContext = "您好，您的信用认证未通过审核。";
+			String msgContext = "VIP特权，给您挑选几个额度高，要求低，下款快的借钱平台，50000额度等你提取！";
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("strongRiskFail,pid=", pid));
 			Map<String, String> extras = new HashMap<String, String>();
@@ -339,7 +339,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("信用认证未通过", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("额度不够用？51返呗借贷超市，帮你解决", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("strongRiskFail error", e);
 		}
@@ -391,7 +391,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "204");
-			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getName());
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getValue2());
 			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, false);
 		} catch (Exception e) {
 			logger.info("gameShareSuccess error", e);
@@ -410,7 +410,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "204");
-			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getName());
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getValue2());
 			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, true);
 		} catch (Exception e) {
 			logger.info("gameShareSuccess error", e);
@@ -651,33 +651,24 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 	}
 
-	@Override
-	public void pushBorrowCashActivitys(String userName,String money,String type) {
+	public  void jPushCoupon(String type,String userName){
+		
 		try {
+			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
+			//String userName = StringUtils.EMPTY;
+			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes("COUPON_POPUPS");
+			AfResourceDo afResourceDo = resourceDoList.get(0);
 			String pid = userName + "_" + System.currentTimeMillis();
-			logger.info(StringUtil.appendStrs("pushBorrowCashActivitys,pid=", pid));
-			String msgContext = null;
-			String title=null;
-			if(type.equals("One")){
-				title="头号“金”喜！";
-				msgContext ="恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放，立即前往";
-			} else if (type.equals("Win")){
-				title="头号“金”喜！";
-				msgContext = "哇！幸运值爆棚的你在“破十五亿”活动中获得"+money+"元现金红包，快去看看吧";
-			} else {
-				title="破十五亿 有“金”喜";
-				msgContext = "又有10位幸运用户已获得"+money+"元现金红包，快来看看有你吗";
-			}
+			logger.info(StringUtil.appendStrs("gameShareSuccess,pid=", pid));
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE, "231");
-			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias(title, msgContext, extras, new String[] { userName });
+			extras.put(PUSH_JUMP_TYPE, "204");
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getValue2());
+			jpushUtil.pushMessageByAlias("恭喜","你获得一次抽现金机会分享越多机会越多",extras,new String[]{userName}, false);
 		} catch (Exception e) {
-			logger.info("pushBorrowCashActivitys error", e);
+			logger.info("gameShareSuccess error", e);
 		}
-		
 	}
 
 

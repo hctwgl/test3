@@ -98,7 +98,7 @@ public class GetAllowConsumeApi implements ApiHandle {
 			}
 		}
 		
-		if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
+		if (leftAmount.compareTo(BigDecimal.ONE) <= 0) {
 			isNoneQuota = "Y";
 		}
 		resp.addResponseData("isNoneQuota", isNoneQuota);

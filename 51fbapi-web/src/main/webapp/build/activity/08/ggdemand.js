@@ -36,8 +36,8 @@ $(function(){
                         $('.banner').html(pic);
                         light+='<span class="light">'+data.data.fakeFinal+'</span>';
                         $('.light').html(light);
-                        combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
-                        $('.combo').html(combo);
+                        // combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
+                        $('.combo').html(data.data.itemsDo.name);
                         detail+='<p class="ruleCont">'+data.data.description+'</p>'
                         $('.ruleCont').html(detail);
 
@@ -90,7 +90,7 @@ $(function(){
                             window.location.href = "gglogin?word=S"+"&urlName=" + urlName + "&itemsId=" + itemsId + "&userName=" + userName + "&activityId=" + activityId; 
                             
                         }else{
-                            var userName = outputData.data.userName;
+                            userName = outputData.data.userName;
                             window.location.href = "ggIndexShare?userName="+userName+"&activityId=" + activityId;
                         }
                     }
@@ -132,6 +132,11 @@ $(function(){
     $('.mask').click(function(){
         $('.mask').hide();
         $('.alertRule').hide();
+    })
+
+    //点击参与人数进入排行榜
+    $('.joinAmount').click(function(){
+        window.location.href='ggrankingList?activityId='+activityId;
     })
 
 })

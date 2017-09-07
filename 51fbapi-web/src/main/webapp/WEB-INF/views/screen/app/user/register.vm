@@ -34,7 +34,7 @@
       	<div class="register_checkbox clearfix">
       		<input type="checkbox" class="input_check" id="input_check" checked="checked"　onkeyup="changeBtn()">
           	<label for="input_check"></label>
-      		<p><span>阅读并同意</span><a href="/app/sys/registerProtocol">《51返呗用户注册协议》</a></p>
+      		<p><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a></p>
       	</div>
         <p class="account"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号</a></p>
 		</div>

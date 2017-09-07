@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.AfFeedBackService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 
@@ -47,6 +48,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	@Resource
 	AfRecommendUserDao afRecommendUserDao;
+	@Resource
+	JpushService jpushService;
 
 
 	@Resource
@@ -67,6 +70,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
 			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId());
+
 
 			        long recommendId = afUserDo.getRecommendId();
 
@@ -90,6 +94,10 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		});
 
 	}
+
+
+
+
 
 	@Override
 	public AfUserDo getUserById(Long userId) {
