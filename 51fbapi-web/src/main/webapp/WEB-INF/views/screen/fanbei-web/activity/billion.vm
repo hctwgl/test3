@@ -91,9 +91,10 @@
                 <p class="timeMoney"><i class="RMB" id="RMB">${winAmount}</i>元现金</p>
                 <p class="award">开奖倒计时</p>
                 <!--<p class="countDown">${dates}</p>-->  
-                <p class="countDown"> <span id="hour">00时</span>
-		    <span id="minute">00分</span>
-		    <span id="second">00秒</span></p>
+                <p class="countDown"> 
+                    <span id="hour">00时</span>
+                    <span id="minute">00分</span>
+                    <span id="second">00秒</span></p>
             </div>
             <!--现金中奖用户!-->  
             <div class="winningUser">

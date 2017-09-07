@@ -35,6 +35,16 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
+                    var overTime=data.timeStemp;//活动结束时间戳
+                    overTime = +overTime + 24 * 60 * 60 * 1000;//活动结束时间
+                    console.log(overTime);
+                    //倒计时时间为活动结束时间是 倒计时显示都为0
+                    var time=document.getElementsByClassName('countDown').innerHTML;//获取倒计时
+                    if(time==overTime){
+                        document.getElementById("hour").innerHTML = 0 + "时";
+                        document.getElementById("minute").innerHTML = 0 + "分";
+                        document.getElementById("second").innerHTML = 0 + "秒";
+                    }
                     var str = data.data; //获取返回的破十五亿金额
                     console.log(str);
                     // str = str.replace(/"/g, ""); //替换掉返回字符串中的引号
@@ -107,8 +117,8 @@ var vm = new Vue({
                         var y = time.getFullYear();
                         var m = time.getMonth() + 1;
                         var d = time.getDate();
-                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        // var t = y + "-" + m + "-" + d + " " + "16:30:00";
+                        // var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        var t = y + "-" + m + "-" + d + " " + "17:42:00";
                         var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
                         tDate = +tDate + 24 * 60 * 60 * 1000;
                         tDate = new Date(tDate);
@@ -119,6 +129,7 @@ var vm = new Vue({
                         //var EndTime= new Date('2017/09/11 10:00:00');
                         var NowTime = new Date();
                         var EndTime = GetNextDate(NowTime);
+
 
                         t = EndTime.getTime() - NowTime.getTime();
                         if (t >= 0) {
@@ -144,7 +155,7 @@ var vm = new Vue({
                             clearTimeout(time1)
                            setTimeout(function(){
                                 _this.famen = true;
-                           },1000)//设置定时器干嘛
+                           },1000)//设置定时器
                             RMB = document.getElementById('RMB').innerHTML;
                             console.log(RMB);
                             $.ajax({
@@ -157,12 +168,11 @@ var vm = new Vue({
                                 success: function (data) {
                                     console.log(data)
                                     _this.timeoutdata=data;
-                                    // var detail = JSON.parse(str);
-                                    // console.log(detail);
+
                                     
                                 }
                             })
-                             _this.initial();//
+                             _this.initial();
                         }
 
 
