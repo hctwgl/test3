@@ -145,8 +145,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
-		char[] split = (df.format(sumAmount)+"").toCharArray();
-		map.put("amount", JsonUtil.toJSONString(split));
+		//char[] split = (df.format(sumAmount)+"").toCharArray();
+		map.put("amount", Integer.parseInt(df.format(sumAmount)));
 		String jsonString = JsonUtil.toJSONString(map);
 		H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
 		return JsonUtil.toJSONString(response);
@@ -190,10 +190,12 @@ public class AppBorrowCashToDrawController extends BaseController {
 		}
 		// 给用户账号打钱*
 		int amount = Integer.parseInt(winAmount);
-		try {
-			afUserAccountService.updateBorrowCashActivity(amount, users);
-		} catch (FanbeiException e) {
-			logger.info("sendBorrowCashActivitys is fails," + e);
+		if(amount <= 1100){
+			try {
+				afUserAccountService.updateBorrowCashActivity(amount, users);
+			} catch (FanbeiException e) {
+				logger.info("sendBorrowCashActivitys is fails," + e);
+			}
 		}
 		//传给前端一个开奖金额
 		String winamount =(String) bizCacheUtil.getObject("winAmount");
