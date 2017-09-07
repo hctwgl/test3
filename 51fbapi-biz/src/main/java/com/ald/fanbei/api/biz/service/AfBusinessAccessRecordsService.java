@@ -11,4 +11,10 @@ import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
  */
 public interface AfBusinessAccessRecordsService extends ParentService<AfBusinessAccessRecordsDo, Long>{
 
+	/**
+	 * 判断用户今天是否签到
+	 * @param userId
+	 * @return
+	 */
+	boolean checkIsSignToday(Long userId);
 }

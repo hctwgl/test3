@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBusinessAccessRecordsDao;
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
@@ -30,5 +31,12 @@ public class AfBusinessAccessRecordsServiceImpl extends ParentServiceImpl<AfBusi
 	@Override
 	public BaseDao<AfBusinessAccessRecordsDo, Long> getDao() {
 		return afBusinessAccessRecordsDao;
+	}
+
+	@Override
+	public boolean checkIsSignToday(Long userId) {
+		
+		int count = afBusinessAccessRecordsDao.getSignCountToday(userId);
+		return count==4?true:false;
 	}
 }
