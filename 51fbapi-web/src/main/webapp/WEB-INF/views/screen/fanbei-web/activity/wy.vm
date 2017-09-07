@@ -9,15 +9,15 @@
 </head>
 <body>
 <div class="loadingMask"><i class="loading"></i></div>
-<img class="first" src="$commonUrl/a1.png">
-<img class="first" src="$commonUrl/a2.png">
-<img class="first" src="$commonUrl/a3.png">
-<img class="first" src="$commonUrl/a4.png">
-<img class="first" src="$commonUrl/a5.png">
-<img class="first" src="$commonUrl/a6.png">
-<img class="first" src="$commonUrl/a7.png">
-<img class="first" src="$commonUrl/a8.png">
-<img onclick="go()" style="position: absolute;top: 6.2rem;width: 2rem;height: 1.58rem;left: 3rem;" src="$commonUrl/gif3.gif">
+<img class="first" src="$commonUrl/a111.png">
+<img class="first" src="$commonUrl/a112.png">
+<img class="first" src="$commonUrl/a113.png">
+<img class="first" src="$commonUrl/a114.png">
+<img class="first" src="$commonUrl/a115.png">
+<img class="first" src="$commonUrl/a116.png">
+<img onclick="go()" class="first" src="$commonUrl/a117.png">
+<img class="first" src="$commonUrl/a118.png">
+<img onclick="go()" style="position: absolute;top: 5.87rem; width: 1.94rem;height: 1.94rem;left: 2.75rem;" src="$commonUrl/gif331.gif">
 <img class="lazy" data-original="$commonUrl/d1.png">
 <img class="lazy" data-original="$commonUrl/d2.png">
 <img class="lazy" data-original="$commonUrl/d3.png">
