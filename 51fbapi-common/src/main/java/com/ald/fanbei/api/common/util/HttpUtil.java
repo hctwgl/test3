@@ -91,6 +91,7 @@ public class HttpUtil {
                 ex.printStackTrace();
             }
         }
+        logger.info("doGet result = {}", result);
         return result;
     }
     

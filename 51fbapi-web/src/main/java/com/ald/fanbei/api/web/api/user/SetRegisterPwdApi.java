@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -13,12 +14,14 @@ import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.ClientTypeEnum;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
@@ -49,6 +52,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 	AfPromotionChannelPointService afPromotionChannelPointService;
 	@Resource
 	SmsUtil smsUtil;
+	@Resource
+	RiskUtil riskUtil;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -62,6 +67,14 @@ public class SetRegisterPwdApi implements ApiHandle {
 		String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
 		String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), null);
 
+		//风控可信异步通知
+		String ip = CommonUtil.getIpAddr(request);
+		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
+		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
+		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
+		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
+		
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
 		if (afUserDo != null) {
@@ -158,6 +171,14 @@ public class SetRegisterPwdApi implements ApiHandle {
 		// 注册完成,给用户发送注册成功的短信
 		// smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 
+		afUserDo = afUserService.getUserByUserName(userName);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String registerTime = sdf.format(new Date(System.currentTimeMillis()));
+		//风控可信异步通知
+		if (context.getAppVersion() >= 381) {
+			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
+					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
+		}
 		return resp;
 	}
 
