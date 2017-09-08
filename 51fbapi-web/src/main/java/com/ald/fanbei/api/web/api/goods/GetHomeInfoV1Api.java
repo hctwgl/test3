@@ -22,6 +22,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -143,22 +144,26 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				} catch(Exception e){
 					logger.error(e.toString());
 				}
+				JSONArray interestFreeArray = null;
 				if(schemeGoodsDo != null){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
-					JSONArray interestFreeArray = null;
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
-					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-					
-					if(nperList!= null){
-						goodsInfo.put("goodsType", "1");
-						Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-						goodsInfo.put("nperMap", nperMap);
-					}
 				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+				if(nperList!= null){
+					goodsInfo.put("goodsType", "1");
+					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+					String isFree = (String)nperMap.get("isFree");
+					if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+						nperMap.put("freeAmount", nperMap.get("amount"));
+					}
+					goodsInfo.put("nperMap", nperMap);
+				}
+				
 				goodsList.add(goodsInfo);
     		}
     		activityData.put("goodsList", goodsList);
@@ -192,22 +197,27 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			} catch(Exception e){
 				logger.error(e.toString());
 			}
+			JSONArray interestFreeArray = null;
 			if(schemeGoodsDo != null){
 				AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 				String interestFreeJson = interestFreeRulesDo.getRuleJson();
-				JSONArray interestFreeArray = null;
 				if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 					interestFreeArray = JSON.parseArray(interestFreeJson);
 				}
-				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-				
-				if(nperList!= null){
-					goodsInfo.put("goodsType", "1");
-					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-					goodsInfo.put("nperMap", nperMap);
-				}
 			}
+			List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+					goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+			
+			if(nperList!= null){
+				goodsInfo.put("goodsType", "1");
+				Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+				String isFree = (String)nperMap.get("isFree");
+				if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+					nperMap.put("freeAmount", nperMap.get("amount"));
+				}
+				goodsInfo.put("nperMap", nperMap);
+			}
+			
 			moreGoodsList.add(goodsInfo);
 		}
 		moreGoodsInfo.put("moreGoodsList", moreGoodsList);
