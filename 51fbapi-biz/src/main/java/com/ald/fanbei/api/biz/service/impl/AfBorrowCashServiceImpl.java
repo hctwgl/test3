@@ -185,4 +185,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return afBorrowCashDao.getBorrowedUserIds();
 	}
 
+
+	@Override
+	public int updateBalancedDate(AfBorrowCashDo afBorrowCashDo) {
+		return afBorrowCashDao.updateBalancedDate(afBorrowCashDo);
+	}
+
 }

@@ -677,4 +677,5 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			}
 		});
 	}
+
 }
