@@ -28,7 +28,8 @@
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodDes">{{txtFix(item.goodName,8)}}</p>
             <p class="goodPrice clearFix"><span class="originPrice">￥{{item.saleAmount}}</span><span class="fan"></span><span class="fanMoney">￥{{item.rebateAmount}}</span></p>
-            <p class="monthPrice" v-if="item.goodsType==='1'">月供￥{{item.nperMap.amount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1'|| item.nperMap.isFree==='2'">月供￥{{item.nperMap.freeAmount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供￥{{item.nperMap.amount}}起</p>
         </div>
     </div>
     <div class="firstCont secondCont clearFix">
@@ -40,7 +41,8 @@
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodDes">{{txtFix(item.goodName,8)}}</p>
             <p class="goodPrice clearFix"><span class="originPrice">￥{{item.saleAmount}}</span><span class="fan"></span><span class="fanMoney">￥{{item.rebateAmount}}</span></p>
-            <p class="monthPrice" v-if="item.goodsType==='1'">月供￥{{item.nperMap.amount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1'|| item.nperMap.isFree==='2'">月供￥{{item.nperMap.freeAmount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供￥{{item.nperMap.amount}}起</p>
         </div>
     </div>
     <div class="firstCont thirdCont clearFix">
@@ -52,7 +54,8 @@
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodDes">{{txtFix(item.goodName,8)}}</p>
             <p class="goodPrice clearFix"><span class="originPrice">￥{{item.saleAmount}}</span><span class="fan"></span><span class="fanMoney">￥{{item.rebateAmount}}</span></p>
-            <p class="monthPrice" v-if="item.goodsType==='1'">月供￥{{item.nperMap.amount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1'|| item.nperMap.isFree==='2'">月供￥{{item.nperMap.freeAmount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供￥{{item.nperMap.amount}}起</p>
         </div>
     </div>
     <div class="firstCont fourthCont clearFix">
@@ -64,7 +67,8 @@
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodDes">{{txtFix(item.goodName,8)}}</p>
             <p class="goodPrice clearFix"><span class="originPrice">￥{{item.saleAmount}}</span><span class="fan"></span><span class="fanMoney">￥{{item.rebateAmount}}</span></p>
-            <p class="monthPrice" v-if="item.goodsType==='1'">月供￥{{item.nperMap.amount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1'|| item.nperMap.isFree==='2'">月供￥{{item.nperMap.freeAmount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供￥{{item.nperMap.amount}}起</p>
         </div>
     </div>
 </div>
