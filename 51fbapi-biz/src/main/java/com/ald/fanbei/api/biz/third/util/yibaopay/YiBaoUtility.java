@@ -190,13 +190,12 @@ public class YiBaoUtility {
             }
             int ret = afYibaoOrderDao.updateYiBaoOrderStatusLock(3,afYibaoOrderDo.getId(),afYibaoOrderDo.getGtmUpdate());
             if(ret >0) {
-                afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 3);
                 AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(afYibaoOrderDo.getOrderNo());
                 repayment.setStatus("P");
                 afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repayment);
             }
         }
-        else if(status.equals("success")){
+        else if(status.equals("SUCCESS")){
             afRepaymentBorrowCashService.dealRepaymentSucess(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
             //成功
         }
@@ -229,7 +228,7 @@ public class YiBaoUtility {
             }
 
         }
-        else if(status.equals("success")){
+        else if(status.equals("SUCCESS")){
             afRenewalDetailService.dealRenewalSucess(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
             //成功
         }
