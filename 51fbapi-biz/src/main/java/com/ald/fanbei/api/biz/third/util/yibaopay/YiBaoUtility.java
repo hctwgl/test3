@@ -119,32 +119,41 @@ public class YiBaoUtility {
 
 
 
-    public String getOrderByYiBao(String orderNo){
+    public Map<String,String> getOrderByYiBao(String orderNo){
+        Map<String,String> ret = new HashMap<String,String>();
+
         AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(orderNo);
         if(afYibaoOrderDo == null){
             return null;
         }
+
+        ret.put("type",afYibaoOrderDo.getPayType());
         if(afYibaoOrderDo.getStatus().intValue() == 0 || afYibaoOrderDo.getStatus().intValue() == 3){
             Map<String, String> result = getYiBaoOrder(orderNo,afYibaoOrderDo.getYibaoNo());
             if(!result.get("code").equals("OPR00000")){
-                return null;
+                return ret;
             }
 
             String status = result.get("status");
             proessUpdate(afYibaoOrderDo,status,afYibaoOrderDo.getoType());
             if(status.equals("PROCESSING")){
-                return "P";
+                ret.put("status","P");
+                return ret;
             }
             else if (status.equals("SUCCESS")){
-                return "Y";
+                ret.put("status","Y");
+                return ret;
             }
-            return "N";
+            ret.put("status","N");
+            return ret;
         }
         int status = afYibaoOrderDo.getStatus();
         if(status ==1){
-            return "Y";
+            ret.put("status","Y");
+            return ret;
         }
-        return "N";
+        ret.put("status","N");
+        return ret;
     }
 
 

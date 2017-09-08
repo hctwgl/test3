@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.repaycash;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
@@ -11,6 +12,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -37,15 +39,18 @@ import java.util.Map;
 public class GetRepayCashByOrderId implements ApiHandle {
     @Resource
     YiBaoUtility yiBaoUtility;
+    @Resource
+    AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
         String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"), "").toString();
-        String status = yiBaoUtility.getOrderByYiBao(orderNo);
-        HashMap map = new HashMap();
-        map.put("result",status);
-        resp.setResponseData(map);
+        Map<String,String> ret = yiBaoUtility.getOrderByYiBao(orderNo);
+        AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(orderNo);
+        ret.put("refId",repayment.getRid().toString());
+        resp.setResponseData(ret);
         return resp;
     }
 }
