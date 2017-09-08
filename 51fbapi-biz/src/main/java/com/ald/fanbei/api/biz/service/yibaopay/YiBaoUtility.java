@@ -45,6 +45,7 @@ public class YiBaoUtility {
         ret.put("goodsParamExt",goodsParamExt);
         ret.put("csUr",csUr);
         ret.put("fundProcessType",fundProcessType);
+        ret.put("timeoutExpress","1"); //有效时间
 
         String uri = YeepayService.getUrl(YeepayService.TRADEORDER_URL);
         Map<String,String> yeeRet =  YeepayService.requestYOP(ret, uri, YeepayService.TRADEORDER);

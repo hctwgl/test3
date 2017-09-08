@@ -387,6 +387,22 @@ public class PayRoutController {
 		thirdLog.info("yibaoresonseMsg_Match = "+ JSON.toJSONString(afYibaoOrderDo));
 
 		String attach = afYibaoOrderDo.getPayType();
+
+
+		if(status.toLowerCase().equals("timeout") || status.toLowerCase().equals("closed")){
+			thirdLog.info("yibaoresonse fail: "+"status="+status+",orderNo="+orderId);
+
+			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo);
+			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
+			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
+			}
+			return "SUCCESS";
+		}
+
+
 		if (PayOrderSource.ORDER.getCode().equals(attach)) {
 			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
 		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
