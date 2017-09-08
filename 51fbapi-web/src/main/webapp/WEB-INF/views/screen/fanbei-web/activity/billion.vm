@@ -60,7 +60,7 @@
                         <i :class="{'circleMoney':true,'change':active==2}">800元</i>
                     </span>
                     <span >
-                        <i  :class="{'date':true,'change':active==3}">${date5}</i><br/>
+                        <i  :class="{'date':true,'change':active==3}">${date4}</i><br/>
                         <i :class="{'circleMoney':true,'change':active==3}">900元</i>
                     </span>
                     <span >
@@ -91,7 +91,10 @@
                 <p class="timeMoney"><i class="RMB" id="RMB">${winAmount}</i>元现金</p>
                 <p class="award">开奖倒计时</p>
                 <!--<p class="countDown">${dates}</p>-->  
-                <p class="countDown"> 
+                <p class="countDown" id="count">
+                    <!--<span id="year">00年</span>
+                    <span id="month">00月</span>
+                    <span id="day">00日</span>!-->
                     <span id="hour">00时</span>
                     <span id="minute">00分</span>
                     <span id="second">00秒</span></p>

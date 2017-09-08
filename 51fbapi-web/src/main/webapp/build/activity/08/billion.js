@@ -14,8 +14,8 @@ var vm = new Vue({
         data: null,
         active: 0,
         famen: true,
-        timeoutdata:[],
-        str:{}
+        timeoutdata: [],
+        str: {}
     },
     created: function () {
         let _this = this;
@@ -37,21 +37,130 @@ var vm = new Vue({
                 success: function (data) {
                     console.log(data);
                     var str = data.data; //获取返回的破十五亿金额
-                    _this.num = JSON.parse(str);//转成json字符串
+                    _this.num = JSON.parse(str); //将json字符串转化成对象
                     var num = _this.num;
+                    var startTime = num.startrTime; //活动开始时间  
+                    var lasttime=startTime-new Date().getTime();
+                    var time2 = setInterval(function () {  
+                         GetRTime(new Date(new Date(new Date().getTime()-startTime)) )
+                    }, 0);
+                    console.log(111111111)
+                    var endTime = num.endTime; //活动结束时间戳
                     console.log(num)
-                    var overTime=num.timeStemp;//活动结束时间戳
-                    console.log(overTime)
-                    overTime = +overTime + 24 * 60 * 60 * 1000;//活动结束时间
-                    //倒计时时间为活动结束时间是 倒计时显示都为0
-                    var time=document.getElementsByClassName('countDown').innerHTML;//获取倒计时
-                    if(time==overTime){
-                        document.getElementById("hour").innerHTML = 0 + "时";
-                        document.getElementById("minute").innerHTML = 0 + "分";
-                        document.getElementById("second").innerHTML = 0 + "秒";
+                    console.log(startTime)
+                    console.log(endTime)
+
+                    function add0(m) {
+                        return m < 10 ? '0' + m : m
+                    }
+                    function Getthistime(endTime) {
+                        //var EndTime= new Date('2017/09/11 10:00:00');
+                        var t = parseInt(endTime);
+
+                        //时间戳是整数，否则要parseInt转换
+                        var time = new Date(endTime);
+                        var y = time.getFullYear();
+                        var m = time.getMonth() + 1;
+                        var d = time.getDate();
+                        var h = time.getHours();
+                        var mm = time.getMinutes();
+                        var s = time.getSeconds();
+                        return y + '-' + add0(m) + '-' + add0(d) + ' ' + add0(h) + ':' + add0(mm) + ':' + add0(s);
+
+                    }
+/*                  endTime = Getthistime(endTime) //活动结束时间
+                    console.log(endTime); */
+
+                    //开奖倒计时
+                    //从上线开始时间开始倒计时 一直到次日上午10点开始
+                    var Day = 0;
+                    var Hour = 0;
+                    var Minute = 0;
+                    var Second = 0;
+                    var Start = document.getElementById("start");
+
+                    //var startTime=new Date('2017/09/10 09:26:21');
+                    function GetNextDate(time) {
+                        //获取当前时间年月日
+                        var y = time.getFullYear();
+                        var m = time.getMonth() + 1;
+                        var d = time.getDate();
+                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
+                        // var t = y + "-" + m + "-" + d + " " + "17:09:00";
+                        var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
+                        tDate = +tDate + 24 * 60 * 60 * 1000;
+                        tDate = new Date(tDate);
+                        return tDate;
                     }
 
-                    
+                    function GetRTime(a) {
+                        //var EndTime= new Date('2017/09/11 10:00:00');
+                        var NowTime = a; //当前时间        
+                        var EndTime = GetNextDate(NowTime);
+                        //console.log(EndTime)  
+                        //console.log(NowTime)                     
+
+                        t = EndTime.getTime() - NowTime.getTime();
+                        if (t >= 0) {
+                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
+                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+                            Minute = Math.floor(t / 1000 / 60 % 60);
+                            Second = Math.floor(t / 1000 % 60);
+                        } else {
+                            t += 1000 * 60 * 60 * 24;
+                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
+                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+                            Minute = Math.floor(t / 1000 / 60 % 60);
+                            Second = Math.floor(t / 1000 % 60);
+                        }
+                        // document.getElementById("day").innerHTML = Day + "天";
+                        document.getElementById("hour").innerHTML = Hour + "时";
+                        document.getElementById("minute").innerHTML = Minute + "分";
+                        document.getElementById("second").innerHTML = Second + "秒";
+
+                        //当前倒计时时间
+                        var rightNow = document.getElementById("hour").innerHTML + document.getElementById("minute").innerHTML + document.getElementById("second").innerHTML
+                        //console.log(rightNow,'111')
+                        endTime = Getthistime(endTime) //活动结束时间
+                        //console.log(endTime)
+                        //var endTime=new Date("9 8,2017 12:05:00")
+
+                        //倒计时时间为活动结束时间时 倒计时显示都为0
+                        /* if(rightNow >= endTime){
+                            console.log(232323232323232323)
+                            document.getElementById("hour").innerHTML = 0 + "时";
+                            document.getElementById("minute").innerHTML = 0 + "分";
+                            document.getElementById("second").innerHTML = 0 + "秒";
+                        }  */
+
+                        //倒计时为0的时候去请求接口
+                        if (Hour == 0 & Minute == 0 & Second == 0 & _this.famen) { //当倒计时为0时   这里已经做过判断 且再异步下实时判断才行 下面判断只判断一次所以没用
+                            _this.famen = false;
+                            clearTimeout(time1)
+                            setTimeout(function () {
+                                _this.famen = true;
+                            }, 1000) //设置定时器
+                            RMB = document.getElementById('RMB').innerHTML;
+                            console.log(RMB);
+                            $.ajax({
+                                url: '/fanbei-web/activity/randomUser',
+                                dataType: 'json',
+                                type: 'post',
+                                data: {
+                                    winAmount: RMB //将开奖金额传给后台
+                                },
+                                success: function (data) {
+                                    console.log(data)
+                                    _this.timeoutdata = data;
+                                }
+                            })
+                            _this.initial();
+                        }
+                    }
+                    var time1 = setInterval(GetRTime(new Date()), 0);
+                    //clearTimeout(time1);
+
+
                     //判断小额现金贷是否为10位
                     if (num.length >= 10) {
                         //隐藏9位数的背景和样式
@@ -64,16 +173,7 @@ var vm = new Vue({
                     } else if (num == 1500000000) { //到达15亿的时候
                         $("#scroll_div").show(); //显示顶部轮播
                     }
-                    
-                    //烟花特效
-                    /* $('.fireWorks').fireworks({
-                         sound: true, // 声音效果
-                          opacity: 0.8, 
-                          width: '50%', 
-                          height: '50%',
-                          
-                    }) */
-                          
+
 
                     ScrollImgLeft();
                     //文字轮播
@@ -100,88 +200,10 @@ var vm = new Vue({
                         }
                     }
 
-                    //开奖倒计时
-                    //第一次开奖前没有开奖名单 只是显示第一次开奖倒计时
-                    //第一次开奖后 左侧显示下一次倒计时 右侧显示最新的开奖结果
-                    //从上线开始时间开始倒计时 一直到次日上午10点开始
-                    var Day = 0;
-                    var Hour = 0;
-                    var Minute = 0;
-                    var Second = 0;
-                    var Start = document.getElementById("start");
-
-                    //var startTime=new Date('2017/09/10 09:26:21');
-                    function GetNextDate(time) {
-                        //获取当前时间年月日
-                        var y = time.getFullYear();
-                        var m = time.getMonth() + 1;
-                        var d = time.getDate();
-                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        // var t = y + "-" + m + "-" + d + " " + "17:42:00";
-                        var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
-                        tDate = +tDate + 24 * 60 * 60 * 1000;
-                        tDate = new Date(tDate);
-                        return tDate;
-                    }
-
-                    function GetRTime() {
-                        //var EndTime= new Date('2017/09/11 10:00:00');
-                        var NowTime = new Date();
-                        var EndTime = GetNextDate(NowTime);
 
 
-                        t = EndTime.getTime() - NowTime.getTime();
-                        if (t >= 0) {
-                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
-                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
-                            Minute = Math.floor(t / 1000 / 60 % 60);
-                            Second = Math.floor(t / 1000 % 60);
-                        } else {
-                            t += 1000 * 60 * 60 * 24;
-                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
-                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
-                            Minute = Math.floor(t / 1000 / 60 % 60);
-                            Second = Math.floor(t / 1000 % 60);
-                        }
-                        // document.getElementById("day").innerHTML = Day + "天";
-                        document.getElementById("hour").innerHTML = Hour + "时";
-                        document.getElementById("minute").innerHTML = Minute + "分";
-                        document.getElementById("second").innerHTML = Second + "秒";
-
-                         //倒计时为0的时候去请求接口
-                        if (Hour == 0 & Minute == 0 & Second == 0&_this.famen ) { //当倒计时为0时   这里已经做过判断 且再异步下实时判断才行 下面判断只判断一次所以没用
-                            _this.famen = false;
-                            clearTimeout(time1)
-                           setTimeout(function(){
-                                _this.famen = true;
-                           },1000)//设置定时器
-                            RMB = document.getElementById('RMB').innerHTML;
-                            console.log(RMB);
-                            $.ajax({
-                                url: '/fanbei-web/activity/randomUser',
-                                dataType: 'json',
-                                type: 'post',
-                                data: {
-                                    winAmount: RMB //将开奖金额传给后台
-                                },
-                                success: function (data) {
-                                    console.log(data)
-                                    _this.timeoutdata=data;
-
-                                    
-                                }
-                            })
-                             _this.initial();
-                        }
-
-
-                    }
-                    var time1 = setInterval(GetRTime, 0);
-                    //clearTimeout(time1);
-                   
 
                 }
-
 
             })
 
@@ -205,6 +227,7 @@ var vm = new Vue({
                 //判断进度条的亮度
                 if (RMB == 600) {
                     _this.active = 0;
+
                 } else if (RMB == 700) {
                     _this.active = 1;
 
@@ -216,6 +239,7 @@ var vm = new Vue({
 
                 } else if (RMB == 1000) {
                     _this.active = 4;
+
 
                 }
                 //_this.active = 0;//默认显示第一个
