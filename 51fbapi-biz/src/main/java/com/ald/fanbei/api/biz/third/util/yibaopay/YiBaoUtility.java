@@ -135,7 +135,7 @@ public class YiBaoUtility {
             if(status.equals("PROCESSING")){
                 return "P";
             }
-            else if (status.equals("success")){
+            else if (status.equals("SUCCESS")){
                 return "Y";
             }
             return "N";

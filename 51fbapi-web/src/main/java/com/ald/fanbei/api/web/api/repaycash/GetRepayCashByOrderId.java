@@ -43,7 +43,9 @@ public class GetRepayCashByOrderId implements ApiHandle {
         Long userId = context.getUserId();
         String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"), "").toString();
         String status = yiBaoUtility.getOrderByYiBao(orderNo);
-        resp.setResponseData(status);
+        HashMap map = new HashMap();
+        map.put("result",status);
+        resp.setResponseData(map);
         return resp;
     }
 }
