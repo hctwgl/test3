@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
+
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
+import com.ald.fanbei.api.dal.domain.AfGameDo;
 
 /**
  * 业务访问记录Service
@@ -17,4 +19,11 @@ public interface AfBusinessAccessRecordsService extends ParentService<AfBusiness
 	 * @return
 	 */
 	boolean checkIsSignToday(Long userId);
+
+	/**
+	 * 签到
+	 * @param gameDo
+	 * @param userId
+	 */
+	void doSign(AfGameDo gameDo, Long userId);
 }

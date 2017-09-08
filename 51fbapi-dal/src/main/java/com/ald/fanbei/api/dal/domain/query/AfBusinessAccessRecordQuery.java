@@ -11,7 +11,7 @@ public class AfBusinessAccessRecordQuery implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String refType; //来源，借贷超市列表或banner
-	private String userId;
+	private Long userId;
 //	private Long refId;
 	private Date beginTime;
 	private Date endTime;
@@ -40,10 +40,10 @@ public class AfBusinessAccessRecordQuery implements Serializable {
 	public void setFromApp(Boolean fromApp) {
 		this.fromApp = fromApp;
 	}
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 }

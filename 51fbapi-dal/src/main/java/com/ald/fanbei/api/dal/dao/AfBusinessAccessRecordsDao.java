@@ -25,9 +25,38 @@ public interface AfBusinessAccessRecordsDao extends BaseDao<AfBusinessAccessReco
 	int getSignCountToday(@Param("userId") Long userId);
 	
 	/**
-	 * 获取签到过的借贷超市id列表
+	 * 获取用户点击的过借贷超市的个数
 	 * @return
 	 */
-	List<String> getSignSuperMarketIds(AfBusinessAccessRecordQuery query);
+	List<String> getSignedSuperMarketList(AfBusinessAccessRecordQuery query);
+	
+	/**
+	 * 获取用户今天访问的借贷超市的个数(不包含访问过的借贷超市)
+	 * @param superMarketIds(访问过的借贷超市)
+	 * @return
+	 */
+	int getVisitCountToday(@Param("superMarketIds") List<String> superMarketIds,@Param("userId") Long userId);
+	
+	/**
+	 * 获取四个借贷超市的访问记录id
+	 * @param signedMarketIds
+	 * @return
+	 */
+	List<String> getFourMarketIds(@Param("superMarketIds")List<String> signedMarketIds,@Param("userId") Long userId);
+	/**
+	 * 获取需要修为为签到状态的id
+	 * @param superMarketIds
+	 * @return
+	 */
+	List<String> getNeedSignIds(@Param("superMarketIds") List<String> superMarketIds,@Param("userId") Long userId);
+	
+	
+	
+	/**
+	 * 批量修改为签到状态
+	 * @param ids
+	 */
+	void batchSetSignByIds(@Param("ids") List<String> ids);
+	
 
 }

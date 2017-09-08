@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,8 @@ import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -24,6 +27,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
+import com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -96,6 +100,7 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 	 * 规则（用户每天逛4个借贷超市算签到，否则不算，已签到的不能重复签到）
 	 */
 	private void sign(Long userId){
+		
 		AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign");
 		// 判断活动时间
 		Date startDate = gameDo.getGmtStart();
@@ -111,6 +116,6 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 			return; //今天签到过
 		}
 		
-		
+		afBusinessAccessRecordsService.doSign(gameDo,userId);
 	}
 }

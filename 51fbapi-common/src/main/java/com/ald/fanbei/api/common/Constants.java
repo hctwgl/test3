@@ -345,5 +345,8 @@ public class Constants {
 	
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
+	
+	//借贷超市签到锁
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "ala_loan_supermarket_sign_lock$";
 
 }
