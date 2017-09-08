@@ -11,12 +11,14 @@ $(function () {
     var userName = param['userName'];
     var word = param['loginSource'];
     var itemsId = param['itemsId'];
+    // var showCode = param['showCode'];
     $.ajax({
         url: "/H5GGShare/ggSendItems",
         type: 'GET',
         dataType: 'JSON',
         data: {
             userItemsId:userItemsId
+            // showCode:showCode
         },
         success: function (data) {
             console.log(data)
@@ -43,7 +45,6 @@ $(function () {
             } else {
                 requestMsg(data.msg);
             }
-
         }
     })
 
@@ -82,6 +83,11 @@ $(function () {
         $('.alertRule').hide();
     })
 
+    //点击参与人数进入排行榜
+    $('.joinAmount').click(function(){
+        window.location.href='ggrankingList?activityId='+activityId;
+    })
+
     //点击我要赠送卡片(领走卡片)
     $('.presentCard').click(function () {
         var word=$(this).html();
@@ -96,7 +102,7 @@ $(function () {
                 console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
-                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName + "&userItemsId=" + userItemsId;
+                        window.location.href = "gglogin?word=Z"+"&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName + "&userItemsId=" + userItemsId;
                     }else{
     
                      requestMsg(outputData.msg);
@@ -109,7 +115,8 @@ $(function () {
 
     //点击我要索要卡片(点亮)
     $('.demandCard').click(function () {
-        var word=$(this).html();
+        // var word=$(this).html();
+        // var userName = param['userName'];
         $.ajax({
             url: "/H5GGShare/lightItems",
             type: 'GET',
@@ -121,31 +128,29 @@ $(function () {
                 console.log(outputData)
                 if (outputData.success) {
                     if(outputData.msg=="没有登录"){
-                        window.location.href = "gglogin?word=Z"+"&&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName + "&userItemsId=" + userItemsId;               
+                        window.location.href = "gglogin?word=Z&urlName=" + urlName + "&activityId=" + activityId +"&userName=" + userName + "&userItemsId=" + userItemsId;
                     }else{
-                       var userName = outputData.data.userName;
-                       window.location.href = "ggIndexShare?userName="+userName+"&activityId=" + activityId;;
+                       userName = outputData.data.userName;
+                       window.location.href = "ggIndexShare?userName="+userName+"&activityId=" + activityId;
                     }
                 }
                 
             }
         })
     })
-
-
 })
 
 //截取字符串方法
 function getUrlParam(url) {
-    var param = new Object(); 
-    if (url.indexOf("?") != -1) { 
-        var str = url.substr(url.indexOf("?")+1,url.length); 
+    var param = new Object();
+    if (url.indexOf("?") != -1) {
+        var str = url.substr(url.indexOf("?")+1,url.length);
         var strs=[];
-        strs = str.split("&"); 
-        for(var i = 0; i < strs.length; i ++) { 
-            param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
-        } 
-    } 
-    return param; 
+        strs = str.split("&");
+        for(var i = 0; i < strs.length; i ++) {
+            param[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+        }
+    }
+    return param;
 
 }

@@ -23,5 +23,7 @@ public interface AfActivityGoodsService {
 
 	List<AfEncoreGoodsDto> listNewEncoreGoodsByActivityId(Long activityId, Integer appVersion);
 
+	List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(Long activityId);
+
 	
 }

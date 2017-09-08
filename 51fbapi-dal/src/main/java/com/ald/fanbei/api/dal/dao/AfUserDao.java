@@ -53,4 +53,6 @@ public interface AfUserDao {
 	 * @return
 	 */
 	List<AfUserInvitationDto> getRecommendUserByRecommendId(@Param("recommendId")Long recommendId,@Param("start")Integer start,@Param("end")Integer end);
+
+	Long getUserIdByMobile(@Param("mobile")String mobile);
 }

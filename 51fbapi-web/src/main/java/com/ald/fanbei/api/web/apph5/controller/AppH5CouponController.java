@@ -111,6 +111,7 @@ public class AppH5CouponController extends BaseController {
         			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
         			String couponId = (String)arrayAll.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			if(afCouponDo == null) continue;
         			couponInfoMap.put("shopUrl", couponCategoryAll.getUrl());
         			couponInfoMap.put("couponId", afCouponDo.getRid());
         			couponInfoMap.put("name", afCouponDo.getName());
@@ -174,6 +175,7 @@ public class AppH5CouponController extends BaseController {
         			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
         			String couponId = (String)array.getString(i);
         			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+        			if(afCouponDo == null) continue;
         			couponInfoMap.put("shopUrl", afCouponCategoryDo.getUrl());
         			couponInfoMap.put("couponId", afCouponDo.getRid());
         			couponInfoMap.put("name", afCouponDo.getName());
@@ -321,32 +323,19 @@ public class AppH5CouponController extends BaseController {
     @RequestMapping(value = "activityCouponInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String activityCouponInfo(HttpServletRequest request, ModelMap model) throws IOException {
-		Calendar calStart = Calendar.getInstance();
-		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-		FanbeiWebContext context = new FanbeiWebContext();
     	try{
-    		context = doWebCheck(request, false);
-    		context = doWebCheck(request, false);
+    		// FanbeiWebContext context = doWebCheck(request, false);
+    		// context = doWebCheck(request, false);
     		JSONObject jsonObj = new JSONObject();
     		// 获取活动优惠券组信息
     		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
     		if(groupId == null) {
     			throw new FanbeiException("groupId can't be null or empty.");
     		}
-    		
-    		// 判断用户是否登录
-    		boolean isLogin = false;
-    		String userName = context.getUserName();
-			AfUserDo userDo = afUserService.getUserByUserName(userName);
-			Long userId = 0l;
-			if(userDo != null) {
-				isLogin = true;
-				userId = userDo.getRid();
-			}
     		// 根据Id获取分组优惠券
     		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
     		String coupons = couponCategory.getCoupons();
-    		List<Map<String,Object>> couponList = new ArrayList<Map<String,Object>>();
+    		
     		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
     		for(int i = 0; i < couponsArray.size(); i++){
     			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
@@ -360,13 +349,6 @@ public class AppH5CouponController extends BaseController {
     			couponInfoMap.put("amount", afCouponDo.getAmount());
     			couponInfoMap.put("useRange", afCouponDo.getUseRange());
     			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
-    			couponInfoMap.put("drawStatus", "N");
-    			if(isLogin) {
-    				int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
-    				if(count > 0) {
-    					couponInfoMap.put("drawStatus", "Y");
-    				}
-    			}
     			Date gmtStart = afCouponDo.getGmtStart();
     			if( gmtStart != null){
     				couponInfoMap.put("gmtStart", gmtStart.getTime());
@@ -379,19 +361,12 @@ public class AppH5CouponController extends BaseController {
     			} else {
     				couponInfoMap.put("gmtEnd", 0);
     			}
-    			couponList.add(couponInfoMap);
     		}
-    		jsonObj.put("couponInfoList",couponList);
-    		resp = H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj);
-    		return resp.toString(); 
+    		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
     		
     	} catch (Exception e) {
-    		logger.error("activityCouponInfo error",e);
-    		resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
-    		return resp.toString();
-    	}finally{
-			Calendar calEnd = Calendar.getInstance();
-			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
+    		e.printStackTrace();
+    		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
     	}
     }
     

@@ -52,6 +52,11 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 				: afActivityGoodsDao.listNewEncoreGoodsByActivityId(activityId);
 		
 	}
+
+	@Override
+	public List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(Long activityId) {
+		return afActivityGoodsDao.listHomeActivityGoodsByActivityId(activityId);
+	}
 	
 	
 	
