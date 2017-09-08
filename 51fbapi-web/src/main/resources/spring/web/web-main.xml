@@ -118,6 +118,7 @@
 				<value>/system/appPopImage</value>
 				<value>/system/getTabbarInfor</value>
 				<value>/user/submitShareAction</value>
+				<value>/user/checkMobileRegistered</value>
 				<value>/user/getImageCode</value>
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
@@ -172,6 +173,8 @@
 				<entry key="/user/addRecommendShared" value-ref="addRecommendSharedApi" />
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
+				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
+				
 				
 				<entry key="/user/signin" value-ref="signinApi" />
 
