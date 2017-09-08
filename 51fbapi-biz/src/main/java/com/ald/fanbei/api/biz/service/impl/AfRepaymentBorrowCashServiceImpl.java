@@ -246,8 +246,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
 						afYibaoOrderDo.setStatus(0);
 						afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-						return map;
-
 					}else if (cardId ==-3){
 						Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
 						for (String key : map1.keySet()) {
@@ -258,7 +256,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
 						afYibaoOrderDo.setStatus(0);
 						afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-						return map;
 					}
 					else if(cardId ==-4){
 
