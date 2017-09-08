@@ -130,8 +130,10 @@ public class AppBorrowCashToDrawController extends BaseController {
 			e1.printStackTrace();
 		}
 	     //long timeStemp = date.getTime();
+		Date currentDate=new Date();
 	     Map<String, Object> map=new HashMap();
 	     map.put("startrTime", date1);
+	     map.put("currentDate", currentDate);
 	     map.put("endTime", date2);
 	    
 		BigDecimal sumAmount=null;
