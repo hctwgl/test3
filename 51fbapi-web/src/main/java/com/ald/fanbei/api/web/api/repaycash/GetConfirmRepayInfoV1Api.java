@@ -24,7 +24,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,6 +50,8 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
     AfBorrowCashService afBorrowCashService;
     @Resource
     AfRenewalDetailService afRenewalDetailService;
+    @Resource
+    AfResourceService afResourceService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -80,7 +84,7 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
         if (userDto == null) {
             throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
-        if(cardId!=-1){
+        if( cardId ==-2 || cardId >0 ){
             String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
             if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
@@ -103,6 +107,18 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
             if(temAmount.compareTo(repaymentAmount)<0){
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
             }
+        }
+
+
+        List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
+        List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
+        AfResourceDo zfbDo = null;
+        AfResourceDo wxDo = null;
+        if(afResourceDoList !=null || afResourceDoList.size()>0){
+            zfbDo = afResourceDoList.get(0);
+        }
+        if(afResourceDoList1 !=null || afResourceDoList1.size()>0){
+            wxDo = afResourceDoList1.get(0);
         }
 
 
@@ -153,18 +169,33 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
             resp.addResponseData("type", map.get("type"));
         }else if(cardId==-1){//微信支付
             map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
-//            resp.setResponseData(map);
-            //todo hzp
 
+            if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")) {
+                map = afRepaymentBorrowCashService.createRepaymentYiBao(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
+                map.put("userNo",userDto.getUserName());
+                map.put("userType","USER_ID");
+                map.put("directPayType","WX");
+                resp.setResponseData(map);
+            }
+            else {
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
 
 
         }
-        else if(cardId ==-2){  //支付宝支付
-                //todo hzp
-
-
+        else if(cardId ==-3){  //支付宝支付
+            if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
+                map = afRepaymentBorrowCashService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
+                map.put("userNo", userDto.getUserName());
+                map.put("userType", "USER_ID");
+                map.put("directPayType", "ZFB");
+                resp.setResponseData(map);
+            }
+            else{
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
         }
-        else if(cardId ==-3){
+        else if(cardId ==-4){
 
         }
         else if(cardId>0){//银行卡支付

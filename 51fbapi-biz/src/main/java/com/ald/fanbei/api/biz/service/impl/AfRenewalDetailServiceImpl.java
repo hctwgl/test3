@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -44,14 +46,9 @@ import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 
 /**
  * @类描述：
@@ -89,6 +86,61 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	RiskUtil riskUtil;
 	@Resource
 	CollectionSystemUtil collectionSystemUtil;
+
+	@Resource
+	AfYibaoOrderDao afYibaoOrderDao;
+
+	@Override
+	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
+		Date now = new Date();
+		String repayNo = generatorClusterNo.getRenewalBorrowCashNo(now);
+		final String payTradeNo = repayNo;
+
+		String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
+
+		final AfRenewalDetailDo renewalDetail = buildRenewalDetailDo(afBorrowCashDo, jfbAmount, repaymentAmount, repayNo, actualAmount, rebateAmount, capital, borrow, cardId, payTradeNo, userId, appVersion);
+		Map<String, Object> map = new HashMap<String, Object>();
+		afRenewalDetailDao.addRenewalDetail(renewalDetail);
+
+		if (cardId == -1) {// 微信支付
+			Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
+			for (String key : map1.keySet()) {
+				map.put(key,map1.get(key));
+			}
+			AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
+			afYibaoOrderDo.setOrderNo(repayNo);
+			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
+			afYibaoOrderDo.setStatus(0);
+			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
+		}
+		else if(cardId ==-3){
+			Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
+			for (String key : map1.keySet()) {
+				map.put(key,map1.get(key));
+			}
+			AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
+			afYibaoOrderDo.setOrderNo(repayNo);
+			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
+			afYibaoOrderDo.setStatus(0);
+			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
+		}
+		else if (cardId > 0) {// 银行卡支付
+			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
+			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
+			if (!respBo.isSuccess()) {
+				dealRenewalFail(payTradeNo, "");
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			}
+			map.put("resp", respBo);
+		} else if (cardId == -2) {// 余额支付
+			dealRenewalSucess(renewalDetail.getPayTradeNo(), "");
+		}
+		map.put("refId", renewalDetail.getRid());
+		map.put("type", UserAccountLogType.RENEWAL_PAY.getCode());
+
+		return map;
+	}
 
 	@Override
 	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {

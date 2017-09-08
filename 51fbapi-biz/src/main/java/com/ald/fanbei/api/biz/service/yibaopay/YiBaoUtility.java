@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.biz.service.yibaopay;
 
 import com.ald.fanbei.api.biz.service.wxpay.WxpayCore;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.alibaba.fastjson.JSON;
 
 import java.math.BigDecimal;
@@ -20,14 +22,17 @@ public class YiBaoUtility {
      * @return
      */
     public static Map<String,String> createOrder(BigDecimal orderAmount,String orderId){
+
+        String baseUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+
         String merchantNo ="";  //商户编号
-        String redirectUrl ="http://www.baidu.com"; //同步回调地止
-        String notifyUrl ="http://www.baidu.com";   //异步
+        String redirectUrl ="http://www.baidu.com";         //同步回调地止
+        String notifyUrl =baseUrl+"/third/ups/yibaoback";   //异步
         HashMap<String,String> goods = new HashMap<>();
         goods.put("goodsName","51返呗还款");
         goods.put("goodsDesc","");
         String goodsParamExt= JSON.toJSONString(goods);
-        String csUr ="http://www.baidu.com";        //清算成功回调地止
+        String csUr =baseUrl+"/third/ups/yibaoqsback";        //清算成功回调地止
         String fundProcessType ="REAL_TIME";
 
         Map<String,String> ret = new HashMap();

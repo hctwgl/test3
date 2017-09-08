@@ -11,7 +11,7 @@
       "store_type": "file_p12",
       "cert_type": "RSA2048",
       "password": "123456",
-      "value": "/10014909101.p12"
+      "value": "/10000466938.p12"
     }
   ],
   "default_protocol_version": "yop-auth-v2",

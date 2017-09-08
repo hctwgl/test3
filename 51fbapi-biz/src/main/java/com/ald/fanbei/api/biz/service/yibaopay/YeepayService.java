@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.yibaopay;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.yeepay.g3.facade.yop.ca.dto.DigitalEnvelopeDTO;
 import com.yeepay.g3.facade.yop.ca.dto.DigitalSignatureDTO;
 import com.yeepay.g3.facade.yop.ca.enums.CertTypeEnum;
 import com.yeepay.g3.facade.yop.ca.enums.DigestAlgEnum;
@@ -14,12 +15,10 @@ import org.springframework.web.client.RestTemplate;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.*;
 
 public class YeepayService {
-
-	private static String merchantNo ="10014909101";
-
 
 	//yop接口应用URI地址
 	public static final String BASE_URL = "baseURL";
@@ -47,57 +46,13 @@ public class YeepayService {
 
 
 
-
-	//请求地止
-	//YOP基础地址
-	public static final String baseURL="https://open.yeepay.com/yop-center";
-	//YOP订单创建URI
-	public static final String  tradeOrderURI="/rest/v1.0/std/trade/order";
-	//YOP单笔订单查询URI
-	public static final String orderQueryURI="/rest/v1.0/std/trade/orderquery";
-	//YOP单笔退款URI
-	public static final String refundURI="/rest/v1.0/std/trade/refund";
-	//YOP单笔退款查询URI
-	public static final String refundQueryURI="/rest/v1.0/std/trade/refundquery";
-	//YOP批量订单查询URI
-	public static final String multiOrderQueryURI="/rest/v1.0/std/trade/multiorderquery";
-	//YOP订单关闭URI
-	public static final String orderCloseURI="/rest/v1.0/std/trade/orderclose";
-
-
-	//标准收银台
-	public static final String CASHIER_URL = "https://cash.yeepay.com/cashier/std";
-	//微信公众号
-	public static final String WECHATGZH_URL = "https://cash.yeepay.com/cashier/wx";
-	//直连模式
-	public static final String DIRECT_URL = "https://cash.yeepay.com/cashier/std";
-	//用户扫码
-	public static final String SCAN_URL = "https://cash.yeepay.com/cashier/pqr";
-	//页面重定向
-	public static final String REDIRECT_URL = "https://cash.yeepay.com/cashier/std";
-
-
 	//获取对应的请求地址
 	public static String getUrl(String payType){
-		switch (payType){
-			case "baseURL":
-				return baseURL;
-			case "tradeOrderURI":
-				return tradeOrderURI;
-			case "orderQueryURI":
-				return orderQueryURI;
-			case "refundURI":
-				return refundURI;
-			case "refundQueryURI":
-				return refundQueryURI;
-			case "multiOrderQueryURI":
-				return multiOrderQueryURI;
-			case "orderCloseURI":
-				return  orderCloseURI;
-			default:
-				return "";
-		}
+		return Configuration.getInstance().getValue(payType);
 	}
+
+
+
 
 	//获取对应的请求参数
 	public static String[] getParams(String payType){
@@ -139,16 +94,18 @@ public class YeepayService {
 		url.append("?sign="+sign+"&"+stringBuilder);
 		return url.toString();
 	}
-	
+
+
 	//获取父商编
 	public static String getParentMerchantNo(){
-		return merchantNo;
+		return Configuration.getInstance().getValue("parentMerchantNo");
 	}
 
 	//获取子商编
 	public static String getMerchantNo(){
-		return merchantNo;
+		return Configuration.getInstance().getValue("merchantNo");
 	}
+
 
 	//获取密钥P12
 	public static PrivateKey getSecretKey(){
@@ -156,6 +113,14 @@ public class YeepayService {
 		PrivateKey isvPrivateKey = internalConfig.getISVPrivateKey(CertTypeEnum.RSA2048);
 		return isvPrivateKey;
 	}
+
+	//获取公钥
+	public static PublicKey getPublicKey(){
+		InternalConfig internalConfig = InternalConfig.Factory.getInternalConfig();
+		PublicKey isvPublicKey = internalConfig.getYopPublicKey(CertTypeEnum.RSA2048);
+		return isvPublicKey;
+	}
+
 	//获取sign
 	public static String getSign(String stringBuilder){
 		String appKey = "OPR:"+getMerchantNo();
@@ -206,6 +171,8 @@ public class YeepayService {
 		if (response.getStringResult() != null) {
 			result = parseResponse(response.getStringResult());
 		}
+		result.put("sign",response.getSign());
+		result.put("timeStamp",response.getTs().toString());
 		return result;
 	}
 
@@ -228,6 +195,28 @@ public class YeepayService {
 		jsonMap	= JSON.parseObject(response, 
 				new TypeReference<TreeMap<String,String>>() {});
 		
+		return jsonMap;
+	}
+
+	/**
+	 *
+	 * @param response
+	 * @return
+	 */
+	public static Map<String, String> callback(String response){
+		DigitalEnvelopeDTO dto = new DigitalEnvelopeDTO();
+		dto.setCipherText(response);
+		Map<String,String> jsonMap  = new HashMap<>();
+		try {
+			InternalConfig internalConfig = InternalConfig.Factory.getInternalConfig();
+			PrivateKey privateKey = internalConfig.getISVPrivateKey(CertTypeEnum.RSA2048);
+			PublicKey publicKey = internalConfig.getYopPublicKey(CertTypeEnum.RSA2048);
+			dto = DigitalEnvelopeUtils.decrypt(dto, privateKey, publicKey);
+			System.out.println(dto.getPlainText());
+			jsonMap = parseResponse(dto.getPlainText());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return jsonMap;
 	}
 }
