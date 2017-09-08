@@ -7,7 +7,7 @@
 
 
 	<insert id="addYibaoOrder" parameterType="AfYibaoOrderDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_yibao_order(order_no ,yibao_no, pay_type , gtm_create , status,o_type,user_id,gtmUpdate)
+		INSERT INTO af_yibao_order(order_no ,yibao_no, pay_type , gtm_create , status,o_type,user_id,gtm_update)
 		VALUES (
 		#{orderNo},
 		#{yibaoNo},
@@ -21,15 +21,15 @@
 	</insert>
 
 	<update id="updateYiBaoOrderStatus">
-		update af_yibao_order set status = #{status},gmt_update = NOW() where id =#{id}
+		update af_yibao_order set status = #{status},gtm_update = NOW() where id =#{id}
 	</update>
 
 	<update id="updateYiBaoOrderStatusByOrderNo">
-		update af_yibao_order set status = #{status},gmt_update = NOW() where order_no =#{orderNo}
+		update af_yibao_order set status = #{status},gtm_update = NOW() where order_no =#{orderNo}
 	</update>
 
 	<update id="updateYiBaoOrderStatusLock">
-		update af_yibao_order set status = #{status},gmt_update = NOW() where id =#{id}  and gtm_update =#{gtmUpdate}
+		update af_yibao_order set status = #{status},gtm_update = NOW() where id =#{id}  and gtm_update =#{gtmUpdate}
 	</update>
 
 
