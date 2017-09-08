@@ -168,8 +168,6 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
             resp.addResponseData("refId", map.get("refId"));
             resp.addResponseData("type", map.get("type"));
         }else if(cardId==-1){//微信支付
-            map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
-
             if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")) {
                 map = afRepaymentBorrowCashService.createRepaymentYiBao(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
                 map.put("userNo",userDto.getUserName());
