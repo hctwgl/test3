@@ -121,15 +121,18 @@ public class AppBorrowCashToDrawController extends BaseController {
 	public String borrowCashActivities() {
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
 		 SimpleDateFormat simpleDateFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	     Date date = null;
+	     Date date1 = null;
+	     Date date2 = null;
 		try {
-			date = simpleDateFormat .parse(resource.getValue2());
+			date1 = simpleDateFormat .parse(resource.getValue());
+			date2 = simpleDateFormat .parse(resource.getValue2());
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
-	     long timeStemp = date.getTime();
+	     //long timeStemp = date.getTime();
 	     Map<String, Object> map=new HashMap();
-	     map.put("timeStemp", timeStemp);
+	     map.put("startrTime", date1);
+	     map.put("endTime", date2);
 	    
 		BigDecimal sumAmount=null;
 		DecimalFormat df = new DecimalFormat("0");
@@ -138,7 +141,6 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis get is fail" + e);
 		}
-		System.out.println(sumAmount);
 		if (sumAmount == null) {
 			sumAmount = afBorrowCashService.getBorrowCashSumAmount();
 		}
@@ -147,7 +149,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 		} catch (Exception e) {
 			logger.info("borrowCashActivities redis save is fail" + e);
 		}
-		map.put("amount", Integer.parseInt(df.format(sumAmount)));
+		char[] split = (df.format(sumAmount)+"").toCharArray();
+		map.put("amount", split);
 		String jsonString = JsonUtil.toJSONString(map);
 		H5CommonResponse response = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(), "",jsonString );
 		return JsonUtil.toJSONString(response);
