@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.repaycash;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
@@ -24,7 +25,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +52,9 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
     AfRenewalDetailService afRenewalDetailService;
     @Resource
     AfResourceService afResourceService;
+
+    @Resource
+    YiBaoUtility yiBaoUtility;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -97,6 +100,11 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
         }
 
 
+        if(! yiBaoUtility.checkCanNext(userId,0)){
+            return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
+        }
+
+
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
         if(afBorrowCashDo!=null){
 
@@ -120,6 +128,8 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
         if(afResourceDoList1 !=null || afResourceDoList1.size()>0){
             wxDo = afResourceDoList1.get(0);
         }
+
+
 
 
 
@@ -160,11 +170,15 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
         if(actualAmount.compareTo(showAmount)!=0){
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
         }
+        if(cardId ==-1 || cardId ==-3){
+
+        }
+
+
 
         Map<String,Object> map;
         if(cardId==-2){//余额支付
             map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
-
             resp.addResponseData("refId", map.get("refId"));
             resp.addResponseData("type", map.get("type"));
         }else if(cardId==-1){//微信支付

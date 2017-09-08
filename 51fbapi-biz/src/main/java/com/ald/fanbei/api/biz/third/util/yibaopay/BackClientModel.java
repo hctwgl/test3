@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.biz.service.yibaopay;
+package com.ald.fanbei.api.biz.third.util.yibaopay;
 
 /**
  * @author honghzengpei 2017/9/7 21:12
@@ -10,7 +10,6 @@ public class BackClientModel {
      * userName
      */
     private String userNo;
-
     /**
      * userId
      */

@@ -1,7 +1,5 @@
-package com.ald.fanbei.api.biz.service.yibaopay;
+package com.ald.fanbei.api.biz.third.util.yibaopay;
 
-import com.ald.fanbei.api.dal.dao.AfFeedBackDao;
-import com.ald.fanbei.api.dal.domain.AfFeedBackDo;
 import com.google.common.collect.Maps;
 import com.yeepay.g3.facade.yop.ca.enums.CertTypeEnum;
 import com.yeepay.g3.facade.yop.ca.enums.KeyStoreTypeEnum;
@@ -12,7 +10,6 @@ import com.yeepay.g3.sdk.yop.utils.JsonUtils;
 import com.yeepay.g3.sdk.yop.utils.config.CertConfig;
 import com.yeepay.g3.sdk.yop.utils.config.SDKConfig;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.BeanFactory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

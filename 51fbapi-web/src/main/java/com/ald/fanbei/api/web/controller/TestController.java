@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.service.yibaopay.YeepayService;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -68,12 +69,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
-import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
+
 
 @Controller
 public class TestController {
 	Logger logger = LoggerFactory.getLogger(TestController.class);
 
+	@Resource
+	YiBaoUtility yiBaoUtility;
 	@Resource
 	SmsUtil smsUtil;
 
@@ -799,16 +802,16 @@ public class TestController {
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
 
-		String aa = "BuBdn67olR2ohThZ4rg42YPZ6L905qvqWUv1NJnKPdZ8xi_6BkxUjFOahAMyxzzzqjdtwRKj2zFvQcfi0DQiWZVtlvZRF90Olc4HVl5pA0Go_RsY8t7WzwddODZ46qb91wwr3UT33c6YpNEyZKukQ7evQFtDrk7G9Q8Toa0ueGtToB-qgF3XdAzzQz4CwcY9qW1qnlWNzqwvpgILW9VZ27j8DmRZM6ZC_tXK1cpN79-mbywmjRO_GUnSgj-JRFLF4zI9DDhq03aNMaIFgiX3-r1DkN9fCnfLq7631rU7Wa5klro1M-qVTlQ64fP76j6u4xxW6JJOIflhghlEad9Jkg$30JwXcdZPhYeLK7gEkjBcAj6cEoirHVFxq0KST-iN2yT5oz6ipsHU6bacWyLol4PvCPEElMGm4GcsT7cLYcKQOt-Df-yErplvE-MgyUN8IoCNXF_DUsI0HlFKDqS_VZZwXoLBUWCq4AU4FidqCr8glUxkewspwaxvYM_Up2l1d5wHCpamn5mEecVf7ji9VeF6_Ta14sC2vbDYHbrrBnh2zArkh5pjKU-vqOrhnyElI3r9UgtFz2CrI-nZfLwXnxMWeheSVYj_D2YcKCxqs8Qo124Y7VtqZNoj9Vzv2zV7jvGzykhvMc_29AH6xXKCkxI5MGUXU8mMSVq3_UzePOPtHyJQQjFeRF1DE0_AN9uM3IYb57dm9ec9ngpu5jwaIkgAMqaN-IKDVLieAkQ9T_4nr0kgWmUhlQrMhkeQYhhItIAsDZPdR2dPjPQoggeS-bFCb3SjW7VqurTZ_A6q0cmANL9UbJuPV5FkLoLrSbXIxsIEqgi875pSY-93t47TDFw3HA9mLXMaUW45tiYtmt0HQZhl9clPPhvV2B8i4UgD2x_p8A-DphSLcWCbxDaQ5A8RJnTMETyXRFbmshzxuhqiRyJ2UPM5SNSBZ4B4QFcP52jb7DAKoWejfvyjzvM6JCeA2MKJvtOVJRbNThsBszhFq2DIfUjH_W2NrTFvoU2Tb6rNOTZY8yKcit0X-Pn3AQcfmHHVO7Q6eaiI3P0FHBZDI-_dIxLWHLVasqeyUKquL30mQhRGJJcv9Oc_UORjFvqg00c5T5MjSeCn-7z-VFNFo6LFNV66QYB8tI5LQA5RBNKVWVpd_SRglMSWveuCny3Gi1pBtQIxrAu4kHZda2UFHf749belWv_ze9s7OyYjeaBVqLO62IZVSfiAON9hGJhJHrwyIiTCWLlCLlE4SjVp1YHjeQ-YVSp-5UWlZE3Dso$AES$SHA256& customerIdentification=OPR:10000466938";
-		Map<String,String> addda = YeepayService.callback(aa);
-		String e ="";
+		Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
+//		String e ="";
 
 //		AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-//		afYibaoOrderDo.setOrderNo("adfasdfadsf11111");
+//		afYibaoOrderDo.setOrderNo("adfasdfadsf1dddddddddddddddddddddd1111");
 //		afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
 //		afYibaoOrderDo.setStatus(0);
+//		afYibaoOrderDo.setYibaoNo("afaf");
 //		afYiBaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-//		AfYibaoOrderDo afYibaoOrderDo1 = afYiBaoOrderDao.getYiBaoOrderByOrderNo("adfasdfadsf");
+//		AfYibaoOrderDo afYibaoOrderDo1 = afYiBaoOrderDao.getYiBaoOrderByOrderNo("adfasdfadsf1dddddddddddddddddddddd1111");
 
 		//afYiBaoOrderDao.updateYiBaoOrderStatusByOrderNo("adfasdfadsf11111",1);
 

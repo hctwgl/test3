@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -10,7 +11,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -52,6 +52,9 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
     AfRepaymentBorrowCashService afRepaymentBorrowCashService;
     @Resource
     AfResourceService afResourceService;
+
+    @Resource
+    YiBaoUtility yiBaoUtility;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -153,6 +156,11 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
             }
 
             BigDecimal actualAmount = BigDecimalUtil.subtract(repaymentAmount, jfb).subtract(userAmount);
+
+            if(! yiBaoUtility.checkCanNext(userId,1)){
+                return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
+            }
+
 
             Map<String, Object> map;
             if (cardId == -2) {// 余额支付

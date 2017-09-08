@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.biz.service.yibaopay;
+package com.ald.fanbei.api.biz.third.util.yibaopay;
 
 import java.util.ResourceBundle;
 

@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.biz.service.yibaopay;
+package com.ald.fanbei.api.biz.third.util.yibaopay;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.yeepay.g3.sdk.yop.enums.FormatType;

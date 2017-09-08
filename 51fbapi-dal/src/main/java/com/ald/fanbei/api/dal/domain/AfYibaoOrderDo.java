@@ -10,9 +10,13 @@ import java.util.Date;
 public class AfYibaoOrderDo {
     private Long id;
     private String orderNo;
+    private String yibaoNo;
     private String payType;
     private Date gtmCreate;
     private Integer status;
+    private Integer oType;
+    private Long userId;
+    private Date gtmUpdate;
 
     public Long getId() {
         return id;
@@ -52,5 +56,38 @@ public class AfYibaoOrderDo {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getYibaoNo() {
+        return yibaoNo;
+    }
+
+    public void setYibaoNo(String yibaoNo) {
+        this.yibaoNo = yibaoNo;
+    }
+
+
+    public Integer getoType() {
+        return oType;
+    }
+
+    public void setoType(Integer oType) {
+        this.oType = oType;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Date getGtmUpdate() {
+        return gtmUpdate;
+    }
+
+    public void setGtmUpdate(Date gtmUpdate) {
+        this.gtmUpdate = gtmUpdate;
     }
 }

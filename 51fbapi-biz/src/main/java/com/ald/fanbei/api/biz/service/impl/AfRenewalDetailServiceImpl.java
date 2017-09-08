@@ -10,7 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -90,6 +90,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	@Resource
 	AfYibaoOrderDao afYibaoOrderDao;
 
+	@Resource
+	YiBaoUtility yiBaoUtility;
+
+
 	@Override
 	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
 		Date now = new Date();
@@ -103,7 +107,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		afRenewalDetailDao.addRenewalDetail(renewalDetail);
 
 		if (cardId == -1) {// 微信支付
-			Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
+			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
 			for (String key : map1.keySet()) {
 				map.put(key,map1.get(key));
 			}
@@ -111,10 +115,13 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			afYibaoOrderDo.setOrderNo(repayNo);
 			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
 			afYibaoOrderDo.setStatus(0);
+			afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
+			afYibaoOrderDo.setUserId(userId);
+			afYibaoOrderDo.setoType(1);
 			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
 		}
 		else if(cardId ==-3){
-			Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
+			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
 			for (String key : map1.keySet()) {
 				map.put(key,map1.get(key));
 			}
@@ -122,6 +129,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			afYibaoOrderDo.setOrderNo(repayNo);
 			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
 			afYibaoOrderDo.setStatus(0);
+			afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
+			afYibaoOrderDo.setUserId(userId);
+			afYibaoOrderDo.setoType(1);
 			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
 		}
 		else if (cardId > 0) {// 银行卡支付
@@ -175,6 +185,17 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	}
 
 	long dealChangStatus(String outTradeNo, String tradeNo, String status, Long rid) {
+
+		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+		if(afYibaoOrderDo !=null){
+			if(afYibaoOrderDo.getStatus().intValue() == 1){
+				return 1L;
+			}
+			else{
+				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),3);
+			}
+		}
+
 		AfRenewalDetailDo afRenewalDetailDo = new AfRenewalDetailDo();
 		afRenewalDetailDo.setStatus(status);
 		afRenewalDetailDo.setTradeNo(tradeNo);
@@ -200,6 +221,17 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+					if(afYibaoOrderDo !=null){
+						if(afYibaoOrderDo.getStatus().intValue() == 1){
+							return 1L;
+						}
+						else{
+							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
+						}
+					}
+
+
 					AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByPayTradeNo(outTradeNo);
 					logger.info("afRenewalDetailDo=" + afRenewalDetailDo);
 					if (YesNoStatus.YES.getCode().equals(afRenewalDetailDo.getStatus())) {

@@ -3,6 +3,9 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * @author honghzengpei 2017/9/8 9:04
  * @类描述：易宝订单
@@ -13,4 +16,8 @@ public interface AfYibaoOrderDao {
     int updateYiBaoOrderStatus(@Param("id") long id,@Param("status") int status);
     int addYibaoOrder(AfYibaoOrderDo afYibaoOrderDo);
     int updateYiBaoOrderStatusByOrderNo(@Param("orderNo") String orderNo,@Param("status") int status);
+
+    List<AfYibaoOrderDo> getYiBaoUnFinishOrderByUserId(@Param("userId") Long userId,@Param("oType") int oType);
+
+    int updateYiBaoOrderStatusLock(@Param("status") int status, @Param("id")long id, @Param("gmtUpdate")Date gmtUpdate);
 }

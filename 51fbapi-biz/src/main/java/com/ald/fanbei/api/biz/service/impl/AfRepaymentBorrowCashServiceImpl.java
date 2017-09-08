@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
@@ -102,6 +102,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 	@Resource
 	AfYibaoOrderDao afYibaoOrderDao;
+	@Resource
+	YiBaoUtility yiBaoUtility;
 
 	
 	@Override
@@ -237,7 +239,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					Map<String, Object> map = new HashMap<String, Object>();
 					afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 					if (cardId == -1) {// 微信支付
-						Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
+						Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
 						for (String key : map1.keySet()) {
 							map.put(key,map1.get(key));
 						}
@@ -245,9 +247,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						afYibaoOrderDo.setOrderNo(repayNo);
 						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
 						afYibaoOrderDo.setStatus(0);
+						afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
+						afYibaoOrderDo.setUserId(userId);
+						afYibaoOrderDo.setoType(0);
 						afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
 					}else if (cardId ==-3){
-						Map<String, String> map1 = YiBaoUtility.createOrder(actualAmount,payTradeNo);
+						Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
 						for (String key : map1.keySet()) {
 							map.put(key,map1.get(key));
 						}
@@ -255,6 +260,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						afYibaoOrderDo.setOrderNo(repayNo);
 						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
 						afYibaoOrderDo.setStatus(0);
+						afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
+						afYibaoOrderDo.setUserId(userId);
+						afYibaoOrderDo.setoType(0);
 						afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
 					}
 					else if(cardId ==-4){
@@ -303,6 +311,18 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 						return 0l;
 					}
+
+					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+					if(afYibaoOrderDo !=null){
+						if(afYibaoOrderDo.getStatus().intValue() == 1){
+							return 1L;
+						}
+						else{
+							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
+						}
+					}
+
+
 
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
 					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
@@ -512,6 +532,16 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	}
 
 	long dealChangStatus(String outTradeNo, String tradeNo, String status, Long rid) {
+		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+		if(afYibaoOrderDo !=null){
+			if(afYibaoOrderDo.getStatus().intValue() == 1){
+				return 1;
+			}
+			else{
+				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),3);
+			}
+		}
+
 		AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
 		temRepayMent.setStatus(status);
 		temRepayMent.setTradeNo(tradeNo);
