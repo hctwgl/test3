@@ -670,7 +670,13 @@ public class RiskUtil extends AbstractThird {
 				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 				orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 				orderInfo.setClosedDetail("系统关闭");
+				//maqiaopan 2017-9-8 10:54:15风控拒绝原因字段添加
+				String rejectCode = verifybo.getRejectCode();
 				orderInfo.setClosedReason("风控审批不通过");
+				if (StringUtils.isNotBlank(rejectCode)){
+					orderInfo.setClosedReason("风控审批不通过"+rejectCode);
+				}
+				
 				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
 				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
@@ -766,7 +772,12 @@ public class RiskUtil extends AbstractThird {
 			orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 			orderInfo.setClosedDetail("系统关闭");
+			//maqiaopan 2017-9-8 10:54:15风控拒绝原因字段添加
+			String rejectCode = verybo.getRejectCode();
 			orderInfo.setClosedReason("风控审批不通过");
+			if (StringUtils.isNotBlank(rejectCode)){
+				orderInfo.setClosedReason("风控审批不通过"+rejectCode);
+			}
 			orderInfo.setGmtClosed(new Date());
 			logger.info("updateOrder orderInfo = {}", orderInfo);
 			if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
@@ -1261,7 +1272,12 @@ public class RiskUtil extends AbstractThird {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 							orderInfo.setClosedDetail("系统关闭");
+							//maqiaopan 2017-9-8 10:54:15风控拒绝原因字段添加
+							String rejectCode = object.get("result").toString();
 							orderInfo.setClosedReason("风控审批不通过");
+							if (StringUtils.isNotBlank(rejectCode)){
+								orderInfo.setClosedReason("风控审批不通过"+rejectCode);
+							}
 							orderInfo.setGmtClosed(new Date());
 							logger.info("updateOrder orderInfo = {}", orderInfo);
 							int re = orderDao.updateOrder(orderInfo);
