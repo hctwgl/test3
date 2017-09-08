@@ -14,7 +14,7 @@ public interface AfUserToutiaoService {
 
     int creatUser(AfUserToutiaoDo afUserToutiaoDo);
 
-    int getUserCount(String imei, String mac);
+    int uptUser(Long id);
 
-    int getUserActive(String imei, String mac);
+    AfUserToutiaoDo getUser(String imei, String mac, String androidid, String idfa, String udid);
 }

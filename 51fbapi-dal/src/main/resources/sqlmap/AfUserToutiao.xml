@@ -242,31 +242,36 @@
     </update>
 
 
-	<select id="getUserCount" resultType="java.lang.Integer">
+	<select id="getUser" resultType="AfUserToutiaoDo">
         SELECT
-        count(1)
+        id rid,active
         FROM af_user_toutiao
         where is_delete = 0
-        <if test="imei !=null">
+        <if test="imei !=null and imei!=''">
             AND imei=#{imei}
         </if>
-        <if test="mac !=null">
+        <if test="mac !=null and mac!=''">
             AND mac=#{mac}
         </if>
-    </select>
-
-    <select id="getUserActive" resultType="java.lang.Integer">
-        SELECT
-        active
-        FROM af_user_toutiao
-        where is_delete = 0
-        <if test="imei !=null">
-            AND imei=#{imei}
+        <if test="idfa !=null and idfa!=''">
+            AND idfa=#{idfa}
         </if>
-        <if test="mac !=null">
-            AND mac=#{mac}
+        <if test="androidid !=null and androidid!=''">
+            AND androidid=#{androidid}
+        </if>
+        <if test="udid !=null and udid!=''">
+            AND udid=#{udid}
         </if>
         limit 0,1
     </select>
+
+
+    <update id="uptUser"  parameterType="AfUserToutiaoDo">
+        UPDATE af_user_toutiao
+        <set>
+                gmt_modified = now()
+        </set>
+         where is_delete = 0 AND id=#{id}
+    </update>
 
 </mapper>

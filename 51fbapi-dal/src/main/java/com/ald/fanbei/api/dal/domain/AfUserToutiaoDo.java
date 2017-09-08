@@ -112,6 +112,13 @@ import java.math.BigDecimal;
      */
     private String callbackUrl;
 
+    /**
+     * 是否激活
+     */
+    private Integer active;
+
+
+
 
     /**
      * 获取主键Id
@@ -456,4 +463,11 @@ import java.math.BigDecimal;
       this.callbackUrl = callbackUrl;
     }
 
+    public Integer getActive() {
+        return active;
+    }
+
+    public void setActive(Integer active) {
+        this.active = active;
+    }
 }

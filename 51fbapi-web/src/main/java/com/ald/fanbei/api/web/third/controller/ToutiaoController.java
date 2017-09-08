@@ -1,44 +1,26 @@
 package com.ald.fanbei.api.web.third.controller;
 
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserToutiaoService;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
-import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.bouncycastle.crypto.macs.HMac;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,18 +37,14 @@ public class ToutiaoController extends BaseController {
 
     @Resource
     AfUserToutiaoService afUserToutiaoService;
-    private static CloseableHttpClient httpClient = null;
 
-    private static String secreat_key = "ffbba6e3-9edc-456d-8de2-bdffdbee22d7";
+    //private static String secreat_key = "ffbba6e3-9edc-456d-8de2-bdffdbee22d7";
 
     @RequestMapping(value = {"/getUser"}, method = RequestMethod.GET)
     @ResponseBody
     public JSONObject getUser( HttpServletRequest request, HttpServletResponse response) throws Exception{
         JSONObject returnjson = new JSONObject();
-        String requestData = "";
-
         try{
-            thirdLog.info("begin requestParams = {}",request.toString());
             StringBuilder sb = new StringBuilder();
             sb.append("---kdnotify begin:");
             Map<String, String[]> paramMap = request.getParameterMap();
@@ -75,43 +53,45 @@ public class ToutiaoController extends BaseController {
                 for (String value : values) {
                     sb.append("键:" + key + ",值:" + value);
                 }
-
             }
             sb.append("---kdnotify end");
 
             thirdLog.info(sb.toString());
             String mac = ObjectUtils.toString(request.getParameter("mac"), null);
             String imei = ObjectUtils.toString(request.getParameter("imei"), null);
+            String androidid = ObjectUtils.toString(request.getParameter("androidid"), null);
+            String idfa = ObjectUtils.toString(request.getParameter("idfa"), null);
+            String udid = ObjectUtils.toString(request.getParameter("udid"), null);
             //String os = ObjectUtils.toString(request.getParameter("os"), null);
             String callbackUrl = ObjectUtils.toString(request.getParameter("callback_url"), null);
-            thirdLog.info(callbackUrl);
-            if(StringUtil.isNotEmpty(imei)||StringUtil.isNotEmpty(mac)){
-                if(afUserToutiaoService.getUserCount(imei,mac)==0){
-                    Map<String, Object> map = buildParamMap(request);
-                    AfUserToutiaoDo afUserToutiaoDo = (AfUserToutiaoDo)map.get("afUserToutiaoDo");
+            Map<String, Object> map = buildParamMap(request);
+            AfUserToutiaoDo afUserToutiaoDo = (AfUserToutiaoDo)map.get("afUserToutiaoDo");
+            if(StringUtil.isNotEmpty(imei)||StringUtil.isNotEmpty(mac)||StringUtil.isNotEmpty(androidid)||StringUtil.isNotEmpty(idfa)||StringUtil.isNotEmpty(udid)){
+                AfUserToutiaoDo tdo = afUserToutiaoService.getUser(imei,mac,androidid,idfa,udid);
+                if(tdo==null){
                     afUserToutiaoService.creatUser(afUserToutiaoDo);
-                  }else{
-                    try{
-                        int active = afUserToutiaoService.getUserActive(imei,mac);
-                        if(active!=0){
-                           String result= HttpUtil.doPost(callbackUrl,"");
-                           logger.error("toutiaoresult:"+result);
-                        }else{
-                            logger.error(imei+"__"+mac);
-                        }
-                    }catch (Exception e) {
-                        logger.error("select active failed error",e.getMessage());
+                    logger.error("toutiaoresult:creat success:"+afUserToutiaoDo.toString());
+                }else{
+                    int active = tdo.getActive();
+                    Long rid = tdo.getRid();
+                    afUserToutiaoService.uptUser(rid);
+                    if(active!=0){
+                        String result= HttpUtil.doGet(callbackUrl,1);
+                        logger.error("toutiaoresult:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
+                    }else{
+                        logger.error("toutiaoresult:update success,active=0,id="+rid);
                     }
                 }
             }else{
                 returnjson.put("ret",-1);
                 returnjson.put("msg","missing params");
+                logger.error("toutiaoresult:all used params are null");
                 return returnjson;
             }
         } catch (Exception e) {
             returnjson.put("ret",-1);
             returnjson.put("msg","missing params");
-            logger.error("ToutiaoController failed error",e.getMessage());
+            logger.error("toutiaoresult:catch error",e.getMessage());
             return returnjson;
         }
 
@@ -157,11 +137,31 @@ public class ToutiaoController extends BaseController {
         afUserToutiaoDo.setUdid(udid);
         afUserToutiaoDo.setTs(timeStamp);
         afUserToutiaoDo.setUuid(uuid);
-
         map.put("afUserToutiaoDo",afUserToutiaoDo);
-
         return map;
     }
+
+    private static String md5(String data) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(data.toString().getBytes());
+        return bytesToHex(md.digest());
+    }
+
+    private static String bytesToHex(byte[] ch) {
+        StringBuffer ret = new StringBuffer("");
+        for (int i = 0; i < ch.length; i++)
+            ret.append(byteToHex(ch[i]));
+        return ret.toString();
+    }
+
+    /**
+     * 字节转换为16进制字符串
+     */
+    private static String byteToHex(byte ch) {
+        String str[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F" };
+        return str[ch >> 4 & 0xF] + str[ch & 0xF];
+    }
+
 
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {

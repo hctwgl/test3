@@ -35,13 +35,12 @@ public class AfUserToutiaoServiceImpl implements AfUserToutiaoService {
 	}
 
 	@Override
-	public int getUserCount(String imei, String mac){
-		System.out.print(1);
-		return afUserToutiaoDao.getUserCount(imei,mac);
+	public int uptUser(Long id) {
+		return afUserToutiaoDao.uptUser(id);
 	}
 
 	@Override
-	public int getUserActive(String imei, String mac) {
-		return afUserToutiaoDao.getUserActive(imei,mac);
+	public AfUserToutiaoDo getUser(String imei, String mac, String androidid, String idfa, String udid) {
+		return afUserToutiaoDao.getUser(imei,mac,androidid,idfa,udid);
 	}
 }
