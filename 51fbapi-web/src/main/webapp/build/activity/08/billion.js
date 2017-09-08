@@ -36,59 +36,10 @@ var vm = new Vue({
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
-                    // var str = data.data; //获取返回的破十五亿金额
-                    // var num = JSON.parse(str); //转成json字符串
-                    var num = {
-                        "amount": 1166942,
-                        "currentDate": 1504885534518,
-                        "startrTime": 1505016000000,
-                        "endTime": 1505361600000
-                    };
-                    var currentDate, diffTimer, day;
-                    var endTime = num.endTime; //活动结束时间戳 1505361600000
-                    var nowTime = num.startrTime; //活动开始时间 1505016000000
-                    var startrTime = num.currentDate; //后台服务器当前时间 1504884213607
-                    if (startrTime > nowTime) {
-                        $('#count').html('活动暂未开始')
-                    } else if (nowTime > endTime) {
-                        $('#count').html('活动结束')
-                    } else {
-                        var activeDaY = new Date(nowTime).getDate();
-                        var hour = new Date(nowTime).getHours();
-                        if (hour > 10 || new Date(startrTime).getDate() == new Date(nowTime).getDate()) {
-                            activeDaY += 1;
-                        }
-                        var year = new Date(nowTime).getFullYear();
-                        var month = new Date(nowTime).getMonth() + 1;
-                        var timer = setInterval(function () {
-                            nowTime += 1000;
-                            let end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
-                            if (activeDaY == new Date(endTime).getDate()) {
-                                end = new Date(endTime);
-                            }
-                            // console.log(year + '/' + month + '/' + activeDaY + ' 10:00:00');
-                            // console.log(new Date(nowTime));
-                            t = end.getTime() - nowTime;
-                            var Hour = Math.floor(t / 1000 / 60 / 60 % 24);
-                            var Minute = Math.floor(t / 1000 / 60 % 60);
-                            var Second = Math.floor(t / 1000 % 60);
-                            document.getElementById("hour").innerHTML = Hour + "时";
-                            document.getElementById("minute").innerHTML = Minute + "分";
-                            document.getElementById("second").innerHTML = Second + "秒";
-                            if (t < 1000) {
-                                // debugger
-                                nowTime = end.getTime();
-                                activeDaY = activeDaY + 1;
-                            }
-
-                            if (nowTime > endTime) {
-                                document.getElementById("hour").innerHTML = 0 + "时";
-                                document.getElementById("minute").innerHTML = 0 + "分";
-                                document.getElementById("second").innerHTML = 0 + "秒";
-                                clearInterval(timer)
-                            }
-                        }, 1000)
-                    }
+                    var str = data.data; //获取返回的破十五亿金额
+                    var num = JSON.parse(str);
+                    _this.num = num; //转成json字符串
+                    // console.log(num);
 
                     //判断小额现金贷是否为10位
                     if (num.length >= 10) {
@@ -263,4 +214,56 @@ function ScrollImgLeft() {
     scroll_div.onmouseout = function () {　　　　　　　
         MyMar = setInterval(Marquee, speed);　　　　　　　　　
     }
+}
+//倒計時
+var num = {
+    "amount": 1166942,
+    "currentDate": 1504885534518,
+    "startrTime": 1505016000000,
+    "endTime": 1505361600000
+};
+var currentDate, diffTimer, day;
+var endTime = num.endTime; //活动结束时间戳 1505361600000
+var nowTime = num.startrTime; //活动开始时间 1505016000000
+var startrTime = num.currentDate; //后台服务器当前时间 1504884213607
+if (startrTime > nowTime) { //当活动还未开始的时候进行判断
+    $('#count').html('活动暂未开始')
+} else if (nowTime > endTime) {
+    $('#count').html('活动结束')
+} else {
+    var activeDaY = new Date(nowTime).getDate();
+    var hour = new Date(nowTime).getHours();
+    if (hour > 10 || new Date(startrTime).getDate() == new Date(nowTime).getDate()) {
+        activeDaY += 1;
+    }
+    var year = new Date(nowTime).getFullYear();
+    var month = new Date(nowTime).getMonth() + 1;
+    var timer = setInterval(function () {
+        nowTime += 1000;
+        let end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
+        if (activeDaY == new Date(endTime).getDate()) {
+            end = new Date(endTime);
+        }
+        // console.log(year + '/' + month + '/' + activeDaY + ' 10:00:00');
+        // console.log(new Date(nowTime));
+        t = end.getTime() - nowTime;
+        var Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+        var Minute = Math.floor(t / 1000 / 60 % 60);
+        var Second = Math.floor(t / 1000 % 60);
+        document.getElementById("hour").innerHTML = Hour + "时";
+        document.getElementById("minute").innerHTML = Minute + "分";
+        document.getElementById("second").innerHTML = Second + "秒";
+        if (t < 1000) {
+            // debugger
+            nowTime = end.getTime();
+            activeDaY = activeDaY + 1;
+        }
+
+        if (nowTime > endTime) {
+            document.getElementById("hour").innerHTML = 0 + "时";
+            document.getElementById("minute").innerHTML = 0 + "分";
+            document.getElementById("second").innerHTML = 0 + "秒";
+            clearInterval(timer)
+        }
+    }, 1000)
 }
