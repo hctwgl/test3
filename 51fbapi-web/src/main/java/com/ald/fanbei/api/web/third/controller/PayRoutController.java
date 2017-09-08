@@ -381,8 +381,11 @@ public class PayRoutController {
 
 		AfYibaoOrderDo afYibaoOrderDo =afYibaoOrderDao.getYiBaoOrderByOrderNo(orderId);
 		if(afYibaoOrderDo ==null){
+			thirdLog.info("yibaoresonseMsg_NoMatch = "+ orderId);
 			return "SUCCESS";
 		}
+		thirdLog.info("yibaoresonseMsg_Match = "+ JSON.toJSONString(afYibaoOrderDo));
+
 		String attach = afYibaoOrderDo.getPayType();
 		if (PayOrderSource.ORDER.getCode().equals(attach)) {
 			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
