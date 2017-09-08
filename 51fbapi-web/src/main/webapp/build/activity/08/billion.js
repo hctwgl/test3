@@ -1,5 +1,6 @@
 var RMB = 0;
 var t = 0;
+var startTime = null;
 var vm = new Vue({
     el: '#billion',
     data: {
@@ -35,131 +36,59 @@ var vm = new Vue({
                 dataType: 'json',
                 type: 'post',
                 success: function (data) {
-                    console.log(data);
-                    var str = data.data; //获取返回的破十五亿金额
-                    _this.num = JSON.parse(str); //将json字符串转化成对象
-                    var num = _this.num;
-                    var startTime = num.startrTime; //活动开始时间  
-                    var lasttime=startTime-new Date().getTime();
-                    var time2 = setInterval(function () {  
-                         GetRTime(new Date(new Date(new Date().getTime()-startTime)) )
-                    }, 0);
-                    console.log(111111111)
-                    var endTime = num.endTime; //活动结束时间戳
-                    console.log(num)
-                    console.log(startTime)
-                    console.log(endTime)
-
-                    function add0(m) {
-                        return m < 10 ? '0' + m : m
-                    }
-                    function Getthistime(endTime) {
-                        //var EndTime= new Date('2017/09/11 10:00:00');
-                        var t = parseInt(endTime);
-
-                        //时间戳是整数，否则要parseInt转换
-                        var time = new Date(endTime);
-                        var y = time.getFullYear();
-                        var m = time.getMonth() + 1;
-                        var d = time.getDate();
-                        var h = time.getHours();
-                        var mm = time.getMinutes();
-                        var s = time.getSeconds();
-                        return y + '-' + add0(m) + '-' + add0(d) + ' ' + add0(h) + ':' + add0(mm) + ':' + add0(s);
-
-                    }
-/*                  endTime = Getthistime(endTime) //活动结束时间
-                    console.log(endTime); */
-
-                    //开奖倒计时
-                    //从上线开始时间开始倒计时 一直到次日上午10点开始
-                    var Day = 0;
-                    var Hour = 0;
-                    var Minute = 0;
-                    var Second = 0;
-                    var Start = document.getElementById("start");
-
-                    //var startTime=new Date('2017/09/10 09:26:21');
-                    function GetNextDate(time) {
-                        //获取当前时间年月日
-                        var y = time.getFullYear();
-                        var m = time.getMonth() + 1;
-                        var d = time.getDate();
-                        var t = y + "-" + m + "-" + d + " " + "10:00:00";
-                        // var t = y + "-" + m + "-" + d + " " + "17:09:00";
-                        var tDate = new Date(Date.parse(t.replace(/-/g, "/")));
-                        tDate = +tDate + 24 * 60 * 60 * 1000;
-                        tDate = new Date(tDate);
-                        return tDate;
-                    }
-
-                    function GetRTime(a) {
-                        //var EndTime= new Date('2017/09/11 10:00:00');
-                        var NowTime = a; //当前时间        
-                        var EndTime = GetNextDate(NowTime);
-                        //console.log(EndTime)  
-                        //console.log(NowTime)                     
-
-                        t = EndTime.getTime() - NowTime.getTime();
-                        if (t >= 0) {
-                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
-                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
-                            Minute = Math.floor(t / 1000 / 60 % 60);
-                            Second = Math.floor(t / 1000 % 60);
-                        } else {
-                            t += 1000 * 60 * 60 * 24;
-                            Day = Math.floor(t / 1000 / 60 / 60 / 24);
-                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
-                            Minute = Math.floor(t / 1000 / 60 % 60);
-                            Second = Math.floor(t / 1000 % 60);
+                    // var str = data.data; //获取返回的破十五亿金额
+                    // var num = JSON.parse(str); //转成json字符串
+                    var num = {
+                        "amount": 1166942,
+                        "currentDate": 1504885534518,
+                        "startrTime": 1505016000000,
+                        "endTime": 1505361600000
+                    };
+                    var currentDate, diffTimer, day;
+                    var endTime = num.endTime; //活动结束时间戳 1505361600000
+                    var nowTime = num.startrTime; //活动开始时间 1505016000000
+                    var startrTime = num.currentDate; //后台服务器当前时间 1504884213607
+                    if (startrTime > nowTime) {
+                        $('#count').html('活动暂未开始')
+                    } else if (nowTime > endTime) {
+                        $('#count').html('活动结束')
+                    } else {
+                        var activeDaY = new Date(nowTime).getDate();
+                        var hour = new Date(nowTime).getHours();
+                        if (hour > 10 || new Date(startrTime).getDate() == new Date(nowTime).getDate()) {
+                            activeDaY += 1;
                         }
-                        // document.getElementById("day").innerHTML = Day + "天";
-                        document.getElementById("hour").innerHTML = Hour + "时";
-                        document.getElementById("minute").innerHTML = Minute + "分";
-                        document.getElementById("second").innerHTML = Second + "秒";
+                        var year = new Date(nowTime).getFullYear();
+                        var month = new Date(nowTime).getMonth() + 1;
+                        var timer = setInterval(function () {
+                            nowTime += 1000;
+                            let end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
+                            if (activeDaY == new Date(endTime).getDate()) {
+                                end = new Date(endTime);
+                            }
+                            // console.log(year + '/' + month + '/' + activeDaY + ' 10:00:00');
+                            // console.log(new Date(nowTime));
+                            t = end.getTime() - nowTime;
+                            var Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+                            var Minute = Math.floor(t / 1000 / 60 % 60);
+                            var Second = Math.floor(t / 1000 % 60);
+                            document.getElementById("hour").innerHTML = Hour + "时";
+                            document.getElementById("minute").innerHTML = Minute + "分";
+                            document.getElementById("second").innerHTML = Second + "秒";
+                            if (t < 1000) {
+                                // debugger
+                                nowTime = end.getTime();
+                                activeDaY = activeDaY + 1;
+                            }
 
-                        //当前倒计时时间
-                        var rightNow = document.getElementById("hour").innerHTML + document.getElementById("minute").innerHTML + document.getElementById("second").innerHTML
-                        //console.log(rightNow,'111')
-                        endTime = Getthistime(endTime) //活动结束时间
-                        //console.log(endTime)
-                        //var endTime=new Date("9 8,2017 12:05:00")
-
-                        //倒计时时间为活动结束时间时 倒计时显示都为0
-                        /* if(rightNow >= endTime){
-                            console.log(232323232323232323)
-                            document.getElementById("hour").innerHTML = 0 + "时";
-                            document.getElementById("minute").innerHTML = 0 + "分";
-                            document.getElementById("second").innerHTML = 0 + "秒";
-                        }  */
-
-                        //倒计时为0的时候去请求接口
-                        if (Hour == 0 & Minute == 0 & Second == 0 & _this.famen) { //当倒计时为0时   这里已经做过判断 且再异步下实时判断才行 下面判断只判断一次所以没用
-                            _this.famen = false;
-                            clearTimeout(time1)
-                            setTimeout(function () {
-                                _this.famen = true;
-                            }, 1000) //设置定时器
-                            RMB = document.getElementById('RMB').innerHTML;
-                            console.log(RMB);
-                            $.ajax({
-                                url: '/fanbei-web/activity/randomUser',
-                                dataType: 'json',
-                                type: 'post',
-                                data: {
-                                    winAmount: RMB //将开奖金额传给后台
-                                },
-                                success: function (data) {
-                                    console.log(data)
-                                    _this.timeoutdata = data;
-                                }
-                            })
-                            _this.initial();
-                        }
+                            if (nowTime > endTime) {
+                                document.getElementById("hour").innerHTML = 0 + "时";
+                                document.getElementById("minute").innerHTML = 0 + "分";
+                                document.getElementById("second").innerHTML = 0 + "秒";
+                                clearInterval(timer)
+                            }
+                        }, 1000)
                     }
-                    var time1 = setInterval(GetRTime(new Date()), 0);
-                    //clearTimeout(time1);
-
 
                     //判断小额现金贷是否为10位
                     if (num.length >= 10) {
@@ -177,33 +106,8 @@ var vm = new Vue({
 
                     ScrollImgLeft();
                     //文字轮播
-                    function ScrollImgLeft() {
-                        var speed = 50;
-                        var MyMar = null;
-                        var scroll_begin = document.getElementById("scroll_begin");
-                        var scroll_end = document.getElementById("scroll_end");
-                        var scroll_div = document.getElementById("scroll_div");
-                        scroll_end.innerHTML = scroll_begin.innerHTML;
-
-                        function Marquee() {
-                            if (scroll_end.offsetWidth - scroll_div.scrollLeft <= 0)
-                                scroll_div.scrollLeft -= scroll_begin.offsetWidth;
-                            else
-                                scroll_div.scrollLeft++;
-                        }
-                        MyMar = setInterval(Marquee, speed);
-                        scroll_div.onmouseover = function () {　　　　　　　
-                            clearInterval(MyMar);　　　　　
-                        }
-                        scroll_div.onmouseout = function () {　　　　　　　
-                            MyMar = setInterval(Marquee, speed);　　　　　　　　　
-                        }
-                    }
-
-
-
-
                 }
+
 
             })
 
@@ -227,7 +131,6 @@ var vm = new Vue({
                 //判断进度条的亮度
                 if (RMB == 600) {
                     _this.active = 0;
-
                 } else if (RMB == 700) {
                     _this.active = 1;
 
@@ -239,7 +142,6 @@ var vm = new Vue({
 
                 } else if (RMB == 1000) {
                     _this.active = 4;
-
 
                 }
                 //_this.active = 0;//默认显示第一个
@@ -264,7 +166,6 @@ var vm = new Vue({
 
 
         },
-
         //点击立即借钱
         goBorrowMoney() {
             $.ajax({
@@ -340,3 +241,26 @@ var vm = new Vue({
     }
 
 });
+
+function ScrollImgLeft() {
+    var speed = 50;
+    var MyMar = null;
+    var scroll_begin = document.getElementById("scroll_begin");
+    var scroll_end = document.getElementById("scroll_end");
+    var scroll_div = document.getElementById("scroll_div");
+    scroll_end.innerHTML = scroll_begin.innerHTML;
+
+    function Marquee() {
+        if (scroll_end.offsetWidth - scroll_div.scrollLeft <= 0)
+            scroll_div.scrollLeft -= scroll_begin.offsetWidth;
+        else
+            scroll_div.scrollLeft++;
+    }
+    MyMar = setInterval(Marquee, speed);
+    scroll_div.onmouseover = function () {　　　　　　　
+        clearInterval(MyMar);　　　　　
+    }
+    scroll_div.onmouseout = function () {　　　　　　　
+        MyMar = setInterval(Marquee, speed);　　　　　　　　　
+    }
+}
