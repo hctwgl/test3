@@ -538,7 +538,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				return 1;
 			}
 			else{
-				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),3);
+				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),2);
 			}
 		}
 

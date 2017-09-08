@@ -294,6 +294,7 @@
 				<entry key="/borrowCash/getRenewalDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
 				<entry key="/repayCash/getConfirmRepayInfoV1" value-ref="getConfirmRepayInfoV1Api" />
+				<entry key="/repayCash/getRepayCashByOrderId" value-ref="getRepayCashByOrderIdApi" />
 
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />

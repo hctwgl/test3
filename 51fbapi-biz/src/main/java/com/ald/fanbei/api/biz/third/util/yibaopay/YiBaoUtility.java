@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
+import com.sun.org.apache.bcel.internal.generic.RET;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -115,6 +116,38 @@ public class YiBaoUtility {
         }
         return ret;
     }
+
+
+
+    public String getOrderByYiBao(String orderNo){
+        AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(orderNo);
+        if(afYibaoOrderDo == null){
+            return null;
+        }
+        if(afYibaoOrderDo.getStatus().intValue() == 0 || afYibaoOrderDo.getStatus().intValue() == 3){
+            Map<String, String> result = getYiBaoOrder(orderNo,afYibaoOrderDo.getYibaoNo());
+            if(!result.get("code").equals("OPR00000")){
+                return null;
+            }
+
+            String status = result.get("status");
+            proessUpdate(afYibaoOrderDo,status,afYibaoOrderDo.getoType());
+            if(status.equals("PROCESSING")){
+                return "P";
+            }
+            else if (status.equals("success")){
+                return "Y";
+            }
+            return "N";
+        }
+        int status = afYibaoOrderDo.getStatus();
+        if(status ==1){
+            return "Y";
+        }
+        return "N";
+    }
+
+
 
 
     /**
