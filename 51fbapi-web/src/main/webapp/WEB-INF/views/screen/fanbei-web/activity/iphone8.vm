@@ -10,14 +10,15 @@
 <body>
 <div id="iphone8">
     <div class="timeList clearFix">
-        <p class="time">9.13<br/>新品预约</p>
+        <p class="time active">9.13<br/>新品预约</p>
         <p class="time">9.20<br/>新品正式发售</p>
         <p class="time">9.21-9.22<br/>特卖秒杀</p>
         <p class="time">9.25<br/>新品发货</p>
     </div>
-    <div class="banner"></div>
-    <div class="orderButton">1元预约 立减100元</div>
-    <div class="orderDes">恭喜您预约成功，iPhone8将在9.20正式开售<br/>100元代金券请在“我的-抵用券”里查看</div>
+    <div class="banner">
+        <div class="orderButton">1元预约 立减100元</div>
+        <div class="orderDes">恭喜您预约成功，iPhone8将在9.20正式开售<br/>100元代金券请在“我的-抵用券”里查看</div>
+    </div>
     <div class="getPrize">
         <p class="prizeTitle">获奖公告</p>
         <ul class="prizeList">
@@ -29,8 +30,25 @@
     </div>
     <div class="hotGood">
         <p class="hotGoodTitle"><span></span>爆款专区<span></span></p>
-        <div class="goodType01"></div>
-        <div class="goodType02"></div>
+        <div class="goodList01 clearFix">
+            <p class="goodImg"></p>
+            <p class="goodName">Apple 6 32G</p>
+            <p class="goodDes">9.21-9.22限时秒杀，正品</p>
+            <span class="nowPrice">￥2799.00</span>
+            <span class="originPrice">原价:￥2999.00</span>
+            <p class="fanMoney">返<span>86</span>元</p>
+            <p class="monthPrice">月供<span>37</span>元起</p>
+            <p class="limitTime">限时秒杀</p>
+        </div>
+        <div class="goodList02 clearFix">
+            <p class="goodImg"></p>
+            <p class="goodName">Apple 6 32G</p>
+            <p class="goodDes">9.21-9.22限时秒杀，正品</p>
+            <span class="nowPrice">￥2799.00</span>
+            <span class="originPrice">原价:￥2999.00</span>
+            <p class="fanMoney">返<span>86</span>元</p>
+            <p class="monthPrice">月供<span>37</span>元起</p>
+        </div>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/iphone8.js?version=$version"></script>
