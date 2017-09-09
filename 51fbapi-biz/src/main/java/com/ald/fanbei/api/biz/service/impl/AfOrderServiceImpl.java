@@ -29,6 +29,8 @@ import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -36,12 +38,14 @@ import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -51,10 +55,12 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.GoodsReservationWebFailStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -217,6 +223,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	
+	
+	@Resource
+	private AfGoodsService afGoodsService;
+	@Resource
+	private AfUserService afUserService;
+	@Resource
+	private SmsUtil smsUtil;
+	@Resource
+	private AfGoodsReservationService afGoodsReservationService;
 	
 	
 	@Override
@@ -1313,10 +1329,71 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 		//iPhone预约
-		String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
-		AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(orderInfo.getUserId(), activityId, orderInfo.getGoodsId(), rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
-
 			
+			AfUserDo afUserDo = afUserService.getUserById(orderInfo.getUserId());//
+			Map<String, Object> returnData = new HashMap<String, Object>();
+			Long rsvNums = 1L;
+			// 预约成功后发送短信开关 Y发送 N不发送
+			String sendMsgStatus = "";
+			String sendMsgInfo = "";
+			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
+			// 解析对应配置并校验
+			Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
+			sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
+			sendMsgInfo = StringUtil.null2Str(jsonObjRes.get("sendMsgInfo"));
+
+			AfResourceDo currActivityResource = afResourceService.getResourceByResourceId(activityId);
+			if (currActivityResource == null) {
+				//returnData.put("status", GoodsReservationWebFailStatus.ReservationActNotExist.getCode());
+				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationActNotExist.getName(), "", returnData).toString();
+			}
+
+			String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
+			AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
+
+			Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
+			if (revCountNums > 0) {
+				// 同活动同商品只允许一次预约
+				logger.warn("用户预约商品次数超限,预约失败。userId:" + orderInfo.getUserId() + ",activityId:" + activityId + ",goodsId" + goodsId + ",revCountNums" + revCountNums);
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationTimesOverrun.getCode());
+				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationTimesOverrun.getName(), "", returnData).toString();
+			}
+
+			if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
+				returnData.put("status", GoodsReservationWebFailStatus.ReservationFail.getCode());
+				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", returnData).toString();
+			}
+
+			// 预约成功，短信通知
+			if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
+				try {
+					boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), sendMsgInfo);
+					if (result == false) {
+						logger.error("活动产品预约成功消息通知发送失败userId：" + afUserDo.getRid());
+					}
+				} catch (Exception e) {
+					logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
+				}
+			}
+			//returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
+			//return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
+		//} catch (Exception e) {
+			//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", null).toString();
+		}
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		}
 		return result;
 	}
