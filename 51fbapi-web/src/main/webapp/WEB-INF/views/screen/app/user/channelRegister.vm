@@ -24,6 +24,8 @@
         <img src="$commonUrl/channel17_01.jpg">
     #elseif( $!{style}==21 )
         <img src="$commonUrl/channel21_01.jpg">
+    #elseif( $!{style}==24 )
+        <img src="$commonUrl/iphone8_03.jpg">
     #else
         <img src="$commonUrl/channel$!{style}_01.jpg">
     #end
@@ -42,6 +44,8 @@
             <img src="$commonUrl/channel17_002.png">
         #elseif( $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
             <img src="$commonUrl/channel17_02.jpg">
+        #elseif( $!{style}==24 )
+            <img src="$commonUrl/iphone8_04.jpg">
         #else
             <img src="$commonUrl/channel$!{style}_02.jpg">
         #end
@@ -54,14 +58,14 @@
 				    channelRegister$!{style}
 				#elseif( $!{style}==1 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
 				    channelRegister17
-				#elseif( $!{style}==22 )
+				#elseif( $!{style}==22 || $!{style}==24)
 				    channelRegister22
 			    #else
 				    channelRegister
 			    #end
 		   ">
             <li><input type="text" class="register_mobile" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
-            #if( $!{style}==1 || $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
+            #if( $!{style}==1 || $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 || $!{style}==24)
                 <li><input type="password" class=" register_password" id="register_password" placeholder="请输入密码" name="words" maxlength="18"></li>
             #else
                 <li class="clearfix">
@@ -69,7 +73,7 @@
                     <button class="register_codeBtn_right" id="register_codeBtn">点击获取</button>
                 </li>
             #end
-            #if( $!{style}==1 || $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
+            #if( $!{style}==1 || $!{style}==10 || $!{style}==13 || $!{style}==15 || $!{style}==16 || $!{style}==17 || $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==21 || $!{style}==22 || $!{style}==23 || $!{style}==24)
                 <li class="clearfix">
                     <input type="text" class="register_verification" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
                     <button class="register_codeBtn_right" id="register_codeBtn" style="
@@ -91,7 +95,7 @@
                 #end
             </li>
             <div class="clearfix register_checkbox">
-                #if( $!{style}==17 )
+                #if( $!{style}==17 || $!{style}==24)
                     <input type="checkbox" class="input_check input_check17" id="input_check" checked="checked">
                 #else
                     <input type="checkbox" class="input_check" id="input_check" checked="checked">
@@ -103,16 +107,16 @@
                 #elseif( $!{style}==22 )
                     <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolBrwPlatform">《借钱平台用户注册协议》</a>
                     </p>
-                #elseif( $!{style}==17 )
+                #elseif( $!{style}==17 || $!{style}==24)
                     <p class="clearfix" style="color:#949494;"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" style="color:#949494;">《51返呗用户注册协议》</a>
                     </p>
                 #else
                     <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a></p>
                 #end
             </div>
-            #if( $!{style}==1 || $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 )
+            #if( $!{style}==1 || $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23 || $!{style}==24)
                 <p class="clearfix" style="width: 3.0rem; margin: 0.2rem auto 0; color: #fff; font-size: 0.3rem;">
-                    #if( $!{style}==17 )
+                    #if( $!{style}==17 || $!{style}==24)
                         <span style="float:left;margin-right:0.1rem;color:#949494;">已注册用户</span>
                     #else
                         <span style="float:left;margin-right:0.1rem;">已注册用户</span>
@@ -192,8 +196,10 @@
 				hide
 			#elseif( $!{style}==22 )
 			    copyright22
-			#elseif( $!{style}==23 )
+			#elseif( $!{style}==23)
 			    copyright23
+			#elseif( $!{style}==24 )
+			    copyright24
 			#else
 				copyright$!{style}
 			#end
