@@ -32,4 +32,13 @@ public interface AfGoodsReservationDao {
      * @return
      */
     Integer getRevCountNumsByQueryCondition(AfGoodsReservationDo afGoodsReservationDo);
+    
+    /**
+     * 根据活动name获取活动id
+     * @param name
+     * 
+     * @return 
+     * 
+     * **/
+    long getActivityIdByname(String name);
 }

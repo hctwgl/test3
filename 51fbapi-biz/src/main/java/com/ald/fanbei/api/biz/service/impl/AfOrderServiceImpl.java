@@ -50,6 +50,7 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
@@ -74,6 +75,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityItemsDao;
@@ -102,6 +104,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
@@ -1309,6 +1312,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+		//iPhone预约
+		String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
+		AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(orderInfo.getUserId(), activityId, orderInfo.getGoodsId(), rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
+
+			
 		}
 		return result;
 	}

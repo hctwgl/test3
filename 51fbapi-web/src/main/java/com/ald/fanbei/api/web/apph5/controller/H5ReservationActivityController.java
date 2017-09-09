@@ -71,20 +71,23 @@ public class H5ReservationActivityController extends BaseController {
 	@RequestMapping(value = "/getActivityGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getActivityGoods() {
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceSecType.Iphone8ReservationActivity.getCode());
-		String value1 = resource.getValue();
-		List<Long> list = (List<Long>) JSONArray.parse(value1);
-		List<AfGoodsDo> afGoodsDo = afGoodsService.getAfGoodsDo(list);
+		
 		Map map = new HashMap();
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date currentDate = DateUtil.parseDateyyyyMMddHHmmss(sdf.format(date));
 		System.out.println(currentDate);
-		System.out.println("=====");
 		List<String> winUsers = (List<String>) bizCacheUtil.getObject("winUser");
+		if(winUsers == null){
+			winUsers=new ArrayList();
+			winUsers.add("138****8888");
+			winUsers.add("138****8888");
+			winUsers.add("138****8888");
+			winUsers.add("138****8888");
+			winUsers.add("138****8888");
+		}
 		map.put("currentDate", date);
 		map.put("winUsers", winUsers);
-		map.put("row", afGoodsDo);
 		return JsonUtil.toJSONString(map);
 	}
 
@@ -102,7 +105,7 @@ public class H5ReservationActivityController extends BaseController {
 			// 预约成功后发送短信开关 Y发送 N不发送
 			String sendMsgStatus = "";
 			String sendMsgInfo = "";
-			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceSecType.Iphone8ReservationActivity.getCode());
+			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
 			// 解析对应配置并校验
 			Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
 			sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
