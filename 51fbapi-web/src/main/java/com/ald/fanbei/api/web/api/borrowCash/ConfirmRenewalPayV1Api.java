@@ -74,10 +74,10 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
         AfResourceDo zfbDo = null;
         AfResourceDo wxDo = null;
-        if(afResourceDoList !=null || afResourceDoList.size()>0){
+        if(afResourceDoList !=null && afResourceDoList.size()>0){
             zfbDo = afResourceDoList.get(0);
         }
-        if(afResourceDoList1 !=null || afResourceDoList1.size()>0){
+        if(afResourceDoList1 !=null && afResourceDoList1.size()>0){
             wxDo = afResourceDoList1.get(0);
         }
 

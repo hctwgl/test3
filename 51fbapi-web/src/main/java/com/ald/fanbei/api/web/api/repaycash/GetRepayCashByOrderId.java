@@ -48,8 +48,8 @@ public class GetRepayCashByOrderId implements ApiHandle {
         Long userId = context.getUserId();
         String orderNo = ObjectUtils.toString(requestDataVo.getParams().get("orderNo"), "").toString();
         Map<String,String> ret = yiBaoUtility.getOrderByYiBao(orderNo);
-        AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(orderNo);
-        ret.put("refId",repayment.getRid().toString());
+//        AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(orderNo);
+//        ret.put("refId",repayment.getRid().toString());
         resp.setResponseData(ret);
         return resp;
     }

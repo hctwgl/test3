@@ -210,7 +210,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			return 0l;
 		}
 		AfUserDo userDo = afUserService.getUserById(afRenewalDetailDo.getUserId());
-		pushService.repayRenewalFail(userDo.getUserName());
+		try {
+			pushService.repayRenewalFail(userDo.getUserName());
+		}
+		catch (Exception e){
+
+		}
 
 		return dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), afRenewalDetailDo.getRid());
 	}
@@ -289,7 +294,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
 
 					AfUserDo userDo = afUserService.getUserById(afBorrowCashDo.getUserId());
-					pushService.repayRenewalSuccess(userDo.getUserName());
+					try {
+						pushService.repayRenewalSuccess(userDo.getUserName());
+					}
+					catch (Exception e){
+
+					}
 					
 					//当续期成功时,同步逾期天数为0
 					dealWithSynchronizeOverduedOrder(afBorrowCashDo);
