@@ -21,33 +21,52 @@
     </div>
     <div class="getPrize">
         <p class="prizeTitle">获奖公告</p>
-        <ul class="prizeList">
-            <li class="clearFix">
-                <p class="name">恭喜18212341234获得iPhone8一台</p>
-                <p class="iphoneImg"></p>
-            </li>
-        </ul>
+        <div class="myscroll">
+             <ul class="prizeList roll">
+                 <li class="clearFix">
+                     <p class="name">1恭喜18212341234获得iPhone8一台</p>
+                     <p class="iphoneImg"></p>
+                 </li>
+                 <li class="clearFix">
+                     <p class="name">2恭喜18212341234获得iPhone8一台</p>
+                     <p class="iphoneImg"></p>
+                 </li>
+                 <li class="clearFix">
+                     <p class="name">3恭喜18212341234获得iPhone8一台</p>
+                     <p class="iphoneImg"></p>
+                 </li>
+                 <li class="clearFix">
+                     <p class="name">4恭喜18212341234获得iPhone8一台</p>
+                     <p class="iphoneImg"></p>
+                 </li>
+                 <li class="clearFix">
+                     <p class="name">5恭喜18212341234获得iPhone8一台</p>
+                     <p class="iphoneImg"></p>
+                 </li>
+             </ul>
+             <ul class="copyRoll"></ul>
+        </div>
     </div>
-    <div class="hotGood">
+    <div class="hotGood clearFix">
         <p class="hotGoodTitle"><span></span>爆款专区<span></span></p>
-        <div class="goodList01 clearFix">
-            <p class="goodImg"></p>
-            <p class="goodName">Apple 6 32G</p>
-            <p class="goodDes">9.21-9.22限时秒杀，正品</p>
-            <span class="nowPrice">￥2799.00</span>
-            <span class="originPrice">原价:￥2999.00</span>
-            <p class="fanMoney">返<span>86</span>元</p>
-            <p class="monthPrice">月供<span>37</span>元起</p>
+        <div class="goodList01 clearFix" v-for="item in content.twoLevelGoodsInfo.goodsList" @click="goodClick(item)">
+            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
+            <p class="goodName">{{txtFix(item.goodName,8)}}</p>
+            <p class="goodDes">{{txtFix(item.remark,10)}}</p>
+            <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
+            <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
             <p class="limitTime">限时秒杀</p>
         </div>
-        <div class="goodList02 clearFix">
-            <p class="goodImg"></p>
-            <p class="goodName">Apple 6 32G</p>
-            <p class="goodDes">9.21-9.22限时秒杀，正品</p>
-            <span class="nowPrice">￥2799.00</span>
-            <span class="originPrice">原价:￥2999.00</span>
-            <p class="fanMoney">返<span>86</span>元</p>
-            <p class="monthPrice">月供<span>37</span>元起</p>
+        <div class="goodList02 clearFix"  v-for="item in content.threeLevelGoodsInfo.goodsList"  @click="goodClick(item)">
+            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
+            <p class="goodName">{{txtFix(item.goodName,8)}}</p>
+            <p class="goodDes">{{txtFix(item.remark,10)}}</p>
+            <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
+            <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
         </div>
     </div>
 </div>
