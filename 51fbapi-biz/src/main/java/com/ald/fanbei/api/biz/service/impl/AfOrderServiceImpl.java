@@ -1329,72 +1329,66 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 		//iPhone预约
-			
-			AfUserDo afUserDo = afUserService.getUserById(orderInfo.getUserId());//
-			Map<String, Object> returnData = new HashMap<String, Object>();
-			Long rsvNums = 1L;
-			// 预约成功后发送短信开关 Y发送 N不发送
-			String sendMsgStatus = "";
-			String sendMsgInfo = "";
-			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
-			// 解析对应配置并校验
-			Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
-			sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
-			sendMsgInfo = StringUtil.null2Str(jsonObjRes.get("sendMsgInfo"));
-
-			AfResourceDo currActivityResource = afResourceService.getResourceByResourceId(activityId);
-			if (currActivityResource == null) {
-				//returnData.put("status", GoodsReservationWebFailStatus.ReservationActNotExist.getCode());
-				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationActNotExist.getName(), "", returnData).toString();
-			}
-
-			String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
-			AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
-
-			Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
-			if (revCountNums > 0) {
-				// 同活动同商品只允许一次预约
-				logger.warn("用户预约商品次数超限,预约失败。userId:" + orderInfo.getUserId() + ",activityId:" + activityId + ",goodsId" + goodsId + ",revCountNums" + revCountNums);
-				returnData.put("status", GoodsReservationWebFailStatus.ReservationTimesOverrun.getCode());
-				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationTimesOverrun.getName(), "", returnData).toString();
-			}
-
-			if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
-				returnData.put("status", GoodsReservationWebFailStatus.ReservationFail.getCode());
-				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", returnData).toString();
-			}
-
-			// 预约成功，短信通知
-			if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
-				try {
-					boolean result = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), sendMsgInfo);
-					if (result == false) {
-						logger.error("活动产品预约成功消息通知发送失败userId：" + afUserDo.getRid());
-					}
-				} catch (Exception e) {
-					logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
+			if(orderInfo.getOrderType().equals("iPhone8")){
+				AfUserDo afUserDo = afUserService.getUserById(orderInfo.getUserId());
+				Map<String, Object> returnData = new HashMap<String, Object>();
+				Long rsvNums = 1L;
+				// 预约成功后发送短信开关 Y发送 N不发送
+				String sendMsgStatus = "";
+				String sendMsgInfo = "";
+				AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
+				// 解析对应配置并校验
+				Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
+				sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
+				sendMsgInfo = StringUtil.null2Str(jsonObjRes.get("sendMsgInfo"));
+				String aId=StringUtil.null2Str(jsonObjRes.get("activityId"));
+				String gId=StringUtil.null2Str(jsonObjRes.get("goodsId"));
+				 long activityId = Long.parseLong(aId);
+				 long goodsId = Long.parseLong(gId);
+				AfResourceDo currActivityResource = afResourceService.getResourceByResourceId(activityId);
+				if (currActivityResource == null) {
+					//returnData.put("status", GoodsReservationWebFailStatus.ReservationActNotExist.getCode());
+					//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationActNotExist.getName(), "", returnData).toString();
 				}
+	
+				String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
+				AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
+	
+				//Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
+				/*if (revCountNums > 0) {
+					// 同活动同商品只允许一次预约
+					logger.warn("用户预约商品次数超限,预约失败。userId:" + orderInfo.getUserId() + ",activityId:" + activityId + ",goodsId" + goodsId + ",revCountNums" + revCountNums);
+					//returnData.put("status", GoodsReservationWebFailStatus.ReservationTimesOverrun.getCode());
+					//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationTimesOverrun.getName(), "", returnData).toString();
+				}*/
+	
+				if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
+					returnData.put("status", GoodsReservationWebFailStatus.ReservationFail.getCode());
+					//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", returnData).toString();
+				}
+	
+				// 预约成功，短信通知
+				if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
+					try {
+						boolean r = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), sendMsgInfo);
+						
+						if (r == false) {
+							logger.error("活动产品预约成功消息通知发送失败userId：" + afUserDo.getRid());
+						}
+					} catch (Exception e) {
+						logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
+					}
+				}
+				//returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
+				//return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
+			//} catch (Exception e) {
+				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", null).toString();
 			}
-			//returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
-			//return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
-		//} catch (Exception e) {
-			//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", null).toString();
 		}
-			
 		
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		}
 		return result;
 	}
 	
