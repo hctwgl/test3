@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -71,29 +72,62 @@ public class H5ReservationActivityController extends BaseController {
 	@RequestMapping(value = "/getActivityGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getActivityGoods() {
+
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
 		Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
-		Date endTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("endTime")));
-		if(!DateUtil.compareDate(new Date(),endTime)){
-			
-			
-		}
+		Date startTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("startTime")));
 		Map map = new HashMap();
 		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date currentDate = DateUtil.parseDateyyyyMMddHHmmss(sdf.format(date));
-		System.out.println(currentDate);
-		List<String> winUsers = (List<String>) bizCacheUtil.getObject("winUser");
-		if(winUsers == null){
-			winUsers=new ArrayList();
-			winUsers.add("138****8888");
-			winUsers.add("138****8888");
-			winUsers.add("138****8888");
-			winUsers.add("138****8888");
-			winUsers.add("138****8888");
+		String status="N";
+		//判断活动是否开始
+		if (DateUtil.compareDate(date, startTime)) {
+			//查询预约状态
+			
+			
+			long days = DateUtil.getNumberOfDatesBetween(date, startTime);
+			List<String> list = new ArrayList();
+			if (days == 1) {
+
+			} else if (days == 2) {
+				list.add("138****6848");
+				list.add("132****8971");
+				list.add("176****3627");
+				list.add("158****0372");
+				list.add("138****7192");
+			} else if (days == 3) {
+				list.add("185****4274");
+				list.add("132****8347");
+				list.add("176****5251");
+				list.add("177****4062");
+				list.add("173****6792");
+			} else if (days == 4) {
+				list.add("130****6037");
+				list.add("132****7437");
+				list.add("186****4375");
+				list.add("158****2687");
+				list.add("131****4805");
+			} else if (days == 5) {
+				list.add("138****4341");
+				list.add("130****4104");
+				list.add("158****3764");
+				list.add("176****3547");
+				list.add("188****3302");
+			} else if (days == 6) {
+				list.add("138****3276");
+				list.add("131****0765");
+				list.add("158****0513");
+				list.add("130****6317");
+				list.add("177****8357");
+			} else {
+				list.add("133****3826");
+				list.add("151****0435");
+				list.add("155****0576");
+				list.add("150****6347");
+				list.add("176****8127");
+			}
+			map.put("status", status);
+			map.put("winUsers", list);
 		}
-		map.put("currentDate", date);
-		map.put("winUsers", winUsers);
 		return JsonUtil.toJSONString(map);
 	}
 
