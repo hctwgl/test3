@@ -67,4 +67,14 @@
         </if>
     </select>
     
+    <select id="getActivityIdByname" parameterType="java.lang.String" resultType="java.lang.Long">
+    	SELECT
+       		id 
+        FROM
+        	af_goods_reservation
+        WHERE
+        	is_delete = 0
+        AND
+        	name=#{name}
+    </select>
 </mapper>
