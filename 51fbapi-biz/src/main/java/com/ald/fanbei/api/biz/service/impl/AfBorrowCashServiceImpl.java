@@ -97,6 +97,17 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
 				logger.info("borrowSuccess--begin");
+				Date currDate = new Date(System.currentTimeMillis());
+				afBorrowCashDo.setGmtArrival(currDate);
+				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+				Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
+				Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+				afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+				
+				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
+				logger.info("updateRecommendUser="+ rr);
+				logger.info("borrowSuccess--end");
 	                //fmf 借钱抽奖活动借款金额加入缓存
 	                BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
 	                if(amount.compareTo(new BigDecimal(1500000000)) == -1 || amount.compareTo(new BigDecimal(1500000000)) == 0) {
@@ -136,20 +147,6 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	                        bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60*60*24*7);
 	                    }
 	                }
-	                
-	            afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
-	                
-				Date currDate = new Date(System.currentTimeMillis());
-				afBorrowCashDo.setGmtArrival(currDate);
-				Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-				Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
-				Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
-				afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
-				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
-				
-				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
-				logger.info("updateRecommendUser="+ rr);
-				logger.info("borrowSuccess--end");
 				return 1;
 			}
 		});
