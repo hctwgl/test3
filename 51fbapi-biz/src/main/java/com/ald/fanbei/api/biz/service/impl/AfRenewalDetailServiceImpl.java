@@ -403,7 +403,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		} else if (cardId == -1) {
 			afRenewalDetailDo.setCardNumber("");
 			afRenewalDetailDo.setCardName(Constants.DEFAULT_WX_PAY_NAME);
-		} else {
+		}
+		else if(cardId ==-3){
+			afRenewalDetailDo.setCardNumber("");
+			afRenewalDetailDo.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
+		}
+		else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			afRenewalDetailDo.setCardNumber(bank.getCardNumber());
 			afRenewalDetailDo.setCardName(bank.getBankName());

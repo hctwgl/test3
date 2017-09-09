@@ -107,7 +107,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
             if (userDto == null) {
                 throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
-            if (cardId != -1) {
+            if (cardId == -2 || cardId>0) {
                 String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
                 if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
@@ -217,7 +217,11 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
             }
 
             return resp;
-        } finally {
+        }
+       catch (Exception e){
+            throw  e;
+       }
+        finally {
             bizCacheUtil.delCache(lockKey);
         }
 
