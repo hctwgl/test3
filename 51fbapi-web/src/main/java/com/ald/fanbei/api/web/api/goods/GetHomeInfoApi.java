@@ -3,7 +3,10 @@
  */
 package com.ald.fanbei.api.web.api.goods;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +19,16 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
@@ -43,6 +50,12 @@ public class GetHomeInfoApi implements ApiHandle {
 	
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
+	
+	@Resource
+	JpushService jpushService;
+	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	private FanbeiContext contextApp;
 
@@ -66,7 +79,24 @@ public class GetHomeInfoApi implements ApiHandle {
 			bannerList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
 		
-		if(context.getAppVersion() >= 363){
+		Integer appVersion = context.getAppVersion();	
+		
+		String userName = context.getUserName();
+		if(userName != null) {
+			// 用户已登录,将登录信息存放到缓存中
+			String storeKey = "GET_HOME_INFO_" + userName;
+			long secs = DateUtil.getSecsEndOfDay();
+			bizCacheUtil.saveObject(storeKey, "Y", secs); //单位:秒
+			
+			
+			// jpushService.jPushCoupon("NO_UPDATE_WND",userName);
+			
+			afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_WND.getCode());
+			
+		}
+		
+			
+		if(appVersion >= 363){
 			bannerSecList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
 		}

@@ -670,6 +670,25 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("gameShareSuccess error", e);
 		}
 	}
+	
+	public void jPushPopupWnd(String type,String userName) {
+		try {
+			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
+			//String userName = StringUtils.EMPTY;
+			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes(type);
+			AfResourceDo afResourceDo = resourceDoList.get(0);
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("jPushPopupWnd,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "204");
+			extras.put(DATA, afResourceDo.getValue() + "," + afResourceDo.getValue2());
+			jpushUtil.pushMessageByAlias("弹框","弹框",extras,new String[]{userName}, false);
+		} catch (Exception e) {
+			logger.info("push wnd  error", e);
+		}
+	}
 
 
 }
