@@ -4,11 +4,11 @@
     #set($version="20170909")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
-    <title>iPhone8</title>
+    <title>iPhone8分享页</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/iphone8.css">
 </head>
 <body>
-<div id="iphone8"  class="iphone8">
+<div id="iphone8Share" class="iphone8">
     <div class="timeList clearFix">
         <p class="time active">9.13<br/>新品预约</p>
         <p class="time">9.20<br/>新品正式发售</p>
@@ -22,29 +22,29 @@
     <div class="getPrize">
         <p class="prizeTitle">获奖公告</p>
         <div class="myscroll">
-             <ul class="prizeList roll">
-                 <li class="clearFix">
-                     <p class="name">1恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">2恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">3恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">4恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">5恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-             </ul>
-             <ul class="copyRoll"></ul>
+            <ul class="prizeList roll">
+                <li class="clearFix">
+                    <p class="name">1恭喜18212341234获得iPhone8一台</p>
+                    <p class="iphoneImg"></p>
+                </li>
+                <li class="clearFix">
+                    <p class="name">2恭喜18212341234获得iPhone8一台</p>
+                    <p class="iphoneImg"></p>
+                </li>
+                <li class="clearFix">
+                    <p class="name">3恭喜18212341234获得iPhone8一台</p>
+                    <p class="iphoneImg"></p>
+                </li>
+                <li class="clearFix">
+                    <p class="name">4恭喜18212341234获得iPhone8一台</p>
+                    <p class="iphoneImg"></p>
+                </li>
+                <li class="clearFix">
+                    <p class="name">5恭喜18212341234获得iPhone8一台</p>
+                    <p class="iphoneImg"></p>
+                </li>
+            </ul>
+            <ul class="copyRoll"></ul>
         </div>
     </div>
     <div class="hotGood clearFix">
@@ -70,6 +70,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="/dist/activity/08/iphone8.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/08/iphone8Share.js?version=$version"></script>
 </body>
 </html>
