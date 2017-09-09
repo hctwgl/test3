@@ -71,7 +71,13 @@ public class H5ReservationActivityController extends BaseController {
 	@RequestMapping(value = "/getActivityGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getActivityGoods() {
-		
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
+		Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
+		Date endTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("endTime")));
+		if(!DateUtil.compareDate(new Date(),endTime)){
+			
+			
+		}
 		Map map = new HashMap();
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
