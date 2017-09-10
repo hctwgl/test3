@@ -233,6 +233,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private SmsUtil smsUtil;
 	@Resource
 	private AfGoodsReservationService afGoodsReservationService;
+	@Resource
+	JpushService jpushService;
 	
 	
 	@Override
@@ -1372,7 +1374,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					try {
 						boolean r = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), sendMsgInfo);
 						//恭喜您预约成功，iphone8将在9.20正式开售
-						
+						jpushService.reservationActivity(afUserDo.getMobile());
 						if (r == false) {
 							logger.error("活动产品预约成功消息通知发送失败userId：" + afUserDo.getRid());
 						}
@@ -1380,18 +1382,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
 					}
 				}
-				if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
-					try {
-						boolean r = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), sendMsgInfo);
-						//恭喜您预约成功，iphone8将在9.20正式开售
-						
-						if (r == false) {
-							logger.error("活动产品预约成功消息通知发送失败userId：" + afUserDo.getRid());
-						}
-					} catch (Exception e) {
-						logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
-					}
-				}
+		
 				//returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
 				//return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
 			//} catch (Exception e) {

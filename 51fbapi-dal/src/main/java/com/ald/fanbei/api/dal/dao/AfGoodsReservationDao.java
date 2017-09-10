@@ -41,4 +41,11 @@ public interface AfGoodsReservationDao {
      * 
      * **/
     long getActivityIdByname(String name);
+    
+    /**
+     * 根据userId得到预约状态
+     * @param userId
+     * @return
+     */
+    String getGoodsReservationStatusByUserId(String userId);
 }

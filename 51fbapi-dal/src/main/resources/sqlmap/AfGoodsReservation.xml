@@ -77,4 +77,15 @@
         AND
         	name=#{name}
     </select>
+    
+    <select id="getGoodsReservationStatusByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+    	SELECT
+       		status 
+        FROM
+        	af_goods_reservation
+        WHERE
+        	is_delete = 0
+        AND
+        	user_id=#{userId}
+    </select>
 </mapper>

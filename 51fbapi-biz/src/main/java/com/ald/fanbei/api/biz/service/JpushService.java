@@ -59,6 +59,13 @@ public interface JpushService {
 	public void getSignCycle(String userName);
 
 	/**
+	 * iPhone预约
+	 * 
+	 * @param userName
+	 */
+	public void reservationActivity(String userName);
+	
+	/**
 	 * 手机充值退款失败
 	 * 
 	 * @param userName

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,47 +76,54 @@ public class H5ReservationActivityController extends BaseController {
 
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
 		Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
-		Date startTime = DateUtil.parseDateyyyyMMddHHmmss(StringUtil.null2Str(jsonObjRes.get("startTime")));
+		SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date startTime = null;;
+		try {
+			startTime = parser.parse(StringUtil.null2Str(jsonObjRes.get("startTime")));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Map map = new HashMap();
 		Date date = new Date();
-		String status="N";
+		String status="FAIL";
 		//判断活动是否开始
 		if (DateUtil.compareDate(date, startTime)) {
 			//查询预约状态
 			
 			
-			long days = DateUtil.getNumberOfDatesBetween(date, startTime);
+			long days = DateUtil.getNumberOfDatesBetween(startTime, date);
 			List<String> list = new ArrayList();
-			if (days == 1) {
+			if (days == 0) {
 
-			} else if (days == 2) {
+			} else if (days == 1) {
 				list.add("138****6848");
 				list.add("132****8971");
 				list.add("176****3627");
 				list.add("158****0372");
 				list.add("138****7192");
-			} else if (days == 3) {
-				list.add("185****4274");
+			} else if (days == 2) {
 				list.add("132****8347");
+				list.add("185****4274");
 				list.add("176****5251");
 				list.add("177****4062");
 				list.add("173****6792");
-			} else if (days == 4) {
+			} else if (days == 3) {
 				list.add("130****6037");
-				list.add("132****7437");
 				list.add("186****4375");
 				list.add("158****2687");
 				list.add("131****4805");
-			} else if (days == 5) {
-				list.add("138****4341");
+				list.add("132****7437");
+			} else if (days == 4) {
 				list.add("130****4104");
 				list.add("158****3764");
 				list.add("176****3547");
+				list.add("138****4341");
 				list.add("188****3302");
-			} else if (days == 6) {
-				list.add("138****3276");
+			} else if (days == 5) {
 				list.add("131****0765");
 				list.add("158****0513");
+				list.add("138****3276");
 				list.add("130****6317");
 				list.add("177****8357");
 			} else {
@@ -125,6 +133,16 @@ public class H5ReservationActivityController extends BaseController {
 				list.add("150****6347");
 				list.add("176****8127");
 			}
+			String s = afGoodsReservationService.getGoodsReservationStatusByUserId("");
+			if(StringUtil.isNotBlank(s)){
+				status=s;
+			}
+			/*if (revCountNums > 0) {
+				// 同活动同商品只允许一次预约
+				logger.warn("用户预约商品次数超限,预约失败。userId:" + orderInfo.getUserId() + ",activityId:" + activityId + ",goodsId" + goodsId + ",revCountNums" + revCountNums);
+				//returnData.put("status", GoodsReservationWebFailStatus.ReservationTimesOverrun.getCode());
+				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationTimesOverrun.getName(), "", returnData).toString();
+			}*/
 			map.put("status", status);
 			map.put("winUsers", list);
 		}
