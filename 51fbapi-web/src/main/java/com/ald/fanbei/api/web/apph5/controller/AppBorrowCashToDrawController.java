@@ -163,6 +163,9 @@ public class AppBorrowCashToDrawController extends BaseController {
 	public String randomUser(HttpServletRequest request) {
 		String winAmount = request.getParameter("winAmount");
 		
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
+		if("Y".equals(resource.getValue4())){
+			
 		List<String> users = afBorrowCashService.getRandomUser(); // 得到中奖用户id
 		List<String> userNames = afUserService.getUserNameByUserId(users); // 得到中奖用户user_name
 		List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
@@ -227,6 +230,11 @@ public class AppBorrowCashToDrawController extends BaseController {
 			logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
 		}
 		return jsonString;
+		} else {
+			String jsonString = JsonUtil.toJSONString(resource.getValue3());
+			return jsonString;
+		}
+		
 
 	}
 

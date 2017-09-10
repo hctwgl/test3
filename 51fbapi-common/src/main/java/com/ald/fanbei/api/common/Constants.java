@@ -346,7 +346,7 @@ public class Constants {
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 	
 	//借钱抽取
-	public static final String BORROWCASH_ACTIVITYS_TYPR="BorrowCash_ To_Draw";
-	public static final String BORROWCASH_ACTIVITYS_SECTYPR="BorrowCash_Activitys";
+	public static final String BORROWCASH_ACTIVITYS_TYPR="BORROWCASH_ TO_DRAW";
+	public static final String BORROWCASH_ACTIVITYS_SECTYPR="BORROWCASH_ACTIVITYS";
 
 }
