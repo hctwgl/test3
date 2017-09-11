@@ -145,6 +145,9 @@ public interface AfResourceService {
 	 */
 	AfResourceDo getScrollbarByType();
 
+	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
+
+//	List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code);
 	/**
 	 * 
 	 * @说明：在活动点亮中根据活动id获取假的人数

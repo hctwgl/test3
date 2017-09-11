@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,8 +59,7 @@ public class SubmitShareActionApi implements ApiHandle {
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
 		String[] strings = sharePage.split("_");
 		if (strings != null && strings.length == 3) {
-			String sharePagee = strings[0];
-			if ("ggpresents".equals(sharePagee)) {
+			if ("ggpresents".equals(strings[0])) {
 				String strUserItemsId = strings[2];
 				Long userItemsId = Long.parseLong(strUserItemsId);
 				//进行冻结卡片

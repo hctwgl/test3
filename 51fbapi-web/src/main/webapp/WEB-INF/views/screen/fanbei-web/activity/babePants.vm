@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017090501")
+    #set($version="2017091102")
     <meta charset="UTF-8">
     <title>纸尿裤品牌专区</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/09/babePants.css?version=$version">
@@ -11,7 +11,7 @@
         <img class="lazy" :data-original="content.bannerUrl">
         <div class="neLevelGoods">
             <ul class="clearfix">
-                <li @click="goGoodsDetail(item)">
+                <li @click="goGoodsDetail(content.oneLevelGoodsInfo.goodsList[0])">
                     <img :src="content.oneLevelGoodsInfo.goodsList[0].goodsIcon">
                     <div class="right">
                         <p class="title">{{content.oneLevelGoodsInfo.goodsList[0].goodName}}</p>
@@ -24,7 +24,7 @@
                         <span class="goBuyBtn">立即抢购</span>
                     </div>
                 </li>
-                <li @click="goGoodsDetail(item)">
+                <li @click="goGoodsDetail(content.oneLevelGoodsInfo.goodsList[1])">
                     <div class="right" style="float:left;">
                         <p class="title">{{content.oneLevelGoodsInfo.goodsList[1].goodName}}</p>
                         <div class="priceWrap">
@@ -37,7 +37,7 @@
                     </div>
                     <img :src="content.oneLevelGoodsInfo.goodsList[1].goodsIcon" style="float: right;">
                 </li>
-                <li @click="goGoodsDetail(item)">
+                <li @click="goGoodsDetail(content.oneLevelGoodsInfo.goodsList[2])">
                     <img :src="content.oneLevelGoodsInfo.goodsList[2].goodsIcon">
                     <div class="right">
                         <p class="title">{{content.oneLevelGoodsInfo.goodsList[2].goodName}}</p>
@@ -110,6 +110,7 @@
                 });
             },
             goGoodsDetail(item){
+                console.log(item);
                 if ( item.source=="SELFSUPPORT" ) {
                     window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
                 } else {

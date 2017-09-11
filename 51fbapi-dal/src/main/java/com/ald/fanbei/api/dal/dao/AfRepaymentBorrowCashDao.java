@@ -97,4 +97,5 @@ public interface AfRepaymentBorrowCashDao {
 	 * @return
 	 */
 	String getCurrentLastRepayNo(String orderNoPre);
+	
 }
