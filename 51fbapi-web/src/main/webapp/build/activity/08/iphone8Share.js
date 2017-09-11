@@ -25,7 +25,7 @@ let vm = new Vue({
     data: {
         content: {},
         prizeCont:{},
-        orderStatus:''
+        ruleShow:''
     },
     created: function () {
         this.logData();
@@ -70,8 +70,6 @@ let vm = new Vue({
                     data = eval('(' + data + ')');
                     console.log(data);
                     self.prizeCont=data.winUsers;
-                    self.orderStatus=data.status;
-                    console.log(self.orderStatus)
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！');
@@ -80,8 +78,18 @@ let vm = new Vue({
         },
         //点击预约与商品
         orderAndGoodClick(){
-                window.location.href='https://www.baidu.com';
-            }
+                window.location.href='iphone8ShareRegister';
+         },
+        //点击活动规则
+        ruleClick(){
+            let self = this;
+            self.ruleShow='Y';
+        },
+        //点击蒙版
+        maskClick(){
+            let self = this;
+            self.ruleShow='';
+        }
         }
 })
 

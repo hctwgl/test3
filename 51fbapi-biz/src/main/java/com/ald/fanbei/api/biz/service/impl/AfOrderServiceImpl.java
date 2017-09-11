@@ -1331,7 +1331,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 		//iPhone预约
-			if(orderInfo.getOrderType().equals("iPhone8")){
+			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
+			
+			if(goods.getTags().equals("subscribe")){
 				AfUserDo afUserDo = afUserService.getUserById(orderInfo.getUserId());
 				Map<String, Object> returnData = new HashMap<String, Object>();
 				Long rsvNums = 1L;
