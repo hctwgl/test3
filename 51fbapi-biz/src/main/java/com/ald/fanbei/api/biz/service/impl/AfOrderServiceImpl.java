@@ -1348,27 +1348,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				 long activityId = Long.parseLong(aId);
 				 long goodsId = Long.parseLong(gId);
 				AfResourceDo currActivityResource = afResourceService.getResourceByResourceId(activityId);
-				if (currActivityResource == null) {
-					//returnData.put("status", GoodsReservationWebFailStatus.ReservationActNotExist.getCode());
-					//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationActNotExist.getName(), "", returnData).toString();
-				}
-	
 				String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
 				AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
-	
-				//Integer revCountNums = afGoodsReservationService.getRevCountNumsByQueryCondition(afGoodsReservationDo);
-				/*if (revCountNums > 0) {
-					// 同活动同商品只允许一次预约
-					logger.warn("用户预约商品次数超限,预约失败。userId:" + orderInfo.getUserId() + ",activityId:" + activityId + ",goodsId" + goodsId + ",revCountNums" + revCountNums);
-					//returnData.put("status", GoodsReservationWebFailStatus.ReservationTimesOverrun.getCode());
-					//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationTimesOverrun.getName(), "", returnData).toString();
-				}*/
-	
 				if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
-					returnData.put("status", GoodsReservationWebFailStatus.ReservationFail.getCode());
-					//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", returnData).toString();
+					logger.info("ReservationActivity is fail");
+					return result;
 				}
-	
 				// 预约成功，短信通知
 				if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
 					try {
@@ -1382,16 +1367,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
 					}
 				}
-		
-				//returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
-				//return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
-			//} catch (Exception e) {
-				//return H5CommonResponse.getNewInstance(false, GoodsReservationWebFailStatus.ReservationFail.getName(), "", null).toString();
 			}
 		}
-		
-		
-		
 		
 		return result;
 	}

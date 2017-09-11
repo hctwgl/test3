@@ -684,7 +684,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "231");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("签到奖励", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("iPhone8预约", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("getSignCycle error", e);
 		}
