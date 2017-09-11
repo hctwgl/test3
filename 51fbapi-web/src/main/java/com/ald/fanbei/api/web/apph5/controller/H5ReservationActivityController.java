@@ -149,7 +149,9 @@ public class H5ReservationActivityController extends BaseController {
 				userDo = afUserService.getUserByUserName(userName);
 				if(userDo != null){
 					loginStatus="Y";
-					s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
+				}
+				s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
+				if(StringUtil.isNotBlank(s)){
 					status=s;
 				}
 				map.put("status", status);
