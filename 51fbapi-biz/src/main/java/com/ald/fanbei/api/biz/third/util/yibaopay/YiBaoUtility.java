@@ -250,4 +250,35 @@ public class YiBaoUtility {
             afRenewalDetailService.dealRenewalFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
         }
     }
+
+    /**
+     * 分期还款
+     * @param afYibaoOrderDo
+     * @param status
+     */
+    private void type2Proess(AfYibaoOrderDo afYibaoOrderDo,String status){
+        if(status.equals("PROCESSING")){
+            //处理中
+            if(afYibaoOrderDo.getStatus().intValue() == 3) {
+                return;
+            }
+            int ret = afYibaoOrderDao.updateYiBaoOrderStatusLock(3,afYibaoOrderDo.getId(),afYibaoOrderDo.getGtmUpdate());
+            if(ret >0) {
+                AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(afYibaoOrderDo.getOrderNo());
+                repayment.setStatus("P");
+                afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repayment);
+            }
+        }
+        else if(status.equals("SUCCESS")){
+            afRepaymentBorrowCashService.dealRepaymentSucess(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+            //成功
+        }
+        else if(status.equals("REJECT")){
+
+        }
+        else{
+            //关闭
+            afRepaymentBorrowCashService.dealRepaymentFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+        }
+    }
 }

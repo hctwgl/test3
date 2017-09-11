@@ -301,6 +301,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	@Override
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
 
+		
+
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 
 			@Override

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.repayment;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
@@ -32,7 +33,7 @@ import java.util.Map;
  * @类描述：还款
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("ubmitRepaymentByYiBaoApi")
+@Component("submitRepaymentByYiBaoApi")
 public class SubmitRepaymentByYiBaoApi implements ApiHandle {
     @Resource
     private AfBorrowBillService afBorrowBillService;
@@ -50,6 +51,9 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
     private AfUserBankcardService afUserBankcardService;
 
     private BigDecimal showAmount;
+
+    @Resource
+    private YiBaoUtility yiBaoUtility;
 
 
     @Override
@@ -71,12 +75,17 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
 
-        if(cardId>0){//支付密码验证
+        if(cardId>0 || cardId ==-2){//支付密码验证
             String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
             if (!StringUtils.equals(inputOldPwd, afUserAccountDo.getPassword())) {
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
             }
         }
+
+        if(! yiBaoUtility.checkCanNext(userId,2)){
+            return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
+        }
+
 
         if(StringUtil.isEmpty(billIds)){
             throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
@@ -146,11 +155,18 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
                     cardId,userId,billDo,"",afUserAccountDo);
             resp.addResponseData("refId", map.get("refId"));
             resp.addResponseData("type", map.get("type"));
-        }else if(cardId==-1){//微信支付
+        }else if(cardId==-1){
+            //微信支付
             map = afRepaymentService.createRepayment(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds,
                     cardId,userId,billDo,"",afUserAccountDo);
             resp.setResponseData(map);
-        }else if(cardId>0){//银行卡支付
+        }
+        else if (cardId ==-3){
+            //支付宝
+
+
+        }
+        else if(cardId>0){//银行卡支付
             AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
             if(null == card){
                 throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
