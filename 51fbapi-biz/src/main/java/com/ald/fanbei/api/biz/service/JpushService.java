@@ -63,7 +63,7 @@ public interface JpushService {
 	 * 
 	 * @param userName
 	 */
-	public void reservationActivity(String userName);
+	public void reservationActivity(String userName,String msgContext);
 	
 	/**
 	 * 手机充值退款失败

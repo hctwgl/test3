@@ -140,20 +140,20 @@ public class H5ReservationActivityController extends BaseController {
 			}
 			//查询预约状态
 			String appInfo = request.getParameter("_appInfo");
-			String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
-			
+			String userName = null;
 			AfUserDo userDo =null;
 			String s = null;
-			if(StringUtil.isNotBlank(userName)){
+			if(StringUtil.isNotBlank(appInfo)){
+				userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+			}
+			if(userName != null && userName !=" "){
 				loginStatus="Y";
 				userDo = afUserService.getUserByUserName(userName);
 				s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
-			}
-			if(StringUtil.isNotBlank(s)){
 				status=s;
 			}
 			map.put("status", status);
-			map.put("loginStatus", status);
+			map.put("loginStatus", loginStatus);
 			map.put("winUsers", list);
 		}
 		return JsonUtil.toJSONString(map);

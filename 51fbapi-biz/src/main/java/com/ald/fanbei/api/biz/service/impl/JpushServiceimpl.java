@@ -674,11 +674,10 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 
 
 	@Override
-	public void reservationActivity(String userName) {
+	public void reservationActivity(String userName,String msgContext) {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("getSignCycle,pid=", pid));
-			String msgContext = "恭喜您预约成功，iphone8将在9.20正式开售";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
