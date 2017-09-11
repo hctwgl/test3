@@ -78,18 +78,10 @@ let vm = new Vue({
                 }
             })
         },
-        //点击商品
-        goodClick(item){
-            if ( item.source=="SELFSUPPORT" ) {
-                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}';
-            } else {
-                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}';
+        //点击预约与商品
+        orderAndGoodClick(){
+                window.location.href='https://www.baidu.com';
             }
-        },
-        //点击预约
-        orderClick(item){
-            window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}';
         }
-    }
 })
 

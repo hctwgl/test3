@@ -3,6 +3,7 @@
 .clearFix{zoom:1}
 body{
   background:#f8f2eb;
+  position: relative;
 }
 .iphone8 .timeList{
   width:100%;
@@ -30,6 +31,51 @@ body{
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-image: linear-gradient(to top, #ffffff, #ffffff);
+}
+.iphone8 .rule{
+  width:.51rem;
+  height:1.33rem;
+  text-align: center;
+  border-radius:.04rem;
+  background-image: linear-gradient(to top, #d1a24d, #e5bf78);
+  font-size:.26rem;
+  letter-spacing: .02rem;
+  color:#fff;
+  line-height: .33rem;
+  position:absolute;
+  top:1.1rem;
+  right:0;
+}
+.iphone8 .mask{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:black;
+  opacity: .6;
+  z-index:10;
+}
+.iphone8 .alertRule{
+  width:6.6rem;
+  border-radius: .1rem;
+  background:#fff;
+  position: fixed;
+  top:1.3rem;
+  left:50%;
+  transform: translateX(-3.3rem);
+  z-index:20;
+}
+.iphone8 .ruleTitle{
+  font-size:.32rem;
+  text-align: center;
+  padding: .4rem 0 .3rem 0;
+}
+.iphone8 .ruleCont{
+  width:90%;
+  margin:0 auto;
+  text-align: justify;
+  padding-bottom: .7rem;
 }
 .iphone8 .banner{
     width:100%;
