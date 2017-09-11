@@ -149,22 +149,23 @@ public class AppH5SubjectController  extends BaseController{
 					} catch(Exception e){
 						logger.error(e.toString());
 					}
+					JSONArray interestFreeArray = null;
 					if(schemeGoodsDo != null){
 						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 						String interestFreeJson = interestFreeRulesDo.getRuleJson();
-						JSONArray interestFreeArray = null;
 						if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 							interestFreeArray = JSON.parseArray(interestFreeJson);
 						}
-						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
-						
-						if(nperList!= null){
-							qualityGoodsInfo.put("goodsType", "1");
-							Map nperMap = nperList.get(nperList.size() - 1);
-							qualityGoodsInfo.put("nperMap", nperMap);
-						}
 					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						qualityGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						qualityGoodsInfo.put("nperMap", nperMap);
+					}
+					
 				}
 				qualityGoodsList.add(qualityGoodsInfo);
 			}
@@ -300,23 +301,23 @@ public class AppH5SubjectController  extends BaseController{
 						} catch(Exception e){
 							logger.error(e.toString());
 						}
+						JSONArray interestFreeArray = null;
 						if(schemeGoodsDo != null){
 							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 							String interestFreeJson = interestFreeRulesDo.getRuleJson();
-							JSONArray interestFreeArray = null;
 							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 								interestFreeArray = JSON.parseArray(interestFreeJson);
 							}
-							
-							List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-									goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-							
-							if(nperList!= null){
-								activityGoodsInfo.put("goodsType", "1");
-								Map nperMap = nperList.get(nperList.size() - 1);
-								activityGoodsInfo.put("nperMap", nperMap);
-							}
 						}
+						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						
+						if(nperList!= null){
+							activityGoodsInfo.put("goodsType", "1");
+							Map nperMap = nperList.get(nperList.size() - 1);
+							activityGoodsInfo.put("nperMap", nperMap);
+						}
+						
 					}
 					activityGoodsList.add(activityGoodsInfo);
 				}
@@ -350,22 +351,23 @@ public class AppH5SubjectController  extends BaseController{
 					} catch(Exception e){
 						logger.error(e.toString());
 					}
+					JSONArray interestFreeArray = null;
 					if(schemeGoodsDo != null){
 						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 						String interestFreeJson = interestFreeRulesDo.getRuleJson();
-						JSONArray interestFreeArray = null;
 						if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 							interestFreeArray = JSON.parseArray(interestFreeJson);
 						}
-						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
-						
-						if(nperList!= null){
-							qualityGoodsInfo.put("goodsType", "1");
-							Map nperMap = nperList.get(nperList.size() - 1);
-							qualityGoodsInfo.put("nperMap", nperMap);
-						}
 					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						qualityGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						qualityGoodsInfo.put("nperMap", nperMap);
+					}
+					
 				}
 				qualityGoodsList.add(qualityGoodsInfo);
 			}
@@ -439,22 +441,23 @@ public class AppH5SubjectController  extends BaseController{
 					} catch(Exception e){
 						logger.error(e.toString());
 					}
+					JSONArray interestFreeArray = null;
 					if(schemeGoodsDo != null){
 						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 						String interestFreeJson = interestFreeRulesDo.getRuleJson();
-						JSONArray interestFreeArray = null;
 						if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 							interestFreeArray = JSON.parseArray(interestFreeJson);
 						}
-						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-						
-						if(nperList!= null){
-							subjectGoodsInfo.put("goodsType", "1");
-							Map nperMap = nperList.get(nperList.size() - 1);
-							subjectGoodsInfo.put("nperMap", nperMap);
-						}
 					}
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						subjectGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						subjectGoodsInfo.put("nperMap", nperMap);
+					}
+					
 				}
 			}
 			jsonObj.put("subjectGoodsList", subjectGoodsList);
