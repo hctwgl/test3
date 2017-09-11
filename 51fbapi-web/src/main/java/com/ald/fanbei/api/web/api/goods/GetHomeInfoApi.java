@@ -85,8 +85,15 @@ public class GetHomeInfoApi implements ApiHandle {
 		if(userName != null) {
 			// 用户已登录,将登录信息存放到缓存中
 			String storeKey = "GET_HOME_INFO_" + userName;
-			long secs = DateUtil.getSecsEndOfDay();
-			bizCacheUtil.saveObject(storeKey, "Y", secs); //单位:秒
+			
+			Object saveObj = bizCacheUtil.getObject(storeKey);
+			
+			if(saveObj == null) {
+				long secs = DateUtil.getSecsEndOfDay();
+				bizCacheUtil.saveObject(storeKey, "Y", secs); //单位:秒
+				jpushService.jPushCoupon("NO_UPDATE_WND",userName);
+			}
+			
 			
 			
 			// jpushService.jPushCoupon("NO_UPDATE_WND",userName);
