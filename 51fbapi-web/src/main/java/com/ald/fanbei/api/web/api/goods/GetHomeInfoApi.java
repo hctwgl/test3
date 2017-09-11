@@ -135,11 +135,15 @@ public class GetHomeInfoApi implements ApiHandle {
 							Long userId = context.getUserId();
 							if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
 								// 用户发券
-								if(tmp.length > 1) {
-									String sceneId = tmp[0];
-									grantBoluomiCoupon(Long.parseLong(sceneId), userId);
-								} else {
-									afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize", "home");
+								try{
+									if(tmp.length > 1) {
+										String sceneId = tmp[0];
+										grantBoluomiCoupon(Long.parseLong(sceneId), userId);
+									} else {
+										afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize", "home");
+									}
+								} catch(Exception e) {
+									logger.error(e.getMessage());
 								}
 							}
 						}
