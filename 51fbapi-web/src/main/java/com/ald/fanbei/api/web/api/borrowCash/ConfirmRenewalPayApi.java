@@ -159,9 +159,10 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 				resp.addResponseData("refId", map.get("refId"));
 				resp.addResponseData("type", map.get("type"));
 			} else if (cardId == -1) {// 微信支付
-				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
-
-				resp.setResponseData(map);
+//				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
+//
+//				resp.setResponseData(map);
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 			} else if (cardId > 0) {// 银行卡支付
 				AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
 				if (null == card) {

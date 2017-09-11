@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -10,15 +10,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.h5.controller.H5GGShareController;
 
 /**
  *@类现描述：客户端提交分享行为，针对某些h5页面用户去分享时服务端需要记录是否分享、分享了之后需要做一些业务。针对需要服务端统计分享的页面客户端需把分享的行为告诉服务端
@@ -31,6 +36,8 @@ public class SubmitShareActionApi implements ApiHandle {
 	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
 	@Resource
 	private AfGameChanceService afGameChanceService;
+	@Resource
+	AfBoluomeActivityUserItemsService afBoluomeActivityUserItemsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -48,7 +55,28 @@ public class SubmitShareActionApi implements ApiHandle {
 		if("ggIndexShare".equals(sharePage)){
 			maidianLog.info(context.getUserName() + "ggIndexShare");
 		}
+		
+		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
+		String[] strings = sharePage.split("_");
+		if (strings != null && strings.length == 3) {
+			if ("ggpresents".equals(strings[0])) {
+				String strUserItemsId = strings[2];
+				Long userItemsId = Long.parseLong(strUserItemsId);
+				//进行冻结卡片
+				try {
+					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+						afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+					}
+				} catch (Exception e) {
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+					
+				}
+				
+			}
+			
+		}
+		
 		return resp;
 	}
-
 }

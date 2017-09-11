@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.WhiteUserRequestBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory;
+import com.ald.fanbei.api.biz.bo.risk.RiskLoginRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
@@ -61,9 +63,11 @@ import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.AsyLoginService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
@@ -187,6 +191,10 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	AsyLoginService asyLoginService;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -662,7 +670,13 @@ public class RiskUtil extends AbstractThird {
 				orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 				orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 				orderInfo.setClosedDetail("系统关闭");
+				//maqiaopan 2017-9-8 10:54:15风控拒绝原因字段添加
+				String rejectCode = verifybo.getRejectCode();
 				orderInfo.setClosedReason("风控审批不通过");
+				if (StringUtils.isNotBlank(rejectCode)){
+					orderInfo.setClosedReason("风控审批不通过"+rejectCode);
+				}
+				
 				orderInfo.setGmtClosed(new Date());
 				logger.info("updateOrder orderInfo = {}", orderInfo);
 				if(StringUtils.equals(orderInfo.getOrderType(), OrderType.AGENTBUY.getCode())) {
@@ -710,7 +724,7 @@ public class RiskUtil extends AbstractThird {
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);
 		// 在风控审批通过后额度不变生成账单
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),orderInfo.getOrderType());
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode());
 		
 		// 修改用户账户信息
 		AfUserAccountDo account = new AfUserAccountDo();
@@ -758,7 +772,12 @@ public class RiskUtil extends AbstractThird {
 			orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 			orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 			orderInfo.setClosedDetail("系统关闭");
+			//maqiaopan 2017-9-8 10:54:15风控拒绝原因字段添加
+			String rejectCode = verybo.getRejectCode();
 			orderInfo.setClosedReason("风控审批不通过");
+			if (StringUtils.isNotBlank(rejectCode)){
+				orderInfo.setClosedReason("风控审批不通过"+rejectCode);
+			}
 			orderInfo.setGmtClosed(new Date());
 			logger.info("updateOrder orderInfo = {}", orderInfo);
 			if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
@@ -824,7 +843,7 @@ public class RiskUtil extends AbstractThird {
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);        //冻结状态
 		// 在风控审批通过后额度不变生成账单
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(),orderInfo.getOrderType());
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode());
 		
 		// 修改用户账户信息
 		AfUserAccountDo account = new AfUserAccountDo();
@@ -1253,7 +1272,12 @@ public class RiskUtil extends AbstractThird {
 							orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 							orderInfo.setClosedDetail("系统关闭");
+							//maqiaopan 2017-9-8 10:54:15风控拒绝原因字段添加
+							String rejectCode = object.get("result").toString();
 							orderInfo.setClosedReason("风控审批不通过");
+							if (StringUtils.isNotBlank(rejectCode)){
+								orderInfo.setClosedReason("风控审批不通过"+rejectCode);
+							}
 							orderInfo.setGmtClosed(new Date());
 							logger.info("updateOrder orderInfo = {}", orderInfo);
 							int re = orderDao.updateOrder(orderInfo);
@@ -1289,7 +1313,7 @@ public class RiskUtil extends AbstractThird {
 						
 						// 在风控审批通过后额度不变生成账单
 						afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
-								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),false);
+								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
 
 
 						// 审批通过时
@@ -1817,5 +1841,132 @@ public class RiskUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
 		}
 	}
+	/**
+	 * 登录可信验证码
+	 * @param userName
+	 * @param device
+	 * @return
+	 */
+	public boolean verifySynLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
+			String ip,String phoneType,String networkType,String osType){
+		
+//		RiskTrustReqBo reqBo = new RiskTrustReqBo();
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",Constants.EVENT_LOGIN_SYN);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("loginType", loginType);
+		obj.put("loginTime", loginTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		//Map<String,String> reqBo = new HashMap<String, String>();
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/event/syn/login.htm";
+		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
+		String reqResult = HttpUtil.post(url, map);
+
+		logThird(reqResult, "verifySynLogin", map);
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.RISK_SYN_LOGIN_VERIFY_ERROR);
+		}
+
+		RiskLoginRespBo riskResp = JSONObject.parseObject(reqResult, RiskLoginRespBo.class);
+		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+			JSONObject jsonObj = JSON.parseObject(riskResp.getData());
+			if("1".equals(jsonObj.getString("isTrust")))
+			{
+				return true;
+			}else{
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 	
+	/**
+	 * 风控异步登录
+	 * @param consumerNo
+	 * @param phone
+	 * @param blackBox
+	 * @param deviceUuid
+	 * @param loginType
+	 * @param loginTime
+	 * @param ip
+	 * @param phoneType
+	 * @param networkType
+	 * @param osType
+	 * @return
+	 */
+	public void verifyASyLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
+			String ip,String phoneType,String networkType,String osType,String result,String event){
+		
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",event);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("loginResult",result);
+		obj.put("loginType", loginType);
+		obj.put("loginTime", loginTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/event/asy/login.htm";
+		asyLoginService.excute(map, url,"asyLoginVerify");
+	}
+	
+	/**
+	 * 风控异步注册通知
+	 * @param consumerNo
+	 * @param phone
+	 * @param blackBox
+	 * @param deviceUuid
+	 * @param loginType
+	 * @param loginTime
+	 * @param ip
+	 * @param phoneType
+	 * @param networkType
+	 * @param osType
+	 * @param result
+	 * @param event
+	 */
+	public void verifyASyRegister(String consumerNo,String phone,String blackBox,String deviceUuid,String registerTime,
+			String ip,String phoneType,String networkType,String osType,String event){
+		
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("consumerNo",consumerNo);
+		map.put("eventType",event);
+		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
+		JSONObject obj = new JSONObject();
+		obj.put("phone", phone);
+		obj.put("blackBox", blackBox);
+		obj.put("deviceUuid", deviceUuid);
+		obj.put("registerResult","1");
+		obj.put("registerTime", registerTime);
+//		obj.put("imei", imei);
+		obj.put("ip", ip);
+		obj.put("phoneType", phoneType);
+		obj.put("networkType", networkType);
+		obj.put("osType", osType);
+		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
+		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+		String url = getUrl() + "/modules/api/event/asy/register.htm";
+		asyLoginService.excute(map, url,"asyRegisterVerify");
+	}
 }

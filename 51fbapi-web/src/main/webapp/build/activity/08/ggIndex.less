@@ -81,46 +81,9 @@ body{
   position:relative;
   overflow:hidden;
 }
-.ggIndex .banner .bannerList{
-  /*width:25rem;*/
-  position:absolute;
-  left:0;
-  top:0;
-}
-.ggIndex .banner .bannerList .positionImg{
-  width:6.25rem;
-  height:6.2rem;
-  margin:0 .625rem;
-}
-.ggIndex .banner .bannerList li{
-  height:6.2rem;
-  float:left;
-  opacity: 0;
-  transition: all 2.5s ease;
-  margin:0 .625rem;
-}
-.ggIndex .banner .bannerList li:nth-child(1){
-  opacity: 1;
-}
-.ggIndex .banner .num {
-  position:absolute;
-  width:100%;
-  bottom:.1rem;
-  left:0;
-  text-align:center;
-  font-size:0;
-  display: none;
-}
-.ggIndex .banner .num li {
-  width:.1rem;
-  height:.1rem;
-  background-color:#888;
-  border-radius:50%;
-  display:inline-block;
-  margin:0 .15rem;
-  cursor:pointer;}
-.ggIndex .banner .num li.on {
-  background-color: #fff;
+.swiper-slide{
+  width: 83.33% !important;
+  margin: 0 8.33%;
 }
 .ggIndex .highPrize{
   font-size:.32rem;
@@ -213,6 +176,10 @@ body{
 }
 .ggIndex .finalPrize02{
   background:url("@{url}/gg017.png") no-repeat;
+  background-size: contain;
+}
+.ggIndex .finalPrize03{
+  background:url("@{url}/gg38.png") no-repeat;
   background-size: contain;
 }
 .ggIndex .finalPrize .amount{
@@ -408,6 +375,7 @@ body{
   top:4.35rem;
   left:0.24rem;
   z-index:200;
+  display:none;
 }
 .ggIndex .alertPresent .next{
   width:.13rem;
@@ -418,6 +386,7 @@ body{
   top:4.35rem;
   right:0.24rem;
   z-index:200;
+  display:none;
 }
 .ggIndex .alertPresent .imgList{
   width: 100%;
@@ -455,10 +424,10 @@ body{
    left:-.3%;
    top: 0;
    filter: url(blur.svg#blur);
-    -webkit-filter: blur(.01rem);
-    -moz-filter: blur(.01rem);
-    -ms-filter: blur(.01rem);
-    filter: blur(.01rem);
+    -webkit-filter: blur(.02rem);
+    -moz-filter: blur(.02rem);
+    -ms-filter: blur(.02rem);
+    filter: blur(.02rem);
     filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=3, MakeShadow=false);
 }
 .ggIndex .alertPresent .imgList .img .num{
@@ -598,4 +567,13 @@ display: none;
   width: 0;
   height:0;
 }
+.changeGray{
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
 
+  filter: grayscale(100%);
+
+  filter: gray;
+}

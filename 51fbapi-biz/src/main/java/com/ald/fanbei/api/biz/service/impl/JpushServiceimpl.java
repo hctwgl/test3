@@ -331,7 +331,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void strongRiskFail(String userName) {
 		try {
-			String msgContext = "您好，您的信用认证未通过审核。";
+			String msgContext = "VIP特权，给您挑选几个额度高，要求低，下款快的借钱平台，50000额度等你提取！";
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("strongRiskFail,pid=", pid));
 			Map<String, String> extras = new HashMap<String, String>();
@@ -339,7 +339,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("信用认证未通过", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("额度不够用？51返呗借贷超市，帮你解决", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("strongRiskFail error", e);
 		}
@@ -652,29 +652,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	}
 
 	public  void jPushCoupon(String type,String userName){
-		/*try {
-			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
-			List<AfResourceDo> resourceDoList = afResourceDao.getConfigByTypes(type);
-			AfResourceDo afResourceDo = resourceDoList.get(0);
-			String pid = userName + "_" + System.currentTimeMillis();
-			logger.info(StringUtil.appendStrs("gameShareSuccess,pid=", pid));
-			Map<String, String> extras = new HashMap<String, String>();
-			extras.put(PID, pid);
-			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
-			extras.put(PUSH_JUMP_TYPE,"204");
-			extras.put(DATA, afResourceDo.getValue() + "," + "http://www.baidu.com");
-			jpushUtil.pushMessageByAlias(afResourceDo.getValue1(),afResourceDo.getValue2(),extras,new String[]{userName}, false);
-			logger.info("pushMessageByAlias argus=>");
-			logger.info(afResourceDo.getValue1());
-			logger.info(afResourceDo.getValue2());
-			logger.info(extras.toString());
-			logger.info(userName);
-		}catch(Exception e){
-			logger.info("gameShareSuccess error", e);
-		}
-		*/
-
-
+		
 		try {
 			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
 			//String userName = StringUtils.EMPTY;

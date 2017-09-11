@@ -313,4 +313,24 @@
 	<select id="getBorrowCashByRemcommend" resultType="HashMap">
 		SELECT count(1) 'count' FROM  af_borrow_cash where user_id = #{user_id}  and status in ('TRANSEDING','TRANSED','CLOSED','FINSH')
 	</select>
+	
+	<update id="updateBalancedDate" parameterType="AfBorrowCashDo">
+		UPDATE af_borrow_cash SET gmt_modified = NOW()
+		<if test="status != null">
+			,status=#{status}
+		</if>
+		<if test="rateAmount != null">
+			,rate_amount=#{rateAmount}
+		</if>
+		<if test="overdueAmount != null">
+			,overdue_amount=#{overdueAmount}
+		</if>
+		<if test="sumRate != null">
+			,sum_rate=#{sumRate}
+		</if>
+		<if test="sumOverdue != null">
+			,sum_overdue=#{sumOverdue}
+		</if>
+		WHERE id=#{rid}
+	</update>
 </mapper>

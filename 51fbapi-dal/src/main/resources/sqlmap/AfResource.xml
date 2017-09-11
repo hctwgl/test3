@@ -155,6 +155,22 @@
 		r1.sort ,r1.id , r2.sort
 	</select>
 
+	<select id="getOneToManyResourceOrderByBytypeOnPreEnv" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFields" />
+		FROM
+		af_resource r1 LEFT JOIN af_resource r2
+		ON r1.id = r2.value_4
+		WHERE
+		r1.type = #{type}
+		AND r1.sec_type = ''
+		AND r2.value_4 !=''
+		AND r1.is_delete =0
+		AND r2.is_delete =0
+	<!-- 	AND r1.value_4 = 'O' -->
+		ORDER BY
+		r1.sort ,r1.id , r2.sort
+	</select>
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
