@@ -63,7 +63,7 @@ public class InterestFreeUitl {
             BigDecimal mouthRate = nPerRate.divide(new BigDecimal(Constants.MONTH_OF_YEAR), 8,
                     BigDecimal.ROUND_HALF_UP);//月利率
 
-            if (interestFreeArray != null) {
+            if (interestFreeArray != null&&interestFreeArray.size()>0) {
             	JSONObject interestFreeObject = interestFreeArray.getJSONObject(i);
             	String freeNper = interestFreeObject.getString(Constants.DEFAULT__FREENPER);//免期数
                 BigDecimal freeNperB = new BigDecimal(freeNper);//免期数BigDecimal

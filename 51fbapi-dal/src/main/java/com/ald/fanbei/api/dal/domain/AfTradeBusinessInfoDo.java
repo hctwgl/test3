@@ -236,7 +236,10 @@ import java.math.BigDecimal;
      * 单笔返利上限
      */
     private BigDecimal rebateMax;
-
+   /**
+    * 返利模型配置
+    */
+   private String configRebateModel;
 
     /**
      * 获取主键Id
@@ -997,9 +1000,10 @@ import java.math.BigDecimal;
 
     /**
      * 获取返利百分比(0-100)
-     *
+     * replace by rebate model 
      * @return 返利百分比(0-100)
      */
+    @Deprecated
     public BigDecimal getRebatePercent(){
       return rebatePercent;
     }
@@ -1031,4 +1035,11 @@ import java.math.BigDecimal;
       this.rebateMax = rebateMax;
     }
 
+   public String getConfigRebateModel() {
+      return configRebateModel;
+   }
+
+   public void setConfigRebateModel(String configRebateModel) {
+      this.configRebateModel = configRebateModel;
+   }
 }
