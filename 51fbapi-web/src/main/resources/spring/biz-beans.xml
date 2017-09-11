@@ -87,5 +87,6 @@
 	<bean id="cacheRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="cacheJedisConnFactory" />
 	</bean>
+	<!--<bean id="yiBaoUtility" class ="com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility"></bean>-->
 
 </beans>

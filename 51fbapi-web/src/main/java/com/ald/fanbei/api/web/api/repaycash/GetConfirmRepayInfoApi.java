@@ -167,9 +167,10 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
 		}else if(cardId==-1){//微信支付
-			map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
-
-			resp.setResponseData(map);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+//			map	=afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount, actualAmount, coupon, userAmount, borrowId, cardId, userId, "", userDto);
+//
+//			resp.setResponseData(map);
 		}else if(cardId>0){//银行卡支付
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
 			if(null == card){

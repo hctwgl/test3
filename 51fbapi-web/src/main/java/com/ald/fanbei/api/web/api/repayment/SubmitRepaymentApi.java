@@ -160,9 +160,10 @@ public class SubmitRepaymentApi implements ApiHandle{
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
 		}else if(cardId==-1){//微信支付
-			map = afRepaymentService.createRepayment(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
-					cardId,userId,billDo,"",afUserAccountDo);
-			resp.setResponseData(map);
+//			map = afRepaymentService.createRepayment(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds,
+//					cardId,userId,billDo,"",afUserAccountDo);
+//			resp.setResponseData(map);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 		}else if(cardId>0){//银行卡支付
 			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
 			if(null == card){

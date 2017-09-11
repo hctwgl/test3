@@ -146,4 +146,12 @@ public interface AfBorrowCashDao {
 	List<String> getBorrowedUserIds();
 
 	HashMap getBorrowCashByRemcommend(@Param("user_id")long user_id);
+	
+	/**
+	 * 催收平账更新数据
+	 * @param
+	 * @return 
+	 * 
+	 * **/
+	int updateBalancedDate(AfBorrowCashDo afBorrowCashDo);
 }
