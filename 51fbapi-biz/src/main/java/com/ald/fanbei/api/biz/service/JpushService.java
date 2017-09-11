@@ -216,4 +216,5 @@ public interface JpushService {
 	//注册新用户弹窗
 	void jPushCoupon(String type,String userName);
 
+	void jPushPopupWnd(String type,String userName);
 }

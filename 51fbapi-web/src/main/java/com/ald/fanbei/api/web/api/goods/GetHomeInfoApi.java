@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -54,6 +55,9 @@ public class GetHomeInfoApi implements ApiHandle {
 	@Resource
 	JpushService jpushService;
 	
+	@Resource 
+	AfUserCouponService afUserCouponService;
+	
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	
@@ -78,31 +82,52 @@ public class GetHomeInfoApi implements ApiHandle {
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
-		
-		Integer appVersion = context.getAppVersion();	
-		
-		String userName = context.getUserName();
-		if(userName != null) {
-			// 用户已登录,将登录信息存放到缓存中
-			String storeKey = "GET_HOME_INFO_" + userName;
-			
-			Object saveObj = bizCacheUtil.getObject(storeKey);
-			
-			if(saveObj == null) {
-				long secs = DateUtil.getSecsEndOfDay();
-				bizCacheUtil.saveObject(storeKey, "Y", secs); //单位:秒
-				jpushService.jPushCoupon("NO_UPDATE_WND",userName);
+		Integer appVersion = context.getAppVersion();
+		try{
+			String userName = context.getUserName();
+			if(userName != null) {
+				// 用户已登录,将登录信息存放到缓存中
+				String ltStoreKey = "GET_HOME_INFO_LT" + userName;
+				Object ltSaveObj = bizCacheUtil.getObject(ltStoreKey);
+				List<AfResourceDo> resList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_WND.getCode());
+				Integer givenVersion = 0;
+				String onOff = "";
+				if(resList != null && !resList.isEmpty()) {
+					AfResourceDo versionInfoRes = resList.get(0);
+					onOff = versionInfoRes.getValue1();
+					String version = versionInfoRes.getValue();
+					givenVersion = Integer.valueOf(version);
+				}
+				if(ltSaveObj == null) {
+					long secs = DateUtil.getSecsEndOfDay();
+					bizCacheUtil.saveObject(ltStoreKey, "Y", secs); //单位:秒
+					if(appVersion.compareTo(givenVersion) < 0 && "Y".equals(onOff)) {
+						jpushService.jPushPopupWnd("LT_GIVEN_VERSION_WND",userName);
+					}
+				}
+				String gtStoreKey = "GET_HOME_INFO_GT" + userName;
+				Object gtSaveObj = bizCacheUtil.getObject(gtStoreKey);
+				// 获取后台配置的优惠券信息
+				List<AfResourceDo> couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON.getCode());
+				if(couponsList != null && !couponsList.isEmpty()) {
+					AfResourceDo couponInfoRes = couponsList.get(0);
+					String couponId = couponInfoRes.getValue();
+					Long userId = context.getUserId();
+					int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
+					if(gtSaveObj == null && count == 0 ) {
+						if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
+							// 用户发券
+							afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize", "home");
+							jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND",userName);
+							bizCacheUtil.saveObject(gtStoreKey, "Y");
+						}
+					}
+				}
 			}
-			
-			
-			
-			// jpushService.jPushCoupon("NO_UPDATE_WND",userName);
-			
-			afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_WND.getCode());
-			
+		} catch(Exception e) {
+			logger.error(e.getMessage());
 		}
 		
-			
 		if(appVersion >= 363){
 			bannerSecList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
