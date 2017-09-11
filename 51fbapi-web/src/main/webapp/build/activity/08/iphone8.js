@@ -17,8 +17,32 @@ function hello(){
     setTimeout("hello()",speed);
 }
 hello();
+/*判断时间list*/
+let currentStarmp=new Date().getTime();
+//let currentStarmp=Date.parse(new Date('2017/09/25 00:00:00'));
+let firstStarmp=Date.parse(new Date('2017/09/20 00:00:00'));
+let secondStarmp=Date.parse(new Date('2017/09/21 00:00:00'));
+let thirdStarmp=Date.parse(new Date('2017/09/23 00:00:00'));
+let fourthStarmp=Date.parse(new Date('2017/09/25 00:00:00'));
+console.log(currentStarmp);
+console.log(firstStarmp);
+if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){
+    addStyle(1);
+}
+if(currentStarmp>=secondStarmp&&currentStarmp<thirdStarmp){
+    addStyle(2);
+}
+if(currentStarmp>=fourthStarmp){
+    addStyle(3);
+}
+function addStyle(i){
+    $('.time').eq(i).addClass('active01');
+    $('.time').eq(i).siblings().removeClass('active01');
+    $('.time').eq(i).find('span').addClass('active02');
+    $('.time').eq(i).siblings().find('span').removeClass('active02');
+}
 
-var activityId=getUrl("activityId");//获取活动Id
+var modelId=getUrl("modelId");//获取活动Id
 var protocol = window.location.protocol;
 var host = window.location.host;
 var domainName = protocol+'//'+host;//获取域名
@@ -42,12 +66,15 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: '/fanbei-web/newEncoreActivityInfo',
-                data:{'activityId':activityId},
+                url: '/fanbei-web/partActivityInfo',
+                data:{'modelId':modelId},
                 success: function (data) {
-                    data = eval('(' + data + ')');
-                    console.log(data);
-                    self.content=data.data;
+                    self.content = eval('(' + data + ')').data.activityList.slice(0,3);
+                    console.log(eval('(' + data + ')').data);
+                    self.content.firstList=self.content[0].activityGoodsList;
+                    self.content.secondList=self.content[1].activityGoodsList;
+                    self.content.thirdList=self.content[2].activityGoodsList;
+                    console.log(self.content);
                     if(data.success){
                         self.$nextTick(function () {
                             $(".loadingMask").fadeOut();
@@ -124,7 +151,7 @@ function alaShareData(){
         "shareAppTitle": "iPhone 8 预约立减100",  // 分享的title
         'shareAppContent': "十周年 翘首以待！1元预约立减100，每日限抽取5名成功分享用户获iPhone 8大奖，限时秒杀iPhone 6 仅1999元！",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/09/iphone8_06.jpg",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/iphone8Share?activityId="+activityId+"&sharePage=iphone8Share",  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/iphone8Share?modelId="+modelId+"&sharePage=iphone8Share",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "iphone8Share" // 分享的页面
     };
