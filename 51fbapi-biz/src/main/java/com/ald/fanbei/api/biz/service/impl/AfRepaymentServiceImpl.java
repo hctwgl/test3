@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -109,6 +111,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	YiBaoUtility yiBaoUtility;
 	@Resource
 	AfYibaoOrderDao afYibaoOrderDao;
+
+	@Resource
+	RedisTemplate redisTemplate;
 
 	public Map<String,Object> createRepaymentYiBao(BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
@@ -296,6 +301,14 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
 	@Override
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
+
+		final String key = outTradeNo +"_success_repay";
+		long count = redisTemplate.opsForValue().increment("", 1);
+		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+		if (count != 1) {
+			return -1;
+		}
+
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 
 			@Override
@@ -353,6 +366,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error = {}", e);
 					return 0l;
+				}
+				finally {
+					redisTemplate.delete(key);
 				}
 			}
 		});

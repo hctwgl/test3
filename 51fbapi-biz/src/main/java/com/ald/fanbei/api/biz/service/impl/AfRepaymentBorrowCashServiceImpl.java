@@ -295,6 +295,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					status.setRollbackOnly();
 					return null;
 				}
+				finally {
+
+				}
 			}
 		});
 
@@ -304,15 +307,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 	@Override
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
-		String key = outTradeNo +"_success_repayCash";
+		final String key = outTradeNo +"_success_repayCash";
 		long count = redisTemplate.opsForValue().increment("", 1);
 		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
-		if (count == 1) {
-
-		} else {
+		if (count != 1) {
 			return -1;
 		}
-		
 
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 
@@ -499,6 +499,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error", e);
 					return 0l;
+				}
+				finally {
+					redisTemplate.delete(key);
 				}
 			}
 		});

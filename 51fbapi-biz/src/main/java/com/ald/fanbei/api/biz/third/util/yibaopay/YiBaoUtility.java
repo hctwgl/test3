@@ -1,14 +1,19 @@
 package com.ald.fanbei.api.biz.third.util.yibaopay;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
 import com.sun.org.apache.bcel.internal.generic.RET;
@@ -45,7 +50,16 @@ public class YiBaoUtility {
     @Resource
     private AfRepaymentBorrowCashService afRepaymentBorrowCashService;
     @Resource
-    TransactionTemplate transactionTemplate;
+    private TransactionTemplate transactionTemplate;
+
+    @Resource
+    private AfRepaymentDao afRepaymentDao;
+
+    @Resource
+    private AfBorrowBillService afBorrowBillService;
+
+    @Resource
+    private AfRepaymentService afRepaymentService;
     /**
      * 新增易宝订单
      * @return
@@ -178,6 +192,9 @@ public class YiBaoUtility {
                         case 1:
                             type1Proess(afYibaoOrderDo, lstatus);
                             break;
+                        case 2:
+                            type2Proess(afYibaoOrderDo,lstatus);
+                            break;
                     }
                 }
                 catch (Exception e){
@@ -264,21 +281,24 @@ public class YiBaoUtility {
             }
             int ret = afYibaoOrderDao.updateYiBaoOrderStatusLock(3,afYibaoOrderDo.getId(),afYibaoOrderDo.getGtmUpdate());
             if(ret >0) {
-                AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(afYibaoOrderDo.getOrderNo());
+                AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(afYibaoOrderDo.getOrderNo());
                 repayment.setStatus("P");
-                afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repayment);
+                afRepaymentDao.updateRepayment("P",null,repayment.getRid());
+                afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.DEALING.getCode(), repayment.getRid(),
+                        repayment.getCouponAmount(), repayment.getJfbAmount(), repayment.getRebateAmount());
             }
         }
         else if(status.equals("SUCCESS")){
-            afRepaymentBorrowCashService.dealRepaymentSucess(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
-            //成功
+            afRepaymentService.dealRepaymentSucess(afYibaoOrderDo.getOrderNo(), afYibaoOrderDo.getYibaoNo());
+
+
         }
         else if(status.equals("REJECT")){
 
         }
         else{
             //关闭
-            afRepaymentBorrowCashService.dealRepaymentFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+            afRepaymentService.dealRepaymentFail(afYibaoOrderDo.getOrderNo(), afYibaoOrderDo.getYibaoNo());
         }
     }
 }

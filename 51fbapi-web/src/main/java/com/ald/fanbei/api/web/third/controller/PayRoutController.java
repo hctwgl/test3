@@ -399,6 +399,10 @@ public class PayRoutController {
 			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
 			}
+			else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
+				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
+			}
+
 			return "SUCCESS";
 		}
 

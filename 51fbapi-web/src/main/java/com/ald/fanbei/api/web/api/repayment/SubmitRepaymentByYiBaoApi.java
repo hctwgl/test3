@@ -10,6 +10,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -54,6 +55,9 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 
     @Resource
     private YiBaoUtility yiBaoUtility;
+
+    @Resource
+    private AfResourceService afResourceService;
 
 
     @Override
@@ -110,8 +114,18 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
         }
 
+        List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
+        List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
+        AfResourceDo zfbDo = null;
+        AfResourceDo wxDo = null;
+        if(afResourceDoList !=null && afResourceDoList.size()>0){
+            zfbDo = afResourceDoList.get(0);
+        }
+        if(afResourceDoList1 !=null && afResourceDoList1.size()>0){
+            wxDo = afResourceDoList1.get(0);
+        }
 
-
+        
         showAmount = repaymentAmount;
         //使用优惠券结算金额
         if(coupon!=null){
@@ -157,13 +171,31 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             resp.addResponseData("type", map.get("type"));
         }else if(cardId==-1){
             //微信支付
-            map = afRepaymentService.createRepayment(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds,
-                    cardId,userId,billDo,"",afUserAccountDo);
-            resp.setResponseData(map);
+            if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")) {
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount, coupon, rebateAmount, billIds,
+                        cardId, userId, billDo, "", afUserAccountDo);
+                map.put("userNo", afUserAccountDo.getUserName());
+                map.put("userType", "USER_ID");
+                map.put("directPayType", "WX");
+                resp.setResponseData(map);
+            }
+            else{
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
         }
         else if (cardId ==-3){
-            //支付宝
-
+            if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
+                //支付宝
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount, coupon, rebateAmount, billIds,
+                        cardId, userId, billDo, "", afUserAccountDo);
+                map.put("userNo", afUserAccountDo.getUserName());
+                map.put("userType", "USER_ID");
+                map.put("directPayType", "ZFB");
+                resp.setResponseData(map);
+            }
+            else{
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
 
         }
         else if(cardId>0){//银行卡支付
