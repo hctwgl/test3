@@ -724,7 +724,7 @@ public class RiskUtil extends AbstractThird {
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);
 		// 在风控审批通过后额度不变生成账单
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode());
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),orderInfo.getOrderType());
 		
 		// 修改用户账户信息
 		AfUserAccountDo account = new AfUserAccountDo();
@@ -843,7 +843,7 @@ public class RiskUtil extends AbstractThird {
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);        //冻结状态
 		// 在风控审批通过后额度不变生成账单
-		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode());
+		afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(),orderInfo.getOrderType());
 		
 		// 修改用户账户信息
 		AfUserAccountDo account = new AfUserAccountDo();
@@ -1313,7 +1313,7 @@ public class RiskUtil extends AbstractThird {
 						
 						// 在风控审批通过后额度不变生成账单
 						afBorrowService.dealAgentPayBorrowAndBill(userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(),
-								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+								orderInfo.getGoodsName(), orderInfo.getNper(), orderInfo.getRid(),orderInfo.getOrderNo(),orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),false);
 
 
 						// 审批通过时
