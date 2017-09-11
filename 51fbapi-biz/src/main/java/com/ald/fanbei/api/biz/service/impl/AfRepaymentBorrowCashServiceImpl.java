@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -105,6 +106,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	@Resource
 	YiBaoUtility yiBaoUtility;
 
+	@Resource
+	private RedisTemplate redisTemplate;
 	
 	@Override
 	public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
@@ -300,7 +303,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 	@Override
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
-
+		
 		
 
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
