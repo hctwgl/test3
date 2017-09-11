@@ -107,6 +107,7 @@ public class GetHomeInfoApi implements ApiHandle {
 					long secs = DateUtil.getSecsEndOfDay();
 					if(appVersion.compareTo(givenVersion) < 0 && "Y".equals(onOff)) {
 						jpushService.jPushPopupWnd("LT_GIVEN_VERSION_WND",userName);
+						logger.error("LT_GIVEN_VERSION_WND send success");
 						bizCacheUtil.saveObject(ltStoreKey, "Y", secs); //单位:秒
 					}
 				}
@@ -130,6 +131,7 @@ public class GetHomeInfoApi implements ApiHandle {
 					if(!sended && gtSaveObj == null) {
 						if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
 							jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND",userName);
+							logger.error("GT_GIVEN_VERSION_WND send success");
 							bizCacheUtil.saveObject(gtStoreKey, "Y");
 							for(String couponId : couponIds) {
 								String[] tmp = couponId.split(":");
