@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017091101")
+    #set($version="2017091102")
     <meta charset="UTF-8">
     <title>纸尿裤品牌专区</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/09/babePants.css?version=$version">
