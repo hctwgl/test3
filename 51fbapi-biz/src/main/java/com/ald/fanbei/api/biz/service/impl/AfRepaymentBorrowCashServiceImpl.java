@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -303,7 +304,14 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 	@Override
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
-		
+		String key = outTradeNo +"_success_repayCash";
+		long count = redisTemplate.opsForValue().increment("", 1);
+		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+		if (count == 1) {
+
+		} else {
+			return -1;
+		}
 		
 
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
