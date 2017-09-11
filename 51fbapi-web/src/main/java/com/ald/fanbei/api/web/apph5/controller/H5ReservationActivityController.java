@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,6 +32,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -95,11 +99,9 @@ public class H5ReservationActivityController extends BaseController {
 		//判断活动是否开始
 		if (DateUtil.compareDate(date, startTime)) {
 			
-			
-			
 			long days = DateUtil.getNumberOfDatesBetween(startTime, date);
 			List<String> list = new ArrayList();
-			if (days == 0) {
+			if (days <= 0) {
 
 			} else if (days == 1) {
 				list.add("138****6848");
@@ -139,26 +141,61 @@ public class H5ReservationActivityController extends BaseController {
 				list.add("176****8127");
 			}
 			//查询预约状态
-			String appInfo = request.getParameter("_appInfo");
-			String userName = null;
-			AfUserDo userDo =null;
-			String s = null;
-			if(StringUtil.isNotBlank(appInfo)){
-				userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
-			}
-			if(userName != null && userName !=" "){
-				loginStatus="Y";
+			try {
+				AfUserDo userDo =null;
+				String s = null;
+				String appInfo = getAppInfo(request.getHeader("Referer"));
+				String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
 				userDo = afUserService.getUserByUserName(userName);
-				s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
-				status=s;
+				if(userDo != null){
+					loginStatus="Y";
+					s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
+					status=s;
+				}
+				map.put("status", status);
+				map.put("loginStatus", loginStatus);
+				map.put("winUsers", list);
+			} catch (Exception e) {
+				logger.info("getActivityGoods is fail"+e);
 			}
-			map.put("status", status);
-			map.put("loginStatus", loginStatus);
-			map.put("winUsers", list);
 		}
 		return JsonUtil.toJSONString(map);
 	}
+	 private static String getAppInfo(String url) {
+	        if (StringUtil.isBlank(url)) {
+	            return null;
+	        }
+	        String result = "";
+	        try {
+	            Map<String, List<String>> params = new HashMap<String, List<String>>();
+	            String[] urlParts = url.split("\\?");
+	            if (urlParts.length > 1) {
+	                String query = urlParts[1];
+	                for (String param : query.split("&")) {
+	                    String[] pair = param.split("=");
+	                    String key = URLDecoder.decode(pair[0], "UTF-8");
+	                    String value = "";
+	                    if (pair.length > 1) {
+	                        value = URLDecoder.decode(pair[1], "UTF-8");
+	                    }
 
+	                    List<String> values = params.get(key);
+	                    if (values == null) {
+	                        values = new ArrayList<String>();
+	                        params.put(key, values);
+	                    }
+	                    values.add(value);
+	                }
+	            }
+	            List<String> _appInfo = params.get("_appInfo");
+	            if (_appInfo != null && _appInfo.size() > 0) {
+	                result = _appInfo.get(0);
+	            }
+	            return result;
+	        } catch (UnsupportedEncodingException ex) {
+	            throw new AssertionError(ex);
+	        }
+	    }
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
