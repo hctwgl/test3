@@ -14,14 +14,22 @@ body{
   height:.65rem;
   font-size:.22rem;
   line-height: .27rem;
-  color:#e5b25a;
   padding-top:.15rem;
   text-align: center;
   float: left;
 }
-.iphone8 .timeList .time.active{
+.iphone8 .timeList .time span{
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(to top, #d1a24d, #e8ce9c), linear-gradient(#303030, #303030);
+}
+.iphone8 .timeList .time.active01{
   background-image: linear-gradient(to top, #d1a24d, #e5bf78);
-  color: #fff;
+}
+.iphone8 .timeList .time span.active02{
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(to top, #ffffff, #ffffff);
 }
 .iphone8 .banner{
     width:100%;
@@ -100,6 +108,7 @@ body{
     position: absolute;
     top: .15rem;
     right: .5rem;
+    border-radius: .04rem;
   }
   .iphone8 .hotGood{
     padding-bottom:.6rem;

@@ -10,10 +10,10 @@
 <body>
 <div id="iphone8Share" class="iphone8">
     <div class="timeList clearFix">
-        <p class="time active">9.13<br/>新品预约</p>
-        <p class="time">9.20<br/>新品正式发售</p>
-        <p class="time">9.21-9.22<br/>特卖秒杀</p>
-        <p class="time">9.25<br/>新品发货</p>
+        <p class="time active01"><span class="active02">9.13<br/>新品预约</span></p>
+        <p class="time"><span>9.20<br/>新品正式发售</span></p>
+        <p class="time"><span>9.21-9.22<br/>特卖秒杀</span></p>
+        <p class="time"><span>9.25<br/>新品发货</span></p>
     </div>
     <div class="banner">
         <div class="orderDes" v-if="orderStatus==='SUCCESS'">恭喜您预约成功，iPhone8将在9.20正式开售<br/>100元代金券请在“我的-抵用券”里查看</div>
