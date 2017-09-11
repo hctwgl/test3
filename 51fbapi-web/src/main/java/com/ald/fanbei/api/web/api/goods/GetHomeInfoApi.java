@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -27,9 +28,11 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
@@ -37,6 +40,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -111,19 +116,38 @@ public class GetHomeInfoApi implements ApiHandle {
 				List<AfResourceDo> couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON.getCode());
 				if(couponsList != null && !couponsList.isEmpty()) {
 					AfResourceDo couponInfoRes = couponsList.get(0);
-					String couponId = couponInfoRes.getValue();
-					Long userId = context.getUserId();
-					int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
-					if(gtSaveObj == null && count == 0 ) {
-						if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
-							// 用户发券
-							afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize", "home");
-							jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND",userName);
-							bizCacheUtil.saveObject(gtStoreKey, "Y");
-						}
+					String couponIdStr = couponInfoRes.getValue();
+					String[] couponIds = couponIdStr.split(",");
+					boolean sended = false;
+					for(String couponId : couponIds) {
+						String[] tmp = couponId.split(":");
+						if(tmp.length > 1) continue;
+						Long userId = context.getUserId();
+						int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
+						if(count > 0 ) sended = true;
+						break;
 					}
+					if(!sended) {
+						jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND",userName);
+						bizCacheUtil.saveObject(gtStoreKey, "Y");
+						for(String couponId : couponIds) {
+							String[] tmp = couponId.split(":");
+							Long userId = context.getUserId();
+								if(gtSaveObj == null) {
+									if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
+										// 用户发券
+										if(tmp.length > 1) {
+											String sceneId = tmp[0];
+											grantBoluomiCoupon(Long.parseLong(sceneId), userId);
+										} else {
+											afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize", "home");
+										}
+									}
+								}
+							}
+						}
+					}	
 				}
-			}
 		} catch(Exception e) {
 			logger.error(e.getMessage());
 		}
@@ -186,6 +210,43 @@ public class GetHomeInfoApi implements ApiHandle {
 		
 		resp.setResponseData(data);
 		return resp;
+	}
+	
+	private void grantBoluomiCoupon(Long sceneId, Long userId ) {
+		logger.info(" pickBoluomeCoupon begin , sceneId = {}, userId = {}",sceneId, userId);
+		if (sceneId == null) {
+			throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
+		AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+		if (resourceInfo == null) {
+			logger.error("couponSceneId is invalid");
+			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+		}
+		
+		PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+		bo.setUser_id(userId + StringUtil.EMPTY);
+		
+		Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+		Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+		
+		if (DateUtil.beforeDay(new Date(), gmtStart)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
+		}
+		if (DateUtil.afterDay(new Date(), gmtEnd)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END);
+		}
+		String url = resourceInfo.getValue();
+		if(url != null) {
+			url = url.replace(" ", "");
+		}
+		String resultString = HttpUtil.doHttpPostJsonParam(url, JSONObject.toJSONString(bo));
+		logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+		JSONObject resultJson = JSONObject.parseObject(resultString);
+		if (!"0".equals(resultJson.getString("code"))) {
+			throw new FanbeiException(resultJson.getString("msg"));
+		} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
+			throw new FanbeiException("仅限领取一次，请勿重复领取！");
+		}
 	}
 
 	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
