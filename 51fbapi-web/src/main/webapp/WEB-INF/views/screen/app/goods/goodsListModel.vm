@@ -53,7 +53,7 @@
             </div>
         </div>
     #end
-    <script type="text/javascript" src="/dist/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/dist/js/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>
