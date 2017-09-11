@@ -74,6 +74,12 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
 
+        String needPayBills =  ObjectUtils.toString(requestDataVo.getParams().get("needPayBills"));
+
+
+
+
+
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (afUserAccountDo == null) {
             throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -125,7 +131,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             wxDo = afResourceDoList1.get(0);
         }
 
-        
+
         showAmount = repaymentAmount;
         //使用优惠券结算金额
         if(coupon!=null){

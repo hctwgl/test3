@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -246,4 +247,8 @@ public interface AfBorrowBillDao {
 	AfBorrowBillDo getOverduedAndNotRepayBill(@Param("borrowId") Long borrowId, @Param("billId")Long billId);
 
 	List<AfBorrowBillDo> getNoPayBorrowBillByUserId(@Param("userId") long userId);
+
+
+	List<AfBorrowBillDo> getAllBorrowNoPayByUserId(@Param("userId") long userId);
+	List<HashMap> getBorrowBillNoPaySumByUserId(@Param("userId") long userId);
 }

@@ -1,12 +1,14 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 
@@ -187,5 +189,9 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	AfBorrowBillDo getOverduedAndNotRepayBill(Long borrowId, Long billId);
+
+
+	List<AfBorrowBillDo> getAllBorrowNoPayByUserId(long userId);
+	List<HashMap> getBorrowBillNoPaySumByUserId( long userId);
 	
 }

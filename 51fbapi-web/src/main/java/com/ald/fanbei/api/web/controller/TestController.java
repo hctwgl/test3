@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -801,8 +799,11 @@ public class TestController {
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
-
-		Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
+		boolean a = isOut(2017,9);
+		boolean b =isOut(2017,10);
+		boolean c =isOut(2017,8);
+		boolean d =isOut(2016,12);
+		//Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
 //		String e ="";
 
 //		AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
@@ -816,6 +817,21 @@ public class TestController {
 		//afYiBaoOrderDao.updateYiBaoOrderStatusByOrderNo("adfasdfadsf11111",1);
 
 //		afRepaymentBorrowCashService.createRepaymentYiBao(BigDecimal.ZERO,BigDecimal.ONE,BigDecimal.TEN,null,null,null,null,null,null,null);
+	}
+
+	private boolean isOut(int year,int month){
+		Date  d = new Date();
+		Calendar c1 = Calendar.getInstance();
+		c1.set(Calendar.YEAR,year);
+		c1.set(Calendar.MONTH,month-1);
+		c1.set(Calendar.DAY_OF_MONTH,10);
+		c1.set(Calendar.HOUR_OF_DAY,0);
+		c1.set(Calendar.MINUTE,0);
+		c1.set(Calendar.SECOND,0);
+		SimpleDateFormat  s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String a = s.format(c1.getTime());
+		boolean flag = c1.getTime().before(d);
+		return flag;
 	}
 	
 }
