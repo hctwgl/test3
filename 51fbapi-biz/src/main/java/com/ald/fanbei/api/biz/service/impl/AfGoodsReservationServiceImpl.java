@@ -39,7 +39,7 @@ public class AfGoodsReservationServiceImpl extends BaseService implements AfGood
     }
 
 	@Override
-	public String getGoodsReservationStatusByUserId(String userId) {
+	public String getGoodsReservationStatusByUserId(long userId) {
 		return afGoodsReservationDao.getGoodsReservationStatusByUserId(userId);
 	}
 }

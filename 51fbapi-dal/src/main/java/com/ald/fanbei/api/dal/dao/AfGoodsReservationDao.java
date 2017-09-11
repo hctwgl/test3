@@ -47,5 +47,5 @@ public interface AfGoodsReservationDao {
      * @param userId
      * @return
      */
-    String getGoodsReservationStatusByUserId(String userId);
+    String getGoodsReservationStatusByUserId(long userId);
 }

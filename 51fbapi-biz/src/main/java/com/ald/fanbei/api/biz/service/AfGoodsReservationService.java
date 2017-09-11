@@ -34,6 +34,6 @@ public interface AfGoodsReservationService {
          * @param userId
          * @return
          */
-        String getGoodsReservationStatusByUserId(String userId);
+        String getGoodsReservationStatusByUserId(long userId);
  
 }
