@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="20170909")
-    #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    #set($src="http://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
     <title>iPhone8</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/iphone8.css">
@@ -16,32 +16,16 @@
         <p class="time">9.25<br/>新品发货</p>
     </div>
     <div class="banner">
-        <div class="orderButton" v-for="item in content.oneLevelGoodsInfo.goodsList" @click="orderClick(item)">1元预约 立减100元</div>
-        <div class="orderDes">恭喜您预约成功，iPhone8将在9.20正式开售<br/>100元代金券请在“我的-抵用券”里查看</div>
+        <div class="orderDes" v-if="orderStatus==='SUCCESS'">恭喜您预约成功，iPhone8将在9.20正式开售<br/>100元代金券请在“我的-抵用券”里查看</div>
+        <div class="orderButton" v-for="item in content.oneLevelGoodsInfo.goodsList" @click="orderClick(item)" v-else>1元预约 立减100元</div>
     </div>
     <div class="getPrize">
         <p class="prizeTitle">获奖公告</p>
         <div class="myscroll">
              <ul class="prizeList roll">
-                 <li class="clearFix">
-                     <p class="name">1恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">2恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">3恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">4恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
-                 </li>
-                 <li class="clearFix">
-                     <p class="name">5恭喜18212341234获得iPhone8一台</p>
-                     <p class="iphoneImg"></p>
+                 <li class="clearFix" v-for="item in prizeCont">
+                     <p class="name">恭喜{{item}}获得iPhone8一台</p>
+                     <p class="iphoneImg"><img src="$src/iphone8_06.jpg"></p>
                  </li>
              </ul>
              <ul class="copyRoll"></ul>

@@ -23,10 +23,13 @@ var activityId=getUrl("activityId");//获取活动Id
 let vm = new Vue({
     el: '#iphone8',
     data: {
-        content: {}
+        content: {},
+        prizeCont:{},
+        orderStatus:''
     },
     created: function () {
         this.logData();
+        this.loginPrize();
     },
     methods: {
         //获取页面初始化信息
@@ -57,6 +60,25 @@ let vm = new Vue({
                 }
             })
         },
+        //获奖公告初始化数据
+        loginPrize(){
+            let self = this;
+            $.ajax({
+                type:'post',
+                url:'/fanbei-web/activity/getActivityGoods',
+                success:function(data){
+                    data = eval('(' + data + ')');
+                    console.log(data);
+                    self.prizeCont=data.winUsers;
+                    self.orderStatus=data.status;
+                    console.log(self.orderStatus)
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！');
+                }
+            })
+        },
+        //点击商品
         goodClick(item){
             if ( item.source=="SELFSUPPORT" ) {
                 window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}';
@@ -64,6 +86,7 @@ let vm = new Vue({
                 window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}';
             }
         },
+        //点击预约
         orderClick(item){
             window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}';
         }
