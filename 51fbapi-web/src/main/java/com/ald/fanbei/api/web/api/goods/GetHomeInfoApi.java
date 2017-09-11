@@ -105,9 +105,9 @@ public class GetHomeInfoApi implements ApiHandle {
 				}
 				if(ltSaveObj == null) {
 					long secs = DateUtil.getSecsEndOfDay();
-					bizCacheUtil.saveObject(ltStoreKey, "Y", secs); //单位:秒
 					if(appVersion.compareTo(givenVersion) < 0 && "Y".equals(onOff)) {
 						jpushService.jPushPopupWnd("LT_GIVEN_VERSION_WND",userName);
+						bizCacheUtil.saveObject(ltStoreKey, "Y", secs); //单位:秒
 					}
 				}
 				String gtStoreKey = "GET_HOME_INFO_GT" + userName;
@@ -128,12 +128,12 @@ public class GetHomeInfoApi implements ApiHandle {
 						break;
 					}
 					if(!sended && gtSaveObj == null) {
-						jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND",userName);
-						bizCacheUtil.saveObject(gtStoreKey, "Y");
-						for(String couponId : couponIds) {
-							String[] tmp = couponId.split(":");
-							Long userId = context.getUserId();
-							if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
+						if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
+							jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND",userName);
+							bizCacheUtil.saveObject(gtStoreKey, "Y");
+							for(String couponId : couponIds) {
+								String[] tmp = couponId.split(":");
+								Long userId = context.getUserId();
 								// 用户发券
 								try{
 									if(tmp.length > 1) {
