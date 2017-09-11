@@ -34,6 +34,7 @@ public class RiskController {
 	@ResponseBody
 	@Deprecated
 	public String verify(HttpServletRequest request, HttpServletResponse response) {
+
 		String code = ObjectUtils.toString(request.getParameter("code"));
 		String data = ObjectUtils.toString(request.getParameter("data"));
 		String msg = ObjectUtils.toString(request.getParameter("msg"));
