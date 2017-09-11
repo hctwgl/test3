@@ -16,6 +16,9 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
  */
 public interface AfRenewalDetailService {
 
+
+	Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion);
+
 	/**
 	 * 收取手续费+利息+滞纳金，并创建续期记录
 	 * 
