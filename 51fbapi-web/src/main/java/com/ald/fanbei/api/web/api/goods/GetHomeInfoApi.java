@@ -3,10 +3,7 @@
  */
 package com.ald.fanbei.api.web.api.goods;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +100,7 @@ public class GetHomeInfoApi implements ApiHandle {
 					String version = versionInfoRes.getValue();
 					givenVersion = Integer.valueOf(version);
 				}
+				logger.info("GetHomeInfoApi userName=>" + userName);
 				if(ltSaveObj == null) {
 					long secs = DateUtil.getSecsEndOfDay();
 					if(appVersion.compareTo(givenVersion) < 0 && "Y".equals(onOff)) {
