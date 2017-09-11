@@ -94,6 +94,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		}
 	}
 
+	int riskMoney = 2;
 	/**
 	 * 通过强风控就给推荐人加10块钱
 	 * 
@@ -106,17 +107,17 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 			if (afRecommendUserDo != null) {
 
 				afRecommendUserDo.setLoan_time(null);
-				afRecommendUserDo.setPrize_money(BigDecimal.valueOf(10));
+				afRecommendUserDo.setPrize_money(BigDecimal.valueOf(riskMoney));
 				afRecommendUserDao.updateLoanById(afRecommendUserDo);
 
 				long pid = afRecommendUserDo.getParentId();
 				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
 				afUserAccountDo.setUserId(pid);
-				afUserAccountDo.setRebateAmount(BigDecimal.valueOf(10));
+				afUserAccountDo.setRebateAmount(BigDecimal.valueOf(riskMoney));
 				afUserAccountDao.updateRebateAmount(afUserAccountDo);
 
 				AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
-				afUserAccountLogDo.setAmount(BigDecimal.valueOf(10));
+				afUserAccountLogDo.setAmount(BigDecimal.valueOf(riskMoney));
 				afUserAccountLogDo.setUserId(pid);
 				afUserAccountLogDo.setType("RECOMMEND_RISK");
 				afUserAccountLogDo.setRefId(String.valueOf(afRecommendUserDo.getId()));
