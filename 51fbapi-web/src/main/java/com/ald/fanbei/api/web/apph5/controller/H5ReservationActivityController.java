@@ -153,12 +153,12 @@ public class H5ReservationActivityController extends BaseController {
 						status=s;
 					}
 				}
-				map.put("status", status);
-				map.put("loginStatus", loginStatus);
-				map.put("winUsers", list);
 			} catch (Exception e) {
 				logger.info("getActivityGoods is fail"+e);
 			}
+			map.put("status", status);
+			map.put("loginStatus", loginStatus);
+			map.put("winUsers", list);
 		}
 		return JsonUtil.toJSONString(map);
 	}
