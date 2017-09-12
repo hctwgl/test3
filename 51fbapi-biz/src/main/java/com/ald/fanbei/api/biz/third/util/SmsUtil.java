@@ -2,11 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.mail.Session;
@@ -65,7 +61,7 @@ public class SmsUtil extends AbstractThird {
     private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在51返呗。回复td退订";
     private static String REGIST_SUCCESS_TEMPLATE = "认证送10元现金，借/还成功再抽现金，100%中奖，最高1888元，最低50元 http://t.cn/RI7CSL2 退订回T";
     private static String REBATE_COMPLETED = "返利入账通知，%s，您购买商品/服务的返利已入账%s元，可登录51返呗查看详情【51返呗】";
-
+    private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单【51返呗】";
     private static String TEST_VERIFY_CODE = "888888";
 
     // public static String sendUserName = "suweili@edspay.com";
@@ -466,6 +462,25 @@ public class SmsUtil extends AbstractThird {
         
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
         sendSmsToDhst(mobile, String.format(REBATE_COMPLETED, simpleDateFormat.format(new Date()), amount));
+    }
+    /**
+     * 发送商圈支付成功短信
+     *
+     * @param mobile
+     */
+    public void sendTradePaid(String mobile, Date date, BigDecimal amount) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        SimpleDateFormat backDateFormat = new SimpleDateFormat("YYYY-MM-20");
+        String payBackDateFormat="";
+        if(calendar.get(Calendar.DAY_OF_MONTH)<=10){
+            payBackDateFormat=backDateFormat.format(date);
+        }else{
+            calendar.add(Calendar.MONTH,1);
+            payBackDateFormat=backDateFormat.format(calendar.getTime());
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
+        sendSmsToDhst(mobile, String.format( TRADE_PAID_SUCCESS, simpleDateFormat.format(new Date()), amount,payBackDateFormat));
     }
 
     /**
