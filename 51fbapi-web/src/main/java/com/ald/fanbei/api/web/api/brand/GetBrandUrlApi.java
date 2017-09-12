@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import jodd.util.StringUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -57,6 +59,12 @@ public class GetBrandUrlApi implements ApiHandle {
 		}
 		
 		AfShopDo shopInfo = afShopService.getShopById(shopId);
+		
+		/*fma_临时关闭掉话费充值功能*/
+		if (StringUtil.equals(shopInfo.getType(), "HUAFEI")) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
+		}
+		
 		if (shopInfo ==  null) {
 			logger.error("shopId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
