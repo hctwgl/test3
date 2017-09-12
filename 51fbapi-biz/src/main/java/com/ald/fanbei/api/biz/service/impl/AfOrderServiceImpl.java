@@ -1360,7 +1360,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				// 预约成功，短信通知
 				if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
 					try {
-						boolean r = smsUtil.sendGoodsReservationSuccessMsg(afUserDo.getMobile(), sendMsgInfo);
+						boolean r = smsUtil.sendGoodsReservationSuccessMsgInfo(afUserDo.getMobile(), sendMsgInfo);
 						//推送通知
 						jpushService.reservationActivity(afUserDo.getMobile(),jpushMsgInfo);
 						if (r == false) {
