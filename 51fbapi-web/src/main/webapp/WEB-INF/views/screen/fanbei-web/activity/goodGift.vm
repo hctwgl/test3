@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017071501")
-    #set($src="https://fs.51fanbei.com/h5/app/activity/07")
+    #set($src="http://f.51fanbei.com/h5/app/activity/07")
     <meta charset="UTF-8">
     <title>七月有钱 狂送一亿</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/06/goodGift.css?version=$version">

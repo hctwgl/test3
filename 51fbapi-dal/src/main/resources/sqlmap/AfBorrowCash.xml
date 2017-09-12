@@ -5,7 +5,7 @@
 		id
 		rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,
 		overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close,rish_order_no,
-		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num
+		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate
 	</sql>
 
 	<insert id="addBorrowCash" parameterType="AfBorrowCashDo"
@@ -313,4 +313,24 @@
 	<select id="getBorrowCashByRemcommend" resultType="HashMap">
 		SELECT count(1) 'count' FROM  af_borrow_cash where user_id = #{user_id}  and status in ('TRANSEDING','TRANSED','CLOSED','FINSH')
 	</select>
+	
+	<update id="updateBalancedDate" parameterType="AfBorrowCashDo">
+		UPDATE af_borrow_cash SET gmt_modified = NOW()
+		<if test="status != null">
+			,status=#{status}
+		</if>
+		<if test="rateAmount != null">
+			,rate_amount=#{rateAmount}
+		</if>
+		<if test="overdueAmount != null">
+			,overdue_amount=#{overdueAmount}
+		</if>
+		<if test="sumRate != null">
+			,sum_rate=#{sumRate}
+		</if>
+		<if test="sumOverdue != null">
+			,sum_overdue=#{sumOverdue}
+		</if>
+		WHERE id=#{rid}
+	</update>
 </mapper>

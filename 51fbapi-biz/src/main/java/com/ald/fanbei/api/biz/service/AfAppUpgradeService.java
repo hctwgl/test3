@@ -24,7 +24,7 @@ public interface AfAppUpgradeService {
 	 *@param clientVersion
 	 *@return
 	 */
-	AfAppUpgradeDo getNewestAppUpgradeVersion(Integer versionCode);
+	AfAppUpgradeDo getNewestAppUpgradeVersion(Integer versionCode,String channelCode,String type);
 	
 	AfAppUpgradeDo getNewestIOSVersionBySpecify(Integer versionCode,String channelCode);
 

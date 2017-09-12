@@ -45,6 +45,7 @@ import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
@@ -105,10 +106,19 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-   		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		List<Object> bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
-		// 另一个banner
-		List<Object> bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		List<Object> bannerList = new ArrayList<Object>();
+		List<Object> bannerListForShop = new ArrayList<Object>();
+		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		    //另一个banner
+		    bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		}else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowTopBanner.getCode()));
+		   //另一个banner
+		    bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowShopBanner.getCode()));
+		}
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -191,7 +201,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
 
 				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(now, afBorrowCashDo.getGmtPlanRepayment());
-				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getRepayAmount());
+				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().add(afBorrowCashDo.getSumOverdue()).add(afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
 				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) >= 0) {
 					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
@@ -200,6 +210,16 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 					}
 				}
 			}
+			
+			//当待还本金小于等于第一次续期时待还本金的10%时，不再显示续期入口
+			BigDecimal waitPaidAmount = BigDecimalUtil.subtract(returnAmount, afBorrowCashDo.getOverdueAmount()).subtract(afBorrowCashDo.getRateAmount());
+			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
+			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+			if (waitPaidAmount.compareTo(capital) <= 0) {
+				data.put("renewalStatus", "N");
+			}
+			
 		}
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
@@ -429,7 +449,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
 		} catch (Exception e) {
 			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, rate.get("poundage").toString(), Constants.SECOND_OF_ONE_MONTH);
-			logger.info("从风控获取分层用户额度失败：" + e);
+			logger.info(userId + "从风控获取分层用户额度失败："  + e);
 		}
 		
 		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);

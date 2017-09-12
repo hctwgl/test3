@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -19,7 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -27,6 +31,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 
 /**
  * @类现描述：和催收平台互调
@@ -44,6 +49,9 @@ public class CollectionController {
 	
 	@Resource
 	AfBorrowCashService borrowCashService;
+	
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
 	 * @param request
@@ -60,7 +68,6 @@ public class CollectionController {
 		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data, sign);
 		return notifyRespBo;
 	}
-	
 	/**
 	 * 催收平台获取借款记录信息用于数据同步刷新
 	 * @param request
@@ -118,6 +125,58 @@ public class CollectionController {
 			updteBo.setCode(FanbeiThirdRespCode.SYSTEM_ERROR.getCode());
 			updteBo.setMsg(FanbeiThirdRespCode.SYSTEM_ERROR.getMsg());
 			return updteBo;
+		}
+	}
+	/**
+	 * 催收平台平账接口
+	 * @param borrowNo
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = { "/updateBalancedDate"}, method = RequestMethod.POST)
+	@ResponseBody
+	public CollectionUpdateResqBo updateBalancedDate(HttpServletRequest request, HttpServletResponse response){
+		String borrowNo = ObjectUtils.toString(request.getParameter("data"));
+		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+		String sign = ObjectUtils.toString(request.getParameter("sign"));
+		
+		logger.info("updateBalancedDate data="+borrowNo+",timestamp="+timestamp+",sign1="+sign+"");
+
+		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
+		if(afBorrowCashDo==null) {
+			logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null" );
+			updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
+			return updteBo;
+		}
+		String sign1=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
+			if (StringUtil.equals(sign, sign1)) {	// 验签成功
+				if((afBorrowCashDo.getRepayAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getSumRate()))).compareTo(afBorrowCashDo.getAmount()) == 1){
+					//平账
+					afBorrowCashDo.setStatus("FINSH");
+					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));//sum_rate+rate_amount
+					afBorrowCashDo.setRateAmount(BigDecimal.ZERO);
+					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
+					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getAmount().add(afBorrowCashDo.getSumRate())));//repay_amount-amount-sum_rate
+					
+					borrowCashService.updateBalancedDate(afBorrowCashDo);
+					
+					updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+					updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+					return updteBo;
+				} else {
+					//还款金额小于借款金额，不能平账
+					logger.info("repayAmount<(amount+rate_amount+sum_rate) Balanced is fail");
+					updteBo.setCode(FanbeiThirdRespCode.COLLECTION_NOT_Balanced.getCode());
+					updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_NOT_Balanced.getMsg());
+					return updteBo;
+				}
+		  } else {
+			  logger.info("sign and sign is fail");
+			  updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
+			  updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
+			  return updteBo;
 		}
 	}
 }

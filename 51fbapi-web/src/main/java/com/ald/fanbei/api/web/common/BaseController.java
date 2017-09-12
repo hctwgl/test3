@@ -242,7 +242,7 @@ public abstract class BaseController {
             throw new FanbeiException("系统维护中", FanbeiExceptionCode.SYSTEM_REPAIRING_ERROR);
         }
         String idName = requestDataVo.getId();
-        if (idName.startsWith("i")) {
+        if (idName.startsWith("i")&&context.getAppVersion()<379) {
             String[] strs = idName.split("_");
             String name = idName.substring(idName.lastIndexOf("_") + 1);
             if (strs.length == 3) {
@@ -425,6 +425,14 @@ public abstract class BaseController {
 
         // 验证签名
         Map<String, Object> systemMap = requestDataVo.getSystem();
+        //针对ios的379版本的升级接口不做处理
+        if("/system/appUpgrade".equals(requestDataVo.getMethod())){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade context=" ,context));
+        }
+        if("/system/appUpgrade".equals(requestDataVo.getMethod()) && "379".equals(systemMap.get(Constants.REQ_SYS_NODE_VERSION))&& (requestDataVo.getId() != null && requestDataVo.getId().startsWith("i_"))){
+        	logger.info(StringUtil.appendStrs("id=",requestDataVo.getId(),",appUpgrade not check sign"));
+        	return context;
+        }
         this.checkSign(context.getAppVersion() + "", ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_NETTYPE)), context.getUserName(),
                 ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_SIGN)), ObjectUtils.toString(systemMap.get(Constants.REQ_SYS_NODE_TIME)), requestDataVo.getParams(), beforeLogin);
 
@@ -612,7 +620,7 @@ public abstract class BaseController {
      * @param respData
      * @param exeT
      */
-    protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData) {
+    protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData, String ...extInfo) {
         try {
             JSONObject param = new JSONObject();
             Enumeration<String> enu = request.getParameterNames();
@@ -664,6 +672,19 @@ public abstract class BaseController {
      					"	reqD=", param.toString(), 
      					"	resD=",respData==null?"null":respData.toString()));
             }else{
+            	// 获取可变参数
+            	String ext1 = "";
+            	String ext2 = "";
+            	String ext3 = "";
+            	String ext4 = "";
+            	try{
+            		ext1 = extInfo[0];
+            		ext2 = extInfo[1];
+            		ext3 = extInfo[2];
+            		ext4 = extInfo[3];
+            	} catch(Exception e) { 
+            		// ignore error
+            	}
             	maidianLog.info(StringUtil.appendStrs(
      					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
      					"	", "h",
@@ -674,10 +695,10 @@ public abstract class BaseController {
      					"	result=",respData == null?false:respData.getSuccess(), 
      					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
      					"	", "md", 
-     					"	", "",
-     					"	", "",
-     					"	", "",
-     					"	", "",
+     					"	", ext1,
+     					"	", ext2,
+     					"	", ext3,
+     					"	", ext4,
      					"	reqD=", param.toString(), 
      					"	resD=",respData==null?"null":respData.toString()));
             }
@@ -809,6 +830,9 @@ public abstract class BaseController {
     }
 
     private static String getTestUser(String url) {
+    	if(StringUtils.isBlank(url)) {
+    		return null;
+    	}
         String result = "";
         try {
             Map<String, List<String>> params = new HashMap<String, List<String>>();

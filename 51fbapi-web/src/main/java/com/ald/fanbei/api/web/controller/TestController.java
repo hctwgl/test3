@@ -15,6 +15,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
+import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
@@ -50,25 +57,18 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
-import com.ald.fanbei.api.common.enums.BorrowStatus;
-import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayStatus;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.PushStatus;
-import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -97,11 +97,15 @@ import com.ald.fanbei.api.dal.domain.query.AfUserBankQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
+import com.taobao.api.domain.XItem;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 
 @Controller
 public class TestController {
 	Logger logger = LoggerFactory.getLogger(TestController.class);
 
+	@Resource
+	YiBaoUtility yiBaoUtility;
 	@Resource
 	SmsUtil smsUtil;
 
@@ -159,6 +163,7 @@ public class TestController {
 	IPTransferUtil iPTransferUtil;
 	@Resource
 	AfUserBankDidiRiskService afUserBankDidiRiskService;
+	private TaobaoApiUtil taobaoApiUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -480,6 +485,54 @@ public class TestController {
 		}
 		return message;
 	}
+	
+	@RequestMapping(value = { "/changeShopName" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	@ResponseBody
+	public String changeShopName(@RequestBody String body, HttpServletRequest request, HttpServletResponse response){
+		String message = "succ!";
+		try {
+			JSONObject json = JSONObject.parseObject(body);
+			String pageNo = json.getString("pageNo");
+
+			String scret = json.getString("scret");
+			if(!"zsdERfds2123".equals(scret)){
+				throw new RuntimeException("秘钥不对");
+			}
+			 List<AfOrderDo> list = afOrderDao.getNotShopNameByAgentBuyOrder(Long.valueOf(pageNo));
+			  List<String> orderNumIdsList = CollectionConverterUtil.convertToListFromList(list,
+                      new Converter<AfOrderDo, String>() {
+                          @Override
+                          public String convert(AfOrderDo source) {
+                              return source.getNumId();
+                          }
+                      });
+			  Map<String, Object> params = new HashMap<String, Object>();
+				params.put("numIid",StringUtil.turnListToStr(orderNumIdsList) );
+				List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
+				
+				for (XItem xItem : nTbkItemList) {
+					String orderType = xItem.getMall()?"TMALL" : "TAOBAO";
+					String nick = xItem.getNick();
+					if(xItem.getOpenId()!=0){
+						for (AfOrderDo orderDo : list) {
+							if(StringUtils.equals(xItem.getOpenId()+"", orderDo.getNumId()) ){
+								AfOrderDo orderN = new  AfOrderDo();
+								orderN.setRid(orderDo.getRid());
+								orderN.setShopName(nick);
+								orderN.setSecType(orderType);
+								afOrderDao.updateOrder(orderN);
+							}
+						}
+					}
+
+				}
+
+		} catch (Exception e) {
+			logger.info("changeShopName error:",e);
+			message = "There is  changeShopName ";
+		}
+		return message;
+	}
 
 	/**
 	 * app中微信支付回调接口
@@ -528,6 +581,23 @@ public class TestController {
 		return "success";
 	}
 
+
+	@RequestMapping(value = { "/jPushCoupon" }, method = RequestMethod.GET)
+	@ResponseBody
+	public String jPushCoupon(String type,String userName){
+		PrintWriter out = null;
+		try {
+			jpushService.jPushCoupon(type,userName);
+		} catch (Exception e) {
+			logger.error("allowcateBrandCoupon", e);
+			return "fail";
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
+		return "success";
+	}
 
 
 
@@ -673,6 +743,19 @@ public class TestController {
 		logger.info("initBorrowCache,end");
 	}
 	
+	
+	@RequestMapping(value = { "/boluomeCoupon" }, method = RequestMethod.GET)
+	@ResponseBody
+	public void boluomeCoupon()
+	{
+		List<BrandCouponResponseBo> list = boluomeUtil.getUserCouponList(68885L, 1, 1, 20);
+		logger.info("boluomeCoupon,start");
+		List<BrandActivityCouponResponseBo> list1 = boluomeUtil.getActivityCouponList("https://dev-api.otosaas.com/bss/v1/apps/157/campaigns/775/give");
+		logger.info("boluomeCoupon,end");
+		System.out.println(boluomeUtil.isUserHasCoupon("https://dev-api.otosaas.com/bss/v1/apps/157/campaigns/775/give", 68885L, 1));
+		
+	}
+	
 	public String getVirtualCode(Map<String, Object> resultMap) {
 		if (resultMap == null) {
 			return null;
@@ -788,6 +871,33 @@ public class TestController {
 		borrow.setFreeNper(freeNper);
 		return borrow;
 	}
-	
+
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+
+	@Resource
+	AfYibaoOrderDao afYiBaoOrderDao;
+
+	/**
+	 *
+	 */
+	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
+	public void testAddYiBao(){
+
+		Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
+//		String e ="";
+
+//		AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
+//		afYibaoOrderDo.setOrderNo("adfasdfadsf1dddddddddddddddddddddd1111");
+//		afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
+//		afYibaoOrderDo.setStatus(0);
+//		afYibaoOrderDo.setYibaoNo("afaf");
+//		afYiBaoOrderDao.addYibaoOrder(afYibaoOrderDo);
+//		AfYibaoOrderDo afYibaoOrderDo1 = afYiBaoOrderDao.getYiBaoOrderByOrderNo("adfasdfadsf1dddddddddddddddddddddd1111");
+
+		//afYiBaoOrderDao.updateYiBaoOrderStatusByOrderNo("adfasdfadsf11111",1);
+
+//		afRepaymentBorrowCashService.createRepaymentYiBao(BigDecimal.ZERO,BigDecimal.ONE,BigDecimal.TEN,null,null,null,null,null,null,null);
+	}
 	
 }

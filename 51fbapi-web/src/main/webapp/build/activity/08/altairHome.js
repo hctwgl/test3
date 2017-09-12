@@ -3,7 +3,6 @@
 * @Date:   2017-08-18 15:37:34
 */
 
-
 let modelId=getUrl('modelId');
 
 new Vue({

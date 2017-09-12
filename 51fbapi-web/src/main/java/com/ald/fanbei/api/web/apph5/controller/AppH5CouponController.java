@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.web.apph5.controller;
  
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,19 +24,29 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.Base64;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfUserCouponVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -59,6 +71,10 @@ public class AppH5CouponController extends BaseController {
     AfUserCouponService afUserCouponService;
     @Resource 
 	AfUserService afUserService;
+    
+    private String opennative = "/fanbei-web/opennative?name=";
+    
+    private final static int EXPIRE_DAY = 2;
     
     @RequestMapping(value = "couponCategoryInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -221,13 +237,94 @@ public class AppH5CouponController extends BaseController {
     	
     }
     
-  
+    @RequestMapping(value = "getMineCouponInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+ 	@ResponseBody
+    public String getMineCouponInfo(HttpServletRequest request, ModelMap model) throws IOException {
+    	try{
+    		// FIXME
+    		FanbeiWebContext context = doWebCheck(request, false);
+    		JSONObject data = new JSONObject();
+    		String userName = context.getUserName();
+    		AfUserDo userDo = afUserService.getUserByUserName(userName);
+			if(userDo == null) {
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+			} else {
+				Long userId = userDo.getRid();
+				Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
+		        String status = ObjectUtils.toString(request.getParameter("status"));
+		        
+		        logger.info("userId=" + userId + ",pageNo=" + pageNo + ",status=" + status);
+		        
+		        AfUserCouponQuery query = new AfUserCouponQuery();
+		        query.setPageNo(pageNo);
+		        query.setUserId(userId);
+		        query.setStatus(status);
+		        List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByUser(query);
+		        List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
+		        for (AfUserCouponDto afUserCouponDto : couponList) {
+		        	AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
+		        	Date gmtEnd = couponVo.getGmtEnd();
+		        	// 如果当前时间离到期时间小于48小时,则显示即将过期
+		        	Calendar cal = Calendar.getInstance();
+		        	cal.add(Calendar.DAY_OF_YEAR, EXPIRE_DAY);
+		        	Date twoDay = cal.getTime();
+		        	if(gmtEnd != null){
+		        		if(twoDay.after(gmtEnd)) {
+		            		couponVo.setWillExpireStatus("Y");
+		            	} else {
+		            		couponVo.setWillExpireStatus("N");
+		            	}
+		        	} else {
+		        		couponVo.setWillExpireStatus("N");
+		        	}
+		        	// 查询优惠券所在分类
+		        	List <AfCouponCategoryDo> couponCategoryList = afCouponCategoryService.getCouponCategoryByCouponId(afUserCouponDto.getCouponId());
+		        	if(couponCategoryList != null && !couponCategoryList.isEmpty()) {
+		        		logger.info("couponCategoryList info=>" + couponCategoryList.toString());
+		        		AfCouponCategoryDo afCouponCategoryDo = couponCategoryList.get(0);
+		        		String shopUrl = afCouponCategoryDo.getUrl();
+		        		couponVo.setShopUrl(shopUrl);
+		        	}
+		        	couponVoList.add(couponVo);
+				}
+		        
+		        data.put("pageNo", pageNo);
+				data.put("couponList", couponVoList);
+			}
+    		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString(); 
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+    	}
+    	
+    	
+    	
+    }
+    
+    private AfUserCouponVo getUserCouponVo(AfUserCouponDto afUserCouponDto){
+		AfUserCouponVo couponVo = new AfUserCouponVo();
+		couponVo.setAmount(afUserCouponDto.getAmount());
+		couponVo.setGmtEnd(afUserCouponDto.getGmtEnd());
+		couponVo.setGmtStart(afUserCouponDto.getGmtStart());
+		couponVo.setLimitAmount(afUserCouponDto.getLimitAmount());
+		couponVo.setName(afUserCouponDto.getName());
+		couponVo.setStatus(afUserCouponDto.getStatus());
+		couponVo.setUseRule(afUserCouponDto.getUseRule());
+		couponVo.setType(afUserCouponDto.getType());
+		couponVo.setUseRange(afUserCouponDto.getUseRange());
+		return couponVo;
+	}
     
     @RequestMapping(value = "activityCouponInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
     public String activityCouponInfo(HttpServletRequest request, ModelMap model) throws IOException {
+		Calendar calStart = Calendar.getInstance();
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+		FanbeiWebContext context = new FanbeiWebContext();
     	try{
-    		FanbeiWebContext context = doWebCheck(request, false);
+    		context = doWebCheck(request, false);
     		context = doWebCheck(request, false);
     		JSONObject jsonObj = new JSONObject();
     		// 获取活动优惠券组信息
@@ -235,6 +332,16 @@ public class AppH5CouponController extends BaseController {
     		if(groupId == null) {
     			throw new FanbeiException("groupId can't be null or empty.");
     		}
+    		
+    		// 判断用户是否登录
+    		boolean isLogin = false;
+    		String userName = context.getUserName();
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			Long userId = 0l;
+			if(userDo != null) {
+				isLogin = true;
+				userId = userDo.getRid();
+			}
     		// 根据Id获取分组优惠券
     		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
     		String coupons = couponCategory.getCoupons();
@@ -252,6 +359,13 @@ public class AppH5CouponController extends BaseController {
     			couponInfoMap.put("amount", afCouponDo.getAmount());
     			couponInfoMap.put("useRange", afCouponDo.getUseRange());
     			couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
+    			couponInfoMap.put("drawStatus", "N");
+    			if(isLogin) {
+    				int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
+    				if(count > 0) {
+    					couponInfoMap.put("drawStatus", "Y");
+    				}
+    			}
     			Date gmtStart = afCouponDo.getGmtStart();
     			if( gmtStart != null){
     				couponInfoMap.put("gmtStart", gmtStart.getTime());
@@ -267,11 +381,16 @@ public class AppH5CouponController extends BaseController {
     			couponList.add(couponInfoMap);
     		}
     		jsonObj.put("couponInfoList",couponList);
-    		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj).toString(); 
+    		resp = H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj);
+    		return resp.toString(); 
     		
     	} catch (Exception e) {
-    		e.printStackTrace();
-    		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+    		logger.error("activityCouponInfo error",e);
+    		resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
+    		return resp.toString();
+    	}finally{
+			Calendar calEnd = Calendar.getInstance();
+			doLog(request, resp,context.getAppInfo(), calEnd.getTimeInMillis()-calStart.getTimeInMillis(),context.getUserName());
     	}
     }
     

@@ -108,6 +108,10 @@ public class PayOrderV1Api implements ApiHandle {
 		if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
 		}
+		
+		if (orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
+		}
 
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		if (payId >= 0) {
@@ -169,6 +173,9 @@ public class PayOrderV1Api implements ApiHandle {
 			    //代付
 			if (payId < 0) {
 				payType = PayType.WECHAT.getCode();
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+
+
 			} else if (payId > 0) {
 				payType = PayType.BANK.getCode();
 				//银行卡

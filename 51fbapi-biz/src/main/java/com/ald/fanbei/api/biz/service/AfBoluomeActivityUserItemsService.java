@@ -21,6 +21,8 @@ public interface AfBoluomeActivityUserItemsService extends ParentService<AfBoluo
 	Integer geFakeJoin(Long activityId);
 
 	Integer getFakeFinal(Long activityId);
+	
+	void updateUserItemsStatus(Long userItemsId , String status) throws Exception;
 
 	
 
