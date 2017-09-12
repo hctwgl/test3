@@ -19,11 +19,16 @@ function hello(){
 hello();
 /*判断时间list*/
 let currentStarmp=new Date().getTime();
-//let currentStarmp=Date.parse(new Date('2017/09/25 02:00:00'));
 let firstStarmp=Date.parse(new Date('2017/09/20 00:00:00'));
 let secondStarmp=Date.parse(new Date('2017/09/21 00:00:00'));
 let thirdStarmp=Date.parse(new Date('2017/09/23 00:00:00'));
-let fourthStarmp=Date.parse(new Date('2017/09/25 00:00:00'));
+let fourthStarmp=Date.parse(new Date('2017/09/14 00:00:00'));
+if(currentStarmp>=fourthStarmp){//14号以后才显示中奖
+    $('.getPrize').show();
+}
+if(currentStarmp>=firstStarmp){ //20号以后按钮变成“立即购买”
+    $('.orderButton').html('立即购买');
+}
 if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){
     addStyle(1);
 }
@@ -31,7 +36,7 @@ if(currentStarmp>=secondStarmp&&currentStarmp<thirdStarmp){
     addStyle(2);
     $('.limitTime').show();
 }
-if(currentStarmp>=fourthStarmp){
+if(currentStarmp>=thirdStarmp){
     addStyle(3);
 }
 function addStyle(i){

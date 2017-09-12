@@ -166,7 +166,7 @@ var vm=new Vue({
                             if ( $("#codeBtn").attr("isState")==1 ) {
 
                                 $.ajax({ // 设置登录密码
-                                    url: "/app/user/commitRegister",
+                                    url: "/app/user/commitChannelRegister",
                                     type: 'POST',
                                     dataType: 'JSON',
                                     data: {

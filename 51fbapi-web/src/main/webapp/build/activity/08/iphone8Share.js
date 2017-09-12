@@ -22,16 +22,21 @@ let currentStarmp=new Date().getTime();
 let firstStarmp=Date.parse(new Date('2017/09/20 00:00:00'));
 let secondStarmp=Date.parse(new Date('2017/09/21 00:00:00'));
 let thirdStarmp=Date.parse(new Date('2017/09/23 00:00:00'));
-let fourthStarmp=Date.parse(new Date('2017/09/25 00:00:00'));
-console.log(currentStarmp);
-if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){
+let fourthStarmp=Date.parse(new Date('2017/09/14 00:00:00'));
+if(currentStarmp>=fourthStarmp){//14号以后才显示中奖
+    $('.getPrize').show();
+}
+if(currentStarmp>=firstStarmp){ //20号以后按钮变成“立即购买”
+    $('.orderButton').html('立即购买');
+}
+if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){ //初始化进来显示13号 当前时间大于20小于21 显示9.20
     addStyle(1);
 }
-if(currentStarmp>=secondStarmp&&currentStarmp<thirdStarmp){
+if(currentStarmp>=secondStarmp&&currentStarmp<thirdStarmp){ //初始化进来显示13号 当前时间大于21小于22 显示9.21-22
     addStyle(2);
     $('.limitTime').show();
 }
-if(currentStarmp>=fourthStarmp){
+if(currentStarmp>=thirdStarmp){
     addStyle(3);
 }
 function addStyle(i){
