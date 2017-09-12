@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>  
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfResourceDao">
 	<sql id="queryAllFields">
@@ -154,23 +154,20 @@
 		ORDER BY
 		r1.sort ,r1.id , r2.sort
 	</select>
-
-	<select id="getOneToManyResourceOrderByBytypeOnPreEnv" resultType="AfResourceDo">
+	
+	<select id="getCarouselToManyResourceOrderByType" resultType="AfResourceDo">
 		SELECT
-		<include refid="queryManyAllFields" />
+		<include refid="queryAllFields" />
 		FROM
-		af_resource r1 LEFT JOIN af_resource r2
-		ON r1.id = r2.value_4
+		af_resource 
 		WHERE
-		r1.type = #{type}
-		AND r1.sec_type = ''
-		AND r2.value_4 !=''
-		AND r1.is_delete =0
-		AND r2.is_delete =0
-	<!-- 	AND r1.value_4 = 'O' -->
+		type = #{type}
+		AND
+		is_delete = 0
 		ORDER BY
-		r1.sort ,r1.id , r2.sort
+		sort ,id
 	</select>
+	
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />

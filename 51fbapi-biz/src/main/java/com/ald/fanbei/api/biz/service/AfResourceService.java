@@ -159,4 +159,6 @@ public interface AfResourceService {
 	
 	AfResourceDo getGGSpecificBanner(String value2);
 	
+	List<AfResourceDo> getCarouselToManyResourceOrderByType(String code);
+	
 }

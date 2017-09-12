@@ -125,18 +125,18 @@
 		</foreach>
 	</update>
 	<select id="getCanWithDrawMoney" resultType="java.math.BigDecimal">
-		select sum(a.actual_amount) from af_order a left join af_trade_order b
+	select sum(a.actual_amount) from af_order a left join af_trade_order b
 		on a.id = b.order_id where
-		a.status='PAID' and a.pay_status='P' and
+		a.status in ('PAID','REBATED') and a.pay_status='P' and
 		a.order_type='TRADE' and a.gmt_create <![CDATA[   <=  ]]>
-		#{canWithDrawDate} and b.business_id =#{businessId} and b.status='NEW'
+		#{canWithDrawDate} and b.business_id =#{userId} and b.status='NEW'
 	</select>
 	<select id="getCannotWithDrawMoney" resultType="java.math.BigDecimal">
-		select sum(a.actual_amount) from af_order a left join af_trade_order b
+	select sum(a.actual_amount) from af_order a left join af_trade_order b
 		on a.id = b.order_id where
-		a.status='PAID' and a.pay_status='P' and
+		a.status in ('PAID','REBATED') and a.pay_status='P' and
 		a.order_type='TRADE' and a.gmt_create <![CDATA[   >  ]]>
-		#{cannotWithDrawDate} and b.business_id =#{businessId} and b.status='NEW'
+		#{cannotWithDrawDate} and b.business_id =#{userId} and b.status='NEW'
 	</select>
 	<select id="payOrderInfo"
 			resultType="com.ald.fanbei.api.dal.domain.dto.AfTradeOrderStatisticsDto">
@@ -149,7 +149,7 @@
 		left join af_trade_order c on a.id =
 		c.order_id
 		where c.business_id =
-		#{businessId} and a.status='PAID'
+		#{businessId} and 	a.status in ('PAID','REBATED')
 		<if test="startOfDate != null and startOfDate != '' ">
 			and a.gmt_create <![CDATA[   >=  ]]>
 			#{startOfDate}
@@ -204,7 +204,7 @@
 			and a.status = #{orderStatus}
 		</if>
 		<if test="orderStatus == null or orderStatus == ''" >
-			and a.status in ('NEW', 'PAID')
+			and a.status in ('NEW', 'PAID','REBATED')
 		</if>
 		order by a.gmt_create desc
 	</select>
@@ -264,7 +264,7 @@
 		af_order a left join
 		af_trade_order c on a.id = c.order_id
 		where
-		a.status='PAID' and
+		 a.status in ('PAID','REBATED')  and
 		a.pay_status='P' and
 		a.order_type='TRADE' and a.gmt_create <![CDATA[   <=  ]]>
 		#{canWithDrawDate} and c.business_id =#{businessId} and c.status='NEW'

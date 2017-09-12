@@ -8,8 +8,8 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/qiXiPhone.css">
 </head>
 <body>
-    <div id="selfHome">
-        <img :data-original="returnData.bannerUrl" class="lazy">
+    <div id="selfHome" v-cloak>
+        <img :data-original="returnData.bannerUrl">
         <div class="bigWrap">
             <div class="bigBox" style="padding:0.04rem">
             <div class="topLine"></div>
@@ -18,12 +18,6 @@
             <div class="rightLine"></div>
                 <div class="discountWrap" style="background-color: white; border:0.01rem solid #DFDBE1;">
                     <div class="bannerUrl">
-##                        <span class="center">
-##                            <i class="centerBig">
-##                                <img src="$commonUrl/heartF.png" alt="" class="left" class="lazy">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right" class="lazy">
-##                            </i><br/>
-##                            <i class="centerSmall">七夕送给心爱的她一份心意</i>
-##                        </span>
                     <img src="$commonUrl/oppoHome01.png">
                     </div>
                     <ul class="discount clearfix" style="background-color: white;">
@@ -31,43 +25,37 @@
                             <img :data-original="item.goodsIcon" class="lazy">
                             <div class="discountRight">
                                 <p class="discountRightTitle">{{item.goodName}}</p>
-                                <p class="priceAmount">京东售价：<span>¥{{item.priceAmount}}</span></p>
                                 <div class="priceWrap">
                                     <span class="saleAmount">¥{{item.saleAmount}}</span>
                                     <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
                                 </div>
+                                <p class="priceAmount" v-if="item.nperMap.isFree==='0'">月供{{item.nperMap.amount}}起</p>
+                                <p class="priceAmount" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供{{item.nperMap.freeAmount}}起</p>
                                 <span class="goBuyBtn">立即抢购</span>
                             </div>
                         </li>
                     </ul>
                 </div>
-                <img src="$commonUrl/tangle.png" alt="" class="tangle" class="lazy">
+                <img src="$commonUrl/tangle.png" alt="" class="tangle">
             </div>
             <div class="rebateWrap" style="padding: 0.04rem;">
                 <div class="r-topLine"></div>
                 <div class="r-leftLine"></div>
                 <div class="r-bottomLine"></div>
                 <div class="r-rightLine"></div>
-                <div class="bannerUrl" style="background-color: white;">
-##                    <span class="center">
-##                        <i class="centerBig">
-##                            <img src="$commonUrl/heartF.png" alt="" class="left" class="lazy">七夕购机更优惠<img src="$commonUrl/heartS.png" alt="" class="right" class="lazy">
-##                        </i><br/>
-##                        <i class="centerSmall">七夕送给心爱的她一份心意</i>
-##                    </span>
-                    <img src="$commonUrl/oppoHome01.png">
-
-                </div>
+                <div class="bannerUrl" style="background-color: white;"><img src="$commonUrl/oppoHome01.png"></div>
                 <ul class="rebate clearfix" style="background-color: white;">
                     <li v-for="item in rebateMap" @click="goGoodsDetail(item)">
                         <img :data-original="item.goodsIcon" class="lazy">
                         <div class="rebateRight">
                             <p class="rebateRightTitle">{{item.goodName}}</p>
-                            <p class="remark">{{item.remark}}</p>
+                            <!--<p class="remark">{{item.remark}}</p>!-->
                             <div class="priceWrap">
                                 <span class="saleAmount">¥{{item.saleAmount}}</span>
                                 <span class="rebateAmount"><i></i>¥{{item.rebateAmount}}</span>
                             </div>
+                            <p class="monthPay" v-if="item.nperMap.isFree==='0'">月供{{item.nperMap.amount}}起</p>
+                            <p class="monthPay" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供{{item.nperMap.freeAmount}}起</p>
                         </div>
                     </li>
                 </ul>
@@ -76,5 +64,4 @@
     </div>
 </body>
 <script type="text/javascript" src="/dist/activity/08/qiXiPhone.js"></script>
-<script type="text/javascript" src="/dist/js/jquery.lazyload.js"></script>
 </html>

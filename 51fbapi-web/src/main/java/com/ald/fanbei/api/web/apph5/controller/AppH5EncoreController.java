@@ -138,21 +138,21 @@ public class AppH5EncoreController extends BaseController {
 				} catch(Exception e){
 					logger.error(e.toString());
 				}
+				JSONArray interestFreeArray = null;
 				if(schemeGoodsDo != null){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
-					JSONArray interestFreeArray = null;
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
-					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							activityGoodsDto.getSpecialPrice(), resource.getValue1(), resource.getValue2());
-					
-					if(nperList!= null){
-						activityGoodsInfo.put("goodsType", "1");
-						Map nperMap = nperList.get(nperList.size() - 1);
-						activityGoodsInfo.put("nperMap", nperMap);
-					}
+				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+						activityGoodsDto.getSpecialPrice(), resource.getValue1(), resource.getValue2());
+				
+				if(nperList!= null){
+					activityGoodsInfo.put("goodsType", "1");
+					Map nperMap = nperList.get(nperList.size() - 1);
+					activityGoodsInfo.put("nperMap", nperMap);
 				}
     			activityGoodsList.add(activityGoodsInfo);
     		}
@@ -181,22 +181,23 @@ public class AppH5EncoreController extends BaseController {
 				} catch(Exception e){
 					logger.error(e.toString());
 				}
+				JSONArray interestFreeArray = null;
 				if(schemeGoodsDo != null){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
-					JSONArray interestFreeArray = null;
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
-					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-					
-					if(nperList!= null){
-						recommendGoodsInfo.put("goodsType", "1");
-						Map nperMap = nperList.get(nperList.size() - 1);
-						recommendGoodsInfo.put("nperMap", nperMap);
-					}
 				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+				
+				if(nperList!= null){
+					recommendGoodsInfo.put("goodsType", "1");
+					Map nperMap = nperList.get(nperList.size() - 1);
+					recommendGoodsInfo.put("nperMap", nperMap);
+				}
+				
     			recommendGoodsList.add(recommendGoodsInfo);
     		}
         	jsonObj.put("recommendGoodsList", recommendGoodsList);
@@ -282,22 +283,23 @@ public class AppH5EncoreController extends BaseController {
 				} catch(Exception e){
 					logger.error(e.toString());
 				}
+				JSONArray interestFreeArray = null;
 				if(schemeGoodsDo != null){
 					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 					String interestFreeJson = interestFreeRulesDo.getRuleJson();
-					JSONArray interestFreeArray = null;
 					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 						interestFreeArray = JSON.parseArray(interestFreeJson);
 					}
-					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-					
-					if(nperList!= null){
-						goodsInfo.put("goodsType", "1");
-						Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-						goodsInfo.put("nperMap", nperMap);
-					}
 				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+				
+				if(nperList!= null){
+					goodsInfo.put("goodsType", "1");
+					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+					goodsInfo.put("nperMap", nperMap);
+				}
+				
 				Integer titeType = goodsDo.getTitleType();
 				switch (titeType) {
 				case 1:

@@ -27,7 +27,7 @@ public class SelfSupportRebateService extends BaseRebateService {
     @Override
     public boolean valid(AfOrderDo afOrderDo) {
         boolean baseValid = super.valid(afOrderDo);
-        return baseValid && false;//先关闭这个功能
+        return baseValid && true;//先关闭这个功能
     }
 
     @Override
@@ -46,7 +46,6 @@ public class SelfSupportRebateService extends BaseRebateService {
 
     @Override
     public boolean reverse(AfOrderDo afOrderDo) {
-        
         return true;
     }
 }
