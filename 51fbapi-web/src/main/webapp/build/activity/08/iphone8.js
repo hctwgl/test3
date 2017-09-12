@@ -24,8 +24,8 @@ let firstStarmp=Date.parse(new Date('2017/09/20 00:00:00'));
 let secondStarmp=Date.parse(new Date('2017/09/21 00:00:00'));
 let thirdStarmp=Date.parse(new Date('2017/09/23 00:00:00'));
 let fourthStarmp=Date.parse(new Date('2017/09/25 00:00:00'));
-console.log(currentStarmp);
-console.log(firstStarmp);
+//console.log(currentStarmp);
+//console.log(firstStarmp);
 if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){
     addStyle(1);
 }
@@ -103,8 +103,8 @@ let vm = new Vue({
                     self.prizeCont=data.winUsers;
                     self.orderStatus=data.status;
                     self.loginStatus=data.loginStatus;
-                    console.log(self.loginStatus);
-                    console.log(self.orderStatus)
+                    //console.log(self.loginStatus);
+                    //console.log(self.orderStatus)
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！');

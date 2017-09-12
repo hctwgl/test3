@@ -47,7 +47,7 @@
         <div class="goodList01 clearFix" v-for="item in content.secondList" @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodName">{{txtFix(item.goodName,8)}}</p>
-            #*<p class="goodDes">{{txtFix(item.remark,10)}}</p>*#
+            <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''">{{txtFix(item.remark,10)}}</p>
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
             <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
             <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
@@ -57,7 +57,7 @@
         <div class="goodList02 clearFix"  v-for="item in content.thirdList"  @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodName">{{txtFix(item.goodName,8)}}</p>
-            #*<p class="goodDes">{{txtFix(item.remark,10)}}</p>*#
+            <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''">{{txtFix(item.remark,10)}}</p>
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
             <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
             <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
