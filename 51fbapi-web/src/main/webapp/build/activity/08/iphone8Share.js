@@ -28,6 +28,7 @@ if(currentStarmp>=fourthStarmp){//14号以后才显示中奖
 }
 if(currentStarmp>=firstStarmp){ //20号以后按钮变成“立即购买”
     $('.orderButton').html('立即购买');
+    $('.orderDes').hide();
 }
 if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){ //初始化进来显示13号 当前时间大于20小于21 显示9.20
     addStyle(1);

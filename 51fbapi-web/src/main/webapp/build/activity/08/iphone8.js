@@ -28,6 +28,7 @@ if(currentStarmp>=fourthStarmp){//14号以后才显示中奖
 }
 if(currentStarmp>=firstStarmp){ //20号以后按钮变成“立即购买”
     $('.orderButton').html('立即购买');
+    $('.orderDes').hide();
 }
 if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){
     addStyle(1);
@@ -155,7 +156,7 @@ function alaShareData(){
         "shareAppTitle": "iPhone 8 预约立减100",  // 分享的title
         'shareAppContent': "十周年 翘首以待！1元预约立减100，每日限抽取5名成功分享用户获iPhone 8大奖，限时秒杀iPhone 6 仅1999元！",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/09/iphone8_06.jpg",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/iphone8Share?modelId="+modelId,  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/iphone8Share?modelId="+modelId+"&title="+title,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "iphone8Share" // 分享的页面
     };
