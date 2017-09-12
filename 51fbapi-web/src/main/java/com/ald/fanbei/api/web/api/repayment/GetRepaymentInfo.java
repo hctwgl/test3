@@ -1,13 +1,18 @@
 package com.ald.fanbei.api.web.api.repayment;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.SimpleFormatter;
@@ -17,31 +22,49 @@ import java.util.logging.SimpleFormatter;
  * @类描述：订单支付
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Component("getRepaymentInfoApi")
 public class GetRepaymentInfo  implements ApiHandle{
 
 
     @Resource
     AfBorrowBillService afBorrowBillService;
 
+    @Resource
+    AfUserAccountService afUserAccountService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         long userId = context.getUserId();
-
+        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         List<HashMap> list = afBorrowBillService.getBorrowBillNoPaySumByUserId(userId);
         List<HashMap> out = new ArrayList<HashMap>();
         List<HashMap> notOut = new ArrayList<HashMap>();
 
-        for (HashMap map : list){
+        BigDecimal allNoOut = BigDecimal.ZERO;
+        for (HashMap map : list) {
+            HashMap m = new HashMap();
             int bill_year = Integer.parseInt(map.get("bill_year").toString());
             int bill_month = Integer.parseInt(map.get("bill_month").toString());
-            if( isOut(bill_year,bill_month)){
-                
-            }
-            else{
-
+            if (isOut(bill_year, bill_month)) {
+                m.put("month", bill_month + "月帐单");
+                m.put("totalAmount", map.get("totalAmount"));
+                m.put("interest", map.get("interest"));
+                out.add(m);
+            } else {
+                notOut.add(m);
+                allNoOut = allNoOut.add(new BigDecimal(map.get("totalAmount").toString()));
             }
         }
-        return null;
+        HashMap ret = new HashMap();
+        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+        ret.put("rebateAmount",afUserAccountDo.getRebateAmount());
+
+        if (allNoOut.compareTo(BigDecimal.ZERO) > 0) {
+            ret.put("noOutMoney", allNoOut);
+        }
+        ret.put("list", out);
+        resp.setResponseData(ret);
+        return resp;
     }
 
     private boolean isOut(int year,int month){
