@@ -199,7 +199,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		}
 		// 给用户账号打钱*
 		int amount = Integer.parseInt(winAmount);
-		if(amount <= 1100){
+		if(amount < 1100){
 			try {
 				afUserAccountService.updateBorrowCashActivity(amount, users);
 			} catch (FanbeiException e) {
