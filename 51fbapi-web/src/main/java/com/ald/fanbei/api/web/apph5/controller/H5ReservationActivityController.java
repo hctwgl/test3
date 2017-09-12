@@ -145,10 +145,9 @@ public class H5ReservationActivityController extends BaseController {
 			try {
 				AfUserDo userDo =null;
 				String s = null;
-				//String appInfo = getAppInfo(request.getHeader("Referer"));
-				//String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
-				//userDo = afUserService.getUserByUserName(userName);
-				userDo = afUserService.getUserByUserName("18557515753");
+				String appInfo = getAppInfo(request.getHeader("Referer"));
+				String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+				userDo = afUserService.getUserByUserName(userName);
 				if(userDo != null){
 					loginStatus="Y";
 					s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
