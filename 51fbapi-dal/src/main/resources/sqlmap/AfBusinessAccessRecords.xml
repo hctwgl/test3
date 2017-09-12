@@ -196,6 +196,7 @@ id,gmt_create,user_id,source_ip,ref_type,ref_id,extra_info,remark,channel
         </foreach>
         </if>
         AND gmt_create <![CDATA[  >=  ]]> CAST(CAST(SYSDATE()AS DATE)AS DATETIME)
+        ORDER BY gmt_create asc
         limit 0,4
     </select>
     
@@ -228,4 +229,16 @@ id,gmt_create,user_id,source_ip,ref_type,ref_id,extra_info,remark,channel
         	#{id}
         </foreach>
     </update>
+    
+    <select id="getTotalSignCount" resultType="int" parameterType="com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery">
+        SELECT
+        COUNT(DISTINCT ref_id)
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        AND remark='sign'
+        AND ref_type = #{refType}
+        AND gmt_create <![CDATA[  <  ]]> #{endTime}
+        AND gmt_create <![CDATA[  >=  ]]> #{beginTime}
+    </select>
 </mapper>

@@ -59,4 +59,10 @@ public interface AfBusinessAccessRecordsDao extends BaseDao<AfBusinessAccessReco
 	void batchSetSignByIds(@Param("ids") List<String> ids);
 	
 
+	/**
+	 * 获取签到活动期间总共remark为sign的个数，为计算签到天数
+	 * @param query
+	 * @return
+	 */
+	int getTotalSignCount(AfBusinessAccessRecordQuery query);
 }

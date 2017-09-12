@@ -59,4 +59,12 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 		return afGameAwardDao.updateContact(userId, contacts);
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	public AfGameAwardDo getLoanSignAward(Long userId, Long gameId) {
+		return afGameAwardDao.getLoanSignAward(userId,gameId);
+	}
+
 }

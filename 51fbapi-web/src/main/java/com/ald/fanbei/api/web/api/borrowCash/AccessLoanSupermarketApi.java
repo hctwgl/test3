@@ -14,6 +14,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
+import com.ald.fanbei.api.biz.service.AfGameAwardService;
 import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -25,6 +26,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
+import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery;
@@ -48,6 +50,8 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 	AfResourceService afResourceService;
 	@Resource
 	AfGameService afGameService;
+	@Resource
+	AfGameAwardService afGameAwardService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -108,6 +112,12 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 		Date nowDate = new Date();
 		if(nowDate.before(startDate) || nowDate.after(endDate)) {
 			return; //未开始或者已结束
+		}
+		
+		//判断是否领取过,领取过就活动结束
+		AfGameAwardDo gameAward = afGameAwardService.getLoanSignAward(userId, gameDo.getRid());
+		if(gameAward!=null){
+			return;
 		}
 		
 		//判断今天是否签过到

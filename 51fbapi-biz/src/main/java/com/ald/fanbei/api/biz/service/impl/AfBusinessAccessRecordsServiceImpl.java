@@ -84,4 +84,10 @@ public class AfBusinessAccessRecordsServiceImpl extends ParentServiceImpl<AfBusi
 		
 	}
 
+	@Override
+	public int getSignDays(AfBusinessAccessRecordQuery query) {
+		int totalCount = afBusinessAccessRecordsDao.getTotalSignCount(query);
+		return (int)(totalCount/4);
+	}
+
 }

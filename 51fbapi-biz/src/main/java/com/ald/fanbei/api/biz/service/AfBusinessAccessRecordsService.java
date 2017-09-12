@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
+import com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery;
 
 /**
  * 业务访问记录Service
@@ -26,4 +27,11 @@ public interface AfBusinessAccessRecordsService extends ParentService<AfBusiness
 	 * @param userId
 	 */
 	void doSign(AfGameDo gameDo, Long userId);
+	
+	/**
+	 * 借贷超市签到天数
+	 * @param query
+	 * @return
+	 */
+	int getSignDays(AfBusinessAccessRecordQuery query);
 }

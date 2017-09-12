@@ -44,4 +44,12 @@ public interface AfGameAwardService {
 	 * @return
 	 */
 	int updateContact(Long userId,String contacts);
+	
+	/**
+	 * 获取借贷超市签到的奖励信息
+	 * @param userId
+	 * @param gameId
+	 * @return
+	 */
+	AfGameAwardDo getLoanSignAward(Long userId,Long gameId);
 }
