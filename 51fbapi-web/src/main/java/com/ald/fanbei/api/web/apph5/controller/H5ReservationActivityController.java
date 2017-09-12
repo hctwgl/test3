@@ -151,13 +151,13 @@ public class H5ReservationActivityController extends BaseController {
 				if(userDo != null){
 					loginStatus="Y";
 					s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
-					if (DateUtil.compareDate(endTime,date)) {
+					//if (DateUtil.compareDate(endTime,date)) {
 						if(StringUtil.isNotBlank(s)){
 							status=s;
 						}
-					} else {
-						status="N";
-					}
+					//} else {
+						//status="N";
+					//}
 				}
 			} catch (Exception e) {
 				logger.info("getActivityGoods is fail"+e);
