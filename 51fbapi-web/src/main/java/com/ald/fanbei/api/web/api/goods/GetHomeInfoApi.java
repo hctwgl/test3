@@ -143,7 +143,7 @@ public class GetHomeInfoApi implements ApiHandle {
 										afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize", "home");
 									}
 								} catch(Exception e) {
-									logger.error(e.getMessage());
+									logger.error("grant coupon error=>" + e.getMessage());
 								}
 							}
 						}
@@ -151,7 +151,7 @@ public class GetHomeInfoApi implements ApiHandle {
 				}	
 			}
 		} catch(Exception e) {
-			logger.error(e.getMessage());
+			logger.error("push wnd error=>" + e.getMessage());
 		}
 		
 		if(appVersion >= 363){
