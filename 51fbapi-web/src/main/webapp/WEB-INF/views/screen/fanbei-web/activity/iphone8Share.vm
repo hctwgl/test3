@@ -22,13 +22,14 @@
     <div class="mask" v-show="ruleShow==='Y'" @click="maskClick()"></div>
     <div class="alertRule" v-show="ruleShow==='Y'">
         <p class="ruleTitle">活动规则</p>
-        <p class="ruleCont">1.预约时间内预约成功的用户，即可领取100元代金券，至‘我的-抵用券’里查看；<br/>
+        <p class="ruleCont">1.预约时间内预约成功的用户，即可领取100元代金券，至‘我的-抵用券’里查看(优惠券将在12小时之内到账)；<br/>
             2.9.21-9.22 早10点整，限时2天apple品牌日特卖开抢；<br/>
             3.优惠券的使用规则以券面上的使用信息为准；<br/>
             4.用户不得以营利为目的购买此商品，如存在恶意刷单行为，一经发现作封号处理，且订单会被关闭；<br/>
             5. 每天抽取5名成功分享的预约用户有机会获得iphone8；<br/>
             6.活动预约结束后，预约金额1元暂不支持退款申请；<br/>
             7.本次活动最终解释权归51返呗所有；</p></div>
+    <div class="close" v-show="ruleShow==='Y'" @click="maskClick()">X</div>
     <div class="getPrize">
         <p class="prizeTitle">获奖公告</p>
         <div class="myscroll">

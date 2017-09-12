@@ -1,4 +1,6 @@
 
+var channelCode=getUrl('channelCode');
+var pointCode=getUrl('pointCode');
 
 // 从分享链接中获取code
 var recommendCode = getUrl("recommendCode");
@@ -121,8 +123,8 @@ var vm=new Vue({
                         mobile: mobileNum,
                         token: token,
                         verifyImgCode:verifyImgCode,
-                        channelCode: 'iphone8',
-                        pointCode: 'iphone8'
+                        channelCode:channelCode,
+                        pointCode:pointCode
                     },
                     success: function(returnData){
                         if (returnData.success) {
@@ -173,8 +175,8 @@ var vm=new Vue({
                                         password: pwdMd5,
                                         recommendCode: recommendCode,
                                         token: token,
-                                        channelCode: 'iphone8',
-                                        pointCode: 'iphone8'
+                                        channelCode:channelCode,
+                                        pointCode:pointCode
                                     },
                                     success: function(returnData){
                                         if ( returnData.success ) {
