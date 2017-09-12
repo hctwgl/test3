@@ -27,8 +27,7 @@ if(currentStarmp>=fourthStarmp){//14号以后才显示中奖
     $('.getPrize').show();
 }
 if(currentStarmp>=firstStarmp){ //20号以后按钮变成“立即购买”
-    $('.orderButton').show();
-    $('.orderButton').html('立即购买');
+    $('.orderButton01').show();
     $('.orderDes').hide();
 }
 if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){

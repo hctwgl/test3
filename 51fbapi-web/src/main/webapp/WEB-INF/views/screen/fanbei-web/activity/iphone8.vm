@@ -18,6 +18,7 @@
     <div class="banner">
         <div class="orderDes" v-if="orderStatus==='SUCCESS'&&loginStatus==='Y'">恭喜您预约成功，iPhone8将在9.20正式开售<br/>100元代金券请在“我的-抵用券”里查看</div>
         <div class="orderButton" v-for="item in content.firstList" @click="orderClick(item)" v-else>1元预约 立减100元</div>
+        <div class="orderButton orderButton01" v-for="item in content.firstList" @click="orderClick(item)">1元预约 立减100元</div>
     </div>
     <div class="rule" @click="ruleClick()">活动规则</div>
     <div class="mask" v-show="ruleShow==='Y'" @click="maskClick()"></div>
