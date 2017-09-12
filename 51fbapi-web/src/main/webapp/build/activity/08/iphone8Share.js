@@ -46,7 +46,7 @@ function addStyle(i){
     $('.time').eq(i).siblings().find('span').removeClass('active02');
 }
 //title
-var title=getUrl('title');
+var title=decodeURI(getUrl('title'));
 document.title=title;
 var modelId=getUrl("modelId");//获取活动Id
 //获取数据

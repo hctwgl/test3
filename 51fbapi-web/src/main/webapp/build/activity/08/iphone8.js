@@ -47,7 +47,7 @@ function addStyle(i){
     $('.time').eq(i).siblings().find('span').removeClass('active02');
 }
 //title
-var title=getUrl('title');
+var title=decodeURI(getUrl('title'));
 document.title=title;
 var modelId=getUrl("modelId");//获取活动Id
 var protocol = window.location.protocol;
@@ -134,6 +134,15 @@ let vm = new Vue({
                 if(self.orderStatus=='FAIL'){
                     window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}';
                 }
+            }
+        },
+        //点击购买
+        buyClick(item){
+            let self = this;
+            if(self.loginStatus=='N'){
+                window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
+            }else{
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}';
             }
         },
         //点击活动规则
