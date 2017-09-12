@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -44,8 +45,10 @@ import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -77,6 +80,8 @@ public class H5ReservationActivityController extends BaseController {
 	private SmsUtil smsUtil;
 	@Resource
 	private AfGoodsReservationService afGoodsReservationService;
+	@Resource
+	private AfOrderService orderService;
 	
 	@RequestMapping(value = "/getActivityGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -93,6 +98,7 @@ public class H5ReservationActivityController extends BaseController {
 		} catch (ParseException e) {
 			logger.info("get startTime is fail"+e);
 		}
+	
 		Map map = new HashMap();
 		Date date = new Date();
 		String status="FAIL";
@@ -150,14 +156,11 @@ public class H5ReservationActivityController extends BaseController {
 				userDo = afUserService.getUserByUserName(userName);
 				if(userDo != null){
 					loginStatus="Y";
-					s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
-					//if (DateUtil.compareDate(endTime,date)) {
-						if(StringUtil.isNotBlank(s)){
-							status=s;
-						}
-					//} else {
-						//status="N";
-					//}
+					long goodsId= Long.parseLong(StringUtil.null2Str(jsonObjRes.get("goodsId")));
+					AfOrderDo order = orderService.getStatusByGoodsAndUserId(goodsId, userDo.getRid());
+					if(order != null){
+						status="SUCCESS";
+					}
 				}
 			} catch (Exception e) {
 				logger.info("getActivityGoods is fail"+e);

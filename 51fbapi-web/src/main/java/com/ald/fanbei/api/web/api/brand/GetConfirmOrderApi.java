@@ -102,19 +102,21 @@ public class GetConfirmOrderApi implements ApiHandle {
 			logger.error("orderId or plantform is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderId;
-		boolean isGetLock = bizCacheUtil.getLockTryTimes(lockKey, "1",
-				Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
-		AfOrderDo orderInfo = null;
-		if (isGetLock) {
-			orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
-			bizCacheUtil.delCache(lockKey);
-		}
+		AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
 		if (orderInfo ==  null) {
 			//订单补偿
 			try {
-				orderInfo = boluomeUtil.orderSearch(orderId);
-				afOrderService.createOrder(orderInfo);
+				String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderId;
+				boolean isGetLock = bizCacheUtil.getLockTryTimes(lockKey, "1",
+						Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
+				if (isGetLock) {
+					orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
+					if (orderInfo == null) {
+						orderInfo = boluomeUtil.orderSearch(orderId);
+						afOrderService.createOrder(orderInfo);
+					}
+					bizCacheUtil.delCache(lockKey);
+				}
 			} catch (UnsupportedEncodingException e) {
 				logger.info("order compensation query error e = {}", e);
 			}
