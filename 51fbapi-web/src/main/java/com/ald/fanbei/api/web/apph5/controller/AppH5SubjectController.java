@@ -138,6 +138,7 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsInfo.put("goodsUrl", qualityGoods.getGoodsUrl());
 				qualityGoodsInfo.put("priceAmount", qualityGoods.getPriceAmount());
 				qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
+				qualityGoodsInfo.put("remark",qualityGoods.getRemark());
 				qualityGoodsInfo.put("goodsType", "0");
 				String tags = qualityGoods.getTags();
 				// 如果是分期免息商品，则计算分期
@@ -289,6 +290,7 @@ public class AppH5SubjectController  extends BaseController{
 					activityGoodsInfo.put("source", goodsDo.getSource());
 					activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
 					activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+					activityGoodsInfo.put("remark", goodsDo.getRemark());
 					activityGoodsInfo.put("activityName", activityName);
 					String tags = goodsDo.getTags();
 					// 如果是分期免息商品，则计算分期
@@ -340,6 +342,7 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsInfo.put("source", qualityGoods.getSource());
 				qualityGoodsInfo.put("priceAmount", qualityGoods.getPriceAmount());
 				qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
+				qualityGoodsInfo.put("remark",qualityGoods.getRemark());
 				qualityGoodsInfo.put("goodsType", "0");
 				String tags = qualityGoods.getTags();
 				// 如果是分期免息商品，则计算分期
@@ -429,6 +432,7 @@ public class AppH5SubjectController  extends BaseController{
 				subjectGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
 				subjectGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
 				subjectGoodsInfo.put("thumbnailIcon",goodsDo.getThumbnailIcon());
+				subjectGoodsInfo.put("remark",goodsDo.getRemark());
 				subjectGoodsInfo.put("goodsType", "0");
 				subjectGoodsList.add(subjectGoodsInfo);
 				String tags = goodsDo.getTags();
