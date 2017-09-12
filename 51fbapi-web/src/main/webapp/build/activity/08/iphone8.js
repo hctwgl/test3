@@ -45,7 +45,9 @@ function addStyle(i){
     $('.time').eq(i).find('span').addClass('active02');
     $('.time').eq(i).siblings().find('span').removeClass('active02');
 }
-
+//title
+var title=getUrl('title');
+document.title=title;
 var modelId=getUrl("modelId");//获取活动Id
 var protocol = window.location.protocol;
 var host = window.location.host;
