@@ -85,12 +85,11 @@ public class H5ReservationActivityController extends BaseController {
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
 		Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
 		SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date startTime = null;;
+		Date startTime = null;
 		try {
 			startTime = parser.parse(StringUtil.null2Str(jsonObjRes.get("startTime")));
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.info("get startTime is fail"+e);
 		}
 		Map map = new HashMap();
 		Date date = new Date();
@@ -154,12 +153,12 @@ public class H5ReservationActivityController extends BaseController {
 						status=s;
 					}
 				}
-				map.put("status", status);
-				map.put("loginStatus", loginStatus);
-				map.put("winUsers", list);
 			} catch (Exception e) {
 				logger.info("getActivityGoods is fail"+e);
 			}
+			map.put("status", status);
+			map.put("loginStatus", loginStatus);
+			map.put("winUsers", list);
 		}
 		return JsonUtil.toJSONString(map);
 	}
