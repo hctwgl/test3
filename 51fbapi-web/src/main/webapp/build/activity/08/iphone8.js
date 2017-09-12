@@ -48,6 +48,7 @@ function addStyle(i){
 }
 //title
 var title=decodeURI(getUrl('title'));
+console.log(title)
 document.title=title;
 var modelId=getUrl("modelId");//获取活动Id
 var protocol = window.location.protocol;
