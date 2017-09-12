@@ -86,8 +86,10 @@ public class H5ReservationActivityController extends BaseController {
 		Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
 		SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date startTime = null;
+		Date endTime = null;
 		try {
 			startTime = parser.parse(StringUtil.null2Str(jsonObjRes.get("startTime")));
+			endTime = parser.parse(StringUtil.null2Str(jsonObjRes.get("endTime")));
 		} catch (ParseException e) {
 			logger.info("get startTime is fail"+e);
 		}
@@ -143,14 +145,19 @@ public class H5ReservationActivityController extends BaseController {
 			try {
 				AfUserDo userDo =null;
 				String s = null;
-				String appInfo = getAppInfo(request.getHeader("Referer"));
-				String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
-				userDo = afUserService.getUserByUserName(userName);
+				//String appInfo = getAppInfo(request.getHeader("Referer"));
+				//String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+				//userDo = afUserService.getUserByUserName(userName);
+				userDo = afUserService.getUserByUserName("18557515753");
 				if(userDo != null){
 					loginStatus="Y";
 					s = afGoodsReservationService.getGoodsReservationStatusByUserId(userDo.getRid());
-					if(StringUtil.isNotBlank(s)){
-						status=s;
+					if (DateUtil.compareDate(endTime,date)) {
+						if(StringUtil.isNotBlank(s)){
+							status=s;
+						}
+					} else {
+						status="N";
 					}
 				}
 			} catch (Exception e) {
