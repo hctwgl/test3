@@ -48,6 +48,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -150,16 +151,17 @@ public class H5ReservationActivityController extends BaseController {
 			try {
 				AfUserDo userDo =null;
 				String s = null;
-				String appInfo = getAppInfo(request.getHeader("Referer"));
-				String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
-				userDo = afUserService.getUserByUserName(userName);
+				//String appInfo = getAppInfo(request.getHeader("Referer"));
+				//String userName =  StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+				//userDo = afUserService.getUserByUserName(userName);
+				userDo = afUserService.getUserByUserName("15976943174");
 				if(userDo != null){
 					loginStatus="Y";
 					long goodsId= Long.parseLong(StringUtil.null2Str(jsonObjRes.get("goodsId")));
-					String orderStatus = orderService.getStatusByGoodsAndUserId(goodsId, userDo.getRid());
-						if(StringUtil.isNotBlank(orderStatus) && (orderStatus.equals("DEALING") || orderStatus.equals("PAID"))){
-								status="SUCCESS";
-							}
+					AfOrderDo order = orderService.getStatusByGoodsAndUserId(goodsId, userDo.getRid());
+					if(order != null){
+						status="SUCCESS";
+					}
 				}
 			} catch (Exception e) {
 				logger.info("getActivityGoods is fail"+e);

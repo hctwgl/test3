@@ -2024,7 +2024,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
-	public String getStatusByGoodsAndUserId(long goodsId, long userId) {
+	public AfOrderDo getStatusByGoodsAndUserId(long goodsId, long userId) {
 		return orderDao.getStatusByGoodsAndUserId(goodsId, userId);
 	}
 	

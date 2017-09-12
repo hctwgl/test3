@@ -283,6 +283,6 @@ public interface AfOrderService {
 	 * @return
 	 */
 	
-	String getStatusByGoodsAndUserId(long goodsId,long userId);
+	AfOrderDo getStatusByGoodsAndUserId(long goodsId,long userId);
 	
 }

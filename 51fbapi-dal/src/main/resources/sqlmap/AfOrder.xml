@@ -882,13 +882,15 @@
  	 	 	`order_type` ='AGENTBUY' AND shop_name =''  LIMIT #{pageNo}, 50
 	</select>
 	
-	<select id="getStatusByGoodsAndUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+	<select id="getStatusByGoodsAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
 		SELECT 	
-				status
+				<include refid="queryFields"/>
  	 	FROM `af_order`
  	 	WHERE 
  	 		is_delete = 0
  	 	AND
+ 	 		status IN ("DEALING","PAID")
+  	 	AND
  	 		goods_id=#{goodsId}
  	 	AND
  	 		user_id=#{userId}
