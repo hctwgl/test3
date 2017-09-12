@@ -1354,11 +1354,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					long goodsId = Long.parseLong(gId);
 					String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
 					AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
-					//判断是否有支付中的订单
-					if(orderInfo.getStatus().equals("DEALING")){
-						logger.info("iPhone8 reservationActivity is repeat");
-						return result;
-					}
+					
 					if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
 						logger.info("iPhone8 reservationActivity is fail");
 						return result;
@@ -2025,6 +2021,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public Integer getDealAmount(Long userId ,String orderType) {
 		
 		return orderDao.getDealAmount(userId,orderType);
+	}
+
+	@Override
+	public String getStatusByGoodsAndUserId(long goodsId, long userId) {
+		return orderDao.getStatusByGoodsAndUserId(goodsId, userId);
 	}
 	
 }

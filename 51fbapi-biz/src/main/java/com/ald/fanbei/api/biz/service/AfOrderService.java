@@ -278,4 +278,11 @@ public interface AfOrderService {
 	 */
 	Integer getDealAmount(Long userId,String orderType);
 	
+	/**
+	 * 根据goodsId与userId查询订单状态
+	 * @return
+	 */
+	
+	String getStatusByGoodsAndUserId(long goodsId,long userId);
+	
 }

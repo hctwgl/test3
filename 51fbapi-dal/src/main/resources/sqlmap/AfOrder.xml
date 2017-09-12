@@ -882,4 +882,15 @@
  	 	 	`order_type` ='AGENTBUY' AND shop_name =''  LIMIT #{pageNo}, 50
 	</select>
 	
+	<select id="getStatusByGoodsAndUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+		SELECT 	
+				status
+ 	 	FROM `af_order`
+ 	 	WHERE 
+ 	 		is_delete = 0
+ 	 	AND
+ 	 		goods_id=#{goodsId}
+ 	 	AND
+ 	 		user_id=#{userId}
+	</select>
 </mapper>

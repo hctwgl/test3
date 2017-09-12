@@ -151,5 +151,11 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	List<AfOrderDo> getNotShopNameByAgentBuyOrder(@Param("pageNo") Long pageNo);
+
+	/**
+	 * 根据goodsId与userId查询订单状态
+	 * @return
+	 */
 	
+	String getStatusByGoodsAndUserId(@Param("goodsId")Long goodsId ,@Param("userId") long userId);
 }
