@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/iphone8ShareRegister.css?version=$version">
 </head>
 <body>
-<div id="inviteShare" class="inviteShare">
+<div id="iphone8ShareRegister" class="inviteShare">
     <img src="$commonUrl/iphone8_03.jpg">
     <div class="inviteShareContWrap">
         <img src="$commonUrl/iphone8_04.jpg">
@@ -18,7 +18,7 @@
                 <input type="text" id="VerifiCode" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
                 <button class="codeBtn" id="codeBtn" @click="getImgCode()">点击获取</button>
             </li>
-            <li @click="goRegister()" class="goRegister"><button class="submitBtn" id="submitBtn">立即注册</button></li>
+            <li @click="goRegister()" class="goRegister register_submitBtn"><button class="submitBtn" id="submitBtn">立即注册</button></li>
             <div class="checkbox clearfix">
                 <input type="checkbox" class="inputCheck" id="inputCheck" checked="checked">
                 <label for="inputCheck"></label>

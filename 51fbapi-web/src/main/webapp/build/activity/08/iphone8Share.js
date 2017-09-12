@@ -24,12 +24,12 @@ let secondStarmp=Date.parse(new Date('2017/09/21 00:00:00'));
 let thirdStarmp=Date.parse(new Date('2017/09/23 00:00:00'));
 let fourthStarmp=Date.parse(new Date('2017/09/25 00:00:00'));
 console.log(currentStarmp);
-console.log(firstStarmp);
 if(currentStarmp>=firstStarmp&&currentStarmp<secondStarmp){
     addStyle(1);
 }
 if(currentStarmp>=secondStarmp&&currentStarmp<thirdStarmp){
     addStyle(2);
+    $('.limitTime').show();
 }
 if(currentStarmp>=fourthStarmp){
     addStyle(3);
@@ -68,17 +68,14 @@ let vm = new Vue({
                     self.content.secondList=self.content[1].activityGoodsList;
                     self.content.thirdList=self.content[2].activityGoodsList;
                     console.log(self.content);
-                    if(data.success){
-                        self.$nextTick(function () {
-                            $(".loadingMask").fadeOut();
-                            $("img.lazy").lazyload({
-                                placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
-                                effect : "fadeIn",  // 载入使用的效果
-                                threshold: 200 // 提前开始加载
-                            });
-                        })
-
-                    }
+                    self.$nextTick(function () {
+                        $(".loadingMask").fadeOut();
+                        $("img.lazy").lazyload({
+                            placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
+                            effect : "fadeIn",  // 载入使用的效果
+                            threshold: 200 // 提前开始加载
+                        });
+                    })
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
@@ -103,7 +100,7 @@ let vm = new Vue({
         },
         //点击预约与商品
         orderAndGoodClick(){
-                window.location.href='iphone8ShareRegister';
+                window.location.href='iphone8ShareRegister?channelCode=iphone8&pointCode=iphone8';
          },
         //点击活动规则
         ruleClick(){
