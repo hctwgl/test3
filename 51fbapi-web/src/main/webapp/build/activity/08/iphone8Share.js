@@ -43,7 +43,7 @@ function addStyle(i){
     $('.time').eq(i).addClass('active01');
     $('.time').eq(i).siblings().removeClass('active01');
     $('.time').eq(i).find('span').addClass('active02');
-    $('.time').eq(i).siblings().removeClass('active02');
+    $('.time').eq(i).siblings().find('span').removeClass('active02');
 }
 var modelId=getUrl("modelId");//获取活动Id
 //获取数据
