@@ -1351,7 +1351,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				String gId=StringUtil.null2Str(jsonObjRes.get("goodsId"));
 				long activityId = Long.parseLong(aId);
 				long goodsId = Long.parseLong(gId);
-				AfResourceDo currActivityResource = afResourceService.getResourceByResourceId(activityId);
 				String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
 				AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
 				if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
