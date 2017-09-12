@@ -892,6 +892,5 @@
  	 		goods_id=#{goodsId}
  	 	AND
  	 		user_id=#{userId}
- 	 	limit 1
 	</select>
 </mapper>
