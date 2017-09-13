@@ -61,10 +61,12 @@
             <p class="goodName"  style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
             <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''"  style="-webkit-box-orient: vertical;">{{item.remark}}</p>
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
-            <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
-        </div>
+            <div style="padding-left:.17rem;">
+               <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
+               <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
+               <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
+            </div>
+            </div>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/iphone8.js?version=$version"></script>
