@@ -36,6 +36,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
@@ -221,8 +222,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setMobile("");
 
 		afOrder.setBankId(0L);
-
-		afOrder.setOrderType(OrderType.SELFSUPPORT.getCode());
+		String source = afOrder.getSource();
+		if (StringUtil.equals(source, "SELFBUILD")) {
+			afOrder.setOrderType("SELFBUILD");
+		}else {
+			afOrder.setOrderType(OrderType.SELFSUPPORT.getCode());
+		}
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT);
 		afOrder.setOrderNo(orderNo);
 		return afOrder;

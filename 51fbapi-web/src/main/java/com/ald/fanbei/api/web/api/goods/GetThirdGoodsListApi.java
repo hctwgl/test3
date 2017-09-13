@@ -109,6 +109,8 @@ public class GetThirdGoodsListApi implements ApiHandle {
 						afSearchGoodsVo.setSaleAmount(query.getPriceAmount());
 						afSearchGoodsVo.setThumbnailIcon(query.getThumbnailIcon());
 						afSearchGoodsVo.setSource(query.getSource());
+					}else {
+						afSearchGoodsVo.setSource("");
 					}
 				}
 				//获取借款分期配置信息
