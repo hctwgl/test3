@@ -225,7 +225,7 @@ function ScrollImgLeft() {
     "endTime": 1505361600000
 };  */
 function countDown(num){
-    var currentDate, diffTimer, day;
+    /* var currentDate, diffTimer, day;
     var endTime = num.endTime; //活动结束时间戳 1505361600000
     var nowTime = num.startrTime; //活动开始时间 1505016000000
     var startrTime = num.currentDate; //后台服务器当前时间 1504884213607
@@ -273,5 +273,59 @@ function countDown(num){
                     clearInterval(timer)
                 }
             }, 1000)
-        }
+        } */
+
+
+                    var startrTime = num.currentDate; //当前后台时间
+                    var endTime = num.endTime;//活动结束时间
+                    var nowTime = num.startrTime; //活动开始时间
+                    var diffTimer, day, end;
+                    var Hour, Minute, Second;
+                    if (startrTime < nowTime) {
+                        $('#count').html('活动暂未开始')
+                    } else if (nowTime > endTime) {
+                        $('#count').html('活动结束')
+
+                    } else {
+                        var activeDaY = new Date(nowTime).getDate();
+                        var hour = new Date(nowTime).getHours();
+                        if (hour > 10 || new Date(startrTime).getDate() == new Date(nowTime).getDate()) {
+                            activeDaY += 1;
+                        }
+                        var year = new Date(nowTime).getFullYear();
+                        var month = new Date(nowTime).getMonth() + 1;
+                       var timer= setInterval(function () {
+                            nowTime += 1000;
+                            //end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
+                            end = new Date(year + '/' + month + '/' + activeDaY + ' 16:40:00');
+                            if (activeDaY == new Date(endTime).getDate()) {
+                                end = new Date(endTime);
+                            }
+                            // console.log(year + '/' + month + '/' + activeDaY + ' 10:00:00');
+                            // console.log(new Date(nowTime));
+                            t = end.getTime() - nowTime;
+                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+                            Minute = Math.floor(t / 1000 / 60 % 60);
+                            Second = Math.floor(t / 1000 % 60);
+                            document.getElementById("hour").innerHTML = Hour + "时";
+                            document.getElementById("minute").innerHTML = Minute + "分";
+                            document.getElementById("second").innerHTML = Second + "秒";
+                            if (t < 1000) {
+                                // debugger
+                                nowTime = end.getTime();
+                                activeDaY = activeDaY + 1;
+                            }
+
+                            if(nowTime > endTime){
+                              document.getElementById("hour").innerHTML = 0 + "时";
+                              document.getElementById("minute").innerHTML = 0 + "分";
+                              document.getElementById("second").innerHTML = 0 + "秒";
+                              clearInterval(timer)
+                            }
+                        }, 1000)
+                    }
+
+
+
+
 }
