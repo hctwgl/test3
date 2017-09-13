@@ -35,6 +35,7 @@ public class AfShopDo extends AbstractSerial {
 	private String platformName;//平台名称 BOLUOME
 	private String serviceProvider;//供应商编号如抠电影【kou】
 	private Long interestFreeId;//免息规则ID
+	private Integer latestOnline;//最新上线开启状态 0:关闭 1:开启
 	
 	/**
 	 * @return the rid
@@ -275,6 +276,12 @@ public class AfShopDo extends AbstractSerial {
 	}
 	public void setShopActivity(String shopActivity) {
 	    this.shopActivity = shopActivity;
+	}
+	public Integer getLatestOnline() {
+	    return latestOnline;
+	}
+	public void setLatestOnline(Integer latestOnline) {
+	    this.latestOnline = latestOnline;
 	}
 	
 
