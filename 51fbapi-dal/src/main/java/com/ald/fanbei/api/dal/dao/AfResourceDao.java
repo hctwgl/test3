@@ -93,7 +93,7 @@ public interface AfResourceDao {
 	 * @return
 	 */
 	List<AfResourceDo> getResourceHomeListByTypeOrderByOnPreEnv(@Param("type") String type);
-
+	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
 	/**
 	 * 根据type获取一个资源信息
 	 * 

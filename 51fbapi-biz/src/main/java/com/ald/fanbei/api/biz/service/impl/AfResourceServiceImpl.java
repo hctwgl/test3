@@ -418,6 +418,15 @@ public class AfResourceServiceImpl implements AfResourceService {
 	}
 
 	@Override
+	public List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code) {
+	    // TODO Auto-generated method stub
+	    return afResourceDao.getOneToManyResourceOrderByBytypeOnPreEnv(code);
+	}
+
+//	public List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code) {
+//	    // TODO Auto-generated method stub
+//	    return afResourceDao.getHomeIndexListByOrderbyOnPreEnv(code);
+//	}
 	public AfResourceDo getFakePersonByActivityId(String string) {
 		AfResourceDo resourceDo = new AfResourceDo();
 		List<AfResourceDo> list = afResourceDao.getFakePersonByActivityId(string);

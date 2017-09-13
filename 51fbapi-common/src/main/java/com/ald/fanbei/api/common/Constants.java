@@ -93,6 +93,7 @@ public class Constants {
 	public static final String DEFAULT_REFUND_PURPOSE = "退款";
 	public static final String DEFAULT_PAY_PURPOSE = "付款";
 	public static final String DEFAULT_WX_PAY_NAME = "微信";
+	public static final String DEFAULT_ZFB_PAY_NAME = "支付宝";
 	public static final String DEFAULT_USER_ACCOUNT = "账户余额";
 	public static final String DEFAULT_BANK_PAY = "银行卡";
 	public static final String DEFAULT_SERVICE_PHONE = "0571-88193918";
@@ -122,6 +123,7 @@ public class Constants {
 	public static final String CACHEKEY_COUPON_INFO      = "coupon$";
 	public static final String CACHEKEY_BORROW_CONSUME_OVERDUE = "borrow_consume_overdue$";
 	public static final String CACHEKEY_USER_CONTACTS = "user_contacts$";
+	public static final String CACHEKEY_USER_LOGIN_WIFI_MAC = "login_wifi_mac$";
 	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
 	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
 	
@@ -212,6 +214,9 @@ public class Constants {
 	public static final String CONFKEY_TONGDUN_PARTNER_HOST = "fbapi.tongdun.partner.host";
 	public static final String CONFKEY_TONGDUN_PARTNER_CODE = "fbapi.tongdun.partner.code";
 	public static final String CONFKEY_TONGDUN_PARTNER_KEY = "fbapi.tongdun.partner.key";
+	
+	public static final String CONFKEY_THIRD_BOLUOME_APPKEY = "third.offer.boluome.appKey";
+	
 
 	public static final String CONFKEY_TONGDUN_PARTNER_WEBHOST = "fbapi.tongdun.partner.webhost";
 

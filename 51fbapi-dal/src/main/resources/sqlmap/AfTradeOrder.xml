@@ -47,6 +47,9 @@
 			<if test="status != null">
 				status,
 			</if>
+			<if test="balanceAmount != null">
+				balance_amount,
+			</if>
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -64,6 +67,9 @@
 			</if>
 			<if test="status != null">
 				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="balanceAmount != null">
+				#{balanceAmount},
 			</if>
 		</trim>
 	</insert>
@@ -125,14 +131,14 @@
 		</foreach>
 	</update>
 	<select id="getCanWithDrawMoney" resultType="java.math.BigDecimal">
-	select sum(a.actual_amount) from af_order a left join af_trade_order b
+	select sum(b.balance_amount) from af_order a left join af_trade_order b
 		on a.id = b.order_id where
 		a.status in ('PAID','REBATED') and a.pay_status='P' and
 		a.order_type='TRADE' and a.gmt_create <![CDATA[   <=  ]]>
 		#{canWithDrawDate} and b.business_id =#{userId} and b.status='NEW'
 	</select>
 	<select id="getCannotWithDrawMoney" resultType="java.math.BigDecimal">
-	select sum(a.actual_amount) from af_order a left join af_trade_order b
+	select sum(b.balance_amount) from af_order a left join af_trade_order b
 		on a.id = b.order_id where
 		a.status in ('PAID','REBATED') and a.pay_status='P' and
 		a.order_type='TRADE' and a.gmt_create <![CDATA[   >  ]]>

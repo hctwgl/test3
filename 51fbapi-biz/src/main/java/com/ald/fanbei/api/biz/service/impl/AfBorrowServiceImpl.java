@@ -593,14 +593,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		
 		//拿到日利率快照Bo
 		BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(borrowRate);
-		
+		BigDecimal mouthRate = borrowRateBo.getRate().divide(new BigDecimal(Constants.MONTH_OF_YEAR), 8,
+				BigDecimal.ROUND_HALF_UP);//月利率
 		//每期本金
 		BigDecimal principleAmount = money.divide(new BigDecimal(borrow.getNper()), 2, RoundingMode.DOWN);
 		//第一期本金
 		BigDecimal firstPrincipleAmount =  getFirstPrincipleAmount(money, principleAmount, nper);
 		//每期利息
-		BigDecimal interestAmount = money.multiply(borrowRateBo.getRate()).divide(
-				Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
+		BigDecimal interestAmount = money.multiply(mouthRate);
 		//每期手续费
 		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(money, borrow.getNper(), borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
 		

@@ -227,7 +227,7 @@ $("#imgVftCodeSbumit").click(function(){
                 }
             },
             error: function(){
-                requestMsg("哎呀，出错了！");
+                requestMsg("网络跑丢了，请稍候重试");
             }
         })
     } else{

@@ -197,7 +197,7 @@ $(function(){
       				}
       			},
       			error: function(){
-    	      	    requestMsg("请求失败");
+    	      	    requestMsg("网络跑丢了，请稍候重试");
       			}
       		})
 		} else{

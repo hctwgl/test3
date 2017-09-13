@@ -10,6 +10,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.IPTransferBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
+import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -69,6 +71,8 @@ public class PayOrderV1Api implements ApiHandle {
 	@Resource
 	AfBorrowBillService afBorrowBillService;
 	@Resource
+	IPTransferUtil iPTransferUtil;
+	@Resource
 	UpsUtil upsUtil;
 
 	@Override
@@ -79,6 +83,8 @@ public class PayOrderV1Api implements ApiHandle {
 		Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
+		BigDecimal lat = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lat"), null);
+		BigDecimal lng = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lng"), null);
 
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		String isCombinationPay = ObjectUtils.toString(requestDataVo.getParams().get("isCombinationPay"), "").toString();
@@ -144,7 +150,16 @@ public class PayOrderV1Api implements ApiHandle {
 
 		String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 		String ipAddress = CommonUtil.getIpAddr(request);
-
+		if (lat == null || lng == null) {
+			IPTransferBo bo = iPTransferUtil.parseIpToLatAndLng(ipAddress);
+			orderInfo.setLat(bo.getLatitude());
+			orderInfo.setLng(bo.getLongitude());
+		} else {
+			orderInfo.setLat(lat);
+			orderInfo.setLng(lng);
+		}
+		afOrderService.updateOrder(orderInfo);
+		
 		try {
 			BigDecimal saleAmount = orderInfo.getSaleAmount();
 			if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode())) {
@@ -158,6 +173,9 @@ public class PayOrderV1Api implements ApiHandle {
 			    //代付
 			if (payId < 0) {
 				payType = PayType.WECHAT.getCode();
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+
+
 			} else if (payId > 0) {
 				payType = PayType.BANK.getCode();
 				//银行卡
