@@ -25,6 +25,8 @@ public class AfShopDo extends AbstractSerial {
 	private String shopUrl;//商城地址
 	private String icon;//图片
 	private String logo;//logo
+	private String latestUseIcon;//最近使用图标
+	private String shopActivity; //商城活动
 	private BigDecimal commissionAmount;//平台返佣
 	private String commissionUnit;//平台返佣单位【RMB人民币,PERCENTAGE百分比】
 	private BigDecimal rebateAmount;//用户返利
@@ -262,5 +264,18 @@ public class AfShopDo extends AbstractSerial {
 	public void setInterestFreeId(Long interestFreeId) {
 		this.interestFreeId = interestFreeId;
 	}
+	public String getLatestUseIcon() {
+	    return latestUseIcon;
+	}
+	public void setLatestUseIcon(String latestUseIcon) {
+	    this.latestUseIcon = latestUseIcon;
+	}
+	public String getShopActivity() {
+	    return shopActivity;
+	}
+	public void setShopActivity(String shopActivity) {
+	    this.shopActivity = shopActivity;
+	}
+	
 
 }

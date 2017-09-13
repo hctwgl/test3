@@ -20,6 +20,8 @@ public class AfShopVo extends AbstractSerial {
 	private String rebateUnit;//用户返利单位【RMB人民币,PERCENTAGE百分比】
 	private String type;//类型
 	private String shopUrl;//商品链接地址
+	private String latestUseIcon;  //最近使用图标
+	private String shopActivity; //商城活动
 	
 	/**
 	 * @return the rid
@@ -104,6 +106,18 @@ public class AfShopVo extends AbstractSerial {
 	 */
 	public void setShopUrl(String shopUrl) {
 		this.shopUrl = shopUrl;
+	}
+	public String getLatestUseIcon() {
+	    return latestUseIcon;
+	}
+	public void setLatestUseIcon(String latestUseIcon) {
+	    this.latestUseIcon = latestUseIcon;
+	}
+	public String getShopActivity() {
+	    return shopActivity;
+	}
+	public void setShopActivity(String shopActivity) {
+	    this.shopActivity = shopActivity;
 	}
 	
 	
