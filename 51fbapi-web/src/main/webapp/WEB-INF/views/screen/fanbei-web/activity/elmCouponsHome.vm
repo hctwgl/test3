@@ -22,6 +22,12 @@
 			margin-bottom: 0.3rem;
 		}
 	</style>
+    <script>
+        var title=decodeURI(getUrl('title'));
+        if(title){
+            document.title=title;
+        }
+    </script>
 </head>
 <body>
 	<div class="elmCouponsHome" id="elmCouponsHome">
