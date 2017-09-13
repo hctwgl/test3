@@ -100,29 +100,30 @@ public class SmsUtil extends AbstractThird {
         return smsResult.isSucc();
     }
 
-	/**
-	 * 发送登录验证码（可信登录）
-	 * @param mobile
-	 * @return
-	 */
-	public boolean sendLoginVerifyCode(String mobile,Long userId) {
-		if (!CommonUtil.isMobile(mobile)) {
-			throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
-		}
-		
-		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
-		if(resourceDo!=null&&StringUtil.isNotBlank(resourceDo.getValue4())){
-			int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.LOGIN.getCode());
-			if(countRegist>=Integer.valueOf(resourceDo.getValue4()))
-				throw new FanbeiException("发送登录验证码超过每日限制次数", FanbeiExceptionCode.SMS_LOGIN_EXCEED_TIME);
-		}
-		String verifyCode = CommonUtil.getRandomNumber(6);
-		String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
-		SmsResult smsResult = sendSmsToDhst(mobile, content);
-		this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
-		return smsResult.isSucc();
-	}
-	
+    /**
+     * 发送登录验证码（可信登录）
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendLoginVerifyCode(String mobile, Long userId) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue4())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.LOGIN.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue4()))
+                throw new FanbeiException("发送登录验证码超过每日限制次数", FanbeiExceptionCode.SMS_LOGIN_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
+        return smsResult.isSucc();
+    }
+
     /**
      * 借款成功发送短信提醒用户
      *
@@ -459,10 +460,11 @@ public class SmsUtil extends AbstractThird {
      * @param content
      */
     public void sendRebate(String mobile, Date date, BigDecimal amount) {
-        
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
         sendSmsToDhst(mobile, String.format(REBATE_COMPLETED, simpleDateFormat.format(new Date()), amount));
     }
+
     /**
      * 发送商圈支付成功短信
      *
@@ -472,15 +474,18 @@ public class SmsUtil extends AbstractThird {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         SimpleDateFormat backDateFormat = new SimpleDateFormat("YYYY-MM-20");
-        String payBackDateFormat="";
-        if(calendar.get(Calendar.DAY_OF_MONTH)<=10){
-            payBackDateFormat=backDateFormat.format(date);
-        }else{
-            calendar.add(Calendar.MONTH,1);
-            payBackDateFormat=backDateFormat.format(calendar.getTime());
+        String payBackDateFormat = "";
+        if (calendar.get(Calendar.DAY_OF_MONTH) <= 10) {
+            payBackDateFormat = backDateFormat.format(date);
+        } else {
+            calendar.add(Calendar.MONTH, 1);
+            payBackDateFormat = backDateFormat.format(calendar.getTime());
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
-        sendSmsToDhst(mobile, String.format( TRADE_PAID_SUCCESS, simpleDateFormat.format(new Date()), amount,payBackDateFormat));
+        String content = String.format(TRADE_PAID_SUCCESS, simpleDateFormat.format(new Date()), amount, payBackDateFormat);
+        logger.error("mobile:"+mobile+","+content);
+        logger.info("mobile:"+mobile+","+content);
+        sendSmsToDhst(mobile, content);
     }
 
     /**
