@@ -95,9 +95,9 @@
                     <!--<span id="year">00年</span>
                     <span id="month">00月</span>
                     <span id="day">00日</span>!-->
-                    <span id="hour">00时</span>
-                    <span id="minute">00分</span>
-                    <span id="second">00秒</span></p>
+                    <span id="hour">{{hourData}} 时</span>
+                    <span id="minute">{{minuteData}} 分</span>
+                    <span id="second">{{secondData}} 秒</span></p>
             </div>
             <!--现金中奖用户!-->  
             <div class="winningUser">

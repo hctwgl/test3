@@ -1,6 +1,7 @@
 var RMB = 0;
 var t = 0;
 var startTime = null;
+var timerId;
 var vm = new Vue({
     el: '#billion',
     data: {
@@ -16,7 +17,10 @@ var vm = new Vue({
         active: 0,
         famen: true,
         timeoutdata: [],
-        str: {}
+        str: {},
+        hourData:"",
+        minuteData:"",
+        secondData:"",
     },
     created: function () {
         let _this = this;
@@ -41,8 +45,7 @@ var vm = new Vue({
                     console.log(num);
                    _this.num = num; //转成json字符串
                     //console.log( _this.num);
-                    countDown(num);
-
+                    countDown(num,_this);
                     //判断小额现金贷是否为10位
                     if (num.length >= 10) {
                         //隐藏9位数的背景和样式
@@ -224,7 +227,7 @@ function ScrollImgLeft() {
     "startrTime": 1505016000000,
     "endTime": 1505361600000
 };  */
-function countDown(num){
+function countDown(num,_this){
                     var startrTime = num.currentDate; //当前后台时间
                     var endTime = num.endTime;//活动结束时间
                     var nowTime = num.startrTime; //活动开始时间
@@ -237,7 +240,6 @@ function countDown(num){
                         $('#count').html('活动暂未开始')
                     } else if (nowTime > endTime) {
                         $('#count').html('活动结束')
-
                     } else {
                         var activeDaY = new Date(nowTime).getDate();
                         var hour = new Date(nowTime).getHours();
@@ -246,10 +248,14 @@ function countDown(num){
                         }
                         var year = new Date(nowTime).getFullYear();
                         var month = new Date(nowTime).getMonth() + 1;
-                       var timer= setInterval(function () {
+                        var hourObj = document.getElementById("hour");
+                        var minuteObj = document.getElementById("minute");
+                        var secondObj =document.getElementById("second");
+                        clearInterval(timerId);
+                        timerId= setInterval(function () {
                             nowTime += 1000;
-                            //end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
-                            end = new Date(year + '/' + month + '/' + activeDaY + ' 16:40:00');
+                            end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
+                            //end = new Date(year + '/' + month + '/' + activeDaY + ' 19:40:00');
                             if (activeDaY == new Date(endTime).getDate()) {
                                 end = new Date(endTime);
                             }
@@ -259,24 +265,29 @@ function countDown(num){
                             Hour = Math.floor(t / 1000 / 60 / 60 % 24);
                             Minute = Math.floor(t / 1000 / 60 % 60);
                             Second = Math.floor(t / 1000 % 60);
-                            document.getElementById("hour").innerHTML = Hour + "时";
-                            document.getElementById("minute").innerHTML = Minute + "分";
-                            document.getElementById("second").innerHTML = Second + "秒";
+                            _this.hourData = Hour;
+                            _this.minuteData = Minute;
+                            _this.secondData = Second;
+                            // hourObj.innerHTML = Hour + "时";
+                            // minuteObj.innerHTML = Minute + "分";
+                            // secondObj.innerHTML = Second + "秒";
                             if (t < 1000) {
                                 // debugger
                                 nowTime = end.getTime();
                                 activeDaY = activeDaY + 1;
                             }
-
                             if(nowTime > endTime){
-                              document.getElementById("hour").innerHTML = 0 + "时";
-                              document.getElementById("minute").innerHTML = 0 + "分";
-                              document.getElementById("second").innerHTML = 0 + "秒";
-                              clearInterval(timer)
+                                _this.hourData = '00';
+                                _this.minuteData = "00";
+                                _this.secondData = "00";
+                            //   hourObj.innerHTML = 0 + "时";
+                            //   minuteObj.innerHTML = 0 + "分";
+                            //   secondObj.innerHTML = 0 + "秒";
+                              clearInterval(timerId)
                             }
-                        }, 1000)
+                            console.log(Second)
+                        },1000)
                     }               
-
 
 
 
