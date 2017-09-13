@@ -281,7 +281,7 @@ function countDown(num){
                     var nowTime = num.startrTime; //活动开始时间
                     var diffTimer, day, end;
                     var Hour, Minute, Second;
-                    if (startrTime < nowTime) {
+                    if (startrTime > nowTime) {
                         $('#count').html('活动暂未开始')
                     } else if (nowTime > endTime) {
                         $('#count').html('活动结束')
