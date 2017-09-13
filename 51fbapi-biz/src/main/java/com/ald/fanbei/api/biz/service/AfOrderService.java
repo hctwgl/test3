@@ -283,6 +283,6 @@ public interface AfOrderService {
 	 * @return
 	 */
 	
-	AfOrderDo getStatusByGoodsAndUserId(long goodsId,long userId);
+	List<AfOrderDo> getStatusByGoodsAndUserId(long goodsId,long userId);
 	
 }

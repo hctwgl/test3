@@ -157,5 +157,5 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	
-	AfOrderDo getStatusByGoodsAndUserId(@Param("goodsId")Long goodsId ,@Param("userId") long userId);
+	List<AfOrderDo> getStatusByGoodsAndUserId(@Param("goodsId")Long goodsId ,@Param("userId") long userId);
 }
