@@ -27,13 +27,13 @@ public class AfUserBankcardDo extends AbstractSerial{
 	private String bankName;
 	private String status;	
 	private String bankIcon;
-	private char isValid;
+	private String isValid;
 
-	public char getIsValid() {
+	public String getIsValid() {
 		return isValid;
 	}
 
-	public void setIsValid(char isValid) {
+	public void setIsValid(String isValid) {
 		this.isValid = isValid;
 	}
 
