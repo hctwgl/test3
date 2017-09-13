@@ -157,8 +157,8 @@ public class H5ReservationActivityController extends BaseController {
 				if(userDo != null){
 					loginStatus="Y";
 					long goodsId= Long.parseLong(StringUtil.null2Str(jsonObjRes.get("goodsId")));
-					AfOrderDo order = orderService.getStatusByGoodsAndUserId(goodsId, userDo.getRid());
-					if(order != null){
+					List<AfOrderDo> order = orderService.getStatusByGoodsAndUserId(goodsId, userDo.getRid());
+					if(order != null && order.size()>0){
 						status="SUCCESS";
 					}
 				}
