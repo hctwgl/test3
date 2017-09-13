@@ -348,5 +348,7 @@ public class Constants {
 	
 	//借贷超市签到锁
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "ala_loan_supermarket_sign_lock$";
+	//借贷超市签到领奖锁
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
 
 }

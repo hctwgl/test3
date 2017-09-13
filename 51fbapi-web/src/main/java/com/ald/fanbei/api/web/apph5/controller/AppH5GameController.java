@@ -544,8 +544,9 @@ public class AppH5GameController  extends BaseController{
 			if(award!=null){
 				//领取过
 			}
-			
 			//开始领奖
+			afGameAwardService.receiveSignAward(userDo.getRid(),confDo);
+			
 		}catch(Exception e){
 			
 		}

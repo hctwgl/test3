@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.dao.AfGameAwardDao;
 import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
+import com.ald.fanbei.api.dal.domain.AfGameConfDo;
 
 /**
  *@类现描述：
@@ -65,6 +66,11 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 	@Override
 	public AfGameAwardDo getLoanSignAward(Long userId, Long gameId) {
 		return afGameAwardDao.getLoanSignAward(userId,gameId);
+	}
+
+	@Override
+	public void receiveSignAward(Long userId, AfGameConfDo confDo) {
+		String key = Constants.CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK+userId;
 	}
 
 }
