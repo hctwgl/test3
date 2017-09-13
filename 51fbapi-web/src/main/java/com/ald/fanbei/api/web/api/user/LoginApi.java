@@ -82,6 +82,8 @@ public class LoginApi implements ApiHandle {
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
+		//滴滴风控相关信息
+		String wifiMac = ObjectUtils.toString(requestDataVo.getParams().get("wifi_mac"));
 		String ip = CommonUtil.getIpAddr(request);
 
 		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
@@ -208,6 +210,9 @@ public class LoginApi implements ApiHandle {
 		jo.put("user", userVo);
 		jo.put("token", token);
 		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(),context.getAppVersion()));
+		
+		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+afUserDo.getRid();
+		bizCacheUtil.saveObject(loginWifiMacKey, wifiMac);
 		
 		//3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
 		Boolean isBorrowed =  bizCacheUtil.isRedisSetValue(Constants.HAVE_BORROWED, String.valueOf(afUserDo.getRid()));

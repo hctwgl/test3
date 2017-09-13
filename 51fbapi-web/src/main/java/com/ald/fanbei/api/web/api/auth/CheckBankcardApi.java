@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.auth;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -7,26 +8,34 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import com.ald.fanbei.api.biz.bo.IPTransferBo;
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthTdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
+import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -54,11 +63,23 @@ public class CheckBankcardApi implements ApiHandle {
 	private AfAuthTdService afAuthTdService;
 	@Resource
 	UpsUtil upsUtil;
+	@Resource
+	IPTransferUtil iPTransferUtil;
+	@Resource
+	AfUserBankDidiRiskService afUserBankDidiRiskService;
+	@Resource
+	AfUserLoginLogService afUserLoginLogService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
+		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
 		Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("bankId")), null);
+		BigDecimal lat = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lat"), null);
+		BigDecimal lng = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lng"), null);
+		String wifiMac = ObjectUtils.toString(requestDataVo.getParams().get("wifi_mac"));
+		String userName = context.getUserName();
 		if(null== bankId){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
 		}
@@ -92,8 +113,19 @@ public class CheckBankcardApi implements ApiHandle {
 			}
 		}
 		
-		String authParamUrl =  ZhimaUtil.authorize(account.getIdNumber(), account.getRealName());
-		resp.addResponseData("zmxyAuthUrl", authParamUrl);
+		String ipAddress = CommonUtil.getIpAddr(request);
+		if (lat == null || lng == null) {
+			IPTransferBo bo = iPTransferUtil.parseIpToLatAndLng(ipAddress);
+			lat = bo.getLatitude();
+			lng = bo.getLongitude();
+		}
+		if (StringUtils.isEmpty(uuid)) {
+			AfUserLoginLogDo loginInfo = afUserLoginLogService.getUserLastLoginInfo(userName);
+			uuid = loginInfo.getUuid();
+		}
+		AfUserBankDidiRiskDo didiInfo = BuildInfoUtil.buildUserBankDidiRiskInfo(ipAddress, lat, lng, context.getUserId(), bankId, uuid, wifiMac);
+		afUserBankDidiRiskService.saveRecord(didiInfo);
+		
 		//判断是否需要设置支付密码
 		String allowPayPwd = YesNoStatus.YES.getCode();
 		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){

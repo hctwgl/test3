@@ -21,26 +21,18 @@ let addModel = function addModel(goodsList,dom,state) {
             let con='';
             // 售价
             var saleAmount = toDecimal2(goodsList[j].saleAmount);
-            var amountAmountSplitArr = saleAmount.split(".");
-            var amountAmountPriceInteger = amountAmountSplitArr[0];
-            var amountAmountPriceDecimal = amountAmountSplitArr[1];
-            let con1=`<p class="fs_28 fsc_red" style="padding-top: .3rem;padding-bottom: .25rem">
-                    <span>￥${amountAmountPriceInteger}</span><span class="fs_22">.${amountAmountPriceDecimal}</span>`;
+
             if(goodsList[j].goodsType==1){
-                let amount=` <span>￥${goodsList[j].nperMap.amount}</span><span class="fs_22">×${goodsList[j].nperMap.nper}期</span>`;
-                if(goodsList[j].nperMap.isFree==1){
-                    amount=` <span>￥${goodsList[j].nperMap.freeAmount}</span><span class="fs_22">×${goodsList[j].nperMap.nper}期</span>`;
+                let amount=` <span>￥${goodsList[j].nperMap.freeAmount}</span><span class="fs_22">起</span>`;
+                if(goodsList[j].nperMap.isFree==0){
+                    amount=` <span>￥${goodsList[j].nperMap.amount}</span><span class="fs_22">起</span>`;
                 }
-                con=`<div class="goodsListModel_mainContent_rebate_wrap">
-                    <div class="goodsListModel_mainContent_rebate clearfix">
-                        <span class="goodsListModel_rebate fl fs_22 bgc_orange fsc_f tac">月供</span>
-                        <p class="fl fs_24 fsc_orange">
+                con=`<div class="goodsListModel_mainContent_rebate clearfix">
+                        <span class="goodsListModel_rebate fl fs_22 fsc_f tac">月供</span>
+                        <p class="fl fs_24">
                             ${amount}
-                        </p>
-                    </div>
-                </div>`;
-                con1=` <p class="fs_26 fsc_red">
-                       <span>￥${amountAmountPriceInteger}</span><span class="fs_20">.${amountAmountPriceDecimal}</span>`
+                        </p>                
+                     </div>`;
             }
             let goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
             html += `<li class="goodsListModel_item">
@@ -48,8 +40,9 @@ let addModel = function addModel(goodsList,dom,state) {
                         <img src=" ${goodsList[j].goodsIcon}" class="mainContent_img">
                         <div class="goodsListModel_mainContent_wrap">
                             <p class="fs_26 fsc_1">${goodsList[j].name}</p>
-                            ${con1}
-                                <span class="fs_24"><i class="ba">返</i>￥${goodsList[j].rebateAmount}</span>
+                            <p>                   
+                            <span>￥${saleAmount}</span>
+                                <span class="fsc_red fr"><i class="ba"></i>￥${goodsList[j].rebateAmount}</span>
                             </p>
                         </div>
                         ${con}
@@ -75,6 +68,21 @@ addModel(goodsList,$('#initGoods'));
 // 获取页面尺寸
 var windowW = $(window).outerWidth(),
     page = 1; // 默认页数从1开始
+function handleScroll (){
+    let win=jQuery(window).scrollTop();
+    if(win>=207){
+        jQuery('#navWrap').addClass('fixTop');
+    }else{
+        jQuery('#navWrap').removeClass('fixTop');
+    }
+}
+if(getBlatFrom()==2){
+    window.addEventListener('touchstart',handleScroll);
+    window.addEventListener('touchmove',handleScroll);
+    window.addEventListener('touchend',handleScroll);
+}else{
+    window.addEventListener('scroll',handleScroll);
+}
 
 //导航滑动
 class Swipe{
@@ -245,3 +253,4 @@ $(function(){
     });
 
 });
+

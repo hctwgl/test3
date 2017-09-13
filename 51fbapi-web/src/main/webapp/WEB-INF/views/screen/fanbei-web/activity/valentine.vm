@@ -47,5 +47,4 @@
 
 </body>
 <script type="text/javascript" src="/dist/activity/08/valentine.js?version=$version"></script>
-<script type="text/javascript" src="/dist/js/jquery.lazyload.js"></script>
 </html>

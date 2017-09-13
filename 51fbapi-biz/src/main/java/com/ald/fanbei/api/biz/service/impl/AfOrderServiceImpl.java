@@ -904,7 +904,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							name = orderInfo.getShopName();
 						}
 						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(),
-								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),orderInfo.getOrderType());
 						
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -965,7 +965,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(orderInfo);
 						
 						//用额度进行分期
-						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),orderInfo.getOrderType());
 
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1090,7 +1090,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param interestFreeJson 分期规则
 	 * @return
 	 */
-	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
+	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson,String orderType) {
 		
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
@@ -1104,7 +1104,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		
 		//获取借款分期配置信息
-        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		AfResourceDo resource=null;
+		if(orderType.equals(OrderType.TRADE.getCode())){
+			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
+		}else{
+			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		}
         JSONArray array = JSON.parseArray(resource.getValue());
         //删除2分期
         if (array == null) {
@@ -1120,7 +1125,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				amount, resource.getValue1(), resource.getValue2());
 		BigDecimal perAmount = null;
 		for(Map<String, Object> nperMap : nperList) {
-			
+
 			Object nperObj = nperMap.get("nper");
 			int nperTemp = 0;
 			if(nperObj instanceof BigDecimal) {

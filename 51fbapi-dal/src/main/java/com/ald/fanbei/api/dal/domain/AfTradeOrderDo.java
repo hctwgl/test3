@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -40,7 +42,10 @@ public class AfTradeOrderDo extends AbstractSerial {
      * 状态：NEW:新建 REFUNDING:退款中 REFUND:退款 EXTRACT:提现 EXTRACTING:提现中
      */
     private String status;
-
+    /**
+     * 状态：结算金额
+     */
+    private BigDecimal balanceAmount;
 
     /**
      * 获取订单ID
@@ -133,4 +138,11 @@ public class AfTradeOrderDo extends AbstractSerial {
         this.status = status;
     }
 
+    public BigDecimal getBalanceAmount() {
+        return balanceAmount;
+    }
+
+    public void setBalanceAmount(BigDecimal balanceAmount) {
+        this.balanceAmount = balanceAmount;
+    }
 }

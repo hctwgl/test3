@@ -10,6 +10,7 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfResourceType {
 	HomeBanner("HOME_BANNER", "轮播图"),
+	HomeBannerNew("HOME_BANNER_NEW", "轮播图（新版）"),
 	HomeNavigation("HOME_NAVIGATION", "四个导航"),
 	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
@@ -64,8 +65,7 @@ public enum AfResourceType {
 	BorrowShopBanner("BORROW_SHOP_BANNER", "借贷超市轮播"),
 	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 	GGTopBanner("GG_TOP_BANNER","逛逛活动点亮顶部轮播"),
-
-	
+	HomeCarouseToMany("HOME_CAROUSEL_TO_MANY","首页轮播+N"),
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
 
 	SelfSupportGoods("SELFSUPPORT_GOODS", "自营商品相关配置"),

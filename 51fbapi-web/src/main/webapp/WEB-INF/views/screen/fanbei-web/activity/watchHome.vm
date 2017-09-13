@@ -21,14 +21,7 @@
         <img @click="goGoodsDetail(content.recommendGoodsList[4])" src="$commonUrl/watchHome6.png">
     </div>
 </body>
-##<script type="text/javascript" src="/common/js/jquery.lazyload.js"></script>
 <script type="text/javascript">
-//    $(function() {
-//        $("#watchHome img").lazyload({
-//            effect : "fadeIn"
-//        });
-//    });
-
     var activityId = getUrl("activityId");
     var vm=new Vue({
         el:'#watchHome',
