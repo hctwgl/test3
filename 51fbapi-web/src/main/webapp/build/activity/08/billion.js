@@ -247,7 +247,7 @@ function countDown(num){
             var timer = setInterval(function () {
                 nowTime += 1000;
                 //let end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
-                let end = new Date(year + '/' + month + '/' + activeDaY + ' 15:40:00');
+                let end = new Date(year + '/' + month + '/' + activeDaY + ' 16:40:00');
                 if (activeDaY == new Date(endTime).getDate()) {
                     end = new Date(endTime);
                 }
