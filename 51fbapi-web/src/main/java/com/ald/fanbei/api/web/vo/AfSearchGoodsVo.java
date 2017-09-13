@@ -22,6 +22,7 @@ public class AfSearchGoodsVo extends AbstractSerial {
 	private String goodsIcon;//商品图片
 	private String thumbnailIcon;//商品缩略图
 	private String goodsUrl;//商品链接
+	private String source; // 商品来源
 	public String getNumId() {
 		return numId;
 	}
@@ -69,6 +70,12 @@ public class AfSearchGoodsVo extends AbstractSerial {
 	}
 	public void setGoodsUrl(String goodsUrl) {
 		this.goodsUrl = goodsUrl;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
 }

@@ -16,6 +16,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -54,6 +56,9 @@ public class GetThirdGoodsListApi implements ApiHandle {
 	
 	@Resource
 	private AfUserSearchService afUserSearchService;
+	
+	@Resource
+	private AfGoodsService afGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -91,6 +96,20 @@ public class GetThirdGoodsListApi implements ApiHandle {
 					}
 				});
 				
+				// 判断是否有自建商品存在，如果有，替换数据
+				for (AfSearchGoodsVo afSearchGoodsVo : result) {
+					AfGoodsDo query = afGoodsService.checkIsSelfBuild(afSearchGoodsVo.getNumId());
+					if (query != null && StringUtil.isNotEmpty(query.getNumId())) {
+						afSearchGoodsVo.setGoodsIcon(query.getGoodsIcon());
+						afSearchGoodsVo.setGoodsName(query.getName());
+						afSearchGoodsVo.setGoodsUrl(query.getGoodsUrl());
+						afSearchGoodsVo.setRealAmount(query.getSaleAmount().toString());
+						afSearchGoodsVo.setRebateAmount(query.getRebateAmount().toString());
+						afSearchGoodsVo.setSaleAmount(query.getPriceAmount());
+						afSearchGoodsVo.setThumbnailIcon(query.getThumbnailIcon());
+						afSearchGoodsVo.setSource(query.getSource());
+					}
+				}
 				resp.addResponseData("goodsList", result);
 				resp.addResponseData("pageNo", buildParams.get("pageNo"));
 			}
