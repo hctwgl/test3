@@ -292,9 +292,9 @@ public class AppH5SubjectController  extends BaseController{
 					activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
 					activityGoodsInfo.put("remark", goodsDo.getRemark());
 					activityGoodsInfo.put("activityName", activityName);
-					String tags = goodsDo.getTags();
 					// 如果是分期免息商品，则计算分期
 					AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
+					JSONArray interestFreeArray = null;
 			        if(null != afSchemeGoodsDo){
 						Long goodsId = goodsDo.getRid();
 						AfSchemeGoodsDo  schemeGoodsDo = null;
@@ -303,7 +303,7 @@ public class AppH5SubjectController  extends BaseController{
 						} catch(Exception e){
 							logger.error(e.toString());
 						}
-						JSONArray interestFreeArray = null;
+						
 						if(schemeGoodsDo != null){
 							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 							String interestFreeJson = interestFreeRulesDo.getRuleJson();
@@ -311,15 +311,15 @@ public class AppH5SubjectController  extends BaseController{
 								interestFreeArray = JSON.parseArray(interestFreeJson);
 							}
 						}
-						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
 						
-						if(nperList!= null){
-							activityGoodsInfo.put("goodsType", "1");
-							Map nperMap = nperList.get(nperList.size() - 1);
-							activityGoodsInfo.put("nperMap", nperMap);
-						}
-						
+					}
+			        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+							goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					
+					if(nperList!= null){
+						activityGoodsInfo.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						activityGoodsInfo.put("nperMap", nperMap);
 					}
 					activityGoodsList.add(activityGoodsInfo);
 				}
@@ -344,17 +344,19 @@ public class AppH5SubjectController  extends BaseController{
 				qualityGoodsInfo.put("thumbnailIcon",qualityGoods.getThumbnailIcon());
 				qualityGoodsInfo.put("remark",qualityGoods.getRemark());
 				qualityGoodsInfo.put("goodsType", "0");
-				String tags = qualityGoods.getTags();
+				
 				// 如果是分期免息商品，则计算分期
-				if(tags != null && tags.contains("INTEREST_FREE")){
+				AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(qualityGoods.getRid());
+				JSONArray interestFreeArray = null;
+		        if(null != afSchemeGoodsDo){
 					Long goodsId = qualityGoods.getRid();
-					AfSchemeGoodsDo schemeGoodsDo = null;
+					AfSchemeGoodsDo  schemeGoodsDo = null;
 					try {
 						schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
 					} catch(Exception e){
 						logger.error(e.toString());
 					}
-					JSONArray interestFreeArray = null;
+					
 					if(schemeGoodsDo != null){
 						AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
 						String interestFreeJson = interestFreeRulesDo.getRuleJson();
@@ -362,16 +364,16 @@ public class AppH5SubjectController  extends BaseController{
 							interestFreeArray = JSON.parseArray(interestFreeJson);
 						}
 					}
-					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-							qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
-					
-					if(nperList!= null){
-						qualityGoodsInfo.put("goodsType", "1");
-						Map nperMap = nperList.get(nperList.size() - 1);
-						qualityGoodsInfo.put("nperMap", nperMap);
-					}
-					
 				}
+		        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+		        		qualityGoods.getSaleAmount(), resource.getValue1(), resource.getValue2());
+				
+				if(nperList!= null){
+					qualityGoodsInfo.put("goodsType", "1");
+					Map nperMap = nperList.get(nperList.size() - 1);
+					qualityGoodsInfo.put("nperMap", nperMap);
+				}
+				
 				qualityGoodsList.add(qualityGoodsInfo);
 			}
 			jsonObj.put("qualityGoodsList",qualityGoodsList);
