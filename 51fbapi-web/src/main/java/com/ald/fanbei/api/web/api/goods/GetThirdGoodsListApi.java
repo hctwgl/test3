@@ -17,6 +17,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -60,6 +62,9 @@ public class GetThirdGoodsListApi implements ApiHandle {
 	@Resource
 	private AfUserSearchService afUserSearchService;
 
+	@Resource
+	private AfGoodsService afGoodsService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -71,11 +76,11 @@ public class GetThirdGoodsListApi implements ApiHandle {
 				afUserSearchService.addUserSearch(getUserSearchDo(context.getUserId(), keyword));
 			}
 			final AfResourceDo virtualGoods = afResourceService.getSingleResourceBytype(AfResourceType.VirtualGoodsKeywords.getCode());
-			
+
 			final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
 
 			if (CollectionUtils.isNotEmpty(list)) {
-				
+
 				List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
 					@Override
 					public AfSearchGoodsVo convert(NTbkItem source) {
@@ -92,6 +97,20 @@ public class GetThirdGoodsListApi implements ApiHandle {
 					}
 				});
 				
+				// 判断是否有自建商品存在，如果有，替换数据
+				for (AfSearchGoodsVo afSearchGoodsVo : result) {
+					AfGoodsDo query = afGoodsService.checkIsSelfBuild(afSearchGoodsVo.getNumId());
+					if (query != null && StringUtil.isNotEmpty(query.getNumId())) {
+						afSearchGoodsVo.setGoodsIcon(query.getGoodsIcon());
+						afSearchGoodsVo.setGoodsName(query.getName());
+						afSearchGoodsVo.setGoodsUrl(query.getGoodsUrl());
+						afSearchGoodsVo.setRealAmount(query.getSaleAmount().toString());
+						afSearchGoodsVo.setRebateAmount(query.getRebateAmount().toString());
+						afSearchGoodsVo.setSaleAmount(query.getPriceAmount());
+						afSearchGoodsVo.setThumbnailIcon(query.getThumbnailIcon());
+						afSearchGoodsVo.setSource(query.getSource());
+					}
+				}
 				//获取借款分期配置信息
 		        AfResourceDo res = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 		        JSONArray array = JSON.parseArray(res.getValue());
@@ -100,7 +119,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		        }
 		        removeSecondNper(array);
-				
+
 		        for(AfSearchGoodsVo goodsInfo : result) {
 		        	List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
 		        			goodsInfo.getSaleAmount(), resource.getValue1(), resource.getValue2());
@@ -109,7 +128,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 						goodsInfo.setNperMap(nperMap);
 					}
 		        }
-				
+
 				resp.addResponseData("goodsList", result);
 				resp.addResponseData("pageNo", buildParams.get("pageNo"));
 			}
@@ -118,7 +137,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		}
 		return resp;
 	}
-	
+
 	private void removeSecondNper(JSONArray array) {
         if (array == null) {
             return;
@@ -133,7 +152,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
         }
 
     }
-	
+
 	private boolean isVirtualWithKey(String key, String virtualGoodsValue){
 		List<String> virtual = StringUtil.splitToList(virtualGoodsValue,",") ;
 		for (String string : virtual) {
