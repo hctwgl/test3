@@ -4,7 +4,7 @@
 	#set($version="2017071801")
 	#set($commonUrl="http://f.51fanbei.com/h5/app/activity/07")
 	<meta charset="UTF-8">
-	<title>美食暑假大放价</title>
+	<title></title>
 	<style type="text/css">
 		.couponsListWrap{
 			position: relative;
