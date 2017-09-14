@@ -58,4 +58,9 @@ public class AfGameConfServiceImpl implements AfGameConfService {
 		return gameConfList;
 	}
 
+	@Override
+	public AfGameConfDo getByIdAndCode(Long id, String gameCode) {
+		return afGameConfDao.getByIdAndCode(id,gameCode);
+	}
+
 }

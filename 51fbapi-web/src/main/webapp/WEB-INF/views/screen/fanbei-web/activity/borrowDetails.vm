@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017052302")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/09")
+<title>借贷超市</title>
+<link rel="stylesheet" type="text/css" href="/dist/activity/09/borrowDetails.css">
+</head>
+<body>
+<div id="vueCon">
+    <img src="$commonUrl/borrowDetails1.png">
+    <div class="schedule">
+        <ul>
+            <li class="day" @click="prize(data.day)" :class="data.style" v-for="data of day"><img :src="'$commonUrl/borrowDetails'+data.img"><p>{{data.txt}}</p></li>
+        </ul>
+    </div>
+    <div class="btn" @click="go(content.canClick)">{{content.buttonString}}</div>
+    <p><i></i>活动规则<i></i></p>
+    <ul class="rule">
+        <li>1、签到1天： 5元红包</li>
+        <li>2、签到5天： 20元红包和3元现金</li>
+        <li>3、签到10天： 50元红包和15元现金</li>
+        <li>4、签到15天： 75元红包、25元现金，并且有机会获得888现金</li>
+        <li>5、奖品只能领取一次，领取奖品后该用户的活动结束。</li>
+        <li>6、如签到1天时，用户可选择领取5元红包也可以继续签到。当签到到5天时，可领取的奖品自动更换成20元红包和3元现金。</li>
+        <li>7、若用户没有主动领取奖品，在活动结束后根据用户的签到情况发放奖励。</li>
+    </ul>
+    <div class="shadow" v-if="dialog.show"></div>
+    <div class="prizeConfirm" v-if="dialog.show">
+        <div class="headerImg">温馨提示</div>
+        <p>领取奖励后签到活动结束。继续签到可获取更多奖励，确认领取吗？</p>
+        <div class="okBtn">立即领取</div>
+        <div class="goBtn">继续签到</div>
+        <div class="close" @click="dialog.show=false"></div>
+    </div>
+    <div class="shadow" v-if="dialog.prizeShow"></div>
+    <div class="prizeConfirm" v-if="dialog.prizeShow">
+        <div class="headerImg">恭喜您</div>
+        <p>领取奖励后签到活动结束。继续签到可获取更多奖励，确认领取吗？</p>
+        <div class="know">知道了</div>
+        <div class="close" @click="dialog.prizeShow=false"></div>
+    </div>
+</div>
+
+</body>
+<script src="/dist/activity/09/borrowDetails.js"></script>
+</html>

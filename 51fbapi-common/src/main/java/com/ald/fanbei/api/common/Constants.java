@@ -93,7 +93,6 @@ public class Constants {
 	public static final String DEFAULT_REFUND_PURPOSE = "退款";
 	public static final String DEFAULT_PAY_PURPOSE = "付款";
 	public static final String DEFAULT_WX_PAY_NAME = "微信";
-	public static final String DEFAULT_ZFB_PAY_NAME = "支付宝";
 	public static final String DEFAULT_USER_ACCOUNT = "账户余额";
 	public static final String DEFAULT_BANK_PAY = "银行卡";
 	public static final String DEFAULT_SERVICE_PHONE = "0571-88193918";
@@ -230,6 +229,7 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_LIANMENG_SECRET = "fbapi.taobao.lianmeng.secret";
 	public static final String CONFKEY_SMS_DHST_PASSWORD = "fbapi.sms.dhst.password";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS = "taobao.tbk.item.get.fields";
+	public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET = "taobao.tbk.item.info.get";
 
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS = "taobao.tae.item.list.fields";
@@ -345,5 +345,10 @@ public class Constants {
 	
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
+	
+	//借贷超市签到锁
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "ala_loan_supermarket_sign_lock$";
+	//借贷超市签到领奖锁
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
 
 }

@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
@@ -23,6 +25,18 @@ public class AfUserSearchServiceImpl implements AfUserSearchService{
 	@Override
 	public int addUserSearch(AfUserSearchDo afUserSearchDo) {
 		return afUserSearchDao.addUserSearch(afUserSearchDo);
+	}
+
+	@Override
+	public List<AfUserSearchDo> getHistoryByUserId(Long userId) {
+		
+		return afUserSearchDao.getHistoryByUserId(userId);
+	}
+
+	@Override
+	public void deleteHistory(Long userId) {
+		afUserSearchDao.deleteHistory(userId);
+		
 	}
 
 }

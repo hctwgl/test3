@@ -15,11 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGameAwardService;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
@@ -34,6 +36,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -56,12 +59,16 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfGameConfCompleteVo;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
+import com.ald.fanbei.api.web.vo.AfLoanSignGameInfoVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 /**
  * 
@@ -98,6 +105,8 @@ public class AppH5GameController  extends BaseController{
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	@Resource
+	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
 	
 	String  opennative = "/fanbei-web/opennative?name=";
 	
@@ -463,6 +472,189 @@ public class AppH5GameController  extends BaseController{
 			logger.error(e.getMessage());
 			return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
 		}
+	}
+	/**
+	 * 借贷超市签到h5页面
+	 * @param request
+	 * @param model
+	 */
+	@RequestMapping(value = "signActivity", produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String signActivity(HttpServletRequest request, ModelMap model){
+		FanbeiWebContext context = new FanbeiWebContext();
+		try{
+//			context = doWebCheck(request, false);
+//			String userName = context.getUserName();
+			Map<String,Object> data = new HashMap<String,Object>();
+			String userName = request.getParameter("userName");
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			if(userDo == null){
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
+			}
+			boolean received = false;
+			String buttonString = "活动结束";
+			boolean canClick = false;
+			AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign");
+			// 判断活动时间
+			Date startDate = gameDo.getGmtStart();
+			Date endDate = gameDo.getGmtEnd();
+			Date nowDate = new Date();
+			if(nowDate.before(startDate) ) {
+				return H5CommonResponse.getNewInstance(false, "活动未开始，敬请期待","",data).toString();
+			}
+
+			List<AfGameConfDo> gameConfList = afGameConfService.getByGameCode("loan_supermaket_sign");
+			AfGameAwardDo awardDo = afGameAwardService.getLoanSignAward(userDo.getRid(), gameDo.getRid());
+			if(awardDo!=null){
+				received = true;
+			}else{
+				if(nowDate.before(endDate)){
+					int  signCount = afBusinessAccessRecordsService.getSignCountToday(userDo.getRid());
+					if(signCount>=4){
+						buttonString = "今日已签到";
+					}
+					else{
+						buttonString = "立即签到（还剩"+(4-signCount)+"个）";
+						canClick = true;
+					}
+				}
+			}
+			AfBusinessAccessRecordQuery query = new AfBusinessAccessRecordQuery();
+			query.setBeginTime(gameDo.getGmtStart());
+			query.setEndTime(gameDo.getGmtEnd());
+			query.setUserId(userDo.getRid());
+			query.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
+			int days = afBusinessAccessRecordsService.getSignDays(query);
+			List<AfLoanSignGameInfoVo> signGameList = parseSignGame(gameConfList,days,received);
+			data.put("gameConfList",signGameList);
+			data.put("signDays", days);
+			data.put("buttonString", buttonString);
+			data.put("canClick", canClick);
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
+		}catch(Exception e){
+			logger.error("signActivity异常:{}",e);
+			return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
+		}
+	}
+
+	@RequestMapping(value = "receiveSignAward", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String receiveSignAward(HttpServletRequest request, HttpServletResponse response){
+		FanbeiWebContext context = new FanbeiWebContext();
+		try{
+//			context = doWebCheck(request, false);
+//			String userName = context.getUserName();
+			Map<String,String> data = new HashMap<String,String>();
+			String userName = request.getParameter("userName");
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			if(userDo==null){
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
+			}
+			Long confId = Long.valueOf(request.getParameter("confId"));
+			AfGameConfDo confDo = afGameConfService.getByIdAndCode(confId, "loan_supermaket_sign");
+			if(confDo==null){
+				return H5CommonResponse.getNewInstance(false, "活动不存在","",null).toString();
+			}
+			
+			checkSignAwardQualified(userDo.getRid(), confDo.getGameId(),confDo);
+			//开始领奖
+			afGameAwardService.receiveSignAward(userDo,confDo);
+			
+		}catch(FanbeiException e){
+			return H5CommonResponse.getNewInstance(false, e.getErrorCode().getDesc(),"",null).toString();
+		}catch(Exception e){
+			return H5CommonResponse.getNewInstance(false, "系统出错","",null).toString();
+		}
+		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",null).toString();
+	}
+	
+	/**
+	 * 
+	 * @param userId
+	 * @param gameId
+	 * @param needDays
+	 */
+	private void checkSignAwardQualified(Long userId,Long gameId,AfGameConfDo confDo)  {
+		AfGameAwardDo award = afGameAwardService.getLoanSignAward(userId, gameId);
+		if(award!=null){
+			throw new FanbeiException("奖励已领取",FanbeiExceptionCode.USER_GET_SIGN_AWARD_ERROR);
+		}
+		AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign"); 
+		Date today = new Date();
+		if(today.before(gameDo.getGmtCreate())){
+			throw new FanbeiException("活动未开始",FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
+		}
+		AfBusinessAccessRecordQuery query = new AfBusinessAccessRecordQuery();
+		query.setBeginTime(gameDo.getGmtStart());
+		query.setEndTime(gameDo.getGmtEnd());
+		query.setUserId(userId);
+		query.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
+		int signDays = afBusinessAccessRecordsService.getSignDays(query);
+		JSONObject jo = JSON.parseObject(confDo.getRule());
+		int needDays = jo.getIntValue("days");
+		if(signDays<needDays){
+			throw new FanbeiException("不符合领取条件",FanbeiExceptionCode.NO_QUALIFIED_SIGN_AWARD);
+		}
+	}
+
+	/**
+	 * 
+	 * @param gameConfList
+	 * @param signDays 签到天数
+	 * @param received 是否领取过
+	 * @return
+	 */
+	private List<AfLoanSignGameInfoVo> parseSignGame(List<AfGameConfDo> gameConfList,int signDays,boolean received) {
+		List<AfResourceDo> resourceDoList = afResourceService.getResourceListByType("BOLUOMI");//菠萝蜜
+		List<AfLoanSignGameInfoVo> list = new ArrayList<AfLoanSignGameInfoVo>();
+		AfLoanSignGameInfoVo gameInfo = null;
+		int index = 0;  
+		for(AfGameConfDo conf:gameConfList){
+			gameInfo = new AfLoanSignGameInfoVo();
+			JSONObject jo = JSON.parseObject(conf.getRule());
+			gameInfo.setRid(conf.getRid());
+			gameInfo.setName(jo.getString("name"));
+			gameInfo.setDays(jo.getIntValue("days"));
+			if(signDays>=gameInfo.getDays()){
+				gameInfo.setComplete(true);
+			}
+			if(received==false&&signDays>=gameInfo.getDays()){
+				gameInfo.setCanReceive(true);
+				if(index>0){
+					int i = index-1;
+					list.get(i).setCanReceive(false);
+				}
+			}
+			List<String> couponNames = new ArrayList<String>();
+			List<String> ids = new ArrayList<String>();
+			JSONArray array = jo.getJSONArray("prize");
+			for(Object obj:array){
+				JSONObject jobj = (JSONObject)obj;
+				String type = jobj.getString("type");
+				String id = jobj.getString("prizeId");
+				if("BOLUOMI".equals(type)){
+					for(AfResourceDo resDo:resourceDoList){
+						if(String.valueOf(resDo.getRid()).equals(id)){
+							couponNames.add(resDo.getName());
+						}
+					}
+				}else{
+					ids.add(id);
+				}
+			}
+			if(ids.size()>0){
+				List<String> names = afCouponService.getCouponNames(ids);
+				couponNames.addAll(names);
+			}
+			gameInfo.setCouponNames(couponNames);
+			list.add(gameInfo);
+			index++;
+		}
+		return list;
 	}
 	
 	@Override

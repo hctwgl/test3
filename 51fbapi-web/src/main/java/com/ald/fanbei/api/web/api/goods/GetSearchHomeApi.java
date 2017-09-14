@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserSearchService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -21,6 +22,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -34,6 +36,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class GetSearchHomeApi implements ApiHandle {
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfUserSearchService afUserSearchService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -46,7 +50,18 @@ public class GetSearchHomeApi implements ApiHandle {
 			throw new FanbeiException("rebate detailed course is not exist error", FanbeiExceptionCode.RESOURES_H5_ERROR);
 
 		}
+		Long userId = context.getUserId();
+		List<String> historyList = new ArrayList<>(); 
+		if ( userId != null) {
+			List<AfUserSearchDo> historysList = afUserSearchService.getHistoryByUserId(userId);
+			if (historysList != null && historysList.size() >0) {
+				for(AfUserSearchDo searchDo :historysList){
+					historyList.add(searchDo.getKeyword()) ;
+				}
+			}
+		}
 	
+		data.put("historyList", historyList);
 		data.put("tipIcon", afResourceDo.getValue());
 		data.put("tipUrl",ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) +  afResourceDo.getValue1());
 		data.put("rebate", afResourceDo.getValue2());

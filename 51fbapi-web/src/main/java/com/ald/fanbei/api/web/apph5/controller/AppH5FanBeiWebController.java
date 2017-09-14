@@ -973,8 +973,8 @@ public class AppH5FanBeiWebController extends BaseController {
 					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
 					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET_BANNER.getCode());
 					afBusinessAccessRecordsDo.setRefId(afLoanSupermarket.getId());
-					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
-					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
+			  		afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
+//					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.APP_LOAN_BANNER.getCode());
 					afBusinessAccessRecordsDo.setChannel(channel);
 					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 					model.put("redirectUrl", accessUrl);

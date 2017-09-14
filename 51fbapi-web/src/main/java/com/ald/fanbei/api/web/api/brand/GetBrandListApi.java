@@ -68,6 +68,9 @@ public class GetBrandListApi implements ApiHandle {
 		vo.setIcon(shopInfo.getIcon());
 		vo.setType(shopInfo.getType());
 		vo.setShopUrl(shopInfo.getShopUrl());
+		vo.setLatestUseIcon(shopInfo.getLatestUseIcon());
+		vo.setShopActivity(shopInfo.getShopActivity());
+		vo.setLatestOnline(shopInfo.getLatestOnline());
 		return vo;
 	}
 
