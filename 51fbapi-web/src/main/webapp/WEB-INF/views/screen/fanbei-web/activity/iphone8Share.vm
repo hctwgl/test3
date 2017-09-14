@@ -16,6 +16,7 @@
         <p class="time"><span>9.25<br/>新品发货</span></p>
     </div>
     <div class="banner">
+        <img src="$src/iphone8_01.png">
         <div class="orderButton" @click="orderAndGoodClick()">1元预约 立减100元</div>
     </div>
     <div class="rule" @click="ruleClick()">活动规则</div>
