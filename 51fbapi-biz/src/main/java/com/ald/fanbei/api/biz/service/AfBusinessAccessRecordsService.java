@@ -34,4 +34,6 @@ public interface AfBusinessAccessRecordsService extends ParentService<AfBusiness
 	 * @return
 	 */
 	int getSignDays(AfBusinessAccessRecordQuery query);
+
+	int getSignCountToday(Long userId);
 }

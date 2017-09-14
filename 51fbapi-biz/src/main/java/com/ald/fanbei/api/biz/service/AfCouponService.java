@@ -22,4 +22,6 @@ public interface AfCouponService {
 	AfCouponDo getCouponInfoById(Long couponId);
 	
 	int updateCouponquotaAlreadyById(AfCouponDo couponDo);
+
+	List<String> getCouponNames(List<String> ids);
 }
