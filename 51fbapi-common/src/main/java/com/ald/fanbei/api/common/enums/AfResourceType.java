@@ -87,9 +87,10 @@ public enum AfResourceType {
 	
 	//app端 借钱按钮高亮显示时长配置
 	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
-	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片");
-	
+	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片"),
 
+	//登录白名单
+	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单");
 
 	private String code;
     private String name;
