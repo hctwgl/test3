@@ -111,5 +111,9 @@ public interface AfUserCouponDao {
 
 	AfUserCouponDto getSubjectUserCouponByAmountAndCouponId(@Param("userId")Long userId, 
 			@Param("amount")BigDecimal actualAmount, @Param("couponId")String couponId);
-
+	
+	/**
+	 * 批量发给用户优惠券
+	 */
+	int batchAddUserCoupon(@Param("userCouponList") List<AfUserCouponDo> userCouponList);
 }

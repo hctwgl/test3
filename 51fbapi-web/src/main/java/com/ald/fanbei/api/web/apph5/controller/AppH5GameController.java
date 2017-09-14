@@ -539,7 +539,7 @@ public class AppH5GameController  extends BaseController{
 		}
 	}
 
-	@RequestMapping(value = "receiveSignAward", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "receiveSignAward", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String receiveSignAward(HttpServletRequest request, HttpServletResponse response){
 		FanbeiWebContext context = new FanbeiWebContext();
@@ -552,22 +552,24 @@ public class AppH5GameController  extends BaseController{
 			if(userDo==null){
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
+				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
 			}
 			Long confId = Long.valueOf(request.getParameter("confId"));
-			AfGameConfDo confDo = afGameConfService.getByIdAndCode(confId, "");
+			AfGameConfDo confDo = afGameConfService.getByIdAndCode(confId, "loan_supermaket_sign");
 			if(confDo==null){
 				return H5CommonResponse.getNewInstance(false, "活动不存在","",null).toString();
 			}
 			
 			checkSignAwardQualified(userDo.getRid(), confDo.getGameId(),confDo);
 			//开始领奖
-			afGameAwardService.receiveSignAward(userDo.getRid(),confDo);
+			afGameAwardService.receiveSignAward(userDo,confDo);
 			
+		}catch(FanbeiException e){
+			return H5CommonResponse.getNewInstance(false, e.getErrorCode().getDesc(),"",null).toString();
 		}catch(Exception e){
-			
+			return H5CommonResponse.getNewInstance(false, "系统出错","",null).toString();
 		}
-		return "";
+		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",null).toString();
 	}
 	
 	/**
