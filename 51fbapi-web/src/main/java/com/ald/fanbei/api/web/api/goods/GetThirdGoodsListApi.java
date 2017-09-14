@@ -78,7 +78,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 				List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
 					@Override
 					public AfSearchGoodsVo convert(NTbkItem source) {
-						System.out.println(source.getTitle());
+						System.out.println(source.getVolume());
 						if(virtualGoods !=null&&isVirtualWithKey(source.getTitle() ,virtualGoods.getValue())){
 							return null;
 						}
@@ -118,6 +118,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		vo.setGoodsIcon(item.getPictUrl());
 		vo.setGoodsName(item.getTitle());
 		vo.setGoodsUrl(item.getItemUrl());
+		vo.setVolume(item.getVolume());
 		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).append("~").append(saleAmount.subtract(minRebateAmount)).toString());
 		vo.setRebateAmount(new StringBuffer("").append(minRebateAmount).append("~").append(maxRebateAmount).toString());
 		vo.setSaleAmount(saleAmount);
