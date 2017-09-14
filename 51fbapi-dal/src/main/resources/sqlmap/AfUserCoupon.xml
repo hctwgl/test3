@@ -287,7 +287,7 @@
 		    u.source_type = #{sourceType} 
 	</select>
 	
-	<insert id="userCouponList" parameterType="list" keyProperty="rid" useGeneratedKeys="true">
+	<insert id="batchAddUserCoupon" parameterType="list" >
 		INSERT INTO af_user_coupon 
 		(
 			gmt_create,
@@ -300,7 +300,7 @@
 			source_type
 		)
    		values 
-    	<foreach collection="list" item="item" index="index" separator="," > 
+    	<foreach collection="userCouponList" item="item" index="index" separator="," > 
         	(
 			NOW(),
 			NOW(),

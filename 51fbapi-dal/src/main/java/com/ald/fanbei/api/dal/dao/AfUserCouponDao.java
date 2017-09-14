@@ -115,5 +115,5 @@ public interface AfUserCouponDao {
 	/**
 	 * 批量发给用户优惠券
 	 */
-	int batchAddUserCoupon(@Param("userCouponList") List<AfUserCouponDo> userCouponList);
+	void batchAddUserCoupon(@Param("userCouponList") List<AfUserCouponDo> userCouponList);
 }
