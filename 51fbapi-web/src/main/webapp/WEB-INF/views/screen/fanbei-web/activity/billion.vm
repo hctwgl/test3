@@ -28,7 +28,7 @@
                <!-- 小额现金贷为10位数时 !-->
                <img class="totalMoney1" src="$commonUrl/billion_07.gif" alt="">
                <div class="num1 compare">                   
-                    <span class="numOne1" v-for="item in num">{{item}}</span>
+                    <span class="numOne1" v-for="item in num.amount">{{item}}</span>
                </div>
             </div>
             <div class="imgTwo">

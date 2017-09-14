@@ -45,20 +45,27 @@ var vm = new Vue({
                     console.log(num);
                    _this.num = num; //转成json字符串
                     //console.log( _this.num);
-                    countDown(num,_this);
+                    countDown(num,_this);//倒计时调用
+
                     //判断小额现金贷是否为10位
-                    if (num.length >= 10) {
+                    var moneyTotal=num.amount;
+                    moneyTotal = moneyTotal.replace(/"/g, ""); //替换掉返回字符串中的引号
+                    moneyTotal = moneyTotal.replace(/"/g, ""); //替换掉返回字符串中的点
+                    var number = moneyTotal.split(""); //将字符串转化成数组
+                    console.log(moneyTotal);
+                    console.log(number);
+                     if (number.length >= 10) {
                         //隐藏9位数的背景和样式
                         $(".totalMoney").hide();
                         $('.num').hide();
                         //让10位数的背景和样式显示
                         $('.totalMoney1').show();
                         $('.num1').show();
-
-                    } else if (num == 1500000000) { //到达15亿的时候
+                        
+                    } else if (number.length >= 1500000000) { //到达15亿的时候
                         $("#scroll_div").show(); //显示顶部轮播
                     }
-
+ 
 
                     ScrollImgLeft();
                     //文字轮播
@@ -285,7 +292,7 @@ function countDown(num,_this){
                             //   secondObj.innerHTML = 0 + "秒";
                               clearInterval(timerId)
                             }
-                            console.log(Second)
+                            // console.log(Second)
                         },1000)
                     }               
 
