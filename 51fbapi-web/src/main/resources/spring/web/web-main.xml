@@ -270,6 +270,8 @@
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
 				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
+				<entry key="/borrow/getRepaymentInfo" value-ref="getRepaymentInfoApi"/>
+				<entry key="/borrow/submitRepaymentByYiBao" value-ref="submitRepaymentByYiBaoApi"/>
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
