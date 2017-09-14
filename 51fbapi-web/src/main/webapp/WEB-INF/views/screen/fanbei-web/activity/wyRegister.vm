@@ -9,29 +9,19 @@
 </head>
 <body>
 <div class="loadingMask"><i class="loading"></i></div>
-<img class="first" src="$commonUrl/c11.png">
-<img class="first" src="$commonUrl/c12.png">
-<img class="first" src="$commonUrl/c13.png">
-<img class="first" src="$commonUrl/c14.png">
-<img class="first" src="$commonUrl/c15.png">
-<img class="first" src="$commonUrl/c16.png">
-<img class="first" src="$commonUrl/c17.png">
-<img class="first" src="$commonUrl/c18.png">
-<img class="sPic" src="$commonUrl/c1.png">
-<img class="sPic" src="$commonUrl/c2.png">
-<img class="sPic" src="$commonUrl/c3.png">
-<img class="sPic" src="$commonUrl/c4.png">
-<img class="sPic" src="$commonUrl/c5.png">
-<img class="sPic" src="$commonUrl/c6.png">
-<img class="sPic" src="$commonUrl/c7.png">
-<img class="sPic" src="$commonUrl/c8.png">
-<img class="lazy" id="more" data-original="$commonUrl/c9.png">
-<img class="lazy" data-original="$commonUrl/d1.png">
-<img class="lazy" data-original="$commonUrl/d2.png">
-<img class="lazy" data-original="$commonUrl/d3.png">
-<img class="lazy" data-original="$commonUrl/d4.png">
-<img class="lazy" data-original="$commonUrl/d5.png">
-<img class="lazy" data-original="$commonUrl/d6.png">
+<img class="first" src="$commonUrl/new1.png">
+<img class="first" src="$commonUrl/new2.png">
+<img class="first" src="$commonUrl/new3.png">
+<img class="first" src="$commonUrl/new4.png">
+<img class="first" src="$commonUrl/new5.png">
+<img class="first" src="$commonUrl/new6.png">
+<img class="first" src="$commonUrl/new8.png">
+<img class="first" src="$commonUrl/new9.png">
+<img class="lazy" data-original="$commonUrl/new10.png">
+<img class="lazy" data-original="$commonUrl/new11.png">
+<img class="lazy" data-original="$commonUrl/new12.png">
+<img class="lazy" data-original="$commonUrl/new13.png">
+##<img class="lazy" data-original="$commonUrl/new14.png">
 <div class="register">
 	<input type="text" class="mobile" id="mobile" pattern="[0-9]*"  maxlength="11" placeholder="请输入手机号领取红包">
     <input type="password" class="password" id="password" placeholder="请设置登录密码" name="words" maxlength="18">
@@ -54,12 +44,8 @@
 </div>
 
 <div class="success">
-    <img src="$commonUrl/b5.png">
-    <img src="$commonUrl/b6.png">
-    <img src="$commonUrl/b7.png">
-    <img src="data:image/png;base64,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">
+    <img style="background: none;width:5.4rem" src="$commonUrl/new14.png">
 	<button class="btn goBtn" onclick="goApp()">前往使用</button>
-	<button class="btn shareBtn" style="top:4.65rem">分享</button>
 </div>
 <script>
     $(".first").each(function() {
