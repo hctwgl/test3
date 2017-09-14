@@ -85,9 +85,10 @@ $(".submit").click(function(){
                             success: function(returnData){
                                 if (returnData.success) {
                                     $('.success').show();
-                                    $('.shadow').show().click(function () {
-                                        location.reload()
-                                    });
+                                    $('.shadow').show()
+                                    // .click(function () {
+                                    //     location.reload()
+                                    // });
                                     //数据统计
                                     $.ajax({
                                         url:'/fanbei-web/postMaidianInfo',
