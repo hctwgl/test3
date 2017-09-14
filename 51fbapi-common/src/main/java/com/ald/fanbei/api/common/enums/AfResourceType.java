@@ -37,6 +37,7 @@ public enum AfResourceType {
 
 	//活动相关
     ReservationActivity("RESERVATION_ACTIVITY", "预约活动"),
+    Iphone8ReservationActivity("IPHONE8_RESERVATION_ACTIVITY","iPhone8预约功能"),
     
 	//借钱模块
 	BaseBankRate("BASE_BANK_RATE", "央行基准利率"),

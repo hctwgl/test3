@@ -2,8 +2,10 @@ package com.ald.fanbei.api.biz.service.impl;
  
 import javax.annotation.Resource;
  
+
 import org.springframework.stereotype.Service;
  
+
 import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.dal.dao.AfGoodsReservationDao;
@@ -35,4 +37,9 @@ public class AfGoodsReservationServiceImpl extends BaseService implements AfGood
     public Integer getRevCountNumsByQueryCondition(AfGoodsReservationDo afGoodsReservationDo){
         return afGoodsReservationDao.getRevCountNumsByQueryCondition(afGoodsReservationDo);
     }
+
+	@Override
+	public String getGoodsReservationStatusByUserId(long userId) {
+		return afGoodsReservationDao.getGoodsReservationStatusByUserId(userId);
+	}
 }
