@@ -64,8 +64,11 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfGameConfCompleteVo;
 import com.ald.fanbei.api.web.vo.AfGameInitVo;
+import com.ald.fanbei.api.web.vo.AfLoanSignGameInfoVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 /**
  * 
@@ -475,43 +478,48 @@ public class AppH5GameController  extends BaseController{
 	 * @param request
 	 * @param model
 	 */
-	@RequestMapping(value = { "signActivity" }, method = RequestMethod.GET)
-	public void signActivity(HttpServletRequest request, ModelMap model){
+	@RequestMapping(value = "signActivity", produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String signActivity(HttpServletRequest request, ModelMap model){
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
 //			context = doWebCheck(request, false);
 //			String userName = context.getUserName();
+			Map<String,Object> data = new HashMap<String,Object>();
 			String userName = request.getParameter("userName");
 			AfUserDo userDo = afUserService.getUserByUserName(userName);
 			if(userDo == null){
-//				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
-//				data.put("loginUrl", loginUrl);
-				return;
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
 			}
 			boolean received = false;
-			boolean end = false;
-			Map<Integer,String> statusMap = new HashMap<Integer, String>();
-//			statusMap.put("1","活动未开始");
-			statusMap.put(1,"活动结束");//已领取
-			statusMap.put(2,"活动结束");//时间结束，还未领取
-			statusMap.put(3,"今日已签到");
-			statusMap.put(4,"进行中");
-			Integer status = 4;
+			String buttonString = "活动结束";
+			boolean canClick = false;
 			AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign");
 			// 判断活动时间
 			Date startDate = gameDo.getGmtStart();
 			Date endDate = gameDo.getGmtEnd();
 			Date nowDate = new Date();
 			if(nowDate.before(startDate) ) {
-				return;
+				return H5CommonResponse.getNewInstance(false, "活动未开始，敬请期待","",data).toString();
 			}
-			if(nowDate.after(endDate)){
-				status = 2;
-			}
+
 			List<AfGameConfDo> gameConfList = afGameConfService.getByGameCode("loan_supermaket_sign");
 			AfGameAwardDo awardDo = afGameAwardService.getLoanSignAward(userDo.getRid(), gameDo.getRid());
 			if(awardDo!=null){
-				status = 1;
+				received = true;
+			}else{
+				if(nowDate.before(endDate)){
+					int  signCount = afBusinessAccessRecordsService.getSignCountToday(userDo.getRid());
+					if(signCount>=4){
+						buttonString = "今日已签到";
+					}
+					else{
+						buttonString = "立即签到（还剩"+(4-signCount)+"个）";
+						canClick = true;
+					}
+				}
 			}
 			AfBusinessAccessRecordQuery query = new AfBusinessAccessRecordQuery();
 			query.setBeginTime(gameDo.getGmtStart());
@@ -519,13 +527,18 @@ public class AppH5GameController  extends BaseController{
 			query.setUserId(userDo.getRid());
 			query.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
 			int days = afBusinessAccessRecordsService.getSignDays(query);
-			
-			System.out.println("");
+			List<AfLoanSignGameInfoVo> signGameList = parseSignGame(gameConfList,days,received);
+			data.put("gameConfList",signGameList);
+			data.put("signDays", days);
+			data.put("buttonString", buttonString);
+			data.put("canClick", canClick);
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
 		}catch(Exception e){
 			logger.error("signActivity异常:{}",e);
+			return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
 		}
 	}
-	
+
 	@RequestMapping(value = "receiveSignAward", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String receiveSignAward(HttpServletRequest request, HttpServletResponse response){
@@ -533,17 +546,21 @@ public class AppH5GameController  extends BaseController{
 		try{
 //			context = doWebCheck(request, false);
 //			String userName = context.getUserName();
+			Map<String,String> data = new HashMap<String,String>();
 			String userName = request.getParameter("userName");
 			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			if(userDo==null){
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
+			}
 			Long confId = Long.valueOf(request.getParameter("confId"));
 			AfGameConfDo confDo = afGameConfService.getByIdAndCode(confId, "");
 			if(confDo==null){
-				
+				return H5CommonResponse.getNewInstance(false, "活动不存在","",null).toString();
 			}
-			AfGameAwardDo award = afGameAwardService.getLoanSignAward(userDo.getRid(), confDo.getGameId());
-			if(award!=null){
-				//领取过
-			}
+			
+			checkSignAwardQualified(userDo.getRid(), confDo.getGameId(),confDo);
 			//开始领奖
 			afGameAwardService.receiveSignAward(userDo.getRid(),confDo);
 			
@@ -553,6 +570,90 @@ public class AppH5GameController  extends BaseController{
 		return "";
 	}
 	
+	/**
+	 * 
+	 * @param userId
+	 * @param gameId
+	 * @param needDays
+	 */
+	private void checkSignAwardQualified(Long userId,Long gameId,AfGameConfDo confDo)  {
+		AfGameAwardDo award = afGameAwardService.getLoanSignAward(userId, gameId);
+		if(award!=null){
+			throw new FanbeiException("奖励已领取",FanbeiExceptionCode.USER_GET_SIGN_AWARD_ERROR);
+		}
+		AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign"); 
+		Date today = new Date();
+		if(today.before(gameDo.getGmtCreate())){
+			throw new FanbeiException("活动未开始",FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
+		}
+		AfBusinessAccessRecordQuery query = new AfBusinessAccessRecordQuery();
+		query.setBeginTime(gameDo.getGmtStart());
+		query.setEndTime(gameDo.getGmtEnd());
+		query.setUserId(userId);
+		query.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
+		int signDays = afBusinessAccessRecordsService.getSignDays(query);
+		JSONObject jo = JSON.parseObject(confDo.getRule());
+		int needDays = jo.getIntValue("days");
+		if(signDays<needDays){
+			throw new FanbeiException("不符合领取条件",FanbeiExceptionCode.NO_QUALIFIED_SIGN_AWARD);
+		}
+	}
+
+	/**
+	 * 
+	 * @param gameConfList
+	 * @param signDays 签到天数
+	 * @param received 是否领取过
+	 * @return
+	 */
+	private List<AfLoanSignGameInfoVo> parseSignGame(List<AfGameConfDo> gameConfList,int signDays,boolean received) {
+		List<AfResourceDo> resourceDoList = afResourceService.getResourceListByType("BOLUOMI");//菠萝蜜
+		List<AfLoanSignGameInfoVo> list = new ArrayList<AfLoanSignGameInfoVo>();
+		AfLoanSignGameInfoVo gameInfo = null;
+		int index = 0;  
+		for(AfGameConfDo conf:gameConfList){
+			gameInfo = new AfLoanSignGameInfoVo();
+			JSONObject jo = JSON.parseObject(conf.getRule());
+			gameInfo.setRid(conf.getRid());
+			gameInfo.setName(jo.getString("name"));
+			gameInfo.setDays(jo.getIntValue("days"));
+			if(signDays>=gameInfo.getDays()){
+				gameInfo.setComplete(true);
+			}
+			if(received==false&&signDays>=gameInfo.getDays()){
+				gameInfo.setCanReceive(true);
+				if(index>0){
+					int i = index-1;
+					list.get(i).setCanReceive(false);
+				}
+			}
+			List<String> couponNames = new ArrayList<String>();
+			List<String> ids = new ArrayList<String>();
+			JSONArray array = jo.getJSONArray("prize");
+			for(Object obj:array){
+				JSONObject jobj = (JSONObject)obj;
+				String type = jobj.getString("type");
+				String id = jobj.getString("prizeId");
+				if("BOLUOMI".equals(type)){
+					for(AfResourceDo resDo:resourceDoList){
+						if(String.valueOf(resDo.getRid()).equals(id)){
+							couponNames.add(resDo.getName());
+						}
+					}
+				}else{
+					ids.add(id);
+				}
+			}
+			if(ids.size()>0){
+				List<String> names = afCouponService.getCouponNames(ids);
+				couponNames.addAll(names);
+			}
+			gameInfo.setCouponNames(couponNames);
+			list.add(gameInfo);
+			index++;
+		}
+		return list;
+	}
 	
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request,

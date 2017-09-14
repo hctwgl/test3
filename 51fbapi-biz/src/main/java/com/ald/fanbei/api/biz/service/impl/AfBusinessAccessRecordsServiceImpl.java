@@ -65,9 +65,14 @@ public class AfBusinessAccessRecordsServiceImpl extends ParentServiceImpl<AfBusi
 		
 		int count = afBusinessAccessRecordsDao.getVisitCountToday(signedMarketIds, userId);
 		if(count>=4){
-			boolean locked = bizCacheUtil.getLock30Second(LOCK_KEY, "1");
+			boolean locked = bizCacheUtil.getLockAFewMinutes(LOCK_KEY, "1",1);
 			try{
 				if(locked){
+					//再判断今天是否签过到，类似双重检查锁
+					boolean signed = checkIsSignToday(userId);
+					if(signed){
+						return; //今天签到过
+					}
 					List<String> marketsId = afBusinessAccessRecordsDao.getFourMarketIds(signedMarketIds,userId);
 					//获取4个需要设置为签到的
 					List<String> ids = afBusinessAccessRecordsDao.getNeedSignIds(marketsId, userId);
@@ -88,6 +93,11 @@ public class AfBusinessAccessRecordsServiceImpl extends ParentServiceImpl<AfBusi
 	public int getSignDays(AfBusinessAccessRecordQuery query) {
 		int totalCount = afBusinessAccessRecordsDao.getTotalSignCount(query);
 		return (int)(totalCount/4);
+	}
+
+	@Override
+	public int getSignCountToday(Long userId) {
+		return afBusinessAccessRecordsDao.getSignCountToday(userId);
 	}
 
 }
