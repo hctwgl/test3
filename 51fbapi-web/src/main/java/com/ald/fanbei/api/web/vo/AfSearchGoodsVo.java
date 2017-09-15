@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.vo;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
@@ -24,7 +25,10 @@ public class AfSearchGoodsVo extends AbstractSerial {
 	private String thumbnailIcon;//商品缩略图
 	private String goodsUrl;//商品链接
 	private Long volume;//销量
-	
+	private Map<String, Object> nperMap;//月供
+	public Map<String, Object> getNperMap() {
+		return nperMap;
+	}
 	public Long getVolume() {
 		return volume;
 	}
@@ -78,6 +82,10 @@ public class AfSearchGoodsVo extends AbstractSerial {
 	}
 	public void setGoodsUrl(String goodsUrl) {
 		this.goodsUrl = goodsUrl;
+	}
+	public void setNperMap(Map<String, Object> nperMap) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
