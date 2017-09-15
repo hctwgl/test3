@@ -96,6 +96,7 @@ let vue=new Vue({
                     if(data.success){
                       self.dialog.show=false;
                       self.dialog.prizeShow=true;
+                      self.init();
                     }else{
                         requestMsg(data.msg)
                     }
