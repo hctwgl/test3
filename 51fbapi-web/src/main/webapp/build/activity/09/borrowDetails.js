@@ -24,7 +24,7 @@ let vue=new Vue({
             {img:'3.png', txt:'25元现金75元红包',day:15,style:''},
         ],
         dialog:{
-            show:false3,
+            show:false,
             prizeShow:false,
             confId:'',
             txt:'获得现金'
