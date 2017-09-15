@@ -12,6 +12,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfGameAwardService;
@@ -30,6 +34,7 @@ import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
 import com.ald.fanbei.api.dal.domain.AfGameConfDo;
+import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -57,6 +62,8 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 	AfCouponDao afCouponDao;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	private TransactionTemplate transactionTemplate;
 	
 	@Override
 	public int addGameAward(AfGameAwardDo afGameAwardDo) {
@@ -97,15 +104,18 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 	}
 
 	@Override
-	public void receiveSignAward(AfUserDo user, AfGameConfDo confDo) {
+	public void receiveSignAward(final AfUserDo user,final AfGameConfDo confDo,final AfGameDo gameDo) {
+		 transactionTemplate.execute(new TransactionCallback<Void>() {
+			@Override
+			public Void doInTransaction(TransactionStatus status) {
 		String key = Constants.CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK+user.getRid();
-		boolean lock = bizCacheUtil.getLockAFewMinutes(key, "1", 3);
+		boolean lock = bizCacheUtil.getLockAFewMinutes(key, "1", 4);
 		try{
 			if(lock){
 				//再次检查是否领取过，避免重复领取
 				AfGameAwardDo award = getLoanSignAward(user.getRid(), confDo.getGameId());
 				if(award!=null){
-					return;
+					return null;
 				}
 				List<AfUserCouponDo> userCouponList = new ArrayList<AfUserCouponDo>();
 				String rule = confDo.getRule();
@@ -127,7 +137,7 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 						userCoupon.setGmtEnd(couponDo.getGmtEnd());
 						userCoupon.setUserId(user.getRid());
 						userCoupon.setStatus("NOUSE");
-						userCoupon.setSourceType("SIGNIN");
+						userCoupon.setSourceType("LOANSIGN");
 						userCouponList.add(userCoupon);
 					}
 				}
@@ -141,6 +151,9 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 				gameAward.setUserName(user.getUserName());
 				gameAward.setAwardId(confDo.getRid());
 				gameAward.setAwardName("借贷超市签到"+dto.getName()+"奖励");
+				gameAward.setUserAvata("");
+				gameAward.setAwardIcon(gameDo.getIcon());
+				gameAward.setAwardType("C");
 				afGameAwardDao.addGameAward(gameAward);
 			}
 		}finally{
@@ -148,6 +161,9 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 				bizCacheUtil.delCache(key);
 			}
 		}
+		return null;
+		}
+			});
 	}
 
 	/**

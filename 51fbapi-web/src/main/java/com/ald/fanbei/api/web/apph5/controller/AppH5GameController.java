@@ -505,7 +505,7 @@ public class AppH5GameController  extends BaseController{
 				return H5CommonResponse.getNewInstance(false, "活动未开始，敬请期待","",data).toString();
 			}
 
-			List<AfGameConfDo> gameConfList = afGameConfService.getByGameCode("loan_supermaket_sign");
+			List<AfGameConfDo> gameConfList = afGameConfService.getByGameId(gameDo.getRid());
 			AfGameAwardDo awardDo = afGameAwardService.getLoanSignAward(userDo.getRid(), gameDo.getRid());
 			if(awardDo!=null){
 				received = true;
@@ -559,31 +559,31 @@ public class AppH5GameController  extends BaseController{
 			if(confDo==null){
 				return H5CommonResponse.getNewInstance(false, "活动不存在","",null).toString();
 			}
-			
-			checkSignAwardQualified(userDo.getRid(), confDo.getGameId(),confDo);
+			AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign"); 
+			checkSignAwardQualified(userDo.getRid(), confDo.getGameId(),confDo,gameDo);
 			//开始领奖
-			afGameAwardService.receiveSignAward(userDo,confDo);
+			afGameAwardService.receiveSignAward(userDo,confDo,gameDo);
 			
 		}catch(FanbeiException e){
 			return H5CommonResponse.getNewInstance(false, e.getErrorCode().getDesc(),"",null).toString();
 		}catch(Exception e){
+			logger.error("receiveSignAward,异常：{}",e);
 			return H5CommonResponse.getNewInstance(false, "系统出错","",null).toString();
 		}
 		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",null).toString();
 	}
 	
 	/**
-	 * 
+	 * 检查是否符合领取条件
 	 * @param userId
 	 * @param gameId
 	 * @param needDays
 	 */
-	private void checkSignAwardQualified(Long userId,Long gameId,AfGameConfDo confDo)  {
+	private void checkSignAwardQualified(Long userId,Long gameId,AfGameConfDo confDo,AfGameDo gameDo)  {
 		AfGameAwardDo award = afGameAwardService.getLoanSignAward(userId, gameId);
 		if(award!=null){
 			throw new FanbeiException("奖励已领取",FanbeiExceptionCode.USER_GET_SIGN_AWARD_ERROR);
 		}
-		AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign"); 
 		Date today = new Date();
 		if(today.before(gameDo.getGmtCreate())){
 			throw new FanbeiException("活动未开始",FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
@@ -594,9 +594,16 @@ public class AppH5GameController  extends BaseController{
 		query.setUserId(userId);
 		query.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET.getCode());
 		int signDays = afBusinessAccessRecordsService.getSignDays(query);
-		JSONObject jo = JSON.parseObject(confDo.getRule());
-		int needDays = jo.getIntValue("days");
-		if(signDays<needDays){
+		List<AfGameConfDo> gameConfList = afGameConfService.getByGameId(gameDo.getRid());
+		Long canConfId=null;
+		for(AfGameConfDo conf:gameConfList){
+			JSONObject jo = JSON.parseObject(conf.getRule());
+			int needDays = jo.getIntValue("days");
+			if(signDays>=needDays){
+				canConfId = conf.getRid();
+			}
+		}
+		if(!confDo.getRid().equals(canConfId)){
 			throw new FanbeiException("不符合领取条件",FanbeiExceptionCode.NO_QUALIFIED_SIGN_AWARD);
 		}
 	}

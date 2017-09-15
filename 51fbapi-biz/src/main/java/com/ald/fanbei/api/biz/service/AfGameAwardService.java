@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
 import com.ald.fanbei.api.dal.domain.AfGameConfDo;
+import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 /**
@@ -60,5 +61,5 @@ public interface AfGameAwardService {
 	 * @param userId
 	 * @param confDo
 	 */
-	void receiveSignAward(AfUserDo user, AfGameConfDo confDo);
+	void receiveSignAward(AfUserDo user, AfGameConfDo confDo,AfGameDo gameDo);
 }
