@@ -1,6 +1,4 @@
-/**
- * Created by nizhiwei-labtop on 2017/9/12.
- */
+
 let vue=new Vue({
     el:'#vueCon',
     data:{
@@ -27,7 +25,9 @@ let vue=new Vue({
         ],
         dialog:{
             show:false,
-            prizeShow:true,
+            prizeShow:false,
+            confId:'',
+            txt:'获得现金'
         }
     },
     created:function () {
@@ -44,42 +44,64 @@ let vue=new Vue({
                         data.img='5.png'
                     }
                 }
-            })
+            });
             if(num>=1){
                 this.day[0].img='4.gif';
                 this.day[0].style='active';
             }
         },
-        init(){
+        init(){        //初始化数据
             let self=this;
             $.ajax({
                 url:'/fanbei-web/signActivity?userName=18072975670',
                 success:function (data) {
                     data = eval('(' + data + ')');
+                    console.log(data);
                     if(data.success){
                         self.content=data.data;
+                        self.changeImg(self.content.signDays);
                         //红包文案修改
                         self.day[0].txt=self.content.gameConfList[0].couponNames.join('');
                         self.day[4].txt=self.content.gameConfList[1].couponNames.join('');
                         self.day[5].txt=self.content.gameConfList[2].couponNames.join('');
                         self.day[14].txt=self.content.gameConfList[3].couponNames.join('');
-                        self.changeImg(self.content.signDays)
                     }
                 }
             })
 
 
         },
-        prize(day){
-            if((day===1||day===5||day===10||day===15)&&this.content.signDays>=day){
-                this.dialog.show=true
+        prize(day){     //点击步骤图片弹出领奖
+            if(this.content.canClick){
+                if((day===1||day===5||day===10||day===15)&&this.content.signDays>=day){
+                    this.dialog.show=true;
+                    let i=(day%5===0)?day/5:0;
+                    this.dialog.confId=this.content.gameConfList[i].rid;
+                    this.dialog.txt=this.content.gameConfList[i].couponNames.join('');
 
+                }
             }
         },
-        go(state){
+        go(state){       //大图按钮
             if(state){
                 requestMsg('可以签到')
             }
+        },
+        receive(){     //领取按钮
+            let self=this;
+            $.ajax({
+                url:'/fanbei-web/receiveSignAward?userName=18072975670&confId='+self.dialog.confId,
+                success:function (data) {
+                    data = eval('(' + data + ')');
+                    if(data.success){
+                      self.dialog.show=false;
+                      self.dialog.prizeShow=true;
+                      self.init();
+                    }else{
+                        requestMsg(data.msg)
+                    }
+                }
+            })
         }
     }
 });

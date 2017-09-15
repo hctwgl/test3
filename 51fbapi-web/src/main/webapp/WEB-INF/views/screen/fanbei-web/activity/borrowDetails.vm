@@ -29,19 +29,18 @@
     <div class="prizeConfirm" v-if="dialog.show">
         <div class="headerImg">温馨提示</div>
         <p>领取奖励后签到活动结束。继续签到可获取更多奖励，确认领取吗？</p>
-        <div class="okBtn">立即领取</div>
-        <div class="goBtn">继续签到</div>
+        <div class="okBtn" @click="receive()">立即领取</div>
+        <div class="goBtn" @click="dialog.show=false">继续签到</div>
         <div class="close" @click="dialog.show=false"></div>
     </div>
     <div class="shadow" v-if="dialog.prizeShow"></div>
-    <div class="prizeConfirm" v-if="dialog.prizeShow">
+    <div class="knowConfirm" v-if="dialog.prizeShow">
         <div class="headerImg">恭喜您</div>
-        <p>领取奖励后签到活动结束。继续签到可获取更多奖励，确认领取吗？</p>
-        <div class="know">知道了</div>
-        <div class="close" @click="dialog.prizeShow=false"></div>
+        <p>{{dialog.txt}}</p>
+        <div class="know" @click="dialog.prizeShow=false">知道了</div>
+        <odiv class="close" @click="dialog.prizeShow=false"></odiv>
     </div>
 </div>
-
 </body>
 <script src="/dist/activity/09/borrowDetails.js"></script>
 </html>
