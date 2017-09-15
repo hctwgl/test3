@@ -68,11 +68,14 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
         //String billIds = ObjectUtils.toString(requestDataVo.getParams().get("billIds"));
 //        BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
         Long couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
-        BigDecimal rebateAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
+        //BigDecimal rebateAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
         Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
-        BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
+//        BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
 
+        Integer useRebateAmount = NumberUtil.objToIntDefault(requestDataVo.getParams().get("useRebateAmount"), 0); //是否使用余额
+
+        BigDecimal jfbAmount = BigDecimal.ZERO;
 
         String billIds = "";
         List<AfBorrowBillDo> afborrowBillList = afBorrowBillService.getAllBorrowNoPayByUserId(userId);
@@ -105,13 +108,18 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 
         BigDecimal allRepaymentAmount = repaymentAmount;
         repaymentAmount = amountSum;
-        BigDecimal yuer = allRepaymentAmount.subtract(repaymentAmount);   //多出来的钱      钱到帐后。这笔钱要进入
+//        BigDecimal yuer = allRepaymentAmount.subtract(repaymentAmount);   //多出来的钱      钱到帐后。这笔钱要进入
 
-
+        BigDecimal rebateAmount = BigDecimal.ZERO;
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (afUserAccountDo == null) {
             throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
+
+        if(useRebateAmount.intValue() ==1){
+            rebateAmount = afUserAccountDo.getRebateAmount();
+        }
+
 
         if (cardId > 0 || cardId == -2) {//支付密码验证
             String inputOldPwd = UserUtil.getPassword(payPwd, afUserAccountDo.getSalt());
@@ -172,18 +180,19 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             rebateAmount = BigDecimal.ZERO;
             showAmount = BigDecimal.ZERO;
         }
-        BigDecimal myjfb = BigDecimalUtil.divide(afUserAccountDo.getJfbAmount(), new BigDecimal(100));
-        //使用集分宝处理
-        if (jfbAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(myjfb) > 0) {
+//        BigDecimal myjfb = BigDecimalUtil.divide(afUserAccountDo.getJfbAmount(), new BigDecimal(100));
+//        //使用集分宝处理
+//        if (jfbAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(myjfb) > 0) {
+//
+//            showAmount = BigDecimalUtil.subtract(showAmount, myjfb);
+//            jfbAmount = afUserAccountDo.getJfbAmount();
+//        } else if (jfbAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(myjfb) <= 0) {
+//            //集分宝金额大于还款金额
+//            jfbAmount = BigDecimalUtil.multiply(showAmount, new BigDecimal(100));
+//            rebateAmount = BigDecimal.ZERO;
+//            showAmount = BigDecimal.ZERO;
+//        }
 
-            showAmount = BigDecimalUtil.subtract(showAmount, myjfb);
-            jfbAmount = afUserAccountDo.getJfbAmount();
-        } else if (jfbAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(myjfb) <= 0) {
-            //集分宝金额大于还款金额
-            jfbAmount = BigDecimalUtil.multiply(showAmount, new BigDecimal(100));
-            rebateAmount = BigDecimal.ZERO;
-            showAmount = BigDecimal.ZERO;
-        }
 
 
         //余额处理
@@ -195,10 +204,11 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             showAmount = BigDecimal.ZERO;
         }
 
+        if(showAmount.compareTo(BigDecimal.ZERO) == 0){  //
+            cardId =-2L;
+        }
 
-//        if(actualAmount.compareTo(showAmount)!=0){
-//            throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
-//        }
+
 
         Map<String, Object> map;
         if (cardId == -2) {//余额支付
