@@ -5,6 +5,7 @@ package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +33,12 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfSearchGoodsVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.ApiException;
 import com.taobao.api.domain.NTbkItem;
 
@@ -91,6 +96,24 @@ public class GetThirdGoodsListApi implements ApiHandle {
 					}
 				});
 				
+				//获取借款分期配置信息
+		        AfResourceDo res = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		        JSONArray array = JSON.parseArray(res.getValue());
+		        //删除2分期
+		        if (array == null) {
+		            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+		        }
+		        removeSecondNper(array);
+				
+		        for(AfSearchGoodsVo goodsInfo : result) {
+		        	List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
+		        			goodsInfo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+					if(nperList!= null){
+						Map<String,Object> nperMap = nperList.get(nperList.size() - 1);
+						goodsInfo.setNperMap(nperMap);
+					}
+		        }
+				
 				resp.addResponseData("goodsList", result);
 				resp.addResponseData("pageNo", buildParams.get("pageNo"));
 			}
@@ -99,6 +122,20 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		}
 		return resp;
 	}
+	private void removeSecondNper(JSONArray array) {
+        if (array == null) {
+            return;
+        }
+        Iterator<Object> it = array.iterator();
+        while (it.hasNext()) {
+            JSONObject json = (JSONObject) it.next();
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+                it.remove();
+                break;
+            }
+        }
+
+    }
 	private boolean isVirtualWithKey(String key, String virtualGoodsValue){
 		List<String> virtual = StringUtil.splitToList(virtualGoodsValue,",") ;
 		for (String string : virtual) {
