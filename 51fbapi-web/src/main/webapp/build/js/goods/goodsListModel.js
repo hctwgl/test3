@@ -42,7 +42,7 @@ let addModel = function addModel(goodsList,dom,state) {
                             <p class="fs_26 fsc_1">${goodsList[j].name}</p>
                             <p>                   
                             <span>￥${saleAmount}</span>
-                                <span class="fsc_red fr"><i class="ba">返</i>￥${goodsList[j].rebateAmount}</span>
+                                <span class="fsc_red fr"><i class="ba"></i>￥${goodsList[j].rebateAmount}</span>
                             </p>
                         </div>
                         ${con}
@@ -68,6 +68,21 @@ addModel(goodsList,$('#initGoods'));
 // 获取页面尺寸
 var windowW = $(window).outerWidth(),
     page = 1; // 默认页数从1开始
+function handleScroll (){
+    let win=jQuery(window).scrollTop();
+    if(win>=207){
+        jQuery('#navWrap').addClass('fixTop');
+    }else{
+        jQuery('#navWrap').removeClass('fixTop');
+    }
+}
+if(getBlatFrom()==2){
+    window.addEventListener('touchstart',handleScroll);
+    window.addEventListener('touchmove',handleScroll);
+    window.addEventListener('touchend',handleScroll);
+}else{
+    window.addEventListener('scroll',handleScroll);
+}
 
 //导航滑动
 class Swipe{
@@ -238,3 +253,4 @@ $(function(){
     });
 
 });
+

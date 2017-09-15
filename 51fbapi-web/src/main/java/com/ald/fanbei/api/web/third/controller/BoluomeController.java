@@ -182,7 +182,9 @@ public class BoluomeController extends AbstractThird{
     	
     	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
     	
-    	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
+    	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), 
+    			orderInfo != null ? orderInfo.getSecType() : orderType, 
+    			orderInfo != null? orderInfo.getServiceProvider() : channel);
     	//不是新建 单订单还没有同步完成  同步订单状态接口不会有orderType字段
     	if(orderInfo == null && StringUtils.isBlank(orderType)) {
     		return null;

@@ -129,6 +129,7 @@ public class TradeOrderApi implements ApiHandle {
         AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
         afTradeOrderDo.setOrderId(afOrder.getRid());
         afTradeOrderDo.setBusinessId(businessId);
+        afTradeOrderDo.setBalanceAmount(actualAmount);
         afTradeOrderService.saveRecord(afTradeOrderDo);
 
         String isEnoughAmount = "Y";

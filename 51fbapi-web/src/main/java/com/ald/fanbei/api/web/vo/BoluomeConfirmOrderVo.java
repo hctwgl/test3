@@ -50,6 +50,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private BigDecimal repaymentAmount;//应还金额
 	private Long borrowId;//借钱id
 	private String riskStatus;
+	private String secType;//第三方二级类型【YONGCHE:滴滴】
 	
 	public char getIsValid() {
 		return isValid;
@@ -426,6 +427,20 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 
 	public void setRiskStatus(String riskStatus) {
 		this.riskStatus = riskStatus;
+	}
+
+	/**
+	 * @return the secType
+	 */
+	public String getSecType() {
+		return secType;
+	}
+
+	/**
+	 * @param secType the secType to set
+	 */
+	public void setSecType(String secType) {
+		this.secType = secType;
 	}
 	
 }
