@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="hairyCrab"  class="hairyCrab">
-    #*<div class="loadingMask"><i class="loading"></i></div>*#
+    <div class="loadingMask"><i class="loading"></i></div>
     <img class="first" src="$src/crab1.png">
     <img class="first" src="$src/crab2.png">
     <img class="first" src="$src/crab3.png">

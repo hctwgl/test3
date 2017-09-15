@@ -1,13 +1,4 @@
-/*图片预加载*/
-$(".first").each(function() {
-    var img = $(this);
-    img.load(function () {
-        $(".loadingMask").fadeOut();
-    });
-    setTimeout(function () {
-        $(".loadingMask").fadeOut();
-    },1000)
-});
+
 let activityId=getUrl('activityId');//获取活动id
 let groupId=getUrl('groupId');//获取优惠券组id
 //获取数据
@@ -33,7 +24,16 @@ let vm = new Vue({
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
                     self.$nextTick(function () {
-                        // lazy.init();
+                        /*图片预加载*/
+                        $(".first").each(function() {
+                            var img = $(this);
+                            img.load(function () {
+                                $(".loadingMask").fadeOut();
+                            });
+                            setTimeout(function () {
+                                $(".loadingMask").fadeOut();
+                            },1000)
+                        });
                         $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
                             placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
