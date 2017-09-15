@@ -802,6 +802,8 @@ public class TestController {
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
 
+		Map<String,String> ccc = yiBaoUtility.createOrder(BigDecimal.ONE,"hq2017090815262700180");
+
 		Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
 //		String e ="";
 
