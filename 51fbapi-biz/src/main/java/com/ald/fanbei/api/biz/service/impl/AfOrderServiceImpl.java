@@ -696,6 +696,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 boluomeActivity(afOrder);
                             }
                         }
+                        AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
+						if(afBorrowDo !=null) {
+							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+							if(borrowList != null && borrowList.size()>0 ){
+								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+								afBorrowDao.addBorrowBill(billList);
+							}
+						}
 						break;
 					default:
 						logger.info(" status is {} ",afOrder.getStatus());
@@ -1484,7 +1492,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							account.setUserId(accountInfo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
 							
-							afBorrowService.dealAgentPayBorrowAndBill(accountInfo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+							afBorrowService.dealAgentPayBorrowAndBill(accountInfo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),true);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款",refundSource,StringUtils.EMPTY));
 						}
@@ -1545,7 +1553,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							account.setUserId(afUserAccountDo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
 
-							afBorrowService.dealAgentPayBorrowAndBill(afUserAccountDo.getUserId(), afUserAccountDo.getUserName(), backAmount.abs(), afBorrowDo.getName(), afBorrowDo.getNper() - afBorrowDo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+							afBorrowService.dealAgentPayBorrowAndBill(afUserAccountDo.getUserId(), afUserAccountDo.getUserName(), backAmount.abs(), afBorrowDo.getName(), afBorrowDo.getNper() - afBorrowDo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),true);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH, PayType.COMBINATION_PAY, StringUtils.EMPTY, null, "组合支付退款", refundSource, StringUtils.EMPTY));
 						}

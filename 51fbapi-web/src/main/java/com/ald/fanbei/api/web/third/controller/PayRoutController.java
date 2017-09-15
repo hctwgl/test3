@@ -2,12 +2,17 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -42,11 +47,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 
 /**
  * @类现描述：
@@ -88,6 +88,8 @@ public class PayRoutController {
 	private AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	@Resource
 	private AfTradeWithdrawRecordService afTradeWithdrawRecordService;
+	@Resource
+	private AfYibaoOrderDao afYibaoOrderDao;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -336,5 +338,104 @@ public class PayRoutController {
 			logger.error("collect", e);
 			return "ERROR";
 		}
+	}
+
+
+	/**
+	 *易宝订单回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/yibaoback" })
+	@ResponseBody
+	public String YiBaoBack(HttpServletRequest request, HttpServletResponse response){
+
+		String responseMsg = request.getParameter("response");
+		thirdLog.info("yibaoresonseMsg = "+responseMsg);
+		Map<String,String> result = YeepayService.callback(responseMsg);
+
+		String parentMerchantNo = formatString(result.get("parentMerchantNo"));
+		String merchantNo = formatString(result.get("merchantNo"));
+		String orderId = formatString(result.get("orderId"));
+		String uniqueOrderNo = formatString(result.get("uniqueOrderNo"));
+		String status = formatString(result.get("status"));
+		String orderAmount = formatString(result.get("orderAmount"));
+		String payAmount = formatString(result.get("payAmount"));
+		String requestDate = formatString(result.get("requestDate"));
+		String paySuccessDate = formatString(result.get("paySuccessDate"));
+
+		thirdLog.info("yibaoresonseMsg = "+ JSON.toJSONString(result));
+
+//		String orderId = request.getParameter("orderId");
+//		String parentMerchantNo = request.getParameter("parentMerchantNo");
+//		String merchantNo = request.getParameter("merchantNo");
+//		String uniqueOrderNo = request.getParameter("uniqueOrderNo");
+//		String status =request.getParameter("status");
+//		String orderAmount = request.getParameter("orderAmount");
+//		String payAmount = request.getParameter("payAmount");
+//		String requestDate = request.getParameter("requestDate");
+//		String paySuccessDate = request.getParameter("paySuccessDate");
+//		String instCompany = request.getParameter("instCompany");
+//		String instNumber = request.getParameter("instNumber");
+
+		AfYibaoOrderDo afYibaoOrderDo =afYibaoOrderDao.getYiBaoOrderByOrderNo(orderId);
+		if(afYibaoOrderDo ==null){
+			thirdLog.info("yibaoresonseMsg_NoMatch = "+ orderId);
+			return "SUCCESS";
+		}
+		thirdLog.info("yibaoresonseMsg_Match = "+ JSON.toJSONString(afYibaoOrderDo));
+
+		String attach = afYibaoOrderDo.getPayType();
+
+
+		if(status.toLowerCase().equals("timeout") || status.toLowerCase().equals("closed")){
+			thirdLog.info("yibaoresonse fail: "+"status="+status+",orderNo="+orderId);
+
+			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo);
+			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
+			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
+			}
+			else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
+				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
+			}
+
+			return "SUCCESS";
+		}
+
+
+		if (PayOrderSource.ORDER.getCode().equals(attach)) {
+			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
+		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
+			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+			afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
+		} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+			afRepaymentBorrowCashService.dealRepaymentSucess(orderId, uniqueOrderNo);
+		} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+			afRenewalDetailService.dealRenewalSucess(orderId, uniqueOrderNo);
+		}
+
+		afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+		return "SUCCESS";
+	}
+
+	private String formatString(String text){
+		return text==null ? "" : text.trim();
+	}
+
+	/**
+	 *易宝清算回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/yibaoqsback" })
+	@ResponseBody
+	public String YiBaoQsBack(HttpServletRequest request, HttpServletResponse response){
+		return "SUCCESS";
 	}
 }

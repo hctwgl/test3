@@ -65,10 +65,10 @@ public class AfBusinessAccessRecordsServiceImpl extends ParentServiceImpl<AfBusi
 		
 		int count = afBusinessAccessRecordsDao.getVisitCountToday(signedMarketIds, userId);
 		if(count>=4){
-			boolean locked = bizCacheUtil.getLockAFewMinutes(LOCK_KEY, "1",1);
+			boolean locked = bizCacheUtil.getLockAFewMinutes(LOCK_KEY, "1",2);
 			try{
 				if(locked){
-					//再判断今天是否签过到，类似双重检查锁
+					//再判断今天是否签过到
 					boolean signed = checkIsSignToday(userId);
 					if(signed){
 						return; //今天签到过

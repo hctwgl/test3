@@ -287,4 +287,31 @@
 		    u.source_type = #{sourceType} 
 	</select>
 	
+	<insert id="batchAddUserCoupon" parameterType="list" >
+		INSERT INTO af_user_coupon 
+		(
+			gmt_create,
+			gmt_modified,
+			user_id,
+			coupon_id,
+			gmt_start,
+			gmt_end,
+			status,
+			source_type
+		)
+   		values 
+    	<foreach collection="userCouponList" item="item" index="index" separator="," > 
+        	(
+			NOW(),
+			NOW(),
+			#{item.userId},
+			#{item.couponId},
+			#{item.gmtStart},
+			#{item.gmtEnd},
+			#{item.status},
+			#{item.sourceType}
+		)
+    	</foreach> 	
+	</insert>
+	
 </mapper>

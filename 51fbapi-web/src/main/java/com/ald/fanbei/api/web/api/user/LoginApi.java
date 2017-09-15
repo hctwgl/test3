@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -176,7 +177,7 @@ public class LoginApi implements ApiHandle {
 			}
 		}
 		//调用风控可信接口
-		if (context.getAppVersion() >= 381 &&isNeedRisk) {
+		if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
 				
 			boolean riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
 					loginType,loginTime,ip,phoneType,networkType,osType);
@@ -254,6 +255,27 @@ public class LoginApi implements ApiHandle {
 		return vo;
 	}
 
+	/**
+	 * 是否是白名单
+	 * @param userName
+	 * @return
+	 */
+	private boolean isInWhiteList(String userName){
+		AfResourceDo resDo = afResourceService.getSingleResourceBytype(AfResourceType.LOGIN_WHITE_LIST.getCode());
+		if(resDo==null){
+			return false;
+		}
+		if(StringUtils.isNotBlank(resDo.getValue3())){
+			String orignStr = resDo.getValue3().replace("，",","); // ，改为,
+			String whites[] = orignStr.split(",");
+			for(int i = 0;i<whites.length;i++){
+				if(userName.equals(whites[i])){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	public FanbeiExceptionCode getErrorCountCode(Integer errorCount) {
 		if (errorCount == 0) {
 			return FanbeiExceptionCode.USER_PASSWORD_ERROR_ZERO;

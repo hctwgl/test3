@@ -19,6 +19,9 @@
 		actual_amount ,
 		borrow_id ,
 		pay_trade_no ,
+		<if test="tradeNo !=null ">
+			trade_no ,
+		</if>
 		<if test="userCouponId !=null ">
 			user_coupon_id ,
 		</if>
@@ -50,7 +53,9 @@
 		#{actualAmount},
 		#{borrowId},
 		#{payTradeNo},
-
+		<if test="tradeNo !=null ">
+			#{tradeNo},
+		</if>
 		<if test="userCouponId !=null ">
 			#{userCouponId},
 		</if>

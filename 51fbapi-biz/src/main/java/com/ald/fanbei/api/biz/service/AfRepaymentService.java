@@ -16,6 +16,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
  */
 public interface AfRepaymentService {
 
+	Map<String,Object> createRepaymentYiBao(BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
+									   BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp,AfUserAccountDo afUserAccountDo);
 	/**
 	 * 新增还款记录
 	 * @param repaymentAmount
