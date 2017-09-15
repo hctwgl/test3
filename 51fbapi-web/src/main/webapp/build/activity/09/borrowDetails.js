@@ -26,8 +26,10 @@ let vue=new Vue({
             {img:'3.png', txt:'25元现金75元红包',day:15,style:''},
         ],
         dialog:{
-            show:false,
-            prizeShow:true,
+            show:true,
+            prizeShow:false,
+            confId:'',
+            txt:'获得现金'
         }
     },
     created:function () {
@@ -50,7 +52,7 @@ let vue=new Vue({
                 this.day[0].style='active';
             }
         },
-        init(){
+        init(){        //初始化数据
             let self=this;
             $.ajax({
                 url:'/fanbei-web/signActivity?userName=18072975670',
@@ -70,16 +72,35 @@ let vue=new Vue({
 
 
         },
-        prize(day){
-            if((day===1||day===5||day===10||day===15)&&this.content.signDays>=day){
-                this.dialog.show=true
+        prize(day){     //点击步骤图片弹出领奖
+            if(this.content.canClick){
+                if((day===1||day===5||day===10||day===15)&&this.content.signDays>=day){
+                    this.dialog.show=true;
+                    this.dialog.confId=self.content.gameConfList[(day%5===0)?day/5:0].rid;
+                    this.dialog.txt=self.content.gameConfList[(day%5===0)?day/5:0].couponNames;
 
+                }
             }
         },
-        go(state){
+        go(state){       //大图按钮
             if(state){
                 requestMsg('可以签到')
             }
+        },
+        receive(){     //领取按钮
+            let self=this;
+            $.ajax({
+                url:'/fanbei-web/receiveSignAward?userName=18072975670&confId='+self.dialog.confId,
+                success:function (data) {
+                    data = eval('(' + data + ')');
+                    if(data.success){
+                      self.dialog.show=false;
+                      self.dialog.prizeShow=true;
+                    }else{
+                        requestMsg(data.msg)
+                    }
+                }
+            })
         }
     }
 });
