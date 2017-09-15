@@ -77,7 +77,7 @@ let vue=new Vue({
                     this.dialog.show=true;
                     let i=(day%5===0)?day/5:0;
                     this.dialog.confId=this.content.gameConfList[i].rid;
-                    this.dialog.txt=this.content.gameConfList[i].couponNames;
+                    this.dialog.txt=this.content.gameConfList[i].couponNames.join('');
 
                 }
             }
