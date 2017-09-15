@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,17 +58,18 @@ public class ToutiaoController extends BaseController {
             sb.append("---kdnotify end");
 
             thirdLog.info(sb.toString());
-            String mac = ObjectUtils.toString(request.getParameter("mac"), null);
+            //String mac = ObjectUtils.toString(request.getParameter("mac"), null);
             String imei = ObjectUtils.toString(request.getParameter("imei"), null);
-            String androidid = ObjectUtils.toString(request.getParameter("androidid"), null);
+            String androidid = ObjectUtils.toString(request.getParameter("androidid1"), null);
             String idfa = ObjectUtils.toString(request.getParameter("idfa"), null);
-            String udid = ObjectUtils.toString(request.getParameter("udid"), null);
+            //String udid = ObjectUtils.toString(request.getParameter("udid"), null);
             //String os = ObjectUtils.toString(request.getParameter("os"), null);
             String callbackUrl = ObjectUtils.toString(request.getParameter("callback_url"), null);
-            Map<String, Object> map = buildParamMap(request);
-            AfUserToutiaoDo afUserToutiaoDo = (AfUserToutiaoDo)map.get("afUserToutiaoDo");
-            if(StringUtil.isNotEmpty(imei)||StringUtil.isNotEmpty(mac)||StringUtil.isNotEmpty(androidid)||StringUtil.isNotEmpty(idfa)||StringUtil.isNotEmpty(udid)){
-                AfUserToutiaoDo tdo = afUserToutiaoService.getUser(imei,mac,androidid,idfa,udid);
+
+            if(StringUtil.isNotEmpty(imei)||StringUtil.isNotEmpty(androidid)||StringUtil.isNotEmpty(idfa)){
+                Map<String, Object> map = buildParamMap(request);
+                AfUserToutiaoDo afUserToutiaoDo = (AfUserToutiaoDo)map.get("afUserToutiaoDo");
+                AfUserToutiaoDo tdo = afUserToutiaoService.getUser(imei,androidid,idfa);
                 if(tdo==null){
                     afUserToutiaoService.creatUser(afUserToutiaoDo);
                     logger.error("toutiaoresult:creat success:"+afUserToutiaoDo.toString());
@@ -76,7 +78,7 @@ public class ToutiaoController extends BaseController {
                     Long rid = tdo.getRid();
                     afUserToutiaoService.uptUser(rid);
                     if(active!=0){
-                        String result= HttpUtil.doGet(callbackUrl,1);
+                        String result= HttpUtil.doGet(callbackUrl,20);
                         logger.error("toutiaoresult:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
                     }else{
                         logger.error("toutiaoresult:update success,active=0,id="+rid);

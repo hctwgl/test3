@@ -5,7 +5,6 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfUserToutiaoDao;
 import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
 import com.ald.fanbei.api.biz.service.AfUserToutiaoService;
@@ -40,7 +39,17 @@ public class AfUserToutiaoServiceImpl implements AfUserToutiaoService {
 	}
 
 	@Override
-	public AfUserToutiaoDo getUser(String imei, String mac, String androidid, String idfa, String udid) {
-		return afUserToutiaoDao.getUser(imei,mac,androidid,idfa,udid);
+	public AfUserToutiaoDo getUser(String imei, String androidid, String idfa) {
+		return afUserToutiaoDao.getUser(imei,androidid,idfa);
+	}
+
+	@Override
+	public Long uptUserActive(Long rid) {
+		return afUserToutiaoDao.uptUserActive(rid);
+	}
+
+	@Override
+	public AfUserToutiaoDo getUserActive(String imei, String androidid, String idfa) {
+		return afUserToutiaoDao.getUserActive(imei,androidid,idfa);
 	}
 }

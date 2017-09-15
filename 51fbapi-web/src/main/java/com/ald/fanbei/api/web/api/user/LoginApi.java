@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -11,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
+import jodd.util.StringUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.security.Credential.MD5;
@@ -71,7 +75,8 @@ public class LoginApi implements ApiHandle {
 	JpushService jpushService;
 	@Resource
 	RiskUtil riskUtil;
-	
+	@Resource
+	AfUserToutiaoService afUserToutiaoService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -87,7 +92,7 @@ public class LoginApi implements ApiHandle {
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
-		
+
 		if (StringUtils.isBlank(inputPassSrc)) {
 			logger.error("inputPassSrc can't be empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -120,6 +125,7 @@ public class LoginApi implements ApiHandle {
 			if (afUserDo.getFailCount() > 5) {
 				loginDo.setResult("false:err count too max" + afUserDo.getFailCount());
 				afUserLoginLogService.addUserLoginLog(loginDo);
+				ToutiaoAdActive(requestDataVo);
 				return new ApiHandleResponse(requestDataVo.getId(),
 						FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5);
 			}
@@ -243,6 +249,46 @@ public class LoginApi implements ApiHandle {
 		return resp;
 	}
 
+	private void ToutiaoAdActive(RequestDataVo requestDataVo) {
+		try {
+			String imei = ObjectUtils.toString(requestDataVo.getParams().get("IMEI"), null);
+			String androidId = ObjectUtils.toString(requestDataVo.getParams().get("AndroidID"), null);
+			String idfa = ObjectUtils.toString(requestDataVo.getParams().get("IDFA"), null);
+			String imeiMd5="";
+			if(StringUtils.isNotBlank(imei)){
+				imeiMd5=getMd5(imei);
+			}
+			if(StringUtils.isNotBlank(imei)||StringUtils.isNotBlank(androidId)||StringUtils.isNotBlank(idfa)){
+				AfUserToutiaoDo tdo = afUserToutiaoService.getUserActive(imeiMd5,androidId,idfa);
+				if(tdo!=null){
+					Long rid = tdo.getRid();
+					afUserToutiaoService.uptUserActive(rid);
+				}
+			}
+		}catch (Exception e){
+			logger.error("toutiaoactive:catch error",e.getMessage());
+		}
+	}
+
+	/**
+	 * 用于获取一个String的md5值
+	 * @param string
+	 * @return
+	 */
+	public static String getMd5(String str) throws Exception {
+		MessageDigest md5 = MessageDigest.getInstance("MD5");
+
+		byte[] bs = md5.digest(str.getBytes());
+		StringBuilder sb = new StringBuilder(40);
+		for(byte x:bs) {
+			if((x & 0xff)>>4 == 0) {
+				sb.append("0").append(Integer.toHexString(x & 0xff));
+			} else {
+				sb.append(Integer.toHexString(x & 0xff));
+			}
+		}
+		return sb.toString();
+	}
 	private AfUserVo parseUserVo(AfUserDo afUserDo) {
 		AfUserVo vo = new AfUserVo();
 		vo.setUserId(afUserDo.getRid());

@@ -179,88 +179,38 @@
 		    </if>
         </trim>
     </insert>
-    
-    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserToutiaoDo">
-        UPDATE af_user_toutiao
-          <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="aid != null and aid != '' ">        
-                aid = #{aid,jdbcType=VARCHAR},                
-            </if>
-            <if test="cid != null and cid != '' ">        
-                cid = #{cid,jdbcType=VARCHAR},                
-            </if>
-            <if test="csite != null and csite != '' ">        
-                csite = #{csite,jdbcType=VARCHAR},                
-            </if>
-            <if test="ctype != null and ctype != '' ">        
-                ctype = #{ctype,jdbcType=INTEGER},                
-            </if>
-            <if test="mac != null and mac != '' ">        
-                mac = #{mac,jdbcType=VARCHAR},                
-            </if>
-            <if test="idfa != null and idfa != '' ">        
-                idfa = #{idfa,jdbcType=VARCHAR},                
-            </if>
-            <if test="androidid != null and androidid != '' ">        
-                androidid = #{androidid,jdbcType=VARCHAR},                
-            </if>
-            <if test="androidid1 != null and androidid1 != '' ">        
-                androidid1 = #{androidid1,jdbcType=VARCHAR},                
-            </if>
-            <if test="imei != null and imei != '' ">        
-                imei = #{imei,jdbcType=VARCHAR},                
-            </if>
-            <if test="uuid != null and uuid != '' ">        
-                uuid = #{uuid,jdbcType=VARCHAR},                
-            </if>
-            <if test="openudid != null and openudid != '' ">        
-                openudid = #{openudid,jdbcType=VARCHAR},                
-            </if>
-            <if test="udid != null and udid != '' ">        
-                udid = #{udid,jdbcType=VARCHAR},                
-            </if>
-            <if test="os != null and os != '' ">        
-                os = #{os,jdbcType=INTEGER},                
-            </if>
-            <if test="ip != null and ip != '' ">        
-                ip = #{ip,jdbcType=VARCHAR},                
-            </if>
-            <if test="ts != null and ts != '' ">        
-                ts = #{ts,jdbcType=VARCHAR},                
-            </if>
-            <if test="callbackUrl != null and callbackUrl != '' ">        
-                callback_url = #{callbackUrl,jdbcType=VARCHAR}                
-            </if>
-        </set>    
-        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
-    </update>
 
 
 	<select id="getUser" resultType="AfUserToutiaoDo">
         SELECT
-        id rid,active
+        id rid,active,gmt_modified
         FROM af_user_toutiao
         where is_delete = 0
         <if test="imei !=null and imei!=''">
             AND imei=#{imei}
         </if>
-        <if test="mac !=null and mac!=''">
-            AND mac=#{mac}
+        <if test="idfa !=null and idfa!=''">
+            AND idfa=#{idfa}
+        </if>
+        <if test="androidid1 !=null and androidid1!=''">
+            AND androidid1=#{androidid1}
+        </if>
+        limit 0,1
+    </select>
+
+    <select id="getUserActive" resultType="AfUserToutiaoDo">
+        SELECT
+        id rid,active,gmt_modified
+        FROM af_user_toutiao
+        where is_delete = 0 and active='0' and <![CDATA[ DATEDIFF(NOW(),gmt_modified)<='7'  ]]>
+        <if test="imei !=null and imei!=''">
+            AND imei=#{imei}
         </if>
         <if test="idfa !=null and idfa!=''">
             AND idfa=#{idfa}
         </if>
-        <if test="androidid !=null and androidid!=''">
-            AND androidid=#{androidid}
-        </if>
-        <if test="udid !=null and udid!=''">
-            AND udid=#{udid}
+        <if test="androidid1 !=null and androidid1!=''">
+            AND androidid1=#{androidid1}
         </if>
         limit 0,1
     </select>
@@ -272,6 +222,15 @@
                 gmt_modified = now()
         </set>
          where is_delete = 0 AND id=#{id}
+    </update>
+
+    <update id="uptUserActive"  parameterType="AfUserToutiaoDo">
+        UPDATE af_user_toutiao
+        <set>
+            gmt_modified = now(),
+            active='1'
+        </set>
+        where is_delete = 0 AND id=#{id}
     </update>
 
 </mapper>
