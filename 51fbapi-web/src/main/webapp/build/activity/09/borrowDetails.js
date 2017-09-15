@@ -1,6 +1,4 @@
-/**
- * Created by nizhiwei-labtop on 2017/9/12.
- */
+
 let vue=new Vue({
     el:'#vueCon',
     data:{
@@ -26,7 +24,7 @@ let vue=new Vue({
             {img:'3.png', txt:'25元现金75元红包',day:15,style:''},
         ],
         dialog:{
-            show:true,
+            show:false3,
             prizeShow:false,
             confId:'',
             txt:'获得现金'
@@ -46,7 +44,7 @@ let vue=new Vue({
                         data.img='5.png'
                     }
                 }
-            })
+            });
             if(num>=1){
                 this.day[0].img='4.gif';
                 this.day[0].style='active';
@@ -58,14 +56,15 @@ let vue=new Vue({
                 url:'/fanbei-web/signActivity?userName=18072975670',
                 success:function (data) {
                     data = eval('(' + data + ')');
+                    console.log(data);
                     if(data.success){
                         self.content=data.data;
+                        self.changeImg(self.content.signDays);
                         //红包文案修改
                         self.day[0].txt=self.content.gameConfList[0].couponNames.join('');
                         self.day[4].txt=self.content.gameConfList[1].couponNames.join('');
                         self.day[5].txt=self.content.gameConfList[2].couponNames.join('');
                         self.day[14].txt=self.content.gameConfList[3].couponNames.join('');
-                        self.changeImg(self.content.signDays)
                     }
                 }
             })
