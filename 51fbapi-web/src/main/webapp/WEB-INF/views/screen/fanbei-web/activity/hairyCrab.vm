@@ -9,7 +9,45 @@
 </head>
 <body>
 <div id="hairyCrab"  class="hairyCrab">
-
+    #*<div class="loadingMask"><i class="loading"></i></div>*#
+    <img class="first" src="$src/crab1.png">
+    <img class="first" src="$src/crab2.png">
+    <img class="first" src="$src/crab3.png">
+    <img class="first" src="$src/crab4.png">
+    <div class="coupon" @click="couponClick()"></div>
+    <div class="firstList">
+        <div class="firstTitle">秋风起 蟹脚黄</div>
+        <div class="firstCont">
+            <div class="cont" v-for="item in content.oneLevelGoodsInfo.goodsList" @click="goodClick(item)">
+                <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
+                <p class="goodName">{{txtFix(item.goodName,8)}}</p>
+                <p>
+                    <span class="salePrice">￥{{item.saleAmount}}</span>
+                    <span class="fan"></span>
+                    <span class="fanMoney">￥{{item.rebateAmount}}</span>
+                </p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供 ￥{{item.nperMap.amount}}起</p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供 ￥{{item.nperMap.freeAmount}}起</p>
+                <p class="buyNow">立即抢购</p>
+            </div>
+        </div>
+    </div>
+    <div class="secondList">
+            <div class="secondTitle">月团圆 饼甜香</div>
+            <div class="secondCont clearFix">
+                <div class="cont" v-for="item in content.twoLevelGoodsInfo.goodsList" @click="goodClick(item)">
+                    <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
+                    <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
+                    <p>
+                        <span class="salePrice">￥{{item.saleAmount}}</span>
+                        <span class="fan"></span>
+                        <span class="fanMoney">￥{{item.rebateAmount}}</span>
+                    </p>
+                    <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供 ￥{{item.nperMap.amount}}起</p>
+                    <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供 ￥{{item.nperMap.freeAmount}}起</p>
+                </div>
+            </div>
+        </div>
 </div>
 <script type="text/javascript" src="/dist/activity/09/hairyCrab.js?version=$version"></script>
 </body>
