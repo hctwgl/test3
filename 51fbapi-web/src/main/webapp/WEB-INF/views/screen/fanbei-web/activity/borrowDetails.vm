@@ -36,7 +36,7 @@
     <div class="shadow" v-if="dialog.prizeShow"></div>
     <div class="knowConfirm" v-if="dialog.prizeShow">
         <div class="headerImg">恭喜您</div>
-        <p>获得3元现金</p>
+        <p>{{dialog.txt}}</p>
         <div class="know" @click="dialog.prizeShow=false">知道了</div>
         <odiv class="close" @click="dialog.prizeShow=false"></odiv>
     </div>

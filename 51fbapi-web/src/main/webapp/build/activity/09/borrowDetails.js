@@ -75,8 +75,9 @@ let vue=new Vue({
             if(this.content.canClick){
                 if((day===1||day===5||day===10||day===15)&&this.content.signDays>=day){
                     this.dialog.show=true;
-                    this.dialog.confId=self.content.gameConfList[(day%5===0)?day/5:0].rid;
-                    this.dialog.txt=self.content.gameConfList[(day%5===0)?day/5:0].couponNames;
+                    let i=(day%5===0)?day/5:0;
+                    this.dialog.confId=this.content.gameConfList[i].rid;
+                    this.dialog.txt=this.content.gameConfList[i].couponNames;
 
                 }
             }
