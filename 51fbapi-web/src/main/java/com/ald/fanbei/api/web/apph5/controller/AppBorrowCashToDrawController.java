@@ -164,6 +164,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 	public String randomUser(HttpServletRequest request) {
 		String winAmount = request.getParameter("winAmount");
 
+		logger.info("randomUser is start , winAmount={}" +winAmount);
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
 		if ("Y".equals(resource.getValue4())) {
 
@@ -208,13 +209,13 @@ public class AppBorrowCashToDrawController extends BaseController {
 				if (amount < 1100) {
 					try {
 						afUserAccountService.updateBorrowCashActivity(amount, users);
+						// 传给前端一个开奖金额
+						String winamount = (String) bizCacheUtil.getObject("winAmount");
+						bizCacheUtil.saveObject("winAmount", Integer.parseInt(winamount) + 100 + "", 60 * 60 * 24 * 10);
 					} catch (FanbeiException e) {
 						logger.info("sendBorrowCashActivitys is fails," + e);
 					}
 				}
-				// 传给前端一个开奖金额
-				String winamount = (String) bizCacheUtil.getObject("winAmount");
-				bizCacheUtil.saveObject("winAmount", Integer.parseInt(winamount) + 100 + "", 60 * 60 * 24 * 10);
 				// 中奖用户存入缓存
 				String userJson = (String) bizCacheUtil.getObject("winAmount_Win_User");
 				if (StringUtil.isBlank(userJson)) {
