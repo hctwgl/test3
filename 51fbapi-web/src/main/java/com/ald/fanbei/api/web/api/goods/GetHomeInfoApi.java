@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.ald.fanbei.api.web.api.goods;
 
@@ -50,7 +50,7 @@ public class GetHomeInfoApi implements ApiHandle {
 
 	@Resource
 	AfResourceService afResourceService;
-	
+
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
 	
@@ -68,7 +68,7 @@ public class GetHomeInfoApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		
+
 		contextApp = context;
 		Map<String, Object> data = new HashMap<String, Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
@@ -83,7 +83,8 @@ public class GetHomeInfoApi implements ApiHandle {
 		Integer appVersion = context.getAppVersion();
 		try{
 			String userName = context.getUserName();
-			if(userName != null) {
+			Long userId = context.getUserId();
+			if(userName != null && userId != null) {
 				// 用户已登录,将登录信息存放到缓存中
 				String ltStoreKey = "GET_HOME_INFO_LT" + userName;
 				Object ltSaveObj = bizCacheUtil.getObject(ltStoreKey);
@@ -117,7 +118,6 @@ public class GetHomeInfoApi implements ApiHandle {
 					for(String couponId : couponIds) {
 						String[] tmp = couponId.split(":");
 						if(tmp.length > 1) continue;
-						Long userId = context.getUserId();
 						int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
 						if(count > 0 ) sended = true;
 						break;
@@ -129,7 +129,6 @@ public class GetHomeInfoApi implements ApiHandle {
 							bizCacheUtil.saveObject(gtStoreKey, "Y");
 							for(String couponId : couponIds) {
 								String[] tmp = couponId.split(":");
-								Long userId = context.getUserId();
 								// 用户发券
 								try{
 									if(tmp.length > 1) {
@@ -153,25 +152,26 @@ public class GetHomeInfoApi implements ApiHandle {
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
-		
+
 			if(appVersion >= 363){
 				bannerSecList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
 			}
             one2OneList = getObjectWithResourceDolist(
             		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
-            		
+
             one2ManyList = getOne2ManyObjectWithResourceDolist(
             		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
-            		
+
             one2TwoList = getOne2ManyObjectWithResourceDolist(
             		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
-            		
+
             one2TwoList2 = getOne2ManyObjectWithResourceDolist(
             		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo2.getCode()));
-            		
+
             homeActivityList = getOne2ManyObjectWithResourceDolist(
             		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
+            		
             navigationList = getObjectWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
@@ -183,23 +183,23 @@ public class GetHomeInfoApi implements ApiHandle {
 		    }
         	one2OneList = getObjectWithResourceDolist(
         		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneImage.getCode()));
-        		
+
         	one2ManyList = getOne2ManyObjectWithResourceDolist(
         		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToMany.getCode()));
-        		
+
         	one2TwoList = getOne2ManyObjectWithResourceDolist(
         		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo.getCode()));
-        		
+
         	one2TwoList2 = getOne2ManyObjectWithResourceDolist(
         		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo2.getCode()));
-        		
+
         	homeActivityList = getOne2ManyObjectWithResourceDolist(
         		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeActivity.getCode()));
         		//预发线上未区分
         	navigationList = getObjectWithResourceDolist(
         		afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		}
-		
+
 		data.put("bannerList", bannerList);
 		data.put("bannerSecList", bannerSecList);
 		data.put("homeActivityList",homeActivityList);
@@ -208,7 +208,7 @@ public class GetHomeInfoApi implements ApiHandle {
 		data.put("one2OneList", one2OneList);
 		data.put("navigationList", navigationList);
 		data.put("one2TwoList2",one2TwoList2);
-	
+		
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -252,7 +252,7 @@ public class GetHomeInfoApi implements ApiHandle {
 
 	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
 		List<Object> bannerList = new ArrayList<Object>();
-		
+
 		for (AfResourceDo afResourceDo : bannerResclist) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
@@ -303,16 +303,16 @@ public class GetHomeInfoApi implements ApiHandle {
 					Long goodsId = NumberUtil.objToLong(afResourceDo.getValue2());
 					AfActivityGoodsDo activityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsId(goodsId);
 					if(activityGoodsDo != null){
-						
+
 						data.put("startTime", activityGoodsDo.getStartTime());
 						data.put("validStart", activityGoodsDo.getValidStart());
 						data.put("validEnd", activityGoodsDo.getValidEnd());
-						data.put("currentTime", new Date());	
-					}	
+						data.put("currentTime", new Date());
+					}
 				}
-				
+
 			}
-			
+
 			if (StringUtil.equals(afResourceDo.getSecType(), AfResourceSecType.ResourceValue1MainImage.getCode())) {
 				oneData = data;
 			} else {
@@ -340,6 +340,6 @@ public class GetHomeInfoApi implements ApiHandle {
 		manyData.clear();
 		oneData.clear();
 	}
-	
+
 
 }

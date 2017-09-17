@@ -201,7 +201,8 @@ public class AppH5UserContorler extends BaseController {
 			return resp.toString();
 
 		} catch (Exception e) {
-			resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+			logger.error("发送验证码失败：",e);
+			resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
 			return resp.toString();
 		}finally{
 			doLog(request, resp,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("mobile"));
