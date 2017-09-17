@@ -18,9 +18,9 @@ var vm = new Vue({
         famen: true,
         timeoutdata: [],
         str: {},
-        hourData:"",
-        minuteData:"",
-        secondData:"",
+        hourData: "",
+        minuteData: "",
+        secondData: "",
     },
     created: function () {
         let _this = this;
@@ -43,29 +43,34 @@ var vm = new Vue({
                     var str = data.data; //获取返回的破十五亿金额
                     var num = JSON.parse(str);
                     console.log(num);
-                   _this.num = num; //转成json字符串
+                    _this.num = num; //转成json字符串
                     //console.log( _this.num);
-                    countDown(num,_this);//倒计时调用
+                    countDown({
+                            currentDate: num.currentDate,
+                            startrTime: num.startrTime,
+                            endTime: num.endTime
+                        },
+                        _this); //倒计时调用
 
                     //判断小额现金贷是否为10位
-                    var moneyTotal=num.amount;
+                    var moneyTotal = num.amount;
                     moneyTotal = moneyTotal.replace(/"/g, ""); //替换掉返回字符串中的引号
                     moneyTotal = moneyTotal.replace(/"/g, ""); //替换掉返回字符串中的点
                     var number = moneyTotal.split(""); //将字符串转化成数组
                     console.log(moneyTotal);
                     console.log(number);
-                     if (number.length >= 10) {
+                    if (number.length >= 10) {
                         //隐藏9位数的背景和样式
                         $(".totalMoney").hide();
                         $('.num').hide();
                         //让10位数的背景和样式显示
                         $('.totalMoney1').show();
                         $('.num1').show();
-                        
+
                     } else if (number.length >= 1500000000) { //到达15亿的时候
                         $("#scroll_div").show(); //显示顶部轮播
                     }
- 
+
 
                     ScrollImgLeft();
                     //文字轮播
@@ -228,73 +233,73 @@ function ScrollImgLeft() {
     }
 }
 //倒計時
- /* var num = {
+/* var num = {
     "amount": 1166942,
     "currentDate": 1504885534518,
     "startrTime": 1505016000000,
     "endTime": 1505361600000
 };  */
-function countDown(num,_this){
-                    var startrTime = num.currentDate; //当前后台时间
-                    var endTime = num.endTime;//活动结束时间
-                    var nowTime = num.startrTime; //活动开始时间
-                    console.log(new Date(startrTime));
-                    console.log(new Date(nowTime));
-                    console.log(new Date(endTime));
-                    var diffTimer, day, end;
-                    var Hour, Minute, Second;
-                    if (startrTime < nowTime) {
-                        $('#count').html('活动暂未开始')
-                    } else if (nowTime > endTime) {
-                        $('#count').html('活动结束')
-                    } else {
-                        var activeDaY = new Date(nowTime).getDate();
-                        var hour = new Date(nowTime).getHours();
-                        if (hour > 10 || new Date(startrTime).getDate() == new Date(nowTime).getDate()) {
-                            activeDaY += 1;
-                        }
-                        var year = new Date(nowTime).getFullYear();
-                        var month = new Date(nowTime).getMonth() + 1;
-                        var hourObj = document.getElementById("hour");
-                        var minuteObj = document.getElementById("minute");
-                        var secondObj =document.getElementById("second");
-                        clearInterval(timerId);
-                        timerId= setInterval(function () {
-                            nowTime += 1000;
-                            end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00');
-                            //end = new Date(year + '/' + month + '/' + activeDaY + ' 19:40:00');
-                            if (activeDaY == new Date(endTime).getDate()) {
-                                end = new Date(endTime);
-                            }
-                            // console.log(year + '/' + month + '/' + activeDaY + ' 10:00:00');
-                            // console.log(new Date(nowTime));
-                            t = end.getTime() - nowTime;
-                            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
-                            Minute = Math.floor(t / 1000 / 60 % 60);
-                            Second = Math.floor(t / 1000 % 60);
-                            _this.hourData = Hour;
-                            _this.minuteData = Minute;
-                            _this.secondData = Second;
-                            // hourObj.innerHTML = Hour + "时";
-                            // minuteObj.innerHTML = Minute + "分";
-                            // secondObj.innerHTML = Second + "秒";
-                            if (t < 1000) {
-                                // debugger
-                                nowTime = end.getTime();
-                                activeDaY = activeDaY + 1;
-                            }
-                            if(nowTime > endTime){
-                                _this.hourData = '00';
-                                _this.minuteData = "00";
-                                _this.secondData = "00";
-                            //   hourObj.innerHTML = 0 + "时";
-                            //   minuteObj.innerHTML = 0 + "分";
-                            //   secondObj.innerHTML = 0 + "秒";
-                              clearInterval(timerId)
-                            }
-                            // console.log(Second)
-                        },1000)
-                    }               
+function countDown(num, _this) {
+    var nowTime = num.currentDate; //当前后台时间
+    var endTime = num.endTime; //活动结束时间
+    var startrTime = num.startrTime; //活动开始时间
+    console.log(new Date(startrTime), '活动开始时间');
+    console.log(new Date(nowTime), '111后天服务器当前时间');
+    console.log(new Date(endTime), '活动结束时间');
+    var diffTimer, day, end;
+    var Hour, Minute, Second;
+    if (startrTime > nowTime) {
+        $('#count').html('活动暂未开始')
+    } else if (nowTime > endTime) {
+        $('#count').html('活动结束')
+    } else {
+        var activeDaY = new Date(nowTime).getDate();
+        var startDay = new Date(startrTime).getDate();
+        var endDay = new Date(endTime).getDate();
+        var hour = new Date(nowTime).getHours();
+        if (hour > 10 || startDay == activeDaY) {
+            activeDaY += 1;
+        }
+        var year = new Date(nowTime).getFullYear();
+        var month = new Date(nowTime).getMonth() + 1;
+        var hourObj = document.getElementById("hour");
+        var minuteObj = document.getElementById("minute");
+        var secondObj = document.getElementById("second");
+
+        clearInterval(timerId);
+        timerId = setInterval(function () {
+            nowTime += 1000;
+            //end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00'); //第二天结束时间
+            var tim = (year + '/' + month + '/' + activeDaY + ' 10:00:00');
+            end = new Date(tim);
+            // console.log(end)
+            if (activeDaY == endDay) {//后台当前时间和结束时间同一天的时候重新赋值
+                end = new Date(endTime);
+            }
+            t = end.getTime() - nowTime;
+            console.log(end.getTime())
+            console.log(nowTime)
+            console.log(t)
+            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+            Minute = Math.floor(t / 1000 / 60 % 60);
+            Second = Math.floor(t / 1000 % 60);
+            _this.hourData = Hour;
+            _this.minuteData = Minute;
+            _this.secondData = Second;
+            if (t < 1000) {
+                // debugger
+                nowTime = end.getTime();
+                activeDaY = activeDaY + 1;
+            }
+            if (nowTime > endTime) {
+                _this.hourData = '00';
+                _this.minuteData = "00";
+                _this.secondData = "00";
+                clearInterval(timerId)
+            }
+            // console.log(Second)
+        }, 1000)
+    }
 
 
 
