@@ -44,7 +44,9 @@ $('.coupon .button')
         data = eval('(' + data + ')');
         console.log(data)
         if (data.success) {
+          alert(data)
           requestMsg(data.msg)
+          requestMsg('3333')
         } else {
           if (data.url) {
             location.href = data.url;
