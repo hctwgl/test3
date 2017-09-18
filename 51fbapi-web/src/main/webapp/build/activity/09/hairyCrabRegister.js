@@ -59,6 +59,9 @@ function timeFunction(){ // 60s倒计时
 
 var vm=new Vue({
     el: '#hairyCrabRegister',
+    data:{
+        alertShow:''
+    },
     methods:{
         getImgCode(){  // 获取图形验证码
             var mobileNum = $("#tel").val();
@@ -149,7 +152,7 @@ var vm=new Vue({
             }
         },
         goRegister(){  // 立即注册
-
+            var self=this;
             var pwdLength = ($("#password").val()).length;
             var pwdMd5 = String(CryptoJS.MD5($("#password").val())); // md5加密
             var pwdReg=(/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/).test($("#password").val()); // 正则判断密码为6-18位字母+字符的组合
@@ -179,9 +182,13 @@ var vm=new Vue({
                                         pointCode:pointCode
                                     },
                                     success: function(returnData){
+                                        console.log(returnData)
                                         if ( returnData.success ) {
                                             $("#register_submitBtn").attr("disabled",true);
-                                            window.location.href = returnData.url;
+                                            self.alertShow='Y';
+                                            $('.goNow').click(function(){
+                                                window.location.href = returnData.url;
+                                            })
                                         } else {
                                             requestMsg(returnData.msg);
                                         }
@@ -205,6 +212,11 @@ var vm=new Vue({
             } else{
                 requestMsg("请填写正确的手机号");
             };
+        },
+        //关闭弹窗
+        closeAlert(){
+            let self=this;
+            self.alertShow='';
         }
     }
 });
