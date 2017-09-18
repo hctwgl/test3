@@ -23,6 +23,7 @@ public class AfShopVo extends AbstractSerial {
 	private String latestUseIcon;  //最近使用图标
 	private String shopActivity; //商城活动
 	private Integer latestOnline;//最新上线开启状态 0:关闭 1:开启
+	private String description;
 	
 	/**
 	 * @return the rid
@@ -125,6 +126,12 @@ public class AfShopVo extends AbstractSerial {
 	}
 	public void setLatestOnline(Integer latestOnline) {
 	    this.latestOnline = latestOnline;
+	}
+	public String getDescription() {
+	    return description;
+	}
+	public void setDescription(String description) {
+	    this.description = description;
 	}
 	
 	
