@@ -40,17 +40,16 @@ $('.coupon .button')
       },
       type: 'POST',
       success: function (data) {
+        requestMsg(data)
         data=eval('(' + data + ')');
         console.log(data)
         if (data.success) {
           requestMsg(data.msg)
-          requestMsg('1')
         } else {
           if (data.url) {
             location.href = data.url;
           } else {
-            requestMsg(data.msg);
-            requestMsg('2')
+            requestMsg(data.msg)
           }
         }
       }
