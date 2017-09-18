@@ -254,6 +254,7 @@ public class LoginApi implements ApiHandle {
 			String androidId = ObjectUtils.toString(requestDataVo.getParams().get("AndroidID"), null);
 			String idfa = ObjectUtils.toString(requestDataVo.getParams().get("IDFA"), null);
 			String imeiMd5="";
+			logger.error(imei+","+androidId+","+idfa);
 			if(StringUtils.isNotBlank(imei)){
 				imeiMd5=getMd5(imei);
 			}
