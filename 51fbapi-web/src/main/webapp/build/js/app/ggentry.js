@@ -33,9 +33,9 @@ window.onload = () => {
 
 $('.coupon .button')
   .click(function () {
+    requestMsg('111')
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
-      dataType: "JSON",
       data: {
         'sceneId': '9022',
       },
@@ -44,9 +44,7 @@ $('.coupon .button')
         data = eval('(' + data + ')');
         console.log(data)
         if (data.success) {
-          alert(data)
           requestMsg(data.msg)
-          requestMsg('3333')
         } else {
           if (data.url) {
             location.href = data.url;
@@ -67,7 +65,7 @@ let drainage = (scase)=>{
     $.ajax({
       url: '/fanbei-web/getBrandUrlV1',
       data: {
-        shopId: getShopId(scase),
+        shop: getShopId(scase),
       },
       type: 'POST',
       success: (data)=>{
