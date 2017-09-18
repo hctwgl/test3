@@ -43,7 +43,7 @@ $('.coupon .button')
         data = eval('(' + data + ')');
         console.log(data)
         if (data.success) {
-          requestMsg("领劵成功")
+          requestMsg(data.msg)
         } else {
           if (data.url) {
             location.href = data.url;
