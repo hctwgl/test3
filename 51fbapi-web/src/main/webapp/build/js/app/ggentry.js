@@ -40,7 +40,7 @@ $('.coupon .button')
       },
       type: 'POST',
       success: function (data) {
-        data = JSON.parse(data);
+        data=eval('(' + data + ')');
         console.log(data)
         if (data.success) {
           requestMsg(data.msg)
