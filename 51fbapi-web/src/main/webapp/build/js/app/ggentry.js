@@ -38,18 +38,19 @@ $('.coupon .button')
       data: {
         'sceneId': 9014,
       },
-      dataType: "JSON",
       type: 'POST',
       success: function (data) {
         data = JSON.parse(data);
         console.log(data)
         if (data.success) {
           requestMsg(data.msg)
+          requestMsg('1')
         } else {
           if (data.url) {
             location.href = data.url;
           } else {
             requestMsg(data.msg);
+            requestMsg('2')
           }
         }
       }
