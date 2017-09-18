@@ -74,15 +74,16 @@ public class ToutiaoController extends BaseController {
                     afUserToutiaoService.creatUser(afUserToutiaoDo);
                     logger.error("toutiaoresult:creat success:"+afUserToutiaoDo.toString());
                 }else{
-                    int active = tdo.getActive();
+                    //int active = tdo.getActive();
                     Long rid = tdo.getRid();
                     afUserToutiaoService.uptUser(rid);
-                    if(active!=0){
+                    logger.error("toutiaoresult:update success"+afUserToutiaoDo.toString());
+                    /*if(active!=0){
                         String result= HttpUtil.doGet(callbackUrl,20);
                         logger.error("toutiaoresult:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
                     }else{
                         logger.error("toutiaoresult:update success,active=0,id="+rid);
-                    }
+                    }*/
                 }
             }else{
                 returnjson.put("ret",-1);

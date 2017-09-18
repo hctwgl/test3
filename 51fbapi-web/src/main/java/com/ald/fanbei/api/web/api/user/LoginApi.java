@@ -116,7 +116,7 @@ public class LoginApi implements ApiHandle {
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
 		loginDo.setUuid(uuid);
-
+		ToutiaoAdActive(requestDataVo);
 		// check login failed count,if count greater than 5,lock specify hours
 		AfResourceDo lockHourResource = afResourceService
 				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
@@ -125,7 +125,6 @@ public class LoginApi implements ApiHandle {
 			if (afUserDo.getFailCount() > 5) {
 				loginDo.setResult("false:err count too max" + afUserDo.getFailCount());
 				afUserLoginLogService.addUserLoginLog(loginDo);
-				ToutiaoAdActive(requestDataVo);
 				return new ApiHandleResponse(requestDataVo.getId(),
 						FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5);
 			}
@@ -263,6 +262,9 @@ public class LoginApi implements ApiHandle {
 				if(tdo!=null){
 					Long rid = tdo.getRid();
 					afUserToutiaoService.uptUserActive(rid);
+					String callbackUrl = tdo.getCallbackUrl();
+					String result= HttpUtil.doGet(callbackUrl,20);
+					logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
 				}
 			}
 		}catch (Exception e){

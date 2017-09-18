@@ -200,7 +200,7 @@
 
     <select id="getUserActive" resultType="AfUserToutiaoDo">
         SELECT
-        id rid,active,gmt_modified
+        id rid,active,gmt_modified,callback_url
         FROM af_user_toutiao
         where is_delete = 0 and active='0' and <![CDATA[ DATEDIFF(NOW(),gmt_modified)<='7'  ]]>
         <if test="imei !=null and imei!=''">
