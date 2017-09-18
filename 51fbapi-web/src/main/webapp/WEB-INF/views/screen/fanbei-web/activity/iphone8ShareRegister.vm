@@ -8,9 +8,9 @@
 </head>
 <body>
 <div id="iphone8ShareRegister" class="inviteShare">
-    <img src="$commonUrl/iphone8_03.jpg">
+    <img src="$commonUrl/iphone8_03.png">
     <div class="inviteShareContWrap">
-        <img src="$commonUrl/iphone8_04.jpg">
+        <img src="$commonUrl/iphone8_04.png">
         <ul class="inviteShareCont">
             <li><input type="text" id="tel" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
             <li class="passwordWrap"><input type="password" id="password" placeholder="请设置登录密码" name="words" maxlength="18"></li>

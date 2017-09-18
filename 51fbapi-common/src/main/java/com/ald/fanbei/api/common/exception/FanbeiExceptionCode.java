@@ -41,6 +41,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_REGIST_CHANNEL_NOTEXIST("USER_REGIST_SMS_NOTEXIST",1138,"user regist channel code not exist","渠道编号不正确"),
     USER_REGIST_IMAGE_NOTEXIST("USER_REGIST_IMAGE_NOTEXIST",1139,"user regist image not exist","图片验证码不正确"),
     USER_REGIST_IMAGE_ERROR("USER_REGIST_IMAGE_ERROR",1140,"user regist image error","图片验证码不正确"),
+    USER_REGIST_IMAGE_ERROR2("USER_REGIST_IMAGE_ERROR",1141,"user regist image error","图片验证码不正确"),
 
     USER_REGIST_SMS_OVERDUE("USER_REGIST_SMS_OVERDUE",1107,"user regist sms overdue","验证码已经过期"),
     USER_REGIST_ACCOUNT_EXIST("USER_REGIST_ACCOUNT_EXIST",1108,"user regist account exist","用户已存在"),

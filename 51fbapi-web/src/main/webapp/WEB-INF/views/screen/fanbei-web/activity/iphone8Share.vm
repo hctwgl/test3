@@ -16,6 +16,7 @@
         <p class="time"><span>9.25<br/>新品发货</span></p>
     </div>
     <div class="banner">
+        <img src="$src/iphone8_01.png">
         <div class="orderButton" @click="orderAndGoodClick()">1元预约 立减100元</div>
     </div>
     <div class="rule" @click="ruleClick()">活动规则</div>
@@ -50,8 +51,8 @@
             <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
             <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
-            #*<p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>*#
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
             <p class="limitTime">限时秒杀</p>
         </div>
         <div class="goodList02 clearFix"  v-for="item in content.thirdList"  @click="orderAndGoodClick()">
@@ -59,9 +60,11 @@
             <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
             <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
-            <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
-            #*<p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>*#
+            <div style="padding-left:.17rem;">
+                <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
+            </div>
         </div>
     </div>
 </div>

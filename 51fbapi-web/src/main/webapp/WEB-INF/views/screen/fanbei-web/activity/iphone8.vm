@@ -16,6 +16,7 @@
         <p class="time"><span>9.25<br/>新品发货</span></p>
     </div>
     <div class="banner">
+        <img src="$src/iphone8_01.png">
         <div class="orderDes" v-if="orderStatus==='SUCCESS'&&loginStatus==='Y'">恭喜您预约成功，iPhone8将在9.20正式开售<br/>100元代金券请在“我的-抵用券”里查看</div>
         <div class="orderButton" v-for="item in content.firstList" @click="orderClick(item)" v-else>1元预约 立减100元</div>
         <div class="orderButton orderButton01" v-for="item in content.firstList" @click="buyClick(item)">立即购买</div>
@@ -52,19 +53,21 @@
             <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
             <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
-            #*<p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>*#
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
             <p class="limitTime">限时秒杀</p>
         </div>
         <div class="goodList02 clearFix"  v-for="item in content.thirdList"  @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodName"  style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-            <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''"  style="-webkit-box-orient: vertical;">{{item.remark}}</p>
+            <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
-            <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
-            #*<p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>*#
-        </div>
+            <div style="padding-left:.17rem;">
+               <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
+               <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
+               <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供<span>{{item.nperMap.freeAmount}}</span>元起</p>
+            </div>
+            </div>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/08/iphone8.js?version=$version"></script>
