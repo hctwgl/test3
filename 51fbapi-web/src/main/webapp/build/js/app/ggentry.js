@@ -46,11 +46,7 @@ $('.coupon .button')
           requestMsg("领劵成功")
         } else {
           if (data.url) {
-            if (getBlatFrom() == 2) {
-              location.href = data.url;
-            } else {
-              requestMsg("请退出当前活动页面,登录后再进行领劵");
-            }
+            location.href = data.url;
           } else {
             requestMsg(data.msg);
           }
