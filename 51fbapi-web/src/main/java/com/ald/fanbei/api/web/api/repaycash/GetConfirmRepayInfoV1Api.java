@@ -123,7 +123,7 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
         }
 
 
-        bizCacheUtil.delCache(CacheConstants.RESOURCE.RESOURCE_CONFIG_TYPES_LIST.getCode());
+        //bizCacheUtil.delCache(CacheConstants.RESOURCE.RESOURCE_CONFIG_TYPES_LIST.getCode());
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
         AfResourceDo zfbDo = null;
