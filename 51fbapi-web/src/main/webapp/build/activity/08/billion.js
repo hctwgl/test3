@@ -273,13 +273,13 @@ function countDown(num, _this) {
             var tim = (year + '/' + month + '/' + activeDaY + ' 10:00:00');
             end = new Date(tim);
             // console.log(end)
-            if (activeDaY == endDay) {//后台当前时间和结束时间同一天的时候重新赋值
+           /*  if (activeDaY == endDay) {//后台当前时间和结束时间同一天的时候重新赋值
                 end = new Date(endTime);
-            }
+            } */
             t = end.getTime() - nowTime;
-            console.log(end.getTime())
+            /* console.log(end.getTime())
             console.log(nowTime)
-            console.log(t)
+            console.log(t) */
             Hour = Math.floor(t / 1000 / 60 / 60 % 24);
             Minute = Math.floor(t / 1000 / 60 % 60);
             Second = Math.floor(t / 1000 % 60);
