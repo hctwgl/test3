@@ -50,7 +50,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private BigDecimal repaymentAmount;//应还金额
 	private Long borrowId;//借钱id
 	private String riskStatus;
-
+	private String secType;//二级分类
 	/**
 	 * @return the rid
 	 */
@@ -434,4 +434,11 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 		this.isValid = isValid;
 	}
 
+	public String getSecType() {
+		return secType;
+	}
+
+	public void setSecType(String secType) {
+		this.secType = secType;
+	}
 }

@@ -40,7 +40,8 @@ public class AfResourceServiceImpl implements AfResourceService {
 	protected static Logger logger = LoggerFactory.getLogger(AfResourceServiceImpl.class);
 	String types = Constants.RES_GAME_AWARD_OF_CATCH_DOLL + "," + Constants.RES_GAME_CATCH_DOLL_CLIENT_RATE + ","
 			+ Constants.RES_GAME_AWARD_COUNT_LIMIT;
-
+	@Resource
+	BizCacheUtil	bizCacheUtil;
 	@Resource
 	AfResourceDao afResourceDao;
 //	@Resource
