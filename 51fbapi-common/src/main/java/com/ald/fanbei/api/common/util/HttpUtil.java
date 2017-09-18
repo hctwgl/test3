@@ -37,6 +37,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -488,6 +489,9 @@ public class HttpUtil {
         HttpPost post = postForm(url, params);
 
         body = invoke(httpclient, post);
+        httpclient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 120000);
+        httpclient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 120000);
+
 
         httpclient.getConnectionManager().shutdown();
 
