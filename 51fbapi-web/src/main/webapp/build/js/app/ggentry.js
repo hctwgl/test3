@@ -33,11 +33,10 @@ window.onload = () => {
 
 $('.coupon .button')
   .click(function () {
-    requestMsg('111')
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
       data: {
-        'sceneId': '9022',
+        'sceneId': 9022,
       },
       type: 'POST',
       success: function (data) {
