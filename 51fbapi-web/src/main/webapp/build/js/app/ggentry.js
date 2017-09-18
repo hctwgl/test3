@@ -1,8 +1,3 @@
-let userName = "";
-if (getInfo().userName) {
-  userName = getInfo().userName;
-};
-
 
 /**
  * 商城id
@@ -39,10 +34,9 @@ window.onload = () => {
 $('.coupon .button')
   .click(function () {
     $.ajax({
-      url: '/fanbei-web/pickBoluomeCoupon',
+      url: '/fanbei-web/pickBoluomeCouponV1',
       data: {
         'sceneId': '9022',
-        'userName': userName
       },
       type: 'POST',
       success: function (data) {
@@ -72,10 +66,9 @@ $('.coupon .button')
 let drainage = (scase)=>{
   $('.' + scase + ' .button').on('click', ()=>{
     $.ajax({
-      url: '/fanbei-web/getBrandUrl',
+      url: '/fanbei-web/getBrandUrlV1',
       data: {
         shop: getShopId(scase),
-        userName: userName,
       },
       type: 'POST',
       success: (data)=>{
@@ -105,6 +98,4 @@ drainage('ele')
 drainage('yiguo')
 drainage('lumama')
 drainage('xiecheng')
-
-
 
