@@ -123,8 +123,8 @@ function alaShareData(){
         "type": "share", // 此页面的类型
         "shareAppTitle": "@所有人，买阳澄湖大闸蟹也可分期了",  // 分享的title
         'shareAppContent': "终于等到你，还好我没放弃。【阳澄湖大闸蟹礼劵】预订开始啦~!最低只要119元6只装",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/09/iphone8_06.jpg",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/iphone8Share?modelId="+modelId+"&groupId="+groupId,  // 分享后的链接
+        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/09/crab9.png",  // 分享右边小图
+        "shareAppUrl": domainName+"/fanbei-web/activity/hairyCrabShare?modelId="+modelId+"&groupId="+groupId,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "hairyCrabShare" // 分享的页面
     };
