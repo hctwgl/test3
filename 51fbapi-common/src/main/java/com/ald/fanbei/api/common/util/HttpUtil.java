@@ -490,8 +490,8 @@ public class HttpUtil {
         HttpPost post = postForm(url, params);
 
         body = invoke(httpclient, post);
-        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 300000); //连接超时
-        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 300000);          //获取数据超时
+        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 120000); //连接超时
+        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 120000);          //获取数据超时
         httpclient.getConnectionManager().shutdown();
 
         return body;
