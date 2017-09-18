@@ -36,11 +36,12 @@ $('.coupon .button')
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
       data: {
-        'sceneId': 9022,
+        'sceneId': 9014,
       },
+      dataType: "JSON",
       type: 'POST',
       success: function (data) {
-        data = eval('(' + data + ')');
+        data = JSON.parse(data);
         console.log(data)
         if (data.success) {
           requestMsg(data.msg)
