@@ -36,7 +36,6 @@ body{
 /*秋风起 蟹脚黄*/
 .hairyCrab .firstList{
   position: relative;
-  height:5.45rem;
   width:100%;
 }
 .hairyCrab .firstList .firstTitle,.hairyCrab .secondList .secondTitle{
@@ -53,23 +52,26 @@ body{
   left: 0;
   top:0;
 }
+.hairyCrab .firstList .firstTitle{
+  top:-.6rem;
+}
 .hairyCrab .secondList .secondTitle{
   top:-1rem;
 }
 .hairyCrab .firstList .firstCont{
   background:#2c3087;
   width:92%;
-  height:4.5rem;
-  position: absolute;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  margin: .6rem auto 0;
+  padding: .45rem 0 .25rem;
 }
 .hairyCrab .firstList .firstCont .cont{
   width:6.56rem;
   height:3.6rem;
-  margin:.48rem auto 0;
+  margin:0 auto .2rem;
   background:#fff;
+}
+.hairyCrab .firstList .firstCont .cont:nth-child(1){
+  margin:.48rem auto .2rem;
 }
 .hairyCrab .firstList .firstCont .cont .goodImg{
   width:2.96rem;

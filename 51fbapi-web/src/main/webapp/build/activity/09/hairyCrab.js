@@ -1,5 +1,5 @@
 
-let activityId=getUrl('activityId');//获取活动id
+let modelId=getUrl('modelId');//获取模板id
 let groupId=getUrl('groupId');//获取优惠券组id
 //获取数据
 let vm = new Vue({
@@ -18,10 +18,13 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: "/fanbei-web/newEncoreActivityInfo",
-                data:{'activityId':activityId},
+                url: "/fanbei-web/partActivityInfo",
+                data:{'modelId':modelId},
                 success: function (data) {
-                    self.content = eval('(' + data + ')').data;
+                    self.content = eval('(' + data + ')').data.activityList.slice(0,2);
+                    console.log(eval('(' + data + ')').data);
+                    self.content.firstList=self.content[0].activityGoodsList;
+                    self.content.secondList=self.content[1].activityGoodsList;
                     console.log(self.content);
                     self.$nextTick(function () {
                         /*图片预加载*/
