@@ -35,6 +35,7 @@ $('.coupon .button')
   .click(function () {
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
+      dataType: "JSON",
       data: {
         'sceneId': '9022',
       },
