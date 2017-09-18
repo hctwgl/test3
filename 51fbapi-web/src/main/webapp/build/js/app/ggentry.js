@@ -87,6 +87,17 @@ let drainage = (scase)=>{
         }
       }
     })
+
+    $.ajax({
+      url: '/fanbei-web/postMaidianInfo',
+      data: {
+        'maidianInfo': getShopId(scase)
+      },
+      type: 'POST',
+      succuess: (data) => {
+        console.log(data)
+      }
+    })
   })
 }
 
