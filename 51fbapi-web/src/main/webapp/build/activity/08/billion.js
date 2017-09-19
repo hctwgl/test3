@@ -83,7 +83,7 @@ var vm = new Vue({
             _this.$nextTick(function () {
                 RMB = document.getElementById('RMB').innerHTML;
                 //判断开奖金额大于600时显示右侧中奖用户列表
-                if (RMB = 600) {
+                if (RMB > 600) {
                     $(".winningUser").show();
                     $(".cash").css({
                         'width': '3rem',
