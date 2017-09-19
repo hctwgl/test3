@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170919")
+    #set($src="http://f.51fanbei.com/h5/app/activity/09")
+    <meta charset="UTF-8">
+    <title>初春美妆种草季</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/09/beauty.css">
+</head>
+<body>
+<div id="beauty"  class="beauty">
+
+</div>
+<script type="text/javascript" src="/dist/activity/09/beauty.js?version=$version"></script>
+</body>
+</html>
