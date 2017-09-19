@@ -23,9 +23,9 @@ let addModel = function addModel(goodsList,dom,state) {
             var saleAmount = toDecimal2(goodsList[j].saleAmount);
 
             if(goodsList[j].goodsType==1){
-                let amount=` <span>￥${goodsList[j].nperMap.freeAmount}</span><span class="fs_22">起</span>`;
+                let amount=` <span>¥${goodsList[j].nperMap.freeAmount}</span><span class="fs_22">起</span>`;
                 if(goodsList[j].nperMap.isFree==0){
-                    amount=` <span>￥${goodsList[j].nperMap.amount}</span><span class="fs_22">起</span>`;
+                    amount=` <span>¥${goodsList[j].nperMap.amount}</span><span class="fs_22">起</span>`;
                 }
                 con=`<div class="goodsListModel_mainContent_rebate clearfix">
                         <span class="goodsListModel_rebate fl fs_22 fsc_f tac">月供</span>
@@ -41,8 +41,8 @@ let addModel = function addModel(goodsList,dom,state) {
                         <div class="goodsListModel_mainContent_wrap">
                             <p class="fs_26 fsc_1">${goodsList[j].name}</p>
                             <p>                   
-                            <span>￥${saleAmount}</span>
-                                <span class="fsc_red fr"><i class="ba"></i>￥${goodsList[j].rebateAmount}</span>
+                            <span>¥${saleAmount}</span>
+                                <span class="fsc_red fr"><i class="ba"></i>¥${goodsList[j].rebateAmount}</span>
                             </p>
                         </div>
                         ${con}
