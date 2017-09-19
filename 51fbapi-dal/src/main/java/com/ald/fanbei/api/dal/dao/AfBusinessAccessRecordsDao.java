@@ -65,4 +65,9 @@ public interface AfBusinessAccessRecordsDao extends BaseDao<AfBusinessAccessReco
 	 * @return
 	 */
 	int getTotalSignCount(AfBusinessAccessRecordQuery query);
+
+	List<AfBusinessAccessRecordsDo> getTotalSign();
+
+	//获取签到活动期间总共remark为sign的list
+	List<AfBusinessAccessRecordsDo> getTotalSignList(@Param("userId")Long userId);
 }

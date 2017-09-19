@@ -486,7 +486,7 @@ public class AppH5GameController  extends BaseController{
 //			context = doWebCheck(request, false);
 //			String userName = context.getUserName();
 			Map<String,Object> data = new HashMap<String,Object>();
-			String userName = request.getParameter("userName");
+			String userName = request.getParameter("userName");//线上去掉
 			AfUserDo userDo = afUserService.getUserByUserName(userName);
 			if(userDo == null){
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();

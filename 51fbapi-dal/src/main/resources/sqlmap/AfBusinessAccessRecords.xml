@@ -241,4 +241,16 @@ id,gmt_create,user_id,source_ip,ref_type,ref_id,extra_info,remark,channel
         AND gmt_create <![CDATA[  <  ]]> #{endTime}
         AND gmt_create <![CDATA[  >=  ]]> #{beginTime}
     </select>
+
+    <select id="getTotalSignList" resultType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo" parameterType="Long">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        AND remark='sign'
+        AND ref_type = 'LOANSUPERMARKET'
+        AND DATE_FORMAT(gmt_create,'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+    </select>
+
 </mapper>

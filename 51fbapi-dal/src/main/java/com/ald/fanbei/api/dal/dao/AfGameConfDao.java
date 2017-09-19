@@ -29,4 +29,6 @@ public interface AfGameConfDao {
 	 * @return
 	 */
 	AfGameConfDo getByIdAndCode(@Param("id")Long id, @Param("gameCode")String gameCode);
+
+
 }
