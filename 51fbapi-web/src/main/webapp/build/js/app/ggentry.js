@@ -101,11 +101,11 @@ let drainage = (scase)=>{
       success: (data)=>{
         data=eval('(' + data + ')');
         requestMsg(data.url)
-        if(data.success){
-           location.href=data.url;
-        }else{
-           location.href=data.url;
-        }
+        // if(data.success){
+        //    location.href=data.url;
+        // }else{
+        //    location.href=data.url;
+        // }
       }
     })
 
