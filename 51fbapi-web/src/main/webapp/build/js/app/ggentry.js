@@ -39,7 +39,7 @@ window.onload = () => {
       data=eval('(' + data + ')')
 
       sceneId = data.data.boluomeCouponList[0].sceneId
-      if(data.data.boluomeCouponList[0].isHas) {
+      if(data.data.boluomeCouponList[0].isHas == 'Y') {
         $('.coupon .button').addClass('grey')
       }
 
@@ -50,6 +50,7 @@ window.onload = () => {
 
 $('.coupon .button')
   .click(function () {
+    loading();
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
       data: {
@@ -57,10 +58,9 @@ $('.coupon .button')
       },
       type: 'POST',
       success: function (data) {
-        // requestMsg(data)
-        data=eval('(' + data + ')');
-        // console.log(data)
+        data=eval('(' + data + ')')
         if (data.success) {
+          $(".loadingMask").fadeOut();
           requestMsg(data.msg)
           $.ajax({
             url: '/H5GG/showCoupon',
@@ -69,7 +69,7 @@ $('.coupon .button')
               data=eval('(' + data + ')')
         
               sceneId = data.data.boluomeCouponList[0].sceneId
-              if(data.data.boluomeCouponList[0].isHas) {
+              if(data.data.boluomeCouponList[0].isHas == 'Y') {
                 $('.coupon .button').addClass('grey')
               }
         
