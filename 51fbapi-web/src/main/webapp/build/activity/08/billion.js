@@ -264,7 +264,7 @@ var vm = new Vue({
             timerId = setInterval(function () {
                 nowTime += 1000;
                 //end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00'); //第二天结束时间
-                var tim = (year + '/' + month + '/' + activeDaY + ' 16:10:00');
+                var tim = (year + '/' + month + '/' + activeDaY + ' 10:00:00');
                 end = new Date(tim);
                 //console.log(end)
                 if (activeDaY == endDay) {//后台当前时间和结束时间同一天的时候重新赋值
