@@ -139,4 +139,6 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getConfigsByTypesAndSecType(@Param("type")String type,@Param("secType")String secType);
 
+	List<AfResourceDo> getCarouselToManyResourceOrderByType(@Param("type")String type);
+
 }
