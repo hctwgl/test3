@@ -36,19 +36,20 @@ $('.coupon .button')
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
       data: {
-        'sceneId': '9022',
+        'sceneId': 9014,
       },
       type: 'POST',
       success: function (data) {
-        data = eval('(' + data + ')');
+        requestMsg(data)
+        data=eval('(' + data + ')');
         console.log(data)
         if (data.success) {
-          requestMsg("领劵成功")
+          requestMsg(data.msg)
         } else {
           if (data.url) {
             location.href = data.url;
           } else {
-            requestMsg(data.msg);
+            requestMsg(data.msg)
           }
         }
       }
@@ -64,7 +65,7 @@ let drainage = (scase)=>{
     $.ajax({
       url: '/fanbei-web/getBrandUrlV1',
       data: {
-        shopId: getShopId(scase),
+        shop: getShopId(scase),
       },
       type: 'POST',
       success: (data)=>{
