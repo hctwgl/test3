@@ -50,7 +50,6 @@ window.onload = () => {
 
 $('.coupon .button')
   .click(function () {
-    loading();
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
       data: {
@@ -60,7 +59,6 @@ $('.coupon .button')
       success: function (data) {
         data=eval('(' + data + ')')
         if (data.success) {
-          $(".loadingMask").fadeOut();
           requestMsg(data.msg)
           $.ajax({
             url: '/H5GG/showCoupon',
