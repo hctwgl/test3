@@ -146,6 +146,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	                    } 
 						bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 	                }
+	                bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 				return 1;
 			}
 		});
