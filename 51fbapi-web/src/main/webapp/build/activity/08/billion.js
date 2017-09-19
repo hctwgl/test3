@@ -2,6 +2,7 @@ var RMB = 0;
 var t = 0;
 var startTime = null;
 var timerId;
+var diff=0;//時間間距
 var vm = new Vue({
     el: '#billion',
     data: {
@@ -57,8 +58,8 @@ var vm = new Vue({
                     moneyTotal = moneyTotal.replace(/"/g, ""); //替换掉返回字符串中的引号
                     moneyTotal = moneyTotal.replace(/"/g, ""); //替换掉返回字符串中的点
                     var number = moneyTotal.split(""); //将字符串转化成数组
-                    console.log(moneyTotal);
-                    console.log(number);
+                    /* console.log(moneyTotal);
+                    console.log(number); */
                     if (number.length >= 10) {
                         //隐藏9位数的背景和样式
                         $(".totalMoney").hide();
@@ -188,11 +189,6 @@ var vm = new Vue({
                         // console.log(JSON.parse(data[key]));
                         t[a] = JSON.parse(data[key]);
                     }
-                    //   console.log(600,t.list600);
-                    //   console.log(700,t.list700);
-                    //   console.log(800,t.list800);
-                    //   console.log(900,t.list900);
-                    //   console.log(1000,t.list1000);
 
                 }
             })
@@ -209,98 +205,91 @@ var vm = new Vue({
     }
 
 });
+    //文字轮播
+    function ScrollImgLeft() {
+        var speed = 50;
+        var MyMar = null;
+        var scroll_begin = document.getElementById("scroll_begin");
+        var scroll_end = document.getElementById("scroll_end");
+        var scroll_div = document.getElementById("scroll_div");
+        scroll_end.innerHTML = scroll_begin.innerHTML;
 
-function ScrollImgLeft() {
-    var speed = 50;
-    var MyMar = null;
-    var scroll_begin = document.getElementById("scroll_begin");
-    var scroll_end = document.getElementById("scroll_end");
-    var scroll_div = document.getElementById("scroll_div");
-    scroll_end.innerHTML = scroll_begin.innerHTML;
-
-    function Marquee() {
-        if (scroll_end.offsetWidth - scroll_div.scrollLeft <= 0)
-            scroll_div.scrollLeft -= scroll_begin.offsetWidth;
-        else
-            scroll_div.scrollLeft++;
-    }
-    MyMar = setInterval(Marquee, speed);
-    scroll_div.onmouseover = function () {　　　　　　　
-        clearInterval(MyMar);　　　　　
-    }
-    scroll_div.onmouseout = function () {　　　　　　　
-        MyMar = setInterval(Marquee, speed);　　　　　　　　　
-    }
-}
-//倒計時
-/* var num = {
-    "amount": 1166942,
-    "currentDate": 1504885534518,
-    "startrTime": 1505016000000,
-    "endTime": 1505361600000
-};  */
-function countDown(num, _this) {
-    var nowTime = num.currentDate; //当前后台时间
-    var endTime = num.endTime; //活动结束时间
-    var startrTime = num.startrTime; //活动开始时间
-    console.log(new Date(startrTime), '活动开始时间');
-    console.log(new Date(nowTime), '111后天服务器当前时间');
-    console.log(new Date(endTime), '活动结束时间');
-    var diffTimer, day, end;
-    var Hour, Minute, Second;
-    if (startrTime > nowTime) {
-        $('#count').html('活动暂未开始')
-    } else if (nowTime > endTime) {
-        $('#count').html('活动结束')
-    } else {
-        var activeDaY = new Date(nowTime).getDate();
-        var startDay = new Date(startrTime).getDate();
-        var endDay = new Date(endTime).getDate();
-        var hour = new Date(nowTime).getHours();
-        if (hour > 10 || startDay == activeDaY) {
-            activeDaY += 1;
+        function Marquee() {
+            if (scroll_end.offsetWidth - scroll_div.scrollLeft <= 0)
+                scroll_div.scrollLeft -= scroll_begin.offsetWidth;
+            else
+                scroll_div.scrollLeft++;
         }
-        var year = new Date(nowTime).getFullYear();
-        var month = new Date(nowTime).getMonth() + 1;
-        var hourObj = document.getElementById("hour");
-        var minuteObj = document.getElementById("minute");
-        var secondObj = document.getElementById("second");
-
-        clearInterval(timerId);
-        timerId = setInterval(function () {
-            nowTime += 1000;
-            //end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00'); //第二天结束时间
-            var tim = (year + '/' + month + '/' + activeDaY + ' 10:00:00');
-            end = new Date(tim);
-            // console.log(end)
-             if (activeDaY == endDay) {//后台当前时间和结束时间同一天的时候重新赋值
-                end = new Date(endTime);
-            } 
-            t = end.getTime() - nowTime;
-            /* console.log(end.getTime())
-            console.log(nowTime)
-            console.log(t) */
-            Hour = Math.floor(t / 1000 / 60 / 60 % 24);
-            Minute = Math.floor(t / 1000 / 60 % 60);
-            Second = Math.floor(t / 1000 % 60);
-            _this.hourData = Hour;
-            _this.minuteData = Minute;
-            _this.secondData = Second;
-            if (t < 1000) {
-                // debugger
-                nowTime = end.getTime();
-                activeDaY = activeDaY + 1;
-            }
-            if (nowTime > endTime) {
-                _this.hourData = '00';
-                _this.minuteData = "00";
-                _this.secondData = "00";
-                clearInterval(timerId)
-            }
-            // console.log(Second)
-        }, 1000)
+        MyMar = setInterval(Marquee, speed);
+        scroll_div.onmouseover = function () {　　　　　　　
+            clearInterval(MyMar);　　　　　
+        }
+        scroll_div.onmouseout = function () {　　　　　　　
+            MyMar = setInterval(Marquee, speed);　　　　　　　　　
+        }
     }
 
+    //倒計時
+    function countDown(num, _this) {
+        var nowTime = num.currentDate; //当前后台时间
+        var endTime = num.endTime; //活动结束时间
+        var startrTime = num.startrTime; //活动开始时间
+        /* console.log(new Date(startrTime), '活动开始时间');
+        console.log(new Date(nowTime), '111后天服务器当前时间');
+        console.log(new Date(endTime), '活动结束时间'); */
+        var diffTimer, day, end;
+        var Hour, Minute, Second;
+        if (startrTime > nowTime) {
+            $('#count').html('活动暂未开始')
+        } else if (nowTime > endTime) {
+            $('#count').html('活动结束');
+
+        } else {
+            var startDay = new Date(startrTime).getDate();//活动开始日
+            var endDay = new Date(endTime).getDate()//活动结束日
+            var hour = new Date(nowTime).getHours();//服务器当前时
+            var year = new Date(nowTime).getFullYear();//服务器当前年
+            var month = new Date(nowTime).getMonth() + 1;//服务器当前月
+            var activeDaY = new Date(nowTime).getDate();//服务器当前日
+            var hourObj = document.getElementById("hour");
+            var minuteObj = document.getElementById("minute");
+            var secondObj = document.getElementById("second");
+
+            if (hour > 10 || startDay == activeDaY) {
+                activeDaY += 1;
+            } 
+            //定时器
+            clearInterval(timerId);
+            timerId = setInterval(function () {
+                nowTime += 1000;
+                //end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00'); //第二天结束时间
+                var tim = (year + '/' + month + '/' + activeDaY + ' 10:00:00');
+                end = new Date(tim);
+                //console.log(end)
+                if (activeDaY == endDay) {//后台当前时间和结束时间同一天的时候重新赋值
+                    end = new Date(endTime);
+                } 
+                t = end.getTime() - nowTime;
+                Hour = Math.floor(t / 1000 / 60 / 60 % 24);
+                Minute = Math.floor(t / 1000 / 60 % 60);
+                Second = Math.floor(t / 1000 % 60);
+                _this.hourData = Hour;
+                _this.minuteData = Minute;
+                _this.secondData = Second;
+                if (t < 1000) {
+                    // debugger
+                    nowTime = end.getTime();
+                    activeDaY = activeDaY + 1;
+                }
+                if (nowTime > endTime) {
+                    _this.hourData = '00';
+                    _this.minuteData = "00";
+                    _this.secondData = "00";
+                    clearInterval(timerId)
+                }
+                // console.log(Second)
+            }, 1000)
+        }
 
 
 }
