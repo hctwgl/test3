@@ -79,7 +79,7 @@ public class UnionLoginController extends BaseController {
 
         //region 无论结果如何,记录loger日志
 
-        String channel = "jdq";
+        String channel = channel_no;
         Map<String, String[]> paramsMap = request.getParameterMap();
         TreeMap<String, String> signMap = getSignMap(paramsMap);
         String paramsJsonStr = JSONObject.toJSONString(paramsMap);
@@ -146,7 +146,61 @@ public class UnionLoginController extends BaseController {
         return jsonResult;
     }
 
+    /**
+     * 现金超人对接
+     * @param phone 手机号码
+     * @param source 来源
+     * @param sign 签名
+     * @return
+     * {
+     *  error_code 正确返回0 ，非0错误
+     *  error_reason 错误原因
+     *  sign_url  登陆成功跳转地址
+     *  }
+     */
 
+    @RequestMapping("/xjcrLogin")
+    @ResponseBody
+    public JSONObject xjcrLogin(String phone, String source, String sign) throws Exception {
+        String testkey="e434cdb063f1bc05498211d3bd6a3c3e";
+        String prokey="f5b78e88cb70a4214f61af58bf035162";
+        String tempkey="0745936debb2db60ff6cad3ab5fb9155";
+        String channel = source;
+        Map<String, String[]> paramsMap = request.getParameterMap();
+        TreeMap<String, String> signMap = getSignMap(paramsMap);
+        String paramsJsonStr = JSONObject.toJSONString(paramsMap);
+        addLogs(channel, paramsJsonStr);
+        String localSign = JdqMessageSign.signParams(signMap,"&key="+tempkey);
+        JSONObject jsonResult = new JSONObject();
+        if (!localSign.toUpperCase().equals(sign)) {
+            jsonResult.put("error_code", "-2");
+            jsonResult.put("error_reason", "签名错误,remote sign:" + sign);
+            return jsonResult;
+        }
+        int is_new_user = 1;
+        AfUserDo userInfo = afUserService.getUserByUserName(phone);//查询数据库
+        if (userInfo != null) {
+            //2.查询用户来源，通过 手机号+渠道
+            AfUnionLoginRegisterDo condition=new AfUnionLoginRegisterDo();
+            condition.setUserId(userInfo.getRid());
+            AfUnionLoginRegisterDo exist= afUnionLoginRegisterService.getByCommonCondition(condition);
+            if(exist!=null){
+                is_new_user = 2;
+            }else{
+                is_new_user=3;
+            }
+        } else {
+            String password= afUnionLoginRegisterService.register(channel,phone,paramsJsonStr);
+            smsUtil.sendDefaultPassword(phone,password) ;
+        }
+        jsonResult.put("error_code", "0");
+        jsonResult.put("error_reason", "处理成功");
+        afUnionLoginLogService.addLog(channel,phone,paramsJsonStr);
+        String token = UserUtil.generateToken(phone);
+        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+        jsonResult.put("apply_url", returnUrl);
+        return jsonResult;
+    }
     @RequestMapping("/welcome")
     public String welcome(int isNew,String token,HttpServletResponse response) throws Exception{
         return "/unionlogin/welcome";
