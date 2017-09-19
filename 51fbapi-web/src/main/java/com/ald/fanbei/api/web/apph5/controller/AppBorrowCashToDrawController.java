@@ -238,6 +238,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 				}
 				return jsonString;
 			} else {
+				String winamount = (String) bizCacheUtil.getObject("winAmount");
+				bizCacheUtil.saveObject("winAmount", Integer.parseInt(winamount) + 100 + "", 60 * 60 * 24 * 10);
 				String jsonString = JsonUtil.toJSONString(resource.getValue3());
 				return jsonString;
 			}
@@ -249,12 +251,16 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getWinUser() {
+		//bizCacheUtil.delCache("Start_Time");
+		//bizCacheUtil.delCache("BorrowCash_Sum_Amount");
+		//List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);
 		String users = null;
 		try {
 			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
 		} catch (Exception e) {
 			logger.info("getWinUser redis get is fail" + e);
 		}
+		//return JsonUtil.toJSONString(users);
 		return users;
 	}
 
