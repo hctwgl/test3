@@ -10,14 +10,14 @@ public class Create {
 	public void test(){
 
 		// 数据库连接信息
-		String url = "jdbc:mysql://192.168.101.85:3306/51fanbei_app?useUnicode=true&characterEncoding=utf8";
+		String url = "jdbc:mysql://192.168.106.76:3306/51fanbei_app?useUnicode=true&characterEncoding=utf8";
 		String MysqlUser = "51fanbei";
 		String mysqlPassword = "Hello1234";
 		
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 		//String table = "tt_test";
-		String table = "af_goods_price";
+		String table = "af_union_login_register";
 
 		
 		
@@ -25,7 +25,7 @@ public class Create {
 		// 配置作者及Domain说明
 		String classAuthor = "maqiaopan-template";
 		//TODO:String classAuthor = " jinhu.chenjh";
-		String functionName = "'第三方-上树请求记录";
+		String functionName = "'联合登录用户登录日志表";
 		
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName ="";
