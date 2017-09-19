@@ -95,17 +95,16 @@ let drainage = (scase)=>{
     $.ajax({
       url: '/fanbei-web/getBrandUrlV1',
       data: {
-        shop: getShopId(scase),
+        shopId: getShopId(scase),
       },
       type: 'POST',
       success: (data)=>{
         data=eval('(' + data + ')');
-        requestMsg(data.url)
-        // if(data.success){
-        //    location.href=data.url;
-        // }else{
-        //    location.href=data.url;
-        // }
+        if(data.success){
+           location.href=data.url;
+        }else{
+           location.href=data.url;
+        }
       }
     })
 
