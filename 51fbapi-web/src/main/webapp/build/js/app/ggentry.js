@@ -43,46 +43,47 @@ window.onload = () => {
         $('.coupon .button').addClass('grey')
       }
 
+      $('.coupon .button')
+      .click(function () {
+        $.ajax({
+          url: '/fanbei-web/pickBoluomeCouponV1',
+          data: {
+            'sceneId': sceneId,
+          },
+          type: 'POST',
+          success: function (data) {
+            data=eval('(' + data + ')')
+            if (data.success) {
+              requestMsg(data.msg)
+              $.ajax({
+                url: '/H5GG/showCoupon',
+                type: 'GET',
+                success: (data) => {
+                  data=eval('(' + data + ')')
+            
+                  sceneId = data.data.boluomeCouponList[0].sceneId
+                  if(data.data.boluomeCouponList[0].isHas == 'Y') {
+                    $('.coupon .button').addClass('grey')
+                  }
+            
+                }
+              })
+            } else {
+              if (data.url) {
+                location.href = data.url;
+              } else {
+                requestMsg(data.msg)
+              }
+            }
+          }
+        });
+      });
+
     }
   })
 
 }
 
-$('.coupon .button')
-  .click(function () {
-    $.ajax({
-      url: '/fanbei-web/pickBoluomeCouponV1',
-      data: {
-        'sceneId': sceneId,
-      },
-      type: 'POST',
-      success: function (data) {
-        data=eval('(' + data + ')')
-        if (data.success) {
-          requestMsg(data.msg)
-          $.ajax({
-            url: '/H5GG/showCoupon',
-            type: 'GET',
-            success: (data) => {
-              data=eval('(' + data + ')')
-        
-              sceneId = data.data.boluomeCouponList[0].sceneId
-              if(data.data.boluomeCouponList[0].isHas == 'Y') {
-                $('.coupon .button').addClass('grey')
-              }
-        
-            }
-          })
-        } else {
-          if (data.url) {
-            location.href = data.url;
-          } else {
-            requestMsg(data.msg)
-          }
-        }
-      }
-    });
-  });
 
 /**
  * 引流
