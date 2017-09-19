@@ -75,6 +75,7 @@ var vm=new Vue({
                         // 显示弹窗
                         $(".registerMask").removeClass("hide");
                         $(".imgVftCodeWrap").removeClass("hide");
+                        $('#imgVftCode').val('');
                         $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
                         $("#imgVftCodeClose").click(function(){ // 关闭弹窗
                             $(".registerMask").addClass("hide");

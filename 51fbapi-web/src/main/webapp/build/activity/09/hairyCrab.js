@@ -90,8 +90,8 @@ let vm = new Vue({
                             window.location.href = returnData.url;
                         }
                         if (status == "OVER") { // 优惠券个数超过最大领券个数
-                            requestMsg(returnData.msg);
-                            requestMsg("优惠券个数超过最大领券个数");
+                            //requestMsg(returnData.msg);
+                            requestMsg("您已经领取，快去使用吧");
                         }
                         if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
                             requestMsg(returnData.msg);
