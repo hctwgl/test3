@@ -414,8 +414,6 @@ public class PayRoutController {
 		} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 			afRenewalDetailService.dealRenewalSucess(orderId, uniqueOrderNo);
 		}
-
-		afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
 		return "SUCCESS";
 	}
 
