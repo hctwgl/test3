@@ -18,6 +18,8 @@ let getShopId = (shop)=>{
   }
 }
 
+let sceneId = null
+
 window.onload = () => {
   $.ajax({
     url: '/fanbei-web/postMaidianInfo',
@@ -29,6 +31,21 @@ window.onload = () => {
       console.log(data)
     }
   })
+
+  $.ajax({
+    url: '/H5GG/showCoupon',
+    type: 'GET',
+    success: (data) => {
+      data=eval('(' + data + ')')
+
+      sceneId = data.data.boluomeCouponList[0].sceneId
+      if(data.data.boluomeCouponList[0].isHas) {
+        $('.coupon .button').addClass('grey')
+      }
+
+    }
+  })
+
 }
 
 $('.coupon .button')
@@ -36,7 +53,7 @@ $('.coupon .button')
     $.ajax({
       url: '/fanbei-web/pickBoluomeCouponV1',
       data: {
-        'sceneId': 9014,
+        'sceneId': sceneId,
       },
       type: 'POST',
       success: function (data) {
@@ -45,6 +62,19 @@ $('.coupon .button')
         console.log(data)
         if (data.success) {
           requestMsg(data.msg)
+          $.ajax({
+            url: '/H5GG/showCoupon',
+            type: 'GET',
+            success: (data) => {
+              data=eval('(' + data + ')')
+        
+              sceneId = data.data.boluomeCouponList[0].sceneId
+              if(data.data.boluomeCouponList[0].isHas) {
+                $('.coupon .button').addClass('grey')
+              }
+        
+            }
+          })
         } else {
           if (data.url) {
             location.href = data.url;
@@ -73,7 +103,7 @@ let drainage = (scase)=>{
         if(data.success){
            location.href=data.url;
         }else{
-           requestMsg(data.msg);
+           location.href=data.url;
         }
       }
     })
@@ -81,7 +111,7 @@ let drainage = (scase)=>{
     $.ajax({
       url: '/fanbei-web/postMaidianInfo',
       data: {
-        'maidianInfo': getShopId(scase)
+        'maidianInfo': 'ggentry' + getShopId(scase)
       },
       type: 'POST',
       succuess: (data) => {

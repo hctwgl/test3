@@ -3,7 +3,7 @@
 <head>
     #set($version="201708212130")
     #set($commonUrl="http://f.51fanbei.com/h5")
-    <title>逛逛</title>
+    <title>吃玩住行0元享</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/ggentry.css?version=$version">
 </head>
 
@@ -12,8 +12,12 @@
 		<img src="http://f.51fanbei.com/h5/app/activity/09/gg1.jpg" />
 		<div class="content">
 			<div class="coupon">
+				<div class="yuan">¥</div>
+				<div class="cost">5</div>
+				<div class="t1">无门槛优惠券</div>
+				<div class="t2">逛逛专区通用</div>
 				<img src="http://f.51fanbei.com/h5/app/activity/09/gg2.png" />
-				<div class="button"></div>
+				<div class="button">立即领取</div>
 			</div>
 			<div class="trades">
 				<div class="trade ele">

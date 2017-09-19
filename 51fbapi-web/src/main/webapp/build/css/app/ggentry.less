@@ -5,12 +5,78 @@ body {
 		.coupon {
 			position: relative;
 			margin-bottom: 0.46rem;
+			height: 1.94rem;
+			img {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				z-index: 90;
+			}
+			.yuan {
+				position: absolute;
+				width: 0.26rem;
+				height: 0.35rem;
+				top: 0.48rem;
+				left: 0.71rem;
+				z-index: 99;
+				font-size: 0.484rem;
+				line-height: 0.35rem;
+				color: #fa3a1d;
+			}
+			.cost {
+				position: absolute;
+				width: 0.52rem;
+				height: 0.92rem;
+				z-index: 99;
+				font-size: 1.28rem;
+				color: #fa3a1d;
+				left: 1.10rem;
+				top: 0.49rem;
+				line-height: 0.92rem;
+			}
+			.t1 {
+				position: absolute;
+				z-index: 99;
+				width: 1.50rem;
+				height: 0.24rem;
+				top: 0.63rem;
+				left: 2.50rem;
+				color: #333333;
+				font-weight: bold;
+				line-height: 0.24rem;
+				font-size: 0.24rem;
+			}
+			.t2 {
+				position: absolute;
+				z-index: 99;
+				width: 1.80rem;
+				height: 0.26rem;
+				top: 1.05rem;
+				left: 2.50rem;
+				color: #777777;
+				line-height: 0.26rem;
+				font-size: 0.28rem;
+			}
 			.button {
 				position: absolute;
 				width: 1.27rem;
 				height: 1.15rem;
 				top: 0.4rem;
 				right: 0.64rem;
+				background: #ff3d00;
+				color: #fff;
+				box-sizing: border-box;
+				padding: 0.18rem 0.25rem;
+				font-size: 0.34rem;
+				text-align: center;
+				line-height: 0.38rem;
+				border-radius: 0.08rem;
+				z-index: 99;
+				&.grey {
+					background: #757575;
+				}
 			}
 		}
 		.trades {
