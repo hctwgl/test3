@@ -137,4 +137,6 @@ public interface AfResourceDao {
 
 	AfResourceDo getGGSpecificBanner(@Param("value2")String value2);
 
+	List<AfResourceDo> getConfigsByTypesAndSecType(@Param("type")String type,@Param("secType")String secType);
+
 }

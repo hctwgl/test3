@@ -238,4 +238,13 @@
 		<include refid="queryAllFields" />
 		from af_resource WHERE type = #{type} and is_delete = 0 ORDER BY sort asc
 	</select>
+	<select id="getConfigsByTypesAndSecType" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+		and value_4 ='O';
+	</select>
 </mapper>
