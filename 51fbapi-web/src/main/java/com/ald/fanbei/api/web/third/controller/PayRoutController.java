@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -439,15 +440,25 @@ public class PayRoutController {
 	 */
 	@RequestMapping(value = { "/yibaoupdate" })
 	@ResponseBody
-	public void YiBaoUpdate(){
-		final String key =  "getyiBao_success_repayCash";
-		long count = redisTemplate.opsForValue().increment(key, 1);
-		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
-		if (count != 1) {
-			return ;
+	public String YiBaoUpdate(){
+		try {
+			final String key = "getyiBao_success_repayCash";
+			long count = redisTemplate.opsForValue().increment(key, 1);
+			redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+			if (count != 1) {
+				return "error";
+			}
+			//Map a = yiBaoUtility.getYiBaoOrder("hq2017091523034389983", "1001201709150000000017453099");
+			thirdLog.info("YiBaoUpdate start ");
+			yiBaoUtility.updateYiBaoAllNotCheck();
+			thirdLog.info("YiBaoUpdate end ");
+			redisTemplate.delete(key);
+			return "success";
 		}
-		yiBaoUtility.updateYiBaoAllNotCheck();
-		redisTemplate.delete(key);
+		catch (Exception e){
+			logger.error("yibaoUpdate error",e);
+			return e.toString();
+		}
 	}
 
 }
