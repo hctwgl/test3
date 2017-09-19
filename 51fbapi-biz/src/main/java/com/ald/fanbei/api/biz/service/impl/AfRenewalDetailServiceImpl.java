@@ -228,7 +228,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	@Override
 	public long dealRenewalSucess(final String outTradeNo, final String tradeNo) {
 
-		final String key = outTradeNo +"_success_repayCash";
+		final String key = outTradeNo +"_success_repayCash_renewal";
 		long count = redisTemplate.opsForValue().increment(key, 1);
 		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
 		if (count != 1) {

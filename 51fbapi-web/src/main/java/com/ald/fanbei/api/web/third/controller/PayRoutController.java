@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -94,7 +96,8 @@ public class PayRoutController {
 
 	@Resource
 	private YiBaoUtility yiBaoUtility;
-
+	@Resource
+	RedisTemplate redisTemplate;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -356,63 +359,63 @@ public class PayRoutController {
 	@ResponseBody
 	public String YiBaoBack(HttpServletRequest request, HttpServletResponse response){
 
-//		String responseMsg = request.getParameter("response");
-//		thirdLog.info("yibaoresonseMsg = "+responseMsg);
-//		Map<String,String> result = YeepayService.callback(responseMsg);
-//
-//		String parentMerchantNo = formatString(result.get("parentMerchantNo"));
-//		String merchantNo = formatString(result.get("merchantNo"));
-//		String orderId = formatString(result.get("orderId"));
-//		String uniqueOrderNo = formatString(result.get("uniqueOrderNo"));
-//		String status = formatString(result.get("status"));
-//		String orderAmount = formatString(result.get("orderAmount"));
-//		String payAmount = formatString(result.get("payAmount"));
-//		String requestDate = formatString(result.get("requestDate"));
-//		String paySuccessDate = formatString(result.get("paySuccessDate"));
-//
-//		thirdLog.info("yibaoresonseMsg = "+ JSON.toJSONString(result));
-//
-//		AfYibaoOrderDo afYibaoOrderDo =afYibaoOrderDao.getYiBaoOrderByOrderNo(orderId);
-//		if(afYibaoOrderDo ==null){
-//			thirdLog.info("yibaoresonseMsg_NoMatch = "+ orderId);
-//			return "SUCCESS";
-//		}
-//		thirdLog.info("yibaoresonseMsg_Match = "+ JSON.toJSONString(afYibaoOrderDo));
-//
-//		String attach = afYibaoOrderDo.getPayType();
-//
-//
-//		if(status.toLowerCase().equals("timeout") || status.toLowerCase().equals("closed")){
-//			thirdLog.info("yibaoresonse fail: "+"status="+status+",orderNo="+orderId);
-//
-//			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-//				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo);
-//			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-//				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
-//			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
-//				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
-//			}
-//			else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
-//				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
-//			}
-//
-//			return "SUCCESS";
-//		}
-//
-//
-//		if (PayOrderSource.ORDER.getCode().equals(attach)) {
-//			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
-//		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-//			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
-//		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
-//			afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
-//		} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-//			afRepaymentBorrowCashService.dealRepaymentSucess(orderId, uniqueOrderNo);
-//		} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-//			afRenewalDetailService.dealRenewalSucess(orderId, uniqueOrderNo);
-//		}
-//
-//		afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+		String responseMsg = request.getParameter("response");
+		thirdLog.info("yibaoresonseMsg = "+responseMsg);
+		Map<String,String> result = YeepayService.callback(responseMsg);
+
+		String parentMerchantNo = formatString(result.get("parentMerchantNo"));
+		String merchantNo = formatString(result.get("merchantNo"));
+		String orderId = formatString(result.get("orderId"));
+		String uniqueOrderNo = formatString(result.get("uniqueOrderNo"));
+		String status = formatString(result.get("status"));
+		String orderAmount = formatString(result.get("orderAmount"));
+		String payAmount = formatString(result.get("payAmount"));
+		String requestDate = formatString(result.get("requestDate"));
+		String paySuccessDate = formatString(result.get("paySuccessDate"));
+
+		thirdLog.info("yibaoresonseMsg = "+ JSON.toJSONString(result));
+
+		AfYibaoOrderDo afYibaoOrderDo =afYibaoOrderDao.getYiBaoOrderByOrderNo(orderId);
+		if(afYibaoOrderDo ==null){
+			thirdLog.info("yibaoresonseMsg_NoMatch = "+ orderId);
+			return "SUCCESS";
+		}
+		thirdLog.info("yibaoresonseMsg_Match = "+ JSON.toJSONString(afYibaoOrderDo));
+
+		String attach = afYibaoOrderDo.getPayType();
+
+
+		if(status.toLowerCase().equals("timeout") || status.toLowerCase().equals("closed")){
+			thirdLog.info("yibaoresonse fail: "+"status="+status+",orderNo="+orderId);
+
+			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo);
+			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
+			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
+			}
+			else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
+				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
+			}
+
+			return "SUCCESS";
+		}
+
+
+		if (PayOrderSource.ORDER.getCode().equals(attach)) {
+			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
+		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
+			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+			afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
+		} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+			afRepaymentBorrowCashService.dealRepaymentSucess(orderId, uniqueOrderNo);
+		} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+			afRenewalDetailService.dealRenewalSucess(orderId, uniqueOrderNo);
+		}
+
+		afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
 		return "SUCCESS";
 	}
 
@@ -439,7 +442,14 @@ public class PayRoutController {
 	@RequestMapping(value = { "/yibaoupdate" })
 	@ResponseBody
 	public void YiBaoUpdate(){
+		final String key =  "getyiBao_success_repayCash";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+		if (count != 1) {
+			return ;
+		}
 		yiBaoUtility.updateYiBaoAllNotCheck();
+		redisTemplate.delete(key);
 	}
 
 }
