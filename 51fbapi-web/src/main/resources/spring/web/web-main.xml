@@ -101,7 +101,6 @@
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
 				<value>/goods/getThirdGoodsList</value>
-				<value>/goods/getThirdShopsList</value>
 				<value>/goods/getCategoryList</value>
 				<value>/goods/getCateGoodsList</value>
 				<value>/user/logout</value>
@@ -183,9 +182,7 @@
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
-				<entry key="/goods/getThirdShopsList" value-ref="getThirdShopsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
-				<entry key="/good/deleteHistory" value-ref="deleteHistoryApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
 				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
 				<entry key="/good/getRecommendGoods" value-ref="getRecommendGoodsApi" />
@@ -270,8 +267,6 @@
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
 				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
-				<entry key="/borrow/getRepaymentInfo" value-ref="getRepaymentInfoApi"/>
-				<entry key="/borrow/submitRepaymentByYiBao" value-ref="submitRepaymentByYiBaoApi"/>
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
@@ -294,9 +289,14 @@
 				<entry key="/borrowCash/getBorrowOverdueList" value-ref="getBorrowOverdueListApi" />
 				<entry key="/borrowCash/applyRenewal" value-ref="applyRenewalApi" />
 				<entry key="/borrowCash/confirmRenewalPay" value-ref="confirmRenewalPayApi" />
+				<entry key="/borrowCash/confirmRenewalPayV1" value-ref="confirmRenewalPayV1Api" />
 				<entry key="/borrowCash/getRenewalList" value-ref="getRenewalListApi" />
 				<entry key="/borrowCash/getRenewalDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
+				<entry key="/repayCash/getConfirmRepayInfoV1" value-ref="getConfirmRepayInfoV1Api" />
+				<entry key="/repayCash/getRepayCashByOrderId" value-ref="getRepayCashByOrderIdApi" />
+				<entry key="/borrow/getRepaymentInfo" value-ref="getRepaymentInfoApi"/>
+
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
 				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
