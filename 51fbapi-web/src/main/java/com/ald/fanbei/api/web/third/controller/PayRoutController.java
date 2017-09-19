@@ -356,75 +356,63 @@ public class PayRoutController {
 	@ResponseBody
 	public String YiBaoBack(HttpServletRequest request, HttpServletResponse response){
 
-		String responseMsg = request.getParameter("response");
-		thirdLog.info("yibaoresonseMsg = "+responseMsg);
-		Map<String,String> result = YeepayService.callback(responseMsg);
-
-		String parentMerchantNo = formatString(result.get("parentMerchantNo"));
-		String merchantNo = formatString(result.get("merchantNo"));
-		String orderId = formatString(result.get("orderId"));
-		String uniqueOrderNo = formatString(result.get("uniqueOrderNo"));
-		String status = formatString(result.get("status"));
-		String orderAmount = formatString(result.get("orderAmount"));
-		String payAmount = formatString(result.get("payAmount"));
-		String requestDate = formatString(result.get("requestDate"));
-		String paySuccessDate = formatString(result.get("paySuccessDate"));
-
-		thirdLog.info("yibaoresonseMsg = "+ JSON.toJSONString(result));
-
-//		String orderId = request.getParameter("orderId");
-//		String parentMerchantNo = request.getParameter("parentMerchantNo");
-//		String merchantNo = request.getParameter("merchantNo");
-//		String uniqueOrderNo = request.getParameter("uniqueOrderNo");
-//		String status =request.getParameter("status");
-//		String orderAmount = request.getParameter("orderAmount");
-//		String payAmount = request.getParameter("payAmount");
-//		String requestDate = request.getParameter("requestDate");
-//		String paySuccessDate = request.getParameter("paySuccessDate");
-//		String instCompany = request.getParameter("instCompany");
-//		String instNumber = request.getParameter("instNumber");
-
-		AfYibaoOrderDo afYibaoOrderDo =afYibaoOrderDao.getYiBaoOrderByOrderNo(orderId);
-		if(afYibaoOrderDo ==null){
-			thirdLog.info("yibaoresonseMsg_NoMatch = "+ orderId);
-			return "SUCCESS";
-		}
-		thirdLog.info("yibaoresonseMsg_Match = "+ JSON.toJSONString(afYibaoOrderDo));
-
-		String attach = afYibaoOrderDo.getPayType();
-
-
-		if(status.toLowerCase().equals("timeout") || status.toLowerCase().equals("closed")){
-			thirdLog.info("yibaoresonse fail: "+"status="+status+",orderNo="+orderId);
-
-			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo);
-			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
-			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
-				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
-			}
-			else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
-				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
-			}
-
-			return "SUCCESS";
-		}
-
-
-		if (PayOrderSource.ORDER.getCode().equals(attach)) {
-			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
-		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
-		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
-			afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
-		} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-			afRepaymentBorrowCashService.dealRepaymentSucess(orderId, uniqueOrderNo);
-		} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-			afRenewalDetailService.dealRenewalSucess(orderId, uniqueOrderNo);
-		}
-
-		afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+//		String responseMsg = request.getParameter("response");
+//		thirdLog.info("yibaoresonseMsg = "+responseMsg);
+//		Map<String,String> result = YeepayService.callback(responseMsg);
+//
+//		String parentMerchantNo = formatString(result.get("parentMerchantNo"));
+//		String merchantNo = formatString(result.get("merchantNo"));
+//		String orderId = formatString(result.get("orderId"));
+//		String uniqueOrderNo = formatString(result.get("uniqueOrderNo"));
+//		String status = formatString(result.get("status"));
+//		String orderAmount = formatString(result.get("orderAmount"));
+//		String payAmount = formatString(result.get("payAmount"));
+//		String requestDate = formatString(result.get("requestDate"));
+//		String paySuccessDate = formatString(result.get("paySuccessDate"));
+//
+//		thirdLog.info("yibaoresonseMsg = "+ JSON.toJSONString(result));
+//
+//		AfYibaoOrderDo afYibaoOrderDo =afYibaoOrderDao.getYiBaoOrderByOrderNo(orderId);
+//		if(afYibaoOrderDo ==null){
+//			thirdLog.info("yibaoresonseMsg_NoMatch = "+ orderId);
+//			return "SUCCESS";
+//		}
+//		thirdLog.info("yibaoresonseMsg_Match = "+ JSON.toJSONString(afYibaoOrderDo));
+//
+//		String attach = afYibaoOrderDo.getPayType();
+//
+//
+//		if(status.toLowerCase().equals("timeout") || status.toLowerCase().equals("closed")){
+//			thirdLog.info("yibaoresonse fail: "+"status="+status+",orderNo="+orderId);
+//
+//			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+//				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo);
+//			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+//				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
+//			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+//				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
+//			}
+//			else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
+//				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
+//			}
+//
+//			return "SUCCESS";
+//		}
+//
+//
+//		if (PayOrderSource.ORDER.getCode().equals(attach)) {
+//			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
+//		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
+//			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+//		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+//			afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
+//		} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+//			afRepaymentBorrowCashService.dealRepaymentSucess(orderId, uniqueOrderNo);
+//		} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+//			afRenewalDetailService.dealRenewalSucess(orderId, uniqueOrderNo);
+//		}
+//
+//		afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
 		return "SUCCESS";
 	}
 
