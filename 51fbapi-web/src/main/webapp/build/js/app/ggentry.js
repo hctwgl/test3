@@ -57,9 +57,9 @@ $('.coupon .button')
       },
       type: 'POST',
       success: function (data) {
-        requestMsg(data)
+        // requestMsg(data)
         data=eval('(' + data + ')');
-        console.log(data)
+        // console.log(data)
         if (data.success) {
           requestMsg(data.msg)
           $.ajax({
@@ -100,6 +100,7 @@ let drainage = (scase)=>{
       type: 'POST',
       success: (data)=>{
         data=eval('(' + data + ')');
+        requestMsg(data.url)
         if(data.success){
            location.href=data.url;
         }else{
