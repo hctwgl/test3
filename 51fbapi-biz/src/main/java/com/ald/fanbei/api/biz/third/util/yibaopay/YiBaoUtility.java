@@ -133,6 +133,24 @@ public class YiBaoUtility {
     }
 
 
+    public void updateYiBaoAllNotCheck(){
+        List<AfYibaoOrderDo> list = afYibaoOrderDao.getYiBaoUnFinishOrderAll();
+        for(AfYibaoOrderDo afYibaoOrderDo:list){
+            Map<String, String> result  = getYiBaoOrder(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+            if(!result.get("code").equals("OPR00000")){
+                continue;
+            }
+            String status = result.get("status");
+            if(status.equals("PROCESSING")){
+                //处理中
+            }
+            proessUpdate(afYibaoOrderDo,status,afYibaoOrderDo.getoType());
+        }
+    }
+
+
+
+
 
     public Map<String,String> getOrderByYiBao(String orderNo){
         Map<String,String> ret = new HashMap<String,String>();

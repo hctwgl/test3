@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
@@ -90,6 +91,10 @@ public class PayRoutController {
 	private AfTradeWithdrawRecordService afTradeWithdrawRecordService;
 	@Resource
 	private AfYibaoOrderDao afYibaoOrderDao;
+
+	@Resource
+	private YiBaoUtility yiBaoUtility;
+
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -438,4 +443,15 @@ public class PayRoutController {
 	public String YiBaoQsBack(HttpServletRequest request, HttpServletResponse response){
 		return "SUCCESS";
 	}
+
+
+	/**
+	 * 处理易宝业务逻辑
+	 */
+	@RequestMapping(value = { "/yibaoupdate" })
+	@ResponseBody
+	public void YiBaoUpdate(){
+		yiBaoUtility.updateYiBaoAllNotCheck();
+	}
+
 }
