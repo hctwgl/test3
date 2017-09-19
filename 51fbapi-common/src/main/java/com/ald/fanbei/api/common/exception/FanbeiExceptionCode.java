@@ -275,7 +275,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗新版上线啦！\n您即将前往的下一站是【App Store】更新，如无更新按钮，请稍后重试或卸载后重新安装"),
 
     // SERVICE 9999
-    SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "服务器操作错误"),
+    SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "流量过大系统开小差啦，请尝试重新发起"),
     //物流信息不存在
     LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"order_not_exist","物流信息不存在");
 

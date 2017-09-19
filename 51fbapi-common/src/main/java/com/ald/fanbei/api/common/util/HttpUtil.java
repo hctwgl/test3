@@ -32,7 +32,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -490,8 +489,10 @@ public class HttpUtil {
         HttpPost post = postForm(url, params);
 
         body = invoke(httpclient, post);
-        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 120000); //连接超时
-        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 120000);          //获取数据超时
+        httpclient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 120000);
+        httpclient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 120000);
+
+
         httpclient.getConnectionManager().shutdown();
 
         return body;
