@@ -253,6 +253,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 	public String getWinUser() {
 		//bizCacheUtil.delCache("Start_Time");
 		//bizCacheUtil.delCache("BorrowCash_Sum_Amount");
+		//bizCacheUtil.delCache("winAmount");
+		//bizCacheUtil.delCache("winAmount_Win_User");
 		//List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);
 		String users = null;
 		try {

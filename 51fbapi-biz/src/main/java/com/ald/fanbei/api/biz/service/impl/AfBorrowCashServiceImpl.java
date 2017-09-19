@@ -143,9 +143,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	                        }
 	                        //保存破十亿中奖用户
 	                        bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60*60*24*7);
-	                    } else {
-	                        bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60*60*24*7);
-	                    }
+	                    } 
+						bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 	                }
 				return 1;
 			}
