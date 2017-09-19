@@ -220,7 +220,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				catch (Exception e){
 					status.setRollbackOnly();
 					logger.info("createRepayment error", e);
-					return null;
+					throw e;
 				}
 			}
 		});
@@ -295,7 +295,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				catch (Exception e){
 					status.setRollbackOnly();
 					logger.info("createRepaymentYiBao error", e);
-					return null;
+					throw e;
 				}
 				finally {
 
