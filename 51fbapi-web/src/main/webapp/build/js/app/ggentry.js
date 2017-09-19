@@ -6,13 +6,13 @@
 let getShopId = (shop)=>{
   switch(shop) {
     case 'ele': 
-      return 22
+      return 10
     case 'yiguo':
-      return 17
+      return 2
     case 'lumama':
-      return 24
+      return 4
     case 'xiecheng': 
-      return 33
+      return 16
     default: 
       return null
   }
