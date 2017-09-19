@@ -4,17 +4,20 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,6 +93,11 @@ public class PayRoutController {
 	private AfTradeWithdrawRecordService afTradeWithdrawRecordService;
 	@Resource
 	private AfYibaoOrderDao afYibaoOrderDao;
+
+	@Resource
+	private YiBaoUtility yiBaoUtility;
+	@Resource
+	RedisTemplate redisTemplate;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -367,18 +375,6 @@ public class PayRoutController {
 
 		thirdLog.info("yibaoresonseMsg = "+ JSON.toJSONString(result));
 
-//		String orderId = request.getParameter("orderId");
-//		String parentMerchantNo = request.getParameter("parentMerchantNo");
-//		String merchantNo = request.getParameter("merchantNo");
-//		String uniqueOrderNo = request.getParameter("uniqueOrderNo");
-//		String status =request.getParameter("status");
-//		String orderAmount = request.getParameter("orderAmount");
-//		String payAmount = request.getParameter("payAmount");
-//		String requestDate = request.getParameter("requestDate");
-//		String paySuccessDate = request.getParameter("paySuccessDate");
-//		String instCompany = request.getParameter("instCompany");
-//		String instNumber = request.getParameter("instNumber");
-
 		AfYibaoOrderDo afYibaoOrderDo =afYibaoOrderDao.getYiBaoOrderByOrderNo(orderId);
 		if(afYibaoOrderDo ==null){
 			thirdLog.info("yibaoresonseMsg_NoMatch = "+ orderId);
@@ -399,6 +395,10 @@ public class PayRoutController {
 			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
 			}
+			else if(PayOrderSource.REPAYMENT.getCode().equals(attach)){
+				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
+			}
+
 			return "SUCCESS";
 		}
 
@@ -434,4 +434,22 @@ public class PayRoutController {
 	public String YiBaoQsBack(HttpServletRequest request, HttpServletResponse response){
 		return "SUCCESS";
 	}
+
+
+	/**
+	 * 处理易宝业务逻辑
+	 */
+	@RequestMapping(value = { "/yibaoupdate" })
+	@ResponseBody
+	public void YiBaoUpdate(){
+		final String key =  "getyiBao_success_repayCash";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+		if (count != 1) {
+			return ;
+		}
+		yiBaoUtility.updateYiBaoAllNotCheck();
+		redisTemplate.delete(key);
+	}
+
 }

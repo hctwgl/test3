@@ -196,8 +196,6 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
             else {
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
             }
-
-
         }
         else if(cardId ==-3){  //支付宝支付
             if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {

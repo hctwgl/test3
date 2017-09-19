@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -105,6 +107,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	@Resource
 	YiBaoUtility yiBaoUtility;
 
+	@Resource
+	private RedisTemplate redisTemplate;
 	
 	@Override
 	public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
@@ -293,6 +297,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					logger.info("createRepaymentYiBao error", e);
 					return null;
 				}
+				finally {
+
+				}
 			}
 		});
 
@@ -302,6 +309,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 	@Override
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
+		final String key = outTradeNo +"_success_repayCash";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+		if (count != 1) {
+			return -1;
+		}
 
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 
@@ -488,6 +501,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error", e);
 					return 0l;
+				}
+				finally {
+					redisTemplate.delete(key);
 				}
 			}
 		});
