@@ -22,6 +22,7 @@ var vm = new Vue({
         hourData: "",
         minuteData: "",
         secondData: "",
+        aNum:"",
     },
     created: function () {
         let _this = this;
@@ -125,6 +126,7 @@ var vm = new Vue({
                 type: 'post',
                 success: function (data) {
                     console.log(data);
+                    _this.aNum=data;
                     if (data !== "") {
                         //破十亿时让顶部轮播显示并显示实时中奖用户
                         $("#scroll_div").show();
