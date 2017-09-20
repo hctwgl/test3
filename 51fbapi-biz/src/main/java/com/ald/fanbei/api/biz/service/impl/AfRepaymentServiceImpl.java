@@ -193,6 +193,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentNo(now);
 		final String payTradeNo=repayNo;
+
+
+
 		//新增还款记录
 		String name =Constants.DEFAULT_REPAYMENT_NAME+billDo.getName();
 		if(billDo.getCount()>1){

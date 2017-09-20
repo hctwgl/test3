@@ -296,6 +296,7 @@
 				<entry key="/repayCash/getConfirmRepayInfoV1" value-ref="getConfirmRepayInfoV1Api" />
 				<entry key="/repayCash/getRepayCashByOrderId" value-ref="getRepayCashByOrderIdApi" />
 				<entry key="/borrow/getRepaymentInfo" value-ref="getRepaymentInfoApi"/>
+				<entry key="/borrow/submitRepaymentByYiBao" value-ref="submitRepaymentByYiBaoApi"/>
 
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
