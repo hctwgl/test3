@@ -271,12 +271,12 @@ public class FanbeiController extends BaseController {
 	@RequestMapping(value = { "re1fla5shLoc3alReesC8a1sh" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	public void reflashLocalResCash(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String randomParam1 = request.getParameter("926d4e62fe23c77e");
-		String randomParam2 = request.getParameter("21603C8898E194C5");
-		String value1= "4Sr221Obo03cM89Q";
-		String value2= "9pF20aF49221b603Ce8s8";
-		if(StringUtil.equals(randomParam1, value1)&&StringUtil.equals(randomParam2, value2)){
-			afResourceService.cleanLocalCache();
-		}
+        String randomParam2 = request.getParameter("21603C8898E194C5");
+        String value1= "4Sr221Obo03cM89Q";
+        String value2= "9pF20aF49221b603Ce8s8";
+        if(StringUtil.equals(randomParam1, value1)&&StringUtil.equals(randomParam2, value2)){
+            afResourceService.cleanLocalCache();
+        }
 	}
 
 }

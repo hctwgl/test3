@@ -53,7 +53,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         String label = ObjectUtils.toString(requestDataVo.getParams().get("label"), null);
         List<AfLoanSupermarketDto> afLoanSupermarketDtoList = new ArrayList<AfLoanSupermarketDto>();
         List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(label);
-        List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+        HashMap<String,String> hashMap = new HashMap<String,String>();
         for(int n=0;n<sourceSupermarketList.size();n++){
             AfLoanSupermarketDto afLoanSupermarketDto = getDto(sourceSupermarketList.get(n));
             afLoanSupermarketDtoList.add(afLoanSupermarketDto);
@@ -73,26 +73,29 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
                 flag = false;
             }
         }
-        List<AfLoanSupermarketDto> desSupermarketList = dealLoanSupermarkets(afLoanSupermarketDtoList,context,flag);
+        List<AfLoanSupermarketDto> desSupermarketList = dealLoanSupermarkets(afLoanSupermarketDtoList,context,flag,afGameDo);
         //判断是否已签到，签到天数
         if(flag){
-            list = popupsHint(context,afGameDo);
+            hashMap = popupsHint(context,afGameDo);
         }
         resp.addResponseData("supermarketList",desSupermarketList);
-        resp.addResponseData("popupsHint",list);
+        resp.addResponseData("popupsHint",hashMap);
         return resp;
     }
 
-    public List<AfLoanSupermarketDto> dealLoanSupermarkets(List<AfLoanSupermarketDto> sourceSupermarketList,FanbeiContext context,boolean flag) {
+    public List<AfLoanSupermarketDto> dealLoanSupermarkets(List<AfLoanSupermarketDto> sourceSupermarketList,FanbeiContext context,boolean flag,AfGameDo afGameDo) {
     	List<AfLoanSupermarketDto> desSupermarketList = new ArrayList<AfLoanSupermarketDto>();
-        StringBuffer str = new StringBuffer();
     	for (AfLoanSupermarketDto tempLoanMarket : sourceSupermarketList) {
     		String linkUrl = StringUtil.null2Str(tempLoanMarket.getLinkUrl()).replaceAll("\\*", "\\&");
             AfLoanSupermarketDto afLoanSupermarketDto = getDto(tempLoanMarket);
             afLoanSupermarketDto.setLinkUrl(linkUrl);
             if(flag){
                 AfLoanSupermarketDto Dto = new AfLoanSupermarketDto();
-                List<AfBusinessAccessRecordsDo> list = afBusinessAccessRecordsDao.getTotalSignList(context.getUserId());
+                AfBusinessAccessRecordQuery query = new AfBusinessAccessRecordQuery();
+                query.setBeginTime(afGameDo.getGmtStart());
+                query.setEndTime(afGameDo.getGmtEnd());
+                query.setUserId(context.getUserId());
+                List<AfBusinessAccessRecordsDo> list = afBusinessAccessRecordsDao.getTotalSignList(query);
                 if(null != list && list.size()>0){
                     for (AfBusinessAccessRecordsDo afBusinessAccessRecordsDoList : list) {
                         if(afBusinessAccessRecordsDoList.getRefId().equals(tempLoanMarket.getId())){
@@ -129,7 +132,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         return afLoanSupermarketDto;
     }
 
-    public List<HashMap<String,String>> popupsHint(FanbeiContext context,AfGameDo gameDo){
+    public HashMap<String,String> popupsHint(FanbeiContext context,AfGameDo gameDo){
         List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
         HashMap<String,String> map = new HashMap<String,String>();
         int count = 0;
@@ -147,27 +150,26 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         }else{
             map.put("flag","false");
         }
-        if(signed){
+        if(signed) {
             List<AfGameConfDo> confList = afGameConfDao.getByGameId(gameDo.getRid());
-            if(confList != null && confList.size()>0){
-                if(1<=signDays && signDays <5){
-                    count = 5- signDays;
+            if (confList != null && confList.size() > 0) {
+                if (1 <= signDays && signDays < 5) {
+                    count = 5 - signDays;
                     String item = "2";
-                    prompt = prompt(confList,count,item);
-                }else if(5 <= signDays && signDays < 10){
-                    count = 10- signDays;
+                    prompt = prompt(confList, count, item);
+                } else if (5 <= signDays && signDays < 10) {
+                    count = 10 - signDays;
                     String item = "3";
-                    prompt = prompt(confList,count,item);
-                }else if(10<= signDays && signDays < 15){
-                    count = 15- signDays;
+                    prompt = prompt(confList, count, item);
+                } else if (10 <= signDays && signDays < 15) {
+                    count = 15 - signDays;
                     String item = "4";
-                    prompt = prompt(confList,count,item);
+                    prompt = prompt(confList, count, item);
                 }
             }
         }
         map.put("prompt",prompt);
-        list.add(map);
-        return list;
+        return map;
     }
 
     public String prompt(List<AfGameConfDo> confList,int count,String itemStr){
