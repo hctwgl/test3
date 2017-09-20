@@ -229,7 +229,7 @@ public class BoluomeController extends AbstractThird{
     		calculateOrderRebateAmount(orderInfo, shopInfo);
     	} else {
     		
-    		BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : null;
+    		BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : orderInfo.getPriceAmount();
     		orderInfo.setPriceAmount(priceAmount);
     		orderInfo.setSaleAmount(priceAmount);
     		orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
