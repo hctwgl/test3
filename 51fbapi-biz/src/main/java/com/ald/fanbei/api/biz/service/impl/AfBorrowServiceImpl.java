@@ -967,7 +967,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, PayType.AGENT_PAY.getCode());
 					afBorrowDao.addBorrowBill(billList);
-					
+
 					return borrow.getRid();
 
 				} catch (Exception e) {
