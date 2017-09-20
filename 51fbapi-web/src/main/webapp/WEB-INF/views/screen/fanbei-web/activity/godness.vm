@@ -46,7 +46,7 @@
         color:white;
         border-radius:50%;
         text-align:center;
-        line-height:0.35rem;
+        line-height:0.34rem;
         margin-left:0.1rem;
     }
     .backMoney{

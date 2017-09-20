@@ -29,10 +29,10 @@ let vue=new Vue({
         },
         buyNow(item){
             let self=this;
-            if (item.source=="SELFSUPPORT"){
-                window.location.href=self.tableContent.notifyUrl+'&params={"privateGoodsId":"'+item.goodsId+'"}'
-            }else{
-                window.location.href=self.tableContent.notifyUrl+'&params={"goodsId":"'+item.goodsId+'"}'
+            if ( item.source=="SELFSUPPORT" ) {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.goodsId+'"}'
+            } else {
+                window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.goodsId+'"}'
             }
         }
     }
