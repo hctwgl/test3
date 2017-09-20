@@ -159,7 +159,7 @@ body {
 		}
 		.rule {
 			width: 6.90rem;
-			height: 3.35rem;
+			height: 4.24rem;
 			margin-top: 0.5rem;
 			box-sizing: border-box;
 			border-radius: 0.35rem;
@@ -169,13 +169,13 @@ body {
 			box-sizing: border-box;
 			ul {
 				li {
-					height: 0.32rem;
 					display: flex;
 					margin-top: 0.22rem;
 					p {
 						display: inline-block;
+						word-wrap: break-word;
 						&:first-child {
-							width: 0.32rem;
+							min-width: 0.32rem;
 							height: 0.32rem;
 							line-height: 0.32rem;
 							width: 0.32rem;
@@ -189,8 +189,11 @@ body {
 						&:last-child {
 							font-size: 0.26rem;
 							color: #3d76de;
-							line-height: 0.32rem;
+							line-height: 0.38rem;
 							letter-spacing: 0.04rem;
+							span {
+								font-style: oblique;
+							}
 						}
 					}
 				}
