@@ -18,7 +18,7 @@
         <img src="$commonUrl/channel7_01.jpg">
     #elseif( $!{style}==17 )
         <img src="$commonUrl/reg1.jpg">
-        <marquee behavior="scroll" direction="up" scrollamount="2" bgcolor="transparent" class="mar17">
+        <marquee behavior="scroll" direction="up" scrollamount="1" bgcolor="transparent" class="mar17">
             用户131****8880 成功借款 8000元
             用户137****9767 成功借款 6000元
             用户186****2099 成功借款 7000元
