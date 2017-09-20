@@ -68,6 +68,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				afOrderDo.setStatus("FINISHED");
 				afOrderDo.setGmtFinished(new Date());
 				if(afOrderService.updateOrder(afOrderDo) > 0){
+					addBorrowBill(orderInfo);
 					return resp;
 				}
 			}
@@ -85,6 +86,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					afOrderDo.setGmtFinished(new Date());
 					afOrderDo.setLogisticsInfo("已签收");
 					if(afOrderService.updateOrder(afOrderDo) > 0){
+						addBorrowBill(orderInfo);
 						return resp;
 					}else{
 						logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
@@ -108,7 +110,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		if(afBorrowDo !=null){
 			//查询是否己产生
 			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-			if(borrowList != null && borrowList.size()>0 ){
+			if(borrowList == null || borrowList.size()==0 ){
 				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
 				afBorrowService.addBorrowBill(billList);
 			}
