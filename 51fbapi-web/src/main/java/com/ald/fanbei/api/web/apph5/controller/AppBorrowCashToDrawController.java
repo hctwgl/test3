@@ -69,14 +69,14 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/toActivitiesPage", produces = "text/html;charset=UTF-8")
 	public String toActivitiesPage(Model model) {
 		// 从缓存中取数据
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
 		String Time = (String) bizCacheUtil.getObject("Start_Time");
 		String winAmount = (String) bizCacheUtil.getObject("winAmount");
 		if (winAmount == null) {
-			bizCacheUtil.saveObject("winAmount", "600", 60 * 60 * 24 * 10);
+			bizCacheUtil.saveObject("winAmount", resource.getValue1(), 60 * 60 * 24 * 10);
 			winAmount = "600";
 		}
 		if (StringUtil.isBlank(Time)) {
-			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.BORROWCASH_ACTIVITYS_TYPR, Constants.BORROWCASH_ACTIVITYS_SECTYPR);
 			Date date1 = null;
 			try {
 				String date = resource.getValue();
@@ -251,18 +251,12 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getWinUser() {
-		//bizCacheUtil.delCache("Start_Time");
-		bizCacheUtil.delCache("BorrowCash_Sum_Amount");
-		bizCacheUtil.delCache("Billion_Win_User");
-		//bizCacheUtil.delCache("winAmount_Win_User");
-		//List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);
 		String users = null;
 		try {
 			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
 		} catch (Exception e) {
 			logger.info("getWinUser redis get is fail" + e);
 		}
-		//return JsonUtil.toJSONString(users);
 		return users;
 	}
 
