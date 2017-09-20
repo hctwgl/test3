@@ -43,8 +43,9 @@ window.onload = () => {
         $('.coupon .button').addClass('grey')
       }
 
-      $('.coupon .button')
+      $('.coupon .button.unpending')
       .click(function () {
+        $('.coupon .button.unpending').removeClass('unpending')
         $.ajax({
           url: '/fanbei-web/pickBoluomeCouponV1',
           data: {
@@ -52,6 +53,7 @@ window.onload = () => {
           },
           type: 'POST',
           success: function (data) {
+            $('.coupon .button').addClass('unpending')
             data=eval('(' + data + ')')
             if (data.success) {
               requestMsg(data.msg)
@@ -75,6 +77,10 @@ window.onload = () => {
                 requestMsg(data.msg)
               }
             }
+          },
+          error: function(err) {
+            console.log(err)
+            $('.coupon .button').addClass('unpending')
           }
         });
       });
