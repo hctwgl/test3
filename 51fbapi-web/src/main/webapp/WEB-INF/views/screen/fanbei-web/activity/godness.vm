@@ -12,12 +12,12 @@
     }
     .detail{
         background-color:white;
-        padding:0.22rem 0.214rem;
+        padding:0.22rem 0rem;
     }
     .left{
         width:3.322rem;
         border:1px dashed  #deaf7c;
-        margin-right: 0.06rem;
+        margin-left: 0.18rem;
     }
     .top img{
         width:2.24rem;
