@@ -173,7 +173,7 @@ public class Codec {
 
 
     public static void main(String[] args) {
-        String key = "3FADAE9950B216AF";
+        String key = "1CA4EDA857AFCC23";
         Map<String, Object> applyInfo = new HashMap<>();
         applyInfo.put("apply_loan", "工薪贷");
         applyInfo.put("apply_amount", 10000);

@@ -94,8 +94,9 @@ public class UnionLoginController extends BaseController {
 
 
         if (!localSign.equals(sign)) {
+            thirdLog.error("local sign "+sign+",remote sign"+sign);
             jsonResult.put("code", "451");
-            jsonResult.put("msg", "local sign:" + localSign + ",remote sign:" + sign);
+            jsonResult.put("msg", "invalid sign,remote sign:" + sign);
             return jsonResult;
         }
         //endregion
@@ -106,44 +107,51 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("msg", "参数错误，不能被解析");
             return jsonResult;
         }
-        JSONObject applyInfoJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(ConfigProperties.get(Constants.UNIONLOGIN_JDQ_SECRET), apply_info).trim());
-        JSONObject userAttributeJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(ConfigProperties.get(Constants.UNIONLOGIN_JDQ_SECRET), user_attribute).trim());
-        //endregion
+        try{
+            JSONObject applyInfoJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(ConfigProperties.get(Constants.UNIONLOGIN_JDQ_SECRET), apply_info).trim());
+            JSONObject userAttributeJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(ConfigProperties.get(Constants.UNIONLOGIN_JDQ_SECRET), user_attribute).trim());
+            //endregion
 
-        String phone = userAttributeJson.getString("mobilephone");
-        if (StringUtils.isEmpty(phone)) {
-            jsonResult.put("code", "456");
-            jsonResult.put("msg", "参数错误，不能被解析");
-            return jsonResult;
-        }
-        //数据库验证用户是否登录
-        //1、查询用户信息
-
-        AfUserDo userInfo = afUserService.getUserByUserName(phone);//查询数据库
-        int is_new_user = 1;
-        if (userInfo != null) {
-            //2.查询用户来源，通过 手机号+渠道
-            AfUnionLoginRegisterDo condition=new AfUnionLoginRegisterDo();
-            condition.setUserId(userInfo.getRid());
-            AfUnionLoginRegisterDo exist= afUnionLoginRegisterService.getByCommonCondition(condition);
-            if(exist!=null){
-                is_new_user = 2;
-            }else{
-                is_new_user=3;
+            String phone = userAttributeJson.getString("mobilephone");
+            if (StringUtils.isEmpty(phone)) {
+                jsonResult.put("code", "456");
+                jsonResult.put("msg", "参数错误，不能被解析");
+                return jsonResult;
             }
-        } else {
-            String password= afUnionLoginRegisterService.register(channel,phone,paramsJsonStr);
-            smsUtil.sendDefaultPassword(phone,password) ;
+            //数据库验证用户是否登录
+            //1、查询用户信息
+
+            AfUserDo userInfo = afUserService.getUserByUserName(phone);//查询数据库
+            int is_new_user = 1;
+            if (userInfo != null) {
+                //2.查询用户来源，通过 手机号+渠道
+                AfUnionLoginRegisterDo condition=new AfUnionLoginRegisterDo();
+                condition.setUserId(userInfo.getRid());
+                AfUnionLoginRegisterDo exist= afUnionLoginRegisterService.getByCommonCondition(condition);
+                if(exist!=null){
+                    is_new_user = 2;
+                }else{
+                    is_new_user=3;
+                }
+            } else {
+                String password= afUnionLoginRegisterService.register(channel,phone,paramsJsonStr);
+                smsUtil.sendDefaultPassword(phone,password) ;
+            }
+
+            afUnionLoginLogService.addLog(channel,phone,paramsJsonStr);
+            String token = UserUtil.generateToken(phone);
+
+            jsonResult.put("code", "0");
+            jsonResult.put("is_new_user", String.valueOf(is_new_user));
+            jsonResult.put("msg", "");
+            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+            jsonResult.put("apply_url", returnUrl);
+        }catch (Exception e){
+            thirdLog.error("jdqLogin error:",e);
+            jsonResult.put("code", "550");
+            jsonResult.put("msg", e.getCause());
         }
 
-        afUnionLoginLogService.addLog(channel,phone,paramsJsonStr);
-        String token = UserUtil.generateToken(phone);
-
-        jsonResult.put("code", "0");
-        jsonResult.put("is_new_user", String.valueOf(is_new_user));
-        jsonResult.put("msg", "");
-        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
-        jsonResult.put("apply_url", returnUrl);
         return jsonResult;
     }
 
@@ -162,7 +170,7 @@ public class UnionLoginController extends BaseController {
 
     @RequestMapping("/xjcrLogin")
     @ResponseBody
-    public JSONObject xjcrLogin(String phone, String source, String sign) throws Exception {
+    public JSONObject xjcrLogin(String mobile, String source, String sign) throws Exception {
         String secretkey=ConfigProperties.get(Constants.UNIONLOGIN_XJCR_SECRET);
         String tempkey="0745936debb2db60ff6cad3ab5fb9155";
         String channel = source;
@@ -178,7 +186,7 @@ public class UnionLoginController extends BaseController {
             return jsonResult;
         }
         int is_new_user = 1;
-        AfUserDo userInfo = afUserService.getUserByUserName(phone);//查询数据库
+        AfUserDo userInfo = afUserService.getUserByUserName(mobile);//查询数据库
         if (userInfo != null) {
             //2.查询用户来源，通过 手机号+渠道
             AfUnionLoginRegisterDo condition=new AfUnionLoginRegisterDo();
@@ -190,13 +198,13 @@ public class UnionLoginController extends BaseController {
                 is_new_user=3;
             }
         } else {
-            String password= afUnionLoginRegisterService.register(channel,phone,paramsJsonStr);
-            smsUtil.sendDefaultPassword(phone,password) ;
+            String password= afUnionLoginRegisterService.register(channel,mobile,paramsJsonStr);
+            smsUtil.sendDefaultPassword(mobile,password) ;
         }
         jsonResult.put("error_code", "0");
         jsonResult.put("error_reason", "处理成功");
-        afUnionLoginLogService.addLog(channel,phone,paramsJsonStr);
-        String token = UserUtil.generateToken(phone);
+        afUnionLoginLogService.addLog(channel,mobile,paramsJsonStr);
+        String token = UserUtil.generateToken(mobile);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
         jsonResult.put("apply_url", returnUrl);
         return jsonResult;
