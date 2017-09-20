@@ -5,6 +5,7 @@ package com.ald.fanbei.api.web.api.borrowCash;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +18,12 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -45,8 +48,16 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		List<Object> bannerList = getBannerObjectWithResourceDolist(
+		List<Object> bannerList = new ArrayList<Object>();
+		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		
+		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+		    bannerList = getBannerObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		}else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowTopBanner.getCode()));
+		}
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		
 

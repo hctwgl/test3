@@ -18,6 +18,10 @@
             <span class="fsc_6">暂无商品</span>
         </div>
     #else
+        #foreach($item in $!{bannerList})
+        <img class="goodsListModel_banner" src="$!{item.imageIcon}">
+        #end
+        <div style="height: .8rem"></div>
         <div id="navWrap">
             <ul class="nav">
                 #foreach($item in $!{categoryList})
@@ -34,9 +38,7 @@
 
         <div class="swiper-container">
             <div class="main_wrap swiper-wrapper">
-                #foreach($item in $!{bannerList})
-                    <img class="goodsListModel_banner" src="$!{item.imageIcon}">
-                #end
+
                 #foreach($item in $!{categoryList})
                     #if($!{item.type}==$!{typeCurrent})
                     <div class="swiper-slide" data-type="$!{item.type}">
@@ -53,7 +55,7 @@
             </div>
         </div>
     #end
-    <script type="text/javascript" src="/dist/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/dist/js/goods/goodsListModel.js?version=$version"></script>
 </body>
 </html>

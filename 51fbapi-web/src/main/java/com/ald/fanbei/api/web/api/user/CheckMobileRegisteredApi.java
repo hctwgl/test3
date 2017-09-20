@@ -5,6 +5,8 @@ package com.ald.fanbei.api.web.api.user;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -38,9 +40,15 @@ public class CheckMobileRegisteredApi implements ApiHandle {
 		Map<String, Object> params = requestDataVo.getParams();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String mobile = ObjectUtils.toString(params.get("mobile"), "");
+		Pattern numPattern = Pattern.compile("^1[3|4|5|7|8][0-9]{9}$");
+		Matcher matcher = numPattern.matcher(mobile);
 		if(StringUtils.isEmpty(mobile)){
 			throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
+		if(!matcher.matches()) {
+			throw new FanbeiException("mobile not allowed",FanbeiExceptionCode.REQUEST_PARAM_ILLEGAL);
+		}
+		
 		data.put("isMember", "N"); // 默认未注册
 		// 查询手机号是否已注册
 		Long userId = afUserService.getUserIdByMobile(mobile);
@@ -49,7 +57,6 @@ public class CheckMobileRegisteredApi implements ApiHandle {
 		}
 		resp.setResponseData(data);
 		return resp;
-
 	}
 
 }

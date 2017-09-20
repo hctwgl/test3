@@ -92,8 +92,10 @@ public abstract class BaseRebateService {
         afUserAccountLogDao.addUserAccountLog(accountLog);
         //修改账户表
         afUserAccountDao.updateRebateAmount(accountInfo);
+
+        AfUserAccountDo userInfo =afUserAccountDao.getUserAccountInfoByUserId( orderInfo.getUserId()) ;
        //返利已经到账通知
-        smsUtil.sendRebate(accountInfo.getUserName(), new Date(),orderInfo.getRebateAmount());
+        smsUtil.sendRebate(userInfo.getUserName(), new Date(),orderInfo.getRebateAmount());
 
         return true;
     }

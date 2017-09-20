@@ -6,11 +6,11 @@ new Vue({
     data: {
         content:[],
         imgContent:[
-            {'imgRightUrl':'http://f.51fanbei.com/h5/valentine/val01.png','imgLeftUrl':'http://f.51fanbei.com/h5/valentine/val02.png','leftWord01':'99朵 红玫瑰花束','leftWord02':'吾爱你 心动正当时','rightWord01':'99朵 爱心混色花束','rightWord02':'吾爱你 心动正当时'},
-            {'imgRightUrl':'http://f.51fanbei.com/h5/valentine/val03.png','imgLeftUrl':'http://f.51fanbei.com/h5/valentine/vai04.png','leftWord01':'99朵 红玫瑰礼盒','leftWord02':'吾爱你 永恒记忆','rightWord01':'11朵 混色玫瑰花礼盒','rightWord02':'吾爱你 初心不变'},
-            {'imgRightUrl':'http://f.51fanbei.com/h5/valentine/val05.png','imgLeftUrl':'http://f.51fanbei.com/h5/valentine/val06.png','leftWord01':'永生花 坠入爱河','leftWord02':'吾爱你 永恒记忆','rightWord01':'一生只爱一人','rightWord02':'让小熊替我拥抱你'},
-            {'imgRightUrl':'http://f.51fanbei.com/h5/valentine/val07.png','imgLeftUrl':'http://f.51fanbei.com/h5/valentine/val08.png','leftWord01':'心印死心塌地礼盒','leftWord02':'心动小幸运 表达浓醇爱意','rightWord01':'KISSES心心相印512g','rightWord02':'创意拼搭 爱意浓浓'},
-            {'imgRightUrl':'http://f.51fanbei.com/h5/valentine/val09.png','imgLeftUrl':'http://f.51fanbei.com/h5/valentine/val10.png','leftWord01':'纯手工玫瑰熊','leftWord02':'我对你的爱表露于心','rightWord01':'甜蜜可爱趴趴熊','rightWord02':'手牵手一起走'}
+            {'imgRightUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val01.png','imgLeftUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val02.png','leftWord01':'99朵 红玫瑰花束','leftWord02':'吾爱你 心动正当时','rightWord01':'99朵 爱心混色花束','rightWord02':'吾爱你 心动正当时'},
+            {'imgRightUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val03.png','imgLeftUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/vai04.png','leftWord01':'99朵 红玫瑰礼盒','leftWord02':'吾爱你 永恒记忆','rightWord01':'11朵 混色玫瑰花礼盒','rightWord02':'吾爱你 初心不变'},
+            {'imgRightUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val05.png','imgLeftUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val06.png','leftWord01':'永生花 坠入爱河','leftWord02':'吾爱你 永恒记忆','rightWord01':'一生只爱一人','rightWord02':'让小熊替我拥抱你'},
+            {'imgRightUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val07.png','imgLeftUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val08.png','leftWord01':'心印死心塌地礼盒','leftWord02':'心动小幸运 表达浓醇爱意','rightWord01':'KISSES心心相印512g','rightWord02':'创意拼搭 爱意浓浓'},
+            {'imgRightUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val09.png','imgLeftUrl':'http://f.51fanbei.com/h5/app/activity/08/valentine/val10.png','leftWord01':'纯手工玫瑰熊','leftWord02':'我对你的爱表露于心','rightWord01':'甜蜜可爱趴趴熊','rightWord02':'手牵手一起走'}
         ],
         titleContent:[
             {'titleName':'求婚告白款','titleDes':'其实最好的日子无非是，你在闹他在笑温暖过一生'},

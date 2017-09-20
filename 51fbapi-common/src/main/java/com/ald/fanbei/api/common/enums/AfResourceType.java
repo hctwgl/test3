@@ -38,6 +38,7 @@ public enum AfResourceType {
 
 	//活动相关
     ReservationActivity("RESERVATION_ACTIVITY", "预约活动"),
+    Iphone8ReservationActivity("IPHONE8_RESERVATION_ACTIVITY","iPhone8预约功能"),
     
 	//借钱模块
 	BaseBankRate("BASE_BANK_RATE", "央行基准利率"),
@@ -86,10 +87,11 @@ public enum AfResourceType {
 	
 	//app端 借钱按钮高亮显示时长配置
 	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
-	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片");
+	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片"),
 	
-
-
+	//登录白名单
+	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单");
+	
 	private String code;
     private String name;
     AfResourceType(String code, String name) {

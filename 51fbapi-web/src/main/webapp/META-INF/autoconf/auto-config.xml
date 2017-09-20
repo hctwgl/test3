@@ -2,7 +2,7 @@
 <config>
 	<group>
 		<!-- log4j -->
-		<property name="fbapi.log.level" defaultValue="debug" description="log4j level" />
+		<property name="fbapi.log.level" defaultValue="info" description="log4j level" />
 		<property name="fbapi.log.path.root" defaultValue="/home/ald/logs/fanbei" description="log dir" />
 		
 		<!-- config -->

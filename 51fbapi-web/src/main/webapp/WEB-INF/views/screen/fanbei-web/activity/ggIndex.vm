@@ -4,7 +4,7 @@
     #set($version="2017090412")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
     <title>逛逛专享区</title>
-    <link rel="stylesheet" type="text/css" href="/dist/css/swiper-3.4.2.min.css">
+    <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">
 </head>
 <body>
@@ -111,10 +111,10 @@
         <p class="sure sureDemand">确定索要</p>
     </div>
 </div>
-<script type="text/javascript" src="/dist/js/base64.js"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
 <script type="text/javascript" src="/dist/activity/08/ggIndexDemand.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/08/ggIndexPresent.js?version=$version"></script>
-<script type="text/javascript" src="/dist/js/swiper-3.4.2.jquery.min.js"></script>
 <script type="text/javascript" src="/dist/activity/08/ggIndex.js?version=$version"></script>
 </body>
 </html>

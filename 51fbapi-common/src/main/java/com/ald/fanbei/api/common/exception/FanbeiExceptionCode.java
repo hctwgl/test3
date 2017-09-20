@@ -10,8 +10,8 @@ public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 
-
-
+    ZFB_NOT_USERD("PARAM_ERROR", 1145, "param error", "支付宝支付正在维护中,请用其它支付方式"),
+    WEBCHAT_NOT_USERD("PARAM_ERROR", 1142, "param error", "微信支付正在维护中,请用其它支付方式"),
     // PARAM_CODE 1001-1099
     PARAM_ERROR("PARAM_ERROR", 1001, "param error", "参数错误"),
     REQUEST_PARAM_NOT_EXIST("REQUEST_PARAM_NOT_EXIST", 1002, "request param is invalid", "请求参数缺失"),
@@ -23,11 +23,12 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     REQUEST_PARAM_SYSTEM_NOT_EXIST("REQUEST_PARAM_SYSTEM_NOT_EXIST", 1008, "system param is invalid", "系统参数缺失"),
     CALCULATE_SHA_256_ERROR("CALCULATE_SHA_256_ERROR",1009,"cal sha 265 error","系统错误"),
     SYSTEM_REPAIRING_ERROR("SYSTEM_REPAIRING_ERROR",1010,"system repairing","系统维护中"),
+    REQUEST_PARAM_ILLEGAL ("REQUEST_PARAM_ILLEGAL", 1011, "request param illegal", "请求参数不合法"),
     REQUEST_PARAM_TOKEN_TIMEOUT("REQUEST_PARAM_TOKEN_ERROR", 1141, "token is invalid", "您的登录已超时, 请重新登录"),
     
     // user mode code from 1100 - 1199
     USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"), 
-    USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1005,"user not exist error","用户不存在"),
+    USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1015,"user not exist error","用户不存在"),
     USER_LOGIN_SMS_NOTEXIST("USER_LOGIN_SMS_NOTEXIST",1016,"user login sms not exist","请获取短信验证码"),
     USER_LOGIN_SMS_WRONG_ERROR("USER_LOGIN_SMS_WRONG_ERROR",1017,"user login sms wrong error","验证码不正确"),
     
@@ -40,6 +41,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_REGIST_CHANNEL_NOTEXIST("USER_REGIST_SMS_NOTEXIST",1138,"user regist channel code not exist","渠道编号不正确"),
     USER_REGIST_IMAGE_NOTEXIST("USER_REGIST_IMAGE_NOTEXIST",1139,"user regist image not exist","图片验证码不正确"),
     USER_REGIST_IMAGE_ERROR("USER_REGIST_IMAGE_ERROR",1140,"user regist image error","图片验证码不正确"),
+    USER_REGIST_IMAGE_ERROR2("USER_REGIST_IMAGE_ERROR",1141,"user regist image error","图片验证码不正确"),
 
     USER_REGIST_SMS_OVERDUE("USER_REGIST_SMS_OVERDUE",1107,"user regist sms overdue","验证码已经过期"),
     USER_REGIST_ACCOUNT_EXIST("USER_REGIST_ACCOUNT_EXIST",1108,"user regist account exist","用户已存在"),
@@ -235,6 +237,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_CASH_SWITCH_NO("BORROW_CASH_SWITCH_NO",2007,"borrow cash switch error","今日放款已达上限， 明天尽早哦！"),
     BORROW_CASH_MORE_ACCOUNT_ERROR("BORROW_CASH_MORE_ACCOUNT_ERROR",2008,"borrow cash  more  account  borrow error","借款金额超过可借金额，请下拉刷新后重新提交"),
     HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2009,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
+    
+    STRONG_RISK_STATUS_ERROR("STRONG_RISK_STATUS_ERROR",2010,"strong risk apply status error","您的风控审核正在提交"),
     
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),

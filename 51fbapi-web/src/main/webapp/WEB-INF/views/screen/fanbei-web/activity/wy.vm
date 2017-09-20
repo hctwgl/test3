@@ -4,26 +4,21 @@
 	#set($version="2017061505")
     #set($commonUrl="https://img.51fanbei.com/h5/app/activity/wy")
 	<meta charset="UTF-8">
-	<title>51返呗邀您领红包</title>
+	<title>您有2个红包待领取</title>
 	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
 </head>
 <body>
 <div class="loadingMask"><i class="loading"></i></div>
-<img class="first" src="$commonUrl/a1.png">
-<img class="first" src="$commonUrl/a2.png">
-<img class="first" src="$commonUrl/a3.png">
-<img class="first" src="$commonUrl/a4.png">
-<img class="first" src="$commonUrl/a5.png">
-<img class="first" src="$commonUrl/a6.png">
-<img class="first" src="$commonUrl/a7.png">
-<img class="first" src="$commonUrl/a8.png">
-<img onclick="go()" style="position: absolute;top: 6.2rem;width: 2rem;height: 1.58rem;left: 3rem;" src="$commonUrl/gif3.gif">
-<img class="lazy" data-original="$commonUrl/d1.png">
-<img class="lazy" data-original="$commonUrl/d2.png">
-<img class="lazy" data-original="$commonUrl/d3.png">
-<img class="lazy" data-original="$commonUrl/d4.png">
-<img class="lazy" data-original="$commonUrl/d5.png">
-<img class="lazy" data-original="$commonUrl/d6.png">
+<img class="first" src="$commonUrl/money_01.jpg">
+<img class="first" src="$commonUrl/money_02.jpg">
+<img class="first" src="$commonUrl/money_03.jpg">
+<img class="first" src="$commonUrl/money_04.jpg">
+<img class="first" src="$commonUrl/money_05.jpg">
+<img class="first" src="$commonUrl/money_06.jpg">
+<img class="first" src="$commonUrl/money_07.jpg">
+<img class="first" src="$commonUrl/money_08.jpg">
+<div onclick="go()" style="position: absolute;top: 2.2rem;width: 5rem;height: 3.8rem;left: 2rem;"></div>
+<div onclick="go51()" style="position: absolute;top: 7rem;width: 5rem;height: 4rem;left: .6rem;"></div>
 <script type="text/javascript" src="/dist/activity/wy/wy.js"></script>
 </body>
 <script>
@@ -37,21 +32,27 @@
             $(".loadingMask").fadeOut();
         },1000)
     });
-    $("img.lazy").lazyload({
-        placeholder : "https://img.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
-        effect : "fadeIn",  // 载入使用的效果
-        threshold: 200 // 提前开始加载
-    });
 	function go() {
 	    jQuery.ajax({
 			url:'/fanbei-web/postMaidianInfo',
 			type:'post',
-			data:{maidianInfo:'/fanbei-web/activity/wy?type=btn'},
+			data:{maidianInfo:'/fanbei-web/activity/wy?type=qianbaoBtn'},
 			success:function (data) {
 				console.log(data)
             }
 		});
-		window.location.href='wyRegister?channelCode=wwyy&pointCode=wwyy'
+		window.location.href='https://www.edspay.com/activity/webapp/source.html?utm_source=wyxw3'
+    }
+    function go51() {
+        jQuery.ajax({
+            url:'/fanbei-web/postMaidianInfo',
+            type:'post',
+            data:{maidianInfo:'/fanbei-web/activity/wy?type=btn'},
+            success:function (data) {
+                console.log(data)
+            }
+        });
+        window.location.href='wyRegister?channelCode=wwyy&pointCode=wwyy'
     }
 </script>
 </html>

@@ -111,31 +111,30 @@ public class AppGoodsControler extends BaseController {
 			
 			if(goodsId != null && !"".equals(goodsId)) {
 				AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(Long.parseLong(goodsId));
+				JSONArray interestFreeArray = null;
 		        if(null != afSchemeGoodsDo){
 		        	Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
 			        AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
-			        JSONArray interestFreeArray = null;
 			        if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
 			            interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
 			        }
-			        //获取借款分期配置信息
-			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-			        JSONArray array = JSON.parseArray(resource.getValue());
-			        //删除2分期
-			        if (array == null) {
-			        	goodsList.add(goodsInfoMap);
-			        	continue;
-			        }
-			        removeSecondNper(array);
-
-			        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-			        		goodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
-			        if(nperList!= null){
-			        	goodsInfoMap.put("goodsType", "1");
-						Map nperMap = nperList.get(nperList.size() - 1);
-						goodsInfoMap.put("nperMap", nperMap);
-					}
 		        }
+		        //获取借款分期配置信息
+		        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		        JSONArray array = JSON.parseArray(resource.getValue());
+		        //删除2分期
+		        if (array == null) {
+		        	goodsList.add(goodsInfoMap);
+		        	continue;
+		        }
+		        removeSecondNper(array);
+		        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+		        		goodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
+		        if(nperList!= null){
+		        	goodsInfoMap.put("goodsType", "1");
+					Map nperMap = nperList.get(nperList.size() - 1);
+					goodsInfoMap.put("nperMap", nperMap);
+				}
 		       
 			}
 	        goodsList.add(goodsInfoMap);
@@ -193,32 +192,33 @@ public class AppGoodsControler extends BaseController {
 				String goodsId = goodsDto.getGoodsId();
 				
 				if(goodsId != null && !"".equals(goodsId)) {
+					JSONArray interestFreeArray = null;
 					AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(Long.parseLong(goodsId));
 			        if(null != afSchemeGoodsDo){
 			        	Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
 				        AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
-				        JSONArray interestFreeArray = null;
 				        if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
 				            interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
 				        }
-				        //获取借款分期配置信息
-				        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-				        JSONArray array = JSON.parseArray(resource.getValue());
-				        //删除2分期
-				        if (array == null) {
-				        	goodsList.add(goodsInfoMap);
-				        	continue;
-				        }
-				        removeSecondNper(array);
-
-				        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-				        		goodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
-				        if(nperList!= null){
-				        	goodsInfoMap.put("goodsType", "1");
-							Map nperMap = nperList.get(nperList.size() - 1);
-							goodsInfoMap.put("nperMap", nperMap);
-						}
 			        }
+			        //获取借款分期配置信息
+			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+			        JSONArray array = JSON.parseArray(resource.getValue());
+			        //删除2分期
+			        if (array == null) {
+			        	goodsList.add(goodsInfoMap);
+			        	continue;
+			        }
+			        removeSecondNper(array);
+
+			        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+			        		goodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
+			        if(nperList!= null){
+			        	goodsInfoMap.put("goodsType", "1");
+						Map nperMap = nperList.get(nperList.size() - 1);
+						goodsInfoMap.put("nperMap", nperMap);
+					}
+			        
 				}
 				goodsList.add(goodsInfoMap);
 			}

@@ -29,6 +29,8 @@ import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -36,12 +38,14 @@ import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -50,10 +54,13 @@ import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.GoodsReservationWebFailStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -74,6 +81,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityItemsDao;
@@ -102,6 +110,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
 import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
@@ -214,6 +223,18 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	
+	
+	@Resource
+	private AfGoodsService afGoodsService;
+	@Resource
+	private AfUserService afUserService;
+	@Resource
+	private SmsUtil smsUtil;
+	@Resource
+	private AfGoodsReservationService afGoodsReservationService;
+	@Resource
+	JpushService jpushService;
 	
 	
 	@Override
@@ -883,7 +904,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							name = orderInfo.getShopName();
 						}
 						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(),
-								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),orderInfo.getOrderType());
 						
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -944,7 +965,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						orderDao.updateOrder(orderInfo);
 						
 						//用额度进行分期
-						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),orderInfo.getOrderType());
 
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
@@ -1069,7 +1090,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param interestFreeJson 分期规则
 	 * @return
 	 */
-	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson) {
+	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson,String orderType) {
 		
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
@@ -1083,7 +1104,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		
 		//获取借款分期配置信息
-        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		AfResourceDo resource=null;
+		if(orderType.equals(OrderType.TRADE.getCode())){
+			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
+		}else{
+			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		}
         JSONArray array = JSON.parseArray(resource.getValue());
         //删除2分期
         if (array == null) {
@@ -1099,7 +1125,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				amount, resource.getValue1(), resource.getValue2());
 		BigDecimal perAmount = null;
 		for(Map<String, Object> nperMap : nperList) {
-			
+
 			Object nperObj = nperMap.get("nper");
 			int nperTemp = 0;
 			if(nperObj instanceof BigDecimal) {
@@ -1309,6 +1335,50 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+		//iPhone预约
+			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
+			logger.info("iPhone8 reservationActivity" +goods.getRid());
+			if(goods != null){
+				if(goods.getTags().equals("subscribe")){
+					AfUserDo afUserDo = afUserService.getUserById(orderInfo.getUserId());
+					Map<String, Object> returnData = new HashMap<String, Object>();
+					Long rsvNums = 1L;
+					// 预约成功后发送短信开关 Y发送 N不发送
+					String sendMsgStatus = "";
+					String sendMsgInfo = "";
+					String jpushMsgInfo="";
+					AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(AfResourceType.ReservationActivity.getCode(), AfResourceType.Iphone8ReservationActivity.getCode());
+					// 解析对应配置并校验
+					Map<String, Object> jsonObjRes = (Map<String, Object>) JSONObject.parse(resource.getValue3());
+					sendMsgStatus = StringUtil.null2Str(jsonObjRes.get("sendMsgStatus"));
+					sendMsgInfo = StringUtil.null2Str(jsonObjRes.get("sendMsgInfo"));
+					jpushMsgInfo = StringUtil.null2Str(jsonObjRes.get("jpushMsgInfo"));
+					String aId=StringUtil.null2Str(jsonObjRes.get("activityId"));
+					String gId=StringUtil.null2Str(jsonObjRes.get("goodsId"));
+					long activityId = Long.parseLong(aId);
+					long goodsId = Long.parseLong(gId);
+					String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
+					AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
+					
+					if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
+						logger.info("iPhone8 reservationActivity is fail");
+						return result;
+					}
+					// 预约成功，短信通知
+					if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
+						try {
+							boolean r = smsUtil.sendGoodsReservationSuccessMsgInfo(afUserDo.getMobile(), sendMsgInfo);
+							//推送通知
+							jpushService.reservationActivity(afUserDo.getMobile(),jpushMsgInfo);
+							if (r == false) {
+								logger.error("活动产品预约成功消息通知发送失败userId：" + afUserDo.getRid());
+							}
+						} catch (Exception e) {
+							logger.error("活动产品预约成功消息通知异常userId：" + afUserDo.getRid() + ",", e);
+						}
+					}
+				}
+			} 
 		}
 		return result;
 	}
@@ -1956,6 +2026,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public Integer getDealAmount(Long userId ,String orderType) {
 		
 		return orderDao.getDealAmount(userId,orderType);
+	}
+
+	@Override
+	public List<AfOrderDo> getStatusByGoodsAndUserId(long goodsId, long userId) {
+		return orderDao.getStatusByGoodsAndUserId(goodsId, userId);
 	}
 	
 }
