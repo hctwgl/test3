@@ -4,9 +4,11 @@ import com.ald.fanbei.api.biz.service.AfUnionLoginLogService;
 import com.ald.fanbei.api.biz.service.AfUnionLoginRegisterService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.unionlogin.Codec;
 import com.ald.fanbei.api.common.unionlogin.JdqMessageSign;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfUnionLoginLogDo;
@@ -31,7 +33,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.ald.fanbei.api.common.unionlogin.JdqMessageSign.SECRET_KEY;
 
 @Controller
 @RequestMapping("/unionlogin")
@@ -89,7 +90,7 @@ public class UnionLoginController extends BaseController {
         //region 签名验证
         JSONObject jsonResult = new JSONObject();
         //签名校验
-        String localSign = JdqMessageSign.signParams(SECRET_KEY, signMap);
+        String localSign = JdqMessageSign.signParams(ConfigProperties.get(Constants.UNIONLOGIN_JDQ_SECRET), signMap);
 
 
         if (!localSign.equals(sign)) {
@@ -105,8 +106,8 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("msg", "参数错误，不能被解析");
             return jsonResult;
         }
-        JSONObject applyInfoJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(SECRET_KEY, apply_info).trim());
-        JSONObject userAttributeJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(SECRET_KEY, user_attribute).trim());
+        JSONObject applyInfoJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(ConfigProperties.get(Constants.UNIONLOGIN_JDQ_SECRET), apply_info).trim());
+        JSONObject userAttributeJson = (JSONObject) JSONObject.parse(Codec.base64StrDecode(ConfigProperties.get(Constants.UNIONLOGIN_JDQ_SECRET), user_attribute).trim());
         //endregion
 
         String phone = userAttributeJson.getString("mobilephone");
@@ -162,15 +163,14 @@ public class UnionLoginController extends BaseController {
     @RequestMapping("/xjcrLogin")
     @ResponseBody
     public JSONObject xjcrLogin(String phone, String source, String sign) throws Exception {
-        String testkey="e434cdb063f1bc05498211d3bd6a3c3e";
-        String prokey="f5b78e88cb70a4214f61af58bf035162";
+        String secretkey=ConfigProperties.get(Constants.UNIONLOGIN_XJCR_SECRET);
         String tempkey="0745936debb2db60ff6cad3ab5fb9155";
         String channel = source;
         Map<String, String[]> paramsMap = request.getParameterMap();
         TreeMap<String, String> signMap = getSignMap(paramsMap);
         String paramsJsonStr = JSONObject.toJSONString(paramsMap);
         addLogs(channel, paramsJsonStr);
-        String localSign = JdqMessageSign.signParams(signMap,"&key="+tempkey);
+        String localSign = JdqMessageSign.signParams(signMap,"&key="+secretkey);
         JSONObject jsonResult = new JSONObject();
         if (!localSign.toUpperCase().equals(sign)) {
             jsonResult.put("error_code", "-2");

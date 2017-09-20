@@ -117,6 +117,9 @@
 		<property name="fbapi.face.plus.face.living.url" defaultValue="https://api.megvii.com/faceid/v2/verify" description="face++活体验证地址"/>
 		<property name="fbapi.face.plus.appkey" defaultValue="FV5T+YXsSPiuLUmM/lIzdePOCaCnnK5GndzBqV1jT37QroYLtEIaqFC8Jmft4E4B" description="face++appKey"/>
 		<property name="fbapi.face.plus.secret" defaultValue="n0mySgkpAdgZStufuC6eLwCZsHQZxD37jOPbXEew3sLQroYLtEIaqFC8Jmft4E4B" description="face++ app_secret"/>
+
+		<property name="fbapi.unionlogin.xjcr.secret" defaultValue="e434cdb063f1bc05498211d3bd6a3c3e" description="现金超人登录对接秘钥"/>
+		<property name="fbapi.unionlogin.jdq.secret" defaultValue="1CA4EDA857AFCC23" description="借点钱登录对接秘钥"/>
 	</group>
 
 	<script>

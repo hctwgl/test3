@@ -23,7 +23,7 @@ public class JdqMessageSign {
     public static final String ALGORITHMS_SHA1 = "SHA-1";
 
     public static final String ALGORITHMS_MD5 = "MD5";
-    public static final String SECRET_KEY = "3FADAE9950B216AF";
+    public static final String TEMP_SECRET_KEY = "3FADAE9950B216AF";
     /**
      * 消息摘要，使用参数 algorithms 指定的算法
      *
@@ -131,7 +131,7 @@ public class JdqMessageSign {
         paramMap.put(pNameUserAttr, userAttribute);
         paramMap.put(pNameTimestamp, timestamp);
 
-        return signParams(SECRET_KEY, paramMap);
+        return signParams(TEMP_SECRET_KEY, paramMap);
     }
 
     public static void main(String[] args) {
