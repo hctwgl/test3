@@ -193,7 +193,8 @@ $(function(){
                	        timerInterval = setInterval(timeFunction,1000);
       				} else {
       					requestMsg(returnData.msg);
-      					$("#register_codeBtn").removeAttr("disabled");
+                        $("#imgVftCode").val('');
+                        $("#register_codeBtn").removeAttr("disabled");
       				}
       			},
       			error: function(){
