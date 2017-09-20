@@ -138,26 +138,26 @@ import com.taobao.api.response.TaeItemDetailGetResponse;
  */
 @Service("afOrderService")
 public class AfOrderServiceImpl extends BaseService implements AfOrderService{
-	
+
 	@Resource
 	private AfOrderDao orderDao;
 	@Resource
 	private AfBorrowDao afBorrowDao;
 	@Resource
 	private KaixinUtil kaixinUtil;
-	
+
 	@Resource
 	private AfUserCouponDao afUserCouponDao;
-	
+
 	@Resource
 	private  AfUserAccountDao afUserAccountDao;
-	
+
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
-	
+
 	@Resource
 	private AfGoodsDao afGoodsDao;
-	
+
 	@Resource
 	private TaobaoApiUtil taobaoApiUtil;
 	@Resource
@@ -210,7 +210,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfBoluomeActivityUserLoginDao afBoluomeActivityUserLoginDao;
 	@Resource
 	AfBoluomeActivityUserRebateDao afBoluomeActivityUserRebateDao;
-	@Resource 
+	@Resource
 	AfShopService afShopService;
 	@Resource
 	AfBoluomeActivityItemsDao afBoluomeActivityItemsDao;
@@ -223,8 +223,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
-	
-	
+
 	@Resource
 	private AfGoodsService afGoodsService;
 	@Resource
@@ -235,13 +234,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private AfGoodsReservationService afGoodsReservationService;
 	@Resource
 	JpushService jpushService;
-	
-	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
 		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
 	}
-	
+
 	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:"+content);
@@ -266,7 +263,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							if(null == goods){
 								Map<String, Object> params = new HashMap<String, Object>();
 								params.put(TaobaoApiUtil.OPEN_IID, goodsObj.getString("auction_id"));
-								
+
 								List<XItem> nTbkItemList = taobaoApiUtil.executeTbkItemSearch(params).getItems();
 								if(nTbkItemList !=null && nTbkItemList.get(0) !=null){
 									XItem item = nTbkItemList.get(0);
@@ -274,7 +271,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 									logger.info("createOrderTrade_content item is not null");
 									orderType = item.getMall() ? OrderType.TMALL.getCode() : OrderType.TAOBAO.getCode();
 									numId = item.getOpenId() + StringUtils.EMPTY;
-									
+
 								}else{
 									//默认值
 									TaeItemDetailGetResponse res = taobaoApiUtil.executeTaeItemDetailSearch(goodsObj.getString("auction_id"));
@@ -284,18 +281,18 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 										JSONObject sellerInfo = resObj.getJSONObject("tae_item_detail_get_response").getJSONObject("data").getJSONObject("seller_info");
 										orderType = sellerInfo.getString("seller_type").toUpperCase();
 									}
-									
+
 									numId = StringUtils.EMPTY;
 								}
-								
+
 							}else{
 								goodsId = goods.getRid();
 								orderType = goods.getSource();
 								numId = goods.getNumId();
 							}
-							AfOrderDo order = buildFullInfo(0l, obj.getString("order_id"), goodsObj.getString("detail_order_id"), StringUtils.EMPTY, OrderStatus.NEW.getCode(), 0l, orderType, 
-									StringUtils.EMPTY, goodsId, goodsObj.getString("auction_id"), numId, goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count, 
-									priceAmount, priceAmount, priceAmount, obj.getString("shop_title"), PayStatus.NOTPAY.getCode(), StringUtils.EMPTY, StringUtils.EMPTY, null, StringUtils.EMPTY, null, StringUtils.EMPTY, null, BigDecimal.ZERO, BigDecimal.ZERO, 0l, null,"",0L); 
+							AfOrderDo order = buildFullInfo(0l, obj.getString("order_id"), goodsObj.getString("detail_order_id"), StringUtils.EMPTY, OrderStatus.NEW.getCode(), 0l, orderType,
+									StringUtils.EMPTY, goodsId, goodsObj.getString("auction_id"), numId, goodsObj.getString("auction_title"), Constants.CONFKEY_TAOBAO_ICON_COMMON_LOCATION+goodsObj.getString("auction_pict_url"), count,
+									priceAmount, priceAmount, priceAmount, obj.getString("shop_title"), PayStatus.NOTPAY.getCode(), StringUtils.EMPTY, StringUtils.EMPTY, null, StringUtils.EMPTY, null, StringUtils.EMPTY, null, BigDecimal.ZERO, BigDecimal.ZERO, 0l, null,"",0L);
 							orderList.add(order);
 						}
 						logger.info("createOrderTrade_content orderList = {}" ,orderList);
@@ -336,7 +333,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				AfOrderDo temorder = orderDao.getOrderInfoByOrderNo(orderNo);
 				afAgentOrderDo.setOrderId(orderTemp.getOrderId());
 				afAgentOrderDo.setStatus("BUY");
-				afAgentOrderDo.setMatchOrderId(temorder.getRid());			
+				afAgentOrderDo.setMatchOrderId(temorder.getRid());
 				afAgentOrderService.updateAgentOrder(afAgentOrderDo);
 				AfOrderDo applyOrder = new AfOrderDo();
 				applyOrder.setRid(orderTemp.getOrderId());
@@ -359,7 +356,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		AfOrderDo order = new AfOrderDo();
 		order.setOrderNo(JSON.parseObject(content).getString("order_id"));
 		order.setStatus(OrderStatus.CLOSED.getCode());
-		
+
 		return orderDao.updateOrderByOrderNo(order);
 	}
 
@@ -422,7 +419,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							//TODO 转账处理
 							AfBankUserBankDto card = afUserBankcardDao.getUserBankcardByBankId(order.getBankId());
 							String refundNo = generatorClusterNo.getRefundNo(new Date());
-							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"", 
+							UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(order.getActualAmount(), userDo.getRealName(), card.getCardNumber(), order.getUserId()+"",
 									card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",OrderType.MOBILE.getCode(),"");
 							if(!upsResult.isSuccess()){
 								afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo,order.getActualAmount(), order.getActualAmount(), order.getUserId(), order.getRid(), order.getOrderNo(), OrderRefundStatus.FAIL,PayType.BANK,card.getCardNumber(),card.getBankName(),"充值失败银行卡退款",RefundSource.PLANT_FORM.getCode(),upsResult.getOrderNo()));
@@ -521,10 +518,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
             }
         });
     }
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param orderNo  --订单编号
 	 * @param userId   --用户id
 	 * @param couponDto --优惠券对象
@@ -562,7 +559,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setSaleAmount(saleAmount);
 		if(null == couponDto){
 			orderDo.setUserCouponId(0l);
-			
+
 		}else{
 			orderDo.setUserCouponId(couponDto.getRid());
 		}
@@ -572,7 +569,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setBankId(bankId);
 		return orderDo;
 	}
-	
+
 	private AfOrderDo buildFullInfo(Long userId,String orderNo,String thirdOrderNo,String thirdDetailUrl,String status,Long userCouponId, String orderType,
 			String secType, Long goodsId, String openId, String numId, String goodsName, String goodsIcon, Integer count, BigDecimal priceAmount, BigDecimal saleAmount,
 			BigDecimal actualAmount, String shopName, String payStatus, String payType, String payTradeNo, Date gmtPay, String tradeNo, Date gmtRebated, String mobile,
@@ -651,13 +648,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		final BigDecimal actualAmount = couponDto==null?money:money.subtract(couponDto.getAmount());
 		Map<String,Object> map;
 		//订单创建
-		orderDao.createOrder(buildOrder(now,orderNo,orderNo,userId, couponDto, money,money, mobile, rebateAmount, 
+		orderDao.createOrder(buildOrder(now,orderNo,orderNo,userId, couponDto, money,money, mobile, rebateAmount,
 				OrderType.MOBILE.getCode(),actualAmount, 0l, "",Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "",bankId));
 		if(bankId<0){//微信支付
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,PayOrderSource.ORDER.getCode());
 		}else{//银行卡支付 代收
 			map = new HashMap<String,Object>();
-			UpsCollectRespBo respBo = upsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(), 
+			UpsCollectRespBo respBo = upsUtil.collect(orderNo,actualAmount, userId+"", afUserAccountDo.getRealName(), card.getMobile(),
 					card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02",OrderType.MOBILE.getCode());
 			if (!respBo.isSuccess()) {
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
@@ -684,7 +681,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		logger.info("updateOrder begin orderInfo = {}" , afOrder);
 		return orderDao.updateOrder(afOrder);
 	}
-	
+
 	@Override
 	public int dealBoluomeOrder(final AfOrderDo afOrder) {
 		logger.info("dealBoluomeOrder begin , afOrder = {}"+afOrder);
@@ -717,6 +714,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 boluomeActivity(afOrder);
                             }
                         }
+                        AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
+						if(afBorrowDo !=null) {
+							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+							if(borrowList != null && borrowList.size()>0 ){
+								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+								afBorrowDao.addBorrowBill(billList);
+							}
+						}
 						break;
 					default:
 						logger.info(" status is {} ",afOrder.getStatus());
@@ -751,7 +756,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			if(afBoluomeActivityItemsDo!= null){
 				//规则判断
 				BigDecimal actualAmount = afOrder.getActualAmount();
-				BigDecimal minConsumption=new BigDecimal(afBoluomeActivityItemsDo.getRuleJson());   
+				BigDecimal minConsumption=new BigDecimal(afBoluomeActivityItemsDo.getRuleJson());
 				int res = actualAmount.compareTo(minConsumption);
 				if(res==1 || res == 0){
 					//添加自己返利记录
@@ -768,22 +773,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					ownRebate.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
 					afBoluomeActivityUserRebateDao.saveRecord(ownRebate);
 					logger.info("activityUserRebate",ownRebate);
-					//添加卡片信息 
+					//添加卡片信息
 					AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
 					userItemsDo.setBoluomeActivityId(afBoluomeActivityItemsDo.getBoluomeActivityId());
 					userItemsDo.setItemsId(afBoluomeActivityItemsDo.getRid());
 					userItemsDo.setSourceId((long) -1);
 					userItemsDo.setStatus("NORMAL");
 					userItemsDo.setUserId(userId);
-					userItemsDo.setUserName(afUserDo.getUserName()); 
+					userItemsDo.setUserName(afUserDo.getUserName());
 					userItemsDo.setGmtSended(nowTime);
 					afBoluomeActivityUserItemsDao.saveRecord(userItemsDo);
 					logger.info("activityUserItems",userItemsDo);
-					
+
 					//给他人返利
 					AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
 					logger.info("activityUserLogin",userLoginRecord);
-					if(userLoginRecord!=null){    
+					if(userLoginRecord!=null){
 						//最后绑定时间，和当前下单时间
 						Date lastTime = userLoginRecord.getGmtCreate();
 						Date orderTime = afOrder.getGmtCreate();
@@ -803,7 +808,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							refMessage.setRefUserId(userLoginRecord.getRefUserId());
 							refMessage.setBoluomeActivityId(userLoginRecord.getBoluomeActivityId());
 							refMessage.setRefOrderId(afOrder.getRid());//id还是orderNo?
-							refMessage.setInviteRebate(afOrder.getRebateAmount()); 
+							refMessage.setInviteRebate(afOrder.getRebateAmount());
 							refMessage.setGmtCreate(nowTime);
 							refMessage.setGmtModified(nowTime);
 							afBoluomeActivityUserRebateDao.saveRecord(refMessage);
@@ -825,8 +830,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		return 0;
 	}
-	
-	
+
+
 	private AfUserAccountLogDo buildUserAccount(BigDecimal amount,Long userId,Long orderId, AccountLogType logType){
 		//增加account变更日志
 		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
@@ -841,7 +846,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public AfOrderDo getOrderById(Long id) {
 		return orderDao.getOrderById(id);
 	}
-	
+
 	@Override
 	public int deleteOrder(Long id) {
 		return orderDao.deleteOrder(id);
@@ -881,7 +886,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
 						// 判断使用额度
 						checkUsedAmount(virtualMap, orderInfo, userAccountInfo);
-						
+
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = null;
 						if(OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
@@ -905,7 +910,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}
 						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(),
 								nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),orderInfo.getOrderType());
-						
+
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						String borrowTime = sdf.format(borrow.getGmtCreate());
 						// 最后调用风控控制
@@ -922,7 +927,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							_vcode = "99";
 						}
 						logger.info("verify userId" + userId);
-						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo, 
+						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, StringUtil.EMPTY, riskOrderNo,
 						userAccountInfo.getUserName(), orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,orderInfo.getOrderType(),orderInfo.getSecType());
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
@@ -936,9 +941,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 						Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-						
+
 						BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-						
+
 						BigDecimal leftAmount = useableAmount;
 						BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(virtualMap);
 						String virtualCode = "";
@@ -948,22 +953,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							//虚拟剩余额度大于信用可用额度 则为可用额度 （获取剩余额度）
 							leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
 						}
-						
+
 						//银行卡需要支付的金额
 						BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
-						
+
 						orderInfo.setNper(nper);
 						BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
 						String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
 						orderInfo.setBorrowRate(boStr);
-						
+
 						String cardNo = card.getCardNumber();
 						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 						orderInfo.setRiskOrderNo(riskOrderNo);
 						orderInfo.setBorrowAmount(leftAmount);
 						orderInfo.setBankAmount(bankAmount);
 						orderDao.updateOrder(orderInfo);
-						
+
 						//用额度进行分期
 						AfBorrowDo borrow = buildAgentPayBorrow(orderInfo.getGoodsName(), BorrowType.TOCONSUME, userId, leftAmount, nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),orderInfo.getOrderType());
 
@@ -989,7 +994,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 							}
 							logger.info("combination_pay orderInfo = {}", orderInfo);
-							
+
 							Map<String, Object> result = riskUtil.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap, isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo);
 							result.put("status", PayStatus.DEALING.getCode());
 							return result;
@@ -1023,7 +1028,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						resultMap.put("status", PayStatus.DEALING.getCode());
 						resultMap.put("success", true);
 						//活动返利
-						
+
 					}
 					return resultMap;
 				} catch (FanbeiException exception) {
@@ -1035,7 +1040,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							payFailMsg = Constants.PAY_ORDER_USE_AMOUNT_LESS;
 						}else if(FanbeiExceptionCode.RISK_VERIFY_ERROR.getCode().equals(exception.getErrorCode().getCode())
 								|| FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR.getCode().equals(exception.getErrorCode().getCode())
-								|| FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode()) 
+								|| FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode())
 								|| FanbeiExceptionCode.BANK_CARD_PAY_ERR.getCode().equals(exception.getErrorCode().getCode()) ){
 							payFailMsg = exception.getErrorCode().getDesc();
 						}else if(FanbeiExceptionCode.UPS_COLLECT_ERROR.getCode().equals(exception.getErrorCode().getCode())){
@@ -1057,10 +1062,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 
-			
+
 		});
 	}
-	
+
 	public JSONObject borrowRateWithOrder(Long orderId,Integer nper){
 		AfOrderDo order = afOrderService.getOrderById(orderId);
 
@@ -1074,9 +1079,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		return borrowRate;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param name 分期名称
 	 * @param type 分期类型
 	 * @param userId 用户id
@@ -1091,7 +1096,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @return
 	 */
 	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson,String orderType) {
-		
+
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);
 		if (CollectionUtils.isNotEmpty(interestFreeList)) {
@@ -1102,7 +1107,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		}
-		
+
 		//获取借款分期配置信息
 		AfResourceDo resource=null;
 		if(orderType.equals(OrderType.TRADE.getCode())){
@@ -1116,7 +1121,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
         removeSecondNper(array);
-		
+
 		JSONArray interestFreeArray = null;
 		if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 			interestFreeArray = JSON.parseArray(interestFreeJson);
@@ -1163,7 +1168,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		borrow.setFreeNper(freeNper);
 		return borrow;
 	}
-	
+
 	private void removeSecondNper(JSONArray array) {
         if (array == null) {
             return;
@@ -1178,7 +1183,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
         }
 
     }
-	
+
 	@Override
 	public Map<String, Object> payBrandOrderOld(final Long payId, final Long orderId, final Long userId,
 			final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount,
@@ -1290,7 +1295,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			}
 		});
 	}
-	
+
 	@Override
 	public int dealBrandOrderSucc(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
@@ -1299,10 +1304,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
 					//菠萝觅，临时增加CLOSED订单：因为额度支付可能会先关闭订单
-					if (orderInfo == null || 
-	   						 (	!orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode()) 
-	   						    &&!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode()) 
-   								&&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode()) 
+					if (orderInfo == null ||
+	   						 (	!orderInfo.getStatus().equals(OrderStatus.PAYFAIL.getCode())
+	   						    &&!orderInfo.getStatus().equals(OrderStatus.CLOSED.getCode())
+   								&&!orderInfo.getStatus().equals(OrderStatus.NEW.getCode())
    								&& !orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()))) {
 							return 0;
 					}
@@ -1335,7 +1340,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
-		//iPhone预约
+			//iPhone预约
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
 			logger.info("iPhone8 reservationActivity" +goods.getRid());
 			if(goods != null){
@@ -1359,7 +1364,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					long goodsId = Long.parseLong(gId);
 					String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
 					AfGoodsReservationDo afGoodsReservationDo = new AfGoodsReservationDo(afUserDo.getRid(), activityId, goodsId, rsvNums, rsvNo, new Date(), new Date(), AfGoodsReservationStatus.SUCCESS.getCode(), "");
-					
+
 					if (!(afGoodsReservationService.addGoodsReservation(afGoodsReservationDo) > 0)) {
 						logger.info("iPhone8 reservationActivity is fail");
 						return result;
@@ -1378,11 +1383,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}
 					}
 				}
-			} 
+			}
 		}
 		return result;
 	}
-	
+
 	@Override
 	public int dealAgentCpOrderSucc(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
@@ -1396,7 +1401,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
 					afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 					afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
-					
+
 					logger.info("dealAgentCpOrderSucc begin , payOrderNo = {} and tradeNo = {} and type = {}", new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
@@ -1420,8 +1425,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			}
 		});
 		return result;
-	}	
-	
+	}
+
 	public int dealBrandOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -1462,7 +1467,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		return result;
 	}
-	
+
 	@Override
 	public int dealBrandOrderRefund(final Long orderId,final Long userId, final Long bankId, final String orderNo, final String thirdOrderNo,
 			final BigDecimal refundAmount, final BigDecimal totalAmount, final String payType, final String payTradeNo, final String refundNo, final String refundSource) {
@@ -1470,7 +1475,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {} refundNo = {} refundSource = {}", 
+					logger.info("dealBrandOrderRefund begin , orderId = {} userId = {} orderNo = {} refundAmount = {} totalAmount = {} payType = {} payTradeNo = {} refundNo = {} refundSource = {}",
 							new Object[]{orderId,userId,orderNo,refundAmount,totalAmount,payType,payTradeNo,refundNo,refundSource});
 					AfOrderDo orderInfo = null;
 					//金额小于0
@@ -1506,15 +1511,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//代付退款
 						logger.info("agent pay refund begin");
 						orderInfo = orderDao.getOrderById(orderId);
-						
+
 						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-						
+
 						AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderIdAndStatus(orderInfo.getRid(), BorrowStatus.TRANSED.getCode());
-						
+
 						//重新需要生成账单的金额
 						BigDecimal borrowAmount = afBorrowService.calculateBorrowAmount(borrowInfo.getRid(), refundAmount, refundSource.equals(RefundSource.USER.getCode()));
 						logger.info("dealBrandOrderRefund borrowAmount = {}", borrowAmount);
-						
+
 						//更新账户金额
 						BigDecimal usedAmount = BigDecimalUtil.subtract(accountInfo.getUsedAmount(), calculateUsedAmount(borrowInfo));
 						accountInfo.setUsedAmount(usedAmount);
@@ -1528,13 +1533,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						//修改订单状态
 						orderInfo.setStatus(OrderStatus.CLOSED.getCode());
 						orderDao.updateOrder(orderInfo);
-						
+
 						AfUserBankcardDo cardInfo = afUserBankcardDao.getUserMainBankcardByUserId(userId);
 						if (borrowAmount.compareTo(BigDecimal.ZERO) < 0) {
 							//退款最后放置，因为如果其他过程抛异常就不需要退款操作
 							AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, borrowAmount.abs(), userId, orderId, orderNo, OrderRefundStatus.REFUNDING,PayType.BANK,cardInfo.getCardNumber(),cardInfo.getBankName(),"菠萝觅代付多余还款退款"+borrowAmount.abs(), refundSource,StringUtils.EMPTY);
 							afOrderRefundDao.addOrderRefund(refundInfo);
-							UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(borrowAmount.abs(), accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"", 
+							UpsDelegatePayRespBo tempUpsResult = upsUtil.delegatePay(borrowAmount.abs(), accountInfo.getRealName(), cardInfo.getCardNumber(), userId+"",
 									cardInfo.getMobile(), cardInfo.getBankName(), cardInfo.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),refundInfo.getRid() + StringUtils.EMPTY);
 							logger.info("agent bank refund upsResult = {}", tempUpsResult);
 							if(!tempUpsResult.isSuccess()){
@@ -1553,8 +1558,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							account.setUsedAmount(borrowAmount);
 							account.setUserId(accountInfo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
-							
-							afBorrowService.dealAgentPayBorrowAndBill(accountInfo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+
+							afBorrowService.dealAgentPayBorrowAndBill(accountInfo.getUserId(), accountInfo.getUserName(), borrowAmount, borrowInfo.getName(), borrowInfo.getNper() - borrowInfo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),true);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,PayType.AGENT_PAY,StringUtils.EMPTY, null,"菠萝觅代付退款",refundSource,StringUtils.EMPTY));
 						}
@@ -1601,7 +1606,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						if (backAmount.compareTo(BigDecimal.ZERO) > 0) {
 							AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, backAmount.abs(), userId, orderId, orderNo, OrderRefundStatus.FINISH, PayType.COMBINATION_PAY, afUserBankcardDo.getCardNumber(), afUserBankcardDo.getBankName(), "组合支付多余还款退款" + backAmount.abs(), refundSource, StringUtils.EMPTY);
 							afOrderRefundDao.addOrderRefund(refundInfo);
-							
+
 							AfUserAccountDo account = new AfUserAccountDo();
 							account.setRebateAmount(backAmount.abs());
 							account.setUserId(afUserAccountDo.getUserId());
@@ -1615,25 +1620,25 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							account.setUserId(afUserAccountDo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
 
-							afBorrowService.dealAgentPayBorrowAndBill(afUserAccountDo.getUserId(), afUserAccountDo.getUserName(), backAmount.abs(), afBorrowDo.getName(), afBorrowDo.getNper() - afBorrowDo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson());
+							afBorrowService.dealAgentPayBorrowAndBill(afUserAccountDo.getUserId(), afUserAccountDo.getUserName(), backAmount.abs(), afBorrowDo.getName(), afBorrowDo.getNper() - afBorrowDo.getNperRepayment(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(),true);
 						} else {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount, BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH, PayType.COMBINATION_PAY, StringUtils.EMPTY, null, "组合支付退款", refundSource, StringUtils.EMPTY));
 						}
 						// 如果成功推送退款成功状态给菠萝觅
 						boluomeUtil.pushRefundStatus(orderId, orderNo, thirdOrderNo, PushStatus.REFUND_SUC, userId, refundAmount, refundNo);
-						break;						
+						break;
 					case BANK:
 						//银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
 						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
-						
+
 						AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING,PayType.BANK,card.getCardNumber(),card.getBankName(),"菠萝觅银行卡退款",refundSource,StringUtils.EMPTY);
 						afOrderRefundDao.addOrderRefund(refundInfo);
 						orderInfo = new AfOrderDo();
 						orderInfo.setRid(orderId);
 						orderInfo.setStatus(OrderStatus.DEAL_REFUNDING.getCode());
 						orderDao.updateOrder(orderInfo);
-						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"", 
+						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(refundAmount, userAccount.getRealName(), card.getCardNumber(), userId+"",
 								card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_REFUND_PURPOSE, "02",UserAccountLogType.BANK_REFUND.getCode(),refundInfo.getRid() + StringUtils.EMPTY);
 						logger.info("bank refund upsResult = {}", upsResult);
 						if(!upsResult.isSuccess()){
@@ -1667,7 +1672,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 获取应该退多少额度
 	 * @param borrowInfo
@@ -1699,23 +1704,23 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return orderDao.getCurrentLastPayNo(startDate, endDate);
 	}
 
-	
+
 	@Override
 	public int syncOrderNoWithAgencyUser(Long userId, String orderNo, Long orderId) {
 		AfOrderTempDo order = new AfOrderTempDo();
 		order.setOrderNo(orderNo);
 		order.setUserId(userId);
 		order.setOrderId(orderId);
-		
+
 		AfAgentOrderDo afAgentOrderDo = new AfAgentOrderDo();
 		afAgentOrderDo.setOrderId(orderId);
 		afAgentOrderDo.setStatus("BUY");
 		afAgentOrderDo.setGmtAgentBuy(new Date());
 		afAgentOrderService.updateAgentOrder(afAgentOrderDo);
-		
+
 		return afUserOrderDao.addUserOrder(order);
 	}
-	
+
 	@Override
 	public String isCanApplyAfterSale(Long orderId){
 		String isCanApply = YesNoStatus.NO.getCode();
@@ -1736,7 +1741,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					|| (OrderType.SELFSUPPORT.getCode().equals(order.getOrderType()) && otherbuyStatus.contains(order.getStatus())))){
 				return isCanApply;
 			}
-			
+
 			//符合订单类型及状态，继续时间校验，自订单状态为待收货开始30个自然日内
 			Date waitDelieveDate = null;
 			if(order.getGmtDeliver()!=null){
@@ -1759,7 +1764,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					}
 				}
 			}
-			
+
 			Date deadlineTime = DateUtil.addDays(waitDelieveDate,Constants.AFTER_SALE_DAYS);
 			if(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(deadlineTime),DateUtil.getToday())<0){
 				isCanApply = YesNoStatus.YES.getCode();
@@ -1767,10 +1772,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		} catch (Exception e) {
 			logger.error("isCanApplyAfterSale request error,orderId:"+orderId,e);
 		}
-		
+
 		return isCanApply;
 	}
-	
+
 	@Override
 	public AfOrderDo getThirdOrderInfoBythirdOrderNo(String thirdOrderNo) {
 		// TODO Auto-generated method stub
@@ -1797,7 +1802,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			}
 			virtualCode = type.getCode();
 			resultMap.put(Constants.VIRTUAL_CODE, type.getCode());
-			
+
 			RiskVirtualProductQuotaRespBo response = riskUtil.virtualProductQuota(orderInfo.getUserId() + StringUtils.EMPTY, virtualCode, StringUtils.EMPTY);
 			if (response != null) {
 				resultMap.put(Constants.VIRTUAL_AMOUNT, response.getAmount());
@@ -1821,7 +1826,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		if (resultMap.get(Constants.VIRTUAL_CODE) == null) {
 			return false;
-		} 
+		}
 		return true;
 	}
 
@@ -1832,7 +1837,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		if (resultMap.get(Constants.VIRTUAL_AMOUNT) == null) {
 			return null;
-		} 
+		}
 		return new BigDecimal(resultMap.get(Constants.VIRTUAL_AMOUNT).toString());
 	}
 
@@ -1843,10 +1848,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 		if (resultMap.get(Constants.VIRTUAL_CODE) == null) {
 			return null;
-		} 
+		}
 		return resultMap.get(Constants.VIRTUAL_CODE).toString();
 	}
-	
+
 	/**
 	 * 判断额度是否足够
 	 * @param orderInfo
@@ -1871,7 +1876,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		}
 	}
 
-	
+
 	/**
 	 * 处理组合支付失败的情况
 	 */
@@ -1882,7 +1887,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					
+
 					// 不处理新建，处理
 					if (orderInfo == null) {
 						return 0;
@@ -1892,9 +1897,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						return 0;
 					}
 					logger.info("dealPayCpOrderFail fail begin , payOrderNo = {} and tradeNo = {}", new Object[] { payOrderNo, tradeNo});
-					
+
 					//恢复额度
-					
+
 					// 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
 					AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
 					if(userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >=0) {
@@ -1906,7 +1911,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						// 增加资金变化的记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL, orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
 					}
-					
+
 					// 恢复虚拟额度
 					AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
 					queryVirtualAccountDo.setUserId(orderInfo.getUserId());
@@ -1916,13 +1921,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						userVirtualAccountDo.setStatus(YesNoStatus.NO.getCode());
 						afUserVirtualAccountService.updateById(userVirtualAccountDo);
 					}
-					
+
 					// 如果使用了优惠卷，恢复优惠卷
 					if(orderInfo.getUserCouponId() != null && orderInfo.getUserCouponId() != 0){
 	                    afUserCouponDao.updateUserCouponSatusNouseById(orderInfo.getUserCouponId());
 					}
 
-						
+
 					// 处理订单
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
@@ -2024,7 +2029,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
 	@Override
 	public Integer getDealAmount(Long userId ,String orderType) {
-		
+
 		return orderDao.getDealAmount(userId,orderType);
 	}
 
@@ -2032,5 +2037,5 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	public List<AfOrderDo> getStatusByGoodsAndUserId(long goodsId, long userId) {
 		return orderDao.getStatusByGoodsAndUserId(goodsId, userId);
 	}
-	
+
 }

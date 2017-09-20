@@ -7,12 +7,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -92,6 +94,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 	@Resource
 	YiBaoUtility yiBaoUtility;
+
+	@Resource
+	RedisTemplate redisTemplate;
 
 
 	@Override
@@ -222,6 +227,14 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 	@Override
 	public long dealRenewalSucess(final String outTradeNo, final String tradeNo) {
+
+		final String key = outTradeNo +"_success_repayCash_renewal";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+		if (count != 1) {
+			return -1;
+		}
+
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -316,6 +329,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error", e);
 					return 0l;
+				}
+				finally {
+					redisTemplate.delete(key);
 				}
 			}
 		});

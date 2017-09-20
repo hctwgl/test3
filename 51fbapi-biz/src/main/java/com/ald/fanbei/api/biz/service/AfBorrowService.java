@@ -2,8 +2,10 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -198,7 +200,7 @@ public interface AfBorrowService {
 	 *            --借款名称
 	 * @return
 	 */
-	Long dealAgentPayBorrowAndBill(AfBorrowDo borrow, Long userId, String userName, BigDecimal amount, String payType);
+	Long dealAgentPayBorrowAndBill(AfBorrowDo borrow, Long userId, String userName, BigDecimal amount, String payType,String orderType);
 
 	/**
 	 * 生成代付借款以及账单
@@ -224,7 +226,7 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	Long dealAgentPayBorrowAndBill(Long userId, String userName, BigDecimal amount, String name, Integer nper, Long orderId,
-			String orderNo, String borrowRate, String interestFreeJson);
+			String orderNo, String borrowRate, String interestFreeJson,boolean isBack);
 	
 	/**
 	 * 获取总借款次数
@@ -263,5 +265,9 @@ public interface AfBorrowService {
 	 * @return
 	 */
 	AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo);
+
+	List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String payType);
+
+	int addBorrowBill(List<AfBorrowBillDo> billList);
 
 }

@@ -273,6 +273,27 @@
 			  AND bb.id <![CDATA[<>]]> #{billId}
 			GROUP BY b.borrow_no 
 	</select>
-	
-	
+
+	<select id="getNoPayBorrowBillByUserId" resultType="AfBorrowBillDo">
+		SELECT <include refid="queryWithFields"/>
+		FROM `af_borrow_bill` where `status` = 'N' and `user_id`  = #{userId}  ORDER BY `bill_year` asc ,`bill_month` asc
+	</select>
+
+
+	<select id="getAllBorrowNoPayByUserId" resultType="AfBorrowBillDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+		af_borrow_bill
+		WHERE is_delete = 0
+		AND user_id = #{userId}
+		AND `status` = 'N'
+		order by bill_year asc , bill_month asc
+	</select>
+
+	<select id="getBorrowBillNoPaySumByUserId">
+		select bill_year,bill_month,SUM(bill_amount) totalAmount,SUM(overdue_interest_amount) interest from af_borrow_bill
+			where user_id = #{userId} and `status` = 'N'
+		GROUP BY bill_year,bill_month
+	</select>
 </mapper>
