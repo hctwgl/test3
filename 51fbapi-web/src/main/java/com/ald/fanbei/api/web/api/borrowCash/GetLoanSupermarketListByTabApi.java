@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfLoanSupermarketDto;
@@ -146,20 +147,22 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         }else{
             map.put("flag","false");
         }
-        List<AfGameConfDo> confList = afGameConfDao.getByGameId(gameDo.getRid());
-        if(confList != null && confList.size()>0){
-            if(1<=signDays && signDays <5){
-                count = 5- signDays;
-                String item = "2";
-                prompt = prompt(confList,count,item);
-            }else if(5 <= signDays && signDays < 10){
-                count = 10- signDays;
-                String item = "3";
-                prompt = prompt(confList,count,item);
-            }else if(10<= signDays && signDays < 15){
-                count = 15- signDays;
-                String item = "4";
-                prompt = prompt(confList,count,item);
+        if(signed){
+            List<AfGameConfDo> confList = afGameConfDao.getByGameId(gameDo.getRid());
+            if(confList != null && confList.size()>0){
+                if(1<=signDays && signDays <5){
+                    count = 5- signDays;
+                    String item = "2";
+                    prompt = prompt(confList,count,item);
+                }else if(5 <= signDays && signDays < 10){
+                    count = 10- signDays;
+                    String item = "3";
+                    prompt = prompt(confList,count,item);
+                }else if(10<= signDays && signDays < 15){
+                    count = 15- signDays;
+                    String item = "4";
+                    prompt = prompt(confList,count,item);
+                }
             }
         }
         map.put("prompt",prompt);
@@ -170,15 +173,13 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
     public String prompt(List<AfGameConfDo> confList,int count,String itemStr){
         String prompt = "继续签到"+count+"天即可获得";
         for(AfGameConfDo conf :confList){
-            JSONArray array = JSON.parseArray(conf.getRule());
-            JSONObject item1 = array.getJSONObject(0);
-            JSONArray item = item1.getJSONArray("item");
+            String rule = conf.getRule();
+            JSONObject result = JSONObject.parseObject(rule);
+            String item = ObjectUtils.toString(result.get("item"), null);
             if(item.toString().equals(itemStr)){
-                JSONArray prizeArray = item1.getJSONArray("prize");
+                JSONArray prizeArray = result.getJSONArray("prize");
                 for (int i = 0; i < prizeArray.size(); i++) {
-                    Map<String,Object> prizeMap = new HashMap<String,Object>();
                     JSONObject prize =  prizeArray.getJSONObject(i);
-                    String prizeType = prize.getString("type");
                     String prizeId = prize.getString("prizeId");
                     AfCouponDo afCouponDo = afCouponDao.getCouponById(Long.parseLong(prizeId));
                     if(i>0){
@@ -189,7 +190,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
                 }
             }
         }
-        return "";
+        return prompt;
     }
 
 }
