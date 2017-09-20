@@ -631,11 +631,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
  				bill.setPrincipleAmount(principleAmount);
  			}
 			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
-//			if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
-//				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
-//			} else {
+			if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+			} else {
 				bill.setStatus(BorrowBillStatus.NO.getCode());
-//			}
+			}
 			bill.setType(BorrowType.CONSUME.getCode());
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
@@ -934,10 +934,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
 
 //					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
-					if(!(orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+//					if(!(orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
 						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 						afBorrowDao.addBorrowBill(billList);
-					}
+//					}
 					return borrow.getRid();
 
 				} catch (Exception e) {
@@ -965,11 +965,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
 
-					if(isBack) {
-						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, PayType.AGENT_PAY.getCode());
-						afBorrowDao.addBorrowBill(billList);
-					}
-
+					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, PayType.AGENT_PAY.getCode());
+					afBorrowDao.addBorrowBill(billList);
+					
 					return borrow.getRid();
 
 				} catch (Exception e) {

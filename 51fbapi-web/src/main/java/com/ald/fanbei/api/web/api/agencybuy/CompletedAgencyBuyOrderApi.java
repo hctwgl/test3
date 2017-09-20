@@ -106,15 +106,15 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	 * @param
 	 */
 	private void addBorrowBill(AfOrderDo afOrderDo){
-		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
-		if(afBorrowDo !=null){
-			//查询是否己产生
-			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-			if(borrowList == null || borrowList.size()==0 ){
-				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
-				afBorrowService.addBorrowBill(billList);
-			}
-		}
+//		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+//		if(afBorrowDo !=null){
+//			//查询是否己产生
+//			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+//			if(borrowList == null || borrowList.size()==0 ){
+//				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+//				afBorrowService.addBorrowBill(billList);
+//			}
+//		}
 	}
 
 }

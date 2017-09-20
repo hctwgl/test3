@@ -714,14 +714,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                                 boluomeActivity(afOrder);
                             }
                         }
-                        AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-						if(afBorrowDo !=null) {
-							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-							if(borrowList == null || borrowList.size()==0 ){
-								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-								afBorrowDao.addBorrowBill(billList);
-							}
-						}
+//                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
+//						if(afBorrowDo !=null) {
+//							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+//							if(borrowList == null || borrowList.size()==0 ){
+//								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+//								afBorrowDao.addBorrowBill(billList);
+//							}
+//						}
 						break;
 					default:
 						logger.info(" status is {} ",afOrder.getStatus());
