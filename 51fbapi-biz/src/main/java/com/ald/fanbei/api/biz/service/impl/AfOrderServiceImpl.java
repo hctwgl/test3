@@ -717,7 +717,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
                         AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
 						if(afBorrowDo !=null) {
 							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-							if(borrowList != null && borrowList.size()>0 ){
+							if(borrowList == null || borrowList.size()==0 ){
 								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
 								afBorrowDao.addBorrowBill(billList);
 							}
