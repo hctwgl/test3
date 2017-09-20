@@ -89,8 +89,8 @@
                         <p class="oppo">{{item.goodName}}</p>
                         <p class="money">￥{{item.priceAmount}}<span class="back">返</span><span class="backMoney">￥{{item.rebateAmount}}</span></p>
                         <!--<p class="monthPay">月供：<sapn>￥67.39</sapn><span class="qi">起</span></p>!-->
-                        <p class="monthPay" v-if="item.goodsType==='1'">月供：<sapn v-if="item.nperMap.isFree==1 && item.nperMap.isFree==2">￥{{item.nperMap.freeAmount}}</sapn><span v-else>￥{{item.nperMap.amount}}</span><span class="qi">起</span></p>
-                        <p class="monthPay" v-else style="opacity: 0">月供</p>
+                        <p class="monthPay">月供：<sapn v-if="item.nperMap.isFree==='1'" || " item.nperMap.isFree==='2'">￥{{item.nperMap.freeAmount}}</sapn><span v-else>￥{{item.nperMap.amount}}</span><span class="qi">起</span></p>
+                        <!--<p class="monthPay" v-else style="opacity: 0">月供</p>!-->
                     </div>
                 </div>
         </ul>
