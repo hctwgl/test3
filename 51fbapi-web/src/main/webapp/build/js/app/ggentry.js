@@ -45,44 +45,46 @@ window.onload = () => {
 
       $('.coupon .button.unpending')
       .click(function () {
-        $('.coupon .button.unpending').removeClass('unpending')
-        $.ajax({
-          url: '/fanbei-web/pickBoluomeCouponV1',
-          data: {
-            'sceneId': sceneId,
-          },
-          type: 'POST',
-          success: function (data) {
-            $('.coupon .button').addClass('unpending')
-            data=eval('(' + data + ')')
-            if (data.success) {
-              requestMsg(data.msg)
-              $.ajax({
-                url: '/H5GG/showCoupon',
-                type: 'GET',
-                success: (data) => {
-                  data=eval('(' + data + ')')
-            
-                  sceneId = data.data.boluomeCouponList[0].sceneId
-                  if(data.data.boluomeCouponList[0].isHas == 'Y') {
-                    $('.coupon .button').addClass('grey')
-                  }
-            
-                }
-              })
-            } else {
-              if (data.url) {
-                location.href = data.url;
-              } else {
+        if($(this).hasClass('unpending')) {
+          $('.coupon .button.unpending').removeClass('unpending')
+          $.ajax({
+            url: '/fanbei-web/pickBoluomeCouponV1',
+            data: {
+              'sceneId': sceneId,
+            },
+            type: 'POST',
+            success: function (data) {
+              $('.coupon .button').addClass('unpending')
+              data=eval('(' + data + ')')
+              if (data.success) {
                 requestMsg(data.msg)
+                $.ajax({
+                  url: '/H5GG/showCoupon',
+                  type: 'GET',
+                  success: (data) => {
+                    data=eval('(' + data + ')')
+              
+                    sceneId = data.data.boluomeCouponList[0].sceneId
+                    if(data.data.boluomeCouponList[0].isHas == 'Y') {
+                      $('.coupon .button').addClass('grey')
+                    }
+              
+                  }
+                })
+              } else {
+                if (data.url) {
+                  location.href = data.url;
+                } else {
+                  requestMsg(data.msg)
+                }
               }
+            },
+            error: function(err) {
+              console.log(err)
+              $('.coupon .button').addClass('unpending')
             }
-          },
-          error: function(err) {
-            console.log(err)
-            $('.coupon .button').addClass('unpending')
-          }
-        });
+          });
+        }
       });
 
     }
