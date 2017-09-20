@@ -292,7 +292,7 @@
 	</select>
 
 	<select id="getBorrowBillNoPaySumByUserId" resultType="HashMap">
-		select bill_year,bill_month,SUM(bill_amount) totalAmount,SUM(overdue_interest_amount) interest from af_borrow_bill
+		select bill_year,bill_month,SUM(bill_amount) totalAmount,SUM(overdue_interest_amount) interest,overdue_status from af_borrow_bill
 			where user_id = #{userId} and `status` = 'N'
 		GROUP BY bill_year,bill_month
 	</select>

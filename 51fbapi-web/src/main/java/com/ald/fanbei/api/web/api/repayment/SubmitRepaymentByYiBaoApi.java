@@ -106,6 +106,10 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             }
         }
 
+        if(amountSum.compareTo(BigDecimal.ZERO)<=0){
+            throw new FanbeiException("Account is invalid", FanbeiExceptionCode.AMOUNT_IS_LESS);
+        }
+
         BigDecimal allRepaymentAmount = repaymentAmount;
         repaymentAmount = amountSum;
 //        BigDecimal yuer = allRepaymentAmount.subtract(repaymentAmount);   //多出来的钱      钱到帐后。这笔钱要进入
@@ -212,14 +216,14 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 
         Map<String, Object> map;
         if (cardId == -2) {//余额支付
-            map = afRepaymentService.createRepayment(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
+            map = afRepaymentService.createRepayment(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
                     cardId, userId, billDo, "", afUserAccountDo);
             resp.addResponseData("refId", map.get("refId"));
             resp.addResponseData("type", map.get("type"));
         } else if (cardId == -1) {
             //微信支付
             if (wxDo != null && wxDo.getValue().toLowerCase().equals("true")) {
-                map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, "", afUserAccountDo);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
@@ -231,7 +235,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
         } else if (cardId == -3) {
             if (zfbDo != null && zfbDo.getValue().toLowerCase().equals("true")) {
                 //支付宝
-                map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, "", afUserAccountDo);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
@@ -246,7 +250,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             if (null == card) {
                 throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
             }
-            map = afRepaymentService.createRepayment(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
+            map = afRepaymentService.createRepayment(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
                     cardId, userId, billDo, request.getRemoteAddr(), afUserAccountDo);
             //代收
             UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
