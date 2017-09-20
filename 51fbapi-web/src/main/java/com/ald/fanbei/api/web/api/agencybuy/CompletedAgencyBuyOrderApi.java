@@ -60,7 +60,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				//自营确认收货走返利
 				rebateContext.rebate(orderInfo);
 				logger.info("自营订单用户点击确认收货,系统对订单不做修改记录.orderId="+orderId+",userId="+userId);
-				addBorrowBill(orderInfo);
+//				addBorrowBill(orderInfo);
 				return resp;
 			}else{
 				AfOrderDo afOrderDo = new AfOrderDo();
@@ -68,7 +68,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				afOrderDo.setStatus("FINISHED");
 				afOrderDo.setGmtFinished(new Date());
 				if(afOrderService.updateOrder(afOrderDo) > 0){
-					addBorrowBill(orderInfo);
+//					addBorrowBill(orderInfo);
 					return resp;
 				}
 			}
@@ -76,7 +76,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 			if(StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
 				//自营确认收货走返利处理，由于返利在确认收货收货状态之后，所以直接修改为返利成功即可
 				rebateContext.rebate(orderInfo);
-				addBorrowBill(orderInfo);
+//				addBorrowBill(orderInfo);
 				return resp;
 			}else{
 				if(OrderStatus.DELIVERED.getCode().equals(orderInfo.getStatus())){
@@ -86,7 +86,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					afOrderDo.setGmtFinished(new Date());
 					afOrderDo.setLogisticsInfo("已签收");
 					if(afOrderService.updateOrder(afOrderDo) > 0){
-						addBorrowBill(orderInfo);
+//						addBorrowBill(orderInfo);
 						return resp;
 					}else{
 						logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);

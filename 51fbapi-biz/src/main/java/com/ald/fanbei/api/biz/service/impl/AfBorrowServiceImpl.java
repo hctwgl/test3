@@ -933,7 +933,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
 
-					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+//					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+					if(!(orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
 						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 						afBorrowDao.addBorrowBill(billList);
 					}
