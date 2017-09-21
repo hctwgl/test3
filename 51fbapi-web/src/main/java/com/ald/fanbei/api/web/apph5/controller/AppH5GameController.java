@@ -483,10 +483,9 @@ public class AppH5GameController  extends BaseController{
 	public String signActivity(HttpServletRequest request, ModelMap model){
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
-//			context = doWebCheck(request, false);
-//			String userName = context.getUserName();
+			context = doWebCheck(request, false);
+			String userName = context.getUserName();
 			Map<String,Object> data = new HashMap<String,Object>();
-			String userName = request.getParameter("userName");//线上去掉
 			AfUserDo userDo = afUserService.getUserByUserName(userName);
 			if(userDo == null){
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -516,7 +515,8 @@ public class AppH5GameController  extends BaseController{
 						buttonString = "今日已签到";
 					}
 					else{
-						buttonString = "立即签到（还剩"+(4-signCount)+"个）";
+						int count = 4-signCount;
+						buttonString = "立即签到（还剩"+count+"个）";
 						canClick = true;
 					}
 				}
@@ -544,10 +544,9 @@ public class AppH5GameController  extends BaseController{
 	public String receiveSignAward(HttpServletRequest request, HttpServletResponse response){
 		FanbeiWebContext context = new FanbeiWebContext();
 		try{
-//			context = doWebCheck(request, false);
-//			String userName = context.getUserName();
+			context = doWebCheck(request, false);
+			String userName = context.getUserName();
 			Map<String,String> data = new HashMap<String,String>();
-			String userName = request.getParameter("userName");
 			AfUserDo userDo = afUserService.getUserByUserName(userName);
 			if(userDo==null){
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
