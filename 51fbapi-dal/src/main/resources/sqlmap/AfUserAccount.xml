@@ -252,4 +252,17 @@
 		,rebate_amount = rebate_amount + #{rebateAmount}
 		where user_id = #{userId}
 	</update>
+	
+	<update id="updateBorrowCashActivity" >
+		UPDATE  
+			`af_user_account` 
+		SET 
+			`gmt_modified` =now(),`rebate_amount` =`rebate_amount` +#{money} 
+		WHERE 
+			`user_id` 
+		IN
+		<foreach collection="userId" item="item" index="index" open="(" separator="," close=")" >  
+        #{item}  
+   		</foreach>  
+	</update>
 </mapper>

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -135,12 +136,33 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	List<String> getBorrowedUserIds();
-	
+
 	/**
 	 * 催收平账更新数据
 	 * @param
-	 * @return 
-	 * 
+	 * @return
+	 *
 	 * **/
 	int updateBalancedDate(AfBorrowCashDo afBorrowCashDo);
+
+	/**
+	 * 借钱活动
+	 *
+	 * @return
+	 * **/
+	BigDecimal getBorrowCashSumAmount();
+
+	/**
+	 * 获取随机用户
+	 *
+	 * @return
+	 * **/
+	List<String> getRandomUser();
+
+	/**
+	 * 获取未中奖用户id
+	 * @param userId
+	 * @return
+	 * **/
+	List<String> getNotRandomUser(List<String> userId);
 }
