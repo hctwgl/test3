@@ -228,12 +228,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					map.put("refId", repayment.getRid());
 					map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
 					return map;
-				}catch (FanbeiException e){
-					logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
-					throw e;
 				}catch (Exception e){
-					status.setRollbackOnly();
-					logger.error("createRepayment exist error,need rollback,payTradeNo="+payTradeNo, e);
+					if(e instanceof FanbeiException){
+						logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
+					}else{
+						logger.error("createRepayment exist error,need rollback,payTradeNo="+payTradeNo, e);
+						status.setRollbackOnly();
+					}
 					throw e;
 				}
 			}
@@ -255,6 +256,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				userId);
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 		logger.info("createRepayment addRepaymentBorrowCash finish,payTradeNo="+payTradeNo+",repaymentId="+(repayment!=null?repayment.getRid():0));
+		if(cardId > 0){
+			dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
+		}
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
@@ -290,7 +294,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 					}else if (cardId > 0) {// 银行卡支付
 						AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-						dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
 						UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 								bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
 						if (!respBo.isSuccess()) {
@@ -305,12 +308,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
 
 					return map;
-				}catch (FanbeiException e){
-					logger.error("createRepaymentYiBao exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
-					throw e;
 				}catch (Exception e){
-					status.setRollbackOnly();
-					logger.error("createRepaymentYiBao exist error,need rollback,payTradeNo="+payTradeNo, e);
+					if(e instanceof FanbeiException){
+						logger.error("createRepaymentYiBao exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
+					}else{
+						logger.error("createRepaymentYiBao exist error,need rollback,payTradeNo="+payTradeNo, e);
+						status.setRollbackOnly();
+					}
 					throw e;
 				}
 			}
