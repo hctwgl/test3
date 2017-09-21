@@ -62,7 +62,7 @@ public class GetThirdShopsListApi implements ApiHandle {
 				}
 				result.add(shop);
 			}
-				resp.addResponseData("goodsList", result);
+				resp.addResponseData("shopsList", result);
 				resp.addResponseData("pageNo", buildParams.get("pageNo"));
 		}catch (ApiException e) {
 			return new ApiHandleResponse("searchGoods failed", FanbeiExceptionCode.FAILED);

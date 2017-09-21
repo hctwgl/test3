@@ -101,6 +101,7 @@
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
 				<value>/goods/getThirdGoodsList</value>
+				<value>/goods/getThirdShopsList</value>
 				<value>/goods/getCategoryList</value>
 				<value>/goods/getCateGoodsList</value>
 				<value>/user/logout</value>
@@ -182,6 +183,8 @@
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
+				<entry key="/good/deleteHistory" value-ref="deleteHistoryApi" />
+				<entry key="/goods/getThirdShopsList" value-ref="getThirdShopsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
 				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
