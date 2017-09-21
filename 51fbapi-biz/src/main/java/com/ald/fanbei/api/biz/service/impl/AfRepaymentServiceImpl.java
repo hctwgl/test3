@@ -230,6 +230,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
 //			}
 			if (!respBo.isSuccess()) {
+				afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
+				afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, repayment.getRid());
 				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
@@ -366,8 +368,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error = {}", e);
 					return 0l;
-				}
-				finally {
+				} finally {
 					redisTemplate.delete(key);
 				}
 			}

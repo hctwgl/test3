@@ -10,9 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -33,6 +30,7 @@ import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -49,6 +47,19 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -183,20 +194,21 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	@Override
 	public Map<String, Object> createRepayment(final BigDecimal jfbAmount,final BigDecimal repaymentAmount,final BigDecimal actualAmount,final AfUserCouponDto coupon,final BigDecimal rebateAmount,
 			final Long borrow,final Long cardId,final Long userId,final String clientIp,final AfUserAccountDo afUserAccountDo) {
+		Date now = new Date();
+		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+		final String payTradeNo = repayNo;
+		// 新增还款记录,移至事务外，保证回调先回用户这笔还款发起有记录产生
+		final String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+		final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
+				userId);
+		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+		logger.info("createRepayment addRepaymentBorrowCash finish,payTradeNo="+payTradeNo+",repaymentId="+(repayment!=null?repayment.getRid():0));
+		
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try {
-					Date now = new Date();
-					String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-					final String payTradeNo = repayNo;
-					// 新增还款记录
-					String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-
-					final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
-							userId);
 					Map<String, Object> map = new HashMap<String, Object>();
-					afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 					if (cardId == -1) {// 微信支付
 						map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
 					} else if (cardId > 0) {// 银行卡支付
@@ -214,42 +226,46 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					}
 					map.put("refId", repayment.getRid());
 					map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
-
 					return map;
-				}
-				catch (Exception e){
+				}catch (FanbeiException e){
+					logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
+					throw e;
+				}catch (Exception e){
 					status.setRollbackOnly();
-					logger.info("createRepayment error", e);
+					logger.error("createRepayment exist error,need rollback,payTradeNo="+payTradeNo, e);
 					throw e;
 				}
 			}
 		});
-
 	}
+	
+	
 	public Map<String, Object> createRepaymentYiBao(final BigDecimal jfbAmount,final BigDecimal repaymentAmount,final BigDecimal actualAmount,final AfUserCouponDto coupon,final BigDecimal rebateAmount,
 											  final Long borrow,final Long cardId,final Long userId,final String clientIp,final AfUserAccountDo afUserAccountDo){
+		
+		Date now = new Date();
+		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+
+		final String payTradeNo = repayNo;
+		// 新增还款记录
+		final String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+
+		final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
+				userId);
+		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+		logger.info("createRepayment addRepaymentBorrowCash finish,payTradeNo="+payTradeNo+",repaymentId="+(repayment!=null?repayment.getRid():0));
 		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try{
-					Date now = new Date();
-					String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-
-					final String payTradeNo = repayNo;
-					// 新增还款记录
-					String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-
-					final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
-							userId);
 					Map<String, Object> map = new HashMap<String, Object>();
-					afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
 					if (cardId == -1) {// 微信支付
 						Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
 						for (String key : map1.keySet()) {
 							map.put(key,map1.get(key));
 						}
 						AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-						afYibaoOrderDo.setOrderNo(repayNo);
+						afYibaoOrderDo.setOrderNo(payTradeNo);
 						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
 						afYibaoOrderDo.setStatus(0);
 						afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
@@ -262,19 +278,16 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 							map.put(key,map1.get(key));
 						}
 						AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-						afYibaoOrderDo.setOrderNo(repayNo);
+						afYibaoOrderDo.setOrderNo(payTradeNo);
 						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
 						afYibaoOrderDo.setStatus(0);
 						afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
 						afYibaoOrderDo.setUserId(userId);
 						afYibaoOrderDo.setoType(0);
 						afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-					}
-					else if(cardId ==-4){
+					}else if(cardId ==-4){
 
-					}
-
-					else if (cardId > 0) {// 银行卡支付
+					}else if (cardId > 0) {// 银行卡支付
 						AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 						dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
 						UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
@@ -291,14 +304,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
 
 					return map;
-				}
-				catch (Exception e){
-					status.setRollbackOnly();
-					logger.info("createRepaymentYiBao error", e);
+				}catch (FanbeiException e){
+					logger.error("createRepaymentYiBao exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
 					throw e;
-				}
-				finally {
-
+				}catch (Exception e){
+					status.setRollbackOnly();
+					logger.error("createRepaymentYiBao exist error,need rollback,payTradeNo="+payTradeNo, e);
+					throw e;
 				}
 			}
 		});
@@ -554,8 +566,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		if(afYibaoOrderDo !=null){
 			if(afYibaoOrderDo.getStatus().intValue() == 1){
 				return 1;
-			}
-			else{
+			}else{
 				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),2);
 			}
 		}
@@ -564,7 +575,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		temRepayMent.setStatus(status);
 		temRepayMent.setTradeNo(tradeNo);
 		temRepayMent.setRid(rid);
-
 		return afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
 	}
 
