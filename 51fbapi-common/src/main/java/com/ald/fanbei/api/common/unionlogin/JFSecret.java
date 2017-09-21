@@ -134,7 +134,7 @@ public class JFSecret {
                 "eIXjJdJiLr4w1Gpsm2s/7X9x53JKW3Jvc20uLcj0yD1IOBM+XBmmccGNSWRc/448LLvOzLAieesV" +
                 "+HWUqRIultS6xv2LqluHkVm+1TdrYGD1l98YX58xZSSse2qUvxLf7wniJwIDAQAB";
 
-        String mobile ="jf";
+        String mobile ="http://xtestapp.51fanbei.com/unionlogin/welcome?isNew=3&token=f268e932";
         byte[] mobilebyte = mobile.getBytes();
         PublicKey publicKey = getPublicKey(public_key);
 

@@ -152,7 +152,7 @@ public class UnionLoginController extends BaseController {
     /**
      * 现金超人对接
      *
-     * @param phone  手机号码
+     * @param mobile  手机号码
      * @param source 来源
      * @param sign   签名
      * @return {
@@ -239,7 +239,7 @@ public class UnionLoginController extends BaseController {
         jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
         int is_new_user=getsetUserInfo(mobileDec,fanbeiChannelCode,paramsJsonStr);
         String token = UserUtil.generateToken(mobileDec);
-        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0,8));
         JSONObject jsonResultObject = new JSONObject();
         jsonResultObject.put("message", "成功");
         jsonResultObject.put("status", "1");
