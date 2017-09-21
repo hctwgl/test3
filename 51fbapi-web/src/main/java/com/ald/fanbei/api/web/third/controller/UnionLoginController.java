@@ -224,7 +224,7 @@ public class UnionLoginController extends BaseController {
         if (StringUtils.isEmpty(channelDo.getThirdChannelCode())) {
             //设置第三方的渠道号码
             channelDo.setThirdChannelCode(channelDec);
-            afUnionLoginChannelService.saveRecord(channelDo);
+            afUnionLoginChannelService.updateById(channelDo);
         }
         String mobileDec = JFSecret.decrypt(privateKey, mobile);
 //        String nameDec = JFSecret.decrypt(privateKey, name);
@@ -248,7 +248,64 @@ public class UnionLoginController extends BaseController {
         jsonResultObject.put("data", jsonObject);
         return jsonResultObject;
     }
+    /**
+     * 玖富登录
+     * @param channel_id 加密渠道id
+     * @param dingdang_id 暂不使用
+     * @param serial_number 暂不使用
+     * @param mobile 手机号
+     * @param name 姓名
+     * @param cert_id 身份证号码
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/jfLogin")
+    @ResponseBody
+    public JSONObject fanbeiLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
+        Map<String, String[]> paramsMap = request.getParameterMap();
+        String paramsJsonStr = JSONObject.toJSONString(paramsMap);
+        String fanbeiChannelCode = "jf";
+        //region 查询渠道信息
+        AfUnionLoginChannelDo afUnionLoginChannelDo = new AfUnionLoginChannelDo();
+        afUnionLoginChannelDo.setCode(fanbeiChannelCode);
+        AfUnionLoginChannelDo channelDo = afUnionLoginChannelService.getByCommonCondition(afUnionLoginChannelDo);
+        //endregion
 
+        //region 必要信息解密
+        String privateKeyStr = channelDo.getValue1();
+        String publicKeyStr = channelDo.getValue2();
+        PrivateKey privateKey = JFSecret.getPrivateKey(privateKeyStr);
+        PublicKey publicKey = JFSecret.getPublicKey(publicKeyStr);
+        String channelDec = JFSecret.decrypt(privateKey, channel_id);
+
+
+        if (StringUtils.isEmpty(channelDo.getThirdChannelCode())) {
+            //设置第三方的渠道号码
+            channelDo.setThirdChannelCode(channelDec);
+            afUnionLoginChannelService.updateById(channelDo);
+        }
+        String mobileDec = JFSecret.decrypt(privateKey, mobile);
+//        String nameDec = JFSecret.decrypt(privateKey, name);
+//        String cert_idDec = JFSecret.decrypt(privateKey, cert_id);
+
+        //region 必要信息解密
+        logger.info("解密第三方渠道号:"+channelDec+"，解密手机号:"+mobileDec);
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("channel_id", fanbeiChannelCode);
+        jsonObject.put("serial_number", serial_number);
+        jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
+        int is_new_user=getsetUserInfo(mobileDec,fanbeiChannelCode,paramsJsonStr);
+        String token = UserUtil.generateToken(mobileDec);
+        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+        JSONObject jsonResultObject = new JSONObject();
+        jsonResultObject.put("message", "成功");
+        jsonResultObject.put("status", "1");
+        jsonResultObject.put("code", "0");
+        jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
+        jsonResultObject.put("data", jsonObject);
+        return jsonResultObject;
+    }
     /**
      * 登陆成功后的欢迎页面
      * @param isNew 是否是新用户
@@ -303,7 +360,7 @@ public class UnionLoginController extends BaseController {
             if (StringUtils.isEmpty(channelDo.getThirdChannelCode())) {
                 //设置第三方的渠道号码
                 channelDo.setThirdChannelCode(thridChannelCode);
-                afUnionLoginChannelService.saveRecord(channelDo);
+                afUnionLoginChannelService.updateById(channelDo);
             }
             return channelDo;
         }
