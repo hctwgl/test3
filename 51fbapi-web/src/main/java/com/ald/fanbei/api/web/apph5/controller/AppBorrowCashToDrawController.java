@@ -173,8 +173,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 			// List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
 			// List<String> list2 = afUserService.getUserNameByUserId(list1); //得到未中奖用户user_name
 
-			//List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);// 得到中奖用户id
-			List<String> users=null;
+			List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);// 得到中奖用户id
 			if (users != null && users.size() > 0) {
 				List<String> userNames = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_userName"), String.class);// 得到中奖用户user_name
 				List<String> list2 = JSONArray.parseArray((String) bizCacheUtil.getObject("Not_Win_User_userName"), String.class);// 得到未中奖用户user_name
@@ -255,16 +254,13 @@ public class AppBorrowCashToDrawController extends BaseController {
 		//bizCacheUtil.delCache("winAmount");
 		//bizCacheUtil.delCache("winAmount_Win_User");
 		//bizCacheUtil.delCache("BorrowCash_Sum_Amount");
-		List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);
-		
-		/*String users = null;
+		String users = null;
 		try {
 			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
 		} catch (Exception e) {
 			logger.info("getWinUser redis get is fail" + e);
 		}
-		return users;*/
-		return JsonUtil.toJSONString(users);
+		return users;
 	}
 
 	@RequestMapping(value = "/getBillionWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
