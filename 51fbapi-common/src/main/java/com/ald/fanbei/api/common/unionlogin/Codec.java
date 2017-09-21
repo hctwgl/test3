@@ -126,7 +126,7 @@ public class Codec {
      */
     public static String strEncodBase64(String secretStr, String inputStr){
         String base64Str = Base64.encodeBase64String(encode(secretStr, inputStr));
-        return base64Str;
+        return base64Str.trim();
     }
 
     /**
@@ -167,8 +167,8 @@ public class Codec {
         byte[] inputBytes;
         inputBytes = Base64.decodeBase64(inputStr);
         String outputStr = new String(decode(secretStr, inputBytes), CHARSET);
-        System.out.println("base64Decode > base64 decrypt " + outputStr);
-        return outputStr;
+        System.out.println("base64Decode > base64 decrypt " + outputStr.trim());
+        return outputStr.trim();
     }
 
 
@@ -184,8 +184,8 @@ public class Codec {
         userAttr.put("idcard", "421202199308183266");
         userAttr.put("name", "张三");
 
-        String applyInfoStr = JSONObject.toJSONString(applyInfo);
-        String userAttrStr = JSONObject.toJSONString(userAttr);
+        String applyInfoStr = "test";
+        String userAttrStr = "spring";
 
         String enApplyInfo =  strEncodBase64(key, applyInfoStr);
         String enUserAttr =  strEncodBase64(key, userAttrStr);
