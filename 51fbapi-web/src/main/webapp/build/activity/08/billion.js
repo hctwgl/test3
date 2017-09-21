@@ -180,8 +180,9 @@ var vm = new Vue({
             $('.mask').show();
             $(".alertRule").show();
 
-            //把下面一层的滚动事件禁掉
-            $("body").css("overflow","hidden");
+            //把弹框下面一层的滚动事件禁掉
+            $("body").css({"overflow":"hidden","height":"100%"});
+            $("html").css({"overflow":"hidden","height":"100%"});
 
             $.ajax({
                 url: '/fanbei-web/activity/getWinUser',
