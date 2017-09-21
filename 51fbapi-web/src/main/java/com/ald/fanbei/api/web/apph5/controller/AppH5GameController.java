@@ -513,6 +513,7 @@ public class AppH5GameController  extends BaseController{
 					int  signCount = afBusinessAccessRecordsService.getSignCountToday(userDo.getRid());
 					if(signCount>=4){
 						buttonString = "今日已签到";
+						canClick = true;
 					}
 					else{
 						int count = 4-signCount;
