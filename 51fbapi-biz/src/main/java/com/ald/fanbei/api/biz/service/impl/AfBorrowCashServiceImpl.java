@@ -112,7 +112,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				if (amount.compareTo(new BigDecimal(1500000000)) == -1 || amount.compareTo(new BigDecimal(1500000000)) == 0) {
 					amount = amount.add(afBorrowCashDo.getAmount());
 					if (amount.compareTo(new BigDecimal(1500000000)) == 1) {
-						logger.info("1500000000 is win");
+						logger.info("1500000000 is win,user_id= "+afBorrowCashDo.getUserId());
 						List<String> users = new ArrayList<String>();
 						users.add(afBorrowCashDo.getUserId() + "");
 						List<String> userName = afUserService.getUserNameByUserId(users);
@@ -146,6 +146,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 					}
 					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 				} else {
+					amount = amount.add(afBorrowCashDo.getAmount());
 					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 				}
 				return 1;
