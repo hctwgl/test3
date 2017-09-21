@@ -93,7 +93,7 @@ public interface AfResourceDao {
 	 * @return
 	 */
 	List<AfResourceDo> getResourceHomeListByTypeOrderByOnPreEnv(@Param("type") String type);
-	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
+
 	/**
 	 * 根据type获取一个资源信息
 	 * 
@@ -127,11 +127,18 @@ public interface AfResourceDao {
 	List<AfResourceDo> selectActivityConfig();
 
 	List<AfResourceDo> getScrollbarByType();
+
+	List<AfResourceDo> getOneToManyResourceOrderByBytypeOnPreEnv(String code);
+
+	//List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code);
+	
 	List<AfResourceDo> getActivieResourceByType(@Param("type") String type);
 	List<AfResourceDo> getFakePersonByActivityId(@Param("activityId")String activityId);
 
 	AfResourceDo getGGSpecificBanner(@Param("value2")String value2);
-	
+
+	List<AfResourceDo> getConfigsByTypesAndSecType(@Param("type")String type,@Param("secType")String secType);
+
 	List<AfResourceDo> getCarouselToManyResourceOrderByType(@Param("type")String type);
 
 }

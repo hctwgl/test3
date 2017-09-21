@@ -59,6 +59,7 @@ public class SmsUtil extends AbstractThird {
     private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
     private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
     private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在51返呗。回复td退订";
+    private static String IPHONE_RESERVATION_SUCCESS="恭喜你预约成功！9月20日正式发售苹果新机，下单立减100元！分期无忧，返利抵账单！http://t.cn/RI7CSL2 回T退订";
     private static String REGIST_SUCCESS_TEMPLATE = "认证送10元现金，借/还成功再抽现金，100%中奖，最高1888元，最低50元 http://t.cn/RI7CSL2 退订回T";
     private static String REBATE_COMPLETED = "返利入账通知，%s，您购买商品/服务的返利已入账%s元，可登录51返呗查看详情【51返呗】";
     private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单【51返呗】";
@@ -156,6 +157,14 @@ public class SmsUtil extends AbstractThird {
         return smsResult.isSucc();
     }
 
+    public boolean sendGoodsReservationSuccessMsgInfo(String mobile, String content) {
+        if (StringUtil.isBlank(content)) {
+            content = IPHONE_RESERVATION_SUCCESS;
+        }
+        SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
+        return smsResult.isSucc();
+    }
+    
     /**
      * 强风控通过
      *

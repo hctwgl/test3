@@ -8,7 +8,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.rebate.RebateContext;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +33,10 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("completedAgencyBuyOrderApi")
 public class CompletedAgencyBuyOrderApi implements ApiHandle {
 
-	
+	@Resource
+	AfBorrowBillService afBorrowBillService;
+	@Resource
+	AfBorrowService afBorrowService;
 	@Resource
 	AfOrderService afOrderService;
 	@Resource
@@ -53,6 +60,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				//自营确认收货走返利
 				rebateContext.rebate(orderInfo);
 				logger.info("自营订单用户点击确认收货,系统对订单不做修改记录.orderId="+orderId+",userId="+userId);
+//				addBorrowBill(orderInfo);
 				return resp;
 			}else{
 				AfOrderDo afOrderDo = new AfOrderDo();
@@ -60,6 +68,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				afOrderDo.setStatus("FINISHED");
 				afOrderDo.setGmtFinished(new Date());
 				if(afOrderService.updateOrder(afOrderDo) > 0){
+//					addBorrowBill(orderInfo);
 					return resp;
 				}
 			}
@@ -67,6 +76,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 			if(StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
 				//自营确认收货走返利处理，由于返利在确认收货收货状态之后，所以直接修改为返利成功即可
 				rebateContext.rebate(orderInfo);
+//				addBorrowBill(orderInfo);
 				return resp;
 			}else{
 				if(OrderStatus.DELIVERED.getCode().equals(orderInfo.getStatus())){
@@ -76,6 +86,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					afOrderDo.setGmtFinished(new Date());
 					afOrderDo.setLogisticsInfo("已签收");
 					if(afOrderService.updateOrder(afOrderDo) > 0){
+//						addBorrowBill(orderInfo);
 						return resp;
 					}else{
 						logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
@@ -87,6 +98,23 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 
 		}
 		return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
+	}
+
+
+	/**
+	 * v-3.9.1 新增逻辑
+	 * @param
+	 */
+	private void addBorrowBill(AfOrderDo afOrderDo){
+//		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+//		if(afBorrowDo !=null){
+//			//查询是否己产生
+//			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+//			if(borrowList == null || borrowList.size()==0 ){
+//				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+//				afBorrowService.addBorrowBill(billList);
+//			}
+//		}
 	}
 
 }

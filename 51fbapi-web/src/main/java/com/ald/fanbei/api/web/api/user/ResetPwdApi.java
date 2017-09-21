@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.user;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
@@ -38,12 +41,24 @@ public class ResetPwdApi implements ApiHandle {
 	AfUserService afUserService;
 	@Resource
 	AfSmsRecordService afSmsRecordService;
+
+	@Resource
+	RiskUtil riskUtil;
+	
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
         String userName = context.getUserName();
         String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
+        
+        String ip = CommonUtil.getIpAddr(request);
+		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
+		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
+		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
+		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
+		
         if(StringUtil.isBlank(passwordSrc)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
@@ -75,7 +90,17 @@ public class ResetPwdApi implements ApiHandle {
         userDo.setFailCount(0);
         userDo.setUserName(userName);
         afUserService.updateUser(userDo);
-        
+        // 添加风控可信
+        if (context.getAppVersion() >= 381) {
+        	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        	String registerTime = sdf.format(new Date(System.currentTimeMillis()));
+        	try{
+        		riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
+						registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
+        	} catch (Exception e){
+        		logger.error(e.getMessage());
+        	}
+		}
         return resp;
     }
     

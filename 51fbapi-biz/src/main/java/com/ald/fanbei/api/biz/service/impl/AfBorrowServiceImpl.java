@@ -583,7 +583,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	 * @param borrow 借款信息
 	 * @return
 	 */
-	private List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String payType) {
+	public List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String payType) {
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();// 当前时间
 		Integer nper = borrow.getNper();
@@ -919,7 +919,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	}
 
 	@Override
-	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType) {
+	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType,final String orderType) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -932,11 +932,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
-					
-					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
-					
-					afBorrowDao.addBorrowBill(billList);
 
+//					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+//					if(!(orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
+						afBorrowDao.addBorrowBill(billList);
+//					}
 					return borrow.getRid();
 
 				} catch (Exception e) {
@@ -950,7 +951,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	
 	@Override
 	public Long dealAgentPayBorrowAndBill(final Long userId, final String userName, final BigDecimal amount,final String name,
-			final Integer nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson) {
+			final Integer nper, final Long orderId,final String orderNo, final String borrowRate,final String interestFreeJson,final boolean isBack) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -963,9 +964,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId, borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
-					
+
 					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, PayType.AGENT_PAY.getCode());
-					
 					afBorrowDao.addBorrowBill(billList);
 
 					return borrow.getRid();
@@ -1090,5 +1090,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	@Override
 	public AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo) {
 		return afBorrowDao.getBorrowInfoByBorrowNo(borrowNo);
+	}
+
+	@Override
+	public int addBorrowBill(List<AfBorrowBillDo> billList){
+		return afBorrowDao.addBorrowBill(billList);
 	}
 }

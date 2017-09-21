@@ -31,7 +31,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private String bankCode;//银行编号
 	private String bankName;//银行名称
 	private String bankIcon;//银行图标
-	private char isValid; //银行是否有效
+	private String isValid; //银行是否有效
 	
 	private BigDecimal useableAmount;//可使用额度
 	private BigDecimal totalAmount;//总额度
@@ -50,16 +50,7 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	private BigDecimal repaymentAmount;//应还金额
 	private Long borrowId;//借钱id
 	private String riskStatus;
-	private String secType;//第三方二级类型【YONGCHE:滴滴】
-	
-	public char getIsValid() {
-		return isValid;
-	}
-
-	public void setIsValid(char isValid) {
-		this.isValid = isValid;
-	}
-
+	private String secType;//二级分类
 	/**
 	 * @return the rid
 	 */
@@ -430,17 +421,24 @@ public class BoluomeConfirmOrderVo extends AbstractSerial{
 	}
 
 	/**
-	 * @return the secType
+	 * @return the isValid
 	 */
+	public String getIsValid() {
+		return isValid;
+	}
+
+	/**
+	 * @param isValid the isValid to set
+	 */
+	public void setIsValid(String isValid) {
+		this.isValid = isValid;
+	}
+
 	public String getSecType() {
 		return secType;
 	}
 
-	/**
-	 * @param secType the secType to set
-	 */
 	public void setSecType(String secType) {
 		this.secType = secType;
 	}
-	
 }

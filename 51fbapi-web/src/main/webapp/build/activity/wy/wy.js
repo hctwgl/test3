@@ -85,9 +85,11 @@ $(".submit").click(function(){
                             success: function(returnData){
                                 if (returnData.success) {
                                     $('.success').show();
-                                    $('.first').hide();
-                                    $('#more').hide();
-                                    $('.sPic').show();
+                                    $('.shadow').show()
+                                    // .click(function () {
+                                    //     location.reload()
+                                    // });
+                                    //数据统计
                                     $.ajax({
                                         url:'/fanbei-web/postMaidianInfo',
                                         type:'post',
@@ -245,23 +247,23 @@ function goApp() {
             console.log(data)
         }
     });
-    if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
-        window.location.href = "com.91ala.www://home://";
-        window.setTimeout(function () {
-            let timeOutDateTime = new Date();
-            if (timeOutDateTime - loadDateTime < 5000 && location.href.indexOf('com.91ala.www://home//') == -1){
+    // if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
+    //     window.location.href = "com.91ala.www://home://";
+    //     window.setTimeout(function () {
+    //         let timeOutDateTime = new Date();
+    //         if (timeOutDateTime - loadDateTime < 5000 && location.href.indexOf('com.91ala.www://home//') == -1){
+    //             window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+    //         } else {
+    //             window.close();
+    //         }
+    //     },2000);
+    // } else if (navigator.userAgent.match(/android/i)) {
+    //     window.location.href = "myapp://jp.app/openwith??isBrowser=1";
+    //     setTimeout(function(){
+    //         let timeOutDateTime = new Date();
+    //         if (timeOutDateTime - loadDateTime < 5000){
                 window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-            } else {
-                window.close();
-            }
-        },2000);
-    } else if (navigator.userAgent.match(/android/i)) {
-        window.location.href = "myapp://jp.app/openwith??isBrowser=1";
-        setTimeout(function(){
-            let timeOutDateTime = new Date();
-            if (timeOutDateTime - loadDateTime < 5000){
-                window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-            }
-        },2000);
-    }
+    //         }
+    //     },2000);
+    // }
 }

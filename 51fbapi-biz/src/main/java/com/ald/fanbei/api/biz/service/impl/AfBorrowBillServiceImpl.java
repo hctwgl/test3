@@ -1,10 +1,12 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
@@ -166,6 +168,14 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public AfBorrowBillDo getOverduedAndNotRepayBill(Long borrowId, Long billId) {
 		return afBorrowBillDao.getOverduedAndNotRepayBill(borrowId, billId);
-	}	
+	}
+
+
+	public List<AfBorrowBillDo> getAllBorrowNoPayByUserId(@Param("userId") long userId){
+		return afBorrowBillDao.getAllBorrowNoPayByUserId(userId);
+	}
+	public List<HashMap> getBorrowBillNoPaySumByUserId(@Param("userId") long userId){
+		return afBorrowBillDao.getBorrowBillNoPaySumByUserId(userId);
+	}
 	
 }

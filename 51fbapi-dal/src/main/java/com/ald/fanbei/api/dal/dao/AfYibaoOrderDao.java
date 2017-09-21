@@ -20,4 +20,6 @@ public interface AfYibaoOrderDao {
     List<AfYibaoOrderDo> getYiBaoUnFinishOrderByUserId(@Param("userId") Long userId,@Param("oType") int oType);
 
     int updateYiBaoOrderStatusLock(@Param("status") int status, @Param("id")long id, @Param("gmtUpdate")Date gmtUpdate);
+
+    List<AfYibaoOrderDo> getYiBaoUnFinishOrderAll();
 }

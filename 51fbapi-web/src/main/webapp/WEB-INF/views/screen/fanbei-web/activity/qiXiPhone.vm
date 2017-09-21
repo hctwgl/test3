@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="selfHome" v-cloak>
-        <img :data-original="returnData.bannerUrl">
+        <img :src="returnData.bannerUrl">
         <div class="bigWrap">
             <div class="bigBox" style="padding:0.04rem">
             <div class="topLine"></div>

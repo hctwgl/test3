@@ -1,14 +1,19 @@
 package com.ald.fanbei.api.biz.third.util.yibaopay;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
 import com.sun.org.apache.bcel.internal.generic.RET;
@@ -45,7 +50,16 @@ public class YiBaoUtility {
     @Resource
     private AfRepaymentBorrowCashService afRepaymentBorrowCashService;
     @Resource
-    TransactionTemplate transactionTemplate;
+    private TransactionTemplate transactionTemplate;
+
+    @Resource
+    private AfRepaymentDao afRepaymentDao;
+
+    @Resource
+    private AfBorrowBillService afBorrowBillService;
+
+    @Resource
+    private AfRepaymentService afRepaymentService;
     /**
      * 新增易宝订单
      * @return
@@ -58,7 +72,7 @@ public class YiBaoUtility {
         String redirectUrl ="http://www.baidu.com";         //同步回调地止
         String notifyUrl =baseUrl+"/third/ups/yibaoback";   //异步
         HashMap<String,String> goods = new HashMap<>();
-        goods.put("goodsName","51返呗还款");
+        goods.put("goodsName","51返呗");
         goods.put("goodsDesc","");
         String goodsParamExt= JSON.toJSONString(goods);
         String csUr =baseUrl+"/third/ups/yibaoqsback";        //清算成功回调地止
@@ -119,6 +133,24 @@ public class YiBaoUtility {
     }
 
 
+    public void updateYiBaoAllNotCheck(){
+        List<AfYibaoOrderDo> list = afYibaoOrderDao.getYiBaoUnFinishOrderAll();
+        for(AfYibaoOrderDo afYibaoOrderDo:list){
+            Map<String, String> result  = getYiBaoOrder(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+            if(!result.get("code").equals("OPR00000")){
+                continue;
+            }
+            String status = result.get("status");
+            if(status.equals("PROCESSING")){
+                //处理中
+            }
+            proessUpdate(afYibaoOrderDo,status,afYibaoOrderDo.getoType());
+        }
+    }
+
+
+
+
 
     public Map<String,String> getOrderByYiBao(String orderNo){
         Map<String,String> ret = new HashMap<String,String>();
@@ -177,6 +209,9 @@ public class YiBaoUtility {
                             break;
                         case 1:
                             type1Proess(afYibaoOrderDo, lstatus);
+                            break;
+                        case 2:
+                            type2Proess(afYibaoOrderDo,lstatus);
                             break;
                     }
                 }
@@ -248,6 +283,40 @@ public class YiBaoUtility {
         else{
             //关闭
             afRenewalDetailService.dealRenewalFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+        }
+    }
+
+    /**
+     * 分期还款
+     * @param afYibaoOrderDo
+     * @param status
+     */
+    private void type2Proess(AfYibaoOrderDo afYibaoOrderDo,String status){
+        if(status.equals("PROCESSING")){
+            //处理中
+            if(afYibaoOrderDo.getStatus().intValue() == 3) {
+                return;
+            }
+            int ret = afYibaoOrderDao.updateYiBaoOrderStatusLock(3,afYibaoOrderDo.getId(),afYibaoOrderDo.getGtmUpdate());
+            if(ret >0) {
+                AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(afYibaoOrderDo.getOrderNo());
+                repayment.setStatus("P");
+                afRepaymentDao.updateRepayment("P",null,repayment.getRid());
+                afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.DEALING.getCode(), repayment.getRid(),
+                        repayment.getCouponAmount(), repayment.getJfbAmount(), repayment.getRebateAmount());
+            }
+        }
+        else if(status.equals("SUCCESS")){
+            afRepaymentService.dealRepaymentSucess(afYibaoOrderDo.getOrderNo(), afYibaoOrderDo.getYibaoNo());
+
+
+        }
+        else if(status.equals("REJECT")){
+
+        }
+        else{
+            //关闭
+            afRepaymentService.dealRepaymentFail(afYibaoOrderDo.getOrderNo(), afYibaoOrderDo.getYibaoNo());
         }
     }
 }

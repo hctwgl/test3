@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
 import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
@@ -40,21 +36,8 @@ import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAuthContactsService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfContactsOldService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.BoluomeService;
-import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
-import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
@@ -79,26 +62,12 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.dao.AfUserLoginLogDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
-import com.ald.fanbei.api.dal.domain.query.AfUserBankQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 import com.taobao.api.domain.XItem;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+
 
 @Controller
 public class TestController {
@@ -156,13 +125,6 @@ public class TestController {
 	@Resource 
 	BoluomeUtil boluomeUtil;
 	@Resource
-	BoluomeService boluomeService;
-	@Resource
-	AfUserLoginLogDao afUserLoginLogDao;
-	@Resource
-	IPTransferUtil iPTransferUtil;
-	@Resource
-	AfUserBankDidiRiskService afUserBankDidiRiskService;
 	private TaobaoApiUtil taobaoApiUtil;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
@@ -717,7 +679,7 @@ public class TestController {
 			// 新增借款信息
 			afBorrowDao.addBorrow(borrow);
 			// 在风控审批通过后额度不变生成账单
-			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode());
+			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),orderInfo.getOrderType());
 			// 修改用户账户信息
 			AfUserAccountDo account = new AfUserAccountDo();
 			account.setUsedAmount(orderInfo.getActualAmount());
@@ -764,52 +726,6 @@ public class TestController {
 			return null;
 		} 
 		return resultMap.get(Constants.VIRTUAL_CODE).toString();
-	}
-	
-	@RequestMapping(value = { "/createDidiBankCardInfo" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String createDidiBankCardInfo(HttpServletRequest request, HttpServletResponse response) {
-		PrintWriter out = null;
-		try {
-			AfUserBankQuery query = new AfUserBankQuery();
-			
-			query.setPageNo(1);
-			query.setPageSize(1000);
-			query.setFull(true);
-			afUserBankcardDao.getUserBankList(query);
-			List<AfUserBankDidiRiskDo> tempList;
-			for (int i = 1; i <= query.getTotalPage(); i++ ) {
-				query.setPageNo(i);
-				List<AfUserBankcardDo> list = afUserBankcardDao.getUserBankList(query);
-				tempList = new ArrayList<AfUserBankDidiRiskDo>();
-				try {
-					for (AfUserBankcardDo cardInfo : list) {
-						 	try {
-						 		AfUserDo userInfo = afUserDao.getUserById(cardInfo.getUserId());
-						 		AfUserLoginLogDo logInfo = afUserLoginLogDao.getUserLastLoginInfo(userInfo.getUserName());
-						 		String ip = logInfo.getLoginIp();
-						 		AfUserBankDidiRiskDo info = BuildInfoUtil.buildUserBankDidiRiskInfo(logInfo.getLoginIp(), iPTransferUtil.getLat(ip), iPTransferUtil.getLng(ip), cardInfo.getUserId(), cardInfo.getRid(), logInfo.getUuid(),"");
-						 		tempList.add(info);
-							} catch (Exception e) {
-								logger.error("createDidiBankCardInfo in save failed e = {}", e);
-							}
-					}
-					if (CollectionUtils.isNotEmpty(tempList)) {
-						afUserBankDidiRiskService.saveRecordList(tempList);
-					}
-				} catch (Exception e) {
-					logger.error("createDidiBankCardInfo save failed e = {}", e);
-				}
-			}
-		} catch (Exception e) {
-			logger.error("allowcateBrandCoupon error e = {}", e);
-			return "fail";
-		} finally {
-			if (out != null) {
-				out.close();
-			}
-		}
-		return "success";
 	}
 	
 	/**
@@ -883,8 +799,11 @@ public class TestController {
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
-
-		Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
+		boolean a = isOut(2017,9);
+		boolean b =isOut(2017,10);
+		boolean c =isOut(2017,8);
+		boolean d =isOut(2016,12);
+		//Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
 //		String e ="";
 
 //		AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
@@ -898,6 +817,21 @@ public class TestController {
 		//afYiBaoOrderDao.updateYiBaoOrderStatusByOrderNo("adfasdfadsf11111",1);
 
 //		afRepaymentBorrowCashService.createRepaymentYiBao(BigDecimal.ZERO,BigDecimal.ONE,BigDecimal.TEN,null,null,null,null,null,null,null);
+	}
+
+	private boolean isOut(int year,int month){
+		Date  d = new Date();
+		Calendar c1 = Calendar.getInstance();
+		c1.set(Calendar.YEAR,year);
+		c1.set(Calendar.MONTH,month-1);
+		c1.set(Calendar.DAY_OF_MONTH,10);
+		c1.set(Calendar.HOUR_OF_DAY,0);
+		c1.set(Calendar.MINUTE,0);
+		c1.set(Calendar.SECOND,0);
+		SimpleDateFormat  s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String a = s.format(c1.getTime());
+		boolean flag = c1.getTime().before(d);
+		return flag;
 	}
 	
 }

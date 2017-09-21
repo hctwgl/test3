@@ -1192,4 +1192,11 @@ public class DateUtil {
     		return defaultDate;
     	}
     }
+    
+    public static long  getSecsEndOfDay() {
+    	Date nowDate  = new Date();
+		Date endDate = getEndOfDate(nowDate);
+		long secs = (endDate.getTime() - nowDate.getTime()) / 1000;
+		return secs;
+    }
 }

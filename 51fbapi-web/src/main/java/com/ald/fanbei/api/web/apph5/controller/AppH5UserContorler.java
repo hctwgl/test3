@@ -95,9 +95,7 @@ public class AppH5UserContorler extends BaseController {
 	AfPromotionLogsService afPromotionLogsService;
 	@Resource
 	TongdunUtil tongdunUtil;
-	
-	
-	
+
 	@RequestMapping(value = { "invitationGift" }, method = RequestMethod.GET)
 	public void invitationGift(HttpServletRequest request, ModelMap model) throws IOException {
 
@@ -107,7 +105,7 @@ public class AppH5UserContorler extends BaseController {
 		model.put("userName", afUserDo.getUserName());
 		model.put("recommendCode", afUserDo.getRecommendCode());
 		model.put("mobile", afUserDo.getMobile());
-		doMaidianLog(request,H5CommonResponse.getNewInstance(true,JSON.toJSONString(model)));
+		doMaidianLog(request, H5CommonResponse.getNewInstance(true, JSON.toJSONString(model)));
 	}
 
 	@RequestMapping(value = { "register" }, method = RequestMethod.GET)
@@ -116,24 +114,25 @@ public class AppH5UserContorler extends BaseController {
 		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + resourceDo.getValue();
 
 		model.put("registerRule", notifyUrl);
-		doMaidianLog(request,H5CommonResponse.getNewInstance(true,JSON.toJSONString(model)));
+		doMaidianLog(request, H5CommonResponse.getNewInstance(true, JSON.toJSONString(model)));
 	}
 
 	/**
 	 * 获取图片验证码
+	 * 
 	 * @param request
 	 * @throws IOException
 	 */
-	@RequestMapping(value = { "/getImgCode" }, method =
-			RequestMethod.POST,produces="application/json;charset=utf-8")
+	@RequestMapping(value = { "/getImgCode" }, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String getImgCode(HttpServletRequest request, ModelMap model) throws IOException {
+		H5CommonResponse resp = null;
+		Calendar calStart = Calendar.getInstance();
 		try {
-			String mobile=request.getParameter("mobile");
-			//获得图片验证码
+			String mobile = request.getParameter("mobile");
+			// 获得图片验证码
 			Map<String, BufferedImage> map = ImageUtil.createRandomImage();
-			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
-
+			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
 			if (map.size() == 1) {
 				String code = "";
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -144,18 +143,23 @@ public class AppH5UserContorler extends BaseController {
 				if (StringUtil.isNotBlank(code)) {
 					byte[] imageByteArray = byteArrayOutputStream.toByteArray();
 					String image = Base64.encodeBytes(imageByteArray);
-					//将验证码放入redis
-					bizCacheUtil.saveObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile, code, 30 * 60l);
-					return H5CommonResponse.getNewInstance(true,"","",image).toString();
+					// 将验证码放入redis
+					bizCacheUtil.saveObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile, code, 30 * 60l);
+					resp = H5CommonResponse.getNewInstance(true, "", "", image);
+					return H5CommonResponse.getNewInstance(true, "", "", image).toString();
 				}
 			}
+			resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.toString());
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.toString()).toString();
 
 		} catch (Exception e) {
 			logger.error("h5 getImgCode is error", e);
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.toString()).toString();
+		} finally {
+			doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("mobile"));
 		}
 	}
+
 	@ResponseBody
 	@RequestMapping(value = "getRegisterSmsCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String getRegisterSmsCode(HttpServletRequest request, ModelMap model) throws IOException {
@@ -168,29 +172,38 @@ public class AppH5UserContorler extends BaseController {
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
 			String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
 
-			try {
-				tongdunUtil.getPromotionSmsResult(token,channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
-			} catch (Exception e) {
-				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
-				return resp.toString();
-			}
-
 			AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
 
 			if (afUserDo != null) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_HAS_REGIST_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
-			//发送短信前,加入图片验证码验证
-			String realCode=bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile).toString();
-
-			if(!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())){//图片验证码不正确
+			// 发送短信前,加入图片验证码验证
+			String realCode = "";
+			Object obj = bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
+			if (obj == null) {
+				logger.error("没有相关图形验证码信息： "+ request.getParameter("mobile"));
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
+				return resp.toString();
+			} else {
+				realCode = obj.toString();
+			}
+			if (!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())) {// 图片验证码不正确
 
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
-			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX+mobile);
+			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
 
+
+			try {
+				tongdunUtil.getPromotionSmsResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
+			} catch (Exception e) {
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
+				return resp.toString();
+			}
+
+			
 			boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
 			if (!resultReg) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null);
@@ -201,10 +214,11 @@ public class AppH5UserContorler extends BaseController {
 			return resp.toString();
 
 		} catch (Exception e) {
-			resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+			logger.error("发送验证码失败：", e);
+			resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
 			return resp.toString();
-		}finally{
-			doLog(request, resp,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("mobile"));
+		} finally {
+			doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("mobile"));
 		}
 
 	}
@@ -214,18 +228,17 @@ public class AppH5UserContorler extends BaseController {
 	public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		Calendar calStart = Calendar.getInstance();
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
-		
+
 		try {
 			String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-			
-			
+
 			AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
 			if (eUserDo != null) {
-				resp= H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null);
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null);
 				return resp.toString();
 
 			}
@@ -239,22 +252,22 @@ public class AppH5UserContorler extends BaseController {
 			String realCode = smsDo.getVerifyCode();
 			if (!StringUtils.equals(verifyCode, realCode)) {
 				logger.error("verifyCode is invalid");
-				resp =  H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null);
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
 			if (smsDo.getIsCheck() == 1) {
 				logger.error("verifyCode is already invalid");
-				resp =  H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "", null);
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
 			// 判断验证码是否过期
 			if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-				resp =  H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null);
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null);
 				return resp.toString();
 
 			}
 			try {
-				tongdunUtil.getPromotionResult(token,null,null,CommonUtil.getIpAddr(request),mobile, mobile, "");
+				tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), mobile, mobile, "");
 			} catch (Exception e) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
 				return resp.toString();
@@ -272,7 +285,7 @@ public class AppH5UserContorler extends BaseController {
 			userDo.setMobile(mobile);
 			userDo.setNick("");
 			userDo.setPassword(password);
-	        userDo.setRecommendId(0l);
+			userDo.setRecommendId(0l);
 			if (!StringUtils.isBlank(recommendCode)) {
 				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 				userDo.setRecommendId(userRecommendDo.getRid());
@@ -291,21 +304,21 @@ public class AppH5UserContorler extends BaseController {
 				appDownLoadUrl = resourceCodeDo.getValue();
 			}
 			resp = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null);
-			
+
 			// 注册成功给用户发送注册短信
-//			smsUtil.sendRegisterSuccessSms(userDo.getUserName());
+			// smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 			return resp.toString();
 
-		}catch(FanbeiException e){
-			logger.error("commitRegister fanbei exception"+e.getMessage());
+		} catch (FanbeiException e) {
+			logger.error("commitRegister fanbei exception" + e.getMessage());
 			resp = H5CommonResponse.getNewInstance(false, "失败", "", null);
 			return resp.toString();
 		} catch (Exception e) {
-			logger.error("commitRegister exception",e);
+			logger.error("commitRegister exception", e);
 			resp = H5CommonResponse.getNewInstance(false, "失败", "", null);
 			return resp.toString();
-		}finally{
-			doLog(request, resp,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
+		} finally {
+			doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("registerMobile"));
 		}
 
 	}
@@ -321,7 +334,7 @@ public class AppH5UserContorler extends BaseController {
 	}
 
 	@Override
-	public  BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		return null;
 	}
 
@@ -329,7 +342,7 @@ public class AppH5UserContorler extends BaseController {
 	public void channelRegister(HttpServletRequest request, ModelMap model) throws IOException {
 		String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 		String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
-		try{
+		try {
 			if (StringUtils.isBlank(channelCode) || StringUtils.isBlank(pointCode)) {
 				throw new FanbeiException("缺少参数！");
 			} else {
@@ -345,9 +358,9 @@ public class AppH5UserContorler extends BaseController {
 					model.put("style", pcp.getStyle());
 					model.put("tdHost", "https://fp.fraudmetrix.cn");
 					logger.info(JSON.toJSONString(model));
-	
+
 					afPromotionChannelPointService.addVisit(pcp.getId());
-	
+
 					AfPromotionLogsDo afPromotionLogsDo = new AfPromotionLogsDo();
 					afPromotionLogsDo.setChannelId(pc.getId());
 					afPromotionLogsDo.setPointId(pcp.getId());
@@ -355,7 +368,7 @@ public class AppH5UserContorler extends BaseController {
 					afPromotionLogsService.addAfPromotionLogs(afPromotionLogsDo);
 				}
 			}
-		}finally{
+		} finally {
 			doLog(request, H5CommonResponse.getNewInstance(), null, 0l, channelCode);
 		}
 
@@ -373,7 +386,6 @@ public class AppH5UserContorler extends BaseController {
 			String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
 			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-
 
 			AfPromotionChannelPointDo pcp = afPromotionChannelPointService.getPoint(channelCode, pointCode);
 			if (pcp == null) {
@@ -412,12 +424,12 @@ public class AppH5UserContorler extends BaseController {
 
 			}
 			try {
-				tongdunUtil.getPromotionResult(token,channelCode,pointCode,CommonUtil.getIpAddr(request),mobile, mobile, "");
+				tongdunUtil.getPromotionResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
 			} catch (Exception e) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
 				return resp.toString();
 			}
-			
+
 			// 更新为已经验证
 			afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 
@@ -439,7 +451,7 @@ public class AppH5UserContorler extends BaseController {
 			String inviteCode = Long.toString(invteLong, 36);
 			userDo.setRecommendCode(inviteCode);
 			afUserService.updateUser(userDo);
-			
+
 			// 获取下载app地址
 			AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
 			String appDownLoadUrl = "";
@@ -449,18 +461,17 @@ public class AppH5UserContorler extends BaseController {
 			afPromotionChannelPointService.addRegister(pcp.getId());
 			resp = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null);
 			// 注册成功,发送注册短信
-//			smsUtil.sendRegisterSuccessSms(userDo.getUserName());
+			// smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 			return resp.toString();
 
 		} catch (Exception e) {
-			logger.error("commitChannelRegister",e);
+			logger.error("commitChannelRegister", e);
 			resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
 			return resp.toString();
-		}finally{
-			doLog(request, resp,"", Calendar.getInstance().getTimeInMillis()-calStart.getTimeInMillis(),request.getParameter("registerMobile"));
+		} finally {
+			doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("registerMobile"));
 		}
 
 	}
-	
 
 }
