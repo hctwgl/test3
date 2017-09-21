@@ -183,7 +183,8 @@ public class UnionLoginController extends BaseController {
 
         jsonResult.put("error_code", "0");
         jsonResult.put("result_code", is_new_user==1?1:2);
-        jsonResult.put("error_reason",is_new_user==1?"新用户":"老用户");
+        jsonResult.put("error_reason","");
+        jsonResult.put("result_reason",is_new_user==1?"新用户":"老用户");
         afUnionLoginLogService.addLog(fanbeiChannelCode, mobile, paramsJsonStr);
         String token = UserUtil.generateToken(mobile);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
