@@ -37,6 +37,15 @@ public class ChangeMobileApi implements ApiHandle {
 	
 	@Resource
 	SmsUtil smsUtil;
+
+
+	/**
+	 * 点击更换手机号码，先检查用户是否有资格(24小时之内支付密码或者身份证验证超过5次错误)
+	 * @param requestDataVo
+	 * @param context
+	 * @param request
+	 * @return
+	 */
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		  ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -45,6 +54,21 @@ public class ChangeMobileApi implements ApiHandle {
 	        String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 	        String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 	        String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
+	        //先检查用户是否有资格(24小时之内支付密码或者身份证验证超过5次错误)
+
+
+
+
+
+			//跳转下个页面
+
+
+
+
+
+
+
+
 	        if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(mobile)){
 	        	logger.error("changeMobile verifyCode or mobile is empty verifyCode = " + verifyCode + " mobile = " + mobile);
 	        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
