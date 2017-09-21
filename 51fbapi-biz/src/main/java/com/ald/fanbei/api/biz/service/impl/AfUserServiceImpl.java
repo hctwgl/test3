@@ -8,6 +8,7 @@ import com.ald.fanbei.api.biz.service.AfFeedBackService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -133,6 +134,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Override
 	public List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId, Integer start, Integer end) {
 		return afUserDao.getRecommendUserByRecommendId(recommendId, start, end);
+	}
+
+	@Override
+	public Long getUserIdByMobile(String mobile) {
+		return afUserDao.getUserIdByMobile(mobile);
 	}
 
 

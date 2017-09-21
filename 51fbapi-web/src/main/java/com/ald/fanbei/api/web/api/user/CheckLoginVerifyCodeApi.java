@@ -128,7 +128,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
         	riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0", 
         			loginTime, ip, phoneType, networkType, osType,FAIL,Constants.EVENT_LOGIN_ASY);
         	// 更新为已经验证
-         	afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+         	//afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
          	loginDo.setResult("false:可信登录短信验证码不正确");
 			afUserLoginLogService.addUserLoginLog(loginDo);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_SMS_WRONG_ERROR);

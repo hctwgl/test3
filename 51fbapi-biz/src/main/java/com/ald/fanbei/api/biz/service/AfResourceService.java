@@ -158,5 +158,14 @@ public interface AfResourceService {
 	AfResourceDo getFakePersonByActivityId(String string);
 	
 	AfResourceDo getGGSpecificBanner(String value2);
+	/**
+	 * 获取type类型的配置信息
+	 * 
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getConfigsByTypesAndSecType(String type, String secType);
+	
+	List<AfResourceDo> getCarouselToManyResourceOrderByType(String code);
 	
 }

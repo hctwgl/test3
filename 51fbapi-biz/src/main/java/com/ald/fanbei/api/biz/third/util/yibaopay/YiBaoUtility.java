@@ -72,7 +72,7 @@ public class YiBaoUtility {
         String redirectUrl ="http://www.baidu.com";         //同步回调地止
         String notifyUrl =baseUrl+"/third/ups/yibaoback";   //异步
         HashMap<String,String> goods = new HashMap<>();
-        goods.put("goodsName","51返呗还款");
+        goods.put("goodsName","51返呗");
         goods.put("goodsDesc","");
         String goodsParamExt= JSON.toJSONString(goods);
         String csUr =baseUrl+"/third/ups/yibaoqsback";        //清算成功回调地止
@@ -136,6 +136,24 @@ public class YiBaoUtility {
         }
         return ret;
     }
+
+
+    public void updateYiBaoAllNotCheck(){
+        List<AfYibaoOrderDo> list = afYibaoOrderDao.getYiBaoUnFinishOrderAll();
+        for(AfYibaoOrderDo afYibaoOrderDo:list){
+            Map<String, String> result  = getYiBaoOrder(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+            if(!result.get("code").equals("OPR00000")){
+                continue;
+            }
+            String status = result.get("status");
+            if(status.equals("PROCESSING")){
+                //处理中
+            }
+            proessUpdate(afYibaoOrderDo,status,afYibaoOrderDo.getoType());
+        }
+    }
+
+
 
 
 

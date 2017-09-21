@@ -736,6 +736,8 @@ public class RiskUtil extends AbstractThird {
 		orderDao.updateOrder(orderInfo);
 		if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 			logger.error("TRADE Rebate process");
+			//商圈订单发送，付款成功短信
+			smsUtil.sendTradePaid(userAccountInfo.getUserName(),new Date(),orderInfo.getActualAmount());
 			//商圈订单付款后直接进行返利,并且将订单修改集中
 			rebateContext.rebate(orderInfo);
 		}
@@ -1325,6 +1327,8 @@ public class RiskUtil extends AbstractThird {
 						orderDao.updateOrder(orderInfo);
 						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
 							logger.error("TRADE Rebate process");
+							//商圈订单发送，付款成功短信
+							smsUtil.sendTradePaid(userAccountInfo.getUserName(),new Date(),orderInfo.getActualAmount());
 							//商圈订单付款后直接进行返利,并且将订单修改集中
 							rebateContext.rebate(orderInfo);
 						}

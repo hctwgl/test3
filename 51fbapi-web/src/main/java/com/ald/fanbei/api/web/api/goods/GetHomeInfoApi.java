@@ -14,14 +14,22 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
@@ -29,6 +37,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -43,6 +53,15 @@ public class GetHomeInfoApi implements ApiHandle {
 	
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
+	
+	@Resource
+	JpushService jpushService;
+	
+	@Resource 
+	AfUserCouponService afUserCouponService;
+	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	private FanbeiContext contextApp;
 
@@ -61,31 +80,98 @@ public class GetHomeInfoApi implements ApiHandle {
 		List<Object> one2TwoList2 = new ArrayList<Object>();
 		List<Object> homeActivityList = new ArrayList<Object>();
 		List<Object> navigationList = new ArrayList<Object>();
+		Integer appVersion = context.getAppVersion();
+		try{
+			String userName = context.getUserName();
+			Long userId = context.getUserId();
+			if(userName != null && userId != null) {
+				// 用户已登录,将登录信息存放到缓存中
+				String ltStoreKey = "GET_HOME_INFO_LT" + userName;
+				Object ltSaveObj = bizCacheUtil.getObject(ltStoreKey);
+				List<AfResourceDo> resList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_WND.getCode());
+				Integer givenVersion = 0;
+				String onOff = "";
+				if(resList != null && !resList.isEmpty()) {
+					AfResourceDo versionInfoRes = resList.get(0);
+					onOff = versionInfoRes.getValue1();
+					String version = versionInfoRes.getValue();
+					givenVersion = Integer.valueOf(version);
+				}
+				logger.info("GetHomeInfoApi userName=>" + userName);
+				if(ltSaveObj == null) {
+					long secs = DateUtil.getSecsEndOfDay();
+					if(appVersion.compareTo(givenVersion) < 0 && "Y".equals(onOff)) {
+						jpushService.jPushPopupWnd("LT_GIVEN_VERSION_WND",userName);
+						logger.error("LT_GIVEN_VERSION_WND send success");
+						bizCacheUtil.saveObject(ltStoreKey, "Y", secs); //单位:秒
+					}
+				}
+				String gtStoreKey = "GET_HOME_INFO_GT" + userName;
+				Object gtSaveObj = bizCacheUtil.getObject(gtStoreKey);
+				// 获取后台配置的优惠券信息
+				List<AfResourceDo> couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON.getCode());
+				if(couponsList != null && !couponsList.isEmpty()) {
+					AfResourceDo couponInfoRes = couponsList.get(0);
+					String couponIdStr = couponInfoRes.getValue();
+					String[] couponIds = couponIdStr.split(",");
+					boolean sended = false;
+					for(String couponId : couponIds) {
+						String[] tmp = couponId.split(":");
+						if(tmp.length > 1) continue;
+						int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId, Long.parseLong(couponId));
+						if(count > 0 ) sended = true;
+						break;
+					}
+					if(!sended && gtSaveObj == null) {
+						if(appVersion.compareTo(givenVersion) >= 0 &&  "Y".equals(onOff)) {
+							jpushService.jPushPopupWnd("GT_GIVEN_VERSION_WND",userName);
+							logger.error("GT_GIVEN_VERSION_WND send success");
+							bizCacheUtil.saveObject(gtStoreKey, "Y");
+							for(String couponId : couponIds) {
+								String[] tmp = couponId.split(":");
+								// 用户发券
+								try{
+									if(tmp.length > 1) {
+										String sceneId = tmp[0];
+										grantBoluomiCoupon(Long.parseLong(sceneId), userId);
+									} else {
+										afUserCouponService.grantCoupon(userId, Long.parseLong(couponId), "updatePrize", "home");
+									}
+								} catch(Exception e) {
+									logger.error("grant coupon error=>" + e.getMessage());
+								}
+							}
+						}
+					}
+				}	
+			}
+		} catch(Exception e) {
+			logger.error("push wnd error=>" + e.getMessage());
+		}
 		//正式环境和预发布环境区分
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBanner.getCode()));
 		
-		if(context.getAppVersion() >= 363){
-			bannerSecList = getObjectWithResourceDolist(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
-		}
-            		one2OneList = getObjectWithResourceDolist(
-            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
+			if(appVersion >= 363){
+				bannerSecList = getObjectWithResourceDolist(
+					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeSecondBanner.getCode()));
+			}
+            one2OneList = getObjectWithResourceDolist(
+            		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneImage.getCode()));
             		
-            	        one2ManyList = getOne2ManyObjectWithResourceDolist(
-            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
+            one2ManyList = getOne2ManyObjectWithResourceDolist(
+            		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToMany.getCode()));
             		
-            		one2TwoList = getOne2ManyObjectWithResourceDolist(
-            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
+            one2TwoList = getOne2ManyObjectWithResourceDolist(
+            		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
             		
-            		one2TwoList2 = getOne2ManyObjectWithResourceDolist(
-            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo2.getCode()));
+            one2TwoList2 = getOne2ManyObjectWithResourceDolist(
+            		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo2.getCode()));
             		
-            		homeActivityList = getOne2ManyObjectWithResourceDolist(
-            				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
-            		
-            		navigationList = getObjectWithResourceDolist(
+            homeActivityList = getOne2ManyObjectWithResourceDolist(
+            		afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeActivity.getCode()));
+            navigationList = getObjectWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
 			bannerList = getObjectWithResourceDolist(
@@ -94,36 +180,73 @@ public class GetHomeInfoApi implements ApiHandle {
 			     bannerSecList = getObjectWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeSecondBanner.getCode()));
 		    }
-        		one2OneList = getObjectWithResourceDolist(
-        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneImage.getCode()));
+        	one2OneList = getObjectWithResourceDolist(
+        		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneImage.getCode()));
         		
-        	        one2ManyList = getOne2ManyObjectWithResourceDolist(
-        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToMany.getCode()));
+        	one2ManyList = getOne2ManyObjectWithResourceDolist(
+        		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToMany.getCode()));
         		
-        		one2TwoList = getOne2ManyObjectWithResourceDolist(
-        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo.getCode()));
+        	one2TwoList = getOne2ManyObjectWithResourceDolist(
+        		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo.getCode()));
         		
-        		one2TwoList2 = getOne2ManyObjectWithResourceDolist(
-        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo2.getCode()));
+        	one2TwoList2 = getOne2ManyObjectWithResourceDolist(
+        		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeOneToTwo2.getCode()));
         		
-        		homeActivityList = getOne2ManyObjectWithResourceDolist(
-        				afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeActivity.getCode()));
+        	homeActivityList = getOne2ManyObjectWithResourceDolist(
+        		afResourceService.getOneToManyResourceOrderByBytypeOnPreEnv(AfResourceType.HomeActivity.getCode()));
         		//预发线上未区分
-        		navigationList = getObjectWithResourceDolist(
-        				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
+        	navigationList = getObjectWithResourceDolist(
+        		afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		}
 		
-    		data.put("bannerList", bannerList);
-    		data.put("bannerSecList", bannerSecList);
-    		data.put("homeActivityList",homeActivityList);
-    		data.put("one2ManyList", one2ManyList);
-    		data.put("one2TwoList", one2TwoList);
-    		data.put("one2OneList", one2OneList);
-    		data.put("navigationList", navigationList);
-    		data.put("one2TwoList2",one2TwoList2);
-		
+		data.put("bannerList", bannerList);
+		data.put("bannerSecList", bannerSecList);
+		data.put("homeActivityList",homeActivityList);
+		data.put("one2ManyList", one2ManyList);
+		data.put("one2TwoList", one2TwoList);
+		data.put("one2OneList", one2OneList);
+		data.put("navigationList", navigationList);
+		data.put("one2TwoList2",one2TwoList2);
+	
 		resp.setResponseData(data);
 		return resp;
+	}
+	
+	private void grantBoluomiCoupon(Long sceneId, Long userId ) {
+		logger.info(" pickBoluomeCoupon begin , sceneId = {}, userId = {}",sceneId, userId);
+		if (sceneId == null) {
+			throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
+		AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+		if (resourceInfo == null) {
+			logger.error("couponSceneId is invalid");
+			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+		}
+		
+		PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+		bo.setUser_id(userId + StringUtil.EMPTY);
+		
+		Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+		Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+		
+		if (DateUtil.beforeDay(new Date(), gmtStart)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
+		}
+		if (DateUtil.afterDay(new Date(), gmtEnd)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END);
+		}
+		String url = resourceInfo.getValue();
+		if(url != null) {
+			url = url.replace(" ", "");
+		}
+		String resultString = HttpUtil.doHttpPostJsonParam(url, JSONObject.toJSONString(bo));
+		logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+		JSONObject resultJson = JSONObject.parseObject(resultString);
+		if (!"0".equals(resultJson.getString("code"))) {
+			throw new FanbeiException(resultJson.getString("msg"));
+		} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
+			throw new FanbeiException("仅限领取一次，请勿重复领取！");
+		}
 	}
 
 	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {

@@ -17,6 +17,7 @@ public enum AfResourceSecType {
 		GOODS_ID("GOODS_ID", "跳转商品详情"),
 		creditScoreAmount("CREDIT_SCORE_AMOUNT","征信等级"),
 		NAVIGATION_MOBILE_CHARGE("NAVIGATION_MOBILE_CHARGE","手机充值"),
+		NAVIGATION_BACKGROUND("NAVIGATION_BACKGROUND","快速导航背景"),
 		NAVIGATION_BOLUOME("NAVIGATION_BOLUOME", "菠萝蜜手机充值"),
 	
 

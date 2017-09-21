@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserBankQuery;
 
 /**
  * @类现描述：
@@ -90,5 +91,12 @@ public interface AfUserBankcardDao {
 	 * @return
 	 */
 	AfUserBankcardDo getUserBankcardByCardNo(@Param("cardNumber") String cardNumber);
+	
+	/**
+	 * 
+	 * @param cardNumber
+	 * @return
+	 */
+	List<AfUserBankcardDo> getUserBankList(AfUserBankQuery query);
 	
 }

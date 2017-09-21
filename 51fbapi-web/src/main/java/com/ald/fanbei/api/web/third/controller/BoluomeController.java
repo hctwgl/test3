@@ -82,9 +82,20 @@ public class BoluomeController extends AbstractThird{
     	if (sign) {
     		try {
     			AfOrderDo orderInfo = buildOrderInfo(params);
+    			
     			if (orderInfo != null) {
     				if (orderInfo.getRid() == null) {
-    					afOrderService.createOrder(orderInfo);
+    					AfOrderDo orderInfoDb = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderInfo.getThirdOrderNo());
+    					String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderInfo.getThirdOrderNo();
+    	    			boolean isGetLock = bizCacheUtil.getLockTryTimes(lockKey, "1",
+    	    					Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
+    	    			//加锁
+    	    	    	if (isGetLock) {
+    	    	    		if (orderInfoDb == null) {
+    	    	    			afOrderService.createOrder(orderInfo);
+    	    	    		}
+    	    	    		bizCacheUtil.delCache(lockKey);
+    	    	    	}
     				} else {
     					afOrderService.dealBoluomeOrder(orderInfo);
     				}
@@ -167,19 +178,13 @@ public class BoluomeController extends AbstractThird{
     		channel = channel.toUpperCase();
     	}
     	
-    	String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderId;
-		boolean isGetLock = bizCacheUtil.getLockTryTimes(lockKey, "1",
-				Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
-		AfOrderDo orderInfo = null;
-		//加锁
-    	if (isGetLock) {
-    		orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
-    		bizCacheUtil.delCache(lockKey);
-    	}
+		AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);;
     	
     	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
     	
-    	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderType, channel);
+    	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), 
+    			orderInfo != null ? orderInfo.getSecType() : orderType, 
+    			orderInfo != null? orderInfo.getServiceProvider() : channel);
     	//不是新建 单订单还没有同步完成  同步订单状态接口不会有orderType字段
     	if(orderInfo == null && StringUtils.isBlank(orderType)) {
     		return null;
@@ -224,7 +229,7 @@ public class BoluomeController extends AbstractThird{
     		calculateOrderRebateAmount(orderInfo, shopInfo);
     	} else {
     		
-    		BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : null;
+    		BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : orderInfo.getPriceAmount();
     		orderInfo.setPriceAmount(priceAmount);
     		orderInfo.setSaleAmount(priceAmount);
     		orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);

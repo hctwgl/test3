@@ -109,6 +109,117 @@ public class APPH5GGShareController extends BaseController {
 
 	/**
 	 * 
+	 * @说明：逛逛首页券列表
+	 * @param: @param
+	 *             request
+	 * @param: @param
+	 *             response
+	 * @param: @return
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/showCoupon", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public String showCoupon(HttpServletRequest request, HttpServletResponse response) {
+		String resultStr = " ";
+		FanbeiWebContext context = new FanbeiWebContext();
+		
+		try {
+			context = doWebCheck(request, false);
+			
+			List<AfResourceDo> listResource = afResourceService.getConfigsByTypesAndSecType("BOLUOMI", "GGENTRY");
+			if (null != listResource && listResource.size() >0 ) {
+				List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
+				
+				for(AfResourceDo couponResourceDo :listResource){
+					
+					logger.info("showCoupon getCouponUrl resourceId = {},couponResourceDo = {}", couponResourceDo.getRid(),
+							couponResourceDo);
+					if (couponResourceDo != null) {
+						Long resourceId = couponResourceDo.getRid();
+						String uri = couponResourceDo.getValue();
+						String[] pieces = uri.split("/");
+						if (pieces.length > 9) {
+							String app_id = pieces[6];
+							String campaign_id = pieces[8];
+							String user_id = "0";
+							// 获取boluome的券的内容
+							String url = getCouponUrl() + "?" + "app_id=" + app_id + "&user_id=" + user_id + "&campaign_id="
+									+ campaign_id;
+							String reqResult = HttpUtil.doGet(url, 10);
+							logger.info("initHomePage getCouponUrl reqResult = {}", reqResult);
+							if (!StringUtil.isBlank(reqResult)) {
+								ThirdResponseBo thirdResponseBo = JSONObject.parseObject(reqResult, ThirdResponseBo.class);
+								if (thirdResponseBo != null && "0".equals(thirdResponseBo.getCode())) {
+									List<BoluomeCouponResponseParentBo> listParent = JSONArray
+											.parseArray(thirdResponseBo.getData(), BoluomeCouponResponseParentBo.class);
+									if (listParent != null && listParent.size() > 0) {
+										BoluomeCouponResponseParentBo parentBo = listParent.get(0);
+										if (parentBo != null) {
+											String activityCoupons = parentBo.getActivity_coupons();
+											String result = activityCoupons.substring(1, activityCoupons.length() - 1);
+											String replacement = "," + "\"sceneId\":" + resourceId + "}";
+											String rString = result.replaceAll("}", replacement);
+											// 字符串转为json对象
+											BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString,
+													BoluomeCouponResponseBo.class);
+											String userName = context.getUserName();
+											// 为了兼容从我也要点亮中调用主页接口
+											if (StringUtil.isBlank(userName)) {
+												userName = request.getParameter("userName");
+											}
+											List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil
+													.getActivityCouponList(uri);
+											BrandActivityCouponResponseBo bo = activityCouponList.get(0);
+											if (userName != null) {
+												Long userId = convertUserNameToUserId(userName);
+												if (userId != null) {
+													// 判断用户是否拥有该优惠券
+													if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
+															|| bo.getDistributed() >= bo.getTotal()) {
+														BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
+													} else {
+														BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
+													}
+												}
+											}
+											Map<String, Object> data = new HashMap<String, Object>();
+											boluomeCouponList.add(BoluomeCouponResponseBo);
+											data.put("boluomeCouponList", boluomeCouponList);
+											resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+										    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
+										}
+									}
+
+								}
+							}
+						}
+					}
+				}
+			}
+
+
+		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			}
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("resultStr = {}", resultStr);
+			logger.error("初始化数据失败  e = {} , resultStr = {}", e, resultStr);
+		} catch (Exception exception) {
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, resultStr);
+		}
+
+		return resultStr;
+
+	}
+
+	/**
+	 * 
 	 * @说明：活动点亮初始化
 	 * @param: @param
 	 *             request
@@ -122,7 +233,7 @@ public class APPH5GGShareController extends BaseController {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = " ";
 		FanbeiWebContext context = new FanbeiWebContext();
-		
+
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try {
@@ -201,7 +312,7 @@ public class APPH5GGShareController extends BaseController {
 											if (userName != null) {
 												Long userId = convertUserNameToUserId(userName);
 												if (userId != null) {
-													//判断用户是否拥有该优惠券
+													// 判断用户是否拥有该优惠券
 													if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
 															|| bo.getDistributed() >= bo.getTotal()) {
 														BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
@@ -1171,8 +1282,7 @@ public class APPH5GGShareController extends BaseController {
 						List<AfBoluomeActivityUserItemsDo> useritemsList = afBoluomeActivityUserItemsService
 								.getListByCommonCondition(useritemsdoo);
 						if (useritemsList == null || useritemsList.size() <= 0) {
-							return H5CommonResponse.getNewInstance(false, "您还没有集齐卡片不能领取终极大奖")
-									.toString();
+							return H5CommonResponse.getNewInstance(false, "您还没有集齐卡片不能领取终极大奖").toString();
 						}
 						deleteList.add(useritemsList.get(0));
 					}

@@ -236,6 +236,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
 //			}
 			if (!respBo.isSuccess()) {
+				AfRepaymentDo currRepayment  = afRepaymentDao.getRepaymentById(repayment.getRid());
+				if(!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())){
+					afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
+					afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, repayment.getRid());
+				}else{
+					logger.info("createRepayment ups response fail,bug syn have process success.repayNo:"+repayNo+",repaymentId:"+repayment.getRid());
+				}
 				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
@@ -309,7 +316,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
 
 		final String key = outTradeNo +"_success_repay";
-		long count = redisTemplate.opsForValue().increment("", 1);
+		long count = redisTemplate.opsForValue().increment(key, 1);
 		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
 		if (count != 1) {
 			return -1;
@@ -382,8 +389,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					status.setRollbackOnly();
 					logger.info("dealRepaymentSucess error = {}", e);
 					return 0l;
-				}
-				finally {
+				} finally {
 					redisTemplate.delete(key);
 				}
 			}

@@ -87,6 +87,9 @@ public class GetBrandUrlApi implements ApiHandle {
 	//根据测试，线上环境区别地址
 	private String parseBoluomeUrl(String baseUrl) {
 		String type = baseUrl.substring(baseUrl.lastIndexOf("/") + 1, baseUrl.length());
+		 if ("didi".equals(type)) {
+			type = "yongche/" + type;
+		 }
 		return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/"+ type + "?";
 	}
 

@@ -17,13 +17,13 @@ public class AfBankUserBankDto extends AfUserBankcardDo {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String bankIcon;
-	private char isValid;
+	private String isValid;
 
-	public char getIsValid() {
+	public String getIsValid() {
 		return isValid;
 	}
 
-	public void setIsValid(char isValid) {
+	public void setIsValid(String isValid) {
 		this.isValid = isValid;
 	}
 
