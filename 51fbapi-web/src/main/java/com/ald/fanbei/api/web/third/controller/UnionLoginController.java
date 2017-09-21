@@ -259,7 +259,7 @@ public class UnionLoginController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/jfLogin")
+    @RequestMapping("/fanbeiLogin")
     @ResponseBody
     public JSONObject fanbeiLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
         Map<String, String[]> paramsMap = request.getParameterMap();
