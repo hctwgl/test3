@@ -254,7 +254,7 @@ var vm = new Vue({
             var year = new Date(nowTime).getFullYear();//服务器当前年
             var month = new Date(nowTime).getMonth() + 1;//服务器当前月
             var activeDaY = new Date(nowTime).getDate();//服务器当前日
-            //超过10点
+            //倒计时第一天的时候 不管倒计时什么时候开始都要倒计时到第二天要加1
             if (hour > 10 || startDay == activeDaY) {
                 activeDaY += 1;
             } 
