@@ -205,6 +205,10 @@ var vm = new Vue({
         noShow() {
             $('.mask').hide();
             $(".alertRule").hide();
+
+            //把弹框下面一层的滚动事件禁掉的放出來
+            $("body").css("overflow","auto");
+            $("html").css("overflow","auto");
         },
 
 
