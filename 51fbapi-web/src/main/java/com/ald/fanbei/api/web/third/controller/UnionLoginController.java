@@ -7,7 +7,9 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.unionlogin.Codec;
+import com.ald.fanbei.api.common.unionlogin.FanBeiSecret;
 import com.ald.fanbei.api.common.unionlogin.JFSecret;
 import com.ald.fanbei.api.common.unionlogin.JdqMessageSign;
 import com.ald.fanbei.api.common.util.*;
@@ -19,6 +21,7 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +99,7 @@ public class UnionLoginController extends BaseController {
 
         //region 签名验证
         JSONObject jsonResult = new JSONObject();
-        AfUnionLoginChannelDo channelDo= getsetChannel(fanbeiChannelCode,channel_no);
+        AfUnionLoginChannelDo channelDo = getsetChannel(fanbeiChannelCode, channel_no);
         //签名校验
         String localSign = JdqMessageSign.signParams(channelDo.getSecretKey(), signMap);
 
@@ -129,7 +132,7 @@ public class UnionLoginController extends BaseController {
             //数据库验证用户是否登录
             //1、查询用户信息
 
-            int is_new_user=getsetUserInfo(phone,fanbeiChannelCode,paramsJsonStr);
+            int is_new_user = getsetUserInfo(phone, fanbeiChannelCode, paramsJsonStr);
 
 
             afUnionLoginLogService.addLog(fanbeiChannelCode, phone, paramsJsonStr);
@@ -152,7 +155,7 @@ public class UnionLoginController extends BaseController {
     /**
      * 现金超人对接
      *
-     * @param mobile  手机号码
+     * @param mobile 手机号码
      * @param source 来源
      * @param sign   签名
      * @return {
@@ -171,7 +174,7 @@ public class UnionLoginController extends BaseController {
         TreeMap<String, String> signMap = getSignMap(paramsMap);
         String paramsJsonStr = JSONObject.toJSONString(paramsMap);
         addLogs(fanbeiChannelCode, paramsJsonStr);
-        AfUnionLoginChannelDo channelDo= getsetChannel(fanbeiChannelCode,source);
+        AfUnionLoginChannelDo channelDo = getsetChannel(fanbeiChannelCode, source);
         String localSign = JdqMessageSign.signParams(signMap, "&key=" + channelDo.getSecretKey());
         JSONObject jsonResult = new JSONObject();
         if (!localSign.toUpperCase().equals(sign)) {
@@ -179,12 +182,12 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("error_reason", "签名错误,remote sign:" + sign);
             return jsonResult;
         }
-        int is_new_user=getsetUserInfo(mobile,fanbeiChannelCode,paramsJsonStr);
+        int is_new_user = getsetUserInfo(mobile, fanbeiChannelCode, paramsJsonStr);
 
         jsonResult.put("error_code", "0");
-        jsonResult.put("result_code", is_new_user==1?1:2);
-        jsonResult.put("error_reason","");
-        jsonResult.put("result_reason",is_new_user==1?"新用户":"老用户");
+        jsonResult.put("result_code", is_new_user == 1 ? 1 : 2);
+        jsonResult.put("error_reason", "");
+        jsonResult.put("result_reason", is_new_user == 1 ? "新用户" : "老用户");
         afUnionLoginLogService.addLog(fanbeiChannelCode, mobile, paramsJsonStr);
         String token = UserUtil.generateToken(mobile);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
@@ -194,77 +197,19 @@ public class UnionLoginController extends BaseController {
 
     /**
      * 玖富登录
-     * @param channel_id 加密渠道id
-     * @param dingdang_id 暂不使用
+     *
+     * @param channel_id    加密渠道id
+     * @param dingdang_id   暂不使用
      * @param serial_number 暂不使用
-     * @param mobile 手机号
-     * @param name 姓名
-     * @param cert_id 身份证号码
+     * @param mobile        手机号
+     * @param name          姓名
+     * @param cert_id       身份证号码
      * @return
      * @throws Exception
      */
     @RequestMapping("/jfLogin")
     @ResponseBody
     public JSONObject jfLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
-        Map<String, String[]> paramsMap = request.getParameterMap();
-        String paramsJsonStr = JSONObject.toJSONString(paramsMap);
-        String fanbeiChannelCode = "jf";
-        //region 查询渠道信息
-        AfUnionLoginChannelDo afUnionLoginChannelDo = new AfUnionLoginChannelDo();
-        afUnionLoginChannelDo.setCode(fanbeiChannelCode);
-        AfUnionLoginChannelDo channelDo = afUnionLoginChannelService.getByCommonCondition(afUnionLoginChannelDo);
-       //endregion
-
-        //region 必要信息解密
-        String privateKeyStr = channelDo.getValue1();
-        String publicKeyStr = channelDo.getValue2();
-        PrivateKey privateKey = JFSecret.getPrivateKey(privateKeyStr);
-        PublicKey publicKey = JFSecret.getPublicKey(publicKeyStr);
-        String channelDec = JFSecret.decrypt(privateKey, channel_id);
-
-
-        if (StringUtils.isEmpty(channelDo.getThirdChannelCode())) {
-            //设置第三方的渠道号码
-            channelDo.setThirdChannelCode(channelDec);
-            afUnionLoginChannelService.updateById(channelDo);
-        }
-        String mobileDec = JFSecret.decrypt(privateKey, mobile);
-//        String nameDec = JFSecret.decrypt(privateKey, name);
-//        String cert_idDec = JFSecret.decrypt(privateKey, cert_id);
-
-        //region 必要信息解密
-        logger.info("解密第三方渠道号:"+channelDec+"，解密手机号:"+mobileDec);
-        JSONObject jsonObject = new JSONObject();
-
-        jsonObject.put("channel_id", fanbeiChannelCode);
-        jsonObject.put("serial_number", serial_number);
-        jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
-        int is_new_user=getsetUserInfo(mobileDec,fanbeiChannelCode,paramsJsonStr);
-        String token = UserUtil.generateToken(mobileDec);
-        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0,8));
-        JSONObject jsonResultObject = new JSONObject();
-        jsonResultObject.put("message", "成功");
-        jsonResultObject.put("status", "1");
-        jsonResultObject.put("code", "0");
-        logger.info("返回 url 地址:"+returnUrl);
-        jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
-        jsonResultObject.put("data", jsonObject);
-        return jsonResultObject;
-    }
-    /**
-     * 玖富登录
-     * @param channel_id 加密渠道id
-     * @param dingdang_id 暂不使用
-     * @param serial_number 暂不使用
-     * @param mobile 手机号
-     * @param name 姓名
-     * @param cert_id 身份证号码
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping("/fanbeiLogin")
-    @ResponseBody
-    public JSONObject fanbeiLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
         Map<String, String[]> paramsMap = request.getParameterMap();
         String paramsJsonStr = JSONObject.toJSONString(paramsMap);
         String fanbeiChannelCode = "jf";
@@ -292,25 +237,103 @@ public class UnionLoginController extends BaseController {
 //        String cert_idDec = JFSecret.decrypt(privateKey, cert_id);
 
         //region 必要信息解密
-        logger.info("解密第三方渠道号:"+channelDec+"，解密手机号:"+mobileDec);
+        logger.info("解密第三方渠道号:" + channelDec + "，解密手机号:" + mobileDec);
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("channel_id", fanbeiChannelCode);
         jsonObject.put("serial_number", serial_number);
         jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
-        int is_new_user=getsetUserInfo(mobileDec,fanbeiChannelCode,paramsJsonStr);
+        int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
         String token = UserUtil.generateToken(mobileDec);
-        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
         JSONObject jsonResultObject = new JSONObject();
         jsonResultObject.put("message", "成功");
         jsonResultObject.put("status", "1");
         jsonResultObject.put("code", "0");
+        logger.info("返回 url 地址:" + returnUrl);
         jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
         jsonResultObject.put("data", jsonObject);
         return jsonResultObject;
     }
+
+    /**
+     * 返呗统一联合登录
+     *
+     * @param channel 渠道 明文
+     * @param phone   手机号 加密
+     * @param sign    签名
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/fanbeiLogin", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject fanbeiLogin(String phone, String channel, String sign) throws Exception {
+        try {
+            Map<String, String[]> paramsMap = request.getParameterMap();
+            String paramsJsonStr = JSONObject.toJSONString(paramsMap);
+
+            String fanbeiChannelCode = channel;
+            addLogs(fanbeiChannelCode, paramsJsonStr);
+
+            //取非空参数作为签名
+            TreeMap<String, String> signMap = getSignMap(paramsMap);
+            //endregion
+
+            //region 签名验证
+            JSONObject jsonResult = new JSONObject();
+            AfUnionLoginChannelDo condition = new AfUnionLoginChannelDo();
+            condition.setCode(fanbeiChannelCode);
+            AfUnionLoginChannelDo channelDo = afUnionLoginChannelService.getByCommonCondition(condition);
+            //签名校验
+            String localSign = FanBeiSecret.signParams(channelDo.getSecretKey(), signMap);
+            if (!localSign.equals(sign)) {
+                thirdLog.error("fanbeiLogin local sign " + sign + ",remote sign" + sign);
+                jsonResult.put("code", "1002");
+                jsonResult.put("msg", "签名错误");
+                return jsonResult;
+            }
+
+
+            //region 必要信息解密
+
+            String phoneStr = "";
+            try {
+                byte[] phoneDecodeBase64Byte = Base64.decodeBase64(phone);
+                byte[] phoneDecodeAesByte = FanBeiSecret.decode(channelDo.getSecretKey(), phoneDecodeBase64Byte);
+                phoneStr = new String(phoneDecodeAesByte, "utf-8").trim();
+
+            } catch (Exception e) {
+                jsonResult.put("code", "1001");
+                jsonResult.put("msg", "解密出错");
+                return jsonResult;
+            }
+
+            //endregion 必要信息解密
+
+            int is_new_user = getsetUserInfo(phoneStr, fanbeiChannelCode, paramsJsonStr);
+            String token = UserUtil.generateToken(phoneStr);
+            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+            JSONObject jsonResultObject = new JSONObject();
+            JSONObject jsonObject = new JSONObject();
+            jsonResultObject.put("msg", "成功");
+            jsonResultObject.put("code", "0");
+            jsonObject.put("user_state", is_new_user);
+            jsonObject.put("return_url", returnUrl);
+            jsonResultObject.put("data", jsonObject);
+            return jsonResultObject;
+        } catch (Exception e) {
+            JSONObject jsonResult = new JSONObject();
+            jsonResult.put("code", "500");
+            jsonResult.put("msg", "服务器操作错误");
+            thirdLog.error("fanbeiLogin error：", e);
+            return jsonResult;
+        }
+
+    }
+
     /**
      * 登陆成功后的欢迎页面
+     *
      * @param isNew 是否是新用户
      * @param token 登录令牌，暂时不使用
      * @return 页面
@@ -323,13 +346,14 @@ public class UnionLoginController extends BaseController {
 
     /**
      * 获取/设置用户信息
-     * @param mobile 手机号
-     * @param channelCode 返呗提供的渠道信息
+     *
+     * @param mobile        手机号
+     * @param channelCode   返呗提供的渠道信息
      * @param paramsJsonStr 参数原样保存
-     * @return  1:新用户 2:当前渠道的老用户 3:其他渠道的老用户
-     * @throws Exception 
+     * @return 1:新用户 2:当前渠道的老用户 3:其他渠道的老用户
+     * @throws Exception
      */
-    private int getsetUserInfo(String mobile,String channelCode,String paramsJsonStr) throws  Exception{
+    private int getsetUserInfo(String mobile, String channelCode, String paramsJsonStr) throws Exception {
         int is_new_user = 1;
         AfUserDo userInfo = afUserService.getUserByUserName(mobile);//查询数据库
         if (userInfo != null) {
@@ -351,12 +375,13 @@ public class UnionLoginController extends BaseController {
 
     /**
      * 获取并设置第三方渠道信息
+     *
      * @param fanbeiChannelCode 返呗的渠道code
-     * @param thridChannelCode 第三方渠道code
+     * @param thridChannelCode  第三方渠道code
      * @return 渠道信息
      */
-    public AfUnionLoginChannelDo getsetChannel(String fanbeiChannelCode,String thridChannelCode){
-        try{
+    public AfUnionLoginChannelDo getsetChannel(String fanbeiChannelCode, String thridChannelCode) {
+        try {
             AfUnionLoginChannelDo condition = new AfUnionLoginChannelDo();
             condition.setCode(fanbeiChannelCode);
             AfUnionLoginChannelDo channelDo = afUnionLoginChannelService.getByCommonCondition(condition);
@@ -366,14 +391,13 @@ public class UnionLoginController extends BaseController {
                 afUnionLoginChannelService.updateById(channelDo);
             }
             return channelDo;
-        }
-        catch (Exception e){
-             logger.error("getsetChannel error:",e);
-             return null;
+        } catch (Exception e) {
+            logger.error("getsetChannel error:", e);
+            return null;
         }
 
     }
-    
+
     /**
      * 参数进行处理，去除sign和空参数
      *
@@ -398,7 +422,8 @@ public class UnionLoginController extends BaseController {
 
     /**
      * 添加日志
-     * @param channel 返呗渠道号
+     *
+     * @param channel       返呗渠道号
      * @param paramsJsonStr 参数信息
      */
     private void addLogs(String channel, String paramsJsonStr) {
