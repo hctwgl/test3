@@ -220,11 +220,13 @@ public class FanBeiSecret {
     }
 
     //endregion
-
+    
     public static void main(String[] args) throws Exception {
-        String secret_key = "2SA4WGA857FFCC23"; //加密签名通用秘钥
+
+
+        String secret_key = "GSA41SA757CCDG97"; //加密签名通用秘钥
         String phone = "15990182307";
-        String channel = "QwEr";
+        String channel = "DkwU";
 
 
         byte[] phoneAesEncodeByte = encode(secret_key, phone);

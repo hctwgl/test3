@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfUnionLoginRegisterDo;
@@ -45,7 +46,7 @@ public class AfUnionLoginRegisterServiceImpl extends ParentServiceImpl<AfUnionLo
     @Override
     public String register(String channel,String phone,String paramsJsonStr) throws Exception {
         String salt = UserUtil.getSalt();
-        String defaultPassword=     "123456";
+        String defaultPassword= CommonUtil.getStringRandom(6);
         String randomPassword = DigestUtil.MD5(defaultPassword);
 
         String password = UserUtil.getPassword(randomPassword, salt);
