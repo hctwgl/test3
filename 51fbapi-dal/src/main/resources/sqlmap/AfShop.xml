@@ -41,7 +41,7 @@
 			is_delete = 0
 		AND
 			status = 'O'
-		ORDER BY sort DESC, gmt_modified DESC
+		ORDER BY latest_online DESC,sort DESC, gmt_modified DESC
 	</select>
 	
 	<select id="getPreEnvShopList" parameterType="AfShopQuery"  resultType="AfShopDo">
@@ -51,7 +51,7 @@
 			af_shop
 		WHERE
 			is_delete = 0
-		ORDER BY sort DESC, gmt_modified DESC
+		ORDER BY latest_online DESC,sort DESC, gmt_modified DESC
 	</select>
 	
 	<select id="getShopInfoBySecType" parameterType="AfShopDo" resultType="AfShopDo">
