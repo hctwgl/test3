@@ -332,6 +332,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		final AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
 		logger.info("dealRepaymentSucess process begin, repayment=" + repayment);
 		if (repayment == null || YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
+			redisTemplate.delete(key);
 			return 0l;
 		}
 		

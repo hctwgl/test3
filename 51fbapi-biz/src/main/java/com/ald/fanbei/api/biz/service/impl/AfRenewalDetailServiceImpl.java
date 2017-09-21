@@ -244,6 +244,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		final AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByPayTradeNo(outTradeNo);
 		logger.info("afRenewalDetailDo=" + afRenewalDetailDo);
 		if (YesNoStatus.YES.getCode().equals(afRenewalDetailDo.getStatus())) {
+			redisTemplate.delete(key);
 			return 0l;
 		}
 		
@@ -313,7 +314,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.info("dealRepaymentSucess error", e);
+					logger.info("dealRenewalSucess error", e);
 					return 0l;
 				} finally {
 					redisTemplate.delete(key);
@@ -329,7 +330,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			AfUserDo userDo = afUserService.getUserById(currAfBorrowCashDo.getUserId());
 			try {
 				pushService.repayRenewalSuccess(userDo.getUserName());
-				logger.error("续期成功，推送消息成功outTradeNo:"+outTradeNo);
+				logger.info("续期成功，推送消息成功outTradeNo:"+outTradeNo);
 			}catch (Exception e){
 				logger.error("续期成功，推送消息异常outTradeNo:"+outTradeNo,e);
 			}
