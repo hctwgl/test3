@@ -237,17 +237,17 @@ var vm = new Vue({
         var nowTime = num.currentDate; //当前后台时间
         var endTime = num.endTime; //活动结束时间
         var startrTime = num.startrTime; //活动开始时间
-        /* console.log(new Date(startrTime), '活动开始时间');
+         console.log(new Date(startrTime), '活动开始时间');
         console.log(new Date(nowTime), '111后天服务器当前时间');
-        console.log(new Date(endTime), '活动结束时间'); */
+        console.log(new Date(endTime), '活动结束时间'); 
         var diffTimer, day, end;
         var Hour, Minute, Second;
         if (startrTime > nowTime) {
             $('#count').html('活动暂未开始')
-        } else if (nowTime > endTime) {
+        } /* else if (nowTime > endTime) {
             $('#count').html('活动结束');
 
-        } else {
+        } */ else {
             var startDay = new Date(startrTime).getDate();//活动开始日
             var endDay = new Date(endTime).getDate()//活动结束日
             var hour = new Date(nowTime).getHours();//服务器当前时
