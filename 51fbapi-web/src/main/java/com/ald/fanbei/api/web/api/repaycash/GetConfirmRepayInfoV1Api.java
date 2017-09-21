@@ -3,6 +3,8 @@ package com.ald.fanbei.api.web.api.repaycash;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
@@ -55,6 +57,9 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
 
     @Resource
     YiBaoUtility yiBaoUtility;
+
+    @Resource
+    BizCacheUtil bizCacheUtil;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -118,6 +123,7 @@ public class GetConfirmRepayInfoV1Api  implements ApiHandle {
         }
 
 
+        //bizCacheUtil.delCache(CacheConstants.RESOURCE.RESOURCE_CONFIG_TYPES_LIST.getCode());
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
         AfResourceDo zfbDo = null;

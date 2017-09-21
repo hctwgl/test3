@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfActivityDao">
 	
 	<sql id="activitySqlField">
-		id,is_delete,gmt_create,gmt_modified,name,type,icon_url,gmt_start,gmt_end,title1,title2,title3,title4,bg_color,btn_color
+		id,is_delete,gmt_create,gmt_modified,name,type,icon_url,gmt_start,gmt_end,title1,title2,title3,title4,bg_color,btn_color,link_type,link_content
 	</sql>
 	
 	<insert id="addActivity" parameterType="AfActivityDo" keyProperty="id" useGeneratedKeys="true" >
@@ -50,6 +50,34 @@
 			is_delete=0
 	</select>
 	
+	<select id="listAllHomeActivity"  resultType="AfActivityDo">
+		SELECT
+			<include refid="activitySqlField"/>
+		FROM
+			af_activity 
+		WHERE
+			is_delete = 0
+		AND
+			type = 3
+		AND
+			tag != 'MORE'
+		ORDER BY gmt_create desc
+	</select>
+	
+	<select id="getHomeMoreActivity"  resultType="AfActivityDo">
+		SELECT
+			<include refid="activitySqlField"/>
+		FROM
+			af_activity 
+		WHERE
+			is_delete = 0
+		AND
+			type = 3
+		AND
+			tag = 'MORE'
+	</select>
+	
+	
 	<update id="updateActivity" parameterType="AfActivityDo">
 		UPDATE af_activity SET gmt_modified = NOW() 
 			<if test="name != null">
@@ -79,4 +107,5 @@
 		WHERE
 			id = #{activityId}
 	</update>
+	
 </mapper>

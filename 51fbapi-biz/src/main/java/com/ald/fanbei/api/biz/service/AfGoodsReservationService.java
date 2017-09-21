@@ -28,5 +28,12 @@ public interface AfGoodsReservationService {
          * @return
          */
         Integer getRevCountNumsByQueryCondition(AfGoodsReservationDo afGoodsReservationDo);
+        
+        /**
+         * 根据userId得到预约状态
+         * @param userId
+         * @return
+         */
+        String getGoodsReservationStatusByUserId(long userId);
  
 }

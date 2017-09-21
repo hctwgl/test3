@@ -49,4 +49,6 @@ public interface AfUserService {
 	
 	List<AfUserInvitationDto> getRecommendUserByRecommendId(Long recommendId,Integer start,Integer end);
 
+	Long getUserIdByMobile(String mobile);
+
 }

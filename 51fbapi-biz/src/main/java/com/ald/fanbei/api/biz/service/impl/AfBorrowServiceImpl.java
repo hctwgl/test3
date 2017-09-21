@@ -593,14 +593,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		
 		//拿到日利率快照Bo
 		BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(borrowRate);
-		
+		BigDecimal mouthRate = borrowRateBo.getRate().divide(new BigDecimal(Constants.MONTH_OF_YEAR), 8,
+				BigDecimal.ROUND_HALF_UP);//月利率
 		//每期本金
 		BigDecimal principleAmount = money.divide(new BigDecimal(borrow.getNper()), 2, RoundingMode.DOWN);
 		//第一期本金
 		BigDecimal firstPrincipleAmount =  getFirstPrincipleAmount(money, principleAmount, nper);
 		//每期利息
-		BigDecimal interestAmount = money.multiply(borrowRateBo.getRate()).divide(
-				Constants.DECIMAL_MONTH_OF_YEAR, 2, RoundingMode.CEILING);
+		BigDecimal interestAmount = money.multiply(mouthRate);
 		//每期手续费
 		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(money, borrow.getNper(), borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
 		
@@ -631,11 +631,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
  				bill.setPrincipleAmount(principleAmount);
  			}
 			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
-//			if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
-//				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
-//			} else {
+			if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+			} else {
 				bill.setStatus(BorrowBillStatus.NO.getCode());
-//			}
+			}
 			bill.setType(BorrowType.CONSUME.getCode());
 			list.add(bill);
 			now = DateUtil.addMonths(now, 1);
@@ -933,10 +933,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
 
-					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+//					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+//					if(!(orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
 						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 						afBorrowDao.addBorrowBill(billList);
-					}
+//					}
 					return borrow.getRid();
 
 				} catch (Exception e) {
@@ -964,10 +965,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 					// 新增借款日志
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
 
-					if(isBack) {
-						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, PayType.AGENT_PAY.getCode());
-						afBorrowDao.addBorrowBill(billList);
-					}
+					List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, PayType.AGENT_PAY.getCode());
+					afBorrowDao.addBorrowBill(billList);
 
 					return borrow.getRid();
 

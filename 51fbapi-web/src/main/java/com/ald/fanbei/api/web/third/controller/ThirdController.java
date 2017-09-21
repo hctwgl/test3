@@ -16,15 +16,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.BoluomeGetDidiRiskInfoRespBo;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.BoluomeService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.boluome.ThirdCore;
 import com.ald.fanbei.api.biz.service.boluome.ThirdNotify;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.AppResponse;
@@ -47,6 +51,8 @@ public class ThirdController extends AbstractThird{
     AfShopService afShopService;
     @Resource
     BoluomeUtil boluomeUtil;
+    @Resource
+    BoluomeService boluomeService;
 
     @RequestMapping(value = { "/orderRefund" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -58,7 +64,7 @@ public class ThirdController extends AbstractThird{
 
         AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
         try {
-            result = checkSignAndParam(params);
+            result = checkSignAndParam(params, "orderRefund");
             Map<String, Object> resultData = new HashMap<String, Object>();
             String orderId = params.get(ThirdCore.ORDER_ID);
             String plantform = params.get(ThirdCore.PLANT_FORM);
@@ -84,13 +90,46 @@ public class ThirdController extends AbstractThird{
         thirdLog.info("result is {}", JSONObject.toJSONString(result));
         return JSONObject.toJSONString(result);
     }
+    
+    @RequestMapping(value = { "/getDidiRiskInfo" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getDidiRiskInfo(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        thirdLog.info("getDidiRiskInfo begin requestData = {}", requestData);
+        JSONObject requestParams = JSON.parseObject(requestData);
 
-    private AppResponse checkSignAndParam(Map<String, String> params) {
+        Map<String, String> params = buildDidiRiskParam(requestParams);
+
         AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
-        if (StringUtils.isEmpty(params.get(ThirdCore.ORDER_ID)) || StringUtils.isEmpty(params.get(ThirdCore.PLANT_FORM)) || StringUtils.isEmpty(params.get(ThirdCore.AMOUNT))
-                || StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP)) || StringUtils.isEmpty(params.get(ThirdCore.USER_ID))) {
-            throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+        try {
+            result = checkSignAndParam(params,"getDidiRiskInfo");
+            String orderId = params.get(ThirdCore.ORDER_ID);
+            String type = params.get(ThirdCore.TYPE);
+            Long userId = NumberUtil.objToLongDefault(params.get(ThirdCore.USER_ID), null);
+            BoluomeGetDidiRiskInfoRespBo respInfo = boluomeService.getRiskInfo(orderId, type, userId);
+            result.setData(respInfo);
+        } catch (FanbeiException e) {
+        	logger.error("getDidiRiskInfo failed : {}", e);
+            result = new AppResponse(e.getErrorCode());
+        } catch (Exception e) {
+        	logger.error("getDidiRiskInfo failed : {}", e);
+            result = new AppResponse(FanbeiExceptionCode.SYSTEM_ERROR);
         }
+        thirdLog.info("result is {}", JSONObject.toJSONString(result));
+        return JSONObject.toJSONString(result);
+    }
+    
+    private AppResponse checkSignAndParam(Map<String, String> params, String method) {
+        AppResponse result = new AppResponse(FanbeiExceptionCode.SUCCESS);
+    	if ("orderRefund".equals(method) && (StringUtils.isEmpty(params.get(ThirdCore.ORDER_ID)) || StringUtils.isEmpty(params.get(ThirdCore.PLANT_FORM)) || StringUtils.isEmpty(params.get(ThirdCore.AMOUNT))
+    			|| StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP)) || StringUtils.isEmpty(params.get(ThirdCore.USER_ID)))) {
+    		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+    	}
+    	if ("getDidiRiskInfo".equals(method) && (StringUtils.isEmpty(params.get(ThirdCore.TIME_STAMP))
+    		    || StringUtils.isEmpty(params.get(ThirdCore.SIGN))
+    		    || StringUtils.isEmpty(params.get(ThirdCore.USER_ID))
+    			)) {
+    		throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+    	}
         boolean sign = ThirdNotify.verify(params);
         if (!sign) {
             throw new FanbeiException(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
@@ -119,6 +158,24 @@ public class ThirdController extends AbstractThird{
         params.put(ThirdCore.AMOUNT, amount);
         params.put(ThirdCore.REFUND_NO, refundNo);
         params.put(ThirdCore.REFUND_SOURCE, refundSource);
+        return params;
+    }
+    
+    private Map<String, String> buildDidiRiskParam(JSONObject requestParams) {
+        Map<String, String> params = new HashMap<String, String>();
+        String appKey = ConfigProperties.get(Constants.CONFKEY_THIRD_BOLUOME_APPKEY);
+        String orderId = requestParams.getString(ThirdCore.ORDER_ID);
+        String timestamp = requestParams.getString(ThirdCore.TIME_STAMP);
+        String sign = requestParams.getString(ThirdCore.SIGN);
+        String type = requestParams.getString(ThirdCore.TYPE);
+        String userId = requestParams.getString(ThirdCore.USER_ID);
+
+        params.put(ThirdCore.APP_KEY, appKey);
+        params.put(ThirdCore.ORDER_ID, orderId);
+        params.put(ThirdCore.TIME_STAMP, timestamp);
+        params.put(ThirdCore.SIGN, sign);
+        params.put(ThirdCore.TYPE, type);
+        params.put(ThirdCore.USER_ID, userId);
         return params;
     }
 

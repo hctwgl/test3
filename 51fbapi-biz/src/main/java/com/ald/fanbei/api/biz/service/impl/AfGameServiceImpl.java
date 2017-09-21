@@ -20,15 +20,15 @@ public class AfGameServiceImpl implements AfGameService {
 	
 	@Override
 	public AfGameDo getByCode(String code) {
-		String cacheKey = Constants.CACHEKEY_GAME_INFO + code;
-		AfGameDo gameInfo = (AfGameDo)bizCacheUtil.getObject(cacheKey);
-		if(gameInfo != null){
-			return gameInfo;
-		}
-		gameInfo = afGameDao.getByCode(code);
-		if(gameInfo != null){
-			bizCacheUtil.saveObject(cacheKey, gameInfo);;
-		}
+//		String cacheKey = Constants.CACHEKEY_GAME_INFO + code;
+//		AfGameDo gameInfo = (AfGameDo)bizCacheUtil.getObject(cacheKey);
+//		if(gameInfo != null){
+//			return gameInfo;
+//		}
+		AfGameDo gameInfo = afGameDao.getByCode(code);
+//		if(gameInfo != null){
+//			bizCacheUtil.saveObject(cacheKey, gameInfo);;
+//		}
 		return gameInfo;
 	}
 
