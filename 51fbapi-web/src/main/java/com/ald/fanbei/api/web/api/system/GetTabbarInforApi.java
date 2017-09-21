@@ -71,9 +71,11 @@ public class GetTabbarInforApi implements ApiHandle {
 				index.put("brandSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "STAGING_NOMAL")){
+				handleIosStaging(context,requestDataVo,data,resourceInfo);
 				index.put("stagingNomal", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "STAGING_SELECTED")){
+				handleIosStaging(context,requestDataVo,data,resourceInfo);
 				index.put("stagingSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "MAIN_NOMAL")){
@@ -134,6 +136,37 @@ public class GetTabbarInforApi implements ApiHandle {
         		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
         	}
         }
+	}
+
+	private void handleIosStaging(FanbeiContext context,RequestDataVo requestDataVo,Map<String, Object> data,AfResourceDo resourceInfo) {
+
+		Map<String, Object> params = requestDataVo.getParams();
+		String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
+		if (resourceInfo == null) {
+			data.put("title", "分期");
+		}
+		//需要打开为了审核的相关版本
+		//VALUE是为了IOS审核
+		if(requestDataVo.getId().startsWith("i")) {
+			String iosCheckVersion = resourceInfo.getValue();
+			if (StringUtils.isBlank(iosCheckVersion)) {
+				data.put("title", "分期");
+			} else {
+				List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
+				CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+				data.put("title", array.contains(desVersion) ? "服务" : "分期");
+			}
+		} else {
+			//VALUE2是为了Android审核
+			String androidCheckVersion = resourceInfo.getValue2();
+			if (StringUtils.isBlank(androidCheckVersion)) {
+				data.put("title", "分期");
+			} else {
+				List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
+				CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
+				data.put("title", array.contains(desVersion) ? "服务" : "分期");
+			}
+		}
 	}
 	
 	/**
