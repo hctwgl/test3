@@ -115,6 +115,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Resource
 	RedisTemplate redisTemplate;
 
+	@Resource
+	AfRepaymentDetalDao afRepaymentDetalDao;
+
 	public Map<String,Object> createRepaymentYiBao(BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
 												   BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp,
@@ -363,7 +366,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					
 					//还款成功同步逾期订单
 					dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
-					
+
+					AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(repayment.getRid(),1);
+					if(afRepaymentDetalDo !=null){
+						//回写返利
+						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+						afUserAccountDo.setRebateAmount(afRepaymentDetalDo.getAmount());
+						afUserAccountDo.setUserId(repayment.getUserId());
+						afUserAccountDao.updateRebateAmount(afUserAccountDo);
+						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT_OUT, afRepaymentDetalDo.getAmount(), repayment.getUserId(), repayment.getRid()));
+					}
+
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();

@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,18 +56,10 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
-import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
-import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 
 
 @Controller
@@ -793,12 +786,25 @@ public class TestController {
 
 	@Resource
 	AfYibaoOrderDao afYiBaoOrderDao;
-
+	@Resource
+	private AfRepaymentDetalDao afRepaymentDetalDao;
 	/**
 	 *
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
+
+		AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(10,1);
+		AfRepaymentDetalDo afRepaymentDetalDo1 = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(12,1);
+
+
+//		AfRepaymentDetalDo afRepaymentDetalDo = new AfRepaymentDetalDo();
+//		long refId = 10l;
+//		afRepaymentDetalDo.setRepaymentId(refId);
+//		afRepaymentDetalDo.setAmount(BigDecimal.ZERO);
+//		afRepaymentDetalDo.setTotalAmount(BigDecimal.ZERO);
+//		afRepaymentDetalDao.addRepaymentDetal(afRepaymentDetalDo);
+
 		boolean a = isOut(2017,9);
 		boolean b =isOut(2017,10);
 		boolean c =isOut(2017,8);

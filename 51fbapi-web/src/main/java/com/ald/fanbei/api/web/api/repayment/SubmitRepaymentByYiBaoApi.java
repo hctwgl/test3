@@ -9,10 +9,8 @@ import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.dao.AfRepaymentDetalDao;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -57,6 +55,9 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 
     @Resource
     private AfResourceService afResourceService;
+
+    @Resource
+    private AfRepaymentDetalDao afRepaymentDetalDao;
 
 
     @Override
@@ -212,18 +213,16 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             cardId =-2L;
         }
 
-
-
-        Map<String, Object> map;
+        Map<String, Object> map = new HashMap<>();
         if (cardId == -2) {//余额支付
-            map = afRepaymentService.createRepayment(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
+            map = afRepaymentService.createRepayment(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
                     cardId, userId, billDo, "", afUserAccountDo);
             resp.addResponseData("refId", map.get("refId"));
             resp.addResponseData("type", map.get("type"));
         } else if (cardId == -1) {
             //微信支付
             if (wxDo != null && wxDo.getValue().toLowerCase().equals("true")) {
-                map = afRepaymentService.createRepaymentYiBao(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, "", afUserAccountDo);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
@@ -235,7 +234,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
         } else if (cardId == -3) {
             if (zfbDo != null && zfbDo.getValue().toLowerCase().equals("true")) {
                 //支付宝
-                map = afRepaymentService.createRepaymentYiBao(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
                         cardId, userId, billDo, "", afUserAccountDo);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
@@ -250,7 +249,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             if (null == card) {
                 throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
             }
-            map = afRepaymentService.createRepayment(jfbAmount, allRepaymentAmount, showAmount, coupon, rebateAmount, billIds,
+            map = afRepaymentService.createRepayment(jfbAmount, repaymentAmount, showAmount, coupon, rebateAmount, billIds,
                     cardId, userId, billDo, request.getRemoteAddr(), afUserAccountDo);
             //代收
             UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
@@ -265,6 +264,19 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             newMap.put("type", map.get("type"));
             resp.setResponseData(newMap);
         }
+
+        // 返写到返现里的钱
+        if(allRepaymentAmount.compareTo(repaymentAmount)>0){
+            BigDecimal bd = allRepaymentAmount.subtract(repaymentAmount);
+            AfRepaymentDetalDo afRepaymentDetalDo = new AfRepaymentDetalDo();
+            long refId = (Long)(map.get("refId"));
+            afRepaymentDetalDo.setRepaymentId(refId);
+            afRepaymentDetalDo.setTotalAmount(allRepaymentAmount);
+            afRepaymentDetalDo.setAmount(bd);
+            afRepaymentDetalDao.addRepaymentDetal(afRepaymentDetalDo);
+        }
+
+
         return resp;
     }
 
