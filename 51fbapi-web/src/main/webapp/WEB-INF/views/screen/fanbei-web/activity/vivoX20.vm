@@ -19,7 +19,7 @@
         <div class="firstCont" v-for="item in content.secondList" @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-            <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>
+            #*<p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>*#
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
             <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
             <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供<span>{{item.nperMap.amount}}</span>元起</p>
@@ -31,7 +31,7 @@
         <div class="secondCont" v-for="item in content.thirdList" @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-            <p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>
+            #*<p class="goodDes" v-if="item.remark!=undefined&&item.remark!=''" style="-webkit-box-orient: vertical;">{{item.remark}}</p>*#
             <p><span class="nowPrice">￥{{item.saleAmount}}</span><span class="originPrice">原价:￥{{item.priceAmount}}</span></p>
             <div style="padding-left:.17rem;">
                 <p class="fanMoney">返<span>{{item.rebateAmount}}</span>元</p>
