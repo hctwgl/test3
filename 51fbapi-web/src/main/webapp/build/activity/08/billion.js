@@ -254,10 +254,7 @@ var vm = new Vue({
             var year = new Date(nowTime).getFullYear();//服务器当前年
             var month = new Date(nowTime).getMonth() + 1;//服务器当前月
             var activeDaY = new Date(nowTime).getDate();//服务器当前日
-            var hourObj = document.getElementById("hour");
-            var minuteObj = document.getElementById("minute");
-            var secondObj = document.getElementById("second");
-
+            //超过10点
             if (hour > 10 || startDay == activeDaY) {
                 activeDaY += 1;
             } 
