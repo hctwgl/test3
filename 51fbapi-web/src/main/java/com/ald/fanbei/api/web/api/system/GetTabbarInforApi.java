@@ -71,7 +71,7 @@ public class GetTabbarInforApi implements ApiHandle {
 				index.put("brandSelected", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "STAGING_NOMAL")){
-				handleIosStaging(context,requestDataVo,data,resourceInfo);
+					handleIosStaging(context,requestDataVo,data,resourceInfo);
 				index.put("stagingNomal", data);
 			}
 			if(StringUtils.equals(afResourceDo.getSecType(), "STAGING_SELECTED")){
