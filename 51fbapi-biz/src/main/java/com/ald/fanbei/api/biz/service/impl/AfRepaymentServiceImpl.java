@@ -142,7 +142,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				return Long.parseLong(source);
 			}
 		});
-		if(cardId==-1 && cardId ==-3){//微信支付 或 支付宝
+		if(cardId==-1 || cardId ==-3){//微信支付 或 支付宝
 			afRepaymentDao.addRepayment(repayment);
 			//修改账单状态
 			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
