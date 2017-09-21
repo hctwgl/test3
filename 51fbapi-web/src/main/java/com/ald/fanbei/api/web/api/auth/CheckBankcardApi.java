@@ -123,6 +123,9 @@ public class CheckBankcardApi implements ApiHandle {
 			AfUserLoginLogDo loginInfo = afUserLoginLogService.getUserLastLoginInfo(userName);
 			uuid = loginInfo.getUuid();
 		}
+		if(ipAddress == null || StringUtil.isEmpty(ipAddress)) {
+			ipAddress = "0";
+		}
 		AfUserBankDidiRiskDo didiInfo = BuildInfoUtil.buildUserBankDidiRiskInfo(ipAddress, lat, lng, context.getUserId(), bankId, uuid, wifiMac);
 		afUserBankDidiRiskService.saveRecord(didiInfo);
 		
