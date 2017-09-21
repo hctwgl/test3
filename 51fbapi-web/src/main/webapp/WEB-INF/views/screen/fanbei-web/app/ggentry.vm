@@ -17,7 +17,7 @@
 				<div class="t1">无门槛优惠券</div>
 				<div class="t2">逛逛专区通用</div>
 				<img src="http://f.51fanbei.com/h5/app/activity/09/gg2.png" />
-				<div class="button">立即领取</div>
+				<div class="button unpending">立即领取</div>
 			</div>
 			<div class="trades">
 				<div class="trade ele">

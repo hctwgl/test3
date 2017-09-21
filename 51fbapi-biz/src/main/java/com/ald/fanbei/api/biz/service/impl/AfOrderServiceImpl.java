@@ -1285,6 +1285,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					}
 					return resultMap;
 				} catch (FanbeiException exception) {
+					status.setRollbackOnly();
 					logger.error("payBrandOrder faied e = {}", exception);
 					throw new FanbeiException("bank card pay error", exception.getErrorCode());
 				} catch (Exception e) {
@@ -1657,6 +1658,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					logger.info("dealBrandOrderRefund comlete");
 					return 1;
 				} catch (FanbeiException e) {
+					status.setRollbackOnly();
 					logger.error("dealBrandOrderRefund error = {}", e);
 					return 0;
 				} catch (Exception e) {
