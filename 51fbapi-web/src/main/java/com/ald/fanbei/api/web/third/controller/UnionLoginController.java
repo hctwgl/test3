@@ -244,6 +244,7 @@ public class UnionLoginController extends BaseController {
         jsonResultObject.put("message", "成功");
         jsonResultObject.put("status", "1");
         jsonResultObject.put("code", "0");
+        logger.info("返回 url 地址:"+returnUrl);
         jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
         jsonResultObject.put("data", jsonObject);
         return jsonResultObject;
