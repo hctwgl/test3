@@ -73,7 +73,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		String Time = (String) bizCacheUtil.getObject("Start_Time");
 		String winAmount = (String) bizCacheUtil.getObject("winAmount");
 		if (winAmount == null) {
-			bizCacheUtil.saveObject("winAmount", resource.getValue1(), 60 * 60 * 24 * 10);
+			bizCacheUtil.saveObject("winAmount", 600+"", 60 * 60 * 24 * 10);
 			winAmount = "600";
 		}
 		if (StringUtil.isBlank(Time)) {
@@ -173,7 +173,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 			// List<String> list1 = afBorrowCashService.getNotRandomUser(users);// 得到当天未中奖用户id
 			// List<String> list2 = afUserService.getUserNameByUserId(list1); //得到未中奖用户user_name
 
-			List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);// 得到中奖用户id
+			//List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);// 得到中奖用户id
+			List<String> users=null;
 			if (users != null && users.size() > 0) {
 				List<String> userNames = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_userName"), String.class);// 得到中奖用户user_name
 				List<String> list2 = JSONArray.parseArray((String) bizCacheUtil.getObject("Not_Win_User_userName"), String.class);// 得到未中奖用户user_name
@@ -208,7 +209,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 				int amount = Integer.parseInt(winAmount);
 				if (amount < 1100) {
 					try {
-						afUserAccountService.updateBorrowCashActivity(amount, users);
+						afUserAccountService.updateBorrowCashActivity(1, users);
 						// 传给前端一个开奖金额
 						String winamount = (String) bizCacheUtil.getObject("winAmount");
 						bizCacheUtil.saveObject("winAmount", Integer.parseInt(winamount) + 100 + "", 60 * 60 * 24 * 10);
@@ -222,7 +223,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 					try {
 						Map<String, Object> map = new HashMap();
 						map.put(winAmount, jsonString);
-						bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 7);
+						bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 10);
 					} catch (Exception e) {
 						logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
 					}
@@ -232,7 +233,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 					Map<String, Object> map = new HashMap();
 					map = JSONObject.parseObject(userJson);
 					map.put(winAmount, jsonString);
-					bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 7);
+					bizCacheUtil.saveObject("winAmount_Win_User", JsonUtil.toJSONString(map), 60 * 60 * 24 * 10);
 				} catch (Exception e) {
 					logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
 				}
@@ -251,13 +252,19 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getWinUser() {
-		String users = null;
+		//bizCacheUtil.delCache("winAmount");
+		//bizCacheUtil.delCache("winAmount_Win_User");
+		//bizCacheUtil.delCache("BorrowCash_Sum_Amount");
+		List<String> users = JSONArray.parseArray((String) bizCacheUtil.getObject("Win_User_Id"), String.class);
+		
+		/*String users = null;
 		try {
 			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
 		} catch (Exception e) {
 			logger.info("getWinUser redis get is fail" + e);
 		}
-		return users;
+		return users;*/
+		return JsonUtil.toJSONString(users);
 	}
 
 	@RequestMapping(value = "/getBillionWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")

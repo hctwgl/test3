@@ -78,7 +78,6 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Resource
 	JpushService jpushService;
 
-
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -86,13 +85,13 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		return afBorrowCashDao.addBorrowCash(afBorrowCashDo);
 	}
 
-
 	/**
 	 * 借款成功
+	 * 
 	 * @param afBorrowCashDo
 	 * @return
 	 */
-	public int borrowSuccess(final AfBorrowCashDo afBorrowCashDo){
+	public int borrowSuccess(final AfBorrowCashDo afBorrowCashDo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
@@ -104,62 +103,63 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 				afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
-				
+
 				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
-				logger.info("updateRecommendUser="+ rr);
+				logger.info("updateRecommendUser=" + rr);
 				logger.info("borrowSuccess--end");
-	                //fmf 借钱抽奖活动借款金额加入缓存
-	                BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
-	                if(amount.compareTo(new BigDecimal(1500000000)) == -1 || amount.compareTo(new BigDecimal(1500000000)) == 0) {
-	                    amount=amount.add(afBorrowCashDo.getAmount());
-	                    if(amount.compareTo(new BigDecimal(1500000000)) == 1){
-	                        List<String> users=new ArrayList<String>();
-	                        users.add(afBorrowCashDo.getUserId()+"");
-	                        List<String> userName = afUserService.getUserNameByUserId(users);
-	                        //发送短信
-	                        try{
-	                            smsUtil.sendBorrowCashActivitys(userName.get(0),"恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回T退订");
-	                        }catch(Exception e){
-	                            logger.info("sendBorrowCashActivitys Billion_Win_User is fail,"+e);
-	                        }
-	                        //推送消息
-	                        try{
-	                            jpushService.pushBorrowCashActivitys(userName.get(0), "10000","One");
-	                        }catch(Exception e){
-	                            logger.info("pushBorrowCashActivitys Billion_Win_User is fail,"+e);
-	                        }
-	                        // 给用户账号打钱
-	                        afUserAccountService.updateBorrowCashActivity(10000, users);
-	                        //af_user_account_log添加记录
-	                        AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
-	                        userAccountLog.setAmount(afBorrowCashDo.getAmount());
-	                        userAccountLog.setUserId(afBorrowCashDo.getUserId());
-	                        userAccountLog.setType("borrow_Activitys");
-	                        userAccountLog.setRefId(" ");
-	                        try{
-	                            afUserAccountLogDao.addUserAccountLog(userAccountLog);
-	                        }catch(Exception e){
-	                            throw new FanbeiException("addUserAccountLog "+afBorrowCashDo.getUserId()+" is fail,"+e);
-	                        }
-	                        //保存破十亿中奖用户
-	                        bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60*60*24*7);
-	                    } 
-						bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
-	                }
-	                bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
+				// fmf 借钱抽奖活动借款金额加入缓存
+				BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
+				if (amount.compareTo(new BigDecimal(1500000000)) == -1 || amount.compareTo(new BigDecimal(1500000000)) == 0) {
+					amount = amount.add(afBorrowCashDo.getAmount());
+					if (amount.compareTo(new BigDecimal(1500000000)) == 1) {
+						logger.info("1500000000 is win");
+						List<String> users = new ArrayList<String>();
+						users.add(afBorrowCashDo.getUserId() + "");
+						List<String> userName = afUserService.getUserNameByUserId(users);
+						// 发送短信
+						try {
+							smsUtil.sendBorrowCashActivitys(userName.get(0), "恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回T退订");
+						} catch (Exception e) {
+							logger.info("sendBorrowCashActivitys Billion_Win_User is fail," + e);
+						}
+						// 推送消息
+						try {
+							jpushService.pushBorrowCashActivitys(userName.get(0), "10000", "One");
+						} catch (Exception e) {
+							logger.info("pushBorrowCashActivitys Billion_Win_User is fail," + e);
+						}
+						// 给用户账号打钱
+						afUserAccountService.updateBorrowCashActivity(10000, users);
+						// af_user_account_log添加记录
+						AfUserAccountLogDo userAccountLog = new AfUserAccountLogDo();
+						userAccountLog.setAmount(afBorrowCashDo.getAmount());
+						userAccountLog.setUserId(afBorrowCashDo.getUserId());
+						userAccountLog.setType("borrow_Activitys");
+						userAccountLog.setRefId(" ");
+						try {
+							afUserAccountLogDao.addUserAccountLog(userAccountLog);
+						} catch (Exception e) {
+							throw new FanbeiException("addUserAccountLog " + afBorrowCashDo.getUserId() + " is fail," + e);
+						}
+						// 保存破十亿中奖用户
+						bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60 * 60 * 24 * 7);
+					}
+					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
+				} else {
+					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
+				}
 				return 1;
 			}
 		});
 	}
-
 
 	@Override
 	public int updateBorrowCash(final AfBorrowCashDo afBorrowCashDo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
-				 afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
-				 return 1;
+				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+				return 1;
 			}
 		});
 
@@ -242,11 +242,12 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public List<String> getBorrowedUserIds() {
 		return afBorrowCashDao.getBorrowedUserIds();
 	}
+
 	@Override
 	public BigDecimal getBorrowCashSumAmount() {
 		return afBorrowCashDao.getBorrowCashSumAmount();
 	}
-	
+
 	@Override
 	public List<String> getRandomUser() {
 		return afBorrowCashDao.getRandomUser();
