@@ -17,7 +17,20 @@
     #elseif( $!{style}==14 )
         <img src="$commonUrl/channel7_01.jpg">
     #elseif( $!{style}==17 )
-        <img src="$commonUrl/channel17_0001.png">
+        <img src="$commonUrl/reg1.jpg">
+        <marquee behavior="scroll" direction="up" scrollamount="1" bgcolor="transparent" class="mar17">
+            <p>用户131****8880 成功借款 8000元</p>
+            <p>用户137****9767 成功借款 6000元</p>
+            <p>用户186****2099 成功借款 7000元</p>
+            <p>用户178****3863 成功借款 6000元</p>
+            <p>用户187****9793 成功借款 4000元</p>
+            <p>用户176****0389 成功借款 6000元</p>
+            <p>用户157****3696 成功借款 5000元</p>
+            <p>用户183****7197 成功借款 4000元</p>
+            <p>用户137****0925 成功借款 7000元</p>
+            <p>用户135****5276 成功借款 3000元</p>
+            <p>用户187****0576 成功借款 6000元</p>
+        </marquee>
     #elseif( $!{style}==19 )
         <img src="$commonUrl/channel19_01.png">
     #elseif( $!{style}==20  )
@@ -39,7 +52,7 @@
         #elseif( $!{style}==15 || $!{style}==16 )
             <img src="$commonUrl/channel15_02.png">
         #elseif( $!{style}==17)
-            <img src="$commonUrl/channel17_002.png">
+            <img src="$commonUrl/reg2.jpg">
         #elseif( $!{style}==19 || $!{style}==20 || $!{style}==21 || $!{style}==23 )
             <img src="$commonUrl/channel17_02.jpg">
         #else
@@ -110,7 +123,7 @@
                     <p class="clearfix"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a></p>
                 #end
             </div>
-            #if( $!{style}==1 || $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23)
+            #if( $!{style}==1 || $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23)
                 <p class="clearfix" style="width: 3.0rem; margin: 0.2rem auto 0; color: #fff; font-size: 0.3rem;">
                     #if( $!{style}==17)
                         <span style="float:left;margin-right:0.1rem;color:#949494;">已注册用户</span>
@@ -131,6 +144,7 @@
             #end
         </ul>
     </div>
+
     <div class="registerMask hide"></div>
     #if( $!{style}==4 || $!{style}==13 )
         <img src="$commonUrl/channel$!{style}_03.jpg">
@@ -177,38 +191,43 @@
         </div>
         <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
     </div>
-    <div class="channelRegister_copyright
-			#if( $!{style}==2 || $!{style}==4 )
-				copyright2
-			#elseif( $!{style}==7 || $!{style}==11 || $!{style}==14 )
-				copyright7
-            #elseif( $!{style}==15 || $!{style}==16 )
-				copyright15
-            #elseif( $!{style}==10 )
-				copyright10
-			#elseif( $!{style}==1 ||  $!{style}==19 || $!{style}==20 || $!{style}==21 )
-			    copyright19
-			#elseif( $!{style}==18 )
-				hide
-			#elseif( $!{style}==22 )
-			    copyright22
-			#elseif( $!{style}==23)
-			    copyright23
-			#else
-				copyright$!{style}
-			#end
-		">
-        版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
-        #if( $!{style}==10 )
-            881939188
+    #if( $!{style}==17 )
+        <img src="$commonUrl/reg3.jpg">
+        <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
+    #else
+        <div class="channelRegister_copyright
+                #if( $!{style}==2 || $!{style}==4 )
+                    copyright2
+                #elseif( $!{style}==7 || $!{style}==11 || $!{style}==14 )
+                    copyright7
+                #elseif( $!{style}==15 || $!{style}==16 )
+                    copyright15
+                #elseif( $!{style}==10 )
+                    copyright10
+                #elseif( $!{style}==1 ||  $!{style}==19 || $!{style}==20 || $!{style}==21 )
+                    copyright19
+                #elseif( $!{style}==18 )
+                    hide
+                #elseif( $!{style}==22 )
+                    copyright22
+                #elseif( $!{style}==23)
+                    copyright23
+                #else
+                    copyright$!{style}
+                #end
+            ">
+            版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
+            #if( $!{style}==10 )
+                881939188
+            #end
+            <br>
+            #if( $!{style}==2 || $!{style}==7 )
+                浙ICP备16001312号-3
+            #elseif( $!{style}==23 )
+                京ICP备16006674号-1  理财有风险，投资需谨慎，放款时间、金额因个人情况而不同
+            #end
+        </div>
         #end
-        <br>
-        #if( $!{style}==2 || $!{style}==7 )
-            浙ICP备16001312号-3
-        #elseif( $!{style}==23 )
-            京ICP备16006674号-1  理财有风险，投资需谨慎，放款时间、金额因个人情况而不同
-        #end
-    </div>
 </div>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>

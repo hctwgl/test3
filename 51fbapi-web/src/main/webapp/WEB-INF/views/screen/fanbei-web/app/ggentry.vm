@@ -17,7 +17,7 @@
 				<div class="t1">无门槛优惠券</div>
 				<div class="t2">逛逛专区通用</div>
 				<img src="http://f.51fanbei.com/h5/app/activity/09/gg2.png" />
-				<div class="button">立即领取</div>
+				<div class="button unpending">立即领取</div>
 			</div>
 			<div class="trades">
 				<div class="trade ele">
@@ -58,7 +58,7 @@
 				<ul>
 					<li>
 						<p>1</p>
-						<p>此红包可与商家优惠同时享用；</p>
+						<p>该通用券可与商家优惠同时享用<span>（注：因消费场景的特殊性，携程酒店、鲜花预定、西十区暂不能使用此券）；</span></p>
 					</li>
 					<li>
 						<p>2</p>
