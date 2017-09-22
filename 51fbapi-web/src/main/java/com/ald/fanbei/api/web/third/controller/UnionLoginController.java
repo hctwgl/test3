@@ -143,7 +143,10 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("msg", "");
             String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
             if("https".equals(request.getScheme())){
-                returnUrl.replace("http:","https:");
+                returnUrl=returnUrl.replace("http:","https:");
+            }
+            if(returnUrl.indexOf("https")==-1){
+                returnUrl=returnUrl.replace("http:","https:");
             }
             jsonResult.put("apply_url", returnUrl);
         } catch (Exception e) {
@@ -195,7 +198,10 @@ public class UnionLoginController extends BaseController {
         String token = UserUtil.generateToken(mobile);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
         if("https".equals(request.getScheme())){
-            returnUrl.replace("http:","https:");
+            returnUrl=returnUrl.replace("http:","https:");
+        }
+        if(returnUrl.indexOf("https")==-1){
+            returnUrl=returnUrl.replace("http:","https:");
         }
         jsonResult.put("apply_url", returnUrl);
         return jsonResult;
@@ -253,7 +259,10 @@ public class UnionLoginController extends BaseController {
         String token = UserUtil.generateToken(mobileDec);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
         if("https".equals(request.getScheme())){
-            returnUrl.replace("http:","https:");
+            returnUrl=returnUrl.replace("http:","https:");
+        }
+        if(returnUrl.indexOf("https")==-1){
+            returnUrl=returnUrl.replace("http:","https:");
         }
         JSONObject jsonResultObject = new JSONObject();
         jsonResultObject.put("message", "成功");
@@ -329,7 +338,10 @@ public class UnionLoginController extends BaseController {
             jsonResultObject.put("code", "0");
             jsonObject.put("user_state", is_new_user);
             if("https".equals(request.getScheme())){
-                returnUrl.replace("http:","https:");
+                returnUrl=returnUrl.replace("http:","https:");
+            }
+            if(returnUrl.indexOf("https")==-1){
+                returnUrl=returnUrl.replace("http:","https:");
             }
             jsonObject.put("return_url", returnUrl);
             jsonResultObject.put("data", jsonObject);
