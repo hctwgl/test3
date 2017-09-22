@@ -81,4 +81,17 @@ public class AfGoodsPriceVo extends AbstractSerial {
 	private BigDecimal actualAmount;
 	private String isSale;
 
+    /**
+     * 库存
+     */
+    private Integer stock;
+
+	public Integer getStock() {
+		return stock;
+	}
+
+	public void setStock(Integer stock) {
+		this.stock = stock;
+	}
+    
 }
