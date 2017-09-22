@@ -6,6 +6,8 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.dal.dao.AfValidationLogDao;
+import com.ald.fanbei.api.dal.domain.AfValidationLogDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
+import java.util.List;
+
 /**
  * @类描述：
  * @author suweili 2017年2月16日下午7:09:36
@@ -37,7 +41,8 @@ public class ChangeMobileApi implements ApiHandle {
 	
 	@Resource
 	SmsUtil smsUtil;
-
+	@Resource
+	AfValidationLogDao afValidationLogDao;
 
 	/**
 	 * 点击更换手机号码，先检查用户是否有资格(24小时之内支付密码或者身份证验证超过5次错误)
@@ -48,19 +53,31 @@ public class ChangeMobileApi implements ApiHandle {
 	 */
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		  ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-			Long userId = context.getUserId();
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+		Long userId = context.getUserId();
 
-	        String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
-	        String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
-	        String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
-	        //先检查用户是否有资格(24小时之内支付密码或者身份证验证超过5次错误)
+		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
+		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
+		String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
+		//先检查用户是否有资格(24小时之内支付密码或者身份证验证超过3次错误)
+		boolean flag = true;
+		AfValidationLogDo afValidationLogDo = new AfValidationLogDo();
+		//检查密码支付错误是否有连续3次
+		afValidationLogDo.setType("1");
+		afValidationLogDo.setUserId(userId);
+		List<AfValidationLogDo> passwordList = afValidationLogDao.selectByUserId(afValidationLogDo);
+		if(passwordList != null && passwordList.size()>0){
+			int count = 0;
+			for(int i=0;passwordList.size()<i;i++){
+				String result = passwordList.get(i).getResult();
+			}
+		}
+		//检查身份证错误是否有连续3次
+		afValidationLogDo.setType("2");
+		List<AfValidationLogDo> idList = afValidationLogDao.selectByUserId(afValidationLogDo);
 
 
-
-
-
-			//跳转下个页面
+		//跳转下个页面
 
 
 
