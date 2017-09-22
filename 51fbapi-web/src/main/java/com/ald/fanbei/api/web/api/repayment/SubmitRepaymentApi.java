@@ -155,7 +155,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 		
 		Map<String,Object> map;
 		if(cardId==-2){//余额支付
-			map = afRepaymentService.createRepayment(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
+			map = afRepaymentService.createRepayment(repaymentAmount, jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds,
 					cardId,userId,billDo,"",afUserAccountDo);
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
@@ -169,7 +169,7 @@ public class SubmitRepaymentApi implements ApiHandle{
 			if(null == card){
 				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afRepaymentService.createRepayment(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, 
+			map = afRepaymentService.createRepayment(repaymentAmount, jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds,
 					cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
 			//代收
 			UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

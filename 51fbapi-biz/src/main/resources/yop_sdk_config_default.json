@@ -10,8 +10,8 @@
     {
       "store_type": "file_p12",
       "cert_type": "RSA2048",
-      "password": "51fangbeiok",
-      "value": "/10015398796.p12"
+      "password": "123456",
+      "value": "/10000466938.p12"
     }
   ],
   "default_protocol_version": "yop-auth-v2",
