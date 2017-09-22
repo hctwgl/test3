@@ -230,12 +230,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 					return map;
 				}catch (Exception e){
 					if(e instanceof FanbeiException){
-						logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
+						logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo);
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
+						return map;
 					}else{
 						logger.error("createRepayment exist error,need rollback,payTradeNo="+payTradeNo, e);
 						status.setRollbackOnly();
+						throw e;
 					}
-					throw e;
 				}
 			}
 		});
@@ -311,11 +314,14 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				}catch (Exception e){
 					if(e instanceof FanbeiException){
 						logger.error("createRepaymentYiBao exist catch error,donot need rollback,payTradeNo="+payTradeNo, e);
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
+						return map;
 					}else{
 						logger.error("createRepaymentYiBao exist error,need rollback,payTradeNo="+payTradeNo, e);
 						status.setRollbackOnly();
+						throw e;
 					}
-					throw e;
 				}
 			}
 		});
