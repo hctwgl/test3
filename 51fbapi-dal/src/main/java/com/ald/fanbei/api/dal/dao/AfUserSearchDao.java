@@ -21,7 +21,7 @@ public interface AfUserSearchDao {
     */
     int addUserSearch(AfUserSearchDo afUserSearchDo);
 
-	List<AfUserSearchDo> getHistoryByUserId(@Param("userId") Long userId);
+	List<String> getHistoryByUserId(@Param("userId") Long userId);
 
 	void deleteHistory(@Param("userId")Long userId);
 }

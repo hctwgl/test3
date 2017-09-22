@@ -53,12 +53,7 @@ public class GetSearchHomeApi implements ApiHandle {
 		Long userId = context.getUserId();
 		List<String> historyList = new ArrayList<>(); 
 		if ( userId != null) {
-			List<AfUserSearchDo> historysList = afUserSearchService.getHistoryByUserId(userId);
-			if (historysList != null && historysList.size() >0) {
-				for(AfUserSearchDo searchDo :historysList){
-					historyList.add(searchDo.getKeyword()) ;
-				}
-			}
+			historyList = afUserSearchService.getHistoryByUserId(userId);
 		}
 	
 		data.put("historyList", historyList);

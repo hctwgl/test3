@@ -28,7 +28,7 @@ public class AfUserSearchServiceImpl implements AfUserSearchService{
 	}
 
 	@Override
-	public List<AfUserSearchDo> getHistoryByUserId(Long userId) {
+	public List<String> getHistoryByUserId(Long userId) {
 		
 		return afUserSearchDao.getHistoryByUserId(userId);
 	}

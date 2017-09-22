@@ -19,7 +19,7 @@ public interface AfUserSearchService {
     */
     int addUserSearch(AfUserSearchDo afUserSearchDo);
 
-	List<AfUserSearchDo> getHistoryByUserId(Long userId);
+	List<String> getHistoryByUserId(Long userId);
 
 	void deleteHistory(Long userId);
 }
