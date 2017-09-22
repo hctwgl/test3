@@ -142,6 +142,9 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("is_new_user", String.valueOf(is_new_user));
             jsonResult.put("msg", "");
             String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+            if("https".equals(request.getScheme())){
+                returnUrl.replace("http://","https://");
+            }
             jsonResult.put("apply_url", returnUrl);
         } catch (Exception e) {
             thirdLog.error("jdqLogin error:", e);
