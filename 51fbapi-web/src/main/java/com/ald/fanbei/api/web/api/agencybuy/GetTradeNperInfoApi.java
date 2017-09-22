@@ -49,23 +49,27 @@ public class GetTradeNperInfoApi implements ApiHandle {
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 1l);
         Map<String, Object> params = requestDataVo.getParams();
         BigDecimal amount = NumberUtil.objToBigDecimalDefault(params.get("amount"), BigDecimal.ZERO);
-
-        //获取借款分期配置信息
-        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
-        JSONArray array = JSON.parseArray(resource.getValue());
-        AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(businessId);
-        String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
         //region 没有配置就采用默认值
         JSONArray rebateModels =new JSONArray();
         //#endregion
-        if (StringUtils.isNotBlank(configRebateModel)) {
-            try{
-                rebateModels=JSON.parseArray(configRebateModel);
-            }catch (Exception e){
-                logger.info( "GetTradeNperInfoApi process error",e.getCause());
-            }
+        if( context.getAppVersion()>390){
+            AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(businessId);
+            String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
+            if (StringUtils.isNotBlank(configRebateModel)) {
+                try{
+                    rebateModels=JSON.parseArray(configRebateModel);
+                }catch (Exception e){
+                    logger.info( "GetTradeNperInfoApi process error",e.getCause());
+                }
 
+            }
         }
+        //获取借款分期配置信息
+        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
+        JSONArray array = JSON.parseArray(resource.getValue());
+
+
+
 
         List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array,  rebateModels, BigDecimal.ONE.intValue(),
                 amount, resource.getValue1(), resource.getValue2());
