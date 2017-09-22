@@ -92,6 +92,7 @@ public class ZhimaUtil extends AbstractThird {
 			if(StringUtil.isBlank(result)){
 				throw new FanbeiException("zhima auth error",FanbeiExceptionCode.ZM_AUTH_ERROR);
 			}
+			thirdLog.info(StringUtil.appendStrs("decryptAndVerifySign:"+result));
 			String[] resultFields = result.split("&");
 			for(String item:resultFields){
 				if(StringUtil.isNotBlank(item)){

@@ -354,4 +354,9 @@ public class Constants {
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 
+	//联合登陆相关 现金超人
+	public static final String UNIONLOGIN_XJCR_SECRET = "fbapi.unionlogin.xjcr.secret";
+	//联合登陆相关 借点钱
+	public static final String UNIONLOGIN_JDQ_SECRET = "fbapi.unionlogin.jdq.secret";
+
 }
