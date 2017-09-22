@@ -363,6 +363,8 @@
 
 				<!--订单物流信息相关-->
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
+				<!--分期广告位-->
+				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
 			</map>
 		</constructor-arg>
 	</bean>
