@@ -224,9 +224,9 @@ public class FanBeiSecret {
     public static void main(String[] args) throws Exception {
 
 
-        String secret_key = "GSA41SA757CCDG97"; //加密签名通用秘钥
-        String phone = "15990182307";
-        String channel = "DkwU";
+        String secret_key = "2SA4WGA857FFCC23"; //加密签名通用秘钥
+        String phone = "15990182388";
+        String channel = "QwEr";
 
 
         byte[] phoneAesEncodeByte = encode(secret_key, phone);
