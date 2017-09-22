@@ -64,20 +64,20 @@ public class ToutiaoController extends BaseController {
             String idfa = ObjectUtils.toString(request.getParameter("idfa"), null);
             //String udid = ObjectUtils.toString(request.getParameter("udid"), null);
             //String os = ObjectUtils.toString(request.getParameter("os"), null);
-            String callbackUrl = ObjectUtils.toString(request.getParameter("callback_url"), null);
+            //String callbackUrl = ObjectUtils.toString(request.getParameter("callback_url"), null);
 
             if(StringUtil.isNotEmpty(imei)||StringUtil.isNotEmpty(androidid)||StringUtil.isNotEmpty(idfa)){
-                Map<String, Object> map = buildParamMap(request);
-                AfUserToutiaoDo afUserToutiaoDo = (AfUserToutiaoDo)map.get("afUserToutiaoDo");
                 AfUserToutiaoDo tdo = afUserToutiaoService.getUser(imei,androidid,idfa);
                 if(tdo==null){
-                    afUserToutiaoService.creatUser(afUserToutiaoDo);
-                    logger.error("toutiaoresult:creat success:"+afUserToutiaoDo.toString());
+                    Map<String, Object> map = buildParamMap(request);
+                    tdo = (AfUserToutiaoDo)map.get("afUserToutiaoDo");
+                    afUserToutiaoService.creatUser(tdo);
+                    logger.error("toutiaoresult:creat success:"+tdo.toString());
                 }else{
                     //int active = tdo.getActive();
                     Long rid = tdo.getRid();
                     afUserToutiaoService.uptUser(rid);
-                    logger.error("toutiaoresult:update success"+afUserToutiaoDo.toString());
+                    logger.error("toutiaoresult:update success"+tdo.toString());
                     /*if(active!=0){
                         String result= HttpUtil.doGet(callbackUrl,20);
                         logger.error("toutiaoresult:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
@@ -98,7 +98,7 @@ public class ToutiaoController extends BaseController {
             return returnjson;
         }
 
-        returnjson.put("ret",1);
+        returnjson.put("ret",0);
         returnjson.put("msg","success");
         return returnjson;
     }
@@ -122,7 +122,16 @@ public class ToutiaoController extends BaseController {
         String ip = ObjectUtils.toString(request.getParameter("ip"), null);
         String timeStamp = ObjectUtils.toString(request.getParameter("timestamp"), null);
         String callbackUrl = ObjectUtils.toString(request.getParameter("callback_url"), null);
-
+        if(StringUtil.isNotEmpty(callbackUrl)){
+            if(callbackUrl.indexOf("&event_type")==-1){
+                callbackUrl+="&event_type=1";
+            }
+            if(os!=null){
+                if(callbackUrl.indexOf("&os")==-1){
+                    callbackUrl = callbackUrl + "&os=" + os;
+                }
+            }
+        }
         AfUserToutiaoDo afUserToutiaoDo = new AfUserToutiaoDo();
         afUserToutiaoDo.setAid(aid);
         afUserToutiaoDo.setCid(cid);
