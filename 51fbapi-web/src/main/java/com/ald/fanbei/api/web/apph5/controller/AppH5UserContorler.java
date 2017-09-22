@@ -172,13 +172,6 @@ public class AppH5UserContorler extends BaseController {
 			String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
 			String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
 
-			try {
-				tongdunUtil.getPromotionSmsResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
-			} catch (Exception e) {
-				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
-				return resp.toString();
-			}
-
 			AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
 
 			if (afUserDo != null) {
@@ -202,6 +195,15 @@ public class AppH5UserContorler extends BaseController {
 			}
 			bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
 
+
+			try {
+				tongdunUtil.getPromotionSmsResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
+			} catch (Exception e) {
+				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
+				return resp.toString();
+			}
+
+			
 			boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
 			if (!resultReg) {
 				resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null);
