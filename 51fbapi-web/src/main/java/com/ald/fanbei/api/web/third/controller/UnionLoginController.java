@@ -143,7 +143,7 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("msg", "");
             String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
             if("https".equals(request.getScheme())){
-                returnUrl.replace("http://","https://");
+                returnUrl.replace("http:","https:");
             }
             jsonResult.put("apply_url", returnUrl);
         } catch (Exception e) {
@@ -194,6 +194,9 @@ public class UnionLoginController extends BaseController {
         afUnionLoginLogService.addLog(fanbeiChannelCode, mobile, paramsJsonStr);
         String token = UserUtil.generateToken(mobile);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+        if("https".equals(request.getScheme())){
+            returnUrl.replace("http:","https:");
+        }
         jsonResult.put("apply_url", returnUrl);
         return jsonResult;
     }
@@ -249,10 +252,14 @@ public class UnionLoginController extends BaseController {
         int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
         String token = UserUtil.generateToken(mobileDec);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
+        if("https".equals(request.getScheme())){
+            returnUrl.replace("http:","https:");
+        }
         JSONObject jsonResultObject = new JSONObject();
         jsonResultObject.put("message", "成功");
         jsonResultObject.put("status", "1");
         jsonResultObject.put("code", "0");
+
         logger.info("返回 url 地址:" + returnUrl);
         jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
         jsonResultObject.put("data", jsonObject);
@@ -321,6 +328,9 @@ public class UnionLoginController extends BaseController {
             jsonResultObject.put("msg", "成功");
             jsonResultObject.put("code", "0");
             jsonObject.put("user_state", is_new_user);
+            if("https".equals(request.getScheme())){
+                returnUrl.replace("http:","https:");
+            }
             jsonObject.put("return_url", returnUrl);
             jsonResultObject.put("data", jsonObject);
             return jsonResultObject;
