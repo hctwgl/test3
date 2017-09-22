@@ -82,10 +82,9 @@ let vue=new Vue({
                 }
             }
         },
-        go(state){       //大图按钮
-            alert('跳转');
-            if(state=='true'){
-                window.location='/fanbei-web/opennative?name=BORROW_MONEY'
+        go(){       //大图按钮
+            if(this.content.canClick){
+                window.location.href='/fanbei-web/opennative?name=BORROW_MONEY'
             }
         },
         receive(){     //领取按钮

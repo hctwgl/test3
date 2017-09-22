@@ -14,7 +14,7 @@
             <li class="day" @click="prize(data.day)" :class="data.style" v-for="data of day"><img :src="'$commonUrl/borrowDetails'+data.img"><p>{{data.txt}}</p></li>
         </ul>
     </div>
-    <div class="btn" @click="go(content.canClick)">{{content.buttonString}}</div>
+    <div class="btn" @click="go()">{{content.buttonString}}</div>
     <p><i></i>活动规则<i></i></p>
     <ul class="rule">
         <li>1、签到1天： 5元红包</li>
