@@ -55,12 +55,7 @@ public class ChangeMobileApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-
-		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
-		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
-		String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
 		//先检查用户是否有资格(24小时之内支付密码或者身份证验证超过3次错误)
-		boolean flag = true;
 		AfValidationLogDo afValidationLogDo = new AfValidationLogDo();
 		//检查密码支付错误是否有连续3次
 		afValidationLogDo.setType("1");
@@ -70,39 +65,39 @@ public class ChangeMobileApi implements ApiHandle {
 			int count = 0;
 			for(int i=0;passwordList.size()<i;i++){
 				String result = passwordList.get(i).getResult();
+				if("false".equals(result)){
+					count += 1;
+					if(count>=3){
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WRONG_PASSWORD_ENTERED_MORE_THAN_THREE_TIMES);
+					}
+				}else{
+					count = 0;
+				}
 			}
 		}
 		//检查身份证错误是否有连续3次
 		afValidationLogDo.setType("2");
 		List<AfValidationLogDo> idList = afValidationLogDao.selectByUserId(afValidationLogDo);
-
+		if(idList != null && idList.size()>0){
+			int count = 0;
+			for(int i=0;idList.size()<i;i++){
+				String result = idList.get(i).getResult();
+				if("false".equals(result)){
+					count += 1;
+					if(count>=3){
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ENTER_AN_IDENTITY_CARD_ERROR_MORE_THAN_THREE_TIMES);
+					}
+				}else{
+					count = 0;
+				}
+			}
+		}
 
 		//跳转下个页面
-
-
-
-
-
-
-
-
-	        if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(mobile)){
-	        	logger.error("changeMobile verifyCode or mobile is empty verifyCode = " + verifyCode + " mobile = " + mobile);
-	        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
-	        }
-	        AfUserDo userDo = afUserService.getUserByUserName(userName);
-	        //验证原手机验证码
-	        smsUtil.checkSmsByMobileAndType(userDo.getMobile(),verifyCode, SmsType.MOBILE_BIND);
-	        AfUserDo afUserDo = new AfUserDo();
-			afUserDo.setRid(userId);
-			afUserDo.setMobile(mobile);
-			afUserDo.setUserName(context.getUserName());
-			if (afUserService.updateUser(afUserDo) > 0) {
-				return resp;
-			}
-			
-			throw new FanbeiException("change Mobile  info failed", FanbeiExceptionCode.SYSTEM_ERROR);
-
+		return resp;
 	}
+
+
+
 
 }

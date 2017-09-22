@@ -25,7 +25,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SYSTEM_REPAIRING_ERROR("SYSTEM_REPAIRING_ERROR",1010,"system repairing","系统维护中"),
     REQUEST_PARAM_ILLEGAL ("REQUEST_PARAM_ILLEGAL", 1011, "request param illegal", "请求参数不合法"),
     REQUEST_PARAM_TOKEN_TIMEOUT("REQUEST_PARAM_TOKEN_ERROR", 1141, "token is invalid", "您的登录已超时, 请重新登录"),
-    
+    WRONG_PASSWORD_ENTERED_MORE_THAN_THREE_TIMES("WRONG_PASSWORD_ENTERED_MORE_THAN_THREE_TIMES",1204,"Wrong password entered more than three times","输入密码错误超过三次"),
+    ENTER_AN_IDENTITY_CARD_ERROR_MORE_THAN_THREE_TIMES("ENTER_AN_IDENTITY_CARD_ERROR_MORE_THAN_THREE_TIMES",1203,"ENTER AN IDENTITY CARD ERROR MORE THAN THREE TIMES","输入身份证错误超过三次"),
     // user mode code from 1100 - 1199
     USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"), 
     USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1015,"user not exist error","用户不存在"),
