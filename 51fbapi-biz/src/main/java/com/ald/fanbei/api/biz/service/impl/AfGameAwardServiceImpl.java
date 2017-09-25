@@ -11,6 +11,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.CouponType;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,16 +31,6 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfCouponDao;
-import com.ald.fanbei.api.dal.dao.AfGameAwardDao;
-import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
-import com.ald.fanbei.api.dal.domain.AfGameConfDo;
-import com.ald.fanbei.api.dal.domain.AfGameDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfGameConfCompleteDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -51,7 +44,10 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Service("afGameAwardService")
 public class AfGameAwardServiceImpl implements AfGameAwardService {
-
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfUserAccountDao afUserAccountDao;
 	@Resource
 	AfGameAwardDao afGameAwardDao;
 	@Resource
@@ -124,6 +120,21 @@ public class AfGameAwardServiceImpl implements AfGameAwardService {
 					if("BOLUOMI".equals(prize.getType())){
 						Map<String,Object> data = new HashMap<String, Object>();
 						grantBoluomiCoupon(Long.valueOf(prize.getPrizeId()),data,user.getRid());
+					}else if(CouponType.CASH.getCode().equals(prize.getType())){
+						Long couponId = Long.valueOf(prize.getPrizeId());
+						AfCouponDo couponDo = afCouponDao.getCouponById(couponId);
+						AfUserAccountDo accountDo = new AfUserAccountDo();
+						accountDo.setUserId(user.getRid());
+						accountDo.setRebateAmount(couponDo.getAmount());
+						int count = afUserAccountDao.updateUserAccount(accountDo);
+						if(count > 0){
+							AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+							accountLog.setAmount(couponDo.getAmount());
+							accountLog.setType(prize.getType());
+							accountLog.setRefId(gameDo.getRid().toString());
+							accountLog.setUserId(user.getRid());
+							afUserAccountLogDao.addUserAccountLog(accountLog);
+						}
 					}else{
 						Long couponId = Long.valueOf(prize.getPrizeId());
 						AfCouponDo couponDo = afCouponDao.getCouponById(couponId);
