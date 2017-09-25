@@ -51,8 +51,18 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         String label = ObjectUtils.toString(requestDataVo.getParams().get("label"), null);
+        String osType = ObjectUtils.toString(request.getHeader("osType"), null);
+
+        Integer systemType=3;
+        if(StringUtil.isNotEmpty(osType)){
+            if(StringUtil.equals("iOS",osType)){
+                systemType=1;
+            }else if(StringUtil.equals("Android",osType)){
+                systemType=2;
+            }
+        }
         List<AfLoanSupermarketDto> afLoanSupermarketDtoList = new ArrayList<AfLoanSupermarketDto>();
-        List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(label);
+        List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType);
         HashMap<String,String> hashMap = new HashMap<String,String>();
         for(int n=0;n<sourceSupermarketList.size();n++){
             AfLoanSupermarketDto afLoanSupermarketDto = getDto(sourceSupermarketList.get(n));

@@ -125,7 +125,7 @@
         SELECT
         <include refid="queryFields" />
         FROM af_ad_instalments
-        WHERE is_delete = 0 AND status = '1'
+        WHERE is_delete = 0 AND status = '1'  ORDER BY gmt_modified DESC
         LIMIT 0,1
     </select>
 
