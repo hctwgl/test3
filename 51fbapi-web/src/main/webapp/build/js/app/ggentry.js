@@ -40,12 +40,14 @@ window.onload = () => {
 
       sceneId = data.data.boluomeCouponList[0].sceneId
       if(data.data.boluomeCouponList[0].isHas == 'Y') {
-        $('.coupon .button').addClass('grey')
+        $('.coupon .button').text('立即前往').addClass('ishas')
+      } else {
+        $('.coupon .button').text('立即领取').removeClass('ishas')
       }
 
       $('.coupon .button.unpending')
       .click(function () {
-        if($(this).hasClass('unpending')) {
+        if($(this).hasClass('unpending') && !$(this).hasClass('ishas')) {
           $('.coupon .button.unpending').removeClass('unpending')
           $.ajax({
             url: '/fanbei-web/pickBoluomeCouponV1',
@@ -66,7 +68,9 @@ window.onload = () => {
               
                     sceneId = data.data.boluomeCouponList[0].sceneId
                     if(data.data.boluomeCouponList[0].isHas == 'Y') {
-                      $('.coupon .button').addClass('grey')
+                      $('.coupon .button').text('立即前往').addClass('ishas')
+                    } else {
+                      $('.coupon .button').text('立即领取').removeClass('ishas')
                     }
               
                   }
@@ -84,6 +88,8 @@ window.onload = () => {
               $('.coupon .button').addClass('unpending')
             }
           });
+        } else if($(this).hasClass('ishas')){
+          location.href = '/fanbei-web/opennative?name=JUMP_BOLUOMI_PAGE'
         }
       });
 
