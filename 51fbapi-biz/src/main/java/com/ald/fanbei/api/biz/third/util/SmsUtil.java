@@ -55,7 +55,7 @@ public class SmsUtil extends AbstractThird {
     private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册51返呗，请在30分钟内完成注册";
     private static String LOGIN_TEMPLATE = "验证码:&param1,您正在确认登录，30分钟内输入有效。";
     private static String FORGET_TEMPLATE = "验证码为:&param1;您正在找回51返呗的账户密码，请在30分钟内完成";
-    private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗绑定手机号，请在30分钟内完成";
+    private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗更换手机号，请在30分钟内完成";
     private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
     private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
     private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在51返呗。回复td退订";
