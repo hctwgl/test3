@@ -156,7 +156,8 @@ public class AppH5UserContorler extends BaseController {
 			logger.error("h5 getImgCode is error", e);
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.toString()).toString();
 		} finally {
-			doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("mobile"));
+			//日志超长
+			//doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("mobile"));
 		}
 	}
 
