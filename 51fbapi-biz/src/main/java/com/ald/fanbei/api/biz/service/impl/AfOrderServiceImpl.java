@@ -2040,4 +2040,19 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return orderDao.getStatusByGoodsAndUserId(goodsId, userId);
 	}
 
+	@Override
+	public void syncOrderInfo(String orderId, String plantform, AfOrderDo orderInfo) {
+	 // 订单补偿
+	    String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderId;
+	    Object lockValue = bizCacheUtil.getObject(lockKey);
+	    if (lockValue == null) {
+		bizCacheUtil.saveObject(lockKey, "", 600);
+		//验证订单是否已经存在
+		AfOrderDo existOrderDo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
+		if (existOrderDo == null)
+		    afOrderService.createOrder(orderInfo);
+	    }
+	    
+	}
+
 }
