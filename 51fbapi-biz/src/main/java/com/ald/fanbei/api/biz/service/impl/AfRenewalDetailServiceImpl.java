@@ -203,7 +203,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 				return 1L;
 			}
 			else{
-				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),3);
+				if(status.equals("N")) {
+					afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
+				}
 			}
 		}
 
