@@ -198,6 +198,9 @@
 				<entry key="/good/getPayTypeList" value-ref="getPayTypeListApi" />
 				<entry key="/goods/getGoodsInfoByNumId" value-ref="getGoodsInfoByNumIdApi" />
 				<entry key ="/goods/getGoodsSpec" value-ref="getGoodsSpecApi"></entry>
+				<entry key="/bill/getBillDetailList" value-ref="getBillDetailListApi"/>
+				<entry key="/bill/getRepayMentAmountByMonth" value-ref="getRepayMentAmountByMonthApi"/>
+				<entry key="/repay/getRepaymentConfirmInfoV1" value-ref="getRepaymentConfirmInfoV1Api"/>
 
 
 				<!-- 订单Order -->

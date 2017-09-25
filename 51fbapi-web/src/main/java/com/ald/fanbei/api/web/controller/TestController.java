@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -50,12 +51,6 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.Converter;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -556,7 +551,7 @@ public class TestController {
 
 
 
-	@RequestMapping(value = { "/testJPush" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testJPush" })
 	@ResponseBody
 	public String testJPush(HttpServletRequest request, HttpServletResponse response) {
 		PrintWriter out = null;
@@ -574,7 +569,7 @@ public class TestController {
 		return "success";
 	}
 	
-	@RequestMapping(value = { "/testAllJPush" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/testAllJPush"})
 	@ResponseBody
 	public String testAllJPush(HttpServletRequest request, HttpServletResponse response) {
 		PrintWriter out = null;
@@ -794,8 +789,24 @@ public class TestController {
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
 
-		AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(10,1);
-		AfRepaymentDetalDo afRepaymentDetalDo1 = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(12,1);
+		Date repayDate = afBorrowService.getReyLimitDate("C",new Date());
+		Map<String,Integer> map22 = afBorrowService.getCurrentTermYearAndMonth("C",new Date());
+
+
+		List<AfBorrowBillDo> list = afBorrowService.getBorrowBillList("N",13989456104l);
+
+
+
+		HashMap map = new HashMap();
+		map.put("billList",getListByStatus(list,1));
+		map.put("billList",getListByStatus(list,2));
+		map.put("billList",getListByStatus(list,3));
+
+
+
+
+//		AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(10,1);
+//		AfRepaymentDetalDo afRepaymentDetalDo1 = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(12,1);
 
 
 //		AfRepaymentDetalDo afRepaymentDetalDo = new AfRepaymentDetalDo();
@@ -805,10 +816,10 @@ public class TestController {
 //		afRepaymentDetalDo.setTotalAmount(BigDecimal.ZERO);
 //		afRepaymentDetalDao.addRepaymentDetal(afRepaymentDetalDo);
 
-		boolean a = isOut(2017,9);
-		boolean b =isOut(2017,10);
-		boolean c =isOut(2017,8);
-		boolean d =isOut(2016,12);
+//		boolean a = isOut(2017,9);
+//		boolean b =isOut(2017,10);
+//		boolean c =isOut(2017,8);
+//		boolean d =isOut(2016,12);
 		//Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
 //		String e ="";
 
@@ -825,6 +836,64 @@ public class TestController {
 //		afRepaymentBorrowCashService.createRepaymentYiBao(BigDecimal.ZERO,BigDecimal.ONE,BigDecimal.TEN,null,null,null,null,null,null,null);
 	}
 
+
+	private List<HashMap> getListByStatus(List<AfBorrowBillDo> list,int status){
+		List<HashMap> _list = new ArrayList<HashMap>();
+		for(AfBorrowBillDo afBorrowBillDo : list){
+			HashMap map = getBillByStatus(afBorrowBillDo,status);
+			if(map !=null && map.size()>0){
+				_list.add(map);
+			}
+		}
+		return _list;
+	}
+
+	/**
+	 *
+	 * @param afBorrowDo
+	 * @param status  1 己出，2 逾期，3 未出
+	 * @return
+	 */
+	private HashMap getBillByStatus(AfBorrowBillDo afBorrowBillDo,int status){
+		HashMap map = new HashMap();
+		if(status ==1){
+			if(afBorrowBillDo.getOverdueStatus().equals("Y")){
+				return map;
+			}
+			if(isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
+				map.put("date",date);
+				map.put("name",afBorrowBillDo.getName());
+				map.put("totalAmount",afBorrowBillDo.getBillAmount());
+			}
+			return map;
+		}
+		else if(status ==2){
+			if(afBorrowBillDo.getOverdueStatus().equals("Y")){
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
+				map.put("date",date);
+				map.put("name",afBorrowBillDo.getName());
+				map.put("totalAmount",afBorrowBillDo.getBillAmount());
+			}
+			return map;
+		}
+		else if (status ==3){
+			if(!isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
+				map.put("date",date);
+				map.put("name",afBorrowBillDo.getName());
+				map.put("totalAmount",afBorrowBillDo.getBillAmount());
+			}
+			return map;
+		}
+		return map;
+	}
+
+
+
 	private boolean isOut(int year,int month){
 		Date  d = new Date();
 		Calendar c1 = Calendar.getInstance();
@@ -839,5 +908,8 @@ public class TestController {
 		boolean flag = c1.getTime().before(d);
 		return flag;
 	}
+
+
+
 	
 }
