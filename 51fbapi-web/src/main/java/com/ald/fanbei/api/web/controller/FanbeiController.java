@@ -118,7 +118,8 @@ public class FanbeiController extends BaseController {
     		"/borrow/getCashConfirmInfo","/borrow/applyCash","/borrow/getBorrowHomeInfo","/borrow/getConsumeConfirmInfo","/borrow/applyConsume",
     		"/bill/getMyBillHomeInfo","/bill/getMyBillList","/bill/getBillDetailList","/bill/getBillDetailInfo","/repay/getRepaymentConfirmInfo",
             "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo","/borrow/getOtherPayWay"
-            ,"/borrow/getRepaymentInfo","/borrow/submitRepaymentByYiBao","/bill/getBillDetailList","/bill/getRepayMentAmountByMonth","/repay/getRepaymentConfirmInfoV1"
+            ,"/borrow/getRepaymentInfo","/borrow/submitRepaymentByYiBao","/bill/getRepayMentAmountByMonth","/repay/getRepaymentConfirmInfoV1"
+            ,"/bill/getBillListByStatus"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{

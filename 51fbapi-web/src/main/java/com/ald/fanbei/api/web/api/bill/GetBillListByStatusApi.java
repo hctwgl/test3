@@ -34,9 +34,12 @@ public class GetBillListByStatusApi implements ApiHandle {
         //Integer status = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("status")), 1);  //1 己出，2逾期，3 未出
         List<AfBorrowBillDo> list = afBorrowService.getBorrowBillList("N",userId);
         HashMap map = new HashMap();
-        map.put("billList1",getListByStatus(list,1));   //未还，本期
-        map.put("billList2",getListByStatus(list,2));   //逾期
-        map.put("billList3",getListByStatus(list,3));   //未出
+        List<HashMap> billList1 = getListByStatus(list,1);
+        List<HashMap> billList2 = getListByStatus(list,2);
+        List<HashMap> billList3 = getListByStatus(list,3);
+        map.put("billList1",billList1);   //未还，本期
+        map.put("billList2",billList2);   //逾期
+        map.put("billList3",billList3);   //未出
         //map.put("needPay",needPayAmount(list));
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -60,9 +63,22 @@ public class GetBillListByStatusApi implements ApiHandle {
         }
         map.put("billList4",mapY);
 
+        map.put("msg1","未还款帐单共"+billList1.size()+"笔,￥"+getAmount(billList1));
+        map.put("msg2","逾期未还款帐单共"+billList2.size()+"笔,￥"+getAmount(billList2));
+        map.put("msg3","未出帐单共"+billList3.size()+"笔,￥"+getAmount(billList3));
+        map.put("msg4","已还款帐单共"+mapY.size()+"笔,￥"+getAmount(mapY));
+
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         resp.setResponseData(map);
         return resp;
+    }
+
+    private BigDecimal getAmount(List<HashMap> list){
+        BigDecimal ret = BigDecimal.ZERO;
+        for(HashMap map :list){
+            ret =  ret.add((BigDecimal) map.get("totalAmount"));
+        }
+        return ret;
     }
 
 
