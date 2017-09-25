@@ -1,0 +1,110 @@
+package com.ald.fanbei.api.web.api.user;
+
+
+import com.ald.fanbei.api.biz.service.AfSmsRecordService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.SmsType;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
+
+/**
+ * 
+ * @类描述：
+ * @author chefeipeng 2017年9月25日下午1:49:07
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
+@Component("changeCheckVerifyCode")
+public class ChangeCheckVerifyCodeApi implements ApiHandle {
+
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfSmsRecordService afSmsRecordService;
+	@Resource
+	SmsUtil smsUtil;
+	@Resource
+    BizCacheUtil bizCacheUtil;
+    @Resource
+    AfUserAuthService afUserAuthService;
+    @Resource
+    AfUserService afUserService;
+    @Override
+    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+        Map<String, Object> data = new HashMap<String, Object>();
+        String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
+        String userName = context.getUserName();
+        Long userId = context.getUserId();
+        String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
+        String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
+
+        if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(type) || SmsType.findByCode(type) == null){
+        	logger.error("verifyCode or type is empty verifyCode = " + verifyCode + " type = " + type);
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
+        }
+        AfSmsRecordDo afSmsRecordDo = afSmsRecordService.getLatestByMobileCode(userName,verifyCode);
+
+        if (afSmsRecordDo == null) {
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
+        }
+        //验证图片验证码
+        String imageCode = ObjectUtils.toString(requestDataVo.getParams().get("imageCode"));
+        if(StringUtil.isNotEmpty(imageCode)) {
+            String id = requestDataVo.getId().split("_")[1];
+            Object value = bizCacheUtil.getObject(id);
+            if(value != null) {
+                bizCacheUtil.delCache(id);
+                String realCode = value.toString();
+                if(!realCode.equalsIgnoreCase(imageCode)) {
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR);
+                }
+            }
+            else {
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_IMAGE_NOTEXIST);
+            }
+        }
+
+        smsUtil.checkSmsByMobileAndType(userName, verifyCode,SmsType.findByCode(type));
+        //是否实名
+        AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        if(null != afUserAuthDo){
+            if("Y".equals(afUserAuthDo.getRealnameStatus())){
+                data.put("realnameStatus", "Y");
+            }else{
+                data.put("realnameStatus", "N");
+            }
+        }else{
+            data.put("realnameStatus", "N");
+        }
+        //新手机是否被注册
+        AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
+        if(null != afUserDo){
+            data.put("isMember", "Y");
+        }else{
+            data.put("isMember", "N");
+        }
+        resp.setResponseData(data);
+        return resp;
+    }
+    
+
+}
