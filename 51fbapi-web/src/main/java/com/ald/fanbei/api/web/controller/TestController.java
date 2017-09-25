@@ -789,18 +789,21 @@ public class TestController {
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
 
-		Date repayDate = afBorrowService.getReyLimitDate("C",new Date());
-		Map<String,Integer> map22 = afBorrowService.getCurrentTermYearAndMonth("C",new Date());
+		Map aaa = yiBaoUtility.getYiBaoOrder("xj20170925150926247561","1001201709250000000018962175");
+		String e = "";
+
+//		Date repayDate = afBorrowService.getReyLimitDate("C",new Date());
+//		Map<String,Integer> map22 = afBorrowService.getCurrentTermYearAndMonth("C",new Date());
+//
+//
+//		List<AfBorrowBillDo> list = afBorrowService.getBorrowBillList("N",13989456104l);
 
 
-		List<AfBorrowBillDo> list = afBorrowService.getBorrowBillList("N",13989456104l);
-
-
-
-		HashMap map = new HashMap();
-		map.put("billList",getListByStatus(list,1));
-		map.put("billList",getListByStatus(list,2));
-		map.put("billList",getListByStatus(list,3));
+//
+//		HashMap map = new HashMap();
+//		map.put("billList",getListByStatus(list,1));
+//		map.put("billList",getListByStatus(list,2));
+//		map.put("billList",getListByStatus(list,3));
 
 
 

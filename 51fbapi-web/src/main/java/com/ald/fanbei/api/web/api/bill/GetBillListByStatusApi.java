@@ -34,9 +34,9 @@ public class GetBillListByStatusApi implements ApiHandle {
         //Integer status = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("status")), 1);  //1 己出，2逾期，3 未出
         List<AfBorrowBillDo> list = afBorrowService.getBorrowBillList("N",userId);
         HashMap map = new HashMap();
-        map.put("billList1",getListByStatus(list,1));
-        map.put("billList2",getListByStatus(list,2));
-        map.put("billList3",getListByStatus(list,3));
+        map.put("billList1",getListByStatus(list,1));   //未还，本期
+        map.put("billList2",getListByStatus(list,2));   //逾期
+        map.put("billList3",getListByStatus(list,3));   //未出
         //map.put("needPay",needPayAmount(list));
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -59,8 +59,6 @@ public class GetBillListByStatusApi implements ApiHandle {
 
         }
         map.put("billList4",mapY);
-
-
 
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         resp.setResponseData(map);
@@ -139,6 +137,13 @@ public class GetBillListByStatusApi implements ApiHandle {
         return map;
     }
 
+
+    /**
+     * 判断是否是已出帐单
+     * @param year
+     * @param month
+     * @return
+     */
     private boolean isOut(int year,int month){
         month = month +1;
         if(month>12){
