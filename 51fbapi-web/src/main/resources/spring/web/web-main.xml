@@ -97,6 +97,7 @@
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
 				<value>/user/checkLoginVerifyCode</value>
+				<value>/user/changeCheckVerifyCode</value>
 				<value>/goods/getHomeInfo</value>
 				<value>/goods/getHomeInfoV1</value>
 				<value>/good/getSearchHome</value>

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.user;
 
 
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -12,6 +13,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -34,9 +36,6 @@ import java.util.Map;
  */
 @Component("changeCheckVerifyCode")
 public class ChangeCheckVerifyCodeApi implements ApiHandle {
-
-	@Resource
-	AfUserService afUserService;
 	@Resource
 	AfSmsRecordService afSmsRecordService;
 	@Resource
@@ -47,6 +46,8 @@ public class ChangeCheckVerifyCodeApi implements ApiHandle {
     AfUserAuthService afUserAuthService;
     @Resource
     AfUserService afUserService;
+    @Resource
+    AfUserAccountService afUserAccountService;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -94,6 +95,17 @@ public class ChangeCheckVerifyCodeApi implements ApiHandle {
             }
         }else{
             data.put("realnameStatus", "N");
+        }
+        //是否有支付密码
+        AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+        if(null != afUserAccountDo){
+            if(!StringUtil.isEmpty(afUserAccountDo.getPassword())){
+                data.put("passwordStatus", "Y");
+            }else{
+                data.put("passwordStatus", "N");
+            }
+        }else{
+            data.put("passwordStatus", "N");
         }
         //新手机是否被注册
         AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
