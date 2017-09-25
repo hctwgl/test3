@@ -40,7 +40,7 @@ window.onload = () => {
 
       sceneId = data.data.boluomeCouponList[0].sceneId
       if(data.data.boluomeCouponList[0].isHas == 'Y') {
-        $('.coupon .button').text('立即前往').addClass('ishas')
+        $('.coupon .button').text('立即使用').addClass('ishas')
       } else {
         $('.coupon .button').text('立即领取').removeClass('ishas')
       }
@@ -68,7 +68,7 @@ window.onload = () => {
               
                     sceneId = data.data.boluomeCouponList[0].sceneId
                     if(data.data.boluomeCouponList[0].isHas == 'Y') {
-                      $('.coupon .button').text('立即前往').addClass('ishas')
+                      $('.coupon .button').text('立即使用').addClass('ishas')
                     } else {
                       $('.coupon .button').text('立即领取').removeClass('ishas')
                     }
