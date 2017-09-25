@@ -29,6 +29,7 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 	private Integer status;
 	private Integer isDelete;
 	private String marketPoint;
+	private int isUnionLogin;
 	
 	public AfLoanSupermarketDo() {
 		super();
@@ -140,4 +141,11 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 		this.isDelete = isDelete;
 	}
 
+	public int getIsUnionLogin() {
+		return isUnionLogin;
+	}
+
+	public void setIsUnionLogin(int isUnionLogin) {
+		this.isUnionLogin = isUnionLogin;
+	}
 }
