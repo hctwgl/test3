@@ -285,4 +285,14 @@ public interface AfOrderService {
 	
 	List<AfOrderDo> getStatusByGoodsAndUserId(long goodsId,long userId);
 	
+	/**
+	 * 订单补偿
+	 * @author gaojb
+	 * @Time 2017年9月25日 下午4:40:28
+	 * @param orderId
+	 * @param plantform
+	 * @param orderInfo
+	 */
+    void syncOrderInfo(String orderId, String plantform, AfOrderDo orderInfo);
+	
 }
