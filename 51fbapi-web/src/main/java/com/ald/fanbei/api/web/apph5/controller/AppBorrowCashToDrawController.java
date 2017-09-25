@@ -73,9 +73,16 @@ public class AppBorrowCashToDrawController extends BaseController {
 		String Time = (String) bizCacheUtil.getObject("Start_Time");
 		String winAmount = (String) bizCacheUtil.getObject("winAmount");
 		if (winAmount == null) {
-			bizCacheUtil.saveObject("winAmount", resource.getValue1(), 60 * 60 * 24 * 2);
+			bizCacheUtil.saveObject("winAmount", resource.getValue1(), 60 * 60 * 24 * 10);
 			winAmount = resource.getValue1();
 		}
+		Map<String, String>  Amount = new HashMap<String, String>();
+		int amount = Integer.parseInt(winAmount);
+		Amount.put("Amount1",amount+"");
+		Amount.put("Amount2",(amount+100)+"");
+		Amount.put("Amount3",(amount+200)+"");
+		Amount.put("Amount4",(amount+300)+"");
+		Amount.put("Amount5",(amount+400)+"");
 		if (StringUtil.isBlank(Time)) {
 			Date date1 = null;
 			try {
@@ -105,26 +112,13 @@ public class AppBorrowCashToDrawController extends BaseController {
 				date.put("dates", resource.getValue());
 				bizCacheUtil.saveObject("Start_Time", JsonUtil.toJSONString(date), 60 * 60 * 24 * 7);
 				model.addAllAttributes(date);
+				
 			}
-			Map<String, String>  Amount = new HashMap<String, String>();
-			int amount = Integer.parseInt(winAmount);
-			Amount.put("Amount1",amount+"");
-			Amount.put("Amount2",(amount+100)+"");
-			Amount.put("Amount3",(amount+200)+"");
-			Amount.put("Amount4",(amount+300)+"");
-			Amount.put("Amount5",(amount+400)+"");
 			model.addAllAttributes(Amount);
 			model.addAttribute("winAmount", winAmount);
 			model.addAttribute("winAmounts", Integer.parseInt(winAmount) - 100);
 			return "fanbei-web/activity/billion";
 		}
-		Map<String, String>  Amount = new HashMap<String, String>();
-		int amount = Integer.parseInt(winAmount);
-		Amount.put("Amount1",amount+"");
-		Amount.put("Amount2",(amount+100)+"");
-		Amount.put("Amount3",(amount+200)+"");
-		Amount.put("Amount4",(amount+300)+"");
-		Amount.put("Amount5",(amount+400)+"");
 		Map<String, String> date = JSONObject.parseObject(Time, Map.class);
 		model.addAllAttributes(Amount);
 		model.addAllAttributes(date);
@@ -267,9 +261,6 @@ public class AppBorrowCashToDrawController extends BaseController {
 	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getWinUser() {
-		bizCacheUtil.delCache("Start_Time");
-		//bizCacheUtil.delCache("winAmount_Win_User");
-		//bizCacheUtil.delCache("BorrowCash_Sum_Amount");
 		String users = null;
 		try {
 			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
@@ -291,6 +282,17 @@ public class AppBorrowCashToDrawController extends BaseController {
 		return amount;
 	}
 
+	@RequestMapping(value = "/delCache", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String delCache() {
+		bizCacheUtil.delCache("winAmount");
+		bizCacheUtil.delCache("Start_Time");
+		bizCacheUtil.delCache("winAmount_Win_User");
+		bizCacheUtil.delCache("Billion_Win_User");
+		bizCacheUtil.delCache("BorrowCash_Sum_Amount");
+		return null;
+	}
+	
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
