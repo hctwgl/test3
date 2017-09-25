@@ -145,9 +145,6 @@ public class UnionLoginController extends BaseController {
             if("https".equals(request.getScheme())){
                 returnUrl=returnUrl.replace("http:","https:");
             }
-            if(returnUrl.indexOf("https")==-1){
-                returnUrl=returnUrl.replace("http:","https:");
-            }
             jsonResult.put("apply_url", returnUrl);
         } catch (Exception e) {
             thirdLog.error("jdqLogin error:", e);
@@ -198,9 +195,6 @@ public class UnionLoginController extends BaseController {
         String token = UserUtil.generateToken(mobile);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
         if("https".equals(request.getScheme())){
-            returnUrl=returnUrl.replace("http:","https:");
-        }
-        if(returnUrl.indexOf("https")==-1){
             returnUrl=returnUrl.replace("http:","https:");
         }
         jsonResult.put("apply_url", returnUrl);
@@ -259,9 +253,6 @@ public class UnionLoginController extends BaseController {
         String token = UserUtil.generateToken(mobileDec);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
         if("https".equals(request.getScheme())){
-            returnUrl=returnUrl.replace("http:","https:");
-        }
-        if(returnUrl.indexOf("https")==-1){
             returnUrl=returnUrl.replace("http:","https:");
         }
         JSONObject jsonResultObject = new JSONObject();
@@ -338,9 +329,6 @@ public class UnionLoginController extends BaseController {
             jsonResultObject.put("code", "0");
             jsonObject.put("user_state", is_new_user);
             if("https".equals(request.getScheme())){
-                returnUrl=returnUrl.replace("http:","https:");
-            }
-            if(returnUrl.indexOf("https")==-1){
                 returnUrl=returnUrl.replace("http:","https:");
             }
             jsonObject.put("return_url", returnUrl);
