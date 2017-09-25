@@ -102,9 +102,12 @@
 			<if test="name != null and name != ''">
 				,name = #{name}
 			</if>
+			<!-- 禁止修改商品图片 -->
+			<!-- 
 			<if test="goodsIcon != null and goodsIcon != ''">
 				,goods_icon = #{goodsIcon}
 			</if>
+			 -->
 			<if test="priceAmount != null">
 				,price_amount = #{priceAmount}
 			</if>
