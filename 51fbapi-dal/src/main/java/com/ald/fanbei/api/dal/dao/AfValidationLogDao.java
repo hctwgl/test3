@@ -1,10 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
-import com.ald.fanbei.api.dal.domain.AfValidationLogDo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.AfValidationLogDo;
 
 /**
  * @类描述：
@@ -28,4 +26,6 @@ public interface AfValidationLogDao {
 
 	List<AfValidationLogDo> selectByUserId(AfValidationLogDo afValidationLogDo);
 
+	int countFailNumWithin24H(AfValidationLogDo afValidationLogDo);
+	
 }

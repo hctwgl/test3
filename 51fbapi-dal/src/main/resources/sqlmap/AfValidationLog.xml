@@ -36,4 +36,8 @@
 		from af_validation_log where gmt_create < now() and gmt_create > (NOW() - interval 24 hour) and user_id = #{userId} and type = #{type} ORDER by gmt_create
 	</select>
 	
+	<select id="countFailNumWithin24H" parameterType="AfValidationLogDo" resultType="java.lang.Integer" >
+		SELECT COUNT(id) FROM af_validation_log WHERE gmt_create > (NOW() - interval 24 hour) and user_id = #{userId} and type = #{type} AND result = 'false'
+	</select>
+	
 </mapper>

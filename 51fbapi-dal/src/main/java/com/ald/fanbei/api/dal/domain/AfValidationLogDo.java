@@ -12,12 +12,26 @@ import java.util.Date;
  */
 public class AfValidationLogDo extends AbstractSerial {
 	private static final long serialVersionUID = 3700535013696929582L;
-
+	
 	private Long rid;
 	private Date gmtCreate;
 	private Long userId;
 	private String type;
 	private String result;
+	
+	public AfValidationLogDo(Long userId, String type, String result) {
+		this.userId = userId;
+		this.type = type;
+		this.result = result;
+	}
+	
+	public AfValidationLogDo() {}
+	
+	public enum AfValidationLogType{
+		NULL,
+		PAY_PWD,
+		ID_CARD;
+	}
 
 	public Long getUserId() {
 		return userId;
