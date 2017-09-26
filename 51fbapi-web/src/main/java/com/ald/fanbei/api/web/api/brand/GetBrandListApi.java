@@ -40,11 +40,12 @@ public class GetBrandListApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
-		AfShopQuery query = new AfShopQuery();
-		query.setFull(false);
-		query.setPageNo(pageNo);
-		List<AfShopDo> shopList = afShopService.getShopList(query);
+		//Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
+		//AfShopQuery query = new AfShopQuery();
+		//query.setFull(false);
+		//query.setPageNo(pageNo);
+		//List<AfShopDo> shopList = afShopService.getShopList(query);
+		List<AfShopDo> shopList = afShopService.getShopList();
 		List<AfShopVo> resultList = new ArrayList<AfShopVo>();
 		if (CollectionUtil.isNotEmpty(shopList)) {
 			resultList = CollectionConverterUtil.convertToListFromList(shopList, new Converter<AfShopDo, AfShopVo>() {
@@ -55,7 +56,7 @@ public class GetBrandListApi implements ApiHandle {
 			});
 		}
 		resp.addResponseData("shopList", resultList);
-		resp.addResponseData("pageNo", pageNo);
+		//resp.addResponseData("pageNo", pageNo);
 		return resp;
 	}
 	

@@ -18,7 +18,7 @@ public interface AfShopService {
 	
 	AfShopDo getShopByPlantNameAndTypeAndServiceProvider(String platformName, String type, String serviceProvider);
 	
-	List<AfShopDo> getShopList(AfShopQuery query);
+	List<AfShopDo> getShopList();
 
 	AfShopDo getShopInfoBySecType(AfShopDo afShopDo);
 

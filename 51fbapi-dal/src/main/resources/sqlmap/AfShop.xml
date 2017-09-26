@@ -32,7 +32,7 @@
 		LIMIT 1
 	</select>
 	
-	<select id="getShopList" parameterType="AfShopQuery"  resultType="AfShopDo">
+	<select id="getShopList"   resultType="AfShopDo">
 		SELECT
 			<include refid="queryFields" />
 		FROM
@@ -44,7 +44,7 @@
 		ORDER BY sort DESC, gmt_modified DESC
 	</select>
 	
-	<select id="getPreEnvShopList" parameterType="AfShopQuery"  resultType="AfShopDo">
+	<select id="getPreEnvShopList"  resultType="AfShopDo">
 		SELECT
 			<include refid="queryFields" />
 		FROM

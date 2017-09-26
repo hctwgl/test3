@@ -35,12 +35,12 @@ public class AfShopServiceImpl implements AfShopService {
 	}
 
 	@Override
-	public List<AfShopDo> getShopList(AfShopQuery query) {
+	public List<AfShopDo> getShopList() {
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
-			return afShopDao.getShopList(query);
+			return afShopDao.getShopList();
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
-			return afShopDao.getPreEnvShopList(query);
+			return afShopDao.getPreEnvShopList();
 		}
 		return null;
 	}
