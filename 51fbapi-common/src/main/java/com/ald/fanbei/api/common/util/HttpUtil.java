@@ -225,7 +225,7 @@ public class HttpUtil {
             // 把数据写入请求的Body
             out.write(param);
             out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"utf-8"));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
