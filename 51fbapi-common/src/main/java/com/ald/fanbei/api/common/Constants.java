@@ -72,6 +72,8 @@ public class Constants {
 	public static final String ISFREEINTEREST_Y = "Y";
 	/**是否免息是否还款状态--不免息**/
 	public static final String ISFREEINTEREST_N = "N";
+	/**三方调用 ，例如还款等调用时，事务内出现自定义异常时，向上返回map对应key值**/
+	public static final String THIRD_REQ_EXCEP_KEY = "fanbei_third_reqexp_key";
 
 
 
@@ -361,5 +363,10 @@ public class Constants {
 	//借钱抽取
 	public static final String BORROWCASH_ACTIVITYS_TYPR="BORROWCASH_ TO_DRAW";
 	public static final String BORROWCASH_ACTIVITYS_SECTYPR="BORROWCASH_ACTIVITYS";
+
+	//联合登陆相关 现金超人
+	public static final String UNIONLOGIN_XJCR_SECRET = "fbapi.unionlogin.xjcr.secret";
+	//联合登陆相关 借点钱
+	public static final String UNIONLOGIN_JDQ_SECRET = "fbapi.unionlogin.jdq.secret";
 
 }

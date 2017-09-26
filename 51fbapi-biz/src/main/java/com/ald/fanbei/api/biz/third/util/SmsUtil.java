@@ -62,6 +62,7 @@ public class SmsUtil extends AbstractThird {
     private static String IPHONE_RESERVATION_SUCCESS="恭喜你预约成功！9月20日正式发售苹果新机，下单立减100元！分期无忧，返利抵账单！http://t.cn/RI7CSL2 回T退订";
     private static String REGIST_SUCCESS_TEMPLATE = "认证送10元现金，借/还成功再抽现金，100%中奖，最高1888元，最低50元 http://t.cn/RI7CSL2 退订回T";
     private static String REBATE_COMPLETED = "返利入账通知，%s，您购买商品/服务的返利已入账%s元，可登录51返呗查看详情【51返呗】";
+    private static String DEFAULT_PASSWORD = "【51返呗】您已注册成功，默认密码%s，登录即可领取最高20000额度！";
     private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单【51返呗】";
     private static String TEST_VERIFY_CODE = "888888";
 
@@ -652,6 +653,10 @@ public class SmsUtil extends AbstractThird {
                     ConfigProperties.get(Constants.CONFKEY_AES_KEY));
         }
         return password;
+    }
+
+    public void sendDefaultPassword(String phone, String password) {
+        sendSmsToDhst(phone, String.format(DEFAULT_PASSWORD, password));
     }
 }
 

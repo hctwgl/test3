@@ -168,7 +168,27 @@ public class CommonUtil {
     public static int getRandomNum(int num){
         return random.nextInt(num);
     }
-    
+
+    //生成随机数字和字母,
+    public static String getStringRandom(int length) {
+
+        String val = "";
+        Random random = new Random();
+        //length为几位密码
+        for(int i = 0; i < length; i++) {
+            String charOrNum = random.nextInt(2) % 2 == 0 ? "char" : "num";
+            //输出字母还是数字
+            if( "char".equalsIgnoreCase(charOrNum) ) {
+                //输出是大写字母还是小写字母
+                int temp = random.nextInt(2) % 2 == 0 ? 65 : 97;
+                val += (char)(random.nextInt(26) + temp);
+            } else if( "num".equalsIgnoreCase(charOrNum) ) {
+                val += String.valueOf(random.nextInt(10));
+            }
+        }
+        return val;
+    }
+
     public static void sleepMilliSeconds(long milliSeconds){
     	try {
 			Thread.sleep(milliSeconds);
@@ -231,7 +251,7 @@ public class CommonUtil {
 //        System.out.println(isMobile("14948572856"));
         System.out.println(isEmail("2323@qq.com"));
 //        System.out.println(isMobileMa("18672349815"));
-//        System.out.println(getRandomNum(2));
+        System.out.println(getRandomNum(2));
 //        System.out.println(filterEmoji("This is a smiley \uD83C\uDFA6 face\uD860\uDD5D \uD860\uDE07 \uD860\uDEE2 \uD863\uDCCA \uD863\uDCCD \uD863\uDCD2 \uD867\uDD98 "));
     }
 }
