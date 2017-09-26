@@ -174,6 +174,9 @@
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
+				<entry key="/user/changeCheckVerifyCode" value-ref="changeCheckVerifyCodeApi"/>
+				<entry key="/user/changeMobileVerifyApi" value-ref="changeMobileVerifyApi"/>
+				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />

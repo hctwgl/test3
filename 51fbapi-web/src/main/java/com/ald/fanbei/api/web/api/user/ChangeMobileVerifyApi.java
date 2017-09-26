@@ -109,4 +109,5 @@ public class ChangeMobileVerifyApi implements ApiHandle {
 		OLD_MOBILE,
 		ID_CARD;
 	}
+
 }
