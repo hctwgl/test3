@@ -2,7 +2,12 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.Resource;
 import javax.mail.Session;
@@ -19,7 +24,6 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -504,6 +508,8 @@ public class SmsUtil extends AbstractThird {
      * @param msg
      */
     private static SmsResult sendSmsToDhst(String mobiles, String content) {
+    	logger.info(StringUtil.appendStrs("sendSms mobile=", mobiles, ",content", content));
+    	
         SmsResult result = new SmsResult();
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
                 Constants.INVELOMENT_TYPE_TEST)) {
@@ -519,8 +525,8 @@ public class SmsUtil extends AbstractThird {
         paramsMap.put("sign", SIGN);
         String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
 
-        logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
-
+        logger.info(StringUtil.appendStrs("sendSms from dhst mobile=", mobiles, ",result=", reqResult));
+        
         JSONObject json = JSON.parseObject(reqResult);
         if (json.getInteger("result") == 0) {
             result.setSucc(true);

@@ -13,19 +13,26 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<context:annotation-config />
-	<task:annotation-driven /> 
-	<mvc:annotation-driven/>
-	<mvc:default-servlet-handler/>
-	
+	<task:annotation-driven />
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.rebate" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.listener" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.api" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.service.boluome" />
+	<context:component-scan base-package="com.ald.fanbei.api.biz.rule.service.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.common" />
-	
+	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.third.controller" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.apph5.controller" />
+
+
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
 		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"
@@ -38,30 +45,41 @@
 		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver"
 		p:cache="true" p:suffix=".vm" p:layoutUrl="layout/default.vm"
 		p:prefix="screen/" p:dateToolAttribute="dateTool"
-		p:numberToolAttribute="numberTool"
-		p:contentType="text/html;charset=UTF-8" p:allowSessionOverride="false"
-		p:allowRequestOverride="false" p:exposeSessionAttributes="false"
-		p:exposeRequestAttributes="false" p:exposeSpringMacroHelpers="true"
-		p:redirectHttp10Compatible="false">
+		p:numberToolAttribute="numberTool" p:contentType="text/html;charset=UTF-8"
+		p:allowSessionOverride="false" p:allowRequestOverride="false"
+		p:exposeSessionAttributes="false" p:exposeRequestAttributes="false"
+		p:exposeSpringMacroHelpers="true" p:redirectHttp10Compatible="false">
 		<property name="attributesMap">
 			<map>
 				<entry key="stringUtils">
 					<bean class="org.apache.commons.lang.StringUtils" />
 				</entry>
+				<entry key="dateUtil">
+					<bean class="com.ald.fanbei.api.common.util.DateUtil" />
+				</entry>
+				<entry key="priceUtil">
+					<bean class="com.ald.fanbei.api.common.util.PriceUtil" />
+				</entry>
+				<entry key="jsonUtil">
+					<bean class="com.ald.fanbei.api.common.util.JsonUtil" />
+				</entry>
 			</map>
 		</property>
 	</bean>
-	
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+
+
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
 			<list>
-				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
 					<property name="supportedMediaTypes">
 						<list>
 							<bean class="org.springframework.http.MediaType">
-								  <constructor-arg value="text" />
-                    				<constructor-arg value="plain" />
-                    				<constructor-arg value="UTF-8" />
+								<constructor-arg value="text" />
+								<constructor-arg value="plain" />
+								<constructor-arg value="UTF-8" />
 							</bean>
 						</list>
 					</property>
@@ -69,29 +87,55 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="beforeLoginApiList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
 				<value>/user/login</value>
 				<value>/user/getVerifyCode</value>
-				<value>/user/registSetPass</value>
+				<value>/user/setRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
-				<value>/user/resetPass</value>
+				<value>/user/resetPwd</value>
+				<value>/user/checkLoginVerifyCode</value>
+				<value>/goods/getHomeInfo</value>
+				<value>/goods/getHomeInfoV1</value>
+				<value>/good/getSearchHome</value>
+				<value>/good/getBrandShopList</value>
+				<value>/goods/getThirdGoodsList</value>
+				<value>/goods/getCategoryList</value>
+				<value>/goods/getCateGoodsList</value>
+				<value>/user/logout</value>
+				<value>/good/getBrandShopList</value>
+				<value>/good/getGoodsDetailInfo</value>
+				<value>/good/getGoodsTkRate</value>
+				<value>/goods/getGoodsInfoByNumId</value>
+
+				<value>/system/appUpgrade</value>
+				<value>/borrowCash/getBorrowCashHomeInfo</value>
+				<value>/brand/getBrandList</value>
+				<value>/system/checkVersion</value>
+				<value>/system/AppLaunchImage</value>
+				<value>/system/appPopImage</value>
+				<value>/system/getTabbarInfor</value>
+				<value>/user/submitShareAction</value>
+				<value>/user/checkMobileRegistered</value>
+				<value>/user/getImageCode</value>
+				<value>/goods/getGoodsSpec</value>
+				<value>/trade/login</value>
 			</list>
 		</constructor-arg>
-	</bean>	
-	
+	</bean>
+
 	<bean id="apiHandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
-			    
+
 				<!-- user -->
 				<entry key="/user/login" value-ref="loginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
-				<entry key="/user/registSetPass" value-ref="registSetPassApi" />
-				<entry key="/user/resetPass" value-ref="resetPassApi" />
+				<entry key="/user/setRegisterPwd" value-ref="setRegisterPwdApi" />
+				<entry key="/user/resetPwd" value-ref="resetPwdApi" />
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
@@ -100,36 +144,231 @@
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
-				<entry key="/user/getRefundCouponList" value-ref="getRefundCouponListApi" />
-				<entry key="/user/acquireReundCoupon" value-ref="acquireReundCouponApi" />
-				<entry key="/user/changeCheckVerifyCode" value-ref="changeCheckVerifyCodeApi" />
+				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
+				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
+				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
+				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
+				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />
+				<entry key="/user/getPayPwdVerifyCode" value-ref="getPayPwdVerifyCodeApi" />
+				<entry key="/user/checkPayPwdVerifyCode" value-ref="checkPayPwdVerifyCodeApi" />
+				<entry key="/user/checkIdNumber" value-ref="checkIdNumberApi" />
+				<entry key="/user/checkPayPwd" value-ref="checkPayPwdApi" />
+				<entry key="/user/getEmailVerifyCode" value-ref="getEmailVerifyCodeApi" />
+				<entry key="/user/changeEmail" value-ref="changeEmailApi" />
+				<entry key="/user/getBankCardList" value-ref="getBankCardListApi" />
+				<entry key="/user/deleteBankCard" value-ref="deleteBankCardApi" />
+				<entry key="/user/withdrawCash" value-ref="withdrawCashApi" />
+				<entry key="/user/deleteCollection" value-ref="deleteCollectionApi" />
+				<entry key="/user/addCollection" value-ref="addCollectionApi" />
+				<entry key="/user/getCollectionList" value-ref="getCollectionListApi" />
+				<entry key="/user/getMobileRechargeMoneyList" value-ref="getMobileRechargeMoneyListApi" />
+				<entry key="/user/getUserCounponListType" value-ref="getUserCounponListTypeApi" />
+				<entry key="/user/submitShareAction" value-ref="submitShareActionApi" />
+				<entry key="/user/getImageCode" value-ref="getImageCodeApi" />
+				<entry key="/user/getRecommedData" value-ref="getRecommedDataApi" />
+				<entry key="/user/getRecommendListByUserId" value-ref="getRecommendListByUserIdApi" />
+				<entry key="/user/getActivieResourceByType" value-ref="getActivieResourceByTypeApi" />
+				<entry key="/user/getRecommendListSort" value-ref="getRecommendListSortApi" />
+				<entry key="/user/getPrizeUser" value-ref="getPrizeUserApi"/>
+				<entry key="/user/addRecommendShared" value-ref="addRecommendSharedApi" />
+				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
+				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
+				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
+				
+				
+				<entry key="/user/signin" value-ref="signinApi" />
 
 
 				<!-- goods -->
 				<entry key="/goods/addFootMark" value-ref="addFootMarkerApi" />
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
-				
-				<!-- 订单Order
-				<entry key="/order/createOrder" value-ref="createOrderApi" /> -->
-				
+				<entry key="/goods/getHomeInfoV1" value-ref="getHomeInfoV1Api" />
+				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
+				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
+				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
+				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
+				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
+				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
+				<entry key="/good/getRecommendGoods" value-ref="getRecommendGoodsApi" />
+				<entry key="/good/getGoodsDetailInfo" value-ref="getGoodsDetailInfoApi" />
+				<entry key="/good/getPayTypeList" value-ref="getPayTypeListApi" />
+				<entry key="/goods/getGoodsInfoByNumId" value-ref="getGoodsInfoByNumIdApi" />
+				<entry key ="/goods/getGoodsSpec" value-ref="getGoodsSpecApi"></entry>
+
+
+				<!-- 订单Order -->
+				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
+				<entry key="/order/getOrderDetailInfo" value-ref="getOrderDetailInfoApi" />
+				<entry key="/order/getOrderList" value-ref="getOrderListApi" />
+				<entry key="/order/getOrderNoWithUser" value-ref="getOrderNoWithUserApi" />
+				<entry key="/order/refundOrderApply" value-ref="refundOrderApplyApi" />
+				<entry key="/order/deleteOrderInfo" value-ref="deleteOrderInfoApi" />
+				<entry key="/order/buySelfGoods" value-ref="buySelfGoodsApi" />
+				<entry key="/order/insufficientBalance" value-ref="insufficientBalanceApi" />
+				<entry key="/order/cancelAfterSaleApply" value-ref="cancelAfterSaleApplyApi" />
+				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
+				<entry key="/order/getOrderAfterSaleInfo" value-ref="getOrderAfterSaleInfoApi" />
+				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
+				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
+				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
+
 				<!-- system模块 -->
-				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" /> 
-				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" /> 
-				
+				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
+				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
+				<entry key="/system/checkVersion" value-ref="checkVersionApi" />
+				<entry key="/system/AppLaunchImage" value-ref="AppLaunchImageApi" />
+				<entry key="/system/appPopImage" value-ref="appPopImageApi" />
+				<entry key="/system/getTabbarInfor" value-ref="getTabbarInforApi" />
+				<entry key="/system/maidian" value-ref="maiDianApi" />
+
+				<!-- auth模块 -->
+				<entry key="/auth/authFace" value-ref="authFaceApi" />
+				<entry key="/auth/authRealname" value-ref="authRealnameApi" />
+				<entry key="/auth/authContacts" value-ref="authContactsApi" />
+				<entry key="/auth/authCredit" value-ref="authCreditApi" />
+				<entry key="/auth/authZhima" value-ref="authZhimaApi" />
+				<entry key="/auth/authBankcard" value-ref="authBankcardApi" />
+				<entry key="/auth/checkBankcard" value-ref="checkBankcardApi" />
+				<entry key="/auth/getBankList" value-ref="getBankListApi" />
+				<entry key="/auth/checkBankcardPay" value-ref="checkBankcardPayApi" />
+				<entry key="/auth/authYdInfo" value-ref="authYdInfoApi" />
+				<entry key="/auth/authMobile" value-ref="authMobileApi" />
+				<entry key="/auth/authContactor" value-ref="authContactorApi" />
+				<entry key="/auth/authLocation" value-ref="authLocationApi" />
+				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />
+				<entry key="/auth/getAllowConsume" value-ref="getAllowConsumeApi" />
+				<entry key="/auth/saveIdNumber" value-ref="saveIdNumberApi" />
+				<entry key="/auth/checkIdCardApi" value-ref="checkIdCardApi" />
+				<entry key="/auth/updateIdCardApi" value-ref="updateIdCardApi" />
+				<entry key="/auth/checkFaceApi" value-ref="checkFaceApi" />
+				<entry key="/auth/getYiTuInfo" value-ref="getYiTuInfoApi" />
+				<entry key="/auth/submitIdNumberInfo" value-ref="submitIdNumberInfoApi" />
+				<entry key="/auth/authStrongRisk" value-ref="authStrongRiskApi" />
+				<entry key="/auth/authContactorV1" value-ref="authContactorV1Api" />
+				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
+				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
+				<entry key="/auth/submitIdNumberInfoV1" value-ref="submitIdNumberInfoV1Api" />
+				<entry key="/auth/authSupplyCertify" value-ref="authSupplyCertifyApi" />
+				<entry key="/auth/authFund" value-ref="authFundApi" />
+				<entry key="/auth/authSocialSecurity" value-ref="authSocialSecurityApi" />
+				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
+				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
+				<entry key="/auth/authAlipay" value-ref="authAlipayApi" />
+
+				<!-- borrow -->
+				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
+				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
+				<entry key="/borrow/getConsumeConfirmInfo" value-ref="getConsumeConfirmInfoApi" />
+				<entry key="/borrow/applyCash" value-ref="applyCashApi" />
+				<entry key="/borrow/applyConsume" value-ref="applyConsumeApi" />
+				<entry key="/bill/getMyBillHomeInfo" value-ref="getMyBillHomeInfoApi" />
+				<entry key="/bill/getMyBillList" value-ref="getMyBillListApi" />
+				<entry key="/bill/getBillDetailList" value-ref="getBillDetailListApi" />
+				<entry key="/bill/getBillDetailInfo" value-ref="getBillDetailInfoApi" />
+				<entry key="/repay/getRepaymentConfirmInfo" value-ref="getRepaymentConfirmInfoApi" />
+				<entry key="/repay/submitRepayment" value-ref="submitRepaymentApi" />
+				<entry key="/bill/getLimitDetailList" value-ref="getLimitDetailListApi" />
+				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
+				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
+				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
+
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
+				<entry key="/brand/getOrderDetailUrl" value-ref="getOrderDetailUrlApi" />
+				<entry key="/brand/getConfirmOrder" value-ref="getConfirmOrderApi" />
+				<entry key="/brand/getBrandList" value-ref="getBrandListApi" />
+				<entry key="/brand/getPayAmount" value-ref="getPayAmountApi" />
+				<entry key="/brand/payOrder" value-ref="payOrderApi" />
+				<entry key="/brand/getBrandCouponList" value-ref="getBrandCouponListApi" />
+				<entry key="/brand/pickBrandCoupon" value-ref="pickBrandCouponApi" />
+				<entry key="/brand/payOrderV1" value-ref="payOrderV1Api" />
+
+				<!--borrowCash -->
+				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
+				<entry key="/borrowCash/getBowCashLogInInfo" value-ref="getBowCashLogInInfoApi" />
+				<entry key="/borrowCash/getConfirmBorrowInfo" value-ref="getConfirmBorrowInfoApi" />
+				<entry key="/borrowCash/applyBorrowCash" value-ref="applyBorrowCashApi" />
+				<entry key="/borrowCash/getBorrowCashDetail" value-ref="getBorrowCashDetailApi" />
+				<entry key="/borrowCash/getBorrowCashList" value-ref="getBorrowCashListApi" />
+				<entry key="/borrowCash/getBorrowOverdueList" value-ref="getBorrowOverdueListApi" />
+				<entry key="/borrowCash/applyRenewal" value-ref="applyRenewalApi" />
+				<entry key="/borrowCash/confirmRenewalPay" value-ref="confirmRenewalPayApi" />
+				<entry key="/borrowCash/confirmRenewalPayV1" value-ref="confirmRenewalPayV1Api" />
+				<entry key="/borrowCash/getRenewalList" value-ref="getRenewalListApi" />
+				<entry key="/borrowCash/getRenewalDetail" value-ref="getRenewalDetailApi" />
+				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
+				<entry key="/repayCash/getConfirmRepayInfoV1" value-ref="getConfirmRepayInfoV1Api" />
+				<entry key="/repayCash/getRepayCashByOrderId" value-ref="getRepayCashByOrderIdApi" />
+
+				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
+				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
+				<entry key="/borrowCash/getLoanSupermarketList" value-ref="getLoanSupermarketListApi" />
+				<entry key="/loanMarket/accessLoanSupermarket" value-ref="accessLoanSupermarketApi" />
+				<entry key="/borrowCash/applyBorrowCashV1" value-ref="applyBorrowCashV1Api" />
+				<entry key="/borrowCash/getLoanSupermarketTabList" value-ref="getLoanSupermarketTabListApi" />
+				<entry key="/borrowCash/getLoanSupermarketListByTab" value-ref="getLoanSupermarketListByTabApi" />
+				<entry key="/borrowCash/tearPacket" value-ref="tearPacketApi" />
+				<!-- 代买模块 -->
+				<entry key="/agencyBuy/addUserAddress" value-ref="addUserAddressApi" />
+				<entry key="/agencyBuy/changeUserAddress" value-ref="changeUserAddressApi" />
+				<entry key="/agencyBuy/deleteUserAddress" value-ref="deleteUserAddressApi" />
+				<entry key="/agencyBuy/getUserAddressList" value-ref="getUserAddressListApi" />
+				<entry key="/agencyBuy/getDefaultUserAddress" value-ref="getDefaultUserAddressApi" />
+				<entry key="/agencyBuy/submitAgencyBuyOrder" value-ref="submitAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/getAgencyBuyOrderDetail" value-ref="GetAgencyBuyOrderDetailApi" />
+				<entry key="/agencyBuy/cancelAgencyBuyOrder" value-ref="cancelAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder"
+					value-ref="completedAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/getAgencyNperInfo" value-ref="getAgencyNperInfoApi" />
+				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
+				<entry key="/agencyBuy/getAgencyCouponList" value-ref="getAgencyCouponListApi" />
+				<entry key="/agencyBuy/payAgencyOrderV1" value-ref="payAgencyOrderV1Api" />
+				<entry key="/order/tradeOrder" value-ref="tradeOrderApi" />
+				<entry key="/agencyBuy/getTradeNperInfo" value-ref="GetTradeNperInfoApi" />
+
+				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
+
+				<!--运营接口 -->
+				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />
+
+				<entry key="/operateApp/getAgencyBuyOrderList" value-ref="getAgencyBuyOrderListApi" />
+				<entry key="/operateApp/getAgencyBuyOrderInfo" value-ref="getAgencyBuyOrderInfoApi" />
+
+				<!-- face++人脸识别 -->
+				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />
+				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
+				<entry key="/auth/updateIdCardForFacePlus" value-ref="updateIdCardForFacePlusApi" />
 				
+				<!-- 商圈微信端 -->
+				<entry key="/trade/login" value-ref="tradeLoginApi" />
+				<entry key="/trade/logout" value-ref="tradeLogoutApi" />
+				<entry key="/trade/businessInfo" value-ref="tradeBusinessInfoApi" />
+				<entry key="/trade/twoBarCode" value-ref="twoBarCodeApi" />
+				<entry key="/trade/getPayListDate" value-ref="getPayListDateApi" />
+				<entry key="/trade/getPayList" value-ref="getPayListApi" />
+				<entry key="/trade/getWithdrawListDate" value-ref="getWithdrawListDateApi" />
+				<entry key="/trade/getWithdrawList" value-ref="getWithdrawListApi" />
+				<entry key="/trade/getRefundListDate" value-ref="getRefundListDateApi" />
+				<entry key="/trade/getRefundList" value-ref="getRefundListApi" />
+				<entry key="/trade/withdraw" value-ref="tradeWithdrawApi" />
+				<entry key="/trade/refund" value-ref="tradeRefundApi" />
+				<entry key="/trade/getIndexData" value-ref="getIndexDataApi" />
+				<entry key="/trade/orderInfo" value-ref="tradeOrderInfoApi" />
+
+				<!--订单物流信息相关-->
+				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 			</map>
 		</constructor-arg>
 	</bean>
 
-	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" /> 
-	
-	<bean id="healthCheck" class="com.ald.fanbei.api.biz.bo.common.HealthCheck"/>
+	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" />
+
+	<bean id="healthCheck" class="com.ald.fanbei.api.biz.bo.common.HealthCheck" />
 	<!-- task job -->
 	<task:scheduled-tasks>
-		<task:scheduled ref="healthCheck" method="checkBizCache" cron="0 1/2 * * * *" />
+		<task:scheduled ref="healthCheck" method="checkBizCache"
+			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
-	
+
 </beans>

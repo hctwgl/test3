@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -88,37 +89,51 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 				
 				userDo.setUserName(newMobile);
 				userDo.setMobile(newMobile);
-				afUserService.updateUser(userDo);
 				userAccountDo.setUserName(newMobile);
-				afUserAccountService.updateUserAccount(userAccountDo);
 				
-				// 更新通讯录 DIRECTORY
-				bizCacheUtil.saveObject(Constants.CACHEKEY_USER_CONTACTS + uidStr, contacts, Constants.SECOND_OF_ONE_DAY);
-				RiskRespBo riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.DIRECTORY.name(), null, null, "", "", null, "", "", "");
-				if (!riskResp.isSuccess()) {
-					throw new FanbeiException(FanbeiExceptionCode.RISK_SYNC_CONTACTS_ERROR);
-				}
+				AfUserDo userDoForMod = new AfUserDo();
+				userDoForMod.setRid(userDo.getRid());
+				userDoForMod.setUserName(newMobile);
+				userDoForMod.setMobile(newMobile);
+				afUserService.updateUser(userDoForMod);
+				AfUserAccountDo userAccountDoForMod = new AfUserAccountDo();
+				userAccountDoForMod.setRid(userAccountDo.getRid());
+				userAccountDoForMod.setUserName(newMobile);
+				afUserAccountService.updateUserAccount(userAccountDoForMod);
 				
-				// 更新用户信息 USER
-				riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "");
-				if (!riskResp.isSuccess()) {
-					throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
-				}
+				AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(uid);
+				if(authDo == null || RiskStatus.A.getCode().equals(authDo.getRiskStatus())) { // 用户还未风控初始化，跳过
+					logger.info("don't init risk,skip sync user");
+				}else {
+					// 更新通讯录 DIRECTORY
+					bizCacheUtil.saveObject(Constants.CACHEKEY_USER_CONTACTS + uidStr, contacts, Constants.SECOND_OF_ONE_DAY);
+					RiskRespBo riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.DIRECTORY.name(), null, null, "", "", null, "", "", "");
+					if (!riskResp.isSuccess()) {
+						throw new FanbeiException(FanbeiExceptionCode.RISK_SYNC_CONTACTS_ERROR);
+					}
 					
-				//状态更新失败不影响核心业务，日志打点即可
-				try {
-					AfUserAuthDo authDoForMod = new AfUserAuthDo();
-					authDoForMod.setUserId(uid);
-					authDoForMod.setTeldirStatus(YesNoStatus.YES.getCode());
-					afUserAuthService.updateUserAuth(authDoForMod);
-				}catch (Exception e) {
-					logger.error(e.getMessage(), e);
+					// 更新用户信息 USER
+					riskResp = riskUtil.registerStrongRisk(uidStr, RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "");
+					if (!riskResp.isSuccess()) {
+						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
+					}
+					
+					//状态更新失败不影响核心业务，日志打点即可
+					try {
+						AfUserAuthDo authDoForMod = new AfUserAuthDo();
+						authDoForMod.setUserId(uid);
+						authDoForMod.setTeldirStatus(YesNoStatus.YES.getCode());
+						afUserAuthService.updateUserAuth(authDoForMod);
+					}catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					}
 				}
 				
 				return 1;
 			}
 		});
 		
+		bizCacheUtil.hdel(Constants.CACHEKEY_CHANGE_MOBILE, uidStr);
 		return resp;
 	}
 

@@ -32,8 +32,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @Component("changeMobileVerifyApi")
 public class ChangeMobileVerifyApi implements ApiHandle {
 	
-	public static final int PAY_PWD_FAIL_THRESHOLD = 3;
-	public static final int ID_CARD_FAIL_THRESHOLD = 3;
+	public static final int PAY_PWD_FAIL_THRESHOLD = 5;
+	public static final int ID_CARD_FAIL_THRESHOLD = 5;
 	
 	@Resource
 	private AfUserAccountService afUserAccountService;
@@ -97,7 +97,7 @@ public class ChangeMobileVerifyApi implements ApiHandle {
         	afValidationLogDao.addValidationLog(tmpDo);
         }
         
-        bizCacheUtil.hset(Constants.CACHEKEY_CHANGE_MOBILE, userId.toString(), newMobile, 24*60*60);
+        bizCacheUtil.hset(Constants.CACHEKEY_CHANGE_MOBILE, userId.toString(), newMobile, 1*60*60);
         return resp;
     }
 	

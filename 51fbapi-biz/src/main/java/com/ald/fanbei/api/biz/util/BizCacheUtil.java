@@ -398,11 +398,16 @@ public class BizCacheUtil extends AbstractThird {
 	 */
 	public void hset(String key, String hkey, String value, long timeout) {
 		long curTimeout = redisTemplate.getExpire(key);
-		if(curTimeout == -2 || curTimeout == -1) { // -2不存在,-1永久
-			hashOps.put(key, hkey, value);
-			redisTemplate.expire(hkey, timeout, TimeUnit.SECONDS);
-		}else {
-			hashOps.put(key, hkey, value);
+		hashOps.put(key, hkey, value);
+		if(curTimeout == -1) { // -2不存在, -1永久
+			redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		}
+	}
+	public void hdel(String key, String hkey) {
+		try {
+			hashOps.delete(key, hkey);
+		} catch (Exception e) {
+			logger.error("hdel" + key, e);
 		}
 	}
 	public Object hget(String key, String hkey) {
