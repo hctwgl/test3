@@ -51,7 +51,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         String label = ObjectUtils.toString(requestDataVo.getParams().get("label"), null);
-        String osType = ObjectUtils.toString(request.getHeader("osType"), null);
+        String osType = ObjectUtils.toString(request.getParameter("osType"), null);
 
         Integer systemType=3;
         if(StringUtil.isNotEmpty(osType)){
