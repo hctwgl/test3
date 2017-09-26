@@ -83,12 +83,12 @@ public class YiBaoUtility {
         ret.put("merchantNo",merchantNo);
         ret.put("orderId",orderId);
 
-        if(baseUrl.contains("http://testapp.51fanbei.com")){
+//        if(baseUrl.contains("http://testapp.51fanbei.com")){
             ret.put("orderAmount","0.01");
-        }
-        else{
-            ret.put("orderAmount",String.valueOf( orderAmount));
-        }
+//        }
+//        else{
+//            ret.put("orderAmount",String.valueOf( orderAmount));
+//        }
         ret.put("redirectUrl",redirectUrl);
         ret.put("notifyUrl",notifyUrl);
         ret.put("goodsParamExt",goodsParamExt);
