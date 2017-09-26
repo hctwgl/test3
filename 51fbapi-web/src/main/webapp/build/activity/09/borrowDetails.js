@@ -39,7 +39,7 @@ let vue=new Vue({
                 if(data.day<=num){
                     if(data.day%5===0){
                         data.img='3.png';
-                        data.style='';
+                        data.style=' ';
                     }else{
                         data.img='5.png'
                     }
@@ -47,12 +47,16 @@ let vue=new Vue({
                 if(data.canReceive){
                     data.img='4.gif';
                     data.style='active';
-
                 }
             });
             if(num>=1){
-                this.day[0].img='3.png';
-                data.style='';
+                if(data.canReceive){
+                    data.img='4.gif';
+                    data.style='active';
+                }else{
+                    this.day[0].img='3.png';
+                    data.style=' ';
+                }
             }
         },
         init(){        //初始化数据
