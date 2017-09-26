@@ -14,7 +14,7 @@
     <div class="firstList">
         <p class="firstTitle"><span></span><span>秋天的风衣 穿对了才更美</span><span></span></p>
         <div class="firstCont clearFix" v-for="item in content.firstList" @click="goodClick(item)">
-            <p class="goodImg"><span><img class="lazy" :data-original="item.goodsIcon"></span></p>
+            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <div class="right">
                 <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
                 <p class="clearFix">
@@ -31,7 +31,7 @@
     <div class="secondList firstList">
         <p class="firstTitle"><span></span><span>秋天的风衣 穿对了才更美</span><span></span></p>
         <div class="firstCont clearFix"  v-for="item in content.secondList" @click="goodClick(item)">
-            <p class="goodImg"><span><img class="lazy" :data-original="item.goodsIcon"></span></p>
+            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <div class="right">
                 <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
                 <p class="clearFix">
