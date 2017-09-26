@@ -19,7 +19,7 @@ public interface AfShopDao {
 	
 	AfShopDo getShopByPlantNameAndTypeAndServiceProvider(@Param("platformName")String platformName, @Param("type")String type, @Param("serviceProvider")String serviceProvider);
 	
-	List<AfShopDo> getShopList();
+	List<AfShopDo> getShopList(AfShopQuery query);
 	
 	
 	/**
@@ -27,7 +27,7 @@ public interface AfShopDao {
 	 * @param query
 	 * @return
 	 */
-	List<AfShopDo> getPreEnvShopList();
+	List<AfShopDo> getPreEnvShopList(AfShopQuery query);
 
 	AfShopDo getShopInfoBySecType(String secType);
 

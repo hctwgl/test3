@@ -33,19 +33,20 @@ import com.ald.fanbei.api.web.vo.AfShopVo;
  */
 @Component("getBrandListApi")
 public class GetBrandListApi implements ApiHandle {
-
+         public static final int PAGE_SIZE = 50;
 	@Resource
 	AfShopService afShopService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		//Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
-		//AfShopQuery query = new AfShopQuery();
-		//query.setFull(false);
-		//query.setPageNo(pageNo);
-		//List<AfShopDo> shopList = afShopService.getShopList(query);
-		List<AfShopDo> shopList = afShopService.getShopList();
+		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
+		AfShopQuery query = new AfShopQuery();
+		query.setFull(false);
+		query.setPageNo(pageNo);
+		query.setFull(false);
+		query.setPageSize(PAGE_SIZE);
+		List<AfShopDo> shopList = afShopService.getShopList(query);
 		List<AfShopVo> resultList = new ArrayList<AfShopVo>();
 		if (CollectionUtil.isNotEmpty(shopList)) {
 			resultList = CollectionConverterUtil.convertToListFromList(shopList, new Converter<AfShopDo, AfShopVo>() {
