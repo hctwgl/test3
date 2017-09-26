@@ -7,12 +7,12 @@ let vue=new Vue({
             canClick: false
         },
         day:[
-            {img:'3.png', txt:'5元红包',day:1,style:''},
+            {img:'31.png', txt:'5元红包',canReceive:false,day:1,style:''},
             {img:'6.png', txt:'第2天',day:2},
             {img:'6.png', txt:'第3天',day:3},
             {img:'6.png', txt:'第4天',day:4},
-            {img:'3.png', txt:'3元现金20元红包',day:5,style:''},
-            {img:'3.png', txt:'15元现金50元红包',day:10,style:'hei'},
+            {img:'31.png', txt:'3元现金20元红包',canReceive:false,day:5,style:''},
+            {img:'31.png', txt:'15元现金50元红包',canReceive:false,day:10,style:'hei'},
             {img:'6.png', txt:'第9天',day:9,style:'hei'},
             {img:'6.png', txt:'第8天',day:8,style:'hei'},
             {img:'6.png', txt:'第7天',day:7,style:'hei'},
@@ -21,7 +21,7 @@ let vue=new Vue({
             {img:'6.png', txt:'第12天',day:12},
             {img:'6.png', txt:'第13天',day:13},
             {img:'6.png', txt:'第14天',day:14},
-            {img:'3.png', txt:'25元现金75元红包',day:15,style:''},
+            {img:'31.png', txt:'25元现金75元红包',canReceive:false,day:15,style:''},
         ],
         dialog:{
             show:false,
@@ -38,16 +38,21 @@ let vue=new Vue({
             this.day.forEach(function (data) {
                 if(data.day<=num){
                     if(data.day%5===0){
-                        data.img='4.gif';
-                        data.style='active';
+                        data.img='3.png';
+                        data.style='';
                     }else{
                         data.img='5.png'
                     }
                 }
+                if(data.canReceive){
+                    data.img='4.gif';
+                    data.style='active';
+
+                }
             });
             if(num>=1){
-                this.day[0].img='4.gif';
-                this.day[0].style='active';
+                this.day[0].img='3.png';
+                data.style='';
             }
         },
         init(){        //初始化数据
@@ -59,26 +64,25 @@ let vue=new Vue({
                     console.log(data);
                     if(data.success){
                         self.content=data.data;
+                        //红包是否可点击
+                        self.day[0].canReceive=self.content.gameConfList[0].canReceive;
+                        self.day[4].canReceive=self.content.gameConfList[1].canReceive;
+                        self.day[5].canReceive=self.content.gameConfList[2].canReceive;
+                        self.day[14].canReceive=self.content.gameConfList[3].canReceive;
                         self.changeImg(self.content.signDays);
-                        //红包文案修改
-                        self.day[0].txt=self.content.gameConfList[0].couponNames.join('');
-                        self.day[4].txt=self.content.gameConfList[1].couponNames.join('');
-                        self.day[5].txt=self.content.gameConfList[2].couponNames.join('');
-                        self.day[14].txt=self.content.gameConfList[3].couponNames.join('');
                     }
                 }
             })
 
 
         },
-        prize(day){     //点击步骤图片弹出领奖
-            if(this.content.canClick){
-                if((day===1||day===5||day===10||day===15)&&this.content.signDays>=day){
+        prize(data){     //点击步骤图片弹出领奖
+            if(this.content.canClick&&data.canReceive){
+                if((data.day===1||data.day===5||data.day===10||data.day===15)&&this.content.signDays>=data.day){
                     this.dialog.show=true;
-                    let i=(day%5===0)?day/5:0;
+                    let i=(data.day%5===0)?data.day/5:0;
                     this.dialog.confId=this.content.gameConfList[i].rid;
-                    this.dialog.txt=this.content.gameConfList[i].couponNames.join('');
-
+                    this.dialog.txt=data.txt;
                 }
             }
         },
