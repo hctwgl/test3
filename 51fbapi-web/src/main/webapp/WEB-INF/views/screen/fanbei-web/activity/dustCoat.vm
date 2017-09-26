@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170926")
+    #set($version="201709261600")
     #set($src="http://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
     <title>让潮流来追你</title>
@@ -17,7 +17,7 @@
             <p class="goodImg"><span><img class="lazy" :data-original="item.goodsIcon"></span></p>
             <div class="right">
                 <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-                <p>
+                <p class="clearFix">
                     <span class="salePrice">￥{{item.saleAmount}}</span>
                     <span class="fan"></span>
                     <span class="fanMoney">￥{{item.rebateAmount}}</span>
@@ -34,7 +34,7 @@
             <p class="goodImg"><span><img class="lazy" :data-original="item.goodsIcon"></span></p>
             <div class="right">
                 <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-                <p>
+                <p class="clearFix">
                     <span class="salePrice">￥{{item.saleAmount}}</span>
                     <span class="fan"></span>
                     <span class="fanMoney">￥{{item.rebateAmount}}</span>
@@ -50,7 +50,7 @@
         <div class="thirdCont"  v-for="item in content.thirdList"  @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-            <p>
+            <p class="clearFix">
                 <span class="salePrice">￥{{item.saleAmount}}</span>
                 <span class="fan"></span>
                 <span class="fanMoney">￥{{item.rebateAmount}}</span>
