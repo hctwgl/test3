@@ -17,12 +17,14 @@ import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
@@ -85,6 +87,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 
 	@Resource
 	AfTradeWithdrawRecordService afTradeWithdrawRecordService;
+	
+	@Resource
+	SmsUtil smsUtil;
 
 	@Override
 	public AfUserAccountDo getUserAccountByUserId(Long userId) {
@@ -201,6 +206,10 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 							afUserAccountDao.updateUserAccount(account);
 						}
 						
+						//打款失败消息通知用户
+						//用户当日打款失败次数
+						int applyBorrowCashFailTimes = afBorrowCashService.getCurrDayTransFailTimes(afBorrowCashDo.getUserId());
+						smsUtil.sendApplyBorrowTransedFail(userAccountDo.getUserName(),afBorrowCashDo.getCardName(),StringUtil.getLastAppointLengthChar(afBorrowCashDo.getCardNumber(),4),applyBorrowCashFailTimes);
 
 					} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
 						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);

@@ -154,4 +154,11 @@ public interface AfBorrowCashDao {
 	 * 
 	 * **/
 	int updateBalancedDate(AfBorrowCashDo afBorrowCashDo);
+	
+	/**
+	 * 获取当前用户当日打款失败次数
+	 * @param userId
+	 * @return
+	 */
+	int getCurrDayTransFailTimes(@Param("userId")long userId);
 }

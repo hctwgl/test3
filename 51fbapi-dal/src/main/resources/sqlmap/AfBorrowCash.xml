@@ -343,4 +343,18 @@
 		</if>
 		WHERE id=#{rid}
 	</update>
+	
+	<select id="getCurrDayTransFailTimes" resultType="java.lang.Integer">
+		SELECT
+		count(*) 
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and `status` = 'TRANSEDFAIL'
+		and  gmt_create  >= CURDATE()
+	</select>
+	
 </mapper>

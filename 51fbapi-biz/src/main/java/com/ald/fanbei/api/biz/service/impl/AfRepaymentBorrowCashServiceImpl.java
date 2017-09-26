@@ -218,7 +218,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 								bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
 						if (!respBo.isSuccess()) {
-							dealRepaymentFail(payTradeNo, "");
+							dealRepaymentFail(payTradeNo, "",false,"");
 							throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
 						map.put("resp", respBo);
@@ -300,7 +300,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 								bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
 						if (!respBo.isSuccess()) {
-							dealRepaymentFail(payTradeNo, "");
+							dealRepaymentFail(payTradeNo, "",false,"");
 							throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
 						map.put("resp", respBo);
@@ -562,13 +562,20 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	}
 
 	@Override
-	public long dealRepaymentFail(String outTradeNo, String tradeNo) {
+	public long dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg) {
 		AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
 		if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 			return 0l;
 		}
-
-		return dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repayment.getRid());
+		long rowNums = dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repayment.getRid());
+		//用户信息及当日还款失败次数校验
+		int errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimes(repayment.getUserId());
+		AfUserDo afUserDo = afUserService.getUserById(repayment.getUserId());
+		if(isNeedMsgNotice){
+			//还款失败短信通知
+			smsUtil.sendRepaymentBorrowCashFail(afUserDo.getMobile(),errorMsg,errorTimes);
+		}
+		return rowNums;
 	}
 
 	long dealChangStatus(String outTradeNo, String tradeNo, String status, Long rid) {

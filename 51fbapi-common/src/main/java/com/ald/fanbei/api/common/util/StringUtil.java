@@ -246,5 +246,18 @@ public class StringUtil extends StringUtils {
 		}
 		return null;
 	}
+
+	/**
+	 * 获取指定字符串最后指定长度信息
+	 * @param cardNumber
+	 * @param lastLength
+	 * @return
+	 */
+	public static String getLastAppointLengthChar(String cardNumber,int lastLength) {
+		if(cardNumber == null || cardNumber.length()<=lastLength){
+			return null2Str(cardNumber);
+		}
+		return cardNumber.substring(cardNumber.length()-lastLength);
+	}
     
 }

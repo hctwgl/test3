@@ -1042,7 +1042,9 @@ public class RiskUtil extends AbstractThird {
 				jpushService.mobileRiskSuccess(accountInfo.getUserName());
 			} else {
 				auth.setMobileStatus(MobileStatus.NO.getCode());
-				jpushService.mobileRiskFail(accountInfo.getUserName());
+				//推送关闭,改为短信推送
+				//jpushService.mobileRiskFail(accountInfo.getUserName());
+				smsUtil.sendMobileOperateFail(accountInfo.getUserName()); 
 			}
 			return afUserAuthService.updateUserAuth(auth);
 		}
