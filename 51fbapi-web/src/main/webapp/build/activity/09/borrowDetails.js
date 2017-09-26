@@ -52,17 +52,17 @@ let vue=new Vue({
             if(num>=1){
                 if(this.day[0].canReceive){
                     data.img='4.gif';
-                    data.style='active';
+                    this.day[0].style='active';
                 }else{
                     this.day[0].img='3.png';
-                    data.style='unactive';
+                    this.day[0].style='unactive';
                 }
             }
         },
         init(){        //初始化数据
             let self=this;
             $.ajax({
-                url:'/fanbei-web/signActivity?userName=18072975670',
+                url:'/fanbei-web/signActivity?userName=15869186137',
                 success:function (data) {
                     data = eval('(' + data + ')');
                     console.log(data);
