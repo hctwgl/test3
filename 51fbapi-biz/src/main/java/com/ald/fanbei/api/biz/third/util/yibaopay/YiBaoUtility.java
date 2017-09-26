@@ -131,7 +131,6 @@ public class YiBaoUtility {
                 //处理中
                 ret =false;
             }
-
             proessUpdate(afYibaoOrderDo,status,type);
         }
         return ret;

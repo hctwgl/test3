@@ -55,6 +55,7 @@ public class GetBillListByStatusApi implements ApiHandle {
             HashMap _map = new HashMap();
 
             String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
+            _map.put("billId",afBorrowBillDo.getRid());
             _map.put("date",date);
             _map.put("name",afBorrowBillDo.getName());
             _map.put("totalAmount",afBorrowBillDo.getBillAmount());
@@ -124,6 +125,7 @@ public class GetBillListByStatusApi implements ApiHandle {
             if(isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
+                map.put("billId",afBorrowBillDo.getRid());
                 map.put("date",date);
                 map.put("name",afBorrowBillDo.getName());
                 map.put("totalAmount",afBorrowBillDo.getBillAmount());
@@ -134,6 +136,7 @@ public class GetBillListByStatusApi implements ApiHandle {
             if(afBorrowBillDo.getOverdueStatus().equals("Y")){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
+                map.put("billId",afBorrowBillDo.getRid());
                 map.put("date",date);
                 map.put("name",afBorrowBillDo.getName());
                 map.put("totalAmount",afBorrowBillDo.getBillAmount());
@@ -144,6 +147,7 @@ public class GetBillListByStatusApi implements ApiHandle {
             if(!isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
+                map.put("billId",afBorrowBillDo.getRid());
                 map.put("date",date);
                 map.put("name",afBorrowBillDo.getName());
                 map.put("totalAmount",afBorrowBillDo.getBillAmount());
@@ -162,8 +166,8 @@ public class GetBillListByStatusApi implements ApiHandle {
      */
     private boolean isOut(int year,int month){
         month = month +1;
-        if(month>12){
-            year = year+1;
+        if(month > 12){
+            year = year +1;
             month =1;
         }
         Date d = new Date();

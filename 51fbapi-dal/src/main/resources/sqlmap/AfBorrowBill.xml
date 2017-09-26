@@ -305,7 +305,7 @@
 		af_borrow_bill
 		WHERE
 		is_delete = 0
-		<if test="status == 'All'">
+		<if test="status != 'All'">
 			and status = #{status}
 		</if>
 		and user_id = #{userId}
