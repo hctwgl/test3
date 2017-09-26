@@ -123,6 +123,7 @@
 				<value>/user/getImageCode</value>
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
+				<value>/instalments/getInstalmentsAd</value>
 			</list>
 		</constructor-arg>
 	</bean>
