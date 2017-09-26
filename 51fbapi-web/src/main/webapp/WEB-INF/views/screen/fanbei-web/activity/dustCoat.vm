@@ -9,86 +9,54 @@
 </head>
 <body>
 <div id="dustCoat"  class="dustCoat">
-    <div class="banner"><img src="$src/dustCoat01.png"></div>
+    <div class="loadingMask"><i class="loading"></i></div>
+    <div class="banner first"><img src="$src/dustCoat01.png"></div>
     <div class="firstList">
         <p class="firstTitle"><span></span><span>秋天的风衣 穿对了才更美</span><span></span></p>
-        <div class="firstCont clearFix">
-            <p class="goodImg"><span></span></p>
+        <div class="firstCont clearFix" v-for="item in content.firstList" @click="goodClick(item)">
+            <p class="goodImg"><span><img class="lazy" :data-original="item.goodsIcon"></span></p>
             <div class="right">
-                <p class="goodName" style="-webkit-box-orient: vertical;">chic港风小个子翻领风衣</p>
+                <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
                 <p>
-                    <span class="salePrice">￥188.00</span>
+                    <span class="salePrice">￥{{item.saleAmount}}</span>
                     <span class="fan"></span>
-                    <span class="fanMoney">￥2.88</span>
+                    <span class="fanMoney">￥{{item.rebateAmount}}</span>
                 </p>
-                <p class="monthPrice">月供 ￥21.15起</p>
-                <p class="buyNow">立即抢购</p>
-            </div>
-        </div>
-        <div class="firstCont clearFix">
-            <p class="goodImg"><span></span></p>
-            <div class="right">
-                <p class="goodName" style="-webkit-box-orient: vertical;">chic港风小个子翻领风衣</p>
-                <p>
-                    <span class="salePrice">￥188.00</span>
-                    <span class="fan"></span>
-                    <span class="fanMoney">￥2.88</span>
-                </p>
-                <p class="monthPrice">月供 ￥21.15起</p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供 ￥{{item.nperMap.amount}}起</p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供 ￥{{item.nperMap.freeAmount}}起</p>
                 <p class="buyNow">立即抢购</p>
             </div>
         </div>
     </div>
     <div class="secondList firstList">
         <p class="firstTitle"><span></span><span>秋天的风衣 穿对了才更美</span><span></span></p>
-        <div class="firstCont clearFix">
-            <p class="goodImg"><span></span></p>
+        <div class="firstCont clearFix"  v-for="item in content.secondList" @click="goodClick(item)">
+            <p class="goodImg"><span><img class="lazy" :data-original="item.goodsIcon"></span></p>
             <div class="right">
-                <p class="goodName" style="-webkit-box-orient: vertical;">chic港风小个子翻领风衣</p>
+                <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
                 <p>
-                    <span class="salePrice">￥188.00</span>
+                    <span class="salePrice">￥{{item.saleAmount}}</span>
                     <span class="fan"></span>
-                    <span class="fanMoney">￥2.88</span>
+                    <span class="fanMoney">￥{{item.rebateAmount}}</span>
                 </p>
-                <p class="monthPrice">月供 ￥21.15起</p>
-                <p class="buyNow">立即抢购</p>
-            </div>
-        </div>
-        <div class="firstCont clearFix">
-            <p class="goodImg"><span></span></p>
-            <div class="right">
-                <p class="goodName" style="-webkit-box-orient: vertical;">chic港风小个子翻领风衣</p>
-                <p>
-                    <span class="salePrice">￥188.00</span>
-                    <span class="fan"></span>
-                    <span class="fanMoney">￥2.88</span>
-                </p>
-                <p class="monthPrice">月供 ￥21.15起</p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供 ￥{{item.nperMap.amount}}起</p>
+                <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供 ￥{{item.nperMap.freeAmount}}起</p>
                 <p class="buyNow">立即抢购</p>
             </div>
         </div>
     </div>
     <div class="firstList thirdList clearFix">
         <p class="firstTitle thirdTitle"><span></span><span>秋天的风衣 穿对了才更美</span><span></span></p>
-        <div class="thirdCont">
-            <p class="goodImg"></p>
-            <p class="goodName" style="-webkit-box-orient: vertical;">chic港风小个子翻领风衣</p>
+        <div class="thirdCont"  v-for="item in content.thirdList"  @click="goodClick(item)">
+            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
+            <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
             <p>
-                <span class="salePrice">￥399.00</span>
+                <span class="salePrice">￥{{item.saleAmount}}</span>
                 <span class="fan"></span>
-                <span class="fanMoney">￥39.90</span>
+                <span class="fanMoney">￥{{item.rebateAmount}}</span>
             </p>
-            <p class="monthPrice">月供 ￥14.56起</p>
-        </div>
-        <div class="thirdCont">
-            <p class="goodImg"></p>
-            <p class="goodName" style="-webkit-box-orient: vertical;">chic港风小个子翻领风衣</p>
-            <p>
-                <span class="salePrice">￥399.00</span>
-                <span class="fan"></span>
-                <span class="fanMoney">￥39.90</span>
-            </p>
-            <p class="monthPrice">月供 ￥14.56起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供 ￥{{item.nperMap.amount}}起</p>
+            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供 ￥{{item.nperMap.freeAmount}}起</p>
         </div>
     </div>
 </div>
