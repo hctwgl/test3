@@ -51,7 +51,7 @@ let vue=new Vue({
             });
             if(num>=1){
                 if(this.day[0].canReceive){
-                    data.img='4.gif';
+                    this.day[0].img='4.gif';
                     this.day[0].style='active';
                 }else{
                     this.day[0].img='3.png';
