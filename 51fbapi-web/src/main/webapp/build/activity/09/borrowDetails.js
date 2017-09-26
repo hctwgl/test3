@@ -39,7 +39,7 @@ let vue=new Vue({
                 if(data.day<=num){
                     if(data.day%5===0){
                         data.img='3.png';
-                        data.style=' ';
+                        data.style='unactive';
                     }else{
                         data.img='5.png'
                     }
@@ -50,12 +50,12 @@ let vue=new Vue({
                 }
             });
             if(num>=1){
-                if(data.canReceive){
+                if(this.day[0].canReceive){
                     data.img='4.gif';
                     data.style='active';
                 }else{
                     this.day[0].img='3.png';
-                    data.style=' ';
+                    data.style='unactive';
                 }
             }
         },
