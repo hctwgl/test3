@@ -142,7 +142,7 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("is_new_user", String.valueOf(is_new_user));
             jsonResult.put("msg", "");
             String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
-            if("https".equals(request.getScheme())){
+            if(request.getRequestURI().indexOf("testapp")==-1){
                 returnUrl=returnUrl.replace("http:","https:");
             }
             jsonResult.put("apply_url", returnUrl);
@@ -194,7 +194,7 @@ public class UnionLoginController extends BaseController {
         afUnionLoginLogService.addLog(fanbeiChannelCode, mobile, paramsJsonStr);
         String token = UserUtil.generateToken(mobile);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
-        if("https".equals(request.getScheme())){
+        if(request.getRequestURI().indexOf("testapp")==-1){
             returnUrl=returnUrl.replace("http:","https:");
         }
         jsonResult.put("apply_url", returnUrl);
@@ -252,7 +252,7 @@ public class UnionLoginController extends BaseController {
         int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
         String token = UserUtil.generateToken(mobileDec);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
-        if("https".equals(request.getScheme())){
+        if(request.getRequestURI().indexOf("testapp")==-1){
             returnUrl=returnUrl.replace("http:","https:");
         }
         JSONObject jsonResultObject = new JSONObject();
@@ -328,7 +328,7 @@ public class UnionLoginController extends BaseController {
             jsonResultObject.put("msg", "成功");
             jsonResultObject.put("code", "0");
             jsonObject.put("user_state", is_new_user);
-            if("https".equals(request.getScheme())){
+            if(request.getRequestURI().indexOf("testapp")==-1){
                 returnUrl=returnUrl.replace("http:","https:");
             }
             jsonObject.put("return_url", returnUrl);
