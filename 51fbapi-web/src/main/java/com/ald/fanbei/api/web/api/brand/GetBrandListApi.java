@@ -57,7 +57,7 @@ public class GetBrandListApi implements ApiHandle {
 			});
 		}
 		resp.addResponseData("shopList", resultList);
-		//resp.addResponseData("pageNo", pageNo);
+		resp.addResponseData("pageNo", pageNo);
 		return resp;
 	}
 	
