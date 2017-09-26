@@ -347,6 +347,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+
+					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+					if(afYibaoOrderDo !=null){
+						if(afYibaoOrderDo.getStatus().intValue() == 1){
+							return 1L;
+						}
+						else{
+							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
+						}
+					}
+
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
 					logger.info("updateBorrowBillStatusByIds repayment  = {}",repayment);
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
@@ -533,6 +544,16 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					if(repayment == null){
 						return 0;
 					}
+
+					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+					if(afYibaoOrderDo !=null) {
+						if (afYibaoOrderDo.getStatus().intValue() == 1) {
+							return 1;
+						} else {
+							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
+						}
+					}
+
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus()) || YesNoStatus.NO.getCode().equals(repayment.getStatus())) {
 						return 0;
 					}
