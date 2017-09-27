@@ -59,7 +59,7 @@ public class UnionLoginController extends BaseController {
     @Autowired
     AfUnionLoginChannelService afUnionLoginChannelService;
 
-    public static final String RETURN_URL = "/unionlogin/welcome?isNew=%s&token=%s";
+    public static final String RETURN_URL = "/unionlogin/welcome?isNew=%s&token=%s&channel=%s";
 
     /**
      * 借点钱登录对接
@@ -141,7 +141,7 @@ public class UnionLoginController extends BaseController {
             jsonResult.put("code", "0");
             jsonResult.put("is_new_user", String.valueOf(is_new_user));
             jsonResult.put("msg", "");
-            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token,channel_no);
             if(request.getRequestURL().toString().indexOf("testapp")==-1){
                 returnUrl=returnUrl.replace("http:","https:");
             }
@@ -193,7 +193,7 @@ public class UnionLoginController extends BaseController {
         jsonResult.put("result_reason", is_new_user == 1 ? "新用户" : "老用户");
         afUnionLoginLogService.addLog(fanbeiChannelCode, mobile, paramsJsonStr);
         String token = UserUtil.generateToken(mobile);
-        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token,fanbeiChannelCode);
         if(request.getRequestURL().toString().indexOf("testapp")==-1){
             returnUrl=returnUrl.replace("http:","https:");
         }
@@ -213,9 +213,9 @@ public class UnionLoginController extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/jfLogin")
+    @RequestMapping(value = "/jfLogin",produces = "text/plain;charset=UTF-8")
     @ResponseBody
-    public JSONObject jfLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
+    public String jfLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
         try {
             Map<String, String[]> paramsMap = request.getParameterMap();
             String paramsJsonStr = JSONObject.toJSONString(paramsMap);
@@ -253,7 +253,7 @@ public class UnionLoginController extends BaseController {
             int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
             afUnionLoginLogService.addLog(fanbeiChannelCode, mobileDec, paramsJsonStr);
             String token = UserUtil.generateToken(mobileDec);
-            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
+            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token,channelDec);
             if(request.getRequestURL().toString().indexOf("testapp")==-1){
                 returnUrl=returnUrl.replace("http:","https:");
             }
@@ -265,14 +265,14 @@ public class UnionLoginController extends BaseController {
             logger.info("返回 url 地址:" + returnUrl);
             jsonObject.put("url",  returnUrl);
             jsonResultObject.put("data", jsonObject);
-            return jsonResultObject;
+            return jsonResultObject.toJSONString();
         }catch (Exception e) {
             JSONObject jsonResultObject = new JSONObject();
             thirdLog.error("jfLogin error:", e);
             jsonResultObject.put("message", "系统异常，请稍后再试！");
             jsonResultObject.put("status", "0");
             jsonResultObject.put("code", "0");
-            return jsonResultObject;
+            return jsonResultObject.toJSONString();
         }
     }
 
@@ -333,7 +333,7 @@ public class UnionLoginController extends BaseController {
             int is_new_user = getsetUserInfo(phoneStr, fanbeiChannelCode, paramsJsonStr);
             afUnionLoginLogService.addLog(fanbeiChannelCode, phoneStr, paramsJsonStr);
             String token = UserUtil.generateToken(phoneStr);
-            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
+            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token,channel);
             JSONObject jsonResultObject = new JSONObject();
             JSONObject jsonObject = new JSONObject();
             jsonResultObject.put("msg", "成功");
@@ -364,7 +364,8 @@ public class UnionLoginController extends BaseController {
      * @throws Exception
      */
     @RequestMapping("/welcome")
-    public String welcome(int isNew, String token) throws Exception {
+    public String welcome(int isNew, String token,String channel) throws Exception {
+        thirdLog.info("union login view："+channel);
         return "/unionlogin/welcome";
     }
 
