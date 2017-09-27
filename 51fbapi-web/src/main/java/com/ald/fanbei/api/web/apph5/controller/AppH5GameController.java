@@ -517,7 +517,7 @@ public class AppH5GameController  extends BaseController{
 					}
 					else{
 						int count = 4-signCount;
-						buttonString = "立即签到（还剩"+count+"个）";
+						buttonString = "立即签到";
 						canClick = true;
 					}
 				}
