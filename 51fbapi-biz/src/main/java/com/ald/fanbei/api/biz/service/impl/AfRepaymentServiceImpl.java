@@ -405,7 +405,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					//还款成功同步逾期订单
 					dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
 
-					AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(repayment.getRid(),1);
+//					AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(repayment.getRid(),1);
 //					if(afRepaymentDetalDo !=null){
 //						//回写返利
 //						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
