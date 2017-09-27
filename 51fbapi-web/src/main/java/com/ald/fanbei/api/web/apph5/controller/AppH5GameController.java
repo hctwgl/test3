@@ -494,7 +494,7 @@ public class AppH5GameController  extends BaseController{
 			}
 			boolean received = false;
 			String buttonString = "活动结束";
-			boolean canClick = false;
+			boolean canClick = true;
 			AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign");
 			// 判断活动时间
 			Date startDate = gameDo.getGmtStart();
