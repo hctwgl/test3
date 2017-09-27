@@ -7,12 +7,12 @@ let vue=new Vue({
             canClick: false
         },
         day:[
-            {img:'31.png', txt:'5元红包',canReceive:false,day:1,style:''},
+            {img:'31.png', txt:'5元券包',canReceive:false,day:1,style:''},
             {img:'6.png', txt:'第2天',day:2},
             {img:'6.png', txt:'第3天',day:3},
             {img:'6.png', txt:'第4天',day:4},
-            {img:'31.png', txt:'3元现金20元红包',canReceive:false,day:5,style:''},
-            {img:'31.png', txt:'15元现金50元红包',canReceive:false,day:10,style:'hei'},
+            {img:'31.png', txt:'3元现金20元券包',canReceive:false,day:5,style:''},
+            {img:'31.png', txt:'15元现金50元券包',canReceive:false,day:10,style:'hei'},
             {img:'6.png', txt:'第9天',day:9,style:'hei'},
             {img:'6.png', txt:'第8天',day:8,style:'hei'},
             {img:'6.png', txt:'第7天',day:7,style:'hei'},
@@ -21,7 +21,7 @@ let vue=new Vue({
             {img:'6.png', txt:'第12天',day:12},
             {img:'6.png', txt:'第13天',day:13},
             {img:'6.png', txt:'第14天',day:14},
-            {img:'31.png', txt:'25元现金75元红包',canReceive:false,day:15,style:''},
+            {img:'31.png', txt:'25元现金75元券包',canReceive:false,day:15,style:''},
         ],
         dialog:{
             show:false,
