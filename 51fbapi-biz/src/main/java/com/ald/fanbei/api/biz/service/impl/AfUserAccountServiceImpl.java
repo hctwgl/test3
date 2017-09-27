@@ -205,6 +205,17 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 							account.setUsedAmount(afBorrowCashDo.getAmount().negate());
 							account.setUserId(afBorrowCashDo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
+							//fmf——增加log记录
+							AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+							accountLog.setUserId(afBorrowCashDo.getUserId());
+							accountLog.setAmount(afBorrowCashDo.getAmount());
+							accountLog.setType("TRANSEDFAIL_USEAMOUNT");
+							accountLog.setRefId(afBorrowCashDo.getRid()+"");
+							try{
+								afUserAccountLogDao.addUserAccountLog(accountLog);
+							}catch(Exception e){
+								throw new FanbeiException("TRANSEDFAIL_USEAMOUNT "+afBorrowCashDo.getRid()+" is fail,"+e);
+							}
 						}
 						
 						//打款失败消息通知用户
