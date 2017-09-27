@@ -247,7 +247,7 @@ public class UnionLoginController extends BaseController {
             logger.info("解密第三方渠道号:" + channelDec + "，解密手机号:" + mobileDec);
             JSONObject jsonObject = new JSONObject();
 
-            jsonObject.put("channel_id", fanbeiChannelCode);
+            jsonObject.put("channel_id", channel_id);
             jsonObject.put("serial_number", serial_number);
             jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
             int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
@@ -263,7 +263,7 @@ public class UnionLoginController extends BaseController {
             jsonResultObject.put("code", "0");
 
             logger.info("返回 url 地址:" + returnUrl);
-            jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
+            jsonObject.put("url",  returnUrl);
             jsonResultObject.put("data", jsonObject);
             return jsonResultObject;
         }catch (Exception e) {
