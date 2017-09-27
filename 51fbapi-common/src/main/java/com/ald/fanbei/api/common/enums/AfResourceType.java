@@ -81,6 +81,7 @@ public enum AfResourceType {
 	
 	VIRTUAL_GOODS_SERVICE_PROVIDER("VIRTUAL_GOODS_SERVICE_PROVIDER", "虚拟商品供应商"),
 	VirtualGoodsKeywords("VIRTUAL_GOODS_KEYWORDS", "虚拟商品关键字"),
+	VirtualShopsKeywords("VIRTUAL_SHOPS_KEYWORDS", "虚拟店铺关键字"),
 
 	SMS_TEMPLATE("SMS_TEMPLATE","短信模板"),
 	SMS_LIMIT("SMS_LIMIT","短信限制"),
@@ -88,10 +89,10 @@ public enum AfResourceType {
 	//app端 借钱按钮高亮显示时长配置
 	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
 	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片"),
-	
+
 	//登录白名单
 	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单");
-	
+
 	private String code;
     private String name;
     AfResourceType(String code, String name) {

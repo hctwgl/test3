@@ -58,6 +58,8 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private int renewalNum; //累计续期次数
 	private BigDecimal poundageRate;// 借钱手续费率（日）
 	private BigDecimal baseBankRate;// 央行基准利率
+	private String majiabaoName;//马甲包名称www为APP,其余的为马甲包名称
+	
 	/**
 	 * @return the gmtClose
 	 */
@@ -602,11 +604,19 @@ public class AfBorrowCashDo extends AbstractSerial {
 	public void setBaseBankRate(BigDecimal baseBankRate) {
 		this.baseBankRate = baseBankRate;
 	}
+	
+	public String getMajiabaoName() {
+		return majiabaoName;
+	}
+
+	public void setMajiabaoName(String majiabaoName) {
+		this.majiabaoName = majiabaoName;
+	}
 
 	@Override
 	public String toString() {
 		return "AfBorrowCashDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", borrowNo=" + borrowNo + ", userId=" + userId + ", type=" + type + ", amount=" + amount + ", status=" + status + ", remark=" + remark + ", cardNumber=" + cardNumber + ", cardName=" + cardName + ", overdueDay=" + overdueDay + ", overdueAmount=" + overdueAmount + ", arrivalAmount=" + arrivalAmount + ", gmtArrival=" + gmtArrival + ", reviewName=" + reviewName + ", reviewUserName=" + reviewUserName + ", reviewDetails=" + reviewDetails + ", gmtReview=" + gmtReview + ", gmtClose=" + gmtClose + ", poundage=" + poundage + ", rateAmount=" + rateAmount + ", repayAmount=" + repayAmount + ", latitude=" + latitude + ", longitude=" + longitude + ", province=" + province + ", city=" + city + ", county=" + county + ", overdueStatus=" + overdueStatus + ", reviewStatus=" + reviewStatus + ", address=" + address + ", rishOrderNo=" + rishOrderNo + ", gmtPlanRepayment=" + gmtPlanRepayment
-				+ ", sumRate=" + sumRate + ", sumOverdue=" + sumOverdue + ", sumRenewalPoundage=" + sumRenewalPoundage + ", sumRebate=" + sumRebate + ", sumJfb=" + sumJfb + ", renewalNum=" + renewalNum + ", poundageRate=" + poundageRate + ", baseBankRate=" + baseBankRate + "]";
+				+ ", sumRate=" + sumRate + ", sumOverdue=" + sumOverdue + ", sumRenewalPoundage=" + sumRenewalPoundage + ", sumRebate=" + sumRebate + ", sumJfb=" + sumJfb + ", renewalNum=" + renewalNum + ", poundageRate=" + poundageRate + ", baseBankRate=" + baseBankRate +", majiabaoName=" + majiabaoName + "]";
 	}
 
 }

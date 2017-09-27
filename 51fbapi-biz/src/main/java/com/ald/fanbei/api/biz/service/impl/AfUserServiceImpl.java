@@ -141,5 +141,10 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserDao.getUserIdByMobile(mobile);
 	}
 
+	@Override
+	public List<String> getUserNameByUserId(List<String> users) {
+		return afUserDao.getUserNameByUserId(users);
+	}
+
 
 }

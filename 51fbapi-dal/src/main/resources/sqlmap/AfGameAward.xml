@@ -37,4 +37,9 @@
 		UPDATE af_game_award SET gmt_modified = NOW(), contacts=#{contacts} WHERE user_id=#{userId}
 	</update>
 	
+	<select id="getLoanSignAward" resultType="AfGameAwardDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_award WHERE is_delete = 0 AND user_id=#{userId} and game_id = #{gameId}
+	</select>
 </mapper>

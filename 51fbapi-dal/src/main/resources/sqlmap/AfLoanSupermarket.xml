@@ -104,6 +104,15 @@
 		status = 1
 		AND
 		label = #{label}
+		<if test="systemType != null and systemType == 1">
+			AND system in (1,3)
+		</if>
+		<if test="systemType != null and systemType == 2">
+			AND system in (2,3)
+		</if>
+		<if test="systemType != null and systemType == 3">
+			AND system = '3'
+		</if>
 		ORDER BY order_no ASC
 	</select>
 	

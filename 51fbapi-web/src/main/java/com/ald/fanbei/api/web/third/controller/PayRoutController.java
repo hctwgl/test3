@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -11,11 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
-import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
-import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
-import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,6 +31,8 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -51,6 +47,14 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
+import com.alibaba.fastjson.JSON;
 
 /**
  * @类现描述：
@@ -286,7 +290,7 @@ public class PayRoutController {
 				}
 			} else {
 				if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId);
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId,false,"");
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId);
 				}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
@@ -311,7 +315,10 @@ public class PayRoutController {
 		String merPriv = request.getParameter("merPriv");
 		String tradeNo = request.getParameter("tradeNo");
 		String tradeState = request.getParameter("tradeState");
-		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo);
+		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
+		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
+		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
+		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:"+tradeDesc+",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo+ ",respCode=" + respCode+ ",respDesc=" + respDesc);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
 				if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
@@ -331,7 +338,19 @@ public class PayRoutController {
 				}
 			} else if(TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo);
+					String errorWarnMsg = "";
+					if(tradeDesc.startsWith("请求第三方失败,")){
+						tradeDesc = tradeDesc.replaceFirst("请求第三方失败,", "");
+					}
+					if(StringUtil.isNotBlank(tradeDesc)){
+						errorWarnMsg = tradeDesc;
+					}else{
+						if(respDesc.startsWith("请求第三方失败,")){
+							respDesc = respDesc.replaceFirst("请求第三方失败,", "");
+						}
+						errorWarnMsg = respDesc;
+					}
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
 				} else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){ // 分期还款失败	311	
@@ -390,7 +409,7 @@ public class PayRoutController {
 			thirdLog.info("yibaoresonse fail: "+"status="+status+",orderNo="+orderId);
 
 			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo);
+				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo,false,"");
 			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
 			}else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {

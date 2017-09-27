@@ -233,7 +233,10 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 			String ipAddress = CommonUtil.getIpAddr(request);
 			AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId, currentDay);
-
+			//用户借钱时app来源区分
+			String majiabaoName = requestDataVo.getId().substring(requestDataVo.getId().lastIndexOf("_") + 1, requestDataVo.getId().length());
+			afBorrowCashDo.setMajiabaoName(majiabaoName);
+			
 			if (!isCanBorrow) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 			}

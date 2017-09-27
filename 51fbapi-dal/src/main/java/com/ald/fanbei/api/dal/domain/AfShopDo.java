@@ -25,6 +25,8 @@ public class AfShopDo extends AbstractSerial {
 	private String shopUrl;//商城地址
 	private String icon;//图片
 	private String logo;//logo
+	private String latestUseIcon;//最近使用图标
+	private String shopActivity; //商城活动
 	private BigDecimal commissionAmount;//平台返佣
 	private String commissionUnit;//平台返佣单位【RMB人民币,PERCENTAGE百分比】
 	private BigDecimal rebateAmount;//用户返利
@@ -33,7 +35,9 @@ public class AfShopDo extends AbstractSerial {
 	private String platformName;//平台名称 BOLUOME
 	private String serviceProvider;//供应商编号如抠电影【kou】
 	private Long interestFreeId;//免息规则ID
-	
+	private Integer latestOnline;//最新上线开启状态 0:关闭 1:开启
+	private String newIcon; //改版商城新图icon
+	private String newLogo;//改版订单新图logo
 	/**
 	 * @return the rid
 	 */
@@ -262,5 +266,36 @@ public class AfShopDo extends AbstractSerial {
 	public void setInterestFreeId(Long interestFreeId) {
 		this.interestFreeId = interestFreeId;
 	}
+	public String getLatestUseIcon() {
+	    return latestUseIcon;
+	}
+	public void setLatestUseIcon(String latestUseIcon) {
+	    this.latestUseIcon = latestUseIcon;
+	}
+	public String getShopActivity() {
+	    return shopActivity;
+	}
+	public void setShopActivity(String shopActivity) {
+	    this.shopActivity = shopActivity;
+	}
+	public Integer getLatestOnline() {
+	    return latestOnline;
+	}
+	public void setLatestOnline(Integer latestOnline) {
+	    this.latestOnline = latestOnline;
+	}
+	public String getNewIcon() {
+	    return newIcon;
+	}
+	public void setNewIcon(String newIcon) {
+	    this.newIcon = newIcon;
+	}
+	public String getNewLogo() {
+	    return newLogo;
+	}
+	public void setNewLogo(String newLogo) {
+	    this.newLogo = newLogo;
+	}
+	
 
 }

@@ -194,7 +194,11 @@
 			<include refid="queryFields"/>
 		FROM af_borrow WHERE is_delete = 0 AND borrow_no = #{borrowNo} LIMIT 1
 	</select>
-	
-	
-	
+
+
+
+
+
+
+
 </mapper>

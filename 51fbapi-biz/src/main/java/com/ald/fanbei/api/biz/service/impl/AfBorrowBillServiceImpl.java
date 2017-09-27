@@ -177,5 +177,8 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public List<HashMap> getBorrowBillNoPaySumByUserId(@Param("userId") long userId){
 		return afBorrowBillDao.getBorrowBillNoPaySumByUserId(userId);
 	}
-	
+
+	public  AfBorrowBillDo getTotalMonthlyBillByIds( Long userId, List<Long > ids ){
+		return  afBorrowBillDao.getTotalMonthlyBillByIds(userId,ids);
+	}
 }

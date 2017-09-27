@@ -17,12 +17,15 @@ import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
@@ -85,6 +88,9 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 
 	@Resource
 	AfTradeWithdrawRecordService afTradeWithdrawRecordService;
+	
+	@Resource
+	SmsUtil smsUtil;
 
 	@Override
 	public AfUserAccountDo getUserAccountByUserId(Long userId) {
@@ -199,8 +205,23 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 							account.setUsedAmount(afBorrowCashDo.getAmount().negate());
 							account.setUserId(afBorrowCashDo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
+							//fmf——增加log记录
+							AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+							accountLog.setUserId(afBorrowCashDo.getUserId());
+							accountLog.setAmount(afBorrowCashDo.getAmount());
+							accountLog.setType("TRANSEDFAIL_USEAMOUNT");
+							accountLog.setRefId(afBorrowCashDo.getRid()+"");
+							try{
+								afUserAccountLogDao.addUserAccountLog(accountLog);
+							}catch(Exception e){
+								throw new FanbeiException("TRANSEDFAIL_USEAMOUNT "+afBorrowCashDo.getRid()+" is fail,"+e);
+							}
 						}
 						
+						//打款失败消息通知用户
+						//用户当日打款失败次数
+						int applyBorrowCashFailTimes = afBorrowCashService.getCurrDayTransFailTimes(afBorrowCashDo.getUserId());
+						smsUtil.sendApplyBorrowTransedFail(userAccountDo.getUserName(),afBorrowCashDo.getCardName(),StringUtil.getLastAppointLengthChar(afBorrowCashDo.getCardNumber(),4),applyBorrowCashFailTimes);
 
 					} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
 						AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
@@ -240,6 +261,24 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	@Override
 	public AfUserAccountDo getUserAccountInfoByUserName(String userName) {
 		return afUserAccountDao.getUserAccountInfoByUserName(userName);
+	}
+
+	@Override
+	public int updateBorrowCashActivity(int money, List<String> userId) {
+		//af_user_account_log添加记录
+		for (String string : userId) {
+			AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
+			userAccountLog.setAmount(new BigDecimal(money));
+			userAccountLog.setUserId(Long.parseLong(string));
+			userAccountLog.setType("borrow_Activitys");
+			userAccountLog.setRefId(" ");
+			try{
+				afUserAccountLogDao.addUserAccountLog(userAccountLog);
+			}catch(Exception e){
+				throw new FanbeiException("addUserAccountLog "+userId+" is fail,"+e);
+			}
+		}
+		return afUserAccountDao.updateBorrowCashActivity(money, userId);
 	}
 
 }

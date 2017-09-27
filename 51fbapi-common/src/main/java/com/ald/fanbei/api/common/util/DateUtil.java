@@ -451,7 +451,13 @@ public class DateUtil {
 
         return formatter.format(srcDate);
     }
+    public static String formatAndMonthAndDay(Date srcDate) {
+        Calendar cal1 = GregorianCalendar.getInstance();
+        cal1.setTime(srcDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("M月d日");
 
+        return formatter.format(srcDate);
+    }
     /**
      * 返回短日期格式
      * 

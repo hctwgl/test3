@@ -45,4 +45,12 @@ public interface AfGameAwardDao {
 	 * @return
 	 */
 	List<AfGameAwardDo> getLatestAwards();
+
+	/**
+	 * 借贷超市签到奖励查询
+	 * @param userId
+	 * @param gameId
+	 * @return
+	 */
+	AfGameAwardDo getLoanSignAward(@Param("userId")Long userId, @Param("gameId")Long gameId);
 }
