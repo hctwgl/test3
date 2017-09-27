@@ -318,11 +318,12 @@ body {
   margin-bottom: 0.32rem;
 }
 #time .others {
-  width: 100%;
+  width: 7.2rem;
   height: 100%;
   background-image: url("http://f.51fanbei.com/h5/app/activity/09/bgp.png");
   background-size: contain;
   padding-top: 0.8rem;
+  margin-left: 0.15rem;
 }
 #time .oneLine {
   width: 7.5rem;
@@ -389,7 +390,7 @@ body {
   margin-bottom: 1.72rem;
 }
 #time .winningUser {
-  width: 4.31rem;
+  width: 4rem;
   height: 4.04rem;
   background-color: #ff3844;
   padding-top: 0.27rem;
