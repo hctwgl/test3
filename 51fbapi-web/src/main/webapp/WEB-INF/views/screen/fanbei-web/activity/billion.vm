@@ -81,34 +81,36 @@
     <!--开奖倒计时!-->
     <div id="time">
         <img src="$commonUrl/billion_05.png" alt="">
-        <div class="oneLine">
-            <i class="left"><i>.</i><i>.</i><i>.</i></i>
-            <i class="right"><i>.</i><i>.</i><i>.</i></i>
-        </div>
-        <div class="twoLine"></div>
-        <div class='clearFix'>
-            <div class="cash">
-                <p class="timeMoney"><i class="RMB" id="RMB">${winAmount}</i>元现金</p>
-                <p class="award">开奖倒计时</p>
-                <!--<p class="countDown">${dates}</p>-->
-                <p class="countDown" id="count">
-                    <!--<span id="year">00年</span>
-                    <span id="month">00月</span>
-                    <span id="day">00日</span>!-->
-                    <span id="hour">{{hourData}} 时</span>
-                    <span id="minute">{{minuteData}} 分</span>
-                    <span id="second">{{secondData}} 秒</span></p>
+        <div class="others">
+            <!--<div class="oneLine">
+                <i class="left"><i>.</i><i>.</i><i>.</i></i>
+                <i class="right"><i>.</i><i>.</i><i>.</i></i>
             </div>
-            <!--现金中奖用户!-->
-            <div class="winningUser">
-                <ul>
-                    <h3>${winAmounts}元现金中奖用户</h3>
-                    <li>
-                        <!--<span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in timeoutdata" :key='index'>{{it}}</span>!-->
-                        <span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in timeoutdata" :key='index'>{{it}}</span>
-                    </li>
-                    <button v-on:click="lists()">查看更多</button>
-                </ul>
+            <div class="twoLine"></div>!-->
+            <div class='clearFix'>
+                <div class="cash">
+                    <p class="timeMoney"><i class="RMB" id="RMB">${winAmount}</i>元现金</p>
+                    <p class="award">开奖倒计时</p>
+                    <!--<p class="countDown">${dates}</p>-->
+                    <p class="countDown" id="count">
+                        <!--<span id="year">00年</span>
+                        <span id="month">00月</span>
+                        <span id="day">00日</span>!-->
+                        <span id="hour">{{hourData}} 时</span>
+                        <span id="minute">{{minuteData}} 分</span>
+                        <span id="second">{{secondData}} 秒</span></p>
+                </div>
+                <!--现金中奖用户!-->
+                <div class="winningUser">
+                    <ul>
+                        <h3>${winAmounts}元现金中奖用户</h3>
+                        <li>
+                            <!--<span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in timeoutdata" :key='index'>{{it}}</span>!-->
+                            <span :class="{'left':index%2==0,'right':index%2==1}" v-for="(it,index) in timeoutdata" :key='index'>{{it}}</span>
+                        </li>
+                        <button v-on:click="lists()">查看更多</button>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
