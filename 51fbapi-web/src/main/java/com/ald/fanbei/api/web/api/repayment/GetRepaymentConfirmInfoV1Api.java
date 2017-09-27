@@ -86,6 +86,8 @@ public class GetRepaymentConfirmInfoV1Api implements ApiHandle {
                 userCoupon.setGmtEnd(afUserCouponDto.getGmtEnd());
                 Date gmtEnd = userCoupon.getGmtEnd();
                 // 如果当前时间离到期时间小于48小时,则显示即将过期
+
+
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.DAY_OF_YEAR, EXPIRE_DAY);
                 Date twoDay = cal.getTime();
