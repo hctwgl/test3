@@ -34,7 +34,7 @@ import java.util.Map;
  * @author chefeipeng 2017年9月25日下午1:49:07
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("changeCheckVerifyCode")
+@Component("changeCheckVerifyCodeApi")
 public class ChangeCheckVerifyCodeApi implements ApiHandle {
 	@Resource
 	AfSmsRecordService afSmsRecordService;
