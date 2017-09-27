@@ -215,7 +215,7 @@ public class UnionLoginController extends BaseController {
      */
     @RequestMapping("/jfLogin")
     @ResponseBody
-    public JSONObject jfLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
+    public String jfLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
         try {
             Map<String, String[]> paramsMap = request.getParameterMap();
             String paramsJsonStr = JSONObject.toJSONString(paramsMap);
@@ -265,14 +265,14 @@ public class UnionLoginController extends BaseController {
             logger.info("返回 url 地址:" + returnUrl);
             jsonObject.put("url",  returnUrl);
             jsonResultObject.put("data", jsonObject);
-            return jsonResultObject;
+            return jsonResultObject.toJSONString();
         }catch (Exception e) {
             JSONObject jsonResultObject = new JSONObject();
             thirdLog.error("jfLogin error:", e);
             jsonResultObject.put("message", "系统异常，请稍后再试！");
             jsonResultObject.put("status", "0");
             jsonResultObject.put("code", "0");
-            return jsonResultObject;
+            return jsonResultObject.toJSONString();
         }
     }
 
