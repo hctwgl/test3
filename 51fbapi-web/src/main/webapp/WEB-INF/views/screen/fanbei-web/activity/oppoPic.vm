@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>OPPO 拍照手机</title>
 </head>
 <style>
     *{
@@ -221,6 +221,18 @@
                     <p class="product-set"><i class="back-set"><i class="point"></i>正面指纹识别 4G+64GB</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
                     <p class="money">￥1399<i class="back">返</i>￥55.96</p>
                     <p class="month-pay">月供<sapn>￥157.38</sapn>起</p>
+                </div>
+            </li>
+            <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">OPPO A77</p>
+                    <p class="product-des">与青春合拍</p>
+                    <p class="product-set"><i class="back-set"><i class="point"></i>前置1600万 4G+64GB</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
+                    <p class="money">￥2599<i class="back">返</i>￥55.96</p>
+                    <p class="month-pay">月供<sapn>￥51.38</sapn>起</p>
                 </div>
             </li>
             <li class="detail">

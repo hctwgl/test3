@@ -80,14 +80,13 @@ var vm = new Vue({
 
 
             })
-            //请求显示右侧列表中奖用户
-            var money=document.getElementById("RMB").innerHTML;//获取中奖现金
+            //请求显示右侧列表10个中奖用户
             $.ajax({
-                        url: '/fanbei-web/activity/randomUser',
+                        url: '/fanbei-web/activity/getWinUsers',
                         dataType: 'json',
                         type: 'post',
-                        data:{winAmount:money},
                         success: function (data) {
+                            console.log(2222222222222)
                             console.log(data);
                             _this.timeoutdata=data;
 
@@ -285,7 +284,7 @@ var vm = new Vue({
             timerId = setInterval(function () {
                 nowTime += 1000;
                 //end = new Date(year + '/' + month + '/' + activeDaY + ' 10:00:00'); //第二天结束时间
-                var tim = (year + '/' + month + '/' + activeDaY + ' 20:51:00');
+                var tim = (year + '/' + month + '/' + activeDaY + ' 21:25:00');
                 end = new Date(tim);
                 //console.log(end)
                 if (activeDaY == endDay) {//后台当前时间和结束时间同一天的时候重新赋值
@@ -299,9 +298,9 @@ var vm = new Vue({
                 _this.minuteData = Minute;
                 _this.secondData = Second;
                 //每日10点的时候调用中奖名单接口
-                // var money=document.getElementById("RMB").innerHTML;//获取中奖现金
+                var money=document.getElementById("RMB").innerHTML;//获取中奖现金
                 //console.log(money);
-                /* if( _this.hourData==0 &&  _this.minuteData==0 && _this.secondData==0){
+                 if( _this.hourData==0 &&  _this.minuteData==0 && _this.secondData==0){
                     $.ajax({
                         url: '/fanbei-web/activity/randomUser',
                         dataType: 'json',
@@ -309,11 +308,11 @@ var vm = new Vue({
                         data:{winAmount:money},
                         success: function (data) {
                             console.log(data);
-                            _this.timeoutdata=data;
+                           // _this.timeoutdata=data;
 
                         }
                     })
-                } */
+                } 
                 if (t < 1000) {
                     // debugger
                     nowTime = end.getTime();
