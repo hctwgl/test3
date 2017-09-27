@@ -36,7 +36,8 @@ public class AfShopDo extends AbstractSerial {
 	private String serviceProvider;//供应商编号如抠电影【kou】
 	private Long interestFreeId;//免息规则ID
 	private Integer latestOnline;//最新上线开启状态 0:关闭 1:开启
-	
+	private String newIcon; //改版商城新图icon
+	private String newLogo;//改版订单新图logo
 	/**
 	 * @return the rid
 	 */
@@ -282,6 +283,18 @@ public class AfShopDo extends AbstractSerial {
 	}
 	public void setLatestOnline(Integer latestOnline) {
 	    this.latestOnline = latestOnline;
+	}
+	public String getNewIcon() {
+	    return newIcon;
+	}
+	public void setNewIcon(String newIcon) {
+	    this.newIcon = newIcon;
+	}
+	public String getNewLogo() {
+	    return newLogo;
+	}
+	public void setNewLogo(String newLogo) {
+	    this.newLogo = newLogo;
 	}
 	
 

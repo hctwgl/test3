@@ -41,6 +41,7 @@ public class GetBrandListApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Integer pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 1);
+		final int appVersion = context.getAppVersion();
 		AfShopQuery query = new AfShopQuery();
 		query.setFull(false);
 		query.setPageNo(pageNo);
@@ -52,7 +53,7 @@ public class GetBrandListApi implements ApiHandle {
 			resultList = CollectionConverterUtil.convertToListFromList(shopList, new Converter<AfShopDo, AfShopVo>() {
 				@Override
 				public AfShopVo convert(AfShopDo source) {
-					return parseDoToVo(source);
+					return parseDoToVo(source,appVersion);
 				}
 			});
 		}
@@ -61,13 +62,18 @@ public class GetBrandListApi implements ApiHandle {
 		return resp;
 	}
 	
-	private AfShopVo parseDoToVo(AfShopDo shopInfo) {
+	private AfShopVo parseDoToVo(AfShopDo shopInfo,int appVersion) {
 		AfShopVo vo = new AfShopVo();
 		vo.setRid(shopInfo.getRid());
 		vo.setName(shopInfo.getName());
 		vo.setRebateAmount(shopInfo.getRebateAmount());
 		vo.setRebateUnit(shopInfo.getRebateUnit());
-		vo.setIcon(shopInfo.getIcon());
+		//版本判断,大于3.9.0的版本，用新图
+		if(appVersion>390){
+		    vo.setIcon(shopInfo.getNewIcon());
+		}else{
+		    vo.setIcon(shopInfo.getIcon());
+		}
 		vo.setType(shopInfo.getType());
 		vo.setShopUrl(shopInfo.getShopUrl());
 		vo.setLatestUseIcon(shopInfo.getLatestUseIcon());
