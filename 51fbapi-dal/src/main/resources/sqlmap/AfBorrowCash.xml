@@ -354,7 +354,7 @@
 		AND
 		user_id = #{userId}
 		and `status` = 'TRANSEDFAIL'
-		and  gmt_create  >= CURDATE()
+		and  gmt_modified  >= CURDATE()
 	</select>
 	
 </mapper>
