@@ -21,6 +21,7 @@ let vue=new Vue({
                 type:'post',
                 data:{'activityId':activityId},
                 success:function (data) {
+                //   console.log(data);
                    var del=eval('(' + data+ ')');
                    self.message=del.data;
                     console.log(self.message);
