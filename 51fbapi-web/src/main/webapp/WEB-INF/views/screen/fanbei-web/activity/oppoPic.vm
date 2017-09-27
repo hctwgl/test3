@@ -137,7 +137,7 @@
 
 </style>
 <body>
-    <div id="oppoPic">
+    <!--<div id="oppoPic">
         <div class="banner"><img src="$src/oppo11n.png" alt=""></div>
         <ul>
             <li class="detail" v-for="item in message.oneLevelGoodsInfo.goodsList" @click="buyNow(item)">
@@ -154,6 +154,85 @@
                     <sapn v-if="item.nperMap.isFree==='1' ||  item.nperMap.isFree==='2'">￥{{item.nperMap.freeAmount}}</sapn>
                     <span v-else>￥{{item.nperMap.amount}}</span>起
                     </p>
+                </div>
+            </li>
+        </ul>
+    </div>!-->
+
+    <div id="oppoPic">
+        <div class="banner"><img src="$src/oppo11n.png" alt=""></div>
+        <ul>
+            <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">OPPO R11巴萨限量版 </p>
+                    <p class="product-des">前后2000万，拍照更清晰</p>
+                    <p class="product-set"><i class="back-set"><i class="point"></i>18K镀金队徽</i><i class="storage"><i class="pointT"></i>稀缺资源</i></p>
+                    <p class="flash-power"><i class="vooc"><i class="pointO"></i>VOOC闪充</i></p>
+                    <p class="money">￥3499<i class="back">返</i>￥69.98</p>
+                    <p class="month-pay">月供<sapn>￥393.64</sapn>起</p>
+                </div>
+            </li>
+            <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">oppo R11 Plus</p>
+                    <p class="product-des">前后2000万，拍照更清晰</p>
+                    <p class="product-set"><i class="back-set"><i class="point"></i>后置双摄 6英寸大屏</i><i class="storage"><i class="pointT"></i>VOOC闪充</i></p>
+                    <p class="money">￥2999<i class="back">返</i>￥119.96</p>
+                    <p class="month-pay">月供<sapn>￥337.38</sapn>起</p>
+                </div>
+            </li>
+            <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">OPPO R9s</p>
+                    <p class="product-des">这一刻，更清晰</p>
+                    <p class="product-set"><i class="back-set"><i class="point"></i>正面指纹 4G+64GB</i><i class="storage"><i class="pointT"></i>VOOC闪充</i></p>
+                    <p class="money">￥2599<i class="back">返</i>￥51.98</p>
+                    <p class="month-pay">月供<sapn>￥292.38</sapn>起</p>
+                </div>
+            </li>
+            <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">OPPO A59s</p>
+                    <p class="product-des">前置1600万像素</p>
+                    <p class="product-set"><i class="back-set"><i class="point"></i>双卡双待 4G+64GB</i><i class="storage"><i class="pointT"></i>VOOC闪充</i></p>
+                    <p class="money">￥1799<i class="back">返</i>￥71.96</p>
+                    <p class="month-pay">月供<sapn>￥202.38</sapn>起</p>
+                </div>
+            </li>
+             <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">OPPO A57</p>
+                    <p class="product-des">1600万美颜自拍</p>
+                    <p class="product-set"><i class="back-set"><i class="point"></i>正面指纹识别 4G+64GB</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
+                    <p class="money">￥1399<i class="back">返</i>￥55.96</p>
+                    <p class="month-pay">月供<sapn>￥157.38</sapn>起</p>
+                </div>
+            </li>
+            <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">OPPO A77</p>
+                    <p class="product-des">与青春合拍</p>
+                    <p class="product-set"><i class="back-set"><i class="point"></i>前置1600万 4G+64GB</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
+                    <p class="money">￥1399<i class="back">返</i>￥55.96</p>
+                    <p class="month-pay">月供<sapn>￥157.38</sapn>起</p>
                 </div>
             </li>
         </ul>
