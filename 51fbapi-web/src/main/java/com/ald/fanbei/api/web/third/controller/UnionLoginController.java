@@ -365,7 +365,7 @@ public class UnionLoginController extends BaseController {
      */
     @RequestMapping("/welcome")
     public String welcome(int isNew, String token,String channel) throws Exception {
-        thirdLog.info("union login view：",channel);
+        thirdLog.info("union login view："+channel);
         return "/unionlogin/welcome";
     }
 
