@@ -12,10 +12,10 @@
     <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner"><img src="$src/nationalDay01.png"></div>
     <div class="couponList clearFix">
-        <div class="coupon clearFix" v-for="item in couponCont.couponInfoList">
+        <div class="coupon clearFix" v-for="item in couponCont.couponInfoList" @click="couponClick(item)">
             <p class="couponAmount"><span>￥</span><span>{{item.amount}}</span></p>
             <p class="couponName">优惠券</p>
-            <p class="couponLimit" v-if="item.limitAmount>0">实付满{{item.limitAmount}}元可用</p>
+            <p class="couponLimit" v-if="item.limitAmount>0">实付满{{item.limitAmount}}使用</p>
             <p class="couponLimit" v-else>无门槛</p>
         </div>
     </div>

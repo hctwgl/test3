@@ -71,6 +71,42 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！");
                 }
             });
+        },
+        /*点击优惠券*/
+        couponClick:function(item) {
+            //let self = this;
+            let couponId = item.couponId;
+            $.ajax({
+                url: "/fanbei-web/pickCoupon",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    couponId: couponId
+                },
+                success: function (returnData) {
+                    if (returnData.success) {
+                        requestMsg("优惠劵领取成功");
+                    } else {
+                        var status = returnData.data["status"];
+                        if (status == "USER_NOT_EXIST") { // 用户不存在
+                            window.location.href = returnData.url;
+                        }
+                        if (status == "OVER") { // 优惠券个数超过最大领券个数
+                            //requestMsg(returnData.msg);
+                            requestMsg("您已经领取，快去使用吧");
+                        }
+                        if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                            requestMsg(returnData.msg);
+                        }
+                        if (status == "MORE_THAN") { // 优惠券已领取完
+                            requestMsg(returnData.msg);
+                        }
+                    }
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
+                }
+            })
         }
     }
 })
