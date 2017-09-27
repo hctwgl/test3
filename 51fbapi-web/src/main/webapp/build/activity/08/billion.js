@@ -87,7 +87,7 @@ var vm = new Vue({
                 if (RMB > 600) {
                     $(".winningUser").show();
                     $(".cash").css({
-                        'width': '3rem',
+                        'width': '2.8rem',
                         'float': 'left'
                     });
                 } else {

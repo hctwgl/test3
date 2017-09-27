@@ -364,7 +364,7 @@ body {
   margin-left: 0;
 }
 #time .cash {
-  width: 3rem;
+  width: 2.8rem;
   float: left;
 }
 #time .clearFix {
@@ -390,7 +390,7 @@ body {
   margin-bottom: 1.72rem;
 }
 #time .winningUser {
-  width: 4.2rem;
+  width: 4.3rem;
   height: 4.04rem;
   background-color: #ff3844;
   padding-top: 0.27rem;
