@@ -250,6 +250,7 @@ public class UnionLoginController extends BaseController {
         jsonObject.put("serial_number", serial_number);
         jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
         int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
+        afUnionLoginLogService.addLog(fanbeiChannelCode, mobileDec, paramsJsonStr);
         String token = UserUtil.generateToken(mobileDec);
         String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
         if(request.getRequestURL().toString().indexOf("testapp")==-1){
@@ -321,6 +322,7 @@ public class UnionLoginController extends BaseController {
             //endregion 必要信息解密
 
             int is_new_user = getsetUserInfo(phoneStr, fanbeiChannelCode, paramsJsonStr);
+            afUnionLoginLogService.addLog(fanbeiChannelCode, phoneStr, paramsJsonStr);
             String token = UserUtil.generateToken(phoneStr);
             String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token);
             JSONObject jsonResultObject = new JSONObject();
