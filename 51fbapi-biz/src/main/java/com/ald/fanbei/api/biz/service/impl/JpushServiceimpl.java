@@ -7,9 +7,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +16,8 @@ import com.ald.fanbei.api.biz.third.util.JpushUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
 /**
  * 

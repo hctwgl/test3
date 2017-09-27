@@ -5,7 +5,7 @@
 		id
 		rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,
 		overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close,rish_order_no,
-		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate
+		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate,majiabao_name
 	</sql>
 
 	<insert id="addBorrowCash" parameterType="AfBorrowCashDo"
@@ -14,7 +14,11 @@
 		af_borrow_cash(gmt_create , gmt_modified , borrow_no , user_id , type,
 		amount , status , card_number , card_name , poundage , rate_amount ,
 		latitude , longitude , province ,arrival_amount, city , county,
-		address, poundage_rate, base_bank_rate)
+		address, poundage_rate, base_bank_rate
+		<if test="majiabaoName != null">
+			,majiabao_name
+		</if>
+		)
 		VALUES (
 		NOW(),
 		NOW(),
@@ -36,6 +40,9 @@
 		#{address},
 		#{poundageRate},
 		#{baseBankRate}
+		<if test="majiabaoName != null">
+			,#{majiabaoName}
+		</if>
 		)
 	</insert>
 
@@ -131,6 +138,9 @@
 		</if>
 		<if test="renewalNum != null and renewalNum !=''">
 			,renewal_num=#{renewalNum}
+		</if>
+		<if test="majiabaoName != null and majiabaoName !=''">
+			,majiabao_name=#{majiabaoName}
 		</if>
 		WHERE id = #{rid}
 	</update>
@@ -334,6 +344,19 @@
 		WHERE id=#{rid}
 	</update>
 
+	<select id="getCurrDayTransFailTimes" resultType="java.lang.Integer">
+		SELECT
+		count(*) 
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and `status` = 'TRANSEDFAIL'
+		and  gmt_modified  >= CURDATE()
+	</select>
+	
 	<select id="getBorrowCashSumAmount" resultType="java.math.BigDecimal">
 		SELECT
 			SUM(`amount`)

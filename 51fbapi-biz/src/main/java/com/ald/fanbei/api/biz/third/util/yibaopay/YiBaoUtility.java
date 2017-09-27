@@ -253,7 +253,7 @@ public class YiBaoUtility {
         }
         else{
             //关闭
-            afRepaymentBorrowCashService.dealRepaymentFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+            afRepaymentBorrowCashService.dealRepaymentFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo(),false,"");
         }
     }
 

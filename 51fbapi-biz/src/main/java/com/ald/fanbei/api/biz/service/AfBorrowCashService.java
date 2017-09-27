@@ -165,4 +165,11 @@ public interface AfBorrowCashService {
 	 * @return
 	 * **/
 	List<String> getNotRandomUser(List<String> userId);
+
+	/**
+	 * 获取当前用户当日打款失败次数
+	 * @param userId
+	 * @return
+	 */
+	int getCurrDayTransFailTimes(Long userId);
 }
