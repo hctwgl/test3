@@ -216,55 +216,64 @@ public class UnionLoginController extends BaseController {
     @RequestMapping("/jfLogin")
     @ResponseBody
     public JSONObject jfLogin(String channel_id, String dingdang_id, String serial_number, String mobile, String name, String cert_id) throws Exception {
-        Map<String, String[]> paramsMap = request.getParameterMap();
-        String paramsJsonStr = JSONObject.toJSONString(paramsMap);
-        String fanbeiChannelCode = "jf";
-        //region 查询渠道信息
-        AfUnionLoginChannelDo afUnionLoginChannelDo = new AfUnionLoginChannelDo();
-        afUnionLoginChannelDo.setCode(fanbeiChannelCode);
-        AfUnionLoginChannelDo channelDo = afUnionLoginChannelService.getByCommonCondition(afUnionLoginChannelDo);
-        //endregion
+        try {
+            Map<String, String[]> paramsMap = request.getParameterMap();
+            String paramsJsonStr = JSONObject.toJSONString(paramsMap);
+            String fanbeiChannelCode = "jf";
+            //region 查询渠道信息
+            AfUnionLoginChannelDo afUnionLoginChannelDo = new AfUnionLoginChannelDo();
+            afUnionLoginChannelDo.setCode(fanbeiChannelCode);
+            AfUnionLoginChannelDo channelDo = afUnionLoginChannelService.getByCommonCondition(afUnionLoginChannelDo);
+            //endregion
 
-        //region 必要信息解密
-        String privateKeyStr = channelDo.getValue1();
-        String publicKeyStr = channelDo.getValue2();
-        PrivateKey privateKey = JFSecret.getPrivateKey(privateKeyStr);
-        PublicKey publicKey = JFSecret.getPublicKey(publicKeyStr);
-        String channelDec = JFSecret.decrypt(privateKey, channel_id);
+            //region 必要信息解密
+            String privateKeyStr = channelDo.getValue1();
+            String publicKeyStr = channelDo.getValue2();
+            PrivateKey privateKey = JFSecret.getPrivateKey(privateKeyStr);
+            PublicKey publicKey = JFSecret.getPublicKey(publicKeyStr);
+            String channelDec = JFSecret.decrypt(privateKey, channel_id);
 
 
-        if (StringUtils.isEmpty(channelDo.getThirdChannelCode())) {
-            //设置第三方的渠道号码
-            channelDo.setThirdChannelCode(channelDec);
-            afUnionLoginChannelService.updateById(channelDo);
-        }
-        String mobileDec = JFSecret.decrypt(privateKey, mobile);
+            if (StringUtils.isEmpty(channelDo.getThirdChannelCode())) {
+                //设置第三方的渠道号码
+                channelDo.setThirdChannelCode(channelDec);
+                afUnionLoginChannelService.updateById(channelDo);
+            }
+            String mobileDec = JFSecret.decrypt(privateKey, mobile);
 //        String nameDec = JFSecret.decrypt(privateKey, name);
 //        String cert_idDec = JFSecret.decrypt(privateKey, cert_id);
 
-        //region 必要信息解密
-        logger.info("解密第三方渠道号:" + channelDec + "，解密手机号:" + mobileDec);
-        JSONObject jsonObject = new JSONObject();
+            //region 必要信息解密
+            logger.info("解密第三方渠道号:" + channelDec + "，解密手机号:" + mobileDec);
+            JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("channel_id", fanbeiChannelCode);
-        jsonObject.put("serial_number", serial_number);
-        jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
-        int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
-        afUnionLoginLogService.addLog(fanbeiChannelCode, mobileDec, paramsJsonStr);
-        String token = UserUtil.generateToken(mobileDec);
-        String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
-        if(request.getRequestURL().toString().indexOf("testapp")==-1){
-            returnUrl=returnUrl.replace("http:","https:");
+            jsonObject.put("channel_id", fanbeiChannelCode);
+            jsonObject.put("serial_number", serial_number);
+            jsonObject.put("regist_code", JFSecret.encrypt(publicKey, "1".getBytes()));
+            int is_new_user = getsetUserInfo(mobileDec, fanbeiChannelCode, paramsJsonStr);
+            afUnionLoginLogService.addLog(fanbeiChannelCode, mobileDec, paramsJsonStr);
+            String token = UserUtil.generateToken(mobileDec);
+            String returnUrl = String.format(request.getRequestURL().toString().replace(request.getRequestURI(), RETURN_URL), is_new_user, token.substring(0, 8));
+            if(request.getRequestURL().toString().indexOf("testapp")==-1){
+                returnUrl=returnUrl.replace("http:","https:");
+            }
+            JSONObject jsonResultObject = new JSONObject();
+            jsonResultObject.put("message", "成功");
+            jsonResultObject.put("status", "1");
+            jsonResultObject.put("code", "0");
+
+            logger.info("返回 url 地址:" + returnUrl);
+            jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
+            jsonResultObject.put("data", jsonObject);
+            return jsonResultObject;
+        }catch (Exception e) {
+            JSONObject jsonResultObject = new JSONObject();
+            thirdLog.error("jfLogin error:", e);
+            jsonResultObject.put("message", "系统异常，请稍后再试！");
+            jsonResultObject.put("status", "0");
+            jsonResultObject.put("code", "0");
+            return jsonResultObject;
         }
-        JSONObject jsonResultObject = new JSONObject();
-        jsonResultObject.put("message", "成功");
-        jsonResultObject.put("status", "1");
-        jsonResultObject.put("code", "0");
-
-        logger.info("返回 url 地址:" + returnUrl);
-        jsonObject.put("url", JFSecret.encrypt(publicKey, returnUrl.getBytes()));
-        jsonResultObject.put("data", jsonObject);
-        return jsonResultObject;
     }
 
     /**
