@@ -317,7 +317,8 @@ public class PayRoutController {
 		String tradeState = request.getParameter("tradeState");
 		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
-		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo+ ",respCode=" + respCode+ ",respDesc=" + respDesc);
+		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
+		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:"+tradeDesc+",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo+ ",respCode=" + respCode+ ",respDesc=" + respDesc);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
 				if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
@@ -337,10 +338,19 @@ public class PayRoutController {
 				}
 			} else if(TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					if(respDesc.startsWith("请求第三方失败,")){
-						respDesc = respDesc.replaceFirst("请求第三方失败,", "");
+					String errorWarnMsg = "";
+					if(tradeDesc.startsWith("请求第三方失败,")){
+						tradeDesc = tradeDesc.replaceFirst("请求第三方失败,", "");
 					}
-					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo,true,respDesc);
+					if(StringUtil.isNotBlank(tradeDesc)){
+						errorWarnMsg = tradeDesc;
+					}else{
+						if(respDesc.startsWith("请求第三方失败,")){
+							respDesc = respDesc.replaceFirst("请求第三方失败,", "");
+						}
+						errorWarnMsg = respDesc;
+					}
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
 				} else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){ // 分期还款失败	311	
