@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($src="http://f.51fanbei.com/h5/app/activity/09")
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    *{
+        box-sizing:border-box;
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+    }
+    .clearfix:after {
+        content: " ";
+        display: block;
+        clear: both;
+        height: 0;
+    }
+    .clearfix {
+        zoom: 1;
+    }
+    body{
+        background-color:#2559c1;
+        padding:0 0.2rem;
+        
+    }
+    .banner{
+        height:4rem;
+    }
+    .detail{
+        width:7.1rem;
+        height:3.4rem;
+    }
+    .detail-left{
+        width:58%;
+        height:3.4rem;
+        background-color:pink;
+        display:inline-block;
+    }
+    .detail-right{
+        width:40%;
+        padding-left:0.16rem;
+        background-color:white;
+        display:inline-block;
+    }
+    .product-name{
+        font-size:0.293rem;
+        margin-bottom:0.18rem;
+        margin-top:0.3rem;
+        font-weight:600;
+    }
+    .product-des{
+        font-size:0.2rem;
+        font-weight:600;
+    }
+    .product-set{
+        font-size:0.16rem;
+        color: rgba(19, 19, 19, 0.8);
+        margin:0.3rem 0;
+    }
+    .flash-power{
+        color:rgba(19, 19, 19, 0.8);
+        font-size:0.16rem;
+        margin-bottom:0.38rem;
+    }
+    .money{
+        color:#d42334;
+        font-size:0.3rem;
+    }
+    .back{
+        width:0.35rem;
+        height:0.35rem;
+        border-radius:50%;
+        line-height:0.35rem;
+        background-color:#d42334;
+        color:white;
+    }
+    .month-pay{
+        width:2.32rem;
+        height:0.38rem;
+        background-color:#d42334;
+        font-size:0.26rem;
+        color:white;
+        margin-top:0.24rem;
+        margin-bottom:0.3rem;
+        padding:0 0.11rem;
+    }
+
+
+
+
+</style>
+<body>
+    <div id="oppoPic">
+        <div class="banner"><img src="$src/09/oppo11n.png" alt=""></div>
+        <ul>
+            <li class="detail">
+                <div class="detail-left">
+                    <img src="" alt="">
+                </div>
+                <div class="detail-right">
+                    <p class="product-name">oppo R11</p>
+                    <p class="product-des">前后2000万，拍照更清晰</p>
+                    <p class="product-set"><i class="back-set">后置双摄</i> <i class="storage">4G+64GB</i></p>
+                    <p class="flash-power"><i class="vooc">VOOC闪充</i></p>
+                    <p class="money">￥2999 <i class="back">返</i> ￥119.96</p>
+                    <p class="month-pay">月供 ￥337.38起</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script src="//cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+<script type="text/javascript" src="/dist/activity/09/oppoPic.js"></script>
+</html>
