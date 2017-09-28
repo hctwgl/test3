@@ -118,7 +118,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 						List<String> userName = afUserService.getUserNameByUserId(users);
 						// 发送短信
 						try {
-							smsUtil.sendBorrowCashActivitys(userName.get(0), "恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。 回复td退订");
+							smsUtil.sendBorrowCashActivitys(userName.get(0), "恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。");
 						} catch (Exception e) {
 							logger.info("sendBorrowCashActivitys Billion_Win_User is fail," + e);
 						}

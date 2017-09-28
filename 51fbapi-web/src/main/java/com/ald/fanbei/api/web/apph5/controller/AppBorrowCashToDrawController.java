@@ -209,7 +209,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 				// 发送短信
 				for (String userName : userNames) {
 					try {
-						smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得" + winAmount + "元现金红包，快去查收惊喜吧。回复td退订");
+						smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得" + winAmount + "元现金红包，快去查收惊喜吧。");
 					} catch (Exception e) {
 						logger.info("sendBorrowCashActivitys " + userName + " is fails," + e);
 					}

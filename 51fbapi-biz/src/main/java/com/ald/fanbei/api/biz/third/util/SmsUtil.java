@@ -440,7 +440,7 @@ public class SmsUtil extends AbstractThird {
      * @return
      * **/
     public  boolean sendBorrowCashActivitys(String mobile,String content){
-      SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
+      SmsResult smsResult = sendSmsToDhst(mobile, content);
       return smsResult.isSucc();
     }
     
