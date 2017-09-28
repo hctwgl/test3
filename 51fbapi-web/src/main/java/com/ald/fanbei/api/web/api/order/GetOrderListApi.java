@@ -97,10 +97,15 @@ public class GetOrderListApi implements ApiHandle{
 		    queryShop.setType(order.getSecType());
 		    AfShopDo afShopDo =  afShopService.getShopInfoBySecTypeOpen(queryShop);
 		    //版本判断
-		    if(context.getAppVersion()>390){
-			vo.setGoodsIcon(afShopDo.getNewLogo());
+		    if(afShopDo!=null){
+        		 if(context.getAppVersion()>390){
+        		   vo.setGoodsIcon(afShopDo.getNewLogo());
+        		  }else{
+        		   vo.setGoodsIcon(afShopDo.getLogo());
+        		 }
 		    }else{
-			vo.setGoodsIcon(afShopDo.getLogo());
+			  //若空，用订单的图片
+			  vo.setGoodsIcon(order.getGoodsIcon());
 		    }
 		}else{
 		    vo.setGoodsIcon(order.getGoodsIcon());

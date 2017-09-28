@@ -236,6 +236,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 					} catch (Exception e) {
 						logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
 					}
+					bizCacheUtil.saveObject("win_user",jsonString ,60*60*24*2);
 					return jsonString;
 				}
 				try {
@@ -246,11 +247,13 @@ public class AppBorrowCashToDrawController extends BaseController {
 				} catch (Exception e) {
 					logger.info("randomUser winAmount_Win_User redis save is fail," + jsonString + "" + e);
 				}
+				bizCacheUtil.saveObject("win_user",jsonString ,60*60*24*2);
 				return jsonString;
 			} else {
 				String winamount = (String) bizCacheUtil.getObject("winAmount");
 				bizCacheUtil.saveObject("winAmount", Integer.parseInt(winamount) + 100 + "", 60 * 60 * 24 * 10);
 				String jsonString = JsonUtil.toJSONString(resource.getValue3());
+				bizCacheUtil.saveObject("win_user",jsonString ,60*60*24*2);
 				return jsonString;
 			}
 		}
@@ -258,6 +261,18 @@ public class AppBorrowCashToDrawController extends BaseController {
 		return null;
 	}
 
+	@RequestMapping(value = "/getWinUsers", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String getWinUsers() {
+		String users = null;
+		try {
+			users = (String) bizCacheUtil.getObject("win_user");
+		} catch (Exception e) {
+			logger.info("getWinUsers redis get is fail" + e);
+		}
+		return users;
+	}
+	
 	@RequestMapping(value = "/getWinUser", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String getWinUser() {
