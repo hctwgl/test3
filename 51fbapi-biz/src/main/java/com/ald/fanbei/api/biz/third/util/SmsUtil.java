@@ -740,8 +740,13 @@ public class SmsUtil extends AbstractThird {
         return password;
     }
 
-    public void sendDefaultPassword(String phone, String password) {
-        sendSmsToDhst(phone, String.format(DEFAULT_PASSWORD, password));
+    public void sendDefaultPassword(String phone, String password,String channelCode) {
+       SmsResult smsResult= sendSmsToDhst(phone, String.format(DEFAULT_PASSWORD, password));
+       if(smsResult.isSucc()){
+           thirdLog.info("union login sms success channel:"+channelCode+",phone:"+phone);
+       }else{
+           thirdLog.error("union login sms error channel:"+channelCode+",phone:"+phone);
+       }
     }
 }
 

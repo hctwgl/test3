@@ -393,7 +393,7 @@ public class UnionLoginController extends BaseController {
             }
         } else {
             String password = afUnionLoginRegisterService.register(channelCode, mobile, paramsJsonStr);
-            smsUtil.sendDefaultPassword(mobile, password);
+            smsUtil.sendDefaultPassword(mobile, password,channelCode);
         }
         return is_new_user;
     }
