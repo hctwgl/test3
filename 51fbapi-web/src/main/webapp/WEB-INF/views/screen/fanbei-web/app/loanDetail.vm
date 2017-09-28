@@ -46,11 +46,16 @@
         <div class="applyLimit">
             <p class="limitTitle">申请条件</p>
             <p class="limitCont">
-                <span></span>18岁以上18岁以上 ,18岁就很好吃。
-                <span></span>无不良记录公民,银卡说到底为此等待。
-                <span></span>18岁以上18岁以上 ,18岁就很好吃。
+                <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span><br/>
+                <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span><br/>
+                <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span>
             </p>
         </div>
+    </div>
+    <div class="needCont">
+        <p class="needTitle">所需材料</p>
+        <p><span></span>身份证</p>
+        <p><span></span>银行卡</p>
     </div>
 </div>
 <script type="text/javascript" src="/dist/js/app/loanDetail.js?version=$version"></script>
