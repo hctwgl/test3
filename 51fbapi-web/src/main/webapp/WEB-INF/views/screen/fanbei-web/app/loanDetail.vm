@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170928")
+    #set($src="http://f.51fanbei.com/h5/app/activity/09")
+    <meta charset="UTF-8">
+    <title>贷款详情</title>
+    <link rel="stylesheet" type="text/css" href="/dist/css/app/loanDetail.css?version=$version">
+</head>
+<body>
+<div id="loanDetail"  class="loanDetail">
+    <div class="header">
+         <div class="top clearFix">
+             <p class="logo"></p>
+             <p class="name">51返呗</p>
+             <p class="peopleNum">本月放款人数2999998</p>
+             <p class="feature"><span>小额极速贷</span><span>低息借款</span><span>返利</span></p>
+         </div>
+         <div class="fanbeiDes">51返呗简介51返呗简介51返呗简介</div>
+    </div>
+    <div class="kong"></div>
+    <div class="main clearFix">
+        <div class="amountLimit">
+            <input type="text" placeholder="3000"><span class="word01">元</span><br/><span class="word02">额度500元-3000元</span>
+        </div>
+        <div class="amountLimit timeLimit">
+            <input type="text" placeholder="60"><span class="word01">天</span><br/><span class="word02">借款期限1月-3月</span>
+        </div>
+        <div class="payMoney">
+            <p class="payMoneyTitle">按月还款</p>
+            <ul class="desList clearFix">
+                <li><p><span>0.8%</span><span>参考月利率</span></p></li>
+                <li><p><span>1小时</span><span>最快放款时间</span></p></li>
+                <li><p><span>500</span><span>每月还款(元)</span></p></li>
+            </ul>
+        </div>
+    </div>
+    <div class="kong"></div>
+    <div class="applyCont">
+        <div class="applyFlow">
+            <p class="flowTitle">申请流程</p>
+            <div class="flowChart clearFix">
+                <p class="left" v-for="item in flowCont"><img :src="item.imgUrl"><span>{{item.name}}</span><span class="line"></span></p>
+            </div>
+        </div>
+        <div class="applyLimit">
+            <p class="limitTitle">申请条件</p>
+            <p class="limitCont">
+                <span></span>18岁以上18岁以上 ,18岁就很好吃。
+                <span></span>无不良记录公民,银卡说到底为此等待。
+                <span></span>18岁以上18岁以上 ,18岁就很好吃。
+            </p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/dist/js/app/loanDetail.js?version=$version"></script>
+</body>
+</html>
