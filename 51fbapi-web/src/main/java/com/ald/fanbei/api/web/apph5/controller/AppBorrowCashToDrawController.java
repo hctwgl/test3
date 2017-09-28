@@ -77,7 +77,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 			winAmount = resource.getValue1();
 		}
 		Map<String, String>  Amount = new HashMap<String, String>();
-		int amount = Integer.parseInt(winAmount);
+		int amount = Integer.parseInt(resource.getValue1());
 		Amount.put("Amount1",amount+"");
 		Amount.put("Amount2",(amount+100)+"");
 		Amount.put("Amount3",(amount+200)+"");
