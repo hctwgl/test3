@@ -27,7 +27,7 @@ public class AuthRealnameRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 	private static final String AUTHNAMEKEY = "authname";
 	
 	@Override
-	protected AfCouponSceneDo getCouponScene(Date now) {
+	protected AfCouponSceneDo getCouponScene(Date now, Long userId) {
 		AfCouponSceneDo activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.AUTHNAME.getCode());
 		return checkActivity(activityDo, now);
 	}

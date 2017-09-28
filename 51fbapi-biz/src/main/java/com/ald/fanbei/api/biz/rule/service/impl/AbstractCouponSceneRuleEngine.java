@@ -81,7 +81,7 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 		logger.info(StringUtil.appendStrs("userId=",userId,",inputData=",inputData));
 		try{
 			Date now = new Date();
-			AfCouponSceneDo couponSenceDo = getCouponScene(now);
+			AfCouponSceneDo couponSenceDo = getCouponScene(now, userId);
 			if(couponSenceDo == null){
 				return;
 			}
@@ -104,9 +104,10 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 	/**
 	 * 获取优惠券场景对象
 	 * @param now
+	 * @param userId 
 	 * @return
 	 */
-	protected abstract AfCouponSceneDo getCouponScene(Date now);
+	protected abstract AfCouponSceneDo getCouponScene(Date now, Long userId);
 	
 	/**
 	 * 获取符合场景的规则列表

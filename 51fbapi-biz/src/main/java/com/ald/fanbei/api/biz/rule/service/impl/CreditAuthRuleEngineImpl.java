@@ -21,7 +21,7 @@ public class CreditAuthRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 	private static final String CREDITAUTHKEY = "creditauth";
 	
 	@Override
-	protected AfCouponSceneDo getCouponScene(Date now) {
+	protected AfCouponSceneDo getCouponScene(Date now, Long userId) {
 		AfCouponSceneDo activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.CREDITAUTH.getCode());
 		return checkActivity(activityDo, now);
 	}

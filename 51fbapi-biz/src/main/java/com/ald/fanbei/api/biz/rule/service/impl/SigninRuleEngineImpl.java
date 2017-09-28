@@ -28,7 +28,7 @@ public class SigninRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 	private static final String SIGNINKEY = "signin";
 
 	@Override
-	protected AfCouponSceneDo getCouponScene(Date now) {
+	protected AfCouponSceneDo getCouponScene(Date now, Long userId) {
 		AfCouponSceneDo activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
 		return checkActivity(activityDo, now);
 	}

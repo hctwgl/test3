@@ -12,6 +12,7 @@ import java.util.Map;
 public enum CouponSenceRuleType {
 
     REGIST("REGIST", "注册"),
+    MJBREGIST("MJBREGIST", "马甲包注册"),
     SIGNIN("SIGNIN", "签到"),
     AUTHNAME("AUTHNAME", "实名认证"),
     PICK("PICK", "领取"),
