@@ -134,7 +134,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 						AfUserAccountLogDo userAccountLog = new AfUserAccountLogDo();
 						userAccountLog.setAmount(afBorrowCashDo.getAmount());
 						userAccountLog.setUserId(afBorrowCashDo.getUserId());
-						userAccountLog.setType("borrow_Activitys");
+						userAccountLog.setType("BORROWCASH_ACTIVITYS");
 						userAccountLog.setRefId(" ");
 						try {
 							afUserAccountLogDao.addUserAccountLog(userAccountLog);

@@ -303,8 +303,10 @@ public class AppBorrowCashToDrawController extends BaseController {
 		bizCacheUtil.delCache("winAmount");
 		bizCacheUtil.delCache("Start_Time");
 		bizCacheUtil.delCache("winAmount_Win_User");
+		bizCacheUtil.delCache("win_user");
 		bizCacheUtil.delCache("Billion_Win_User");
 		bizCacheUtil.delCache("BorrowCash_Sum_Amount");
+		logger.info("delCache is SUCCESS,endDate = " + new Date());
 		return null;
 	}
 	
