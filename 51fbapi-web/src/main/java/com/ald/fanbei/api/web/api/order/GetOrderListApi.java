@@ -86,12 +86,12 @@ public class GetOrderListApi implements ApiHandle{
         resp.setResponseData(map);
 		return resp;
 	}
-
+	
 	private AfOrderListVo getOrderListVo(AfOrderDo order ,FanbeiContext context){
 		AfOrderListVo vo = new AfOrderListVo();
 		vo.setGmtCreate(order.getGmtCreate());
 		//如果是菠萝觅订单，查询shop表,
-		if(order.getOrderType().equals("BOLUOME")){
+		if(OrderType.BOLUOME.getCode().equals(order.getOrderType())){
 		   //通过类型查商城图片
 		    AfShopDo queryShop = new AfShopDo();
 		    queryShop.setType(order.getSecType());

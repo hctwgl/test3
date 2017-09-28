@@ -270,7 +270,7 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 			AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
 			userAccountLog.setAmount(new BigDecimal(money));
 			userAccountLog.setUserId(Long.parseLong(string));
-			userAccountLog.setType("borrow_Activitys");
+			userAccountLog.setType("BORROWCASH_ACTIVITYS");
 			userAccountLog.setRefId(" ");
 			try{
 				afUserAccountLogDao.addUserAccountLog(userAccountLog);

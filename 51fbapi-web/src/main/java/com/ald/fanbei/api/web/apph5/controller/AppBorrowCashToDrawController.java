@@ -77,7 +77,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 			winAmount = resource.getValue1();
 		}
 		Map<String, String>  Amount = new HashMap<String, String>();
-		int amount = Integer.parseInt(winAmount);
+		int amount = Integer.parseInt(resource.getValue1());
 		Amount.put("Amount1",amount+"");
 		Amount.put("Amount2",(amount+100)+"");
 		Amount.put("Amount3",(amount+200)+"");
@@ -209,7 +209,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 				// 发送短信
 				for (String userName : userNames) {
 					try {
-						smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得" + winAmount + "元现金红包，快去查收惊喜吧。回复td退订");
+						smsUtil.sendBorrowCashActivitys(userName, "哇！幸运值爆棚的你在“破十五亿”活动中获得" + winAmount + "元现金红包，快去查收惊喜吧。");
 					} catch (Exception e) {
 						logger.info("sendBorrowCashActivitys " + userName + " is fails," + e);
 					}
@@ -303,8 +303,10 @@ public class AppBorrowCashToDrawController extends BaseController {
 		bizCacheUtil.delCache("winAmount");
 		bizCacheUtil.delCache("Start_Time");
 		bizCacheUtil.delCache("winAmount_Win_User");
+		bizCacheUtil.delCache("win_user");
 		bizCacheUtil.delCache("Billion_Win_User");
 		bizCacheUtil.delCache("BorrowCash_Sum_Amount");
+		logger.info("delCache is SUCCESS,endDate = " + new Date());
 		return null;
 	}
 	
