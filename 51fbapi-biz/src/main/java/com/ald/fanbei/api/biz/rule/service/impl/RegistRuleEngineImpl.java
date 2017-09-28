@@ -42,7 +42,7 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 			return null;
 		}
 		AfCouponSceneDo activityDo = null;
-		if (StringUtil.equals(AfUserMaJiaBaoType.APP.toString(), afUserDo.getMajiabaoName()) || StringUtil.equals(AfUserMaJiaBaoType.H5.toString(), afUserDo.getMajiabaoName())) {
+		if (StringUtil.equals(AfUserMaJiaBaoType.APP.getCode(), afUserDo.getMajiabaoName()) || StringUtil.isEmpty(afUserDo.getMajiabaoName())) {
 			// app用户
 			activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.REGIST.getCode());
 		}else {

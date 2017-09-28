@@ -12,7 +12,7 @@ import java.util.Map;
 public enum AfUserMaJiaBaoType {
 
     APP("www", "51"),
-    H5("", "H5"),
+    H5(null, "H5"),
     BORROWMONEY("borrowMoney", "borrowMoney"),
     BORROWSUPERMAN("borrowSuperman", "借款超人"),
     JIEDAIBAO("jiedaibao", "借贷宝"),
