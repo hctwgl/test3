@@ -298,7 +298,7 @@ var vm = new Vue({
                 _this.minuteData = Minute;
                 _this.secondData = Second;
                 //每日10点的时候调用中奖名单接口
-                var money=document.getElementById("RMB").innerHTML;//获取中奖现金
+           /*      var money=document.getElementById("RMB").innerHTML;//获取中奖现金
                 //console.log(money);
                  if( _this.hourData==0 &&  _this.minuteData==0 && _this.secondData==0){
                     $.ajax({
@@ -312,7 +312,7 @@ var vm = new Vue({
 
                         }
                     })
-                } 
+                }  */
                 if (t < 1000) {
                     // debugger
                     nowTime = end.getTime();
