@@ -221,7 +221,7 @@ body {
   transform: translateY(-50%);
 }
 .progress .progressFour {
-  width: 1rem;
+  width: 1.2rem;
   height: 0.09rem;
   background-color: #b7000a;
   position: absolute;
@@ -235,7 +235,7 @@ body {
   border-radius: 50%;
   background-color: #b7000a;
   position: absolute;
-  left: 68%;
+  left: 71%;
   top: 50%;
   transform: translateY(-50%);
 }
