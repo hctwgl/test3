@@ -27,7 +27,7 @@
             <input type="text" placeholder="60"><span class="word01">天</span><br/><span class="word02">借款期限1月-3月</span>
         </div>
         <div class="payMoney">
-            <p class="payMoneyTitle">按月还款</p>
+            <p class="sameTitle payMoneyTitle">按月还款</p>
             <ul class="desList clearFix">
                 <li><p><span>0.8%</span><span>参考月利率</span></p></li>
                 <li><p><span>1小时</span><span>最快放款时间</span></p></li>
@@ -38,13 +38,13 @@
     <div class="kong"></div>
     <div class="applyCont">
         <div class="applyFlow">
-            <p class="flowTitle">申请流程</p>
+            <p class="sameTitle flowTitle">申请流程</p>
             <div class="flowChart clearFix">
                 <p class="left" v-for="item in flowCont"><img :src="item.imgUrl"><span>{{item.name}}</span><span class="line"></span></p>
             </div>
         </div>
         <div class="applyLimit">
-            <p class="limitTitle">申请条件</p>
+            <p class="sameTitle limitTitle">申请条件</p>
             <p class="limitCont">
                 <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span><br/>
                 <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span><br/>
@@ -53,9 +53,9 @@
         </div>
     </div>
     <div class="needCont">
-        <p class="needTitle">所需材料</p>
-        <p><span></span>身份证</p>
-        <p><span></span>银行卡</p>
+        <p class="sameTitle needTitle">所需材料</p>
+        <p class="everyCont everyCont01"><span></span>身份证</p>
+        <p class="everyCont everyCont02"><span></span>银行卡</p>
     </div>
 </div>
 <script type="text/javascript" src="/dist/js/app/loanDetail.js?version=$version"></script>
