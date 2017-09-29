@@ -107,6 +107,10 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！");
                 }
             })
+        },
+        //点击最后大图进入场景
+        fourthContClick(){
+            window.location.href='https://91ala.otosaas.com/menpiao';
         }
     }
-})
+});
