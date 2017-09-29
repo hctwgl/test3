@@ -124,7 +124,7 @@ public abstract class BaseController {
             catch (Exception e){
                 if(e instanceof  FanbeiException){
                     FanbeiException fanebei1 = (FanbeiException)e;
-                    if(fanebei1.getErrorCode().equals("VERSION_ERROR")){
+                    if(fanebei1.getErrorCode().getCode().equals("VERSION_ERROR")){
                        throw e;
                     }
                     else{
