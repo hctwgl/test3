@@ -22,30 +22,30 @@ new Vue({
             }
         },
         cli:function () {
-            if(this.type=='down'){
-                window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-            }else{
-                var loadDateTime=new Date();
-                if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
-                    window.location.href = "com.91ala.www://home://";
-                    window.setTimeout(function () {
-                        let timeOutDateTime = new Date();
-                        if (timeOutDateTime - loadDateTime < 5000 && location.href.indexOf('com.91ala.www://home//') == -1){
-                            window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-                        } else {
-                            window.close();
-                        }
-                    },2000);
-                } else if (navigator.userAgent.match(/android/i)) {
-                    window.location.href = "myapp://jp.app/openwith??isBrowser=1";
-                    setTimeout(function(){
-                        let timeOutDateTime = new Date();
-                        if (timeOutDateTime - loadDateTime < 5000){
-                            window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-                        }
-                    },2000);
-                }
+            let ifrSrc = 'com.91ala.www://home://';
+            if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
+                ifrSrc = 'com.91ala.www://home://';
+            }else if (navigator.userAgent.match(/android/i)){
+                ifrSrc = 'myapp://jp.app/openwith??isBrowser=1';
             }
+            let ifr = document.createElement('iframe');
+            ifr.src = ifrSrc;
+            ifr.style.display = 'none';
+            // var isInstalled;
+            // ifr.onload = function() {
+            //     isInstalled = true;
+            //     alert(isInstalled);
+            //     document.getElementById('openApp1').click();};
+            // ifr.onerror = function() {
+            //     // alert('May be not installed.');
+            //     isInstalled = false;
+            //     alert(isInstalled);
+            // };
+            document.body.appendChild(ifr);
+            setTimeout(function() {
+                document.body.removeChild(ifr);
+            },1000);
+                window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
         }
     }
 })
