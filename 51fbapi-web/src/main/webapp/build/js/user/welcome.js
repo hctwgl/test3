@@ -23,8 +23,10 @@ new Vue({
         },
         cli:function () {
             let ifrSrc = 'com.91ala.www://home://';
+            let url='http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www';
             if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
                 ifrSrc = 'com.91ala.www://home://';
+                url='https://itunes.apple.com/cn/app/51%E8%BF%94%E5%91%97-%E8%B4%AD%E7%89%A9%E5%88%86%E6%9C%9F%E8%B4%B7%E6%AC%BE%E8%BF%94%E5%88%A9%E5%B9%B3%E5%8F%B0/id1136587444?mt=8';
             }else if (navigator.userAgent.match(/android/i)){
                 ifrSrc = 'myapp://jp.app/openwith??isBrowser=1';
             }
@@ -45,7 +47,7 @@ new Vue({
             setTimeout(function() {
                 document.body.removeChild(ifr);
             },1000);
-                window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+                window.location = url;
         }
     }
 })
