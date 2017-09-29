@@ -12,6 +12,7 @@ import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -27,7 +28,7 @@ public class AuthRealnameRuleEngineImpl extends AbstractCouponSceneRuleEngine {
 	private static final String AUTHNAMEKEY = "authname";
 	
 	@Override
-	protected AfCouponSceneDo getCouponScene(Date now, Long userId) {
+	protected AfCouponSceneDo getCouponScene(Date now, AfUserDo userDo) {
 		AfCouponSceneDo activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.AUTHNAME.getCode());
 		return checkActivity(activityDo, now);
 	}

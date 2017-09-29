@@ -36,20 +36,16 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 	AfUserDao afUserDao;
 	
 	@Override
-	protected AfCouponSceneDo getCouponScene(Date now, Long userId) {
-		AfUserDo afUserDo = afUserDao.getUserById(userId);
-		logger.info(StringUtil.appendStrs("yuyueafUserDo",userId,"user",afUserDo));
-		if (afUserDo == null || afUserDo.getRid() == 0L) {
+	protected AfCouponSceneDo getCouponScene(Date now, AfUserDo userDo) {
+		if (userDo == null || userDo.getRid() == 0L) {
 			return null;
 		}
 		AfCouponSceneDo activityDo = null;
-		logger.info(StringUtil.appendStrs("yuyuegetCouponScene",userId,"user",afUserDo));
-		if (StringUtil.equals(AfUserMaJiaBaoType.APP.getCode(), afUserDo.getMajiabaoName()) || StringUtil.isEmpty(afUserDo.getMajiabaoName())) {
+		if (StringUtil.equals(AfUserMaJiaBaoType.APP.getCode(), userDo.getMajiabaoName()) || StringUtil.isEmpty(userDo.getMajiabaoName())) {
 			// app用户
 			activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.REGIST.getCode());
 		}else {
 			// 马甲包用户
-			logger.info(StringUtil.appendStrs("yuyuegetCouponSceneMJB",userId,"user",afUserDo));
 			activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.MJBREGIST.getCode());
 		}
 		return checkActivity(activityDo, now);
