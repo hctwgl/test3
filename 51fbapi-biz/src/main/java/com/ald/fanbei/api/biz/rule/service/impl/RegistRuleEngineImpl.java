@@ -38,6 +38,7 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 	@Override
 	protected AfCouponSceneDo getCouponScene(Date now, Long userId) {
 		AfUserDo afUserDo = afUserDao.getUserById(userId);
+		logger.info(StringUtil.appendStrs("yuyueafUserDo",userId,"user",afUserDo));
 		if (afUserDo == null || afUserDo.getRid() == 0L) {
 			return null;
 		}
