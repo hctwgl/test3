@@ -6,7 +6,8 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *@类描述：ras生成签名和验签的工具类
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
  */
 public class SignUtil {
 	
-	private static final Logger logger = Logger.getLogger(SignUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(SignUtil.class);
 	
 
 	/**

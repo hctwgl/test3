@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.web.h5.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -15,7 +13,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +44,6 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;

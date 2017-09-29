@@ -6,22 +6,9 @@
 	<display-name>fanbei</display-name>
 	<description>fanbei api</description>
  
- 	<!-- log4j -->
-	<context-param>
-		<param-name>log4jConfigLocation</param-name>
-		<param-value>classpath:props/log4j.xml</param-value>
-	</context-param>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring/import-beans.xml</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jExposeWebAppRoot</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jRefreshInterval</param-name>
-		<param-value>10000</param-value>
 	</context-param>
 	<context-param>
 		<param-name>webAppRootKey</param-name>
@@ -33,9 +20,6 @@
 	</context-param>
 	
 
-	<listener>
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>

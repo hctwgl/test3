@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.web.test.common.BaseTest;
 
@@ -83,7 +85,7 @@ public class ChangeMobileTest extends BaseTest{
 		testApiSkipSign(url, params, userName);
 	}
 	
-	@Test
+//	@Test
 	public void doFlow() throws InterruptedException {
 		testGetVerifyCodeApi();
 		TimeUnit.SECONDS.sleep(2);
@@ -92,6 +94,12 @@ public class ChangeMobileTest extends BaseTest{
 		TimeUnit.SECONDS.sleep(2);
 		
 		testChangeMobileSyncConactsApi();
+	}
+	
+	@Test
+	public void test() {
+		Logger logger = LoggerFactory.getLogger(this.getClass());
+		logger.info("Hello World!");
 	}
 	
 }

@@ -18,11 +18,12 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.x509.RSAPublicKeyStructure;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.dbunit.util.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *@类描述：rsa签名辅助工具类
@@ -31,7 +32,7 @@ import org.dbunit.util.Base64;
  */
 public class RSAUtil {
 
-	private static final Logger logger = Logger.getLogger(RSAUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(RSAUtil.class);
 	
 	/**
 	 * 默认的key生成方式，根据该参数灵活管理 rsa加密、解密、签名、验签

@@ -7,48 +7,21 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ald.51fbapi</groupId>
 	<artifactId>51fbapi-web</artifactId>
+	
 	<packaging>war</packaging>
 	<version>2.0</version>
 	<name>51fbapi-web Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.ald.51fbapi</groupId>
 			<artifactId>51fbapi-biz</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<dependency>
-		 	<groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <version>4.11</version>
-		    <type>pom</type>
-		</dependency>
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-test</artifactId>
-		    <version>4.2.1.RELEASE</version>
-		</dependency>
-	<!-- 	<dependency>
-			<groupId>third.taobao.sdk</groupId>
-			<artifactId>taobao-sdk</artifactId>
-			<version>20170204</version>
-		</dependency>
-		
-		<dependency>
-		  <groupId>third.taobao.sdk</groupId>
-		  <artifactId>taobao-sdk-source</artifactId>
-		  <version>20170204</version>
-		  <classifier>source</classifier>
-		</dependency> -->
-		<!-- <dependency>
-		  <groupId>tt</groupId>
-		  <artifactId>taobao</artifactId>
-		  <version>20170207</version>
-		</dependency> -->
-		
 	</dependencies>
+	
 	<build>
 		<finalName>ROOT</finalName>
 		<plugins>

@@ -1,14 +1,16 @@
 package com.ald.fanbei.api.biz.third.util.yibaopay;
 
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.yeepay.g3.sdk.yop.enums.FormatType;
 import com.yeepay.g3.sdk.yop.unmarshaller.JacksonJsonMarshaller;
 import com.yeepay.g3.sdk.yop.unmarshaller.YopMarshaller;
-import org.apache.log4j.Logger;
-
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author honghzengpei 2017/9/7 20:46
@@ -16,7 +18,7 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class YopMarshallerUtils {
-    private static final Logger logger = Logger.getLogger(com.yeepay.g3.sdk.yop.unmarshaller.YopMarshallerUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.yeepay.g3.sdk.yop.unmarshaller.YopMarshallerUtils.class);
     private static Map<FormatType, YopMarshaller> marshallers = new HashMap();
 
     public YopMarshallerUtils() {
