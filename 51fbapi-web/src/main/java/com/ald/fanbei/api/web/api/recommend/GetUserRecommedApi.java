@@ -105,6 +105,7 @@ public class GetUserRecommedApi implements ApiHandle {
             if (requestDataVo.getId().startsWith("i") && Integer.parseInt(requestDataVo.getSystem().get("appVersion").toString()) == 391) {
                 new Timer().schedule(new TimerTask() {
                     public void run() {
+                        logger.error("getUserRecommedApi 391 tips："+mobile);
                         smsUtil.sendSms(mobile, "邀请好友请使用邀请页面底部二维码截图，其他分享方式在下个系统版本升级后可体验");
                         jpushService.pushSharedTips(mobile, "邀请好友请使用邀请页面底部二维码截图，其他分享方式在下个系统版本升级后可体验");
                         this.cancel();
