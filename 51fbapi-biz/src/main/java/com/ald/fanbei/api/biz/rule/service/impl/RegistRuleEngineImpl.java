@@ -42,11 +42,13 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 			return null;
 		}
 		AfCouponSceneDo activityDo = null;
+		logger.info(StringUtil.appendStrs("yuyuegetCouponScene",userId,"user",afUserDo));
 		if (StringUtil.equals(AfUserMaJiaBaoType.APP.getCode(), afUserDo.getMajiabaoName()) || StringUtil.isEmpty(afUserDo.getMajiabaoName())) {
 			// app用户
 			activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.REGIST.getCode());
 		}else {
 			// 马甲包用户
+			logger.info(StringUtil.appendStrs("yuyuegetCouponSceneMJB",userId,"user",afUserDo));
 			activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.MJBREGIST.getCode());
 		}
 		return checkActivity(activityDo, now);

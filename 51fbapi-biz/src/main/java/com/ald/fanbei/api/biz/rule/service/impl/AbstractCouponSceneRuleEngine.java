@@ -82,7 +82,7 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 		try{
 			Date now = new Date();
 			AfCouponSceneDo couponSenceDo = getCouponScene(now, userId);
-			logger.info(StringUtil.appendStrs("yuyue",couponSenceDo));
+			logger.info(StringUtil.appendStrs("yuyue12",couponSenceDo));
 			if(couponSenceDo == null){
 				return;
 			}
