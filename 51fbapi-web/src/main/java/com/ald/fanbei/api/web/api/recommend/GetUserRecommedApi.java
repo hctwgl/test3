@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.api.recommend;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -17,17 +19,18 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Component("getUserRecommedApi")
-public class GetUserRecommedApi implements ApiHandle{
+public class GetUserRecommedApi implements ApiHandle {
     @Resource
     AfRecommendUserService afRecommendUserService;
     @Resource
     AfUserService afUserService;
+    @Resource
+    JpushService jpushService;
+    @Resource
+    SmsUtil smsUtil;
 
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         long userId = context.getUserId();
@@ -36,7 +39,7 @@ public class GetUserRecommedApi implements ApiHandle{
         List<AfResourceDo> list = afRecommendUserService.getActivieResourceByType("RECOMMEND_BACK_IMG");
         HashMap ret = new HashMap();
         String color = "#FE4B2D";
-        if(totalData == null){
+        if (totalData == null) {
             totalData = new HashMap();
         }
 
@@ -44,29 +47,29 @@ public class GetUserRecommedApi implements ApiHandle{
 
 
         //# regoin 分享
-        String sharedImg ="";
-        String sharedTitle ="";
-        String sharedDesc ="";
+        String sharedImg = "";
+        String sharedTitle = "";
+        String sharedDesc = "";
         List<AfResourceDo> listImg = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_IMG");
         List<AfResourceDo> listTitle = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_TITLE");
         List<AfResourceDo> listDes = afRecommendUserService.getActivieResourceByType("RECOMMEND_SHARED_DESCRIPTION");
-        if(listImg != null && listImg.size()>0){
+        if (listImg != null && listImg.size() > 0) {
             sharedImg = listImg.get(0).getValue();
         }
-        if(listTitle != null && listTitle.size()>0){
+        if (listTitle != null && listTitle.size() > 0) {
             sharedTitle = listTitle.get(0).getValue();
         }
 
-        if(listDes != null && listDes.size()>0){
+        if (listDes != null && listDes.size() > 0) {
             sharedDesc = listDes.get(0).getValue();
         }
 
 
-        String allOrderUrl = notifyHost+"/fanbei-web/app/inviteRank";
+        String allOrderUrl = notifyHost + "/fanbei-web/app/inviteRank";
         Date now = new Date();
         Date last = getMonthLast();
-        if(now.getTime() > last.getTime()){
-            allOrderUrl +="?addUiName=LAST_WIN_RANK";
+        if (now.getTime() > last.getTime()) {
+            allOrderUrl += "?addUiName=LAST_WIN_RANK";
         }
         //test
 //        if(notifyHost.equals("http://testapp.51fanbei.com")) {
@@ -74,36 +77,52 @@ public class GetUserRecommedApi implements ApiHandle{
 //        }
 
 
-
-        totalData.put("allOrderUrl",allOrderUrl);
-        totalData.put("activeRule","http://www.baidu.com");
-        totalData.put("recommendCode",afUserDo.getRecommendCode());
+        totalData.put("allOrderUrl", allOrderUrl);
+        totalData.put("activeRule", "http://www.baidu.com");
+        totalData.put("recommendCode", afUserDo.getRecommendCode());
 
 //        addUiName = LAST_WIN_RANK
 
-        String sharedurl = notifyHost +"/fanbei-web/app/inviteShare?recommendCode="+afUserDo.getRecommendCode();
-        totalData.put("url",sharedurl);
-        totalData.put("title",sharedTitle);
-        totalData.put("img",sharedImg);
-        totalData.put("desc",sharedDesc);
+        String sharedurl = notifyHost + "/fanbei-web/app/inviteShare?recommendCode=" + afUserDo.getRecommendCode();
+        totalData.put("url", sharedurl);
+        totalData.put("title", sharedTitle);
+        totalData.put("img", sharedImg);
+        totalData.put("desc", sharedDesc);
 
         //# endregion
-        ret.put("userData",totalData);
-        ret.put("pic",list);
+        ret.put("userData", totalData);
+        ret.put("pic", list);
 
-        if(list != null && list.size()>0){
+        if (list != null && list.size() > 0) {
             color = list.get(0).getValue1();
         }
-        ret.put("color",color);
+        ret.put("color", color);
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         resp.setResponseData(ret);
+
+        try {
+            final String mobile = afUserDo.getUserName();
+            if (requestDataVo.getId().startsWith("i") && Integer.parseInt(requestDataVo.getSystem().get("appVersion").toString()) == 391) {
+                new Timer().schedule(new TimerTask() {
+                    public void run() {
+                        smsUtil.sendSms(mobile, "邀请好友请使用邀请页面底部二维码截图，其他分享方式在下个系统版本升级后可体验");
+                        jpushService.pushSharedTips(mobile, "邀请好友请使用邀请页面底部二维码截图，其他分享方式在下个系统版本升级后可体验");
+                        this.cancel();
+                    }
+                }, 1000 * 5);
+
+            }
+
+        } catch (Exception e) {
+
+        }
         return resp;
     }
 
 
-    private Date getMonthLast(){
+    private Date getMonthLast() {
         Calendar ca = Calendar.getInstance();
         ca.set(2017, 8, 1, 0, 0, 0);
-        return  ca.getTime();
+        return ca.getTime();
     }
 }
