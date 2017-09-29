@@ -177,7 +177,7 @@ public class SmsUtil extends AbstractThird {
      * @return
      */
     public boolean sendRiskSuccess(String mobile) {
-        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_SUCCESS.getCode());
+        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_SUCCESS.getCode(),false);
     }
 
     /**
@@ -187,7 +187,7 @@ public class SmsUtil extends AbstractThird {
      * @return
      */
     public boolean sendRiskFail(String mobile) {
-        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_FAIL.getCode());
+        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_FAIL.getCode(),true);
     }
 
     /**
@@ -256,11 +256,16 @@ public class SmsUtil extends AbstractThird {
     	return false;
     }
 
-    private boolean sendSmsByResource(String mobile, String type, String secType) {
+    private boolean sendSmsByResource(String mobile, String type, String secType,boolean isMarket) {
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(type, secType);
         if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
             String content = resourceDo.getValue();
-            SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
+            SmsResult smsResult = null;
+            if(isMarket){
+            	smsResult = sendMarketingSmsToDhst(mobile, content);
+            }else{
+            	smsResult = sendSmsToDhst(mobile, content);
+            }
             return smsResult.isSucc();
         }
         return false;
@@ -440,7 +445,7 @@ public class SmsUtil extends AbstractThird {
      * @return
      * **/
     public  boolean sendBorrowCashActivitys(String mobile,String content){
-      SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
+      SmsResult smsResult = sendSmsToDhst(mobile, content);
       return smsResult.isSucc();
     }
     
@@ -740,8 +745,13 @@ public class SmsUtil extends AbstractThird {
         return password;
     }
 
-    public void sendDefaultPassword(String phone, String password) {
-        sendSmsToDhst(phone, String.format(DEFAULT_PASSWORD, password));
+    public void sendDefaultPassword(String phone, String password,String channelCode) {
+       SmsResult smsResult= sendSmsToDhst(phone, String.format(DEFAULT_PASSWORD, password));
+       if(smsResult.isSucc()){
+           thirdLog.info("union login sms success channel:"+channelCode+",phone:"+phone);
+       }else{
+           thirdLog.error("union login sms error channel:"+channelCode+",phone:"+phone);
+       }
     }
 }
 
