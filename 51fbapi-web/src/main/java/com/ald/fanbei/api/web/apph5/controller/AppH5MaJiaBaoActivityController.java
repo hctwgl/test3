@@ -10,6 +10,8 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.AppResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -34,6 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @类描述：
@@ -48,14 +51,18 @@ public class AppH5MaJiaBaoActivityController extends BaseController {
 	@Resource
 	AfResourceService afResourceService;
 	
-    @RequestMapping(value = "getDiagram", method = RequestMethod.GET)
+    @RequestMapping(value = "getDiagram", method = RequestMethod.POST)
     @ResponseBody
-	public String getDiagram() {
+	public ApiHandleResponse getDiagram() {
+    	ApiHandleResponse resp = new ApiHandleResponse(null,FanbeiExceptionCode.SUCCESS);
+    	Map<String, String> map = new HashMap<String, String>();
 		List<AfResourceDo> list = afResourceService.getResourceListByType("MJB_REGIST_IMAGE");
 		if (list == null || list.size() < 1) {
-			return null;
+			return resp = new ApiHandleResponse(null,FanbeiExceptionCode.FAILED);
 		}
-		return list.get(0).getValue();
+		map.put("value", list.get(0).getValue());
+		resp.setResponseData(map);
+		return resp;
 	}
 	
     @Override
