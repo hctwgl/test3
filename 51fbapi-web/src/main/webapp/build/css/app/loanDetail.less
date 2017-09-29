@@ -17,8 +17,8 @@ body{
 .sameTitle{
   font-size:.28rem;
   color:#646464;
-  height:.4rem;
   line-height: .4rem;
+  margin:0;
 }
 /*header*/
 .loanDetail .header{
@@ -26,8 +26,7 @@ body{
   margin:0 auto;
 }
 .loanDetail .header .top{
-  height:1.81rem;
-  padding-top:.25rem;
+  padding:.16rem 0 .28rem 0;
   border-bottom:1px solid #dedede;
 }
 .loanDetail .header .top .logo{
@@ -36,6 +35,7 @@ body{
   background:url('@{url}/loanDetail09.png') no-repeat;
   background-size:contain;
   float:left;
+  margin:0;
 }
 .loanDetail .header .top .name{
   font-size:.32rem;
@@ -43,6 +43,7 @@ body{
   padding:.1rem 0 0 1.94rem;
   height:.44rem;
   line-height: .44rem;
+  margin:0;
 }
 .loanDetail .header .top .peopleNum{
   font-size:.26rem;
@@ -50,6 +51,7 @@ body{
   padding-left:1.94rem;
   height:.44rem;
   line-height: .44rem;
+  margin:0;
 }
 .loanDetail .header .top .feature{
   font-size:.22rem;
@@ -57,6 +59,7 @@ body{
   padding:.1rem 0 0 1.94rem;
   height:.36rem;
   line-height: .36rem;
+  margin:0;
 }
 .loanDetail .header .top .feature span{
   border:1px solid #47a6f9;
@@ -70,7 +73,7 @@ body{
   font-size:.26rem;
   color:#969696;
 }
-/*main*/
+/*main-------------------------------*/
 .loanDetail .main{
   width:94%;
   margin:0 auto;
@@ -87,7 +90,11 @@ body{
 .loanDetail .main .amountLimit input{
   height:100%;
   background:#f9f9f9;
-  padding-left:5%;
+  line-height: 100%;
+  margin: 0;
+  padding: 0 0 0 5%;
+  border: 0;
+  border-radius: 0;
 }
 .loanDetail .main .amountLimit .word01{
   position: absolute;
@@ -116,7 +123,7 @@ body{
   box-shadow:0 .02rem .06rem 0 rgba(179,179,179,0.44);
   border-radius:.08rem;
   width:2.08rem;
-  height:1.2rem;
+  padding-bottom: .2rem;
   padding-top:.2rem;
   float:left;
   margin-left:.36rem;
@@ -127,6 +134,7 @@ body{
 .loanDetail .main .payMoney .desList li p {
   height: 1rem;
   padding-left:.3rem;
+  margin:0;
 }
 .loanDetail .main .payMoney .desList li:nth-of-type(odd) p {
   border-left: 2px solid #ff6e34;
@@ -146,7 +154,7 @@ body{
   height:.34rem;
   line-height: .34rem;
 }
-/*申请流程--apply*/
+/*申请流程--apply----------------------------*/
 .loanDetail .applyCont{
   width:94%;
   margin:0 auto;
@@ -180,7 +188,7 @@ body{
   height:.6rem;
   margin:0 auto;
 }
-/*申请条件*/
+/*申请条件-------------------------*/
 .loanDetail .applyCont .applyLimit .limitTitle{
   padding:.26rem 0 .32rem 0;
 }
@@ -202,26 +210,26 @@ body{
 .loanDetail .applyCont .applyLimit .limitCont .contDes{
   padding-left: .1rem;
 }
-/*所需材料*/
-.loanDetail .needCont{
+/*所需材料--------------------------*/
+.loanDetail .applyCont .needCont{
   border-top:1px solid #dedede;
 }
-.loanDetail .needCont .needTitle{
-  padding:.26rem 0 .32rem 3%;
+.loanDetail .applyCont .needCont .needTitle{
+  padding:.26rem 0 .32rem 0;
 }
-.loanDetail .needCont .everyCont{
+.loanDetail .applyCont .needCont .everyCont{
   font-size:.26rem;
   color:#232323;
   padding-bottom: .3rem;
   float:left;
 }
-.loanDetail .needCont .everyCont01{
+.loanDetail .applyCont .needCont .everyCont01{
   margin-left: 3%;
 }
-.loanDetail .needCont .everyCont02{
+.loanDetail .applyCont .needCont .everyCont02{
   margin-left: 8%;
 }
-.loanDetail .needCont .everyCont span{
+.loanDetail .applyCont .needCont .everyCont span{
   width:.1rem;
   height:.1rem;
   background:#47a6f9;
@@ -230,7 +238,17 @@ body{
   display: block;
   float: left;
 }
-
+/*提交申请----------------*/
+.loanDetail .submit{
+  width:100%;
+  height:.98rem;
+  font-size:.32rem;
+  color:#fff;
+  line-height: .98rem;
+  text-align: center;
+  background:#ff6e34;
+  margin:0;
+}
 
 
 

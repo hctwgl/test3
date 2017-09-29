@@ -35,5 +35,25 @@ let vm = new Vue({
         }
     }
 });
-
+//贷款额度
+function moneyLimit(){
+    console.log(1);
+    let picker = new mui.PopPicker();
+    picker.setData([{
+        value: "1",
+        text: "30",
+    }, {
+        value: "2",
+        text: "60"
+    }, {
+        value: "3",
+        text: "120"
+    }
+    ]);
+    // picker.pickers[0].setSelectedIndex(0, 2000);
+    picker.show(function(SelectedItem) {
+        $('.moneyLimit').val(SelectedItem[0].text);
+        picker.dispose();
+    })
+}
 
