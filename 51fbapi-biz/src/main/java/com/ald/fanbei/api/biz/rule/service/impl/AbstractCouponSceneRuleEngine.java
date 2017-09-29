@@ -82,10 +82,10 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 		try{
 			Date now = new Date();
 			AfCouponSceneDo couponSenceDo = getCouponScene(now, userId);
+			logger.info(StringUtil.appendStrs("yuyue",couponSenceDo));
 			if(couponSenceDo == null){
 				return;
 			}
-			logger.info(StringUtil.appendStrs("yuyue",couponSenceDo));
 			Map<String,List<CouponSceneRuleBo>> rules =  getRules(now,couponSenceDo);
 			logger.info(StringUtil.appendStrs("userId=",userId,",rules=",rules));
 			if(rules == null || rules.size() < 0){
