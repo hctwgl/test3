@@ -30,6 +30,7 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 	private Integer isDelete;
 	private String marketPoint;
 	private int isUnionLogin;
+	private String lsmSecretKey;
 	
 	public AfLoanSupermarketDo() {
 		super();
@@ -147,5 +148,13 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 
 	public void setIsUnionLogin(int isUnionLogin) {
 		this.isUnionLogin = isUnionLogin;
+	}
+
+	public String getLsmSecretKey() {
+		return lsmSecretKey;
+	}
+
+	public void setLsmSecretKey(String lsmSecretKey) {
+		this.lsmSecretKey = lsmSecretKey;
 	}
 }
