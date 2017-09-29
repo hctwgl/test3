@@ -271,6 +271,7 @@ public class Constants {
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
 
 	public static final String CONFKEY_WX_APPID = "fbapi.wx.appid";
+	public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 	public static final String CONFKEY_WX_MCHID = "fbapi.wx.mchid";
 	public static final String CONFKEY_WX_KEY = "fbapi.wx.key";
 	public static final String CONFKEY_WX_CERTPATH = "fbapi.wx.certpath";
