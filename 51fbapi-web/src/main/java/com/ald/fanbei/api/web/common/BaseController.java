@@ -114,7 +114,7 @@ public abstract class BaseController {
             try {
                 AfResourceDo afResourceDo = afResourceService.getAfResourceAppVesion();
                 if (afResourceDo != null && afResourceDo.getValue().toLowerCase().equals("true")) {
-                    if (contex.getAppVersion() < Integer.parseInt(afResourceDo.getValue1()) && requestDataVo.getId().endsWith("wwww")) {
+                    if (contex.getAppVersion() < Integer.parseInt(afResourceDo.getValue1()) && requestDataVo.getId().endsWith("www")) {
                         if (!(request.getRequestURI().toString().toLowerCase().contains("/system/appupgrade") || request.getRequestURI().toLowerCase().contains("/system/checkversion"))) {
                             throw new FanbeiException("version is letter 391", FanbeiExceptionCode.VERSION_ERROR);
                         }
