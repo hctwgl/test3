@@ -106,6 +106,10 @@ public abstract class BaseController {
             // 验证参数、签名
             FanbeiContext contex = doCheck(requestDataVo);
 
+            if(contex.getAppVersion()<383){
+                throw new FanbeiException("version is letter 391", FanbeiExceptionCode.VERSION_ERROR);
+            }
+
             // 处理业务
             exceptionresponse = doProcess(requestDataVo, contex, request);
 			resultStr = JSON.toJSONString(exceptionresponse);
