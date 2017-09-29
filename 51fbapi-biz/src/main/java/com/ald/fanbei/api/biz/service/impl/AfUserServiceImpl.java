@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -63,6 +64,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					afUserDao.addUser(afUserDo);
 					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 					afUserAuthDo.setUserId(afUserDo.getRid());
+					logger.info(StringUtil.appendStrs("yuyuegetaddUser",afUserDo.getRid()));
 					afUserAuthDao.addUserAuth(afUserAuthDo);
 
 					AfUserAccountDo account = new AfUserAccountDo();
