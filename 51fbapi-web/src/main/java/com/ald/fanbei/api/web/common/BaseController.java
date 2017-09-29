@@ -122,8 +122,20 @@ public abstract class BaseController {
                 }
             }
             catch (Exception e){
-                logger.info("update version error",e.toString());
-                logger.error("update version error",e);
+                if(e instanceof  FanbeiException){
+                    FanbeiException fanebei1 = (FanbeiException)e;
+                    if(fanebei1.getErrorCode().equals("VERSION_ERROR")){
+                       throw e;
+                    }
+                    else{
+                        logger.info("update version error", e.toString());
+                        logger.error("update version error", e);
+                    }
+                }
+                else {
+                    logger.info("update version error", e.toString());
+                    logger.error("update version error", e);
+                }
             }
 
             // 处理业务
