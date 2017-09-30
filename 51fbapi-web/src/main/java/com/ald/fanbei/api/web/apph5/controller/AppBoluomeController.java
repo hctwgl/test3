@@ -19,12 +19,15 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @RequestMapping("/h5-brand")
@@ -37,7 +40,7 @@ public class AppBoluomeController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/getBrandUrl", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String getBrandUrl(HttpServletRequest request, ModelMap model) {
+    public String getBrandUrl(HttpServletRequest request) {
 	H5CommonResponse resp = H5CommonResponse.getNewInstance();
 	//Calendar calStart = Calendar.getInstance();
 
@@ -100,8 +103,17 @@ public class AppBoluomeController extends BaseController {
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-	// TODO Auto-generated method stub
-	return null;
+    	  try {
+              RequestDataVo reqVo = new RequestDataVo();
+              
+              JSONObject jsonObj = JSON.parseObject(requestData);
+              reqVo.setId(jsonObj.getString("id"));
+              reqVo.setMethod(request.getRequestURI());
+              reqVo.setSystem(jsonObj);
+              return reqVo;
+          } catch (Exception e) {
+              throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+          }
     }
 
     @Override
