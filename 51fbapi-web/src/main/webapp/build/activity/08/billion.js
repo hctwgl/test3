@@ -258,7 +258,7 @@ var vm = new Vue({
         var nowTime = num.currentDate; //当前后台时间
         var endTime = num.endTime; //活动结束时间
         var startrTime = num.startrTime; //活动开始时间
-         console.log(new Date(startrTime), '活动开始时间');
+        console.log(new Date(startrTime), '活动开始时间');
         console.log(new Date(nowTime), '111后天服务器当前时间');
         console.log(new Date(endTime), '活动结束时间'); 
         var diffTimer, day, end;
