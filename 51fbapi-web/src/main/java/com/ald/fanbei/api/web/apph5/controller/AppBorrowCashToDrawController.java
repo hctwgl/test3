@@ -222,7 +222,8 @@ public class AppBorrowCashToDrawController extends BaseController {
 		String amount = null;
 		try {
 			String str = (String) bizCacheUtil.getObject("Billion_Win_User");
-			amount = str.substring(0,str.length()-(str.substring(3)).length())+"****"+str.substring(7); 
+			String ss = str.substring(0,str.length()-(str.substring(3)).length())+"****"+str.substring(7); 
+			amount =JsonUtil.toJSONString(ss);
 		} catch (Exception e) {
 			logger.error("getBillionWinUser redis get is fail");
 		}
