@@ -4,10 +4,13 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +44,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * @类描述:
@@ -174,7 +178,14 @@ public class AppBorrowCashToDrawController extends BaseController {
 	public String getWinUsers() {
 		String users = null;
 		try {
-			users = (String) bizCacheUtil.getObject("win_user");
+		List<Object> user =  JSONArray.parseArray((String)bizCacheUtil.getObject("win_user"));
+		List<String> list =new ArrayList<String>();	
+		for (Object string : user) {
+				String str = (String) string;
+				String ss = str.substring(0,str.length()-(str.substring(3)).length())+"****"+str.substring(7); 
+				list.add(ss);
+		}
+			users = JsonUtil.toJSONString(list);
 		} catch (Exception e) {
 			logger.info("getWinUsers redis get is fail" + e);
 		}
@@ -186,7 +197,19 @@ public class AppBorrowCashToDrawController extends BaseController {
 	public String getWinUser() {
 		String users = null;
 		try {
-			users = (String) bizCacheUtil.getObject("winAmount_Win_User");
+			Map<String,String> map = JSONObject.parseObject((String) bizCacheUtil.getObject("winAmount_Win_User"), Map.class);
+			Map<String,String> maps = new HashMap<String,String>();
+			for (Entry<String, String> entry : map.entrySet()) {
+				List<Object> user = JSONArray.parseArray(entry.getValue());
+				List<String> list =new ArrayList<String>();	
+				for (Object string : user) {
+					String str = (String) string;
+					String ss = str.substring(0,str.length()-(str.substring(3)).length())+"****"+str.substring(7); 
+					list.add(ss);
+				}
+				maps.put(entry.getKey(), JsonUtil.toJSONString(list));
+			}
+			users=JsonUtil.toJSONString(maps);
 		} catch (Exception e) {
 			logger.info("getWinUser redis get is fail" + e);
 		}
