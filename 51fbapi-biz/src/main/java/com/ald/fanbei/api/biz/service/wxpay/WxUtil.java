@@ -59,4 +59,18 @@ public class WxUtil {
 		JSONObject resultObj = JSONObject.parseObject(reqResult);
 		return resultObj.getString("ticket");
 	}
+	
+	/**
+	 * 通过code获取openid
+	 * @param code 菜单页面code
+	 * @return
+	 */
+	public static String getOpenidByCode(String code) {
+		String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + getWxAppId() + "&secret="
+				+ getWxSecret() + "&code=" + code + "&grant_type=authorization_code";
+		String result = HttpUtil.doGet(url, 1000);
+		JSONObject resultJson = JSONObject.parseObject(result);
+		String openid = resultJson.getString("openid");
+		return openid;
+	}
 }
