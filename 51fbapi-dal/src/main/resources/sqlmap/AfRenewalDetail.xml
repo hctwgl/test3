@@ -123,4 +123,9 @@
 		from af_renewal_detail WHERE borrow_id=#{borrowId} ORDER BY gmt_create DESC LIMIT 1 
 	</select>	
 	
+	<select id="getRenewalDetailListByBorrowId" parameterType="java.lang.Long" resultType="AfRenewalDetailDo">
+			select 
+			<include refid="queryFields"/> 
+		from af_renewal_detail WHERE WHERE is_datele=0 AND borrow_id=#{borrowId} AND status='Y'
+	</select>
 </mapper>
