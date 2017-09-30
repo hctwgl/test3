@@ -112,7 +112,7 @@
         text-align:center;
         background-color:#d42334;
         color:white;
-        margin:0 0.2rem;
+        margin:0 0.1rem;
     }
     .back-set{
         margin-left: 0.2rem;
