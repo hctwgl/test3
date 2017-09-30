@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -77,6 +78,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	SmsUtil smsUtil;
 	@Resource
 	JpushService jpushService;
+	@Resource
+	AfFundSideBorrowCashService afFundSideBorrowCashService;
 
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
@@ -92,7 +95,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	 * @return
 	 */
 	public int borrowSuccess(final AfBorrowCashDo afBorrowCashDo) {
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+		int resultValue = 0;
+		resultValue =  transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
 				logger.info("borrowSuccess--begin");
@@ -127,6 +131,18 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				return 1;
 			}
 		});
+		
+		if(resultValue == 1){
+			//业务处理成功,和资金方关联处理添加
+			logger.info("borrowSuccess ,begin rela fund site info,borrowCashId:"+afBorrowCashDo.getRid());
+			boolean matchResult = afFundSideBorrowCashService.matchFundAndBorrowCash(afBorrowCashDo.getRid());
+			if(matchResult){
+				logger.info("borrowSuccess ,end rela fund site info success,borrowCashId:"+afBorrowCashDo.getRid());
+			}else{
+				logger.info("borrowSuccess ,end rela fund site info fail,borrowCashId:"+afBorrowCashDo.getRid());
+			}
+		}
+		return resultValue;
 	}
 
 	@Override
