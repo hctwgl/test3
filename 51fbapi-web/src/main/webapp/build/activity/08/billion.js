@@ -310,6 +310,7 @@ var vm = new Vue({
                 _this.minuteData = Minute;
                 _this.secondData = Second;
                 if (t < 1000) {
+                    // nowTime=end.getTime;
                     nowTime = Date.parse(new Date());
                     activeDaY = activeDaY + 1;
                 }
