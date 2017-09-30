@@ -42,7 +42,7 @@
         top: 0;
     }
     .detail-right{
-        width:3.7rem;
+        width:3.04rem;
         height:3.04rem;
         padding-left:0.16rem;
         padding-right: 0.16rem;
