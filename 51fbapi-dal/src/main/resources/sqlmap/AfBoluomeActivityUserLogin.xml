@@ -132,13 +132,24 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getUserLoginRecordByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" parameterType="java.lang.Long">
+<!--     <select id="getUserLoginRecordByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" parameterType="java.lang.Long">
         SELECT
         <include refid="queryFields" />
         FROM af_boluome_activity_user_login
         WHERE is_delete = 0 
         AND
         user_id = #{userId}
+        order by gmt_create desc
+        limit 0, 1
+    </select>  -->
+    <select id="getUserLoginRecord" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_user_login
+        WHERE is_delete = 0 
+        AND
+        user_id = #{userId}
+        AND gmt_create  &lt;  #{gmtCreate}
         order by gmt_create desc
         limit 0, 1
     </select> 

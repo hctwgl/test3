@@ -20,6 +20,8 @@ public interface AfBoluomeActivityUserLoginDao extends BaseDao<AfBoluomeActivity
 
 	AfBoluomeActivityUserLoginDo getUserLoginRecordByUserId(Long userId);
 
+	AfBoluomeActivityUserLoginDo getUserLoginRecord(AfBoluomeActivityUserLoginDo queryUserLoginRecord);
+
     
 
 }

@@ -136,6 +136,26 @@ import com.taobao.api.response.TaeItemDetailGetResponse;
  *@author 何鑫 2017年16月20日 下午4:20:22
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+/**
+ * @author chenqiwei
+ *
+ * 下午2:12:36
+ */
+/**
+ * @author chenqiwei
+ *
+ * 下午2:12:42
+ */
+/**
+ * @author chenqiwei
+ *
+ * 下午2:12:42
+ */
+/**
+ * @author chenqiwei
+ *
+ * 下午2:12:42
+ */
 @Service("afOrderService")
 public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 
@@ -703,15 +723,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
-				        //若在菠萝觅活动期间内则返利
+				               
+						//若在菠萝觅活动期间内则返利
 						AfBoluomeActivityDo activityDo = new AfBoluomeActivityDo();
 						activityDo.setStatus("O");
 						AfBoluomeActivityDo afBoluomeActivityDo =  afBoluomeActivityDao.getByCommonCondition(activityDo);
 						if(afBoluomeActivityDo !=null){
-                            Date startTime = afBoluomeActivityDo.getGmtCreate();
-                            Date endTime = afBoluomeActivityDo.getGmtEnd();
-                            if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
-                                boluomeActivity(afOrder);
+						    Date startTime = afBoluomeActivityDo.getGmtCreate();
+						    Date endTime = afBoluomeActivityDo.getGmtEnd();
+						    if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
+						       boluomeActivity(afOrder);
                             }
                         }
 //                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
@@ -738,13 +759,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			}
 		});
 	}
+	
+	/**
+	 * 菠萝觅活动返利
+	 * @param afOrder
+	 * @return
+	 */
 	public int boluomeActivity(final AfOrderDo afOrder){
-		//登陆者消费就返利和返卡片
-	    Long userId = afOrder.getUserId();
-		//查询商城id
-		//AfShopDo afShopDo =new AfShopDo();
-//		afShopDo.setType(afOrder.getSecType());
-//		AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
+		
+	    
+	        //登陆者消费就返利和返卡片
+	         Long userId = afOrder.getUserId();
+//		 查询商城id
+//		 AfShopDo afShopDo =new AfShopDo();
+//		 afShopDo.setType(afOrder.getSecType());
+//		 AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
 	         String platformName = afOrder.getOrderType(); //BOLUOME
 	         String type = afOrder.getSecType();    //JIUDIAN
 	         String serviceProvider = afOrder.getServiceProvider();  //CTRIP
@@ -791,8 +820,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					logger.info("activityUserItems",userItemsDo);
 
 					//给他人返利
-					AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
-					logger.info("activityUserLogin",userLoginRecord);
+					//在订单创建之前的绑定的最后一个用户
+					AfBoluomeActivityUserLoginDo queryUserLoginRecord  = new AfBoluomeActivityUserLoginDo();
+					queryUserLoginRecord.setUserId(userId);
+					queryUserLoginRecord.setGmtCreate(afOrder.getGmtCreate());
+					//AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
+					AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecord(queryUserLoginRecord);
+					logger.info("userLoginRecord",userLoginRecord);
+					
 					if(userLoginRecord!=null){
 						//最后绑定时间，和当前下单时间
 						Date lastTime = userLoginRecord.getGmtCreate();
@@ -837,9 +872,35 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		}
+		boluomeActivitySendCoupon(afOrder);
 		return 0;
 	}
-
+	
+	/**
+	 * 菠萝觅活动送券
+	 * @param afOrder
+	 * @return
+	 */
+	public int boluomeActivitySendCoupon(final AfOrderDo afOrder){
+	    /*
+		 * 给用户送券
+		 * */
+		
+		//在订单创建之前的绑定的最后一个用户
+		AfBoluomeActivityUserLoginDo queryUserLoginRecord  = new AfBoluomeActivityUserLoginDo();
+		queryUserLoginRecord.setUserId(afOrder.getUserId());
+		queryUserLoginRecord.setGmtCreate(afOrder.getGmtCreate());
+		//AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
+		AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecord(queryUserLoginRecord);
+		//若是被邀请而产生消费行为
+		if(userLoginRecord!=null){
+		    //必须是新注册用户？
+		   //邀请用户记录表里添加记录
+		    //活动表查n
+		    //查记录是否大于等于n条，是，送券
+		}
+	    return 0;
+	    }
 
 	private AfUserAccountLogDo buildUserAccount(BigDecimal amount,Long userId,Long orderId, AccountLogType logType){
 		//增加account变更日志
