@@ -124,7 +124,7 @@
                 #end
             </div>
             #if( $!{style}==1 || $!{style}==7 || $!{style}==10 || $!{style}==14 || $!{style}==15 || $!{style}==17 || $!{style}==20 || $!{style}==21 || $!{style}==22 || $!{style}==23)
-                <p class="clearfix" style="width: 3.0rem; margin: 0.1rem auto 0; color: #fff; font-size: 0.2rem;">
+                <p class="clearfix" style="width: 3.0rem; margin: 0 auto; color: #fff; font-size: 0.28rem;">
                     #if( $!{style}==17)
                         <span style="float:left;margin-right:0.1rem;color:#949494;">已注册用户</span>
                     #else
