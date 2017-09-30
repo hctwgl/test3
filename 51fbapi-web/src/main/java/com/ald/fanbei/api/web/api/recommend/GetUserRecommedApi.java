@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -31,6 +32,8 @@ public class GetUserRecommedApi implements ApiHandle {
     JpushService jpushService;
     @Resource
     SmsUtil smsUtil;
+    @Resource
+    BizCacheUtil bizCacheUtil;
 
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         long userId = context.getUserId();
@@ -103,14 +106,18 @@ public class GetUserRecommedApi implements ApiHandle {
         try {
             final String mobile = afUserDo.getUserName();
             if (requestDataVo.getId().startsWith("i") && Integer.parseInt(requestDataVo.getSystem().get("appVersion").toString()) == 391) {
-                new Timer().schedule(new TimerTask() {
-                    public void run() {
-                        logger.error("getUserRecommedApi 391 tips："+mobile);
-                        smsUtil.sendSms(mobile, "邀请好友请使用邀请页面底部二维码截图，其他分享方式在下个系统版本升级后可体验");
-                        jpushService.pushSharedTips(mobile, "邀请好友请使用邀请页面底部二维码截图，其他分享方式在下个系统版本升级后可体验");
-                        this.cancel();
-                    }
-                }, 1000 * 5);
+                if (bizCacheUtil.getObject("NotifyShared" + mobile) == null) {
+                    bizCacheUtil.saveObject("NotifyShared" + mobile, "1");
+                    new Timer().schedule(new TimerTask() {
+                        public void run() {
+                            logger.error("getUserRecommedApi 391 tips：" + mobile);
+
+                            smsUtil.sendSms(mobile, "报！由于系统升级您当前的版本只支持二维码方式邀请，您可以截图二维码发送给您的好友扫码识别后即可完成邀请。其他分享方式最新版本更新后即可体验，预计明日可恢复正常。");
+                            jpushService.pushSharedTips(mobile, "报！由于系统升级您当前的版本只支持二维码方式邀请，您可以截图二维码发送给您的好友扫码识别后即可完成邀请。其他分享方式最新版本更新后即可体验，预计明日可恢复正常。");
+                            this.cancel();
+                        }
+                    }, 1000 * 5);
+                }
 
             }
 
