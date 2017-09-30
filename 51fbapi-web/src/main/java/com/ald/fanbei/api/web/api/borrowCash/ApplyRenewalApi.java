@@ -80,9 +80,13 @@ public class ApplyRenewalApi implements ApiHandle {
 		resp.setResponseData(data);
 
 		// fmf  add续期前逾期状态
-		List<AfRenewalDetailDo> renewalDetailList= afRenewalDetailService.getRenewalDetailListByBorrowId(rid);
-		if(renewalDetailList == null && renewalDetailList.size()==0){
-			afBorrowCashService.updateAfBorrowCashService(afBorrowCashDo);
+		try{
+			List<AfRenewalDetailDo> renewalDetailList= afRenewalDetailService.getRenewalDetailListByBorrowId(rid);
+			if(renewalDetailList == null && renewalDetailList.size()==0){
+				afBorrowCashService.updateAfBorrowCashService(afBorrowCashDo);
+			}
+		}catch(Exception e){
+			e.getStackTrace();
 		}
 		return resp;
 	}
