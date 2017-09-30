@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfShopService;
@@ -35,7 +36,7 @@ public class AppBoluomeController extends BaseController {
     AfShopService afShopService;
 
     @ResponseBody
-    @RequestMapping(value = "/getBrandUrl", produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/getBrandUrl", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getBrandUrl(HttpServletRequest request, ModelMap model) {
 	H5CommonResponse resp = H5CommonResponse.getNewInstance();
 	//Calendar calStart = Calendar.getInstance();
