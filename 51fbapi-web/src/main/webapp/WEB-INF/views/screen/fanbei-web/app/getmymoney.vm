@@ -105,10 +105,10 @@
       let last = des - days*oneday
 
       let sex = (last)=>{
-        if(last>=fir) return 1
-        if(last>=sec) return 2
-        if(last>=thr) return 3
-        if(last>=four) return 4
+          if(last>=four) return 4
+          if(last>=thr) return 3
+          if(last>=sec) return 2
+          if(last>=fir) return 1
         if(last<fir) return 0
       }
 
