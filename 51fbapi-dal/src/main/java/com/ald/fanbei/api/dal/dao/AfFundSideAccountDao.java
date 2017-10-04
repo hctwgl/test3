@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfFundSideAccountDo;
 
@@ -20,7 +19,7 @@ public interface AfFundSideAccountDao extends BaseDao<AfFundSideAccountDo, Long>
 	 * @param amount
 	 * @return
 	 */
-	public List<AfFundSideAccountDo> getAccountsByMinUsableMoney(BigDecimal amount);
+	public AfFundSideAccountDo getRandomOneAccountsByMinUsableMoney(BigDecimal amount);
 
     
 

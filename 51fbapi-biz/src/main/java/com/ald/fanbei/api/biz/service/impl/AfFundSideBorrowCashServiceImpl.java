@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -9,15 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfFundSideAccountDao;
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfFundSideBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfFundSideAccountDo;
 import com.ald.fanbei.api.dal.domain.AfFundSideBorrowCashDo;
-import com.ald.fanbei.api.biz.service.AfFundSideAccountService;
-import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
 
 
 
@@ -56,7 +54,7 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 		}
 		
 		//找出所有账户可用余额大于借款金额的用户，随机取一个并锁定
-		List<AfFundSideAccountDo> accounts = afFundSideAccountDao.getAccountsByMinUsableMoney(borrowCashDao.getAmount());
+		AfFundSideAccountDo accounts = afFundSideAccountDao.getRandomOneAccountsByMinUsableMoney(borrowCashDao.getAmount());
 		
 		//如果没有则不匹配直接返回
 		
