@@ -45,6 +45,8 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 		if(afLoanSupermarket!=null && StringUtil.isNotBlank(afLoanSupermarket.getLinkUrl())){
 			String accessUrl = afLoanSupermarket.getLinkUrl();
 			accessUrl = accessUrl.replaceAll("\\*", "\\&");
+			int isUnionLogin =  afLoanSupermarket.getIsUnionLogin();
+			resp.addResponseData("isUnionLogin", isUnionLogin);
 			logger.info("贷款超市请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);
 			try {
 				//访问记入数据库处理
