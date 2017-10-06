@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,borrow_cash_id,borrow_cash_no,borrow_cash_amount,borrow_rate,borrow_days,plan_collect_interest,fund_side_info_id,fund_side_pre_back_time,fund_side_back_money,fund_side_back_time,status,gmt_create,gmt_modified 
+        id rid,borrow_cash_id,borrow_cash_no,plan_collect_interest,fund_side_info_id,fund_side_pre_back_time,fund_side_back_money,fund_side_back_time,status,gmt_create,gmt_modified,fund_side_annual_rate 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -19,15 +19,6 @@
         </if>
         <if test="borrowCashNo != null and borrowCashNo != ''">
             AND borrow_cash_no = #{borrowCashNo,jdbcType=VARCHAR}
-        </if>
-        <if test="borrowCashAmount != null and borrowCashAmount != ''">
-            AND borrow_cash_amount = #{borrowCashAmount,jdbcType=DECIMAL}
-        </if>
-        <if test="borrowRate != null and borrowRate != ''">
-            AND borrow_rate = #{borrowRate,jdbcType=DECIMAL}
-        </if>
-        <if test="borrowDays != null and borrowDays != ''">
-            AND borrow_days = #{borrowDays,jdbcType=INTEGER}
         </if>
         <if test="planCollectInterest != null and planCollectInterest != ''">
             AND plan_collect_interest = #{planCollectInterest,jdbcType=DECIMAL}
@@ -53,6 +44,9 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
+        <if test="fundSideAnnualRate != null and fundSideAnnualRate != ''">
+            AND fund_side_annual_rate = #{fundSideAnnualRate,jdbcType=DECIMAL}
+        </if>
     </sql>
 
     
@@ -68,15 +62,6 @@
 	        </if>
 	        <if test="borrowCashNo != null">        
 	            borrow_cash_no,
-	        </if>
-	        <if test="borrowCashAmount != null">        
-	            borrow_cash_amount,
-	        </if>
-	        <if test="borrowRate != null">        
-	            borrow_rate,
-	        </if>
-	        <if test="borrowDays != null">        
-	            borrow_days,
 	        </if>
 	        <if test="planCollectInterest != null">        
 	            plan_collect_interest,
@@ -102,6 +87,9 @@
 	        <if test="gmtModified != null">        
 	            gmt_modified,
 	        </if>
+	        <if test="fundSideAnnualRate != null">        
+	            fund_side_annual_rate,
+	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -110,15 +98,6 @@
 		    </if>
 		    <if test="borrowCashNo != null" >
 		       #{borrowCashNo,jdbcType=VARCHAR},
-		    </if>
-		    <if test="borrowCashAmount != null" >
-		       #{borrowCashAmount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="borrowRate != null" >
-		       #{borrowRate,jdbcType=DECIMAL},
-		    </if>
-		    <if test="borrowDays != null" >
-		       #{borrowDays,jdbcType=INTEGER},
 		    </if>
 		    <if test="planCollectInterest != null" >
 		       #{planCollectInterest,jdbcType=DECIMAL},
@@ -144,6 +123,9 @@
 		    <if test="gmtModified != null" >
 		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
+		    <if test="fundSideAnnualRate != null" >
+		       #{fundSideAnnualRate,jdbcType=DECIMAL},
+		    </if>
         </trim>
     </insert>
     
@@ -155,15 +137,6 @@
             </if>
             <if test="borrowCashNo != null and borrowCashNo != '' ">        
                 borrow_cash_no = #{borrowCashNo,jdbcType=VARCHAR},                
-            </if>
-            <if test="borrowCashAmount != null and borrowCashAmount != '' ">        
-                borrow_cash_amount = #{borrowCashAmount,jdbcType=DECIMAL},                
-            </if>
-            <if test="borrowRate != null and borrowRate != '' ">        
-                borrow_rate = #{borrowRate,jdbcType=DECIMAL},                
-            </if>
-            <if test="borrowDays != null and borrowDays != '' ">        
-                borrow_days = #{borrowDays,jdbcType=INTEGER},                
             </if>
             <if test="planCollectInterest != null and planCollectInterest != '' ">        
                 plan_collect_interest = #{planCollectInterest,jdbcType=DECIMAL},                
@@ -187,7 +160,10 @@
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
             <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}                
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="fundSideAnnualRate != null and fundSideAnnualRate != '' ">        
+                fund_side_annual_rate = #{fundSideAnnualRate,jdbcType=DECIMAL}                
             </if>
         </set>    
         WHERE  id = #{rid ,jdbcType=BIGINT}
@@ -197,7 +173,7 @@
         SELECT
         <include refid="queryFields" />
         FROM af_fund_side_borrow_cash
-        WHERE id=#{rid ,jdbcType=BIGINT}
+        WHERE  id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
 

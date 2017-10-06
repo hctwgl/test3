@@ -2,6 +2,7 @@ package com.ald.fanbei.api.common.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import org.apache.commons.lang.StringUtils;
@@ -387,8 +388,28 @@ public class NumberUtil {
         }
     }
     
+    
+    /**
+     * 利息计算
+     * @param amount
+     * @param rate
+     * @param days
+     * @return
+     */
+    public static BigDecimal getSumInterestsByAmountAndRate(BigDecimal amount,BigDecimal rate,Integer days){
+    	BigDecimal interests = BigDecimal.valueOf(0);
+    	try {
+    		interests = amount.multiply(rate).multiply(BigDecimal.valueOf(days)).divide(BigDecimal.valueOf(36500),2 , RoundingMode.HALF_UP);
+		} catch (Exception e) {
+			return BigDecimal.valueOf(0);
+		}
+    	return interests;
+    }
+    
+    
+    
     public static void main(String[] args) {
-		System.out.println(objToBigDecimalDivideOnehundredDefault(21350.78,BigDecimal.ZERO));
+		System.out.println(getSumInterestsByAmountAndRate(BigDecimal.valueOf(1000),BigDecimal.valueOf(9),10));
 	}
 
 }

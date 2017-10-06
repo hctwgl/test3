@@ -5,10 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 资金方账户信息表
+ *  资金方账户信息表实体
+ * 
  * @author chegnkang
  * @version 1.0.0 初始化
- * @date 2017-09-30 17:17:04
+ * @date 2017-10-06 10:20:08
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfFundSideAccountDo extends AbstractSerial {
@@ -59,6 +60,11 @@ import java.math.BigDecimal;
      * 待收利息
      */
     private BigDecimal collectInterest;
+
+    /**
+     * 放款总额(待回款+已回款)
+     */
+    private BigDecimal borrowTotalAmount;
 
 
     /**
@@ -221,6 +227,24 @@ import java.math.BigDecimal;
      */
     public void setCollectInterest(BigDecimal collectInterest){
       this.collectInterest = collectInterest;
+    }
+
+    /**
+     * 获取放款总额(待回款+已回款)
+     *
+     * @return 放款总额(待回款+已回款)
+     */
+    public BigDecimal getBorrowTotalAmount(){
+      return borrowTotalAmount;
+    }
+
+    /**
+     * 设置放款总额(待回款+已回款)
+     * 
+     * @param borrowTotalAmount 要设置的放款总额(待回款+已回款)
+     */
+    public void setBorrowTotalAmount(BigDecimal borrowTotalAmount){
+      this.borrowTotalAmount = borrowTotalAmount;
     }
 
 }

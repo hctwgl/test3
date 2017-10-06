@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- af_fund_side_account表:资金方放款与用户借款记录关联表模块 -->
+<!-- af_fund_side_account表: 资金方账户信息表模块 -->
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfFundSideAccountDao">
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,fund_side_info_id,amount,frozen_amount,usable_amount,income_amount,gmt_modified,collect_capital,collect_interest 
+        id rid,fund_side_info_id,amount,frozen_amount,usable_amount,income_amount,gmt_modified,collect_capital,collect_interest,borrow_total_amount 
     </sql>
     
     <sql id="queryAliasFields">
@@ -42,6 +42,9 @@
         <if test="collectInterest != null and collectInterest != ''">
             AND collect_interest = #{collectInterest,jdbcType=DECIMAL}
         </if>
+        <if test="borrowTotalAmount != null and borrowTotalAmount != ''">
+            AND borrow_total_amount = #{borrowTotalAmount,jdbcType=DECIMAL}
+        </if>
     </sql>
 
     
@@ -76,6 +79,9 @@
 	        <if test="collectInterest != null">        
 	            collect_interest,
 	        </if>
+	        <if test="borrowTotalAmount != null">        
+	            borrow_total_amount,
+	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -102,6 +108,9 @@
 		    </if>
 		    <if test="collectInterest != null" >
 		       #{collectInterest,jdbcType=DECIMAL},
+		    </if>
+		    <if test="borrowTotalAmount != null" >
+		       #{borrowTotalAmount,jdbcType=DECIMAL},
 		    </if>
         </trim>
     </insert>
@@ -131,17 +140,20 @@
                 collect_capital = #{collectCapital,jdbcType=DECIMAL},                
             </if>
             <if test="collectInterest != null and collectInterest != '' ">        
-                collect_interest = #{collectInterest,jdbcType=DECIMAL}                
+                collect_interest = #{collectInterest,jdbcType=DECIMAL},                
+            </if>
+            <if test="borrowTotalAmount != null and borrowTotalAmount != '' ">        
+                borrow_total_amount = #{borrowTotalAmount,jdbcType=DECIMAL}                
             </if>
         </set>    
-        WHERE id = #{rid ,jdbcType=BIGINT}
+        WHERE  id = #{rid ,jdbcType=BIGINT}
     </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfFundSideAccountDo">
         SELECT
         <include refid="queryFields" />
         FROM af_fund_side_account
-        WHERE id=#{rid ,jdbcType=BIGINT}
+        WHERE  id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
 

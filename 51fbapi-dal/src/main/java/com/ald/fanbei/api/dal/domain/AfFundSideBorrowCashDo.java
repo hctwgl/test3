@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author chegnkang
  * @version 1.0.0 初始化
- * @date 2017-09-30 17:17:20
+ * @date 2017-10-06 09:54:27
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfFundSideBorrowCashDo extends AbstractSerial {
@@ -30,21 +30,6 @@ import java.math.BigDecimal;
      * 借款编号
      */
     private String borrowCashNo;
-
-    /**
-     * 借款金额
-     */
-    private BigDecimal borrowCashAmount;
-
-    /**
-     * 借款时利率
-     */
-    private BigDecimal borrowRate;
-
-    /**
-     * 借款期限（结合现在业务7或者14天）
-     */
-    private Integer borrowDays;
 
     /**
      * 预计获利
@@ -85,6 +70,11 @@ import java.math.BigDecimal;
      * 
      */
     private Date gmtModified;
+
+    /**
+     * 资金方利率
+     */
+    private BigDecimal fundSideAnnualRate;
 
 
     /**
@@ -139,60 +129,6 @@ import java.math.BigDecimal;
      */
     public void setBorrowCashNo(String borrowCashNo){
       this.borrowCashNo = borrowCashNo;
-    }
-
-    /**
-     * 获取借款金额
-     *
-     * @return 借款金额
-     */
-    public BigDecimal getBorrowCashAmount(){
-      return borrowCashAmount;
-    }
-
-    /**
-     * 设置借款金额
-     * 
-     * @param borrowCashAmount 要设置的借款金额
-     */
-    public void setBorrowCashAmount(BigDecimal borrowCashAmount){
-      this.borrowCashAmount = borrowCashAmount;
-    }
-
-    /**
-     * 获取借款时利率
-     *
-     * @return 借款时利率
-     */
-    public BigDecimal getBorrowRate(){
-      return borrowRate;
-    }
-
-    /**
-     * 设置借款时利率
-     * 
-     * @param borrowRate 要设置的借款时利率
-     */
-    public void setBorrowRate(BigDecimal borrowRate){
-      this.borrowRate = borrowRate;
-    }
-
-    /**
-     * 获取借款期限（结合现在业务7或者14天）
-     *
-     * @return 借款期限（结合现在业务7或者14天）
-     */
-    public Integer getBorrowDays(){
-      return borrowDays;
-    }
-
-    /**
-     * 设置借款期限（结合现在业务7或者14天）
-     * 
-     * @param borrowDays 要设置的借款期限（结合现在业务7或者14天）
-     */
-    public void setBorrowDays(Integer borrowDays){
-      this.borrowDays = borrowDays;
     }
 
     /**
@@ -337,6 +273,24 @@ import java.math.BigDecimal;
      */
     public void setGmtModified(Date gmtModified){
       this.gmtModified = gmtModified;
+    }
+
+    /**
+     * 获取资金方利率
+     *
+     * @return 资金方利率
+     */
+    public BigDecimal getFundSideAnnualRate(){
+      return fundSideAnnualRate;
+    }
+
+    /**
+     * 设置资金方利率
+     * 
+     * @param fundSideAnnualRate 要设置的资金方利率
+     */
+    public void setFundSideAnnualRate(BigDecimal fundSideAnnualRate){
+      this.fundSideAnnualRate = fundSideAnnualRate;
     }
 
 }
