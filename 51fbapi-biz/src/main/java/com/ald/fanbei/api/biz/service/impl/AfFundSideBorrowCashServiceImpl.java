@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -12,13 +13,21 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
+import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfFundSideAccountLogType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfFundSideAccountDao;
+import com.ald.fanbei.api.dal.dao.AfFundSideAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfFundSideBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfFundSideInfoDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfFundSideAccountDo;
+import com.ald.fanbei.api.dal.domain.AfFundSideAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfFundSideBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfFundSideInfoDo;
 
 
 
@@ -42,6 +51,10 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
     private AfBorrowCashDao afBorrowCashDao;
     @Resource
     private AfFundSideAccountDao afFundSideAccountDao;
+    @Resource
+    private AfFundSideAccountLogDao afFundSideAccountLogDao;
+    @Resource
+    private AfFundSideInfoDao afFundSideInfoDao;
     
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -57,27 +70,48 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 		int resultValue = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
-				AfBorrowCashDo borrowCashDao = afBorrowCashDao.getBorrowCashByrid(borrowCashId);
-				if(borrowCashDao==null || borrowCashDao.getAmount().compareTo(BigDecimal.ZERO)<=0){
+				AfBorrowCashDo borrowCashDo = afBorrowCashDao.getBorrowCashByrid(borrowCashId);
+				if(borrowCashDo==null || borrowCashDo.getAmount().compareTo(BigDecimal.ZERO)<=0){
 					logger.error("matchFundAndBorrowCash return false,borrowCashDao is null or amount is zero,borrowCashId:"+borrowCashId);
 					return 0;
 				}
 				
 				//找出所有账户可用余额大于借款金额的用户，随机取一个并锁定
-				AfFundSideAccountDo accounts = afFundSideAccountDao.getRandomOneAccountsByMinUsableMoney(borrowCashDao.getAmount());
-				if(accounts==null && accounts.getUsableAmount().compareTo(borrowCashDao.getAmount()) <0){
+				AfFundSideAccountDo accounts = afFundSideAccountDao.getRandomOneAccountsByMinUsableMoney(borrowCashDo.getAmount());
+				
+				if(accounts==null ||  accounts.getUsableAmount().compareTo(borrowCashDo.getAmount()) <0){
 					logger.error("matchFundAndBorrowCash return false,accounts is null or usableAmount is not enough,borrowCashId:"+borrowCashId+",accountsId:"+(accounts!=null?accounts.getRid():0));
 					return 0;
 				}
 				
+				AfFundSideInfoDo fundSideInfoDo = afFundSideInfoDao.getById(accounts.getFundSideInfoId());
+				if(fundSideInfoDo==null){
+					logger.error("matchFundAndBorrowCash return false,fundSideInfoDo is null ,borrowCashId:"+borrowCashId+",accountsId:"+accounts.getRid()+",fundSideInfoId"+accounts.getFundSideInfoId());
+					return 0;
+				}
+				
+				//当前日期和资金方可用余额
+				Date currDay = new Date();
+				BigDecimal usableMoney = accounts.getUsableAmount();
+				
 				//af_fund_side_borrow_cash关联记录插入
-		
+				Integer borrowDays = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(borrowCashDo.getType()).getCode(), 0);
+				BigDecimal planCollectInterest = NumberUtil.getSumInterestsByAmountAndRate(borrowCashDo.getAmount(), fundSideInfoDo.getAnnualRate(), borrowDays);
+				AfFundSideBorrowCashDo fundSideBorrowCashDo = new AfFundSideBorrowCashDo(borrowCashId, borrowCashDo.getBorrowNo(), planCollectInterest, accounts.getFundSideInfoId(), borrowCashDo.getGmtPlanRepayment(), 
+						borrowCashDo.getAmount().add(planCollectInterest), null, YesNoStatus.NO.getCode(), currDay, currDay, fundSideInfoDo.getAnnualRate());
+				afFundSideBorrowCashDao.saveRecord(fundSideBorrowCashDo);
 				
 				//af_fund_side_account资金更新
-				
+				AfFundSideAccountDo afFundSideAccountDo = new AfFundSideAccountDo();
+				afFundSideAccountDo.setUsableAmount(borrowCashDo.getAmount().negate());
+				afFundSideAccountDo.setCollectCapital(borrowCashDo.getAmount());
+				afFundSideAccountDo.setCollectInterest(planCollectInterest);
+				afFundSideAccountDo.setBorrowTotalAmount(borrowCashDo.getAmount());
+				afFundSideAccountDao.updateRecordInfo(afFundSideAccountDo);
 				
 				//af_fund_side_account_log资金记录插入
-				
+				AfFundSideAccountLogDo afFundSideAccountLogDo = new AfFundSideAccountLogDo(accounts.getFundSideInfoId(), usableMoney, borrowCashDo.getAmount().negate(), AfFundSideAccountLogType.LOAN.getCode(), fundSideBorrowCashDo.getRid(), currDay, "放款成功，可用减少,待收本金增加"+borrowCashDo.getAmount()+"元");
+				afFundSideAccountLogDao.saveRecord(afFundSideAccountLogDo);
 				
 				return 1;
 			}

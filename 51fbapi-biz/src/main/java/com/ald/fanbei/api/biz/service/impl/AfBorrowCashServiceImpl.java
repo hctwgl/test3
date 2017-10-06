@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -16,6 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -26,7 +25,6 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -35,7 +33,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 
 /**
  * @类描述：

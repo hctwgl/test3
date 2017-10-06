@@ -21,6 +21,10 @@ public interface AfFundSideAccountDao extends BaseDao<AfFundSideAccountDo, Long>
 	 */
 	public AfFundSideAccountDo getRandomOneAccountsByMinUsableMoney(BigDecimal amount);
 
-    
-
+    /**
+     * 更新用户资金信息，在之前基础上累加
+     * @param fundSideAccountDo
+     * @return
+     */
+	public int updateRecordInfo(AfFundSideAccountDo fundSideAccountDo);
 }

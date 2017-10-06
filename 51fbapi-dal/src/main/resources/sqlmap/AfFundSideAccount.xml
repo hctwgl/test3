@@ -216,4 +216,33 @@
 		]]>
     </select>
     
+    <update id="updateRecordInfo"  parameterType="com.ald.fanbei.api.dal.domain.AfFundSideAccountDo">
+        UPDATE af_fund_side_account
+        <set>
+            gmt_modified = now(), 
+            <if test="amount != null and amount != '' ">        
+                amount = amount + #{amount,jdbcType=DECIMAL},                
+            </if>
+            <if test="frozenAmount != null and frozenAmount != '' ">        
+                frozen_amount = frozen_amount + #{frozenAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="usableAmount != null and usableAmount != '' ">        
+                usable_amount = usable_amount + #{usableAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="incomeAmount != null and incomeAmount != '' ">        
+                income_amount = income_amount + #{incomeAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="collectCapital != null and collectCapital != '' ">        
+                collect_capital = collect_capital + #{collectCapital,jdbcType=DECIMAL},                
+            </if>
+            <if test="collectInterest != null and collectInterest != '' ">        
+                collect_interest = collect_interest + #{collectInterest,jdbcType=DECIMAL},                
+            </if>
+            <if test="borrowTotalAmount != null and borrowTotalAmount != '' ">        
+                borrow_total_amount = borrow_total_amount + #{borrowTotalAmount,jdbcType=DECIMAL}                
+            </if>
+        </set>    
+        WHERE  id = #{rid ,jdbcType=BIGINT}
+    </update>
+    
 </mapper>

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+
 import java.util.Date;
 import java.math.BigDecimal;
 
@@ -76,8 +77,31 @@ import java.math.BigDecimal;
      */
     private BigDecimal fundSideAnnualRate;
 
+    
+    public AfFundSideBorrowCashDo() {
+		super();
+	}
 
-    /**
+	public AfFundSideBorrowCashDo(Long borrowCashId, String borrowCashNo,
+			BigDecimal planCollectInterest, Long fundSideInfoId,
+			Date fundSidePreBackTime, BigDecimal fundSideBackMoney,
+			Date fundSideBackTime, String status, Date gmtCreate,
+			Date gmtModified, BigDecimal fundSideAnnualRate) {
+		super();
+		this.borrowCashId = borrowCashId;
+		this.borrowCashNo = borrowCashNo;
+		this.planCollectInterest = planCollectInterest;
+		this.fundSideInfoId = fundSideInfoId;
+		this.fundSidePreBackTime = fundSidePreBackTime;
+		this.fundSideBackMoney = fundSideBackMoney;
+		this.fundSideBackTime = fundSideBackTime;
+		this.status = status;
+		this.gmtCreate = gmtCreate;
+		this.gmtModified = gmtModified;
+		this.fundSideAnnualRate = fundSideAnnualRate;
+	}
+
+	/**
      * 获取主键Id
      *
      * @return rid
