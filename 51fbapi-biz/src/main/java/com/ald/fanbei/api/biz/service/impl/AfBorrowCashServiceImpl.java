@@ -25,6 +25,8 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -33,6 +35,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
 /**
  * @类描述：
@@ -77,7 +80,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	JpushService jpushService;
 	@Resource
 	AfFundSideBorrowCashService afFundSideBorrowCashService;
-
+	
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -130,13 +133,19 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		});
 		
 		if(resultValue == 1){
-			//业务处理成功,和资金方关联处理添加
-			logger.info("borrowSuccess ,begin rela fund site info,borrowCashId:"+afBorrowCashDo.getRid());
-			boolean matchResult = afFundSideBorrowCashService.matchFundAndBorrowCash(afBorrowCashDo.getRid());
-			if(matchResult){
-				logger.info("borrowSuccess ,end rela fund site info success,borrowCashId:"+afBorrowCashDo.getRid());
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.FUND_SIDE_BORROW_CASH.getCode(), AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
+			if (resourceDo != null && "1".equals(resourceDo.getValue())) {
+				//业务处理成功,和资金方关联处理添加
+				logger.info("borrowSuccess ,begin rela fund site info,borrowCashId:"+afBorrowCashDo.getRid());
+				boolean matchResult = afFundSideBorrowCashService.matchFundAndBorrowCash(afBorrowCashDo.getRid());
+				if(matchResult){
+					logger.info("borrowSuccess ,end rela fund site info success,borrowCashId:"+afBorrowCashDo.getRid());
+				}else{
+					logger.info("borrowSuccess ,end rela fund site info fail,borrowCashId:"+afBorrowCashDo.getRid());
+				}
 			}else{
-				logger.info("borrowSuccess ,end rela fund site info fail,borrowCashId:"+afBorrowCashDo.getRid());
+				//资金方开关关闭，跳过关联
+				logger.info("borrowSuccess ,rela fund site info is off,and jump it ,borrowCashId:"+afBorrowCashDo.getRid());
 			}
 		}
 		return resultValue;
