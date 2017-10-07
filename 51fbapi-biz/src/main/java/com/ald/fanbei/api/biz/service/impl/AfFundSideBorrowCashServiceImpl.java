@@ -67,13 +67,13 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 	@Override
 	public boolean matchFundAndBorrowCash(Long rid){
 		final Long borrowCashId = rid;
-		int resultValue = transactionTemplate.execute(new TransactionCallback<Integer>() {
+		return transactionTemplate.execute(new TransactionCallback<Boolean>() {
 			@Override
-			public Integer doInTransaction(TransactionStatus transactionStatus) {
+			public Boolean doInTransaction(TransactionStatus transactionStatus) {
 				AfBorrowCashDo borrowCashDo = afBorrowCashDao.getBorrowCashByrid(borrowCashId);
 				if(borrowCashDo==null || borrowCashDo.getAmount().compareTo(BigDecimal.ZERO)<=0){
 					logger.error("matchFundAndBorrowCash return false,borrowCashDao is null or amount is zero,borrowCashId:"+borrowCashId);
-					return 0;
+					return false;
 				}
 				
 				//找出所有账户可用余额大于借款金额的用户，随机取一个并锁定
@@ -81,13 +81,13 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 				
 				if(accounts==null ||  accounts.getUsableAmount().compareTo(borrowCashDo.getAmount()) <0){
 					logger.error("matchFundAndBorrowCash return false,accounts is null or usableAmount is not enough,borrowCashId:"+borrowCashId+",accountsId:"+(accounts!=null?accounts.getRid():0));
-					return 0;
+					return false;
 				}
 				
 				AfFundSideInfoDo fundSideInfoDo = afFundSideInfoDao.getById(accounts.getFundSideInfoId());
 				if(fundSideInfoDo==null){
 					logger.error("matchFundAndBorrowCash return false,fundSideInfoDo is null ,borrowCashId:"+borrowCashId+",accountsId:"+accounts.getRid()+",fundSideInfoId"+accounts.getFundSideInfoId());
-					return 0;
+					return false;
 				}
 				
 				//当前日期和资金方可用余额
@@ -103,24 +103,20 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 				
 				//af_fund_side_account资金更新
 				AfFundSideAccountDo afFundSideAccountDo = new AfFundSideAccountDo();
+				afFundSideAccountDo.setRid(accounts.getRid());
 				afFundSideAccountDo.setUsableAmount(borrowCashDo.getAmount().negate());
 				afFundSideAccountDo.setCollectCapital(borrowCashDo.getAmount());
 				afFundSideAccountDo.setCollectInterest(planCollectInterest);
 				afFundSideAccountDo.setBorrowTotalAmount(borrowCashDo.getAmount());
+				afFundSideAccountDo.setGmtModified(accounts.getGmtModified());
 				afFundSideAccountDao.updateRecordInfo(afFundSideAccountDo);
 				
 				//af_fund_side_account_log资金记录插入
 				AfFundSideAccountLogDo afFundSideAccountLogDo = new AfFundSideAccountLogDo(accounts.getFundSideInfoId(), usableMoney, borrowCashDo.getAmount().negate(), AfFundSideAccountLogType.LOAN.getCode(), fundSideBorrowCashDo.getRid(), currDay, "放款成功，可用减少,待收本金增加"+borrowCashDo.getAmount()+"元");
 				afFundSideAccountLogDao.saveRecord(afFundSideAccountLogDo);
 				
-				return 1;
+				return true;
 			}
 		});
-		
-		if(resultValue ==1){
-			return true;
-		}else{
-			return false;
-		}
 	}
 }

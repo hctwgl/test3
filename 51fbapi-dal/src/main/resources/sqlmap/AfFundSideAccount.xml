@@ -242,7 +242,10 @@
                 borrow_total_amount = borrow_total_amount + #{borrowTotalAmount,jdbcType=DECIMAL}                
             </if>
         </set>    
-        WHERE  id = #{rid ,jdbcType=BIGINT}
+        WHERE  id = #{rid ,jdbcType=BIGINT} 
+         <if test="gmtModified != null ">        
+                and gmt_modified <![CDATA[   <=  ]]> #{gmtModified}            
+         </if>
     </update>
     
 </mapper>
