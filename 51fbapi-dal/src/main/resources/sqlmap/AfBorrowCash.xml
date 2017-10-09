@@ -142,8 +142,8 @@
 		<if test="majiabaoName != null and majiabaoName !=''">
 			,majiabao_name=#{majiabaoName}
 		</if>
-		<if test="finshDate != null and finshDate !=''">
-			,finsh_date=#{finshDate}
+		<if test="finishDate != null and finshDate !=''">
+			,finish_date=#{finishDate}
 		</if>
 		WHERE id = #{rid}
 	</update>
