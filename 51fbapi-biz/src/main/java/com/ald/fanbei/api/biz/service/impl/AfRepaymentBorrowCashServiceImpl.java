@@ -475,7 +475,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						
 						bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 						//fmf 增加还款成功为FINSH的时间
-						bcashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+						try{
+							bcashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+						}catch (Exception e) {
+							logger.error("bcashDo.setFinishDate is fail", e);
+						}
 					} else {
 						notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
 					}
