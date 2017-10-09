@@ -4,7 +4,7 @@ let vue=new Vue({
     data:{
         content:{
             buttonString:'立即签到',
-            canClick: false
+            canClick: true
         },
         day:[
             {img:'31.png', txt:'5元券包',canReceive:false,day:1,style:''},
