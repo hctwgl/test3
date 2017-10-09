@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.vo;
 
 import java.util.List;
 
+import org.apache.log4j.lf5.viewer.LogFactor5LoadingDialog;
+
 import com.ald.fanbei.api.common.AbstractSerial;
 /**
  * 借贷超市的taps还有哥哥tap下的shops

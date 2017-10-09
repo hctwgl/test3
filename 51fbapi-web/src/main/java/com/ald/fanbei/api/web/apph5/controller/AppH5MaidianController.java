@@ -21,7 +21,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
  
 /**
- * @类描述：H5通用PV/UV埋点接口
+ * @类描述：
+ * 返场活动
  * @author 江荣波 2017年6月20日下午1:41:05
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

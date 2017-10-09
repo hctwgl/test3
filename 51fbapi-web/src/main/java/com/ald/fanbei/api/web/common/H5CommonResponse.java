@@ -25,19 +25,11 @@ public class H5CommonResponse {
         return new H5CommonResponse();
     }
 
-    public static H5CommonResponse terseSucc() {
-    	return getNewInstance(true, null);
-    }
-    public static H5CommonResponse terseFail() {
-    	return getNewInstance(false, null);
-    }
-    
     public static H5CommonResponse getNewInstance(boolean success, String msg) {
-    	return getNewInstance(true, msg, null, null);
-    }
-    
-    public static H5CommonResponse getNewInstance(boolean success, String msg, Object data) {
-    	return getNewInstance(true, msg, null, data);
+        H5CommonResponse instance = new H5CommonResponse();
+        instance.setSuccess(success);
+        instance.setMsg(msg);
+        return instance;
     }
 
     public static H5CommonResponse getNewInstance(boolean success, String msg, String url, Object data) {
@@ -48,7 +40,7 @@ public class H5CommonResponse {
         instance.setData(data);
         return instance;
     }
-    
+
     public Boolean getSuccess() {
         return success;
     }

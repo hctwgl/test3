@@ -1,31 +1,5 @@
 package com.ald.fanbei.api.biz.third.util.yibaopay;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.spec.InvalidKeySpecException;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -37,11 +11,7 @@ import com.yeepay.g3.facade.yop.ca.enums.DigestAlgEnum;
 import com.yeepay.g3.frame.yop.ca.DigitalEnvelopeUtils;
 import com.yeepay.g3.frame.yop.ca.rsa.RSAKeyUtils;
 import com.yeepay.g3.frame.yop.ca.utils.Exceptions;
-import com.yeepay.g3.sdk.yop.client.YopClient3;
-import com.yeepay.g3.sdk.yop.client.YopConfig;
-import com.yeepay.g3.sdk.yop.client.YopRequest;
-import com.yeepay.g3.sdk.yop.client.YopResponse;
-import com.yeepay.g3.sdk.yop.client.YopRestTemplate;
+import com.yeepay.g3.sdk.yop.client.*;
 import com.yeepay.g3.sdk.yop.enums.FormatType;
 import com.yeepay.g3.sdk.yop.enums.HttpMethodType;
 import com.yeepay.g3.sdk.yop.exception.YopClientException;
@@ -49,13 +19,27 @@ import com.yeepay.g3.sdk.yop.http.HttpUtils;
 import com.yeepay.g3.sdk.yop.utils.Assert;
 import com.yeepay.g3.sdk.yop.utils.DateUtils;
 
+import org.apache.log4j.Logger;
+import org.springframework.http.HttpEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author honghzengpei 2017/9/7 16:11
  * @类描述：订单支付
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class YiBaoClient {
-    protected static final Logger logger = LoggerFactory.getLogger(YopClient3.class);
+    protected static final Logger logger = Logger.getLogger(YopClient3.class);
     protected static RestTemplate restTemplate = new YopRestTemplate();
     protected static Map<String, List<String>> uriTemplateCache = new HashMap();
     private static final Set<String> defaultHeadersToSign = Sets.newHashSet();
