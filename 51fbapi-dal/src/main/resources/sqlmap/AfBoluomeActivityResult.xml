@@ -131,7 +131,7 @@
         FROM af_boluome_activity_result
         <include refid="commonCondition"/>
     </select>
-    <select>
+    <select id = "isGetSuperPrize" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo" parameterType= "java.lang.Long">
 	    SELECT
 		*
 		FROM

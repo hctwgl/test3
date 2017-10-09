@@ -190,8 +190,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
 					boluome_activity_id = #{activityId} 
 				AND user_id = #{userId} GROUP BY items_id
 			) AS t
-		WHERE
-			num > 1
+		
     </select>
     
     
