@@ -621,7 +621,7 @@ public class APPH5GGShareController extends BaseController {
 				List<AfBoluomeActivityUserItemsDo> resultList = new ArrayList<>();
 				List<AfBoluomeActivityItemsDo> itemsList = new ArrayList<>();
 				List<Long> tempItemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId,
-						userId);// 大于1张卡片的用户记录
+						userId);// 大于1张卡片的用户记录--》update，改成所有的。
 				if (tempItemsList != null && tempItemsList.size() > 0) {
 					itemsList = addNumber(activityId, userId);
 

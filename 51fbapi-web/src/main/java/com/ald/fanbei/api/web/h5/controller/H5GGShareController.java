@@ -488,6 +488,7 @@ public class H5GGShareController extends H5Controller {
 	 * @throws UnsupportedEncodingException
 	 * 
 	 */
+	@Deprecated
 	@RequestMapping(value = "/sendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String sendItems(HttpServletRequest request, HttpServletResponse response)

@@ -33,4 +33,15 @@ public class AfBoluomeActivityResultServiceImpl extends ParentServiceImpl<AfBolu
 	public BaseDao<AfBoluomeActivityResultDo, Long> getDao() {
 		return afBoluomeActivityResultDao;
 	}
+
+		@Override
+		public boolean isGetSuperPrize(Long userId, Long activityId) {
+			boolean result = false;
+			int intResult ;
+			intResult = afBoluomeActivityResultDao.isGetSuperPrize(userId,activityId);
+			if (intResult > 0 ) {
+				result = true;
+			}
+			return result;
+		}
 }
