@@ -235,6 +235,7 @@ public class H5GGShareController extends H5Controller {
 			}
 			// TODO:活动的卡片
 			List<AfBoluomeActivityItemsDo> itemsList = getActivityItems(activityId);
+			
 
 			// TODO:活动表活动规则
 			AfBoluomeActivityDo activityDo = afBoluomeActivityService.getById(activityId);
@@ -252,9 +253,12 @@ public class H5GGShareController extends H5Controller {
 			}
 			
 			//定义终极大奖的初始状态（只有有资格领取并且未领取的状态是）
-			String superPrizeStatus = "N";//用户没登陆的时候默认是只灰色状态（已经领取过了）
+			//update 未登录则NY
+			String superPrizeStatus = "NY";
+			//用户没登陆的时候默认是只灰色状态（已经领取过了）
 			// String userName = request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
+				superPrizeStatus = "N";//若是已经登录了则是初始化为N的状态
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
 					useritemsDo.setUserId(userId);
@@ -315,6 +319,11 @@ public class H5GGShareController extends H5Controller {
 						data.put("userName", userName);
 					}
 				}
+			}else{
+				//未登录则终极大奖状态不变，并且卡片个数是-1
+				for(AfBoluomeActivityItemsDo itemsDoo :itemsList){
+					itemsDoo.setNum(-1);
+				}
 			}
 			
 			data.put("superPrizeStatus", superPrizeStatus);
@@ -340,6 +349,7 @@ public class H5GGShareController extends H5Controller {
 		return resultStr;
 	}
 
+	
 	private List<AfBoluomeActivityItemsDo> addNumber(Long activityId, Long userId) {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
 		t.setBoluomeActivityId(activityId);
