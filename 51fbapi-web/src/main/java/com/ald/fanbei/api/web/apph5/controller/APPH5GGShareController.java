@@ -365,9 +365,12 @@ public class APPH5GGShareController extends BaseController {
 			}
 
 			// 定义终极大奖的初始状态（只有有资格领取并且未领取的状态是）
-			String superPrizeStatus = "N";// 用户没登陆的时候默认是只灰色状态（已经领取过了）
+			//update 未登录则NY
+			String superPrizeStatus = "NY";
+			//用户没登陆的时候默认是只灰色状态（已经领取过了）
 			// String userName = request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
+				superPrizeStatus = "N";//若是已经登录了则是初始化为N的状态
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
 					useritemsDo.setUserId(userId);
@@ -425,6 +428,11 @@ public class APPH5GGShareController extends BaseController {
 					if (!StringUtil.isBlank(userName)) {
 						data.put("userName", userName);
 					}
+				}
+			}else{
+				//未登录则终极大奖状态不变，并且卡片个数是-1
+				for(AfBoluomeActivityItemsDo itemsDoo :itemsList){
+					itemsDoo.setNum(-1);
 				}
 			}
 
