@@ -61,12 +61,19 @@
         </div>
     </div>
     <!--终极大奖-->
+    <!--未登录-->
+    <div class="finalPrize finalPrize01" @click="finalPrize()" v-if="content.superPrizeStatus==='NY'">
+        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
+    </div>
+    <!--已登录+卡片数量够+未领取-->
     <div class="finalPrize finalPrize01" @click="finalPrize()" v-if="content.superPrizeStatus==='YY'">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
+    <!--已登录+卡片数量不够-->
     <div class="finalPrize finalPrize02" @click="finalPrize()" v-if="content.superPrizeStatus==='N'">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
+    <!--已登录+已领取-->
     <div class="finalPrize finalPrize03" @click="finalPrize()" v-if="content.superPrizeStatus==='YN'">
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元现金红包</p>
     </div>
