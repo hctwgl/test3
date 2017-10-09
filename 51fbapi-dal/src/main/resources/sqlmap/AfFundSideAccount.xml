@@ -179,41 +179,12 @@
 		FROM
 			af_fund_side_account afsa
 		LEFT JOIN af_fund_side_info afsi ON afsa.fund_side_info_id = afsi.id
-		JOIN (
-			SELECT
-				ROUND(
-					RAND() * IFNULL(
-						(
-							(
-								SELECT
-									MAX(id)
-								FROM
-									`af_fund_side_account`
-							) - (
-								SELECT
-									MIN(id)
-								FROM
-									`af_fund_side_account`
-							)
-						),
-						0
-					) + IFNULL(
-						(
-							SELECT
-								MIN(id)
-							FROM
-								`af_fund_side_account`
-						),
-						0
-					)
-				) AS id
-		) AS rand_data
 		WHERE
 		<![CDATA[ 
-			afsa.id >= rand_data.id
-		AND afsi.status = 'Y'
+		afsi.status = 'Y'
 		AND afsa.usable_amount >= #{borrowAmount ,jdbcType=DECIMAL} 
 		]]>
+		ORDER BY RAND() LIMIT 1
     </select>
     
     <update id="updateRecordInfo"  parameterType="com.ald.fanbei.api.dal.domain.AfFundSideAccountDo">
