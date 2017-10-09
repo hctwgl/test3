@@ -112,7 +112,7 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 				afFundSideAccountDao.updateRecordInfo(afFundSideAccountDo);
 				
 				//af_fund_side_account_log资金记录插入
-				AfFundSideAccountLogDo afFundSideAccountLogDo = new AfFundSideAccountLogDo(accounts.getFundSideInfoId(), usableMoney, borrowCashDo.getAmount().negate(), AfFundSideAccountLogType.LOAN.getCode(), fundSideBorrowCashDo.getRid(), currDay, "放款成功");
+				AfFundSideAccountLogDo afFundSideAccountLogDo = new AfFundSideAccountLogDo(accounts.getFundSideInfoId(), usableMoney, borrowCashDo.getAmount().negate(), AfFundSideAccountLogType.LOAN.getCode(), fundSideBorrowCashDo.getRid(), currDay,borrowCashDo.getBorrowNo(), "放款成功");
 				afFundSideAccountLogDao.saveRecord(afFundSideAccountLogDo);
 				
 				return true;

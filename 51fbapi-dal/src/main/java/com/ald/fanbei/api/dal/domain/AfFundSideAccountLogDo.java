@@ -53,6 +53,11 @@ import java.math.BigDecimal;
     private Date gmtModified;
 
     /**
+     * 关联业务记录对应的业务编号
+     */
+    private String refBusiNo;
+    
+    /**
      * 账户变动说明
      */
     private String remarks;
@@ -63,7 +68,7 @@ import java.math.BigDecimal;
 
 	public AfFundSideAccountLogDo(Long fundSideInfoId, BigDecimal amountOld,
 			BigDecimal amountAdded, String changeType, Long refBusiId,
-			Date gmtModified, String remarks) {
+			Date gmtModified, String refBusiNo,String remarks) {
 		super();
 		this.fundSideInfoId = fundSideInfoId;
 		this.amountOld = amountOld;
@@ -71,6 +76,7 @@ import java.math.BigDecimal;
 		this.changeType = changeType;
 		this.refBusiId = refBusiId;
 		this.gmtModified = gmtModified;
+		this.refBusiNo = refBusiNo;
 		this.remarks = remarks;
 	}
 
@@ -217,5 +223,13 @@ import java.math.BigDecimal;
     public void setRemarks(String remarks){
       this.remarks = remarks;
     }
+
+	public String getRefBusiNo() {
+		return refBusiNo;
+	}
+
+	public void setRefBusiNo(String refBusiNo) {
+		this.refBusiNo = refBusiNo;
+	}
 
 }
