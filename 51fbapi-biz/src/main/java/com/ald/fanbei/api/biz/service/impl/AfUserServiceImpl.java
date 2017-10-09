@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -63,13 +64,14 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					afUserDao.addUser(afUserDo);
 					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
 					afUserAuthDo.setUserId(afUserDo.getRid());
+					logger.info(StringUtil.appendStrs("yuyuegetaddUser",afUserDo.getRid()));
 					afUserAuthDao.addUserAuth(afUserAuthDo);
 
 					AfUserAccountDo account = new AfUserAccountDo();
 					account.setUserId(afUserDo.getRid());
 					account.setUserName(afUserDo.getUserName());
 					afUserAccountDao.addUserAccount(account);
-			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId());
+			        couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
 
 
 			        long recommendId = afUserDo.getRecommendId();
@@ -139,6 +141,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Override
 	public Long getUserIdByMobile(String mobile) {
 		return afUserDao.getUserIdByMobile(mobile);
+	}
+
+	@Override
+	public List<String> getUserNameByUserId(List<String> users) {
+		return afUserDao.getUserNameByUserId(users);
 	}
 
 

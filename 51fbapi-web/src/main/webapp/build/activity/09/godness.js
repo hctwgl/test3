@@ -1,5 +1,5 @@
-
 /**
+
  * Created by nizhiwei-labtop on 2017/7/10.
  */
 let activityId = getUrl("activityId");

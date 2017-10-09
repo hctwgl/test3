@@ -2,12 +2,16 @@ package com.ald.fanbei.api.web.api.repayment;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfUserCouponVo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -32,6 +36,9 @@ public class GetRepaymentInfo  implements ApiHandle{
     @Resource
     AfUserAccountService afUserAccountService;
 
+    @Resource
+    private AfUserCouponService afUserCouponService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         long userId = context.getUserId();
@@ -49,6 +56,12 @@ public class GetRepaymentInfo  implements ApiHandle{
                 m.put("month", bill_month + "月帐单");
                 m.put("totalAmount", map.get("totalAmount"));
                 m.put("interest", map.get("interest"));
+                if(map.get("overdue_status").toString().equals("Y")){
+                    m.put("status", "已逾期");
+                }
+                else {
+                    m.put("status", "已出帐单");
+                }
                 out.add(m);
             } else {
                 notOut.add(m);
@@ -63,6 +76,9 @@ public class GetRepaymentInfo  implements ApiHandle{
             ret.put("noOutMoney", allNoOut);
         }
         ret.put("list", out);
+
+        List<AfUserCouponDto> couponDto = afUserCouponService.getUserCouponByUserIdAndType(userId, CouponType.REPAYMENT.getCode(), BigDecimal.valueOf(200000L));
+        ret.put("couponList",couponDto);
         resp.setResponseData(ret);
         return resp;
     }

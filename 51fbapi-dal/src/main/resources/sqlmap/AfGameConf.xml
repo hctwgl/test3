@@ -17,4 +17,10 @@
 		FROM af_game_conf WHERE is_delete = 0 AND game_code=#{gameCode}
 	</select>
 	
+	<select id="getByIdAndCode" resultType="AfGameConfDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_conf WHERE is_delete = 0 AND id = #{id} AND game_code=#{gameCode}
+	</select>
+	
 </mapper>

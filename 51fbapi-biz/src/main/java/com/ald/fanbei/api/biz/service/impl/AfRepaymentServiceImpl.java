@@ -115,7 +115,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Resource
 	RedisTemplate redisTemplate;
 
-	public Map<String,Object> createRepaymentYiBao(BigDecimal jfbAmount,BigDecimal repaymentAmount,
+	@Resource
+	AfRepaymentDetalDao afRepaymentDetalDao;
+
+	public Map<String,Object> createRepaymentYiBao(final BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
 												   BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp,
 												   final AfUserAccountDo afUserAccountDo){
@@ -139,8 +142,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				return Long.parseLong(source);
 			}
 		});
-		if(cardId==-1 && cardId ==-3){//微信支付 或 支付宝
+		if(cardId==-1 || cardId ==-3){//微信支付 或 支付宝
 			afRepaymentDao.addRepayment(repayment);
+
+
 			//修改账单状态
 			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
 			for (String key : map1.keySet()) {
@@ -186,13 +191,16 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
 
 	@Override
-	public Map<String,Object> createRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,
+	public Map<String,Object> createRepayment( BigDecimal jfbAmount,BigDecimal repaymentAmount,
 			final BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp,
 			final AfUserAccountDo afUserAccountDo) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentNo(now);
 		final String payTradeNo=repayNo;
+
+
+
 		//新增还款记录
 		String name =Constants.DEFAULT_REPAYMENT_NAME+billDo.getName();
 		if(billDo.getCount()>1){
@@ -210,6 +218,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				return Long.parseLong(source);
 			}
 		});
+
+
+
 		if(cardId==-1){//微信支付
 			afRepaymentDao.addRepayment(repayment);
 			//修改账单状态
@@ -242,12 +253,27 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			afRepaymentDao.addRepayment(repayment);
+			//addRepaymentyDetail(totalAmount,repaymentAmount,repayment.getRid());
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
 		}
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENT.getCode());
 		return map;
 	}
+
+	private void addRepaymentyDetail(BigDecimal totalAmount,BigDecimal actualAmount,Long refId){
+		// 返写到返现里的钱
+		if(totalAmount.compareTo(actualAmount)>0){
+			BigDecimal bd = totalAmount.subtract(actualAmount);
+			AfRepaymentDetalDo afRepaymentDetalDo = new AfRepaymentDetalDo();
+			afRepaymentDetalDo.setRepaymentId(refId);
+			afRepaymentDetalDo.setTotalAmount(totalAmount);
+			afRepaymentDetalDo.setAmount(bd);
+			afRepaymentDetalDao.addRepaymentDetal(afRepaymentDetalDo);
+		}
+	}
+
+
 
 	@Override
 	public String getCurrentLastRepayNo(String orderNoPre) {
@@ -321,6 +347,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
+
+					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+					if(afYibaoOrderDo !=null){
+						if(afYibaoOrderDo.getStatus().intValue() == 1){
+							return 1L;
+						}
+						else{
+							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
+						}
+					}
+
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
 					logger.info("updateBorrowBillStatusByIds repayment  = {}",repayment);
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
@@ -367,7 +404,16 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					
 					//还款成功同步逾期订单
 					dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
-					
+
+//					AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(repayment.getRid(),1);
+//					if(afRepaymentDetalDo !=null){
+//						//回写返利
+//						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+//						afUserAccountDo.setRebateAmount(afRepaymentDetalDo.getAmount());
+//						afUserAccountDo.setUserId(repayment.getUserId());
+//						afUserAccountDao.updateRebateAmount(afUserAccountDo);
+//						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT_OUT, afRepaymentDetalDo.getAmount(), repayment.getUserId(), repayment.getRid()));
+//					}
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -498,6 +544,16 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					if(repayment == null){
 						return 0;
 					}
+
+					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+					if(afYibaoOrderDo !=null) {
+						if (afYibaoOrderDo.getStatus().intValue() == 1) {
+							return 1;
+						} else {
+							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
+						}
+					}
+
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus()) || YesNoStatus.NO.getCode().equals(repayment.getStatus())) {
 						return 0;
 					}

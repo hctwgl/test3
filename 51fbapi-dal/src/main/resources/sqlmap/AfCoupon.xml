@@ -89,4 +89,18 @@
 			id = #{couponId}
 	</update>
 	
+	<select id="getCouponNames" resultType="String">
+		SELECT
+	   		name
+	    FROM
+	   		 af_coupon
+	    WHERE
+	    	is_delete = 0
+		AND `status` ='O'
+		AND id in 
+    		<foreach collection="ids" item="id" open="(" close=")"
+    			separator=",">
+    				#{id}
+    		</foreach>
+	</select>
 </mapper>

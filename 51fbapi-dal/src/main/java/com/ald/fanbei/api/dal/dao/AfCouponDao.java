@@ -25,4 +25,6 @@ public interface AfCouponDao {
 
 	AfCouponDo getCouponInfoById(@Param("couponId")Long couponId);
 
+	List<String> getCouponNames(@Param("ids")List<String> ids);
+
 }

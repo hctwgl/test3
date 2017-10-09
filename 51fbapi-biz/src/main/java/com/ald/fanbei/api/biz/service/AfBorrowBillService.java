@@ -193,5 +193,7 @@ public interface AfBorrowBillService {
 
 	List<AfBorrowBillDo> getAllBorrowNoPayByUserId(long userId);
 	List<HashMap> getBorrowBillNoPaySumByUserId( long userId);
+
+	AfBorrowBillDo getTotalMonthlyBillByIds(@Param("userId") Long userId,@Param("ids") List<Long > ids );
 	
 }

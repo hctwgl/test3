@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
+import com.ald.fanbei.api.dal.domain.AfGameDo;
+import com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery;
 
 /**
  * 业务访问记录Service
@@ -11,4 +14,26 @@ import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
  */
 public interface AfBusinessAccessRecordsService extends ParentService<AfBusinessAccessRecordsDo, Long>{
 
+	/**
+	 * 判断用户今天是否签到
+	 * @param userId
+	 * @return
+	 */
+	boolean checkIsSignToday(Long userId);
+
+	/**
+	 * 签到
+	 * @param gameDo
+	 * @param userId
+	 */
+	void doSign(AfGameDo gameDo, Long userId);
+	
+	/**
+	 * 借贷超市签到天数
+	 * @param query
+	 * @return
+	 */
+	int getSignDays(AfBusinessAccessRecordQuery query);
+
+	int getSignCountToday(Long userId);
 }

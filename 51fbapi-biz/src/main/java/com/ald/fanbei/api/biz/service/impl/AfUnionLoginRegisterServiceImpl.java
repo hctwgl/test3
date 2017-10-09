@@ -63,7 +63,7 @@ public class AfUnionLoginRegisterServiceImpl extends ParentServiceImpl<AfUnionLo
             userId = userDo.getRid();
             AfUnionLoginRegisterDo afUnionLoginRegisterDo=new AfUnionLoginRegisterDo();
             afUnionLoginRegisterDo.setChannelCode(channel);
-            afUnionLoginRegisterDo.setDefaultPassword(defaultPassword);
+            afUnionLoginRegisterDo.setDefaultPassword(password);
             afUnionLoginRegisterDo.setGmtCreate(new Date());
             afUnionLoginRegisterDo.setRequestInfo(paramsJsonStr.substring(0,paramsJsonStr.length()>1024?1024:paramsJsonStr.length()));
             afUnionLoginRegisterDo.setPhone(phone);

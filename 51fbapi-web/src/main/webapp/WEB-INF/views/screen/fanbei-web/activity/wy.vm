@@ -1,58 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	#set($version="2017061505")
-    #set($commonUrl="https://img.51fanbei.com/h5/app/activity/wy")
-	<meta charset="UTF-8">
-	<title>您有2个红包待领取</title>
-	<link rel="stylesheet" type="text/css" href="/dist/activity/wy/wy.css">
+    #set($version="2017052302")
+    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/07")
+    <title>借点钱</title>
+    <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/wy/wyBorrow.css">
 </head>
 <body>
 <div class="loadingMask"><i class="loading"></i></div>
-<img class="first" src="$commonUrl/money_01.jpg">
-<img class="first" src="$commonUrl/money_02.jpg">
-<img class="first" src="$commonUrl/money_03.jpg">
-<img class="first" src="$commonUrl/money_04.jpg">
-<img class="first" src="$commonUrl/money_05.jpg">
-<img class="first" src="$commonUrl/money_06.jpg">
-<img class="first" src="$commonUrl/money_07.jpg">
-<img class="first" src="$commonUrl/money_08.jpg">
-<div onclick="go()" style="position: absolute;top: 2.2rem;width: 5rem;height: 3.8rem;left: 2rem;"></div>
-<div onclick="go51()" style="position: absolute;top: 7rem;width: 5rem;height: 4rem;left: .6rem;"></div>
-<script type="text/javascript" src="/dist/activity/wy/wy.js"></script>
+<div id="vueCon">
+    <div class="bar" v-if="barShow">
+        <img class="fl" src="$commonUrl/lb.png">
+        <a class="fl" :href="content.scrollbar.wordUrl">
+            <span v-if="content.scrollbar.content.length<20">{{content.scrollbar.content}}</span>
+            <marquee scrollamount="3" v-else>{{content.scrollbar.content}}</marquee>
+        </a>
+        <img class="fr" src="$commonUrl/x.png" @click="barShow=false">
+    </div>
+    <div class="banner">
+        <a @click="maidian('banner')" :href="banner.content">
+            <img class="first" :src="banner.imageUrl">
+        </a>
+    </div>
+    <div class="swiper-container">
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination" id="navWrap"></div>
+        <div class="hei"></div>
+
+        <div class="swiper-wrapper" id="wrapper">
+            <div class="swiper-slide" v-for="data of content.tabList">
+                <a @click="maidian(item.lsmNo)" :href="item.linkUrl" class="app" v-for="item of data.loanShopList">
+                    <div class="left">
+                        <img class="img" :src="item.iconUrl">
+                        <div class="name">{{item.lsmName}}</div>
+                        <div class="text">{{item.lsmIntro}}</div>
+                    </div>
+                    <div class="right" v-if="item.marketPoint">
+                        <div class="num">{{sp(item.marketPoint,0)}}</div>
+                        <div class="text">{{sp(item.marketPoint,1)}}</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
-<script>
-    $(".first").each(function() {
-        var img = $(this);
-        img.load(function () {
-            $(".loadingMask").fadeOut();
-            console.log(2)
-        });
-        setTimeout(function () {
-            $(".loadingMask").fadeOut();
-        },1000)
-    });
-	function go() {
-	    jQuery.ajax({
-			url:'/fanbei-web/postMaidianInfo',
-			type:'post',
-			data:{maidianInfo:'/fanbei-web/activity/wy?type=qianbaoBtn'},
-			success:function (data) {
-				console.log(data)
-            }
-		});
-		window.location.href='https://www.edspay.com/activity/webapp/source.html?utm_source=wyxw3'
-    }
-    function go51() {
-        jQuery.ajax({
-            url:'/fanbei-web/postMaidianInfo',
-            type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/wy?type=btn'},
-            success:function (data) {
-                console.log(data)
-            }
-        });
-        window.location.href='wyRegister?channelCode=wwyy&pointCode=wwyy'
-    }
-</script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
+<script src="/dist/activity/wy/wyBorrow.js"></script>
 </html>

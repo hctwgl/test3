@@ -48,5 +48,5 @@ public interface AfLoanSupermarketDao {
 	 * @param label
 	 * @return
 	 */
-	List<AfLoanSupermarketDo> getLoanSupermarketByLabel(@Param("label")String label);
+	List<AfLoanSupermarketDo> getLoanSupermarketByLabel(@Param("label")String label,@Param("systemType")Integer systemType);
 }

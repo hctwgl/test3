@@ -291,9 +291,50 @@
 		order by bill_year asc , bill_month asc
 	</select>
 
-	<select id="getBorrowBillNoPaySumByUserId">
-		select bill_year,bill_month,SUM(bill_amount) totalAmount,SUM(overdue_interest_amount) interest from af_borrow_bill
+	<select id="getBorrowBillNoPaySumByUserId" resultType="HashMap">
+		select bill_year,bill_month,SUM(bill_amount) totalAmount,SUM(overdue_interest_amount) interest,overdue_status from af_borrow_bill
 			where user_id = #{userId} and `status` = 'N'
 		GROUP BY bill_year,bill_month
 	</select>
+
+
+	<select id="getBorrowBillList"   resultType="AfBorrowBillDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+		af_borrow_bill
+		WHERE
+		is_delete = 0
+		<if test="status != 'All'">
+			and status = #{status}
+		</if>
+		and user_id = #{userId}
+		ORDER by gmt_create asc
+	</select>
+
+	<select id="getBorrowBillListY"   resultType="AfBorrowBillDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+		af_borrow_bill
+		WHERE
+		is_delete = 0
+		and status = 'Y'
+		and user_id = #{userId}
+		and bill_year =#{billYear}
+		and bill_month = #{billMonth}
+		ORDER by gmt_create asc
+	</select>
+
+	<select id="getTotalMonthlyBillByIds" resultType="AfBorrowBillDo">
+		SELECT SUM(bill_amount) bill_amount,GROUP_CONCAT(id) bill_ids
+		FROM af_borrow_bill
+		WHERE is_delete=0 AND user_id = #{userId}
+		AND STATUS ='N'
+		AND id IN
+		<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
 </mapper>

@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.CouponSceneRuleEnginer;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 /**
  * 
@@ -35,10 +36,11 @@ public class CouponSceneRuleEnginerUtil {
 	 *@param invitor 邀请人userId
 	 */
 	@Async
-	public void regist(Long userId,Long invitor){
+	public void regist(Long userId,Long invitor,AfUserDo afUserDo){
 		Map<String,Object> inputData = new HashMap<String,Object>();
 		inputData.put("userId", userId);
 		inputData.put("invitor", invitor);
+		inputData.put("userDo", afUserDo);
 		registRuleEngine.executeRule(inputData);
 	}
 	

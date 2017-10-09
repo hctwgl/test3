@@ -18,6 +18,7 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -1095,5 +1096,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	@Override
 	public int addBorrowBill(List<AfBorrowBillDo> billList){
 		return afBorrowDao.addBorrowBill(billList);
+	}
+
+	public List<AfBorrowBillDo> getBorrowBillList(String status, Long userId){
+		return afBorrowBillDao.getBorrowBillList(status,userId);
+	}
+
+	public List<AfBorrowBillDo> getBorrowBillListY( Long userId,  Integer billYear, Integer billMonth){
+		return  afBorrowBillDao.getBorrowBillListY(userId,billYear,billMonth);
 	}
 }
