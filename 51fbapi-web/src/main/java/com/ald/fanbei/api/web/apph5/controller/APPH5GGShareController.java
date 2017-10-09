@@ -622,22 +622,48 @@ public class APPH5GGShareController extends BaseController {
 				List<AfBoluomeActivityItemsDo> itemsList = new ArrayList<>();
 				List<Long> tempItemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId,
 						userId);// 大于1张卡片的用户记录--》update，改成所有的。
-				if (tempItemsList != null && tempItemsList.size() > 0) {
-					itemsList = addNumber(activityId, userId);
-
-					for (Long itemsId : tempItemsList) {
-						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
-						t.setUserId(userId);
-						t.setStatus("NORMAL");
-						t.setBoluomeActivityId(activityId);
-						t.setItemsId(itemsId);
-						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
-								.getListByCommonCondition(t);
-						if (userItemsList != null && userItemsList.size() > 0) {
-							resultList.addAll(userItemsList);
+				//根据是否领取终极大奖不同个逻辑
+				boolean isGetSuperPrize = false;
+				isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId, activityId);
+				if(isGetSuperPrize){//已经获得终极大奖了则所有的卡片都可以赠送了
+					if (tempItemsList != null && tempItemsList.size() > 0) {
+						itemsList = addNumber(activityId, userId);
+						
+						for (Long itemsId : tempItemsList) {
+							AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
+							t.setUserId(userId);
+							t.setStatus("NORMAL");
+							t.setBoluomeActivityId(activityId);
+							t.setItemsId(itemsId);
+							List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+									.getListByCommonCondition(t);
+							if (userItemsList != null && userItemsList.size() > 0) {
+								resultList.addAll(userItemsList);
+							}
+						}
+					}
+				}else{
+				//若没有领取周终极大奖，则逻辑不变
+				
+					if (tempItemsList != null && tempItemsList.size() > 1) {//此时判断是否大于1则。。
+						itemsList = addNumber(activityId, userId);
+	
+						for (Long itemsId : tempItemsList) {
+							AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
+							t.setUserId(userId);
+							t.setStatus("NORMAL");
+							t.setBoluomeActivityId(activityId);
+							t.setItemsId(itemsId);
+							List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+									.getListByCommonCondition(t);
+							if (userItemsList != null && userItemsList.size() > 0) {
+								resultList.addAll(userItemsList);
+							}
 						}
 					}
 				}
+				
+				
 				Map<String, Object> data = new HashMap<>();
 				data.put("itemsList", itemsList);
 				data.put("userItemsList", resultList);
