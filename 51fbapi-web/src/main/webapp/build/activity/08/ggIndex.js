@@ -43,25 +43,34 @@ let vm = new Vue({
                             var cont = $(".cont1").html();
                             $(".cont2").html(cont);
                             wordMove();//左右移动动画
-                        })
+                        });
+                        //终极大奖+是否可赠送
                         self.$nextTick(function () {
                             self.imgSwiper();//首页轮播
                             //判断蒙版
-                            for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
-                                num=self.content.itemsList[j].num;
-                                if(num>=2){
-                                    $('.card').eq(j).find('.num').css('display','block');
-                                    $('.presentCard').attr('present','Y');
+                            if(self.content.superPrizeStatus=='YN'){//已领取终极大奖 num>=1就可赠送
+                                for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
+                                    num=self.content.itemsList[j].num;
+                                    if(num>=1){
+                                        $('.presentCard').attr('present','Y');
+                                        $('.presentCard').attr('superPrize','Y');
+                                    }
+                                    if(num>=2){
+                                        $('.card').eq(j).find('.num').css('display','block');
+                                    }
+                                }
+                            }else{  //未领取终极大奖 num>=2就可赠送
+                                for(var m=0;m<self.content.itemsList.length;m++){//是否可赠送
+                                    num=self.content.itemsList[m].num;
+                                    if(num>=2){
+                                        $('.card').eq(m).find('.num').css('display','block');
+                                        $('.presentCard').attr('present','Y');
+                                        $('.presentCard').attr('superPrize','N');
+                                    }
                                 }
                             }
-
-                        })
-                    }/*else{
-                        //alert(0)
-                        //alert(data.data.loginUrl);
-                        //window.location.href="https://www.baidu.com/";
-                        window.location.href=data.data.loginUrl;//未登录
-                    }*/
+                        })//终极大奖+是否可赠送
+                    }
                 }
             })
         },
@@ -87,7 +96,7 @@ let vm = new Vue({
                 url: '/fanbei-web/getBrandUrlV1',
                 data:{'shopId':shopId},
                 success: function (returnData) {
-                    console.log(returnData)
+                    console.log(returnData);
                     if(returnData.success){
                         location.href=returnData.url;
                     }else{
@@ -163,6 +172,7 @@ let vm = new Vue({
                             $('.mask').css('display','block');
                             $('.alertFinalPrize').css('display','block');
                             self.content.superPrizeStatus='YN';
+                            $('.presentCard').attr('superPrize','Y');
                             for(var j=0;j<self.content.itemsList.length;j++) {//点击后卡片num-1
                                 num = self.content.itemsList[j].num;
                                 if (num == 0) {
@@ -173,10 +183,11 @@ let vm = new Vue({
                                     if (num - 1 == 0) {
                                         $('.card').eq(j).find('.gray').css('display', 'block');
                                         $('.card').eq(j).find('.num').css('display', 'none');
-                                        $('.presentCard').attr('present', 'N');
+                                        //$('.presentCard').attr('present', 'N');
                                     } else if (num - 1 == 1) {
                                         $('.card').eq(j).find('.num').css('display', 'none');
-                                        $('.presentCard').attr('present', 'N');
+                                        //$('.presentCard').attr('present', 'N');
+                                        $('.presentCard').attr('present', 'Y');
                                     } else if (num - 1 >= 2) {
                                         $('.presentCard').attr('present', 'Y');
                                     }
