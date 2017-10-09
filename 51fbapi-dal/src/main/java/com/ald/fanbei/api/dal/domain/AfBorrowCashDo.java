@@ -48,7 +48,8 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String overdueStatus;
 	private String reviewStatus;
 	private String address;
-
+	private String finishDate;//订单为FINSH时记录该时间
+	private String rdBeforeOverdueStatus;//记录续期前的订单状态
 	private String rishOrderNo;
 
 	private Date gmtPlanRepayment;// 预计还款时间
@@ -61,19 +62,13 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private BigDecimal poundageRate;// 借钱手续费率（日）
 	private BigDecimal baseBankRate;// 央行基准利率
 	private String majiabaoName;//马甲包名称www为APP,其余的为马甲包名称
-	private String finishDate;//订单为FINSH时记录该时间
-	private String rdBeforeOverdueStatus;//记录续期前的订单状态
 	
 	
 
 	
-	public String getFinishDate() {
-		return finishDate;
-	}
 
-	public void setFinishDate(String finishDate) {
-		this.finishDate = finishDate;
-	}
+
+
 
 	/**
 	 * @return the gmtClose
@@ -627,7 +622,15 @@ public class AfBorrowCashDo extends AbstractSerial {
 	public void setMajiabaoName(String majiabaoName) {
 		this.majiabaoName = majiabaoName;
 	}
+	
+	public String getFinishDate() {
+		return finishDate;
+	}
 
+	public void setFinishDate(String finishDate) {
+		this.finishDate = finishDate;
+	}
+	
 	public String getRdBeforeOverdueStatus() {
 		return rdBeforeOverdueStatus;
 	}

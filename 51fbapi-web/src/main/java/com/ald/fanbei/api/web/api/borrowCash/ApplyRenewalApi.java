@@ -82,7 +82,8 @@ public class ApplyRenewalApi implements ApiHandle {
 		// fmf  add续期前逾期状态
 		try{
 			List<AfRenewalDetailDo> renewalDetailList= afRenewalDetailService.getRenewalDetailListByBorrowId(rid);
-			if(renewalDetailList == null && renewalDetailList.size()==0){
+			if(renewalDetailList == null || renewalDetailList.size()==0){
+				afBorrowCashDo.setRdBeforeOverdueStatus(afBorrowCashDo.getOverdueStatus());
 				afBorrowCashService.updateAfBorrowCashService(afBorrowCashDo);
 			}
 		}catch(Exception e){

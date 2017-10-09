@@ -126,6 +126,6 @@
 	<select id="getRenewalDetailListByBorrowId" parameterType="java.lang.Long" resultType="AfRenewalDetailDo">
 			select 
 			<include refid="queryFields"/> 
-		from af_renewal_detail WHERE WHERE is_datele=0 AND borrow_id=#{borrowId} AND status='Y'
+		from af_renewal_detail WHERE is_delete=0 AND borrow_id=#{borrowId} AND status='Y'
 	</select>
 </mapper>
