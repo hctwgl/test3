@@ -23,6 +23,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -114,6 +116,9 @@ public class TestController {
 	BoluomeUtil boluomeUtil;
 	@Resource
 	private TaobaoApiUtil taobaoApiUtil;
+
+	@Resource
+	RedisTemplate redisTemplate;
 	/**
 	 * 新h5页面处理，针对前端开发新的h5页面时请求的处理
 	 * 
@@ -788,7 +793,7 @@ public class TestController {
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
-
+		addOutDay(100);
 		Map aaa = yiBaoUtility.getYiBaoOrder("xj20170925150926247561","1001201709250000000018962175");
 		String e = "";
 
@@ -858,6 +863,7 @@ public class TestController {
 	 * @return
 	 */
 	private HashMap getBillByStatus(AfBorrowBillDo afBorrowBillDo,int status){
+
 		HashMap map = new HashMap();
 		if(status ==1){
 			if(afBorrowBillDo.getOverdueStatus().equals("Y")){
@@ -913,6 +919,48 @@ public class TestController {
 	}
 
 
+	@Resource
+	AfUserOutDayDao afUserOutDayDao;
+	/**
+	 * 帐单日处理
+	 * @param userId
+	 */
+	public void addOutDay(long userId){
+		try {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH, 7);
+			int out_day = calendar.get(Calendar.DAY_OF_MONTH);
+			List<Integer> _nodays = new ArrayList<>();
+			_nodays.add(19);
+			_nodays.add(20);
+			List<Integer> _nodays1 = new ArrayList<>();
+			_nodays1.add(29);
+			_nodays1.add(30);
+			_nodays1.add(31);
+			AfUserOutDayDo afUserOutDayDo = new AfUserOutDayDo();
+			int pay_day = 0;
+			if (_nodays.contains(out_day)) {
+				out_day = 21;
+				pay_day = 1;
+
+			} else if (_nodays1.contains(out_day)) {
+				out_day = 1;
+				pay_day = 11;
+			} else {
+				pay_day = out_day + 10;
+				if (pay_day > 30) pay_day = pay_day - 30;
+
+			}
+			afUserOutDayDo.setUserId(userId);
+			afUserOutDayDo.setOutDay(out_day);
+			afUserOutDayDo.setPayDay(pay_day);
+			afUserOutDayDao.addserOutDay(afUserOutDayDo);
+		}
+		catch (Exception e){
+			logger.info("add out_day error:", e);
+			logger.error("add out_day error",e);
+		}
+	}
 
 	
 }

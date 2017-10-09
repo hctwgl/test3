@@ -117,6 +117,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	AfRecommendUserDao afRecommendUserDao;
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	AfUserOutDayDao afUserOutDayDao;
+
 	@Override
 	public Date getReyLimitDate(String billType, Date now) {
 		Date start = DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now));
@@ -375,11 +378,20 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	}
 
 	@Override
-	public Map<String, Integer> getCurrentYearAndMonth(Date now) {
-		Map<String, Integer> map = new HashMap<String, Integer>();
+	public Map<String, Object> getCurrentYearAndMonth(Date now,AfUserOutDayDo afUserOutDayDo) {
+		Map<String, Object> map = new HashMap<String, Object>();
 		// 账单日
+
+		int default_out_day = NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10);
+		int default_pay_day = NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20);
+
+		if(afUserOutDayDo !=null){
+			default_out_day = afUserOutDayDo.getOutDay();
+			default_pay_day = afUserOutDayDo.getPayDay();
+		}
+
 		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
-				NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10) - 1);
+				default_out_day - 1);
 		if (now.before(startDate)) {// 账单日前面
 			startDate = DateUtil.addMonths(startDate, -1);
 		}
@@ -391,6 +403,32 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		}
 		map.put(Constants.DEFAULT_YEAR, billYear);
 		map.put(Constants.DEFAULT_MONTH, billMonth);
+
+		Calendar out_datetime = Calendar.getInstance();
+		out_datetime.setTime(startDate);
+		out_datetime.add(Calendar.MONTH,1);
+		out_datetime.set(Calendar.DAY_OF_MONTH,default_out_day);
+		out_datetime.set(Calendar.HOUR_OF_DAY,0);
+		out_datetime.set(Calendar.MINUTE,0);
+		out_datetime.set(Calendar.SECOND,0);
+		out_datetime.set(Calendar.MILLISECOND,0);
+
+		Calendar pay_datetime = Calendar.getInstance();
+		pay_datetime.setTime(startDate);
+		if(default_pay_day > default_out_day) {
+			pay_datetime.add(Calendar.MONTH, 1);
+		}
+		else{
+			pay_datetime.add(Calendar.MONTH, 2);
+		}
+		pay_datetime.set(Calendar.DAY_OF_MONTH,default_pay_day);
+		pay_datetime.set(Calendar.HOUR_OF_DAY,23);
+		pay_datetime.set(Calendar.MINUTE,59);
+		pay_datetime.set(Calendar.SECOND,59);
+		pay_datetime.set(Calendar.MILLISECOND,999);
+
+		map.put(Constants.OUT_DATETIME,out_datetime.getTime());
+		map.put(Constants.PAY_DATETIME,pay_datetime.getTime());
 		return map;
 	}
 
@@ -536,6 +574,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		Date now = new Date();// 当前时间
 		BigDecimal billAmount = perAmount;
 		BigDecimal money = borrow.getAmount();// 借款金额
+		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
 		// 计算本息总计
 		for (int i = 1; i <= borrow.getNper(); i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
@@ -544,9 +583,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			bill.setBorrowNo(borrow.getBorrowNo());
 			bill.setName(borrow.getName());
 			bill.setGmtBorrow(borrow.getGmtCreate());
-			Map<String, Integer> timeMap = getCurrentYearAndMonth(now);
-			bill.setBillYear(timeMap.get(Constants.DEFAULT_YEAR));
-			bill.setBillMonth(timeMap.get(Constants.DEFAULT_MONTH));
+			Map<String, Object> timeMap = getCurrentYearAndMonth(now,afUserOutDayDo);
+			bill.setBillYear((Integer) timeMap.get(Constants.DEFAULT_YEAR));
+			bill.setBillMonth((Integer) timeMap.get(Constants.DEFAULT_MONTH));
+			bill.setGmtOutDay((Date) timeMap.get(Constants.OUT_DATETIME));
+			bill.setGmtPayTime((Date) timeMap.get(Constants.PAY_DATETIME));
 			bill.setNper(borrow.getNper());
 			bill.setBillNper(i);
 			if (borrowType.equals(BorrowType.CASH)) {
@@ -604,7 +645,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		BigDecimal interestAmount = money.multiply(mouthRate);
 		//每期手续费
 		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(money, borrow.getNper(), borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
-		
+
+		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
+
 		for (int i = 1; i <= nper; i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
 			bill.setUserId(borrow.getUserId());
@@ -612,9 +655,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			bill.setBorrowNo(borrow.getBorrowNo());
 			bill.setName(borrow.getName());
 			bill.setGmtBorrow(borrow.getGmtCreate());
-			Map<String, Integer> timeMap = getCurrentYearAndMonth(now);
-			bill.setBillYear(timeMap.get(Constants.DEFAULT_YEAR));
-			bill.setBillMonth(timeMap.get(Constants.DEFAULT_MONTH));
+			Map<String, Object> timeMap = getCurrentYearAndMonth(now,afUserOutDayDo);
+			bill.setBillYear((Integer) timeMap.get(Constants.DEFAULT_YEAR));
+			bill.setBillMonth((Integer) timeMap.get(Constants.DEFAULT_MONTH));
+			bill.setGmtOutDay((Date) timeMap.get(Constants.OUT_DATETIME));
+			bill.setGmtPayTime((Date) timeMap.get(Constants.PAY_DATETIME));
 			bill.setNper(borrow.getNper());
 			bill.setBillNper(i);
 			if (i <= freeNper) {

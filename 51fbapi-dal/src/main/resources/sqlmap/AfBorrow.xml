@@ -133,7 +133,9 @@
 		  principle_amount,
 		  interest_amount,
 		  poundage_amount,
-		  is_free_interest
+		  is_free_interest,
+		  gmt_out_day,
+		  gmt_pay_time
 		) 
 		VALUES
 	    <foreach collection = "list" separator = "," item = "item" index = "index" > 
@@ -155,7 +157,9 @@
 	  		#{item.principleAmount},
 	  		#{item.interestAmount},
 	  		#{item.poundageAmount},
-	  		#{item.isFreeInterest}
+	  		#{item.isFreeInterest},
+			#{item.gmtOutDay},
+			#{item.gmtPayTime}
 	  	)
 	  	</foreach> 
    </insert>
