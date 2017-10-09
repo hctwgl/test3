@@ -116,13 +116,14 @@ public class GetBillListByStatusApi implements ApiHandle {
     private HashMap getBillByStatus(AfBorrowBillDo afBorrowBillDo,int status){
         HashMap map = new HashMap();
         if(afBorrowBillDo.getStatus().equals("Y")){
-            return map;
+            return null;
         }
         if(status ==1){
             if(afBorrowBillDo.getOverdueStatus().equals("Y")){
-                return map;
+                return null;
             }
-            if(isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+//            if(isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+            if(afBorrowBillDo.getIsOut().intValue() ==1){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
                 map.put("billId",afBorrowBillDo.getRid());
@@ -144,7 +145,8 @@ public class GetBillListByStatusApi implements ApiHandle {
             return map;
         }
         else if (status ==3){
-            if(!isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+//            if(!isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+            if(afBorrowBillDo.getIsOut().intValue() == 0){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
                 map.put("billId",afBorrowBillDo.getRid());
