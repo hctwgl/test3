@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170830")
+    #set($version="201710091410")
     #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    <meta charset="UTF-8">
     <title>逛逛专享区</title>
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggIndex.css?version=$version">

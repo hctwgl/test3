@@ -183,12 +183,12 @@ let vm = new Vue({
                                 }
                             }
                         }else{
-                            if(self.content.superPrizeStatus=='N'&&returnData.url==''){
+                            if(self.content.superPrizeStatus=='NY'){
                                 window.location.href=returnData.data.loginUrl;//未登录
                             }else if(self.content.superPrizeStatus=='YN'){
-                                requestMsg(returnData.msg);//已领取
+                                requestMsg(returnData.msg);//已登录+已领取
                             }else{
-                                requestMsg(returnData.msg);//已登录缺少卡片
+                                requestMsg(returnData.msg);//已登录+缺少卡片此时self.content.superPrizeStatus=='N'
                             }
                         }
                     },
