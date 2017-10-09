@@ -742,9 +742,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		//登陆者消费就返利和返卡片
 	    Long userId = afOrder.getUserId();
 		//查询商城id
-		AfShopDo afShopDo =new AfShopDo();
-		afShopDo.setType(afOrder.getSecType());
-		AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
+		//AfShopDo afShopDo =new AfShopDo();
+//		afShopDo.setType(afOrder.getSecType());
+//		AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
+	         String platformName = afOrder.getOrderType(); //BOLUOME
+	         String type = afOrder.getSecType();    //JIUDIAN
+	         String serviceProvider = afOrder.getServiceProvider();  //CTRIP
+		 AfShopDo shop = afShopService.getShopByPlantNameAndTypeAndServiceProvider(platformName, type,  serviceProvider);
+		
 		logger.info("shop",shop);
 		if (shop != null) {
 			Long shopId = shop.getRid();

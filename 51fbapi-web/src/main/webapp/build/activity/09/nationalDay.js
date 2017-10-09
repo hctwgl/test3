@@ -1,6 +1,7 @@
 
 let activityId=getUrl("activityId");//获取活动Id
 let groupId=getUrl('groupId');//获取优惠券列表
+let shopId=getUrl('shopId');//获取场景Id
 //获取数据
 let vm = new Vue({
     el: '#nationalDay',
@@ -107,6 +108,29 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！");
                 }
             })
+        },
+        //点击最后大图进入场景
+        fourthContClick(){
+            //window.location.href='https://91ala.otosaas.com/menpiao';
+            $.ajax({
+                url: "/fanbei-web/getBrandUrlV1",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    'shopId':shopId
+                },
+                success: function (returnData) {
+                    console.log(returnData);
+                    if(returnData.success){
+                        location.href=returnData.url;
+                    }else{
+                        location.href=returnData.url;
+                    }
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
+                }
+            })
         }
     }
-})
+});

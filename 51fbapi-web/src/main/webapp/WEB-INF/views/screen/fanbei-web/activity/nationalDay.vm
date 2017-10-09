@@ -10,7 +10,7 @@
 <body>
 <div id="nationalDay"  class="nationalDay">
     <div class="loadingMask"><i class="loading"></i></div>
-    <div class="banner"><img src="$src/nationalDay01.png"></div>
+    <div class="banner first"><img src="$src/nationalDay01.png"></div>
     <div class="couponList clearFix">
         <div class="coupon clearFix" v-for="item in couponCont.couponInfoList" @click="couponClick(item)">
             <p class="couponAmount"><span>￥</span><span>{{item.amount}}</span></p>
@@ -61,20 +61,9 @@
             <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供 ￥{{item.nperMap.freeAmount}}起</p>
         </div>
     </div>
-    <div class="fourthList firstList clearFix">
+    <div class="fourthList">
         <p class="firstTitle"><img src="$src/nationalDay06.png"></p>
-        <div class="fourthCont clearFix" v-for="item in content.fourLevelGoodsInfo.goodsList" @click="goodClick(item)">
-            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
-            <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodName}}</p>
-            <p>
-                <span class="salePrice">￥{{item.saleAmount}}</span>
-                <span class="fan"></span>
-                <span class="fanMoney">￥{{item.rebateAmount}}</span>
-            </p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供 ￥{{item.nperMap.amount}}起</p>
-            <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供 ￥{{item.nperMap.freeAmount}}起</p>
-            <p class="buyNow">立即抢购</p>
-        </div>
+        <p class="fourthCont" @click="fourthContClick()"><img src="$src/nationalDay09.png"></p>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/09/nationalDay.js?version=$version"></script>
