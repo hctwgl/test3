@@ -77,7 +77,7 @@ public class UnionThirdRegisterController extends BaseController {
                     Date beforDT = new Date();
                     long time1 = beforDT.getTime();
                     result= HttpUtil.doHttpPost("http://localhost/unionlogin/fanbeiLogin",
-                            paramsStr);
+                            paramsStr.replace("+","%2B"));
                     Date afterDT = new Date();
                     long time2 = afterDT.getTime();
                     request_time = time2 - time1;
