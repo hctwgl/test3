@@ -147,25 +147,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         int isUnionLogin = tempLoanMarket.getIsUnionLogin();
         if(unionProcess){
             if(isUnionLogin==1){
-                BigDecimal moneyMin = tempLoanMarket.getMoneyMin();
-                BigDecimal moneyMax = tempLoanMarket.getMoneyMax();
-                Integer timeMin = tempLoanMarket.getTimeMin();
-                Integer timeMax = tempLoanMarket.getTimeMax();
-                Integer payMethod = tempLoanMarket.getPayMethod();
-                String applyProcess = tempLoanMarket.getApplyProcess();
-                String applyCondition = tempLoanMarket.getApplyCondition();
-                String needMaterial = tempLoanMarket.getNeedMaterial();
-                String fastLendTime = tempLoanMarket.getFastLendTime();
-                BigDecimal lendRate = tempLoanMarket.getLendRate();
-                BigDecimal money = tempLoanMarket.getMoney();
-                Integer time = tempLoanMarket.getTime();
-                Integer timeUnit = tempLoanMarket.getTimeUnit();
-                String slogan = tempLoanMarket.getSlogan();
-                linkUrl = unionRegisterUrl + "?moneyMin=" + moneyMin + "&moneyMax=" + moneyMax + "&timeMin=" + timeMin
-                        + "&timeMax=" + timeMax + "&payMethod=" + payMethod + "&applyProcess=" + applyProcess + "&applyCondition=" +applyCondition
-                        + "&needMaterial=" + needMaterial + "&fastLendTime=" + fastLendTime + "&lendRate=" + lendRate + "&money=" + money
-                        + "&time=" + time + "&timeUnit=" + timeUnit + "&slogan=" + slogan;
-
+                linkUrl = unionRegisterUrl + "?lsmNo=" + lsmNo;
             }
         }
         afLoanSupermarketDto.setLinkUrl(linkUrl);
