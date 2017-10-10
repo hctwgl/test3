@@ -48,7 +48,7 @@ body{
 .loanDetail .header .top .peopleNum{
   font-size:.26rem;
   color:#969696;
-  padding-left:1.94rem;
+  padding: .03rem 0 0 1.94rem;
   height:.44rem;
   line-height: .44rem;
   margin:0;
@@ -68,10 +68,10 @@ body{
   margin-right:.2rem;
 }
 .loanDetail .header .fanbeiDes{
-  height:.8rem;
-  line-height: .8rem;
+  line-height: .44rem;
   font-size:.26rem;
   color:#969696;
+  padding:.16rem 0 .22rem 0;
 }
 /*main-------------------------------*/
 .loanDetail .main{
@@ -92,14 +92,14 @@ body{
   background:#f9f9f9;
   line-height: 100%;
   margin: 0;
-  padding: 0 0 0 5%;
+  padding: 1% 0 0 5%;
   border: 0;
   border-radius: 0;
 }
 .loanDetail .main .amountLimit .word01{
   position: absolute;
   right: .1rem;
-  bottom: .1rem;
+  line-height: .62rem;
 }
 .loanDetail .main .amountLimit .word02{
   font-size:.26rem;
@@ -165,6 +165,9 @@ body{
 .loanDetail .applyCont .applyFlow .flowTitle{
   padding:.26rem 0 .32rem 0;
 }
+.loanDetail .applyCont .applyFlow .flowChart{
+  width:88%;
+}
 .loanDetail .applyCont .applyFlow .flowChart .left{
   color:#969696;
   float:left;
@@ -181,34 +184,62 @@ body{
   background-size:contain;
   position: absolute;
   top: .23rem;
-  left: 1rem;
+}
+.loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(1) .line{
+  left:86%;
+}
+.loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(2) .line{
+  left:82%;
+}
+.loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(3) .line{
+  left:77%;
+}
+.loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(4) .line{
+  left:88%;
+}
+.loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(5) .line{
+  left:79%;
+}
+.loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(6) .line{
+  left:83%;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left img{
   width:.6rem;
   height:.6rem;
   margin:0 auto;
 }
+
 /*申请条件-------------------------*/
+.loanDetail .applyCont .applyLimit{
+  padding-bottom: .3rem;
+}
 .loanDetail .applyCont .applyLimit .limitTitle{
   padding:.26rem 0 .32rem 0;
 }
 .loanDetail .applyCont .applyLimit .limitCont{
   font-size:.26rem;
   color:#232323;
-  padding-bottom: .3rem;
-  line-height: .46rem;
+  margin:0;
+  position:relative;
 }
 .loanDetail .applyCont .applyLimit .limitCont .dian{
-  width:.1rem;
-  height:.1rem;
+  width:6px;
+  height:6px;
   background:#ff6e34;
-  border-radius: 50%;
-  margin-top: 0.18rem;
+  border-top-left-radius: 999px; /* 左上角 */
+  border-top-right-radius: 999px; /* 右上角 */
+  border-bottom-right-radius: 999px; /* 右下角 */
+  border-bottom-left-radius: 999px; /* 左下角 */
+  border-radius: 999px;
+  position:absolute;
+  top:.17rem;
+  left:0;
   display: block;
   float: left;
 }
 .loanDetail .applyCont .applyLimit .limitCont .contDes{
-  padding-left: .1rem;
+  padding-left:2%;
+  width:98%;
 }
 /*所需材料--------------------------*/
 .loanDetail .applyCont .needCont{
@@ -222,6 +253,7 @@ body{
   color:#232323;
   padding-bottom: .3rem;
   float:left;
+  margin:0;
 }
 .loanDetail .applyCont .needCont .everyCont01{
   margin-left: 3%;
@@ -230,11 +262,15 @@ body{
   margin-left: 8%;
 }
 .loanDetail .applyCont .needCont .everyCont span{
-  width:.1rem;
-  height:.1rem;
+  width:6px;
+  height:6px;
   background:#47a6f9;
-  border-radius: 50%;
-  margin: 0.18rem .1rem 0 0;
+  border-top-left-radius: 999px; /* 左上角 */
+  border-top-right-radius: 999px; /* 右上角 */
+  border-bottom-right-radius: 999px; /* 右下角 */
+  border-bottom-left-radius: 999px; /* 左下角 */
+  border-radius: 999px;
+  margin: .15rem .1rem 0 0;
   display: block;
   float: left;
 }

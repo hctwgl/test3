@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170928")
+    #set($version="20171010000")
     #set($src="http://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
     <title>贷款详情</title>
@@ -18,7 +18,7 @@
              <p class="peopleNum">本月放款人数2999998</p>
              <p class="feature"><span>小额极速贷</span><span>低息借款</span><span>返利</span></p>
          </div>
-         <div class="fanbeiDes">51返呗简介51返呗简介51返呗简介</div>
+         <div class="fanbeiDes">51返呗简介51返呗简介51返呗51返呗简介51返呗简介51返呗简介51返呗简介51返呗简介51返呗简介51返呗简介51返呗简介51返呗简介简介</div>
     </div>
     <div class="kong"></div>
     <div class="main clearFix">
@@ -52,8 +52,9 @@
         <div class="applyLimit">
             <p class="sameTitle limitTitle">申请条件</p>
             <p class="limitCont">
-                <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span><br/>
-                <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span><br/>
+                <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。18岁以上18岁以上 ,18岁就很好吃。18岁以上18岁以上 ,18岁就很好吃。</span>
+            </p>
+            <p class="limitCont">
                 <span class="dian"></span><span class="contDes">18岁以上18岁以上 ,18岁就很好吃。</span>
             </p>
         </div>
@@ -65,8 +66,8 @@
     </div>
     <p class="submit">提交资料并申请</p>
 </div>
-<script type="text/javascript" src="/dist/js/mui.min.js?version=$version"></script>
-<script type="text/javascript" src="/dist/js/mui.picker.min.js?version=$version"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.min.js?version=$version"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.picker.min.js?version=$version"></script>
 <script type="text/javascript" src="/dist/js/app/loanDetail.js?version=$version"></script>
 </body>
 </html>
