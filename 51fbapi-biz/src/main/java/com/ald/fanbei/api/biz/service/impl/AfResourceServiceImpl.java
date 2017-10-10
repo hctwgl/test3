@@ -465,5 +465,16 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getConfigsByTypesAndSecType(type,secType);
 	}
 
+	public AfResourceDo getAfResourceAppVesion(){
+		AfResourceDo afResourceDo =  (AfResourceDo) bizCacheUtil.getObject("check_app_version");
+		if(afResourceDo !=null) return afResourceDo;
+		List<AfResourceDo> list = afResourceDao.getResourceListByType("check_app_version");
+		if(list !=null && list.size()>0){
+			afResourceDo = list.get(0);
+			bizCacheUtil.saveObject("check_app_version",afResourceDo);
+		}
+		return afResourceDo;
+	}
+
 	
 }
