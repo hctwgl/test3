@@ -25,7 +25,6 @@ public class RedPacketPoolServiceImpl implements RedPacketPoolService {
     public  int count;
     public  int typeCount;
 
-    public AtomicInteger applyCounter = new AtomicInteger();
 
     @PostConstruct
     public void init(){
@@ -47,9 +46,6 @@ public class RedPacketPoolServiceImpl implements RedPacketPoolService {
         BlockingQueue<Redpacket> redpackets = list.get(rand);
         System.out.println(rand);
         Redpacket r = redpackets.poll();
-        if(r != null){
-            applyCounter.incrementAndGet();
-        }
         return r;
     }
 
@@ -61,53 +57,14 @@ public class RedPacketPoolServiceImpl implements RedPacketPoolService {
     @Override
     public Map<String,Integer> InformationPacket() {
         Map<String,Integer> map = new HashMap<String,Integer>();
-        map.put("listNumber",list.size());
+        int surplusCount = 0;
+        for(int i=0;i<list.size();i++){
+            surplusCount = surplusCount + list.get(i).size();
+        }
+        map.put("listNumber",surplusCount);
         map.put("count",count);
         return map;
     }
 
-    public static void main (String[] args) {
-
-        final RedPacketPoolServiceImpl  aa = new RedPacketPoolServiceImpl();
-        aa.init();
-        for (int x=0;x<10;x++){
-            BlockingQueue<Redpacket> packets = new ArrayBlockingQueue<Redpacket>(2000000);
-            for(int i=0;i<10000;i++){
-                RedPacketPoolService.Redpacket redpacket = new RedPacketPoolService.Redpacket();
-                redpacket.setType("CASH");
-                redpacket.setCoupon_id(1l);
-                redpacket.setCoupon_name("优惠券");
-                packets.add(redpacket);
-            }
-
-
-            aa.inject(packets);
-        }
-//        System.out.println(JSON.toJSONString(aa));
-       final CountDownLatch latch = new CountDownLatch(5000);
-
-        for(int y=0;y<5000;y++){
-            new Thread(){
-                @Override
-                public void run() {
-                    for(int i=0;i<40;i++){
-                        System.out.println(JSON.toJSONString(
-                                aa.apply()
-                        ));
-                    }
-                    latch.countDown();
-                }
-            }.start();
-
-        }
-        try {
-            latch.await();
-        }catch (Exception e){
-
-        }
-
-        System.out.println(JSON.toJSONString(aa));
-
-    }
 
 }
