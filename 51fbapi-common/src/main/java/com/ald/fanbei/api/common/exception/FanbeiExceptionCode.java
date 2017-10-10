@@ -10,7 +10,7 @@ public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 
-    VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低, 请更新版本"),
+    VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，更新到最新版本享受更好体验"),
 
     ZFB_NOT_USERD("PARAM_ERROR", 1145, "param error", "支付宝支付正在维护中,请用其它支付方式"),
     WEBCHAT_NOT_USERD("PARAM_ERROR", 1142, "param error", "微信支付正在维护中,请用其它支付方式"),
