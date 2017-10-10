@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -47,6 +48,8 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
     AfCouponDao afCouponDao;
     @Resource
     AfBusinessAccessRecordsService afBusinessAccessRecordsService;
+    @Resource
+    AfResourceDao afResourceDao;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -63,9 +66,12 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         }
         List<AfLoanSupermarketDto> afLoanSupermarketDtoList = new ArrayList<AfLoanSupermarketDto>();
         List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType);
+        AfResourceDo afResourceDo = new AfResourceDo();
+        afResourceDo = afResourceDao.getSingleResourceBytype("unionregister");
+        String unionRegisterUrl = afResourceDo.getValue();
         HashMap<String,String> hashMap = new HashMap<String,String>();
         for(int n=0;n<sourceSupermarketList.size();n++){
-            AfLoanSupermarketDto afLoanSupermarketDto = getDto(sourceSupermarketList.get(n));
+            AfLoanSupermarketDto afLoanSupermarketDto = getDto(sourceSupermarketList.get(n),unionRegisterUrl,true);
             afLoanSupermarketDtoList.add(afLoanSupermarketDto);
         }
         //查询是否存在借贷超市活动
@@ -97,7 +103,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
     	List<AfLoanSupermarketDto> desSupermarketList = new ArrayList<AfLoanSupermarketDto>();
     	for (AfLoanSupermarketDto tempLoanMarket : sourceSupermarketList) {
     		String linkUrl = StringUtil.null2Str(tempLoanMarket.getLinkUrl()).replaceAll("\\*", "\\&");
-            AfLoanSupermarketDto afLoanSupermarketDto = getDto(tempLoanMarket);
+            AfLoanSupermarketDto afLoanSupermarketDto = getDto(tempLoanMarket,"",false);
             afLoanSupermarketDto.setLinkUrl(linkUrl);
             if(flag){
                 AfLoanSupermarketDto Dto = new AfLoanSupermarketDto();
@@ -120,7 +126,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
 
 	}
 
-    public AfLoanSupermarketDto getDto(AfLoanSupermarketDo tempLoanMarket){
+    public AfLoanSupermarketDto getDto(AfLoanSupermarketDo tempLoanMarket,String unionRegisterUrl,boolean unionProcess){
         AfLoanSupermarketDto afLoanSupermarketDto = new AfLoanSupermarketDto();
         String linkUrl = tempLoanMarket.getLinkUrl();
         String lsmNo = tempLoanMarket.getLsmNo();
@@ -132,13 +138,37 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         Long id = tempLoanMarket.getId();
         afLoanSupermarketDto.setRemake("");
         afLoanSupermarketDto.setLabel(Label);
-        afLoanSupermarketDto.setLinkUrl(linkUrl);
         afLoanSupermarketDto.setLsmIntro(lsmIntro);
         afLoanSupermarketDto.setIconUrl(iconUrl);
         afLoanSupermarketDto.setLsmName(lsmName);
         afLoanSupermarketDto.setMarketPoint(marketPoint);
         afLoanSupermarketDto.setLsmNo(lsmNo);
         afLoanSupermarketDto.setId(id);
+        int isUnionLogin = tempLoanMarket.getIsUnionLogin();
+        if(unionProcess){
+            if(isUnionLogin==1){
+                BigDecimal moneyMin = tempLoanMarket.getMoneyMin();
+                BigDecimal moneyMax = tempLoanMarket.getMoneyMax();
+                Integer timeMin = tempLoanMarket.getTimeMin();
+                Integer timeMax = tempLoanMarket.getTimeMax();
+                Integer payMethod = tempLoanMarket.getPayMethod();
+                String applyProcess = tempLoanMarket.getApplyProcess();
+                String applyCondition = tempLoanMarket.getApplyCondition();
+                String needMaterial = tempLoanMarket.getNeedMaterial();
+                String fastLendTime = tempLoanMarket.getFastLendTime();
+                BigDecimal lendRate = tempLoanMarket.getLendRate();
+                BigDecimal money = tempLoanMarket.getMoney();
+                Integer time = tempLoanMarket.getTime();
+                Integer timeUnit = tempLoanMarket.getTimeUnit();
+                String slogan = tempLoanMarket.getSlogan();
+                linkUrl = unionRegisterUrl + "?moneyMin=" + moneyMin + "&moneyMax=" + moneyMax + "&timeMin=" + timeMin
+                        + "&timeMax=" + timeMax + "&payMethod=" + payMethod + "&applyProcess=" + applyProcess + "&applyCondition=" +applyCondition
+                        + "&needMaterial=" + needMaterial + "&fastLendTime=" + fastLendTime + "&lendRate=" + lendRate + "&money=" + money
+                        + "&time=" + time + "&timeUnit=" + timeUnit + "&slogan=" + slogan;
+
+            }
+        }
+        afLoanSupermarketDto.setLinkUrl(linkUrl);
         return afLoanSupermarketDto;
     }
 
