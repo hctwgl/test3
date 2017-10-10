@@ -23,10 +23,10 @@
     <div class="kong"></div>
     <div class="main clearFix">
         <div class="amountLimit">
-            <input type="text" placeholder="3000"><span class="word01">元</span><br/><span class="word02">额度500元-3000元</span>
+            <input type="text" :placeholder="content.moneyMin"><span class="word01">元</span><br/><span class="word02">额度{{content.moneyMin}}元-{{content.moneyMax}}元</span>
         </div>
         <div class="amountLimit timeLimit">
-            <input type="text" placeholder="60" class="moneyLimit" onclick="moneyLimit()"><span class="word01">天</span><br/><span class="word02">借款期限1月-3月</span>
+            <input type="text" placeholder="60" class="moneyLimit" onclick="moneyLimit()"><span class="word01">天</span><br/><span class="word02">借款期限{{content.timeMin}}天-{{content.timeMax}}天</span>
         </div>
         <div class="payMoney">
             <p class="sameTitle payMoneyTitle">按月还款</p>
