@@ -15,7 +15,7 @@
             background: white;
         }
         .btn a {
-            background: red;
+            background: #FF6E34;
             color:white;
             width: 7.2rem;
             margin: .11rem auto;
