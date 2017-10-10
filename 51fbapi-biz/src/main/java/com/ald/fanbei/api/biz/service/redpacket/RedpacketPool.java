@@ -30,11 +30,13 @@ interface RedpacketPool {
 	/**
 	 * 清空红包池
 	 */
+	public void EmptyPacket();
 	// TODO 
 	
 	/**
 	 * 红包池状态信息
 	 */
+	public void InformationPacket();
 	// TODO 
 	
 	static class Redpacket{

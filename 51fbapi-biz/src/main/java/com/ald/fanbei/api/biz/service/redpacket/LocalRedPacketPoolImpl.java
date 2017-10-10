@@ -16,7 +16,7 @@ public class LocalRedPacketPoolImpl implements RedpacketPool {
 
 
     @Override
-    public void inject(BlockingQueue<Redpacket> packets) throws InterruptedException {
+    public void inject(BlockingQueue<Redpacket> packets)   {
         List list = new ArrayList();
         int count = packets.size();
         list.add(packets);
