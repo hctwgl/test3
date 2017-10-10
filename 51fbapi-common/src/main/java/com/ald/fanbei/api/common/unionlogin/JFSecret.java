@@ -113,34 +113,21 @@ public class JFSecret {
     }
 
     public static void main(String[] args) throws Exception{
-        String private_key = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMPYODKFD4bTm13GtVNv1VnbTPYk" +
-                "Ipmh0PPwkgl4heMl0mIuvjDUamybaz/tf3Hnckpbcm9zbS4tyPTIPUg4Ez5cGaZxwY1JZFz/jjws" +
-                "u87MsCJ56xX4dZSpEi6W1LrG/YuqW4eRWb7VN2tgYPWX3xhfnzFlJKx7apS/Et/vCeInAgMBAAEC" +
-                "gYBfKmQ0eGARHiZzLSnTf5Zm8Z+2Q9zkVrNYtl/gZkZ5GFnhB+G3jKCiYet9xwSU7uikpUc4TRiS" +
-                "xgDOobbVrxn565+24H9MN9Z9vl5/slDBXhMu+LOODzQCgTceti45Ibd4pwpw6Qq2aq1DqVXTOqCp" +
-                "n/jJfmeZEtbt6MoA0ddKgQJBAOrS0KEVx2RVrz/1jZxh3bM7t3VHKhY3ZPKMYbQ9sIFoS1dzNQYb" +
-                "o5ZAVWDKRvsZSA+t3SyxPuEI73z85Se/JMcCQQDVgYeY1Tb5TyLhmR2ONZwHAnQFuraIbyTyhsP7" +
-                "30gCaCrXIpZUjOfukJcH0wgxHpdH3liNRC5RqdfOw3lCqzehAkAJNzTQ3ZXxrhsum2hvVrforNNK" +
-                "Wvyf2pSvoCrFdBZVPc6XJAJUtwj4gJXZMpcOi7N0ShKACoS5OCyN7y7fHHVJAkEAwl96Ixl5Qt9Y" +
-                "0imjTqRft8Hz/oNNSkhlSqaGJffQhuBuoA1M7wyY2geod+cXviArebJiy7kWsiH95q7u5lMaAQJB" +
-                "AJmJ75JmvjOCxfWts5BeeLCtp0CWQuwpuZPSUeo9KnwA0rE3PNz6p0KoLxwXUzjEo1rFxAGR3DMz" +
-                "NR/V5J+Wh8c=";
+        String private_key = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMPYODKFD4bTm13GtVNv1VnbTPYkIpmh0PPwkgl4heMl0mIuvjDUamybaz/tf3Hnckpbcm9zbS4tyPTIPUg4Ez5cGaZxwY1JZFz/jjwsu87MsCJ56xX4dZSpEi6W1LrG/YuqW4eRWb7VN2tgYPWX3xhfnzFlJKx7apS/Et/vCeInAgMBAAECgYBfKmQ0eGARHiZzLSnTf5Zm8Z+2Q9zkVrNYtl/gZkZ5GFnhB+G3jKCiYet9xwSU7uikpUc4TRiSxgDOobbVrxn565+24H9MN9Z9vl5/slDBXhMu+LOODzQCgTceti45Ibd4pwpw6Qq2aq1DqVXTOqCpn/jJfmeZEtbt6MoA0ddKgQJBAOrS0KEVx2RVrz/1jZxh3bM7t3VHKhY3ZPKMYbQ9sIFoS1dzNQYbo5ZAVWDKRvsZSA+t3SyxPuEI73z85Se/JMcCQQDVgYeY1Tb5TyLhmR2ONZwHAnQFuraIbyTyhsP730gCaCrXIpZUjOfukJcH0wgxHpdH3liNRC5RqdfOw3lCqzehAkAJNzTQ3ZXxrhsum2hvVrforNNKWvyf2pSvoCrFdBZVPc6XJAJUtwj4gJXZMpcOi7N0ShKACoS5OCyN7y7fHHVJAkEAwl96Ixl5Qt9Y0imjTqRft8Hz/oNNSkhlSqaGJffQhuBuoA1M7wyY2geod+cXviArebJiy7kWsiH95q7u5lMaAQJBAJmJ75JmvjOCxfWts5BeeLCtp0CWQuwpuZPSUeo9KnwA0rE3PNz6p0KoLxwXUzjEo1rFxAGR3DMzNR/V5J+Wh8c=";
 
         PrivateKey privateKey = getPrivateKey(private_key);
-        out.println("private_key:-----------"+private_key);
+        out.println("private_key:-----------"+"[{\"nper\":\"3\",\"rebatePercent\":\"10\",\"freeNper\":\"3\"},{\"nper\":\"6\",\"rebatePercent\":\"20\",\"freeNper\":\"6\"},{\"nper\":\"9\",\"rebatePercent\":\"30\",\"freeNper\":\"9\"},{\"nper\":\"12\",\"rebatePercent\":\"40\",\"freeNper\":\"12\"}]".length());
 
 
-        String public_key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDD2DgyhQ+G05tdxrVTb9VZ20z2JCKZodDz8JIJ" +
-                "eIXjJdJiLr4w1Gpsm2s/7X9x53JKW3Jvc20uLcj0yD1IOBM+XBmmccGNSWRc/448LLvOzLAieesV" +
-                "+HWUqRIultS6xv2LqluHkVm+1TdrYGD1l98YX58xZSSse2qUvxLf7wniJwIDAQAB";
+        String public_key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDD2DgyhQ+G05tdxrVTb9VZ20z2JCKZodDz8JIJeIXjJdJiLr4w1Gpsm2s/7X9x53JKW3Jvc20uLcj0yD1IOBM+XBmmccGNSWRc/448LLvOzLAieesV+HWUqRIultS6xv2LqluHkVm+1TdrYGD1l98YX58xZSSse2qUvxLf7wniJwIDAQAB";
 
-        String mobile ="http://xtestapp.51fanbei.com/unionlogin/welcome?isNew=3&token=f268e932";
+        String mobile ="211";
         byte[] mobilebyte = mobile.getBytes();
         PublicKey publicKey = getPublicKey(public_key);
 
         String mobileEnc = encrypt(publicKey, mobilebyte);
         out.println("mobile enc-----:    "+mobileEnc);
-        String mobileDec=decrypt(privateKey,"r2epwPIA6CbHJ0fYKO/Fla0C8dC9ZqcjOdX0/jGqjy1dA2l9HuRYJeCq99pg14E/wQjiMStwRTzF\r\n54u8mMyXl+SyZgY/wJvcdGdyWIH9u3x4Q6Fv04o5DwL5JJ5az/B6QYnX9LTetVRYJ1myTETxq/mc\r\nEvcr46bbzDUBsa+QbYg=\r\n");
-        out.println("mobile dec-----:    "+mobileDec);
+        String mobileDec=decrypt(privateKey, mobileEnc);
+                out.println("mobile dec-----:    "+mobileDec);
     }
 }

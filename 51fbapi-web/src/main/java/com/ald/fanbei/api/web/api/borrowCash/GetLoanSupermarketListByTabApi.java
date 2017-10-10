@@ -47,6 +47,8 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
     AfCouponDao afCouponDao;
     @Resource
     AfBusinessAccessRecordsService afBusinessAccessRecordsService;
+    @Resource
+    AfResourceDao afResourceDao;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -193,11 +195,21 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
                 for (int i = 0; i < prizeArray.size(); i++) {
                     JSONObject prize =  prizeArray.getJSONObject(i);
                     String prizeId = prize.getString("prizeId");
-                    AfCouponDo afCouponDo = afCouponDao.getCouponById(Long.parseLong(prizeId));
-                    if(i>0){
-                        prompt = prompt +"和"+ afCouponDo.getName();
-                    }else if(i==0){
-                        prompt = prompt + afCouponDo.getName();
+                    String type = prize.getString("type");
+                    if("BOLUOMI".equals(type)){
+                        AfResourceDo afResourceDo = afResourceDao.getResourceByResourceId(Long.parseLong(prizeId));
+                        if(i>0){
+                            prompt = prompt +"和"+ afResourceDo.getName();
+                        }else if(i==0){
+                            prompt = prompt + afResourceDo.getName();
+                        }
+                    }else{
+                        AfCouponDo afCouponDo = afCouponDao.getCouponById(Long.parseLong(prizeId));
+                        if(i>0){
+                            prompt = prompt +"和"+ afCouponDo.getName();
+                        }else if(i==0){
+                            prompt = prompt + afCouponDo.getName();
+                        }
                     }
                 }
             }

@@ -116,33 +116,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 						List<String> users = new ArrayList<String>();
 						users.add(afBorrowCashDo.getUserId() + "");
 						List<String> userName = afUserService.getUserNameByUserId(users);
-						// 发送短信
-						try {
-							smsUtil.sendBorrowCashActivitys(userName.get(0), "恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放至您的账户，快去查收惊喜吧。");
-						} catch (Exception e) {
-							logger.info("sendBorrowCashActivitys Billion_Win_User is fail," + e);
-						}
-						// 推送消息
-						try {
-							jpushService.pushBorrowCashActivitys(userName.get(0), "10000", "One");
-						} catch (Exception e) {
-							logger.info("pushBorrowCashActivitys Billion_Win_User is fail," + e);
-						}
-						// 给用户账号打钱
-						afUserAccountService.updateBorrowCashActivity(10000, users);
-						// af_user_account_log添加记录
-						AfUserAccountLogDo userAccountLog = new AfUserAccountLogDo();
-						userAccountLog.setAmount(afBorrowCashDo.getAmount());
-						userAccountLog.setUserId(afBorrowCashDo.getUserId());
-						userAccountLog.setType("BORROWCASH_ACTIVITYS");
-						userAccountLog.setRefId(" ");
-						try {
-							afUserAccountLogDao.addUserAccountLog(userAccountLog);
-						} catch (Exception e) {
-							throw new FanbeiException("addUserAccountLog " + afBorrowCashDo.getUserId() + " is fail," + e);
-						}
 						// 保存破十亿中奖用户
 						bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60 * 60 * 24 * 7);
+						logger.info("1500000000 is win,user_name= "+userName.get(0));
 					}
 					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 				} else {

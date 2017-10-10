@@ -338,18 +338,7 @@ public class PayRoutController {
 				}
 			} else if(TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					String errorWarnMsg = "";
-					if(tradeDesc.startsWith("请求第三方失败,")){
-						tradeDesc = tradeDesc.replaceFirst("请求第三方失败,", "");
-					}
-					if(StringUtil.isNotBlank(tradeDesc)){
-						errorWarnMsg = tradeDesc;
-					}else{
-						if(respDesc.startsWith("请求第三方失败,")){
-							respDesc = respDesc.replaceFirst("请求第三方失败,", "");
-						}
-						errorWarnMsg = respDesc;
-					}
+					String errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);

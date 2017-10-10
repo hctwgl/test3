@@ -186,6 +186,18 @@ var vm = new Vue({
                     requestMsg("请求失败");
                 }
             });
+            //数据统计
+             $.ajax({
+                     url:'/fanbei-web/postMaidianInfo',
+                     type:'post',
+                     data:{maidianInfo:'/fanbei-web/activity/toActivitiesPage'},
+                     success:function (data) {
+                            console.log(data)
+                    }
+                                    
+             })
+
+
         },
         //点击查看更多弹出弹窗
         lists() {
@@ -254,7 +266,7 @@ var vm = new Vue({
     }
 
     //倒計時
-    function countDown(num, _this) {
+    function countDown(num, _this) { 
         var nowTime = num.currentDate; //当前后台时间
         var endTime = num.endTime; //活动结束时间
         var startrTime = num.startrTime; //活动开始时间
@@ -276,9 +288,9 @@ var vm = new Vue({
             var month = new Date(nowTime).getMonth() + 1;//服务器当前月
             var activeDaY = new Date(nowTime).getDate();//服务器当前日
             //倒计时第一天的时候 不管倒计时什么时候开始都要倒计时到第二天要加1
-            if (hour > 10 || startDay == activeDaY) {
+             if (hour > 10 || startDay == activeDaY) {
                 activeDaY += 1;
-            } 
+            }
             //定时器
             clearInterval(timerId);
             timerId = setInterval(function () {
@@ -297,25 +309,9 @@ var vm = new Vue({
                 _this.hourData = Hour;
                 _this.minuteData = Minute;
                 _this.secondData = Second;
-                //每日10点的时候调用中奖名单接口
-           /*      var money=document.getElementById("RMB").innerHTML;//获取中奖现金
-                //console.log(money);
-                 if( _this.hourData==0 &&  _this.minuteData==0 && _this.secondData==0){
-                    $.ajax({
-                        url: '/fanbei-web/activity/randomUser',
-                        dataType: 'json',
-                        type: 'post',
-                        data:{winAmount:money},
-                        success: function (data) {
-                            console.log(data);
-                           // _this.timeoutdata=data;
-
-                        }
-                    })
-                }  */
                 if (t < 1000) {
-                    // debugger
-                    nowTime = end.getTime();
+                    // nowTime=end.getTime;
+                    nowTime = Date.parse(new Date());
                     activeDaY = activeDaY + 1;
                 }
                 if (nowTime > endTime) {
@@ -324,7 +320,6 @@ var vm = new Vue({
                     _this.secondData = "00";
                     clearInterval(timerId)
                 }
-                // console.log(Second)
             }, 1000)
         }
 
