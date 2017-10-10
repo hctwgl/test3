@@ -1,4 +1,4 @@
-
+let lsmNo=getUrl('lsmNo');//获取借款超市的编码
 //获取数据
 let vm = new Vue({
     el: '#loanDetail',
@@ -20,10 +20,26 @@ let vm = new Vue({
         ]
     },
     created: function () {
-        //this.logData();
+        this.logData();
     },
     methods: {
-
+//获取页面初始化信息
+        logData() {
+            let self = this;
+            $.ajax({
+                type: 'post',
+                url: "/borrowCash/getRegisterLoanSupermarket",
+                data:{
+                    'lsmNo':lsmNo
+                },
+                success: function (data) {
+                   console.log(data);
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！')
+                }
+            })
+        }
     }
 });
 //贷款额度
