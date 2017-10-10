@@ -399,7 +399,7 @@ public class NumberUtil {
     public static BigDecimal getSumInterestsByAmountAndRate(BigDecimal amount,BigDecimal rate,Integer days){
     	BigDecimal interests = BigDecimal.valueOf(0);
     	try {
-    		interests = amount.multiply(rate).multiply(BigDecimal.valueOf(days)).divide(BigDecimal.valueOf(36500),2 , RoundingMode.HALF_UP);
+    		interests = amount.multiply(rate).multiply(BigDecimal.valueOf(days)).divide(BigDecimal.valueOf(36000),2 , RoundingMode.HALF_UP);
 		} catch (Exception e) {
 			return BigDecimal.valueOf(0);
 		}
