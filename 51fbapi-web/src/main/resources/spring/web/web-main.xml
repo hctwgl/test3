@@ -124,6 +124,7 @@
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
+				<value>/borrowCash/getRegisterLoanSupermarket</value>
 			</list>
 		</constructor-arg>
 	</bean>

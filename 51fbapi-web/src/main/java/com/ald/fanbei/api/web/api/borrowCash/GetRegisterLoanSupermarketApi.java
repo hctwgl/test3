@@ -24,12 +24,12 @@ public class GetRegisterLoanSupermarketApi implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        Long userId = context.getUserId();
         String lsmNo = ObjectUtils.toString(requestDataVo.getParams().get("lsmNo"));
         AfLoanSupermarketDo afLoanSupermarket  = afLoanSupermarketService.getLoanSupermarketByLsmNo(lsmNo);
         if(afLoanSupermarket!=null){
             resp.setResponseData(afLoanSupermarket);
         }else{
+            Long userId = context.getUserId();
             logger.error("贷款超市请求发起异常-贷款超市不存在，lsmNo："+lsmNo+"-userId:"+userId);
             resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
         }
