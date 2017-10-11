@@ -35,6 +35,8 @@ public interface AfBorrowBillService {
 	 */
 	BigDecimal getMonthlyBillByStatus(Long userId, int billYear, int billMonth, String status);
 
+	BigDecimal getMonthlyBillByStatusNew(Long userId, int billYear, int billMonth, String status);
+
 	/**
 	 * 用户全部账单
 	 */

@@ -63,6 +63,8 @@ public interface AfBorrowBillDao {
 	 */
 	public BigDecimal getMonthlyBillByStatus(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth, @Param("status") String status);
 
+	BigDecimal getMonthlyBillByStatusNew(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth, @Param("status") String status);
+
 	/**
 	 * 获取用户全部账单
 	 * 
