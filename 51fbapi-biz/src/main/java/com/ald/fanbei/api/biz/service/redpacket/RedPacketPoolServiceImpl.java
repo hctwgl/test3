@@ -1,25 +1,17 @@
 package com.ald.fanbei.api.biz.service.redpacket;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.stereotype.Service;
 
 @Service("redPacketPoolService")
 public class RedPacketPoolServiceImpl implements RedPacketPoolService {
-    @Resource
-    RedisTemplate redisTemplate;
 
     public  List<BlockingQueue<Redpacket>> list;
     public  int count;
@@ -50,12 +42,12 @@ public class RedPacketPoolServiceImpl implements RedPacketPoolService {
     }
 
     @Override
-    public void EmptyPacket() {
+    public void emptyPacket() {
         list.clear();
     }
 
     @Override
-    public Map<String,Integer> InformationPacket() {
+    public Map<String,Integer> informationPacket() {
         Map<String,Integer> map = new HashMap<String,Integer>();
         int surplusCount = 0;
         for(int i=0;i<list.size();i++){

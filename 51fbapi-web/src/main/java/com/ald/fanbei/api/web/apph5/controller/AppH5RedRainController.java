@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.service.redpacket.IRedpacketService;
+import com.ald.fanbei.api.biz.service.redpacket.IRedRainService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
@@ -26,11 +26,11 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/app/redpacket/")
-public class AppH5RedpacketController extends BaseController {
+@RequestMapping("/app/redRain/")
+public class AppH5RedRainController extends BaseController {
 	
 	@Resource
-	IRedpacketService redpacketService;
+	IRedRainService redRedService;
 	
     @RequestMapping(value = "applyHit", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
@@ -40,7 +40,7 @@ public class AppH5RedpacketController extends BaseController {
     	try{
     		context = doWebCheck(request, true);
     		
-    		AfCouponDo coupon = redpacketService.apply();
+    		AfCouponDo coupon = redRedService.apply(context.getUserName());
     		if(coupon == null) {
 //    			resp = H5CommonResponse.getNewInstance(true, "", coupon);
     		}else {

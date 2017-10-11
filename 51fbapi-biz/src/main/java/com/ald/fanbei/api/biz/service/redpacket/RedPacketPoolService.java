@@ -3,19 +3,9 @@ package com.ald.fanbei.api.biz.service.redpacket;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import org.springframework.stereotype.Component;
-
 
 public interface RedPacketPoolService {
 	
-	// TODO 池，可选方案A：BlockQueue，B：Redis List
-	// private ArrayBlockingQueue<Redpacket> cashCoupons;		//现金券
-	// private ArrayBlockingQueue<Redpacket> moneyOffCoupons;	//满减券
-	// ...
-	
-	
-	// TODO 红包池状态信息字段
-	// ...
 	
 	/**
 	 * 注入红包
@@ -31,20 +21,26 @@ public interface RedPacketPoolService {
 	/**
 	 * 清空红包池
 	 */
-	public void EmptyPacket();
-	// TODO 
+	public void emptyPacket();
 	
 	/**
 	 * 红包池状态信息
 	 */
-	public Map<String,Integer> InformationPacket();
-	// TODO 
+	public Map<String,Integer> informationPacket();
 	
 	static class Redpacket{
 		private String type;
 		private String coupon_name;
 		private Long coupon_id;
+		private Integer redRainRoundId;
 
+		public Redpacket(String type, String couponName, Long couponId, Integer redRainRoundId){
+			this.type = type;
+			this.coupon_name = couponName;
+			this.coupon_id = couponId;
+			this.redRainRoundId = redRainRoundId;
+		}
+		
 		public String getType() {
 			return type;
 		}
@@ -67,6 +63,14 @@ public interface RedPacketPoolService {
 
 		public void setCoupon_id(Long coupon_id) {
 			this.coupon_id = coupon_id;
+		}
+
+		public Integer getRedRainRoundId() {
+			return redRainRoundId;
+		}
+
+		public void setRedRainRoundId(Integer redRainRoundId) {
+			this.redRainRoundId = redRainRoundId;
 		}
 	}
 	
