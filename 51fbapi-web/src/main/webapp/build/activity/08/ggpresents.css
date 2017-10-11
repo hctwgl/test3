@@ -109,9 +109,14 @@ body {
 
 .banner img {
     width: 6.25rem;
-     height: 6.2rem; 
+     height: 2.97rem; 
     /* background-color: pink; */
     margin-left: 9%;
+    margin-top: 1.8rem;
+}
+banner .banner-bottom{
+    width:6.25rem;
+    height:2.97rem;
 }
 
 .ask {
