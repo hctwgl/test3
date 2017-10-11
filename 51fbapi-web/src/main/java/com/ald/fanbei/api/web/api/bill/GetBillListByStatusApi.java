@@ -5,7 +5,9 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -27,6 +29,8 @@ import java.util.*;
 @Component("getBillListByStatusApi")
 public class GetBillListByStatusApi implements ApiHandle {
     @Resource
+    AfUserOutDayDao afUserOutDayDao;
+    @Resource
     AfBorrowService afBorrowService;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -45,7 +49,22 @@ public class GetBillListByStatusApi implements ApiHandle {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         //本期还款日
         Date repayDate = afBorrowService.getReyLimitDate("C",new Date());
+
         map.put("repayDate",simpleDateFormat.format(repayDate));
+
+        AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+        if(afUserOutDayDo!=null){
+            String[] d = map.get("repayDate").toString().split("-");
+            String payDay = "";
+            if(afUserOutDayDo.getPayDay()>=10){
+                payDay = afUserOutDayDo.getPayDay().toString();
+            }
+            else{
+                payDay = "0"+afUserOutDayDo.getPayDay().toString();
+            }
+            map.put("repayDate",d[0]+"-"+d[1]+"-"+payDay);
+        }
+
 
         //处理己还的
         Map<String,Integer> map22 = afBorrowService.getCurrentTermYearAndMonth("C",new Date());
