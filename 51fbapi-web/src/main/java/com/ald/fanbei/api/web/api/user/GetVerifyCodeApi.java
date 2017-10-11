@@ -55,7 +55,8 @@ public class GetVerifyCodeApi implements ApiHandle {
 		
 		AfUserDo afUserDo = null;
 		SmsType type = SmsType.findByCode(typeParam);
-		if(!SmsType.REGIST.equals(type)) {// 非注册，检查手机号是否存在
+		if(SmsType.REGIST.equals(type) || SmsType.MOBILE_BIND.equals(type)) {// 除了注册和更换手机号功能，其余须检查手机号是否存在
+		}else {
 			afUserDo = afUserService.getUserByUserName(mobile);
 			if (afUserDo == null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
