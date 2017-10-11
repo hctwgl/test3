@@ -55,4 +55,11 @@ public interface AfRenewalDetailService {
 	 */
 	public AfRenewalDetailDo getRenewalDetailByBorrowId(Long borrowId);
 	
+	/**
+	 *查询续期表中是否有续期成功的订单
+	 * @param borrowId
+	 * @return
+	 * **/
+	public List<AfRenewalDetailDo> getRenewalDetailListByBorrowId(Long borrowId);
+	
 }
