@@ -771,8 +771,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		 AfShopDo shop = afShopService.getShopByPlantNameAndTypeAndServiceProvider(platformName, type,  serviceProvider);
 		logger.info("shop",shop);
 		if (shop != null) {
-		    
-		     
 			Long shopId = shop.getRid();
 			//根据shopId查询卡片信息
 			AfBoluomeActivityItemsDo ItemsMessageSet = new AfBoluomeActivityItemsDo();
@@ -864,6 +862,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		}
+		//在活动中的几个场景？
 		boluomeActivitySendCoupon(afOrder,afBoluomeActivityDo);
 		return 0;
 	}
@@ -874,30 +873,32 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @return
 	 */
 	public int boluomeActivitySendCoupon(final AfOrderDo afOrder,AfBoluomeActivityDo afBoluomeActivityDo){
-	    /*
-		 * 给用户送券
-		 * */
 	        logger.info("boluomeActivitySendCoupon begin , afOrder = {}", afOrder);
-		//在订单创建之前通过（索要）绑定的最后一个用户
+		//在订单创建之前绑定的最后一个用户
 		AfBoluomeActivityUserLoginDo queryUserLoginRecord  = new AfBoluomeActivityUserLoginDo();
 		queryUserLoginRecord.setUserId(afOrder.getUserId());
 		queryUserLoginRecord.setGmtCreate(afOrder.getGmtCreate());
-		//添加登录来源，若该订单对应用户记录是索要来源，则送券
-		//AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
+		
 		AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecord(queryUserLoginRecord);
 		logger.info("userLoginRecord = {}", userLoginRecord);
 		//若是被邀请而产生消费行为
 		if(userLoginRecord!=null){
+		  //消费者只完成第一笔(新用户)
+		 AfOrderDo queryCount = new AfOrderDo();
+		 queryCount.setUserId(userLoginRecord.getUserId());
+		 queryCount.setOrderStatus("FINISHED");
+		 int  orderCount =  orderDao.getOrderCountByStatusAndUserId(queryCount);
+	         logger.info("orderCount = {}", orderCount);
+		//<=1?
+		  if(orderCount<=1){
 		    //将这条记录设置标记
 		    if(!"N".equals(userLoginRecord.getBindingFlag()) && !"Y".equals(userLoginRecord.getBindingFlag())){
 		    AfBoluomeActivityUserLoginDo setBidingFlag = new AfBoluomeActivityUserLoginDo();
 		    setBidingFlag.setBindingFlag("Y");
 		    setBidingFlag.setRid(userLoginRecord.getRid());
 		    int updateRusult =  afBoluomeActivityUserLoginDao.updateById(setBidingFlag);
-		    //
 		    if(updateRusult>0){
 			//查询邀请者的记录，是否大于n,若大于等于n，送券，并置为N，
-			
 			BoluomeActivityRuleBo ruleBo = new BoluomeActivityRuleBo();
 			//json转对象
 			 String ruleJson = afBoluomeActivityDo.getActivityRule();
@@ -907,14 +908,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			 logger.info("ruleBo = {}", ruleBo);
 		         int n = ruleBo.getNum();
 			 long  refId = userLoginRecord.getRefUserId();
-			 //消费者只完成第一笔
-			 AfOrderDo queryCount = new AfOrderDo();
-			 queryCount.setUserId(userLoginRecord.getUserId());
-			 queryCount.setOrderStatus("FINISHED");
-			 int  orderCount =  orderDao.getOrderCountByStatusAndUserId(queryCount);
-			 logger.info("orderCount = {}", orderCount);
-			 //<=1?
-		       	 if(orderCount<=1){
 		         int sum =   afBoluomeActivityUserLoginDao.getFlagCountByRefUserId(refId);
 		         logger.info("sum = {}", sum);
 			 if(sum>= n){
@@ -922,7 +915,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			  }
 		    	}
 		     }
-		    
 		    }
 		}
 	    return 0;
