@@ -58,11 +58,11 @@
     <script>
 		$(function(){
             var processResult = $("#processResult").val();
-            if(processResult == 'true'){
+            /*if(processResult == 'true'){
                 $('#warnMsgInfo').html('运营商认证申请已提交，请耐心等待审核结果');
                 $('.bgs_f').hide();
                 $('.bgs_c').show();
-            }
+            }*/
         })
 	</script>
 </html>
