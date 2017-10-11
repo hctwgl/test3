@@ -52,8 +52,8 @@ let vm = new Vue({
                                 for(var j=0;j<self.content.itemsList.length;j++){//是否可赠送
                                     num=self.content.itemsList[j].num;
                                     if(num>=1){
-                                        $('.presentCard').attr('present','Y');
-                                        $('.presentCard').attr('superPrize','Y');
+                                        $('.presentButton').attr('present','Y');
+                                        $('.presentButton').attr('superPrize','Y');
                                     }
                                     if(num>=2){
                                         $('.card').eq(j).find('.num').css('display','block');
@@ -64,8 +64,8 @@ let vm = new Vue({
                                     num=self.content.itemsList[m].num;
                                     if(num>=2){
                                         $('.card').eq(m).find('.num').css('display','block');
-                                        $('.presentCard').attr('present','Y');
-                                        $('.presentCard').attr('superPrize','N');
+                                        $('.presentButton').attr('present','Y');
+                                        $('.presentButton').attr('superPrize','N');
                                     }
                                 }
                             }
@@ -172,7 +172,7 @@ let vm = new Vue({
                             $('.mask').css('display','block');
                             $('.alertFinalPrize').css('display','block');
                             self.content.superPrizeStatus='YN';
-                            $('.presentCard').attr('superPrize','Y');
+                            $('.presentButton').attr('superPrize','Y');
                             for(var j=0;j<self.content.itemsList.length;j++) {//点击后卡片num-1
                                 num = self.content.itemsList[j].num;
                                 if (num == 0) {
@@ -187,9 +187,9 @@ let vm = new Vue({
                                     } else if (num - 1 == 1) {
                                         $('.card').eq(j).find('.num').css('display', 'none');
                                         //$('.presentCard').attr('present', 'N');
-                                        $('.presentCard').attr('present', 'Y');
+                                        $('.presentButton').attr('present', 'Y');
                                     } else if (num - 1 >= 2) {
-                                        $('.presentCard').attr('present', 'Y');
+                                        $('.presentButton').attr('present', 'Y');
                                     }
                                 }
                             }
@@ -224,7 +224,7 @@ let vm = new Vue({
             $('.alertFinalPrize').css('display','none');
         },
         fixImgUrl:function(i){
-            return "http://f.51fanbei.com/h5/app/activity/08/gg000"+i+".png";
+            return "http://f.51fanbei.com/h5/app/activity/10/gg000"+i+".png";
         }
     }
 })

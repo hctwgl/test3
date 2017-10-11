@@ -13,7 +13,7 @@ if(getInfo().userName){
 
 var name;//卡片名称
 $(function() {
-    $('.demandCard').click(function () {
+    $('.demandButton').click(function () {
         $.ajax({
             type: 'get',
             url: "/H5GG/askForItems",

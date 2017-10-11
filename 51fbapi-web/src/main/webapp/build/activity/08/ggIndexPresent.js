@@ -18,7 +18,7 @@ var numClick01;
 var numClick03;//左右滑动时img3卡片数量
 var hasTouchInit=false;//是否初始化过滑动事件监听
 $(function(){
-    $('.presentCard').click(function(){
+    $('.presentButton').click(function(){
             $.ajax({
                 type: 'get',
                 url: "/H5GG/sendItems",
@@ -29,7 +29,7 @@ $(function(){
                     if(returnData.data.loginUrl){
                         location.href = returnData.data.loginUrl;
                     }else{
-                        if($('.presentCard').attr('present')=='Y'){//可赠送
+                        if($('.presentButton').attr('present')=='Y'){//可赠送
                             $('body').addClass('overflowChange');
                             $('html').addClass('overflowChange');
                             $('.imgList').empty();
@@ -41,7 +41,7 @@ $(function(){
                             var presentCardList=returnData.data.itemsList;
                             userItemsList=returnData.data.userItemsList;
                             var str='';
-                            if($('.presentCard').attr('superPrize')=='Y'){//已领取终极大奖 num>=1 就可赠送 显示为亮
+                            if($('.presentButton').attr('superPrize')=='Y'){//已领取终极大奖 num>=1 就可赠送 显示为亮
                                 for(var k=0;k<presentCardList.length;k++){
                                     if(presentCardList[k].num>=1){
                                         str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'" rid="'+presentCardList[k].rid+'"><img src="'+presentCardList[k].iconUrl+'"><img class="cardBlur" src="'+presentCardList[k].iconUrl+'"><p class="num">x'+presentCardList[k].num+'</p>'+ '</div>';
@@ -213,7 +213,7 @@ function k_touch() {
 }
 //根据 是否领取终极大奖 + 卡片数量 判断按钮颜色
 function changeButtonBg(cardNumClick){
-    if($('.presentCard').attr('superPrize')=='Y'){
+    if($('.presentButton').attr('superPrize')=='Y'){
         if(cardNumClick<1){ //已领取终极大奖 num<1 按钮为灰
             $('.surePresent').css('background','#B3B3B3');
         }else{
