@@ -22,7 +22,7 @@
             </div>
             <div class="money">
                 <p><i class="friend">你的好友</i>正在51返呗收集卡片</p>
-                <p><span class="demand">向你索要</span><span class="combo"></span></p>
+                <p>向你索要<span class="demand">饿了么卡</span><span class="combo"></span></p>
             </div>
             <div class="banner">
                 <img src="$src/gg22.png" alt="" class="banner-img">
@@ -32,7 +32,7 @@
                 <div class="demandCard ask">我也要点亮</div>
             </div>
         </div>
-        <div class="presents-bottom clearFix">
+        <!--<div class="presents-bottom clearFix">
             <div class="presents-bottom-right">
                 <div class="line">
                     <span class="number-one">1</span>
@@ -53,7 +53,8 @@
                 </p>
                 <div class="rules"><a href="#">活动规则详情</a></div>
             </div>
-        </div>
+        </div>!-->
+        <div class="rules"><a href="#">活动规则详情</a></div>
          <!--活动规则弹框!-->
         <div class="mask">
             <div class="alertRule">
