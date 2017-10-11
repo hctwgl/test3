@@ -1,26 +1,23 @@
-package com.ald.fanbei.api.biz.service.redpacket;
+package com.ald.fanbei.api.biz.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.AfRedPacketPoolService;
 
 @Service("redPacketPoolService")
-public class RedPacketPoolServiceImpl implements RedPacketPoolService {
-    @Resource
-    RedisTemplate redisTemplate;
-
+public class AfRedPacketPoolServiceImpl implements AfRedPacketPoolService {
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
     public  List<BlockingQueue<Redpacket>> list;
     public  int count;
     public  int typeCount;
@@ -37,25 +34,34 @@ public class RedPacketPoolServiceImpl implements RedPacketPoolService {
         count = count + packets.size();
         list.add(packets);
         typeCount = list.size();
-
+        
+        StringBuilder log = new StringBuilder();
+        for(BlockingQueue<Redpacket> queue : list) {
+        	Redpacket peek = queue.peek();
+        	log.append("[queue").append(list.indexOf(queue)).append(",")
+        	.append(peek.getCoupon_name()).append(",")
+        	.append(peek.getType()).append(",")
+        	.append(queue.size()).append("]\r\n");
+        }
+        logger.info("redPacketPoolService.inject,final pool=\r\n{}", log);
+        
     }
 
     @Override
     public Redpacket apply() {
         int rand = (int)(Math.random() * typeCount)/1;
         BlockingQueue<Redpacket> redpackets = list.get(rand);
-        System.out.println(rand);
         Redpacket r = redpackets.poll();
         return r;
     }
 
     @Override
-    public void EmptyPacket() {
+    public void emptyPacket() {
         list.clear();
     }
 
     @Override
-    public Map<String,Integer> InformationPacket() {
+    public Map<String,Integer> informationPacket() {
         Map<String,Integer> map = new HashMap<String,Integer>();
         int surplusCount = 0;
         for(int i=0;i<list.size();i++){

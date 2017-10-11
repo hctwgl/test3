@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfCouponService;
@@ -33,7 +35,8 @@ import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
  */
 @Service("afUserCouponService")
 public class AfUserCouponServiceImpl implements AfUserCouponService{
-
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Resource
 	private AfUserCouponDao afUserCouponDao;
 	@Resource
@@ -93,6 +96,8 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	
 	@Override
 	public void grantCoupon(Long userId, Long couponId, String sourceType, String sourceRef) {
+		logger.info("grantCoupon, userId={}, couponId={}, sourceType={}", userId, couponId, sourceType, sourceRef);
+		
 		AfCouponDo couponDo = afCouponService.getCouponById(couponId);
 		if(couponDo == null){
 			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR);

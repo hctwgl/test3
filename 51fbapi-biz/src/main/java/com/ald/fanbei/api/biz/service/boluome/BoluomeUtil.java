@@ -26,8 +26,10 @@ import com.ald.fanbei.api.biz.bo.BoluomePushRefundResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandUserCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -43,12 +45,15 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderPushLogDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -71,6 +76,9 @@ public class BoluomeUtil extends AbstractThird{
 	GeneratorClusterNo generatorClusterNo;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	
+	@Resource
+	AfResourceService afResourceService;
 	
 	private static String pushPayUrl = null;
 	private static String pushRefundUrl = null;
@@ -492,6 +500,51 @@ public class BoluomeUtil extends AbstractThird{
 			status = PayStatus.DEALING;
 		}
 		return status;
+	}
+	
+	/**
+	 * 发菠萝觅优惠券
+	 * @param resourceId 
+	 * @param data
+	 * @param userId
+	 */
+	public void grantCoupon(Long resourceId, Map<String, Object> data, Long userId ) {
+		logger.info("BoluomeUtil grant start, sceneId = {}, userId = {}",resourceId, userId);
+		if (resourceId == null) {
+			throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		}
+		AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+		if (resourceInfo == null) {
+			logger.error("couponSceneId is invalid");
+			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+		}
+		data.put("prizeName", resourceInfo.getName());
+		data.put("prizeType", "BOLUOMI");
+		
+		PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+		bo.setUser_id(userId + StringUtil.EMPTY);
+		
+		Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+		Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+		
+		if (DateUtil.beforeDay(new Date(), gmtStart)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START);
+		}
+		if (DateUtil.afterDay(new Date(), gmtEnd)) {
+			throw new FanbeiException(FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END);
+		}
+		String url = resourceInfo.getValue();
+		if(url != null) {
+			url = url.replace(" ", "");
+		}
+		String resultString = HttpUtil.doHttpPostJsonParam(url, JSONObject.toJSONString(bo));
+		logger.info("BoluomeUtil grant finish, bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+		JSONObject resultJson = JSONObject.parseObject(resultString);
+		if (!"0".equals(resultJson.getString("code"))) {
+			throw new FanbeiException(resultJson.getString("msg"));
+		} else if (JSONArray.parseArray(resultJson.getString("data")).size() == 0){
+			throw new FanbeiException("仅限领取一次，请勿重复领取！");
+		}
 	}
 	
 	private AfOrderPushLogDo buildPushLog(Long orderId, String orderNo, PushStatus pushStatus, boolean status, String params, String result) {
