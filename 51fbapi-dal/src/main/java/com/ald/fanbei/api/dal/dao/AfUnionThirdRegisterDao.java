@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo;
  */
 public interface AfUnionThirdRegisterDao extends BaseDao<AfUnionThirdRegisterDo, Long> {
 
-    
 
+    int getIsRegister(String phone);
 }

@@ -121,12 +121,11 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo">
+	<select id="getIsRegister" resultType="java.lang.Integer">
         SELECT
-        <include refid="queryFields" />
+        count(1)
         FROM af_union_third_register
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
-        LIMIT 0,1
+        WHERE phone=#{phone}
     </select>
 
 	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo" parameterType="com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo">
