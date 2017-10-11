@@ -89,7 +89,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 			resultSms = smsUtil.sendLoginVerifyCode(mobile,afUserDo.getRid());
 			break;
 		case MOBILE_BIND:// 更换手机号
-			resultSms = smsUtil.sendMobileBindVerifyCode(mobile,afUserDo.getRid());
+			resultSms = smsUtil.sendMobileBindVerifyCode(mobile);
 			break;
 		default:
 			logger.error("type is invalid,type = " + typeParam);
