@@ -425,7 +425,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		pay_datetime.set(Calendar.HOUR_OF_DAY,23);
 		pay_datetime.set(Calendar.MINUTE,59);
 		pay_datetime.set(Calendar.SECOND,59);
-		pay_datetime.set(Calendar.MILLISECOND,999);
+		//pay_datetime.set(Calendar.MILLISECOND,999);
 
 		map.put(Constants.OUT_DATETIME,out_datetime.getTime());
 		map.put(Constants.PAY_DATETIME,pay_datetime.getTime());
