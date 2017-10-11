@@ -25,7 +25,8 @@
                 <p>向你要<span class="demand">饿了么卡</span><!--<span class="combo">!--></span></p>
             </div>
             <div class="banner">
-                <img src="$src/gg22.png" alt="" class="banner-img">
+                <span class="banner-bottom"><img src="$src/pengbg.png" alt="" class="banner-img"></span>
+                <!--<img src="" alt="" class="banner-img">!-->
             </div>
             <div class="send">
                 <div class="presentCard ask">赠送好友</div>
