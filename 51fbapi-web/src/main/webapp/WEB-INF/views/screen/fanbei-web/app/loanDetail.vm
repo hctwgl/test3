@@ -24,17 +24,19 @@
     </div>
     <div class="kong"></div>
     <div class="main clearFix">
-##        <div class="amountLimit">
-##            <input type="text" :placeholder="content.moneyMin"><span class="word01">元</span><br/><span class="word02">额度{{content.moneyMin}}元-{{content.moneyMax}}元</span>
-##        </div>
-##        <div class="amountLimit timeLimit">
-##            <input type="text" placeholder="60" class="moneyLimit" onclick="moneyLimit()"><span class="word01">天</span><br/><span class="word02">借款期限{{content.timeMin}}天-{{content.timeMax}}天</span>
-##        </div>
+        <div class="amountLimit">
+            <p class="word01">额度</p>
+            <p class="word02">{{content.moneyMin}}元~{{content.moneyMax}}元</p>
+        </div>
+        <div class="amountLimit timeLimit">
+            <p class="word01">借款期限</p>
+            <p class="word02">{{content.timeMin}}{{dayMonth()}}~{{content.timeMax}}{{dayMonth()}}</p>
+        </div>
         <div class="payMoney">
             <p class="sameTitle payMoneyTitle">按{{dayMonth()}}还款</p>
             <ul class="desList clearFix">
-                <li><p><span>{{content.lendRate*100}}%</span><span>参考月利率</span></p></li>
-                <li><p><span>{{content.fastLendTime}}</span><span>最快放款时间</span></p></li>
+                <li><p>{{content.lendRate*100}}%</p><p>参考月利率</p></li>
+                <li><p>{{content.fastLendTime}}</p><p>最快放款时间</p></li>
 ##                <li><p><span>500</span><span>每月还款(元)</span></p></li>
             </ul>
         </div>
@@ -60,13 +62,12 @@
         <div class="needCont clearFix">
             <p class="sameTitle needTitle">所需材料</p>
             <p class="everyCont"  v-for="data of fen(content.needMaterial)"><span></span>{{data}}</p>
-            <p class="everyCont"><span></span>银行卡</p>
         </div>
     </div>
-    <p class="submit">提交资料并申请</p>
+    <p class="submit" @click="submit">提交资料并申请</p>
 </div>
-<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.min.js?version=$version"></script>
-<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.picker.min.js?version=$version"></script>
+##<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.min.js?version=$version"></script>
+##<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.picker.min.js?version=$version"></script>
 <script type="text/javascript" src="/dist/js/app/loanDetail.js?version=$version"></script>
 </body>
 </html>

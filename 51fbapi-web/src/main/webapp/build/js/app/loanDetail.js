@@ -28,8 +28,24 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
-                    self.flow();
-                    console.log(self.content);
+                    //流程map
+                    let stat=[
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail01.png','name':'身份认证'},
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail02.png','name':'银行卡认证'},
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail03.png','name':'运营商认证'},
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail04.png','name':'个人信息认证'},
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail05.png','name':'通讯录认证'},
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail06.png','name':'芝麻信用认证'},
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail07.png','name':'等待认证'}
+                    ];
+                    let con=self.content.applyProcess.split(',');
+                    for(let i=0;i<con.length;i++){
+                        for(let j=0;j<stat.length;j++){
+                            if(con[i]==stat[j].name){
+                                self.flowCont.push(stat[j])
+                            }
+                        }
+                    }
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
@@ -46,28 +62,22 @@ let vm = new Vue({
                 return '日'
             }
         },
-        flow(){
-            let stat=[
-                {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail01.png','name':'身份认证'},
-                {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail02.png','name':'银行卡认证'},
-                {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail03.png','name':'运营商认证'},
-                {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail04.png','name':'个人信息认证'},
-                {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail05.png','name':'通讯录认证'},
-                {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail06.png','name':'芝麻信用认证'},
-                {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail07.png','name':'等待认证'}
-            ];
-            let self=this.content;
-            let con=self.applyProcess.split(',');
-            let arr=[];
-            for(let i=0;i<con.length;i++){
-                for(let j=0;j<stat.length;j++){
-                    if(con[i]==stat[j].name){
-                        self.flowCont.push(stat[j])
-                    }
+        submit(){
+            $.ajax({
+                type: 'post',
+                url: "/unionRegister/third/register",
+                data:{
+                    lsmNo:lsmNo,
+                    phone:getInfo().userName
+                },
+                success: function (data) {
+                    window.location.href=data.data.return_url
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！')
                 }
-            }
+            })
         }
-
     }
 });
 //贷款额度

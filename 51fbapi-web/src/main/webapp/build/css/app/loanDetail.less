@@ -82,31 +82,25 @@ body{
 .loanDetail .main .amountLimit{
   width:3.28rem;
   height:.64rem;
-  background:#f9f9f9;
-  border:1px solid #e2e0e0;
   position:relative;
   float:left;
 }
-.loanDetail .main .amountLimit input{
-  height:100%;
-  background:#f9f9f9;
-  line-height: 100%;
-  margin: 0;
-  padding: 1% 0 0 5%;
-  border: 0;
-  border-radius: 0;
-}
-.loanDetail .main .amountLimit .word01{
-  position: absolute;
-  right: .1rem;
-  line-height: .62rem;
-}
-.loanDetail .main .amountLimit .word02{
+
+.word01{
   font-size:.26rem;
   color:#969696;
+  text-align: center;
   line-height:.44rem;
   height:.44rem;
   padding-top:.1rem;
+}
+.word02{
+  font-size:.36rem;
+  color:#232323;
+  height:.5rem;
+  text-align: center;
+  line-height: .5rem;
+  font-weight: 600;
 }
 .loanDetail .main .timeLimit{
   float:right;
@@ -119,36 +113,35 @@ body{
 .loanDetail .main .payMoney .payMoneyTitle{
   padding:.24rem 0;
 }
-.loanDetail .main .payMoney .desList li{
+.desList li{
   box-shadow:0 .02rem .06rem 0 rgba(179,179,179,0.44);
   border-radius:.08rem;
-  width:2.08rem;
+  width:3.2rem;
   padding-bottom: .2rem;
   padding-top:.2rem;
   float:left;
   margin-left:.36rem;
 }
-.loanDetail .main .payMoney .desList li:nth-child(1){
+.desList li:nth-child(1){
   margin-left:0;
 }
-.loanDetail .main .payMoney .desList li p {
-  height: 1rem;
-  padding-left:.3rem;
+.desList li>p {
+  padding-left:.7rem;
   margin:0;
 }
-.loanDetail .main .payMoney .desList li:nth-of-type(odd) p {
+.desList li:nth-of-type(odd)>p {
   border-left: 2px solid #ff6e34;
 }
-.loanDetail .main .payMoney .desList li:nth-of-type(even) p {
+.desList li:nth-of-type(even)>p {
   border-left: 2px solid #47a6f9;
 }
-.loanDetail .main .payMoney .desList li p span:nth-child(1){
+.desList li>p:nth-child(1){
   font-size:.36rem;
-  color:#232323;
+  color:#646464;
   height:.5rem;
   line-height: .5rem;
 }
-.loanDetail .main .payMoney .desList li p span:nth-child(2){
+.desList li>p:nth-child(2){
   font-size:.24rem;
   color:#969696;
   height:.34rem;
@@ -218,8 +211,10 @@ body{
 }
 .loanDetail .applyCont .applyLimit .limitCont{
   font-size:.26rem;
+  line-height: .4rem;
   color:#232323;
   margin:0;
+  height: .4rem;
   position:relative;
 }
 .loanDetail .applyCont .applyLimit .limitCont .dian{
@@ -238,8 +233,8 @@ body{
   float: left;
 }
 .loanDetail .applyCont .applyLimit .limitCont .contDes{
-  padding-left:2%;
-  width:98%;
+  padding-left:4%;
+  width:96%;
 }
 /*所需材料--------------------------*/
 .loanDetail .applyCont .needCont{
@@ -255,7 +250,7 @@ body{
   float:left;
   margin:0;
   margin-left: 3%;
-  right: 5%;
+  margin-right: 6%;
 
 }
 .loanDetail .applyCont .needCont .everyCont span{
