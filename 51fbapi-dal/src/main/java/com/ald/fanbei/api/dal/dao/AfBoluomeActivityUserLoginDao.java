@@ -24,7 +24,7 @@ public interface AfBoluomeActivityUserLoginDao extends BaseDao<AfBoluomeActivity
 
 	int getFlagCountByRefUserId(long refId);
 
-	int updateBidingFlagIsN(AfBoluomeActivityUserLoginDo updateBidingflag);
+	int updateBindingFlagIsN(AfBoluomeActivityUserLoginDo updateBidingflag);
 
     
 

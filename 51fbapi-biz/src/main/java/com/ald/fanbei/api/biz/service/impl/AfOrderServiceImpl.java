@@ -889,9 +889,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		//若是被邀请而产生消费行为
 		if(userLoginRecord!=null){
 		    //将这条记录设置标记
-		    if(!"N".equals(userLoginRecord.getBidingFlag()) && !"Y".equals(userLoginRecord.getBidingFlag())){
+		    if(!"N".equals(userLoginRecord.getBindingFlag()) && !"Y".equals(userLoginRecord.getBindingFlag())){
 		    AfBoluomeActivityUserLoginDo setBidingFlag = new AfBoluomeActivityUserLoginDo();
-		    setBidingFlag.setBidingFlag("Y");
+		    setBidingFlag.setBindingFlag("Y");
 		    setBidingFlag.setRid(userLoginRecord.getRid());
 		    int updateRusult =  afBoluomeActivityUserLoginDao.updateById(setBidingFlag);
 		    //
@@ -963,9 +963,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	    if("CHANGE".equals(flag)){
 	    //送完券，解除绑定关系biding_flag
         	    AfBoluomeActivityUserLoginDo updateBidingflag = new AfBoluomeActivityUserLoginDo();
-        	    updateBidingflag.setBidingFlag("N");
+        	    updateBidingflag.setBindingFlag("N");
         	    updateBidingflag.setRefUserId(userLoginRecord.getRefUserId());
-        	    int result =    afBoluomeActivityUserLoginDao.updateBidingFlagIsN(updateBidingflag);
+        	    int result =    afBoluomeActivityUserLoginDao.updateBindingFlagIsN(updateBidingflag);
         	    logger.info("updateBidingFlagIsN result=",result);
 	    }
 	    return 0;

@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_id,biding_flag
+id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_id,binding_flag
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -32,8 +32,8 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
         <if test="boluomeActivityId != null and boluomeActivityId != ''">
             AND boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
         </if>
-        <if test="bidingFlag != null and bidingFlag != ''">
-            AND biding_flag = #{bidingFlag,jdbcType=INTEGER}
+        <if test="bindingFlag != null and bindingFlag != ''">
+            AND binding_flag = #{bindingFlag,jdbcType=INTEGER}
         </if>
     </sql>
 
@@ -108,19 +108,19 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
             <if test="boluomeActivityId != null and boluomeActivityId != ''">
                 boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
            </if>
-           <if test="bidingFlag != null and bidingFlag != ''">
-                biding_flag = #{bidingFlag,jdbcType=VARCHAR}
+           <if test="bindingFlag != null and bindingFlag != ''">
+                binding_flag = #{bindingFlag,jdbcType=VARCHAR}
            </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
-    <update id="updateBidingFlagIsN"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo">
+    <update id="updateBindingFlagIsN"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo">
         UPDATE af_boluome_activity_user_login
         SET
-        biding_flag = 'N'
+        binding_flag = 'N'
         WHERE is_delete = 0 
         AND ref_user_id = #{refUserId}
-        AND biding_flag = 'Y'
+        AND binding_flag = 'Y'
     </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo">
@@ -185,7 +185,7 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
         WHERE is_delete = 0 
         AND
         ref_user_id = #{refUserId}
-        AND biding_flag ='Y'
+        AND binding_flag ='Y'
     </select>
      
 </mapper>
