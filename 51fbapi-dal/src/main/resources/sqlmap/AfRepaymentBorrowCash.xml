@@ -250,4 +250,17 @@
 		select repay_no from af_repayment_borrow_cash WHERE repay_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
 	</select>
 
+	<select id="getCurrDayRepayErrorTimes" resultType="java.lang.Integer">
+		SELECT
+		count(*) 
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and `status` = 'N'
+		and  gmt_create  >= CURDATE()
+	</select>
+	
 </mapper>

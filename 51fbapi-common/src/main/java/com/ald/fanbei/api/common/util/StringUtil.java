@@ -246,5 +246,52 @@ public class StringUtil extends StringUtils {
 		}
 		return null;
 	}
+
+	/**
+	 * 获取指定字符串最后指定长度信息
+	 * @param cardNumber
+	 * @param lastLength
+	 * @return
+	 */
+	public static String getLastAppointLengthChar(String cardNumber,int lastLength) {
+		if(cardNumber == null || cardNumber.length()<=lastLength){
+			return null2Str(cardNumber);
+		}
+		return cardNumber.substring(cardNumber.length()-lastLength);
+	}
     
+	/**
+	 * 只针对还款失败三方返回内容处理
+	 * 裁掉最前面的"请求第三方失败,",删除中间出现的<100051>等返回码信息等
+	 * @param cardNumber
+	 * @param lastLength
+	 * @return
+	 */
+	public static String processRepayFailThirdMsg(String originMsg) {
+		String defaultMsg = "交易失败";
+		try {
+			if(isEmpty(originMsg)){
+				return defaultMsg;
+			}
+			if(originMsg.startsWith("请求第三方失败,")){
+				originMsg = originMsg.replaceFirst("请求第三方失败,", "");
+			}
+			String replaceStr = "";
+			if(originMsg.contains("[") && originMsg.contains("]")){
+				int beginIndex = originMsg.indexOf("[");
+				int endIndex = originMsg.lastIndexOf("]")+1;
+				replaceStr = originMsg.substring(beginIndex,endIndex);
+			}
+			originMsg = originMsg.replace(replaceStr, "");
+			if(isEmpty(originMsg)){
+				return defaultMsg;
+			}else{
+				return originMsg;
+			}
+		} catch (Exception e) {
+			return originMsg;
+		}
+	}
+	
+	
 }

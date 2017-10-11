@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -251,4 +252,10 @@ public interface AfBorrowBillDao {
 
 	List<AfBorrowBillDo> getAllBorrowNoPayByUserId(@Param("userId") long userId);
 	List<HashMap> getBorrowBillNoPaySumByUserId(@Param("userId") long userId);
+
+	List<AfBorrowBillDo> getBorrowBillList(@Param("status") String status,@Param("userId")Long userId);
+
+	AfBorrowBillDo getTotalMonthlyBillByIds(@Param("userId") Long userId,@Param("ids") List<Long > ids );
+
+	List<AfBorrowBillDo> getBorrowBillListY(@Param("userId") Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
 }

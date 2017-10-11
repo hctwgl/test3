@@ -71,15 +71,15 @@ public class GetThirdGoodsListApi implements ApiHandle {
 				afUserSearchService.addUserSearch(getUserSearchDo(context.getUserId(), keyword));
 			}
 			final AfResourceDo virtualGoods = afResourceService.getSingleResourceBytype(AfResourceType.VirtualGoodsKeywords.getCode());
-			
+
 			final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
 
 			if (CollectionUtils.isNotEmpty(list)) {
-				
+
 				List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
 					@Override
 					public AfSearchGoodsVo convert(NTbkItem source) {
-						System.out.println(source.getTitle());
+					//	System.out.println(source.getTitle());
 						if(virtualGoods !=null&&isVirtualWithKey(source.getTitle() ,virtualGoods.getValue())){
 							return null;
 						}
@@ -100,7 +100,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		        }
 		        removeSecondNper(array);
-				
+
 		        for(AfSearchGoodsVo goodsInfo : result) {
 		        	List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
 		        			goodsInfo.getSaleAmount(), resource.getValue1(), resource.getValue2());
@@ -109,7 +109,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 						goodsInfo.setNperMap(nperMap);
 					}
 		        }
-				
+
 				resp.addResponseData("goodsList", result);
 				resp.addResponseData("pageNo", buildParams.get("pageNo"));
 			}
@@ -118,7 +118,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		}
 		return resp;
 	}
-	
+
 	private void removeSecondNper(JSONArray array) {
         if (array == null) {
             return;
@@ -133,7 +133,6 @@ public class GetThirdGoodsListApi implements ApiHandle {
         }
 
     }
-	
 	private boolean isVirtualWithKey(String key, String virtualGoodsValue){
 		List<String> virtual = StringUtil.splitToList(virtualGoodsValue,",") ;
 		for (String string : virtual) {
@@ -153,6 +152,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 		vo.setGoodsIcon(item.getPictUrl());
 		vo.setGoodsName(item.getTitle());
 		vo.setGoodsUrl(item.getItemUrl());
+		vo.setVolume(item.getVolume());
 		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).append("~").append(saleAmount.subtract(minRebateAmount)).toString());
 		vo.setRebateAmount(new StringBuffer("").append(minRebateAmount).append("~").append(maxRebateAmount).toString());
 		vo.setSaleAmount(saleAmount);

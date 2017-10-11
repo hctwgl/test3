@@ -12,9 +12,13 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.AfGameChanceService;
+import com.ald.fanbei.api.common.enums.AfUserMaJiaBaoType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -28,9 +32,22 @@ public class RegistRuleEngineImpl extends AbstractCouponSceneRuleEngine{
 
 	private static final String REGISTKEY = "regist";
 	
+	@Resource
+	AfUserDao afUserDao;
+	
 	@Override
-	protected AfCouponSceneDo getCouponScene(Date now) {
-		AfCouponSceneDo activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.REGIST.getCode());
+	protected AfCouponSceneDo getCouponScene(Date now, AfUserDo userDo) {
+		if (userDo == null || userDo.getRid() == 0L) {
+			return null;
+		}
+		AfCouponSceneDo activityDo = null;
+		if (StringUtil.equals(AfUserMaJiaBaoType.APP.getCode(), userDo.getMajiabaoName()) || StringUtil.isEmpty(userDo.getMajiabaoName())) {
+			// app用户
+			activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.REGIST.getCode());
+		}else {
+			// 马甲包用户
+			activityDo = afCouponSceneDao.getCouponSceneByType(CouponSenceRuleType.MJBREGIST.getCode());
+		}
 		return checkActivity(activityDo, now);
 	}
 	

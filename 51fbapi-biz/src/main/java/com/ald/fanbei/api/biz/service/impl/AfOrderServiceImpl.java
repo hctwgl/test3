@@ -742,9 +742,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		//登陆者消费就返利和返卡片
 	    Long userId = afOrder.getUserId();
 		//查询商城id
-		AfShopDo afShopDo =new AfShopDo();
-		afShopDo.setType(afOrder.getSecType());
-		AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
+		//AfShopDo afShopDo =new AfShopDo();
+//		afShopDo.setType(afOrder.getSecType());
+//		AfShopDo shop =  afShopService.getShopInfoBySecTypeOpen(afShopDo);
+	         String platformName = afOrder.getOrderType(); //BOLUOME
+	         String type = afOrder.getSecType();    //JIUDIAN
+	         String serviceProvider = afOrder.getServiceProvider();  //CTRIP
+		 AfShopDo shop = afShopService.getShopByPlantNameAndTypeAndServiceProvider(platformName, type,  serviceProvider);
+		
 		logger.info("shop",shop);
 		if (shop != null) {
 			Long shopId = shop.getRid();
@@ -821,8 +826,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							logger.info("refAccountInfo ",refAccountInfo);
 							//add log
 							AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userLoginRecord.getRefUserId());
+							if(accountInfo!=null){
 							AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userLoginRecord.getRefUserId(), afOrder.getRid(), AccountLogType.REBATE);
-							afUserAccountLogDao.addUserAccountLog(accountLog);
+							if(accountLog!=null){
+							    afUserAccountLogDao.addUserAccountLog(accountLog);
+								}
+							}
 						}
 					}
 				}
@@ -1343,7 +1352,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
 			//iPhone预约
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
-			logger.info("iPhone8 reservationActivity" +goods.getRid());
+			logger.info("iPhone8 reservationActivity" +(goods!=null?goods.getRid():0L));
 			if(goods != null){
 				if(goods.getTags().equals("subscribe")){
 					AfUserDo afUserDo = afUserService.getUserById(orderInfo.getUserId());
@@ -2038,6 +2047,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	@Override
 	public List<AfOrderDo> getStatusByGoodsAndUserId(long goodsId, long userId) {
 		return orderDao.getStatusByGoodsAndUserId(goodsId, userId);
+	}
+
+	@Override
+	public void syncOrderInfo(String orderId, String plantform, AfOrderDo orderInfo) {
+	 // 订单补偿
+	    String lockKey = Constants.CACHEKEY_BUILD_BOLUOME_ORDER_LOCK + orderId;
+	    Object lockValue = bizCacheUtil.getObject(lockKey);
+	    if (lockValue == null) {
+		bizCacheUtil.saveObject(lockKey, "", 600);
+		//验证订单是否已经存在
+		AfOrderDo existOrderDo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(plantform, orderId);
+		if (existOrderDo == null)
+		    afOrderService.createOrder(orderInfo);
+	    }
+	    
 	}
 
 }

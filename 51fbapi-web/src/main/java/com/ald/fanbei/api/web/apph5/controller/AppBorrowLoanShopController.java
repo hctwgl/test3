@@ -149,7 +149,7 @@ public class AppBorrowLoanShopController extends BaseController {
 				tapsAndShops.setSort(old.getSort());
 				
 				List<AfLoanShopVo> shopList = new ArrayList<>();
-				List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(old.getAlias());
+				List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(old.getAlias(),null);
 				if (sourceSupermarketList != null && sourceSupermarketList.size() > 0 ) {
 					for(AfLoanSupermarketDo oldShop :sourceSupermarketList){
 						AfLoanShopVo newShop = new AfLoanShopVo();

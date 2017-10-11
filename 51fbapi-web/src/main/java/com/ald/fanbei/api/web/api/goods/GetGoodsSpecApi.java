@@ -111,6 +111,7 @@ public class GetGoodsSpecApi implements ApiHandle {
 			for (AfGoodsPriceDo priceDo : priceDos) {
 				AfGoodsPriceVo goodsPriceVo = new AfGoodsPriceVo();
 
+				goodsPriceVo.setStock(priceDo.getStock());
 				goodsPriceVo.setActualAmount(priceDo.getActualAmount());
 				goodsPriceVo.setIsSale(priceDo.getIsSale());
 				goodsPriceVo.setPriceAmount(priceDo.getPriceAmount());

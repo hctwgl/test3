@@ -57,6 +57,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 
 /**
  * @类描述：
@@ -203,7 +204,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 				return 1L;
 			}
 			else{
-				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),3);
+				if(status.equals("N")) {
+					afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
+				}
 			}
 		}
 
@@ -244,9 +247,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		final AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByPayTradeNo(outTradeNo);
 		logger.info("afRenewalDetailDo=" + afRenewalDetailDo);
 		if (YesNoStatus.YES.getCode().equals(afRenewalDetailDo.getStatus())) {
+			redisTemplate.delete(key);
 			return 0l;
 		}
-		
+
 		long resultValue =  transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -259,7 +263,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
 						}
 					}
-					
+
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(afRenewalDetailDo.getBorrowId());
 
 					// 变更续期记录为续期成功
@@ -313,30 +317,30 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.info("dealRepaymentSucess error", e);
+					logger.info("dealRenewalSucess error", e);
 					return 0l;
 				} finally {
 					redisTemplate.delete(key);
 				}
 			}
 		});
-		
+
 		if(resultValue == 1L){
 			//续期成功,推送等抽出
 			logger.info("续期成功，推送消息和向催收平台同步进入borrowCashId:"+afRenewalDetailDo.getBorrowId()+",afRenewalDetailDoId:"+afRenewalDetailDo.getRid());
-			
+
 			AfBorrowCashDo currAfBorrowCashDo = afBorrowCashService.getBorrowCashByrid(afRenewalDetailDo.getBorrowId());
 			AfUserDo userDo = afUserService.getUserById(currAfBorrowCashDo.getUserId());
 			try {
 				pushService.repayRenewalSuccess(userDo.getUserName());
-				logger.error("续期成功，推送消息成功outTradeNo:"+outTradeNo);
+				logger.info("续期成功，推送消息成功outTradeNo:"+outTradeNo);
 			}catch (Exception e){
 				logger.error("续期成功，推送消息异常outTradeNo:"+outTradeNo,e);
 			}
-			
+
 			//当续期成功时,同步逾期天数为0
 			dealWithSynchronizeOverduedOrder(currAfBorrowCashDo);
-			
+
 			//返呗续期通知接口，向催收平台同步续期信息
 			try {
 				CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
@@ -345,7 +349,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 				logger.error("向催收平台同步续期信息",e);
 			}
 		}
-		
+
 		return resultValue;
 	}
 	

@@ -146,4 +146,112 @@ id,gmt_create,user_id,source_ip,ref_type,ref_id,extra_info,remark,channel
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getSignCountToday" resultType="int" parameterType="Long">
+        SELECT
+        COUNT(*)
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        AND remark='sign'
+        AND gmt_create <![CDATA[  >=  ]]> CAST(CAST(SYSDATE()AS DATE)AS DATETIME);
+    </select>
+    
+    <select id="getSignedSuperMarketList" resultType="String" parameterType="com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery">
+        SELECT
+        DISTINCT ref_id
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        AND remark='sign'
+        AND ref_type = #{refType}
+        AND gmt_create <![CDATA[  <  ]]> CAST(CAST(SYSDATE()AS DATE)AS DATETIME)
+        AND gmt_create <![CDATA[  >=  ]]> #{beginTime}
+    </select>
+    
+    <select id="getVisitCountToday" resultType="int" >
+        SELECT
+        COUNT(DISTINCT ref_id)
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        <if test = "superMarketIds!=null and superMarketIds.size >0 ">
+        AND ref_id NOT IN 
+        <foreach collection="superMarketIds" item="id" open="(" close=")" separator=",">
+        	#{id}
+        </foreach>
+        </if>
+        AND gmt_create <![CDATA[  >=  ]]> CAST(CAST(SYSDATE()AS DATE)AS DATETIME);
+    </select>
+    
+    <select id="getFourMarketIds" resultType="String" >
+        SELECT
+        DISTINCT ref_id
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        <if test = "superMarketIds!=null and superMarketIds.size >0 ">
+        AND ref_id NOT IN 
+        <foreach collection="superMarketIds" item="id" open="(" close=")" separator=",">
+        	#{id}
+        </foreach>
+        </if>
+        AND gmt_create <![CDATA[  >=  ]]> CAST(CAST(SYSDATE()AS DATE)AS DATETIME)
+        ORDER BY gmt_create asc
+        limit 0,4
+    </select>
+    
+    <select id="getNeedSignIds" resultType="String" >
+        <if test = "superMarketIds!=null and superMarketIds.size >0 ">
+        	<foreach collection="superMarketIds" item="id"  separator="UNION">
+	        (SELECT
+	        id
+	        FROM af_business_access_records
+	        WHERE user_id = #{userId}
+	        AND is_delete = 0
+	        AND ref_id = #{id}
+	        AND gmt_create <![CDATA[  >=  ]]> CAST(CAST(SYSDATE()AS DATE)AS DATETIME)
+	        ORDER BY gmt_create asc
+	        limit 1
+	        )
+        	</foreach>
+        </if>
+       
+        
+    </select>
+    
+    <update  id="batchSetSignByIds" parameterType="String">
+    	update 
+    	af_business_access_records
+    	set
+    		remark='sign'
+    	where id in 
+    	<foreach collection="ids" item="id" open="(" close=")" separator=",">
+        	#{id}
+        </foreach>
+    </update>
+    
+    <select id="getTotalSignCount" resultType="int" parameterType="com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery">
+        SELECT
+        COUNT(DISTINCT ref_id)
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        AND remark='sign'
+        AND ref_type = #{refType}
+        AND gmt_create <![CDATA[  <  ]]> #{endTime}
+        AND gmt_create <![CDATA[  >=  ]]> #{beginTime}
+    </select>
+
+    <select id="getTotalSignList" resultType="com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo" parameterType="com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_business_access_records
+        WHERE user_id = #{userId}
+        AND is_delete = 0
+        AND remark='sign'
+        AND ref_type = 'LOANSUPERMARKET'
+        AND gmt_create <![CDATA[  <  ]]> #{endTime}
+        AND gmt_create <![CDATA[  >=  ]]> #{beginTime}
+    </select>
+
 </mapper>

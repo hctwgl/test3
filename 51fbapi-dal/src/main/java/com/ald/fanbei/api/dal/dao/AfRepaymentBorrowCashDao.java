@@ -97,5 +97,7 @@ public interface AfRepaymentBorrowCashDao {
 	 * @return
 	 */
 	String getCurrentLastRepayNo(String orderNoPre);
+
+	int getCurrDayRepayErrorTimes(@Param("userId") Long userId);
 	
 }

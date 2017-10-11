@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.common.Constants;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -63,6 +65,8 @@ public class GetOrderListApi implements ApiHandle{
 	AfResourceService afResourceService;
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
+	@Resource
+	AfShopService afShopService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -82,11 +86,35 @@ public class GetOrderListApi implements ApiHandle{
         resp.setResponseData(map);
 		return resp;
 	}
-
+	
 	private AfOrderListVo getOrderListVo(AfOrderDo order ,FanbeiContext context){
 		AfOrderListVo vo = new AfOrderListVo();
 		vo.setGmtCreate(order.getGmtCreate());
-		vo.setGoodsIcon(order.getGoodsIcon());
+		//如果是菠萝觅订单，查询shop表,
+		if(OrderType.BOLUOME.getCode().equals(order.getOrderType())){
+		   //通过类型查商城图片
+//		    AfShopDo queryShop = new AfShopDo();
+//		    queryShop.setType(order.getSecType());
+//		    AfShopDo afShopDo =  afShopService.getShopInfoBySecTypeOpen(queryShop);
+		    String platformName = order.getOrderType(); //BOLUOME
+		    String type = order.getSecType();    //JIUDIAN
+		    String serviceProvider = order.getServiceProvider();  //CTRIP
+		    AfShopDo afShopDo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(platformName, type,  serviceProvider);
+		    //版本判断
+		    if(afShopDo!=null){
+        		 if(context.getAppVersion()>390){
+        		   vo.setGoodsIcon(afShopDo.getNewLogo());
+        		  }else{
+        		   vo.setGoodsIcon(afShopDo.getLogo());
+        		 }
+		    }else{
+			  //若空，用订单的图片
+			  vo.setGoodsIcon(order.getGoodsIcon());
+		    }
+		}else{
+		    vo.setGoodsIcon(order.getGoodsIcon());
+		}
+		
 		vo.setGoodsName(order.getGoodsName());
 		vo.setGoodsPriceName(order.getGoodsPriceName());
 		vo.setOrderId(order.getRid());

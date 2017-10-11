@@ -51,4 +51,11 @@ public interface AfUserService {
 
 	Long getUserIdByMobile(String mobile);
 
+	/**
+	 * 根据用户id批量得到用户电话
+	 * @param userId
+	 *
+	 * @return
+	 * **/
+	List<String> getUserNameByUserId(List<String> users);
 }

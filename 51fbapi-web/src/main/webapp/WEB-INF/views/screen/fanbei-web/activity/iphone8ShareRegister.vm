@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="20170911")
+    #set($version="20170913")
     #set($commonUrl="https://img.51fanbei.com/h5/app/images/user/channel")
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/iphone8ShareRegister.css?version=$version">

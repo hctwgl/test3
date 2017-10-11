@@ -6,6 +6,9 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
+import com.ald.fanbei.api.dal.domain.AfGameConfDo;
+import com.ald.fanbei.api.dal.domain.AfGameDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 /**
  * @类现描述：
@@ -44,4 +47,19 @@ public interface AfGameAwardService {
 	 * @return
 	 */
 	int updateContact(Long userId,String contacts);
+	
+	/**
+	 * 获取借贷超市签到的奖励信息
+	 * @param userId
+	 * @param gameId
+	 * @return
+	 */
+	AfGameAwardDo getLoanSignAward(Long userId,Long gameId);
+
+	/**
+	 * 领取签到奖
+	 * @param userId
+	 * @param confDo
+	 */
+	void receiveSignAward(AfUserDo user, AfGameConfDo confDo,AfGameDo gameDo);
 }

@@ -102,6 +102,7 @@
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
 				<value>/goods/getThirdGoodsList</value>
+				<value>/goods/getThirdShopsList</value>
 				<value>/goods/getCategoryList</value>
 				<value>/goods/getCateGoodsList</value>
 				<value>/user/logout</value>
@@ -122,6 +123,7 @@
 				<value>/user/getImageCode</value>
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
+				<value>/instalments/getInstalmentsAd</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -191,6 +193,8 @@
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
+				<entry key="/good/deleteHistory" value-ref="deleteHistoryApi" />
+				<entry key="/goods/getThirdShopsList" value-ref="getThirdShopsListApi" />
 				<entry key="/good/getSearchHome" value-ref="getSearchHomeApi" />
 				<entry key="/good/getBrandShopList" value-ref="getBrandShopListApi" />
 				<entry key="/good/getGoodsTkRate" value-ref="getGoodsTkRateApi" />
@@ -199,6 +203,9 @@
 				<entry key="/good/getPayTypeList" value-ref="getPayTypeListApi" />
 				<entry key="/goods/getGoodsInfoByNumId" value-ref="getGoodsInfoByNumIdApi" />
 				<entry key ="/goods/getGoodsSpec" value-ref="getGoodsSpecApi"></entry>
+				<entry key="/bill/getRepayMentAmountByMonth" value-ref="getRepayMentAmountByMonthApi"/>
+				<entry key="/repay/getRepaymentConfirmInfoV1" value-ref="getRepaymentConfirmInfoV1Api"/>
+				<entry key="/bill/getBillListByStatus" value-ref="getBillListByStatusApi"/>
 
 
 				<!-- 订单Order -->
@@ -304,6 +311,8 @@
 				<entry key="/repayCash/getConfirmRepayInfo" value-ref="getConfirmRepayInfoApi" />
 				<entry key="/repayCash/getConfirmRepayInfoV1" value-ref="getConfirmRepayInfoV1Api" />
 				<entry key="/repayCash/getRepayCashByOrderId" value-ref="getRepayCashByOrderIdApi" />
+				<entry key="/borrow/getRepaymentInfo" value-ref="getRepaymentInfoApi"/>
+				<entry key="/borrow/submitRepaymentByYiBao" value-ref="submitRepaymentByYiBaoApi"/>
 
 				<entry key="/repayCash/getRepayCashList" value-ref="getRepayCashListApi" />
 				<entry key="/repayCash/getRepayCashInfo" value-ref="getRepayCashInfoApi" />
@@ -362,6 +371,8 @@
 
 				<!--订单物流信息相关-->
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
+				<!--分期广告位-->
+				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
 			</map>
 		</constructor-arg>
 	</bean>
