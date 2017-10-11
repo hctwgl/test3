@@ -102,6 +102,11 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 	 */
 	private String slogan;
 
+	/**
+	 * 第三方接口url
+	 */
+	private String registerUrl;
+
 
 	public AfLoanSupermarketDo() {
 		super();
@@ -479,5 +484,13 @@ public class AfLoanSupermarketDo extends AbstractSerial {
 	 */
 	public void setSlogan(String slogan){
 		this.slogan = slogan;
+	}
+
+	public String getRegisterUrl() {
+		return registerUrl;
+	}
+
+	public void setRegisterUrl(String registerUrl) {
+		this.registerUrl = registerUrl;
 	}
 }

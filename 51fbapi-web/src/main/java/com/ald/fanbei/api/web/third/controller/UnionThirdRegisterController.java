@@ -65,6 +65,7 @@ public class UnionThirdRegisterController extends BaseController {
                 AfLoanSupermarketDo afLoanSupermarketDo = afLoanSupermarketDao.getLoanSupermarketByLsmNo(lsmNo);
                 if(afLoanSupermarketDo!=null){
                     String secret_key = afLoanSupermarketDo.getLsmSecretKey(); //加密签名通用秘钥
+                    String register_url = afLoanSupermarketDo.getRegisterUrl();//第三方接口url
                     byte[] phoneAesEncodeByte = encode(secret_key, phone);
                     String phoneBase64EncodeStr = Base64.encodeBase64String(phoneAesEncodeByte); //注意：用于后面加签
                     //签名
@@ -76,7 +77,7 @@ public class UnionThirdRegisterController extends BaseController {
                     String paramsStr = paramTreeMapToString(params);
                     Date beforDT = new Date();
                     long time1 = beforDT.getTime();
-                    result= HttpUtil.doHttpPost("http://localhost/unionlogin/fanbeiLogin",
+                    result= HttpUtil.doHttpPost(register_url,
                             paramsStr.replace("+","%2B"));
                     Date afterDT = new Date();
                     long time2 = afterDT.getTime();
