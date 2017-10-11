@@ -734,5 +734,20 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("getSignCycle error", e);
 		}
 	}
+	@Override
+	public void pushSharedTips(String userName,String msgContext) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("pushSharedTips,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "231");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("邀请使用二维码", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("getSignCycle error", e);
+		}
+	}
 
 }

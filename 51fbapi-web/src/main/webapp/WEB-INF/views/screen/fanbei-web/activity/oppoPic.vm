@@ -24,31 +24,37 @@
     }
     body{
         background-color:#2559c1;
-        padding:0 0.2rem;
+        
         
     }
     .detail{
         width:7.1rem;
         height:3.4rem;
-        margin-bottom: 0.27rem;
+        margin-bottom: 0.42rem;
+        position: relative;
     }
     .detail-left{
-        width:50%;
-        height:3.4rem;
+        width:4.6rem;
+        height:3.54rem;
         background-color:pink;
-        float:left;
+        position: absolute;
+        left: 0;
+        top: 0;
     }
     .detail-right{
-        width:50%;
-        height:3.4rem;
+        width:3.04rem;
+        height:3.04rem;
         padding-left:0.16rem;
+        padding-right: 0.16rem;
         background-color:white;
-        float:right;
+        position: absolute;
+        right: 0;
+        top: 0.5rem;
     }
     .product-name{
         font-size:0.293rem;
-        margin-bottom:0.1rem;
-        margin-top:0.2rem;
+        margin-bottom: 0.09rem;
+        margin-top:0.3rem;
         font-weight:600;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -56,18 +62,32 @@
     }
     .product-des{
         font-size:0.2rem;
-        font-weight:600;
+        color:#999999;
+        position:relative;
+        padding-left: 0.2rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .pointO{
+        width:0.08rem;
+        height:0.08rem;
+        background-color:rgba(19, 19, 19, 0.8);
+        position:absolute;
+        top:50%;
+        left:0rem;
+        transform:translateY(-50%);
     }
     .product-set{
-        font-size:0.16rem;
+        font-size:0.16rem;l
         color: rgba(19, 19, 19, 0.8);
-        margin:0.1rem 0;
+        margin: 0.1rem 0 0.25rem 0;
         position:relative;
+        color:#999999;
     }
     .point{
-        width:0.06rem;
-        height:0.06rem;
-        border-radius:50%;
+        width:0.08rem;
+        height:0.08rem;
         background-color:rgba(19, 19, 19, 0.8);
         position:absolute;
         top:50%;
@@ -82,169 +102,74 @@
     .money{
         color:#d42334;
         font-size:0.3rem;
+        margin-left: -0.1rem;
     }
     .back{
         width:0.35rem;
         height:0.35rem;
         border-radius:50%;
-        line-height:0.35rem;
+        line-height:0.32rem;
+        text-align:center;
         background-color:#d42334;
         color:white;
-        margin:0 0.2rem;
+        margin:0 0.05rem;
     }
     .back-set{
         margin-left: 0.2rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width:95%;
     }
     .month-pay{
-        width:2.32rem;
+        width:100%;
         height:0.38rem;
         background-color:#d42334;
         font-size:0.26rem;
         color:white;
-        margin-top:0.24rem;
+        margin-top:4%;
         margin-bottom:0.3rem;
         padding:0 0.11rem;
-    }
-    .vooc{
-        position:relative;
-        margin-left:0.2rem;
-    }
-    .pointO{
-        width:0.06rem;
-        height:0.06rem;
-        border-radius:50%;
-        background-color:rgba(19, 19, 19, 0.8);
-        position:absolute;
-        top:50%;
-        left:-0.2rem;
-        transform:translateY(-50%);
+        text-align: center;
+        line-height: 0.38rem;
     }
     .storage{
         position:relative;
-        margin-left:0.4rem;
+        margin-left:0.1rem;
     }
-    .pointT{
-        width:0.06rem;
-        height:0.06rem;
-        border-radius:50%;
-        background-color:rgba(19, 19, 19, 0.8);
-        position:absolute;
-        top:50%;
-        left:-0.2rem;
-        transform:translateY(-50%);
+    .detail:nth-child(even)>.detail-left{
+        right:0;
+        left:auto;
     }
-
+    .detail:nth-child(even)>.detail-right{
+        left:0;
+    }
+    .qi{
+        margin-left: 0.2rem;
+    }
+    ul{
+        margin-top: 0.3rem;
+        padding:0 0.2rem;
+    }
 
 </style>
 <body>
-    <!--<div id="oppoPic">
+    <div id="oppoPic">
         <div class="banner"><img src="$src/oppo11n.png" alt=""></div>
         <ul>
-            <li class="detail" v-for="item in message.oneLevelGoodsInfo.goodsList" @click="buyNow(item)">
+            <li class="detail" v-for="(item,index) in message.oneLevelGoodsInfo.goodsList" @click="buyNow(item)" >
                 <div class="detail-left">
                     <img :src="item.goodsIcon" alt="">
                 </div>
                 <div class="detail-right">
                     <p class="product-name">{{item.goodName}}</p>
-                    <p class="product-des">前后2000万，拍照更清晰</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>后置双摄</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
-                    <p class="flash-power"><i class="vooc"><i class="pointO"></i>VOOC闪充</i></p>
+                    <p class="product-des"><i class="pointO"></i>{{item.des}}</p>
+                    <p class="product-set" v-if="item.del"><i class="back-set"><i class="point"></i>{{item.del}}</i></p>
                     <p class="money">￥{{item.saleAmount}}<i class="back">返</i>￥{{item.rebateAmount}}</p>
                     <p class="month-pay">月供  
                     <sapn v-if="item.nperMap.isFree==='1' ||  item.nperMap.isFree==='2'">￥{{item.nperMap.freeAmount}}</sapn>
-                    <span v-else>￥{{item.nperMap.amount}}</span>起
+                    <span v-else>￥{{item.nperMap.amount}}</span><i class="qi">起</i>
                     </p>
-                </div>
-            </li>
-        </ul>
-    </div>!-->
-
-    <div id="oppoPic">
-        <div class="banner"><img src="$src/oppo11n.png" alt=""></div>
-        <ul>
-            <li class="detail">
-                <div class="detail-left">
-                    <img src="" alt="">
-                </div>
-                <div class="detail-right">
-                    <p class="product-name">OPPO R11巴萨限量版 </p>
-                    <p class="product-des">前后2000万，拍照更清晰</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>18K镀金队徽</i><i class="storage"><i class="pointT"></i>稀缺资源</i></p>
-                    <p class="flash-power"><i class="vooc"><i class="pointO"></i>VOOC闪充</i></p>
-                    <p class="money">￥3499<i class="back">返</i>￥69.98</p>
-                    <p class="month-pay">月供<sapn>￥393.64</sapn>起</p>
-                </div>
-            </li>
-            <li class="detail">
-                <div class="detail-left">
-                    <img src="" alt="">
-                </div>
-                <div class="detail-right">
-                    <p class="product-name">oppo R11 Plus</p>
-                    <p class="product-des">前后2000万，拍照更清晰</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>后置双摄 6英寸大屏</i><i class="storage"><i class="pointT"></i>VOOC闪充</i></p>
-                    <p class="money">￥2999<i class="back">返</i>￥119.96</p>
-                    <p class="month-pay">月供<sapn>￥337.38</sapn>起</p>
-                </div>
-            </li>
-            <li class="detail">
-                <div class="detail-left">
-                    <img src="" alt="">
-                </div>
-                <div class="detail-right">
-                    <p class="product-name">OPPO R9s</p>
-                    <p class="product-des">这一刻，更清晰</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>正面指纹 4G+64GB</i><i class="storage"><i class="pointT"></i>VOOC闪充</i></p>
-                    <p class="money">￥2599<i class="back">返</i>￥51.98</p>
-                    <p class="month-pay">月供<sapn>￥292.38</sapn>起</p>
-                </div>
-            </li>
-            <li class="detail">
-                <div class="detail-left">
-                    <img src="" alt="">
-                </div>
-                <div class="detail-right">
-                    <p class="product-name">OPPO A59s</p>
-                    <p class="product-des">前置1600万像素</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>双卡双待 4G+64GB</i><i class="storage"><i class="pointT"></i>VOOC闪充</i></p>
-                    <p class="money">￥1799<i class="back">返</i>￥71.96</p>
-                    <p class="month-pay">月供<sapn>￥202.38</sapn>起</p>
-                </div>
-            </li>
-             <li class="detail">
-                <div class="detail-left">
-                    <img src="" alt="">
-                </div>
-                <div class="detail-right">
-                    <p class="product-name">OPPO A57</p>
-                    <p class="product-des">1600万美颜自拍</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>正面指纹识别 4G+64GB</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
-                    <p class="money">￥1399<i class="back">返</i>￥55.96</p>
-                    <p class="month-pay">月供<sapn>￥157.38</sapn>起</p>
-                </div>
-            </li>
-            <li class="detail">
-                <div class="detail-left">
-                    <img src="" alt="">
-                </div>
-                <div class="detail-right">
-                    <p class="product-name">OPPO A77</p>
-                    <p class="product-des">与青春合拍</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>前置1600万 4G+64GB</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
-                    <p class="money">￥2599<i class="back">返</i>￥55.96</p>
-                    <p class="month-pay">月供<sapn>￥51.38</sapn>起</p>
-                </div>
-            </li>
-            <li class="detail">
-                <div class="detail-left">
-                    <img src="" alt="">
-                </div>
-                <div class="detail-right">
-                    <p class="product-name">OPPO A77</p>
-                    <p class="product-des">与青春合拍</p>
-                    <p class="product-set"><i class="back-set"><i class="point"></i>前置1600万 4G+64GB</i><i class="storage"><i class="pointT"></i>4G+64GB</i></p>
-                    <p class="money">￥1399<i class="back">返</i>￥55.96</p>
-                    <p class="month-pay">月供<sapn>￥157.38</sapn>起</p>
                 </div>
             </li>
         </ul>

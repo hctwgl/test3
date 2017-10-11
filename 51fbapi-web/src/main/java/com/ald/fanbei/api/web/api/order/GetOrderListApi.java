@@ -93,9 +93,13 @@ public class GetOrderListApi implements ApiHandle{
 		//如果是菠萝觅订单，查询shop表,
 		if(OrderType.BOLUOME.getCode().equals(order.getOrderType())){
 		   //通过类型查商城图片
-		    AfShopDo queryShop = new AfShopDo();
-		    queryShop.setType(order.getSecType());
-		    AfShopDo afShopDo =  afShopService.getShopInfoBySecTypeOpen(queryShop);
+//		    AfShopDo queryShop = new AfShopDo();
+//		    queryShop.setType(order.getSecType());
+//		    AfShopDo afShopDo =  afShopService.getShopInfoBySecTypeOpen(queryShop);
+		    String platformName = order.getOrderType(); //BOLUOME
+		    String type = order.getSecType();    //JIUDIAN
+		    String serviceProvider = order.getServiceProvider();  //CTRIP
+		    AfShopDo afShopDo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(platformName, type,  serviceProvider);
 		    //版本判断
 		    if(afShopDo!=null){
         		 if(context.getAppVersion()>390){

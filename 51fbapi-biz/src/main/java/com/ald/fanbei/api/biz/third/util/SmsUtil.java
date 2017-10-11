@@ -489,6 +489,7 @@ public class SmsUtil extends AbstractThird {
         if (!CommonUtil.isMobile(mobile)) {
             throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
         }
+        System.out.println("发送手机号："+mobile);
         sendSmsToDhst(mobile, content);
     }
 

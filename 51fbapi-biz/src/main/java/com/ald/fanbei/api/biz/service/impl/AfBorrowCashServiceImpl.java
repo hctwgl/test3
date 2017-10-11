@@ -118,6 +118,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 						List<String> userName = afUserService.getUserNameByUserId(users);
 						// 保存破十亿中奖用户
 						bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60 * 60 * 24 * 7);
+						logger.info("1500000000 is win,user_name= "+userName.get(0));
 					}
 					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 				} else {

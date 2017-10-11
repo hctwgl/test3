@@ -30,6 +30,7 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.alibaba.druid.util.StringUtils;
 
 
@@ -78,15 +79,14 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 	@Override
 	public void executeRule(Map<String,Object> inputData) {
 		Long userId = (Long)inputData.get("userId");
-		logger.info(StringUtil.appendStrs("userId=",userId,",inputData=",inputData));
+		AfUserDo userDo = (AfUserDo) inputData.get("userDo");
 		try{
 			Date now = new Date();
-			AfCouponSceneDo couponSenceDo = getCouponScene(now);
+			AfCouponSceneDo couponSenceDo = getCouponScene(now, userDo);
 			if(couponSenceDo == null){
 				return;
 			}
 			Map<String,List<CouponSceneRuleBo>> rules =  getRules(now,couponSenceDo);
-			logger.info(StringUtil.appendStrs("userId=",userId,",rules=",rules));
 			if(rules == null || rules.size() < 0){
 				return ;
 			}
@@ -104,9 +104,10 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 	/**
 	 * 获取优惠券场景对象
 	 * @param now
+	 * @param userId 
 	 * @return
 	 */
-	protected abstract AfCouponSceneDo getCouponScene(Date now);
+	protected abstract AfCouponSceneDo getCouponScene(Date now, AfUserDo userDo);
 	
 	/**
 	 * 获取符合场景的规则列表
