@@ -42,9 +42,14 @@ public class RegisterLoanShopController extends BaseController {
             String lsmNo = request.getParameter("lsmNo");
             if(StringUtil.isNotEmpty(lsmNo)){
                 AfLoanSupermarketDo afLoanSupermarket  = afLoanSupermarketService.getLoanSupermarketByLsmNo(lsmNo);
-                Map<String, Object> data = new HashMap<String, Object>();
-                data.put("afLoanSupermarket", afLoanSupermarket);
-                resp = H5CommonResponse.getNewInstance(true, "success", "", data);
+                //Map<String, Object> data = new HashMap<String, Object>();
+                //data.put("afLoanSupermarket", afLoanSupermarket);
+                if(afLoanSupermarket!=null){
+                    resp = H5CommonResponse.getNewInstance(true, "success", "", afLoanSupermarket);
+                }else{
+                    resp = H5CommonResponse.getNewInstance(false, "借款超市不存在", "", "");
+                }
+
             }else{
                 resp = H5CommonResponse.getNewInstance(false, "参数为空", "", "");
             }
