@@ -53,7 +53,18 @@ import java.util.Date;
 
     private String status;
     private String type;
+    private String scopeApplication;
+ 
+    
+    
+    
+    public String getScopeApplication() {
+        return scopeApplication;
+    }
 
+    public void setScopeApplication(String scopeApplication) {
+        this.scopeApplication = scopeApplication;
+    }
 
     /**
      * 获取主键Id
