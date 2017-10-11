@@ -11,13 +11,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -36,6 +39,8 @@ public class GetBrandListApi implements ApiHandle {
          public static final int PAGE_SIZE = 50;
 	@Resource
 	AfShopService afShopService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -57,6 +62,9 @@ public class GetBrandListApi implements ApiHandle {
 				}
 			});
 		}
+		List<AfResourceDo> bannerList = afResourceService
+				.getResourceHomeListByTypeOrderBy(AfResourceType.GGHomeTopBanner.getCode());
+		resp.addResponseData("bannerList", bannerList);
 		resp.addResponseData("shopList", resultList);
 		resp.addResponseData("pageNo", pageNo);
 		return resp;

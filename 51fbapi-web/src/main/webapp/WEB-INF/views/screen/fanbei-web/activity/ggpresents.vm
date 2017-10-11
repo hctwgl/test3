@@ -23,17 +23,18 @@
             </div>
             <div class="money">
                 <p><i class="friend"></i>正在51返呗收集卡片</p>
-                <p><span class="combo"></span><span class="give">送给你</span></p>
+                <p><span class="combo"></span><span class="give">看电影卡</span>送给你</p>
             </div>
             <div class="banner">
-                <img src="" alt="" class="banner-img">
+                <span class="banner-bottom"><img src="$src/pengbg.png" alt="" class="banner-img"></span>
+                <!--<img src="" alt="" class="banner-img">!-->
             </div>
             <div class="send">
                 <div class="presentCard ask">领走卡片</div>
                 <div class="demandCard ask">我也要点亮</div>
             </div>
         </div>
-        <div class="presents-bottom clearFix">
+        <!--<div class="presents-bottom clearFix">
             <div class="presents-bottom-right">
                 <div class="line">
                     <span class="number-one">1</span>
@@ -54,7 +55,8 @@
                 </p>
                 <div class="rules"><a href="#">活动规则详情</a></div>
             </div>
-        </div>
+        </div>!-->
+        <div class="rules"><a href="#">活动规则详情</a></div>
         <!--活动规则弹框!-->
         <div class="mask">
             <div class="alertRule">

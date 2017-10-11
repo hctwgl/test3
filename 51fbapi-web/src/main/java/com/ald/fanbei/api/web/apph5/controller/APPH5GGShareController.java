@@ -243,12 +243,7 @@ public class APPH5GGShareController extends BaseController {
 			// List<Object> bannerList = new ArrayList<>();
 			List<AfResourceDo> bannerList = afResourceService
 					.getResourceHomeListByTypeOrderBy(AfResourceType.GGTopBanner.getCode());
-			/*
-			 * if (bannerResclist != null && bannerResclist.size() > 0) {
-			 * GetBorrowCashBase base = new GetBorrowCashBase(); bannerList =
-			 * base.getBannerObjectWithResourceDolist(bannerResclist); }
-			 */
-
+	
 			// TODO:resource+终极大奖的人数.初始化数据,根据类型和活动id去取。GG_FAKE_PERSON
 			Map<String, Integer> fakeMap = getFakePerson(activityId);
 			Integer fakeFinal = 0;

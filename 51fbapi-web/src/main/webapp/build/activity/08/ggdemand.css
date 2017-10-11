@@ -97,8 +97,9 @@ body{
   margin-left:0.1rem;
 }
 .money p:nth-child(2) span{
-  color:#fe963b;
+  color:#f2404d;
   /* margin-left:0.1rem; */
+   margin-left: 2%; 
 }
 .money .combo{
     margin-left:1%;
@@ -108,14 +109,19 @@ body{
 }
 .banner img{
     width:6.25rem;
-     height:6.2rem; 
+     height:2.97rem; 
     /* background-color:pink; */
     margin-left:9%;
+    margin-top: 1.8rem;
+}
+banner .banner-bottom{
+    width:6.25rem;
+    height:2.97rem;
 }
 .ask{
   width:2.86rem;
   height:.88rem;
-  background:#fb9659;
+  background:#f2404d;
   box-shadow:0 .06rem .13rem 0 rgba(212,195,185,0.87);
   border-radius:1rem;
   margin-top:.5rem;
@@ -135,7 +141,7 @@ body{
     /*width: 100%;*/
     /* height: 6rem; */
     /* background-color: yellow; */
-    margin-bottom: 0.84rem;
+    /* margin-bottom: 0.84rem; */
 }
 #presents .presents-bottom {
     margin-bottom:30%;
@@ -190,14 +196,14 @@ body{
     font-size:0.3rem;
     position:relative;
 }
-#presents .presents-bottom .presents-bottom-left .rules{
+#presents .rules{
     position:absolute;
     left:50%;
     transform:translateX(-50%);
-    font-size:0.28rem;
+    font-size:0.32rem;
     
 }
-#presents .presents-bottom .presents-bottom-left .rules a{
+#presents .rules a{
     color:#5cb4e2;
     text-decoration: underline;
 }
