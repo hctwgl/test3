@@ -9,7 +9,8 @@ let vm = new Vue({
             timeMin:2,
             timeMax:20,
             lsmName:'51fanbei',
-            timeUnit:2
+            timeUnit:2,
+            isRegister:0
         },
         flowCont:[]
     },
@@ -61,6 +62,9 @@ let vm = new Vue({
             }else{
                 return '日'
             }
+        },
+        btnTxt(){
+            if(this.content.isRegister==1){return '打开'}else{return '提交资料并申请'}
         },
         submit(){
             $.ajax({

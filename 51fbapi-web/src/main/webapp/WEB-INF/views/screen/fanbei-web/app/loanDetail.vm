@@ -64,7 +64,7 @@
             <p class="everyCont"  v-for="data of fen(content.needMaterial)"><span></span>{{data}}</p>
         </div>
     </div>
-    <p class="submit" @click="submit">提交资料并申请</p>
+    <p class="submit" @click="submit">{{btnTxt()}}</p>
 </div>
 ##<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.min.js?version=$version"></script>
 ##<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.picker.min.js?version=$version"></script>
