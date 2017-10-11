@@ -38,6 +38,7 @@
 <img src="$src/zhe1 (7).jpg" />
 <img src="$src/zhe1 (8).jpg" />
 <img src="$src/zhe1 (9).jpg" />
-<div class="btn"><a href="https://e.czbank.com/weixinHTML/outInterface/creditCardApplyTemplateOutside.html?apOrigin=1348&pageFlag=a1111">立即办卡</a></div>
+<div class="btn"><a onclick="mai()" href="https://e.czbank.com/weixinHTML/outInterface/creditCardApplyTemplateOutside.html?apOrigin=1348&pageFlag=a1111">立即办卡</a></div>
 </body>
+<script src="/dist/activity/10/czbank.js"></script>
 </html>
