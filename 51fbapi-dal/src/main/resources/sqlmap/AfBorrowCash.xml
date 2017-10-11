@@ -142,6 +142,9 @@
 		<if test="majiabaoName != null and majiabaoName !=''">
 			,majiabao_name=#{majiabaoName}
 		</if>
+		<if test="finishDate != null and finishDate !=''">
+			,finish_date=#{finishDate}
+		</if>
 		WHERE id = #{rid}
 	</update>
 
@@ -399,5 +402,13 @@
     			separator=",">
     			#{id}
     		</foreach>
+	</select>
+	
+	<select id="updateAfBorrowCashService" parameterType="AfBorrowCashDo">
+		UPDATE af_borrow_cash SET gmt_modified = NOW()
+		<if test="overdueStatus != null">
+			,rd_before_overdue_status=#{overdueStatus}
+		</if>
+		WHERE id=#{rid}
 	</select>
 </mapper>
