@@ -13,15 +13,15 @@
              height:.1rem;
              background:#eeeeee;
          }
-        .mobileOperator .bgs_c {
+        .mobileOperator .bgs_f {
              width: 3.72rem;
              height: 3rem;
-             background: url('$commonUrl/chengg002.png') no-repeat;
+             background: url('$commonUrl/chengg001.png') no-repeat;
              -webkit-background-size: cover;
              background-size: cover;
          }
-         .mobileOperator .bgs_f {
-             background: url('$commonUrl/chengg001.png') no-repeat;
+         .mobileOperator .bgs_c {
+             background: url('$commonUrl/chengg002.png') no-repeat;
              -webkit-background-size: cover;
              background-size: cover;
              display: none;
@@ -48,9 +48,9 @@
     <input type="hidden"  id="processResult" value="$!{processResult}" name="processResult"/>
         <div class="kong"></div>
     	<div class="tac mobileOperator">
-            <span class="bgs_c"></span>
-            <span class="bgs_c bgs_f"></span>
-            <p id="warnMsgInfo">运营商认证申请已提交，请耐心等待审核结果</p>
+            <span class="bgs_f"></span>
+            <span class="bgs_f bgs_c"></span>
+            <p id="warnMsgInfo">运营商认证失败，请返回重试</p>
             <div class="mobileOperator_btn"><a href='/app/sys/authBack?fbapiNeedRefreshCurrData={"refreshStatus":"1"}'>返回信用认证</a></div>
         </div>
     </body>
@@ -58,10 +58,10 @@
     <script>
 		$(function(){
             var processResult = $("#processResult").val();
-            if(processResult == null || processResult == "false"){
-                $('#warnMsgInfo').html('运营商认证失败，请返回重试');
-                $('.bgs_c').hide();
-                $('.bgs_f').show();
+            if(processResult == 'true'){
+                $('#warnMsgInfo').html('运营商认证申请已提交，请耐心等待审核结果');
+                $('.bgs_f').hide();
+                $('.bgs_c').show();
             }
         })
 	</script>
