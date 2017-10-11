@@ -54,7 +54,17 @@ import java.util.Date;
      */
 
     private Long boluomeActivityId;
+    
+    
+    private String bidingFlag;
+    
+    public String getBidingFlag() {
+        return bidingFlag;
+    }
 
+    public void setBidingFlag(String bidingFlag) {
+        this.bidingFlag = bidingFlag;
+    }
 
     public Long getBoluomeActivityId() {
 		return boluomeActivityId;

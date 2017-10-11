@@ -20,13 +20,16 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.BoluomeActivityRuleBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
@@ -60,7 +63,6 @@ import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.common.enums.GoodsReservationWebFailStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -79,6 +81,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
@@ -102,6 +105,7 @@ import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
@@ -136,29 +140,10 @@ import com.taobao.api.response.TaeItemDetailGetResponse;
  *@author 何鑫 2017年16月20日 下午4:20:22
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-/**
- * @author chenqiwei
- *
- * 下午2:12:36
- */
-/**
- * @author chenqiwei
- *
- * 下午2:12:42
- */
-/**
- * @author chenqiwei
- *
- * 下午2:12:42
- */
-/**
- * @author chenqiwei
- *
- * 下午2:12:42
- */
+
 @Service("afOrderService")
 public class AfOrderServiceImpl extends BaseService implements AfOrderService{
-
+        
 	@Resource
 	private AfOrderDao orderDao;
 	@Resource
@@ -234,6 +219,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfShopService afShopService;
 	@Resource
 	AfBoluomeActivityItemsDao afBoluomeActivityItemsDao;
+	@Resource
+	AfBoluomeActivityCouponService afBoluomeActivityCouponService;
 	@Resource
 	AfBoluomeActivityUserItemsDao afBoluomeActivityUserItemsDao;
 	@Resource
@@ -732,7 +719,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						    Date startTime = afBoluomeActivityDo.getGmtCreate();
 						    Date endTime = afBoluomeActivityDo.getGmtEnd();
 						    if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
-						       boluomeActivity(afOrder);
+						       boluomeActivity(afOrder,afBoluomeActivityDo);
                             }
                         }
 //                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
@@ -765,7 +752,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param afOrder
 	 * @return
 	 */
-	public int boluomeActivity(final AfOrderDo afOrder){
+	public int boluomeActivity(final AfOrderDo afOrder,AfBoluomeActivityDo afBoluomeActivityDo){
 		
 	    
 	        //登陆者消费就返利和返卡片
@@ -777,10 +764,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	         String platformName = afOrder.getOrderType(); //BOLUOME
 	         String type = afOrder.getSecType();    //JIUDIAN
 	         String serviceProvider = afOrder.getServiceProvider();  //CTRIP
+	         //如果是话费和流量，则通过chongzhi取查询
+		    if("HUAFEI".equals(type)||"LIULIANG".equals(type)){
+			type ="CHONGZHI";
+		    }
 		 AfShopDo shop = afShopService.getShopByPlantNameAndTypeAndServiceProvider(platformName, type,  serviceProvider);
-		
 		logger.info("shop",shop);
 		if (shop != null) {
+		    
+		     
 			Long shopId = shop.getRid();
 			//根据shopId查询卡片信息
 			AfBoluomeActivityItemsDo ItemsMessageSet = new AfBoluomeActivityItemsDo();
@@ -872,7 +864,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 				}
 			}
 		}
-		boluomeActivitySendCoupon(afOrder);
+		boluomeActivitySendCoupon(afOrder,afBoluomeActivityDo);
 		return 0;
 	}
 	
@@ -881,26 +873,104 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param afOrder
 	 * @return
 	 */
-	public int boluomeActivitySendCoupon(final AfOrderDo afOrder){
+	public int boluomeActivitySendCoupon(final AfOrderDo afOrder,AfBoluomeActivityDo afBoluomeActivityDo){
 	    /*
 		 * 给用户送券
 		 * */
-		
-		//在订单创建之前的绑定的最后一个用户
+	        logger.info("boluomeActivitySendCoupon begin , afOrder = {}", afOrder);
+		//在订单创建之前通过（索要）绑定的最后一个用户
 		AfBoluomeActivityUserLoginDo queryUserLoginRecord  = new AfBoluomeActivityUserLoginDo();
 		queryUserLoginRecord.setUserId(afOrder.getUserId());
 		queryUserLoginRecord.setGmtCreate(afOrder.getGmtCreate());
+		//添加登录来源，若该订单对应用户记录是索要来源，则送券
 		//AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecordByUserId(userId);
 		AfBoluomeActivityUserLoginDo userLoginRecord = afBoluomeActivityUserLoginDao.getUserLoginRecord(queryUserLoginRecord);
+		logger.info("userLoginRecord = {}", userLoginRecord);
 		//若是被邀请而产生消费行为
 		if(userLoginRecord!=null){
-		    //必须是新注册用户？
-		   //邀请用户记录表里添加记录
-		    //活动表查n
-		    //查记录是否大于等于n条，是，送券
+		    //将这条记录设置标记
+		    if(!"N".equals(userLoginRecord.getBidingFlag()) && !"Y".equals(userLoginRecord.getBidingFlag())){
+		    AfBoluomeActivityUserLoginDo setBidingFlag = new AfBoluomeActivityUserLoginDo();
+		    setBidingFlag.setBidingFlag("Y");
+		    setBidingFlag.setRid(userLoginRecord.getRid());
+		    int updateRusult =  afBoluomeActivityUserLoginDao.updateById(setBidingFlag);
+		    //
+		    if(updateRusult>0){
+			//查询邀请者的记录，是否大于n,若大于等于n，送券，并置为N，
+			
+			BoluomeActivityRuleBo ruleBo = new BoluomeActivityRuleBo();
+			//json转对象
+			 String ruleJson = afBoluomeActivityDo.getActivityRule();
+			 JSONArray jsStr = JSONArray.parseArray(ruleJson);
+			 Object o=jsStr.get(0);
+			 ruleBo = JSONObject.parseObject(o.toString(), BoluomeActivityRuleBo.class);
+			 logger.info("ruleBo = {}", ruleBo);
+		         int n = ruleBo.getNum();
+			 long  refId = userLoginRecord.getRefUserId();
+			 //消费者只完成第一笔
+			 AfOrderDo queryCount = new AfOrderDo();
+			 queryCount.setUserId(userLoginRecord.getUserId());
+			 queryCount.setOrderStatus("FINISHED");
+			 int  orderCount =  orderDao.getOrderCountByStatusAndUserId(queryCount);
+			 logger.info("orderCount = {}", orderCount);
+			 //<=1?
+		       	 if(orderCount<=1){
+		         int sum =   afBoluomeActivityUserLoginDao.getFlagCountByRefUserId(refId);
+		         logger.info("sum = {}", sum);
+			 if(sum>= n){
+			     sentBoluomeCoupon(userLoginRecord);
+			  }
+		    	}
+		     }
+		    
+		    }
 		}
 	    return 0;
 	    }
+
+	
+	private int sentBoluomeCoupon(final AfBoluomeActivityUserLoginDo userLoginRecord) {
+	    logger.info("sentBoluomeCoupon begin , userLoginRecord = {}", userLoginRecord);
+	    long couponUserId = userLoginRecord.getRefUserId();
+	    String flag = null;
+	    //优惠券表查券，limit 0, 1
+	    AfBoluomeActivityCouponDo  queryCoupon =new AfBoluomeActivityCouponDo();
+	    queryCoupon.setScopeApplication("INVITER");
+	    queryCoupon.setType("B");
+	    List<AfBoluomeActivityCouponDo>    sentCoupons =     afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
+	    logger.info("sentCoupons=",sentCoupons);
+	    if(sentCoupons.size()>0){
+	    for(AfBoluomeActivityCouponDo sentCoupon:sentCoupons){
+	    long resourceId = sentCoupon.getCouponId();
+	    AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+	    logger.info("resourceInfo = {}", resourceInfo);
+	    if(resourceInfo!=null){
+	    PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+	    bo.setUser_id(couponUserId + StringUtil.EMPTY);
+	  
+	    String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+		logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo),
+				resultString);
+		JSONObject resultJson = JSONObject.parseObject(resultString);
+		String code = resultJson.getString("code");
+        		if ("0".equals(code)) {
+        		    flag = "CHANGE";
+                    }
+	    	}
+	    }
+	   }
+	    logger.info("updateBidingFlag=",flag);
+	    if("CHANGE".equals(flag)){
+	    //送完券，解除绑定关系biding_flag
+        	    AfBoluomeActivityUserLoginDo updateBidingflag = new AfBoluomeActivityUserLoginDo();
+        	    updateBidingflag.setBidingFlag("N");
+        	    updateBidingflag.setRefUserId(userLoginRecord.getRefUserId());
+        	    int result =    afBoluomeActivityUserLoginDao.updateBidingFlagIsN(updateBidingflag);
+        	    logger.info("updateBidingFlagIsN result=",result);
+	    }
+	    return 0;
+	    // TODO Auto-generated method stub
+	}
 
 	private AfUserAccountLogDo buildUserAccount(BigDecimal amount,Long userId,Long orderId, AccountLogType logType){
 		//增加account变更日志
@@ -2123,6 +2193,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		    afOrderService.createOrder(orderInfo);
 	    }
 	    
+	}
+
+	@Override
+	public int getOrderCountByStatusAndUserId(AfOrderDo queryCount) {
+	    // TODO Auto-generated method stub
+	    return orderDao.getOrderCountByStatusAndUserId(queryCount);
 	}
 
 }
