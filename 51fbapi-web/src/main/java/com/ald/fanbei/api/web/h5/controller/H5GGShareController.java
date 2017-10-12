@@ -243,7 +243,7 @@ public class H5GGShareController extends H5Controller {
 				JSONObject jsonObject = listRule.get(0);
 				supportedNum = jsonObject.getString("num");
 			}
-			
+
 			Map<String, Object> data = new HashMap<String, Object>();
 			// TODO:用户如果登录，则用户的该活动获得的卡片list
 			AfBoluomeActivityUserItemsDo useritemsDo = new AfBoluomeActivityUserItemsDo();
@@ -319,39 +319,36 @@ public class H5GGShareController extends H5Controller {
 					if (!StringUtil.isBlank(userName)) {
 						data.put("userName", userName);
 					}
-				}
-			} else {
-				// 未登录则终极大奖状态不变，并且卡片个数是-1
-				for (AfBoluomeActivityItemsDo itemsDoo : itemsList) {
-					itemsDoo.setNum(-1);
+				} else {
+					// 未登录则终极大奖状态不变，并且卡片个数是-1
+					for (AfBoluomeActivityItemsDo itemsDoo : itemsList) {
+						itemsDoo.setNum(-1);
+					}
 				}
 			}
-			//获取文案的信息
+			// 获取文案的信息
 			String popupWords = "";
-			
-			
-			//获取饿了么场景Id
-			Long shopId = null ;
+
+			// 获取饿了么场景Id
+			Long shopId = null;
 			AfShopDo shopDo = new AfShopDo();
 			shopDo.setType("WAIMAI");
 			AfShopDo resultShop = afShopService.getShopInfoBySecTypeOpen(shopDo);
 			if (resultShop != null) {
 				shopId = resultShop.getRid();
 			}
-			
-			int alreadyNum = 0 ;
-			//和用户登录有关的
+
+			int alreadyNum = 0;
+			// 和用户登录有关的
 			if (StringUtil.isNotBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
-				//TODO:获取弹框文案；
+				// TODO:获取弹框文案；
 				popupWords = afBoluomeActivityService.activityOffical(userId);
-				//获取已经邀请的人数
+				// 获取已经邀请的人数
 				alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
-				
+
 			}
-			
-			
-			
+
 			data.put("alreadyNum", alreadyNum);
 			data.put("supportedNum", supportedNum);
 			data.put("shopId", shopId);
@@ -378,8 +375,6 @@ public class H5GGShareController extends H5Controller {
 
 		return resultStr;
 	}
-
-
 
 	private List<AfBoluomeActivityItemsDo> addNumber(Long activityId, Long userId) {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
