@@ -52,13 +52,12 @@ public class RegisterLoanShopController extends BaseController {
                 JSONObject data = JSONObject.parseObject(JSON.toJSONString(afLoanSupermarket));
 
                 if(afLoanSupermarket!=null){
-                    String phone = (String)(request.getAttribute("userName"));
+                    String phone = (request.getParameter("phone"));
                     if(afUnionThirdRegisterDao.getIsRegister(phone)>0){
                         data.put("isRegister","1");
                     }else{
                         data.put("isRegister","0");
                     }
-                    data.put("phone34356555555",phone);
                     resp = H5CommonResponse.getNewInstance(true, "success", "", data);
                 }else{
                     resp = H5CommonResponse.getNewInstance(false, "借款超市不存在", "", "");
