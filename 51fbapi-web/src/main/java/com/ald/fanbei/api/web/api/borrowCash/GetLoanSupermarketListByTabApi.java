@@ -148,7 +148,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
         HashMap<String,String> map = new HashMap<String,String>();
         int count = 0;
-        String prompt = "继续签到"+count+"天即可获得";
+        String prompt = "";
         AfBusinessAccessRecordQuery query = new AfBusinessAccessRecordQuery();
         query.setBeginTime(gameDo.getGmtStart());
         query.setEndTime(gameDo.getGmtEnd());
@@ -167,13 +167,13 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
             if (confList != null && confList.size() > 0) {
                 if (1 <= signDays && signDays < 5) {
                     count = 5 - signDays;
-                    prompt = prompt + "20元红包和3元现金";
+                    prompt = "继续签到"+count+"天即可获得" + "20元红包和3元现金";
                 } else if (5 <= signDays && signDays < 10) {
                     count = 10 - signDays;
-                    prompt = prompt + "50元红包和15元现金";
+                    prompt = "继续签到"+count+"天即可获得" + "50元红包和15元现金";
                 } else if (10 <= signDays && signDays < 15) {
                     count = 15 - signDays;
-                    prompt = prompt + "75元红包和25元现金，并且有机会获得888现金";
+                    prompt = "继续签到"+count+"天即可获得" + "75元红包和25元现金，并且有机会获得888现金";
                 }
             }
         }
