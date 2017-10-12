@@ -24,9 +24,11 @@
                 <p><i class="friend">你的好友</i>正在51返呗收集卡片</p>
                 <p>向你要<span class="demand">饿了么卡</span><!--<span class="combo">!--></span></p>
             </div>
-            <div class="banner">
+            <div class="super-big">
+                 <div class="banner">
+                    <img src="" alt="" class="banner-img">
+                </div>
                 <span class="banner-bottom"><img src="$src/pengbg.png" alt="" class="banner-img"></span>
-                <!--<img src="" alt="" class="banner-img">!-->
             </div>
             <div class="send">
                 <div class="presentCard ask">赠送好友</div>
