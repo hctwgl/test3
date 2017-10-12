@@ -628,6 +628,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	public List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String payType) {
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();// 当前时间
+		//生成时间
+
 		Integer nper = borrow.getNper();
 		Integer freeNper = borrow.getFreeNper();
 		String borrowRate = borrow.getBorrowRate();
@@ -647,6 +649,21 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(money, borrow.getNper(), borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
 
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
+
+		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
+		if(afBorrowBillLast !=null){
+			int out_day = 10;
+			if(afUserOutDayDo !=null){
+				out_day = afUserOutDayDo.getOutDay();
+			}
+			Date d=  getNowOutDay(out_day);
+			if(d.compareTo(afBorrowBillLast.getGmtOutDay())<=0){
+				Calendar c = Calendar.getInstance();
+				c.setTime(afBorrowBillLast.getGmtOutDay());
+				c.add(Calendar.MONTH,1);
+				now = c.getTime();
+			}
+		}
 
 		for (int i = 1; i <= nper; i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
@@ -688,7 +705,18 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		}
 		return list;
 	}
-	
+
+
+	private Date getNowOutDay(int day){
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.DAY_OF_MONTH,day);
+		c.set(Calendar.HOUR_OF_DAY,0);
+		c.set(Calendar.MINUTE,0);
+		c.set(Calendar.SECOND,0);
+		c.set(Calendar.MILLISECOND,0);
+		return c.getTime();
+	}
+
 	/**
 	 * 获取第一期分期金额
 	 * @param amount 本金
