@@ -150,8 +150,8 @@ let timescroll = (arr) => {
     $('.roll ul').animate({top: '-=20px'})
   }, 2000)
   setInterval(() => {
-    $('.roll ul').animate({top: '0px'})
-  }, 2000 * (length - 1))
+    $('.roll ul').css({top: '20px'})
+  }, 2000 * (length) - 1)
 }
 
 window.onload = () => {
