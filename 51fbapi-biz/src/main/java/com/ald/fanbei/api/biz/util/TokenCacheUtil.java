@@ -394,13 +394,14 @@ public class TokenCacheUtil extends AbstractThird{
 	 * 授予访问令牌
 	 * @param userName
 	 */
-	public void grant(String userName) {
+	public TokenBo grant(String userName) {
 		String token = UserUtil.generateToken(userName);
 		TokenBo tokenBo = new TokenBo();
 		tokenBo.setLastAccess(System.currentTimeMillis() + "");
 		tokenBo.setToken(token);
 		tokenBo.setUserId(userName);
 		saveToken(userName, tokenBo);
+		return tokenBo;
 	}
     
 }

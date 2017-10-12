@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory.RiskEventType;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -74,7 +75,7 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
         }
 		
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+		final ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		final Long uid = context.getUserId();
 		final String uidStr = context.getUserId().toString();
 		Object o = bizCacheUtil.hget(Constants.CACHEKEY_CHANGE_MOBILE, uidStr);
@@ -122,7 +123,8 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 					}
 					
-					tokenCacheUtil.grant(newMobile);
+					TokenBo tokenBo = tokenCacheUtil.grant(newMobile);
+					resp.setResponseData(tokenBo.getToken());
 					
 					//状态更新失败不影响核心业务，日志打点即可
 					try {
