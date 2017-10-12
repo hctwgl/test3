@@ -337,26 +337,7 @@ public class H5GGShareController extends H5Controller {
 		return resultStr;
 	}
 
-	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
-		List<Object> bannerList = new ArrayList<Object>();
-		
-		for (AfResourceDo afResourceDo : bannerResclist) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("imageUrl", afResourceDo.getValue());
-		data.put("titleName", afResourceDo.getName());
-		if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
-		data.put("type", afResourceDo.getSecType());
-		
-		data.put("type", afResourceDo.getValue1());
-		data.put("content", afResourceDo.getValue2());
-		data.put("sort", afResourceDo.getSort());
-		
-		bannerList.add(data);
-		}
-		
-		}
-		return bannerList;
-		}
+
 
 	private List<AfBoluomeActivityItemsDo> addNumber(Long activityId, Long userId) {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
