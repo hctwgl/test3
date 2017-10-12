@@ -167,16 +167,13 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
             if (confList != null && confList.size() > 0) {
                 if (1 <= signDays && signDays < 5) {
                     count = 5 - signDays;
-                    String item = "2";
-                    prompt = prompt(confList, count, item);
+                    prompt = "继续签到"+count+"天即可获得" + "20元红包和3元现金";
                 } else if (5 <= signDays && signDays < 10) {
                     count = 10 - signDays;
-                    String item = "3";
-                    prompt = prompt(confList, count, item);
+                    prompt = "继续签到"+count+"天即可获得" + "50元红包和15元现金";
                 } else if (10 <= signDays && signDays < 15) {
                     count = 15 - signDays;
-                    String item = "4";
-                    prompt = prompt(confList, count, item);
+                    prompt = "继续签到"+count+"天即可获得" + "75元红包和25元现金，并且有机会获得888现金";
                 }
             }
         }
@@ -184,37 +181,5 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         return map;
     }
 
-    public String prompt(List<AfGameConfDo> confList,int count,String itemStr){
-        String prompt = "继续签到"+count+"天即可获得";
-        for(AfGameConfDo conf :confList){
-            String rule = conf.getRule();
-            JSONObject result = JSONObject.parseObject(rule);
-            String item = ObjectUtils.toString(result.get("item"), null);
-            if(item.toString().equals(itemStr)){
-                JSONArray prizeArray = result.getJSONArray("prize");
-                for (int i = 0; i < prizeArray.size(); i++) {
-                    JSONObject prize =  prizeArray.getJSONObject(i);
-                    String prizeId = prize.getString("prizeId");
-                    String type = prize.getString("type");
-                    if("BOLUOMI".equals(type)){
-                        AfResourceDo afResourceDo = afResourceDao.getResourceByResourceId(Long.parseLong(prizeId));
-                        if(i>0){
-                            prompt = prompt +"和"+ afResourceDo.getName();
-                        }else if(i==0){
-                            prompt = prompt + afResourceDo.getName();
-                        }
-                    }else{
-                        AfCouponDo afCouponDo = afCouponDao.getCouponById(Long.parseLong(prizeId));
-                        if(i>0){
-                            prompt = prompt +"和"+ afCouponDo.getName();
-                        }else if(i==0){
-                            prompt = prompt + afCouponDo.getName();
-                        }
-                    }
-                }
-            }
-        }
-        return prompt;
-    }
 
 }
