@@ -106,17 +106,32 @@ body {
     color: #f2404d;
     margin-right: 0.1rem;
 }
-
-.banner img {
-    width: 6.25rem;
-     height: 2.97rem; 
-    /* background-color: pink; */
-    margin-left: 9%;
-    margin-top: 1.8rem;
+.super-big{
+    position: relative;
+    height: 7.06rem;
+    margin-top: 0.7rem;
+}
+.banner img{
+    width:3.46rem;
+     height:5.06rem; 
+    /* background-color:pink; */
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
 }
 banner .banner-bottom{
     width:6.25rem;
     height:2.97rem;
+}
+.banner-bottom img{
+    width: 6.25rem;
+    height: 2.97rem;
+    position:absolute;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+
 }
 
 .ask {
