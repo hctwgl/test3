@@ -257,6 +257,7 @@ public class APPH5GGShareController extends BaseController {
 			bDo.setBoluomeActivityId(activityId);
 			bDo.setStatus("O");
 			bDo.setType("B");
+			bDo.setScopeApplication("LIGHT");
 			List<AfBoluomeActivityCouponDo> bList = afBoluomeActivityCouponService.getListByCommonCondition(bDo);
 
 			// List<BoluomeCouponResponseBo> boluomeCouponList = new
