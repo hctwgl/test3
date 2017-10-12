@@ -149,6 +149,7 @@ public class H5GGShareController extends H5Controller {
 			bDo.setBoluomeActivityId(activityId);
 			bDo.setStatus("O");
 			bDo.setType("B");
+			bDo.setScopeApplication("LIGHT");
 			List<AfBoluomeActivityCouponDo> bList = afBoluomeActivityCouponService.getListByCommonCondition(bDo);
 
 			// List<BoluomeCouponResponseBo> boluomeCouponList = new
