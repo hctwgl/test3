@@ -239,8 +239,9 @@ public class H5GGShareController extends H5Controller {
 			if (activityDo != null) {
 				despcription = activityDo.getDescription();
 				String activityRule = activityDo.getActivityRule();
-				JSONObject activityRuleJson = JSONObject.parseObject(activityRule);
-				supportedNum = activityRuleJson.getString("num");
+				List<JSONObject> listRule = JSONObject.parseArray(activityRule, JSONObject.class);
+				JSONObject jsonObject = listRule.get(0);
+				supportedNum = jsonObject.getString("num");
 			}
 			
 			Map<String, Object> data = new HashMap<String, Object>();

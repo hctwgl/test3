@@ -363,8 +363,9 @@ public class APPH5GGShareController extends BaseController {
 			if (activityDo != null) {
 				despcription = activityDo.getDescription();
 				String activityRule = activityDo.getActivityRule();
-				JSONObject activityRuleJson = JSONObject.parseObject(activityRule);
-				supportedNum = activityRuleJson.getString("num");
+				List<JSONObject> listRule = JSONObject.parseArray(activityRule, JSONObject.class);
+				JSONObject jsonObject = listRule.get(0);
+				supportedNum = jsonObject.getString("num");
 			}
 			
 
@@ -442,12 +443,12 @@ public class APPH5GGShareController extends BaseController {
 					if (!StringUtil.isBlank(userName)) {
 						data.put("userName", userName);
 					}
-				}
-			}else{
-				//未登录则终极大奖状态不变，并且卡片个数是-1
-				for(AfBoluomeActivityItemsDo itemsDoo :itemsList){
-					itemsDoo.setNum(-1);
-				}
+				}else{
+					//未登录则终极大奖状态不变，并且卡片个数是-1
+					for(AfBoluomeActivityItemsDo itemsDoo :itemsList){
+						itemsDoo.setNum(-1);
+					}
+			}
 			}
 
 			//获取文案的信息
@@ -467,10 +468,12 @@ public class APPH5GGShareController extends BaseController {
 			//和用户登录有关的
 			if (StringUtil.isNotBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
-				//TODO:获取弹框文案；
-				popupWords = afBoluomeActivityService.activityOffical(userId);
-				//获取已经邀请的人数
-				alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
+				if (userId != null) {
+					//TODO:获取弹框文案；
+					popupWords = afBoluomeActivityService.activityOffical(userId);
+					//获取已经邀请的人数
+					alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
+				}
 				
 			}
 			
