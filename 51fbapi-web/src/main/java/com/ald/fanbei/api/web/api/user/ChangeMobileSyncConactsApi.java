@@ -96,8 +96,9 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 				userDoForMod.setUserName(newMobile);
 				userDoForMod.setMobile(newMobile);
 				afUserService.updateUser(userDoForMod);
+				
 				AfUserAccountDo userAccountDoForMod = new AfUserAccountDo();
-				userAccountDoForMod.setRid(userAccountDo.getRid());
+				userAccountDoForMod.setUserId(userDo.getRid());
 				userAccountDoForMod.setUserName(newMobile);
 				afUserAccountService.updateUserAccount(userAccountDoForMod);
 				

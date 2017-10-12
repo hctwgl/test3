@@ -13,6 +13,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -127,7 +128,8 @@ public class BaseTest {
         
         // request body
     	EntityBuilder builder = EntityBuilder.create();
-    	builder.setContentEncoding("");
+    	builder.setContentEncoding("UTF-8");
+    	builder.setContentType(ContentType.APPLICATION_JSON);
     	builder.setText(reqBody);
         HttpEntity reqEntity = builder.build();
         postMethod.setEntity(reqEntity);
@@ -141,7 +143,7 @@ public class BaseTest {
     }
     
     public static void main(String[] args) {
-    	String signBeforeStr = "appVersion=1&netType=4G&time=1507784453368&userName=15968196088&mobile=15968196088&type=M";
+    	String signBeforeStr = "appVersion=1&netType=4G&time=1507792206031&userName=15968196088ae17e9bc68274d3cffc4f72b7c99190d83fb63733b39cd4c1de34ef040d27764&contacts=陈金虎:15958686524&18857416845,小猪:07966898475,她娘:18656847587";
     	System.out.println(DigestUtil.getDigestStr(signBeforeStr));
 	}
     

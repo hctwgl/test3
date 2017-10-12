@@ -2,7 +2,6 @@ package com.ald.fanbei.web.test.api.user;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +18,7 @@ public class ChangeMobileTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
+	String urlBase = "http://192.168.101.80:8080";
 	String userName = "15968196088";
 	
 	
@@ -94,17 +93,26 @@ public class ChangeMobileTest extends BaseTest{
 		testApi(url, params, userName);
 	}
 	
+	
+	public void  testAuthContactsV1() {
+		String url = urlBase + "/auth/authContactsV1";
+		Map<String,String> params = new HashMap<>();
+		params.put("contacts", "陈金虎:15958686524,小猪:07966898475,她娘:18656847587");
+		
+		testApi(url, params, userName);
+	}
+	
 	@Test
 	public void doFlow() throws InterruptedException {
-		testGetVerifyCodeApi();
-		TimeUnit.SECONDS.sleep(2);
-		
-		testChangeMobileCheckVerifyCodeApi();
-		
-//		testChangeMobileVerifyApi();
+//		testGetVerifyCodeApi();
 //		TimeUnit.SECONDS.sleep(2);
 //		
+//		testChangeMobileVerifyApi();
+//		TimeUnit.SECONDS.sleep(2);
+		
 //		testChangeMobileSyncConactsApi();
+		
+		testAuthContactsV1();
 	}
 	
 }
