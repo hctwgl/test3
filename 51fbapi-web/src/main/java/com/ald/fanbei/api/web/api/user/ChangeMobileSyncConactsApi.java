@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.RiskStatus;
@@ -63,6 +64,8 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	TokenCacheUtil tokenCacheUtil;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, final FanbeiContext context, HttpServletRequest request) {
@@ -118,6 +121,8 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 					}
+					
+					tokenCacheUtil.grant(newMobile);
 					
 					//状态更新失败不影响核心业务，日志打点即可
 					try {

@@ -63,7 +63,7 @@ public class ChangeMobileVerifyApi implements ApiHandle {
         	AfValidationLogDo tmpDo = new AfValidationLogDo(userId, String.valueOf(AfValidationLogType.PAY_PWD.ordinal()), "false");
         	int num = afValidationLogDao.countFailNumWithin24H(tmpDo);
         	if(num >= PAY_PWD_FAIL_THRESHOLD) {
-        		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WRONG_PASSWORD_ENTERED_MORE_THAN_THREE_TIMES);
+        		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_MOBILE_PASSWORD_ERROR_EXCEED_THRESHOLD);
         	}
         	
         	AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());
@@ -85,7 +85,7 @@ public class ChangeMobileVerifyApi implements ApiHandle {
         	AfValidationLogDo tmpDo = new AfValidationLogDo(userId, String.valueOf(AfValidationLogType.ID_CARD.ordinal()), "false");
         	int num = afValidationLogDao.countFailNumWithin24H(tmpDo);
         	if(num >= ID_CARD_FAIL_THRESHOLD) {
-        		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ENTER_AN_IDENTITY_CARD_ERROR_MORE_THAN_THREE_TIMES);
+        		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_MOBILE_IDENTITY_CARD_ERROR_EXCEED_THRESHOLD);
         	}
         	
         	AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(context.getUserId());

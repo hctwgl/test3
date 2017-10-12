@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.SerializeUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 
 
 
@@ -387,6 +388,19 @@ public class TokenCacheUtil extends AbstractThird{
         	logger.error("incr error",e);
         	return 0;
         }
+	}
+	
+	/**
+	 * 授予访问令牌
+	 * @param userName
+	 */
+	public void grant(String userName) {
+		String token = UserUtil.generateToken(userName);
+		TokenBo tokenBo = new TokenBo();
+		tokenBo.setLastAccess(System.currentTimeMillis() + "");
+		tokenBo.setToken(token);
+		tokenBo.setUserId(userName);
+		saveToken(userName, tokenBo);
 	}
     
 }

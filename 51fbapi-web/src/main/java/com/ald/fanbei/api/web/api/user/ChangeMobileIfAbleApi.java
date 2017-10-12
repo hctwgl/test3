@@ -23,7 +23,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * @类描述：查询用户是否有资格更换手机号
- * @author suweili 2017年2月16日下午7:09:36
+ * @author chefeipeng 2017年2月16日下午7:09:36
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("changeMobileIfAbleApi")
@@ -50,9 +50,9 @@ public class ChangeMobileIfAbleApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		//先检查用户是否有资格(24小时之内支付密码或者身份证验证超过3次错误)
+		//先检查用户是否有资格(24小时之内支付密码或者身份证验证超过5次错误)
 		AfValidationLogDo afValidationLogDo = new AfValidationLogDo();
-		//检查密码支付错误是否有连续3次
+		//检查密码支付错误是否有连续5次
 		afValidationLogDo.setType("1");
 		afValidationLogDo.setUserId(userId);
 		List<AfValidationLogDo> passwordList = afValidationLogDao.selectByUserId(afValidationLogDo);
@@ -62,15 +62,15 @@ public class ChangeMobileIfAbleApi implements ApiHandle {
 				String result = passwordList.get(i).getResult();
 				if("false".equals(result)){
 					count += 1;
-					if(count>=3){
-						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WRONG_PASSWORD_ENTERED_MORE_THAN_THREE_TIMES);
+					if(count>=ChangeMobileVerifyApi.PAY_PWD_FAIL_THRESHOLD){
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_MOBILE_PASSWORD_ERROR_EXCEED_THRESHOLD);
 					}
 				}else{
 					count = 0;
 				}
 			}
 		}
-		//检查身份证错误是否有连续3次
+		//检查身份证错误是否有连续5次
 		afValidationLogDo.setType("2");
 		List<AfValidationLogDo> idList = afValidationLogDao.selectByUserId(afValidationLogDo);
 		if(idList != null && idList.size()>0){
@@ -79,8 +79,8 @@ public class ChangeMobileIfAbleApi implements ApiHandle {
 				String result = idList.get(i).getResult();
 				if("false".equals(result)){
 					count += 1;
-					if(count>=3){
-						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ENTER_AN_IDENTITY_CARD_ERROR_MORE_THAN_THREE_TIMES);
+					if(count>=ChangeMobileVerifyApi.ID_CARD_FAIL_THRESHOLD){
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_MOBILE_IDENTITY_CARD_ERROR_EXCEED_THRESHOLD);
 					}
 				}else{
 					count = 0;

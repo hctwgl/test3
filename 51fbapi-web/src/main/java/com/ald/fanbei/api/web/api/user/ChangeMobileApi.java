@@ -64,7 +64,7 @@ public class ChangeMobileApi implements ApiHandle {
 				if("false".equals(result)){
 					count += 1;
 					if(count>=3){
-						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WRONG_PASSWORD_ENTERED_MORE_THAN_THREE_TIMES);
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_MOBILE_PASSWORD_ERROR_EXCEED_THRESHOLD);
 					}
 				}else{
 					count = 0;
@@ -81,7 +81,7 @@ public class ChangeMobileApi implements ApiHandle {
 				if("false".equals(result)){
 					count += 1;
 					if(count>=3){
-						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ENTER_AN_IDENTITY_CARD_ERROR_MORE_THAN_THREE_TIMES);
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_MOBILE_IDENTITY_CARD_ERROR_EXCEED_THRESHOLD);
 					}
 				}else{
 					count = 0;
