@@ -34,11 +34,24 @@ import com.alibaba.fastjson.JSONObject;
 
 public class BaseTest {
 	
-	protected void testApiSkipSign(String urlString, Map<String,String> params){
-		testApiSkipSign(urlString, params, "15968109556");
+	/**
+	 * 自动生成登陆令牌
+	 * @param userName
+	 */
+	public void init(String userName) {
+		String token = UserUtil.generateToken(userName);
+		TokenBo tokenBo = new TokenBo();
+		tokenBo.setLastAccess(System.currentTimeMillis() + "");
+		tokenBo.setToken(token);
+		tokenBo.setUserId(userName);
+		RedisClient.hmset(userName, tokenBo.getTokenMap());
 	}
 	
-    protected void testApiSkipSign(String urlString, Map<String,String> params, String userName){
+	protected void testApi(String urlString, Map<String,String> params){
+		testApi(urlString, params, "15968109556");
+	}
+	
+    protected void testApi(String urlString, Map<String,String> params, String userName){
     	Map<String,String> header = createBaseHeader();
     	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
     	
@@ -51,33 +64,6 @@ public class BaseTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    }
-    
-    protected void testApi(String urlString, Map<String,String> params, String userName, boolean skipSign) {
-    	Map<String,String> header = createBaseHeader();
-    	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
-    	
-    	String signStrPrefix = createSignPrefix(header);
-    	String sign = sign(params, signStrPrefix);
-    	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
-    	
-    	if(!skipSign) {
-    		// TODO save token to cache
-    		String token = UserUtil.generateToken(userName);
-    		TokenBo tokenBo = new TokenBo();
-    		tokenBo.setLastAccess(System.currentTimeMillis() + "");
-    		tokenBo.setToken(token);
-    		tokenBo.setUserId(userName);
-    		// tokenCacheUtil.saveToken(userName, tokenBo);
-    	}
-    	
-    	try {
-			httpPost(urlString, JSONObject.toJSONString(params), header);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-    	
-
     }
     
     protected String genPayPwd(String srcPwd, String salt) {

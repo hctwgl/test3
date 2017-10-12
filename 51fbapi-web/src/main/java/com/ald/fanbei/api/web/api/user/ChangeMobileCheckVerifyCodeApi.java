@@ -52,22 +52,21 @@ public class ChangeMobileCheckVerifyCodeApi implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-        Map<String, Object> data = new HashMap<String, Object>();
+        
         String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
-        String userName = context.getUserName();
-        Long userId = context.getUserId();
         String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-        String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
+        String newMobile = ObjectUtils.toString(requestDataVo.getParams().get("newMobile"));
 
         if(StringUtil.isBlank(verifyCode) || StringUtil.isBlank(type) || SmsType.findByCode(type) == null){
         	logger.error("verifyCode or type is empty verifyCode = " + verifyCode + " type = " + type);
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR); 
         }
-        AfSmsRecordDo afSmsRecordDo = afSmsRecordService.getLatestByMobileCode(userName,verifyCode);
-
+        
+        AfSmsRecordDo afSmsRecordDo = afSmsRecordService.getLatestByMobileCode(newMobile,verifyCode);
         if (afSmsRecordDo == null) {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_ERROR);
         }
+        
         //验证图片验证码
         String imageCode = ObjectUtils.toString(requestDataVo.getParams().get("imageCode"));
         if(StringUtil.isNotEmpty(imageCode)) {
@@ -85,8 +84,12 @@ public class ChangeMobileCheckVerifyCodeApi implements ApiHandle {
             }
         }
 
-        smsUtil.checkSmsByMobileAndType(userName, verifyCode,SmsType.findByCode(type));
+        //验证手机验证码
+        smsUtil.checkSmsByMobileAndType(newMobile, verifyCode,SmsType.findByCode(type));
+        
         //是否实名
+        Long userId = context.getUserId();
+        Map<String, Object> data = new HashMap<String, Object>();
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
         if(null != afUserAuthDo){
             if("Y".equals(afUserAuthDo.getRealnameStatus())){
@@ -109,7 +112,7 @@ public class ChangeMobileCheckVerifyCodeApi implements ApiHandle {
             data.put("passwordStatus", "N");
         }
         //新手机是否被注册
-        AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
+        AfUserDo afUserDo = afUserService.getUserByUserName(newMobile);
         if(null != afUserDo){
             data.put("isMember", "Y");
         }else{

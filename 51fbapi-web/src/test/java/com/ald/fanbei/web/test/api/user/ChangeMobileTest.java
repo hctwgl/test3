@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.web.test.common.BaseTest;
@@ -15,11 +16,19 @@ import com.ald.fanbei.web.test.common.BaseTest;
  */
 public class ChangeMobileTest extends BaseTest{
 	
+	/**
+	 * 自动注入登陆令牌
+	 */
+	@Before
+	public void init(){
+		this.init();
+	}
+	
 //	@Test
 	public void  testChangeMobileIfAbleApi() {
 		String url = "http://localhost:8080/user/changeMobileIfAble";
 		String userName = "15968196088";
-		testApiSkipSign(url, null, userName);
+		testApi(url, null, userName);
 	}
 	
 //	@Test
@@ -29,7 +38,7 @@ public class ChangeMobileTest extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("mobile", "15968196088");
 		params.put("type", "M");
-		testApiSkipSign(url, params, userName);
+		testApi(url, params, userName);
 	}
 	
 //	@Test
@@ -40,7 +49,7 @@ public class ChangeMobileTest extends BaseTest{
 		params.put("verifyCode", String.valueOf(888888));
 		params.put("type", "M");
 		
-		testApiSkipSign(url, params, userName);
+		testApi(url, params, userName);
 	}
 	
 //	@Test
@@ -51,7 +60,7 @@ public class ChangeMobileTest extends BaseTest{
 		params.put("verifyCode", String.valueOf(888888));
 		params.put("type", "M");
 		
-		testApiSkipSign(url, params, userName);
+		testApi(url, params, userName);
 	}
 	
 //	@Test
@@ -70,7 +79,7 @@ public class ChangeMobileTest extends BaseTest{
 		
 		params.put("newMobile", "15968196088");
 		
-		testApiSkipSign(url, params, userName);
+		testApi(url, params, userName);
 	}
 	
 //	@Test
@@ -80,7 +89,7 @@ public class ChangeMobileTest extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("contacts", "陈金虎:15958686524&18857416845,小猪:07966898475,她娘:18656847587");
 		
-		testApiSkipSign(url, params, userName);
+		testApi(url, params, userName);
 	}
 	
 	@Test
