@@ -106,9 +106,10 @@ public class APPH5GGShareController extends BaseController {
 	BoluomeUtil boluomeUtil;
 	@Resource
 	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
-	private static String couponUrl = null;
 	@Resource
 	AfShopService afShopService;
+	private static String couponUrl = null;
+
 	
 	@Resource
 	AfBoluomeActivityUserRebateService afBoluomeActivityUserRebateService;
@@ -450,7 +451,7 @@ public class APPH5GGShareController extends BaseController {
 			}
 
 			//获取文案的信息
-			String popupWords = "";
+			String popupWords = null;
 			
 			
 			//获取饿了么场景Id
@@ -467,7 +468,7 @@ public class APPH5GGShareController extends BaseController {
 			if (StringUtil.isNotBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
 				//TODO:获取弹框文案；
-				
+				popupWords = afBoluomeActivityService.activityOffical(userId);
 				//获取已经邀请的人数
 				alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
 				
