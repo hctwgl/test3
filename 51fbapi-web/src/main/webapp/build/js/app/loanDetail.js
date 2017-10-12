@@ -25,7 +25,9 @@ let vm = new Vue({
                 type: 'post',
                 url: "/borrowCash/getRegisterLoanSupermarket",
                 data:{
-                    lsmNo:lsmNo
+                    lsmNo:lsmNo,
+                    phone:getInfo().userName
+
                 },
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
@@ -75,7 +77,12 @@ let vm = new Vue({
                     phone:getInfo().userName
                 },
                 success: function (data) {
-                    window.location.href=data.data.return_url
+                    if(data.code==1000){
+                        window.location.href=data.data.return_url
+                    }else{
+                        requestMsg(data.msg)
+
+                    }
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
