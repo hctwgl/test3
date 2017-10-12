@@ -4,7 +4,9 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -62,14 +64,30 @@ public class GetBrandListApi implements ApiHandle {
 				}
 			});
 		}
-		List<AfResourceDo> bannerList = afResourceService
+		List<AfResourceDo> bannerList1 = afResourceService
 				.getResourceHomeListByTypeOrderBy(AfResourceType.GGHomeTopBanner.getCode());
+		List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
 		resp.addResponseData("bannerList", bannerList);
 		resp.addResponseData("shopList", resultList);
 		resp.addResponseData("pageNo", pageNo);
 		return resp;
 	}
-	
+	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+		List<Object> bannerList = new ArrayList<Object>();
+		
+		for (AfResourceDo afResourceDo : bannerResclist) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("imageUrl", afResourceDo.getValue());
+		data.put("titleName", afResourceDo.getName());
+		data.put("type", afResourceDo.getType());
+		data.put("content", afResourceDo.getValue2());
+		data.put("sort", afResourceDo.getSort());
+		
+		bannerList.add(data);
+		
+		}
+		return bannerList;
+		}
 	private AfShopVo parseDoToVo(AfShopDo shopInfo,int appVersion) {
 		AfShopVo vo = new AfShopVo();
 		vo.setRid(shopInfo.getRid());
