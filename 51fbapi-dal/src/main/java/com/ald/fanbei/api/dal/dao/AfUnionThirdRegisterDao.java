@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * '联合注册成功日志表Dao
@@ -13,5 +14,5 @@ import com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo;
 public interface AfUnionThirdRegisterDao extends BaseDao<AfUnionThirdRegisterDo, Long> {
 
 
-    int getIsRegister(String phone);
+    int getIsRegister(@Param("phone")String phone,@Param("lsmNo")String lsmNo);
 }

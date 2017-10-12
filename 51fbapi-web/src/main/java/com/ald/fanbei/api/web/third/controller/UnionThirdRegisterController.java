@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.unionlogin.FanBeiSecret;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfLoanSupermarketDao;
+import com.ald.fanbei.api.dal.dao.AfUnionThirdRegisterDao;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
 import com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo;
 import com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterLogDo;
@@ -37,6 +38,8 @@ public class UnionThirdRegisterController extends BaseController {
     HttpServletRequest request;
     @Resource
     private AfLoanSupermarketDao afLoanSupermarketDao;
+    @Resource
+    AfUnionThirdRegisterDao afUnionThirdRegisterDao;
     @Resource
     private AfUnionThirdRegisterService afUnionThirdRegisterService;
     @Resource
@@ -96,17 +99,19 @@ public class UnionThirdRegisterController extends BaseController {
                         data.put("user_state", userState);
                         data.put("return_url",url);
                         jsonResult.put("data", data);
-                        AfUnionThirdRegisterDo rdo = new AfUnionThirdRegisterDo();
-                        rdo.setChannelCode(channelCode);
-                        rdo.setPhone(phone);
-                        rdo.setReturnUrl(url);
-                        rdo.setRequestInfo(result);
-                        rdo.setGmtCreate(new Date());
-                        if(StringUtil.isNotEmpty(userState)){
-                            int state = Integer.parseInt(userState);
-                            rdo.setUserState(state);
+                        if(afUnionThirdRegisterDao.getIsRegister(phone,lsmNo)==0){
+                            AfUnionThirdRegisterDo rdo = new AfUnionThirdRegisterDo();
+                            rdo.setChannelCode(channelCode);
+                            rdo.setPhone(phone);
+                            rdo.setReturnUrl(url);
+                            rdo.setRequestInfo(result);
+                            rdo.setGmtCreate(new Date());
+                            if(StringUtil.isNotEmpty(userState)){
+                                int state = Integer.parseInt(userState);
+                                rdo.setUserState(state);
+                            }
+                            afUnionThirdRegisterService.saveRecord(rdo);
                         }
-                        afUnionThirdRegisterService.saveRecord(rdo);
                     }else{
                         jsonResult.put("code", "1001");
                         jsonResult.put("msg", jsonObject.getString("msg"));

@@ -125,7 +125,7 @@
         SELECT
         count(1)
         FROM af_union_third_register
-        WHERE phone=#{phone}
+        WHERE phone=#{phone} and channel_code=#{lsmNo}
     </select>
 
 	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo" parameterType="com.ald.fanbei.api.dal.domain.AfUnionThirdRegisterDo">

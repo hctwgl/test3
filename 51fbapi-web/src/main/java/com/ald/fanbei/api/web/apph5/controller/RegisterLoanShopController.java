@@ -53,7 +53,7 @@ public class RegisterLoanShopController extends BaseController {
 
                 if(afLoanSupermarket!=null){
                     String phone = (request.getParameter("phone"));
-                    if(afUnionThirdRegisterDao.getIsRegister(phone)>0){
+                    if(afUnionThirdRegisterDao.getIsRegister(phone,lsmNo)>0){
                         data.put("isRegister","1");
                     }else{
                         data.put("isRegister","0");
