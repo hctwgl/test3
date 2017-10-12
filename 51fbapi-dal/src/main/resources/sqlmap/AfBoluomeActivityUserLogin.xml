@@ -190,13 +190,13 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
      
     <select id = "getBindingNum" resultType="java.lang.Integer" parameterType="java.lang.Long">
 	    SELECT
-		*
+		count(*)
 		FROM
 			af_boluome_activity_user_login
 		WHERE
 			is_delete = 0
 		AND ref_user_id = #{refUserId}
 		AND boluome_activity_id = #{activityId}
-		AND binding_flag = 'Y';
+		AND binding_flag in ('Y','N');
     </select>
 </mapper>
