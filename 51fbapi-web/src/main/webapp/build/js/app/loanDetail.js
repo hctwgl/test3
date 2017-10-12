@@ -56,7 +56,9 @@ let vm = new Vue({
             })
         },
         fen(data){
-            return data.split('；');
+            if(data){
+                return data.split('；');
+            }
         },
         dayMonth(){
             if(this.content.timeUnit==2){
