@@ -14,4 +14,5 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
  */
 public interface AfBoluomeActivityService extends ParentService<AfBoluomeActivityDo, Long>{
     int ggLightActivity(final AfOrderDo afOrder);
+    String activityOffical(Long userId);
 }
