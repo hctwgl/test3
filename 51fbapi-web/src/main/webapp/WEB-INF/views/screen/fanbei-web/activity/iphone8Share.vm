@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="20170909")
-    #set($src="http://f.51fanbei.com/h5/app/activity/09")
+    #set($src="https://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
     <title>iPhone8分享页</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/iphone8.css">
