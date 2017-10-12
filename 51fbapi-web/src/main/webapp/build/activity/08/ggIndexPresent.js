@@ -46,7 +46,7 @@ $(function(){
                                     if(presentCardList[k].num>=1){
                                         str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'" rid="'+presentCardList[k].rid+'"><img src="'+presentCardList[k].iconUrl+'"><img class="cardBlur" src="'+presentCardList[k].iconUrl+'"><p class="num">x'+presentCardList[k].num+'</p>'+ '</div>';
                                     }else{
-                                        str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'" rid="'+presentCardList[k].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[k].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[k].rid+'.png">'+ '</div>';
+                                        str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'" rid="'+presentCardList[k].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[k].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[k].rid+'.png">'+ '</div>';
                                     }
                                 }
                             }else{ //未已领取终极大奖 num>=2 就可赠送 显示为亮
@@ -54,7 +54,7 @@ $(function(){
                                     if(presentCardList[j].num>=2){
                                         str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="cardBlur" src="'+presentCardList[j].iconUrl+'"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
                                     }else{
-                                        str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/08/gg0000'+presentCardList[j].rid+'.png">'+ '</div>';
+                                        str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[j].rid+'.png">'+ '</div>';
                                     }
                                 }
                             }
@@ -99,12 +99,12 @@ $(function(){
     $('.mask').click(function(){
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');
-        $('.surePresent').css('background','#fb9659');
+        $('.surePresent').css('background','#f2404d');
     });
     $('.closeAlert').click(function(){
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');
-        $('.surePresent').css('background','#fb9659');
+        $('.surePresent').css('background','#f2404d');
     });
 });
 

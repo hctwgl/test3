@@ -224,7 +224,7 @@ let vm = new Vue({
             $('.alertFinalPrize').css('display','none');
         },
         fixImgUrl:function(i){
-            return "http://f.51fanbei.com/h5/app/activity/10/gg000"+i+".png";
+            return "http://f.51fanbei.com/h5/app/activity/10/ggNewCard0"+i+".png";
         }
     }
 })
