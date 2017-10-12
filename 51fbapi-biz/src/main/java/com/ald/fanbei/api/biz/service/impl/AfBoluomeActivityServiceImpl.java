@@ -329,21 +329,32 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 		JSONObject resultJson = JSONObject.parseObject(resultString);
 		String code = resultJson.getString("code");
         		if ("0".equals(code)) {
-        		    flag = "CHANGE";
+        		  flag = "CHANGE";
         		    //发送短信
-                	    String sendMessage = "";
-                	    float money = 0;
-                	    String rString = resultJson.getString("data");
-                	    JSONArray jsStr = JSONArray.parseArray(rString);
-   			    Object o=jsStr.get(0);
-        		    BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(o.toString(), BoluomeCouponResponseBo.class);
-        		    money = BoluomeCouponResponseBo.getValue();
-                	    sendMessage="恭喜您获得一次吃霸王餐的机会,"+money+"元代金券已发放您的账户";
-                	    AfUserDo user =   afUserDao.getUserById(userLoginRecord.getRefUserId());
-                	    if(user!=null){
-                	        smsUtil.sendSms(user.getMobile(),sendMessage);
-                	    }
-                    }
+                	  String sendMessage = "";
+    			   //设置文案
+    		          String  type = "GG_LIGHT";
+    			  String  secType = "GG_SMS_OLD";
+    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+    					if(resourceDo!=null){
+    					  sendMessage = resourceDo.getValue();
+    					  AfUserDo user =   afUserDao.getUserById(userLoginRecord.getRefUserId());
+    		                	    if(user!=null){
+    		                	        smsUtil.sendSms(user.getMobile(),sendMessage);
+    		                	    }
+    					}
+    				}
+                	    
+                	    
+//                	    float money = 0;
+//                	    String rString = resultJson.getString("data");
+//                	    JSONArray jsStr = JSONArray.parseArray(rString);
+//   			    Object o=jsStr.get(0);
+//        		    BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(o.toString(), BoluomeCouponResponseBo.class);
+//        		    money = BoluomeCouponResponseBo.getValue();
+//                	    sendMessage="恭喜您获得一次吃霸王餐的机会,"+money+"元代金券已发放您的账户";
+                	  
+                    
 	    	}
 	    }
 	   }

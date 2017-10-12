@@ -210,9 +210,19 @@ public class H5BoluomeActivityController extends BaseController {
 				bo.setUser_id(UserDo.getRid() + StringUtil.EMPTY);
 				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
 				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
-			    }
-			}
-
+			   
+				  //发送短信
+	                	  String sendMessage = "";
+	    			   //设置文案
+	    		          String  type = "GG_LIGHT";
+	    			  String  secType = "GG_SMS_NEW";
+	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+	    					if(resourceDo!=null){
+	    					  sendMessage = resourceDo.getValue();
+	    		                	  smsUtil.sendSms(UserDo.getMobile(),sendMessage);
+	    			     }
+			       }
+			 }
 		    }
 		}
 	    }
