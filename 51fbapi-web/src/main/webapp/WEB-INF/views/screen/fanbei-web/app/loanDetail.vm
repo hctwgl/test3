@@ -35,7 +35,7 @@
         <div class="payMoney">
             <p class="sameTitle payMoneyTitle">按{{dayMonth()}}还款</p>
             <ul class="desList clearFix">
-                <li><p>{{content.lendRate*100}}%</p><p>参考月利率</p></li>
+                <li><p>{{content.lendRate*100}}%</p><p>参考{{dayMonth()}}利率</p></li>
                 <li><p>{{content.fastLendTime}}</p><p>最快放款时间</p></li>
 ##                <li><p><span>500</span><span>每月还款(元)</span></p></li>
             </ul>
