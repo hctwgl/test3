@@ -17,34 +17,38 @@ import com.ald.fanbei.web.test.common.BaseTest;
 public class ChangeMobileTest extends BaseTest{
 	
 	/**
+	 * 自测根据自己的业务修改下列属性 TODO
+	 */
+	String urlBase = "http://localhost:8080";
+	String userName = "15968196088";
+	
+	
+	/**
 	 * 自动注入登陆令牌
 	 */
 	@Before
 	public void init(){
-		this.init();
+		super.init(userName);
 	}
 	
 //	@Test
 	public void  testChangeMobileIfAbleApi() {
-		String url = "http://localhost:8080/user/changeMobileIfAble";
-		String userName = "15968196088";
+		String url = urlBase + "/user/changeMobileIfAble";
 		testApi(url, null, userName);
 	}
 	
 //	@Test
 	public void  testGetVerifyCodeApi() {
-		String url = "http://localhost:8080/user/getVerifyCode";
-		String userName = "15968196088";
+		String url = urlBase + "/user/getVerifyCode";
 		Map<String,String> params = new HashMap<>();
 		params.put("mobile", "15968196088");
 		params.put("type", "M");
-		testApi(url, params, userName);
+		testApi(url, params, userName ,true);
 	}
 	
 //	@Test
 	public void  testCheckVerifyCodeApi() {
-		String url = "http://localhost:8080/user/checkVerifyCode";
-		String userName = "15968196088";
+		String url = urlBase + "/user/checkVerifyCode";
 		Map<String,String> params = new HashMap<>();
 		params.put("verifyCode", String.valueOf(888888));
 		params.put("type", "M");
@@ -54,10 +58,10 @@ public class ChangeMobileTest extends BaseTest{
 	
 //	@Test
 	public void  testChangeMobileCheckVerifyCodeApi() {
-		String url = "http://localhost:8080/user/changeMobileCheckVerifyCode";
-		String userName = "15968196088";
+		String url = urlBase + "/user/changeMobileCheckVerifyCode";
 		Map<String,String> params = new HashMap<>();
 		params.put("verifyCode", String.valueOf(888888));
+		params.put("newMobile", "15968196088");
 		params.put("type", "M");
 		
 		testApi(url, params, userName);
@@ -65,8 +69,7 @@ public class ChangeMobileTest extends BaseTest{
 	
 //	@Test
 	public void  testChangeMobileVerifyApi() {
-		String url = "http://localhost:8080/user/changeMobileVerify";
-		String userName = "15968196088";
+		String url = urlBase + "/user/changeMobileVerify";
 		Map<String,String> params = new HashMap<>();
 //		params.put("behavior", "PAY_PWD");
 //		params.put("payPwd", DigestUtils.md5Hex("123456"));
@@ -84,8 +87,7 @@ public class ChangeMobileTest extends BaseTest{
 	
 //	@Test
 	public void  testChangeMobileSyncConactsApi() {
-		String url = "http://localhost:8080/user/changeMobileSyncConacts";
-		String userName = "15968196088";
+		String url = urlBase + "/user/changeMobileSyncConacts";
 		Map<String,String> params = new HashMap<>();
 		params.put("contacts", "陈金虎:15958686524&18857416845,小猪:07966898475,她娘:18656847587");
 		
@@ -97,10 +99,12 @@ public class ChangeMobileTest extends BaseTest{
 		testGetVerifyCodeApi();
 		TimeUnit.SECONDS.sleep(2);
 		
-		testChangeMobileVerifyApi();
-		TimeUnit.SECONDS.sleep(2);
+		testChangeMobileCheckVerifyCodeApi();
 		
-		testChangeMobileSyncConactsApi();
+//		testChangeMobileVerifyApi();
+//		TimeUnit.SECONDS.sleep(2);
+//		
+//		testChangeMobileSyncConactsApi();
 	}
 	
 }

@@ -85,7 +85,7 @@ public class ChangeMobileCheckVerifyCodeApi implements ApiHandle {
         }
 
         //验证手机验证码
-        smsUtil.checkSmsByMobileAndType(newMobile, verifyCode,SmsType.findByCode(type));
+        smsUtil.checkSmsByMobileAndType(newMobile, verifyCode, SmsType.findByCode(type));
         
         //是否实名
         Long userId = context.getUserId();

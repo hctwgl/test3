@@ -518,7 +518,7 @@ public abstract class BaseController {
         if (!needToken) {
             TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
             if (token == null) {
-                throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+                throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
             }
 
             // refresh token
@@ -567,7 +567,7 @@ public abstract class BaseController {
         if (Constants.SWITCH_OFF.equals(ConfigProperties.get(Constants.CONFKEY_CHECK_SIGN_SWITCH))) {
             if (needToken) {//需要登录的接口必须加token
                 if (token == null) {
-                    throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+                    throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
                 }
                 webContext.setLogin(true);
             } else {//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token

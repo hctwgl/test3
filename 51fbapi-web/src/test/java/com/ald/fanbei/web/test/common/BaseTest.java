@@ -34,28 +34,40 @@ import com.alibaba.fastjson.JSONObject;
 
 public class BaseTest {
 	
+	private TokenBo tokenBo;
+	
 	/**
 	 * 自动生成登陆令牌
 	 * @param userName
 	 */
 	public void init(String userName) {
 		String token = UserUtil.generateToken(userName);
-		TokenBo tokenBo = new TokenBo();
+		tokenBo = new TokenBo();
 		tokenBo.setLastAccess(System.currentTimeMillis() + "");
 		tokenBo.setToken(token);
 		tokenBo.setUserId(userName);
-		RedisClient.hmset(userName, tokenBo.getTokenMap());
-	}
-	
-	protected void testApi(String urlString, Map<String,String> params){
-		testApi(urlString, params, "15968109556");
+		RedisClient.hmset(Constants.CACHEKEY_USER_TOKEN+userName, tokenBo.getTokenMap());
 	}
 	
     protected void testApi(String urlString, Map<String,String> params, String userName){
+    	testApi(urlString, params, userName ,false);
+    }
+	
+	/**
+	 * @param urlString
+	 * @param params
+	 * @param userName
+	 * @param beforeLogin 对应web-main.xml中的定义,true即无需token
+	 */
+    protected void testApi(String urlString, Map<String,String> params, String userName, boolean beforeLogin){
     	Map<String,String> header = createBaseHeader();
     	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
     	
     	String signStrPrefix = createSignPrefix(header);
+    	if(beforeLogin) {
+    	}else {
+    		signStrPrefix += tokenBo.getToken();
+    	}
     	String sign = sign(params, signStrPrefix);
     	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
     	
@@ -82,6 +94,7 @@ public class BaseTest {
                 signStrBefore = signStrBefore + "&" + item + "=" + params.get(item);
             }
         }
+        System.out.println(signStrBefore);
         return DigestUtil.getDigestStr(signStrBefore);
     }
     
@@ -98,7 +111,7 @@ public class BaseTest {
     	return Constants.REQ_SYS_NODE_VERSION + "=" + header.get(Constants.REQ_SYS_NODE_VERSION) + 
 		"&"+ Constants.REQ_SYS_NODE_NETTYPE+"=" + header.get(Constants.REQ_SYS_NODE_NETTYPE) + 
 		"&"+ Constants.REQ_SYS_NODE_TIME+"=" + header.get(Constants.REQ_SYS_NODE_TIME) + 
-		"&"+ Constants.REQ_SYS_NODE_USERNAME+"=" + header.get(Constants.REQ_SYS_NODE_TIME);
+		"&"+ Constants.REQ_SYS_NODE_USERNAME+"=" + header.get(Constants.REQ_SYS_NODE_USERNAME);
     }
     
     private String httpPost(String url, String reqBody, Map<String, String> headers) throws ClientProtocolException, IOException {
@@ -126,5 +139,10 @@ public class BaseTest {
         System.out.println(result);
         return result;
     }
+    
+    public static void main(String[] args) {
+    	String signBeforeStr = "appVersion=1&netType=4G&time=1507784453368&userName=15968196088&mobile=15968196088&type=M";
+    	System.out.println(DigestUtil.getDigestStr(signBeforeStr));
+	}
     
 }
