@@ -61,6 +61,7 @@ $(function(){
                             $('.imgList').append(str);
                             slideNub = $(".imgList .img").size();//获取轮播图片数量
                             getData(slideNub);
+                            console.log($('.img.img3').attr('name'));
                             $('.presentTitle span').eq(1).html($('.img.img3').attr('name'));
                             $('.img').click(function(){//点击卡片
                                 var index=$(this).index();
@@ -222,13 +223,13 @@ function changeButtonBg(cardNumClick){
         if(cardNumClick<1){ //已领取终极大奖 num<1 按钮为灰
             $('.surePresent').css('background','#B3B3B3');
         }else{
-            $('.surePresent').css('background','#fb9659');
+            $('.surePresent').css('background' ,'#f2404d');
         }
     }else{
         if(cardNumClick<2){ //已领取终极大奖 num<2 按钮为灰
             $('.surePresent').css('background','#B3B3B3');
         }else{
-            $('.surePresent').css('background','#fb9659');
+            $('.surePresent').css('background','#f2404d');
         }
     }
 }
