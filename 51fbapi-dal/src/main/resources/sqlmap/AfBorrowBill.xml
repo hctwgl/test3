@@ -348,7 +348,7 @@
 
 	<select id="getLastOutBill" resultType="AfBorrowBillDo">
 		SELECT <include refid="queryFields"/> from af_borrow_bill
-		where user_id = #{userId}  and is_out = 1 order by gmt_out_day desc limit 0,1;
+		where user_id = #{userId}  and is_out = 1 and is_delete = 0 order by gmt_out_day desc limit 0,1;
 	</select>
 
 </mapper>
