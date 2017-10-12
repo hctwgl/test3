@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
@@ -14,7 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
  */
 public interface AfBoluomeActivityResultDao extends BaseDao<AfBoluomeActivityResultDo, Long> {
 
-	int isGetSuperPrize(@Param("userId")Long userId, @Param("activityId") Long activityId);
+	List<AfBoluomeActivityResultDo> isGetSuperPrize(@Param("userId")Long userId, @Param("activityId") Long activityId);
 
     
 
