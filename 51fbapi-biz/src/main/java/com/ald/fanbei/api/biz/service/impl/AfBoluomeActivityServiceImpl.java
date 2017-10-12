@@ -369,7 +369,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 		accountLog.setType(logType.getCode());
 		return accountLog;
 	}
-	private String activityOffical(Long userId){
+	public String activityOffical(Long userId){
 	    String officalText = null;
 	    // 如果该用户在平台没有订单，则送券
 	    AfOrderDo queryCount = new AfOrderDo();
