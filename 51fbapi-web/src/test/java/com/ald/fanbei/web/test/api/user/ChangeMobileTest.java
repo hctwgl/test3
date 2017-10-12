@@ -2,6 +2,7 @@ package com.ald.fanbei.web.test.api.user;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +80,7 @@ public class ChangeMobileTest extends BaseTest{
 //		params.put("behavior", "ID_CARD");
 //		params.put("idCard", "3301271990020147330");
 		
-		params.put("newMobile", "15968196088");
+		params.put("newMobile", "15968196089");
 		
 		testApi(url, params, userName);
 	}
@@ -104,15 +105,15 @@ public class ChangeMobileTest extends BaseTest{
 	
 	@Test
 	public void doFlow() throws InterruptedException {
-//		testGetVerifyCodeApi();
-//		TimeUnit.SECONDS.sleep(2);
-//		
-//		testChangeMobileVerifyApi();
-//		TimeUnit.SECONDS.sleep(2);
+		testGetVerifyCodeApi();
+		TimeUnit.SECONDS.sleep(2);
 		
-//		testChangeMobileSyncConactsApi();
+		testChangeMobileVerifyApi();
+		TimeUnit.SECONDS.sleep(2);
 		
-		testAuthContactsV1();
+		testChangeMobileSyncConactsApi();
+		
+//		testAuthContactsV1();
 	}
 	
 }

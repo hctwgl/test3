@@ -12,7 +12,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
-import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory.RiskEventType;
 import com.ald.fanbei.api.biz.service.AfAuthContactsService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -122,9 +121,6 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 					if (!riskResp.isSuccess()) {
 						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
 					}
-					
-					TokenBo tokenBo = tokenCacheUtil.grant(newMobile);
-					resp.setResponseData(tokenBo.getToken());
 					
 					//状态更新失败不影响核心业务，日志打点即可
 					try {
