@@ -66,8 +66,11 @@ $(function() {
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');
     })
-
-})
+    $('.closeAlert').click(function(){
+        $('body').removeClass('overflowChange');
+        $('html').removeClass('overflowChange');
+    })
+});
 function getData(slideNub){
     for(var i=0;i<slideNub;i++){
         $(".imgList .img:eq("+i+")").attr("data-slide-imgId",i);
