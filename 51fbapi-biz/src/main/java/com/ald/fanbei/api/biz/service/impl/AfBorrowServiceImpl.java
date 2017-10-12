@@ -657,7 +657,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				out_day = afUserOutDayDo.getOutDay();
 			}
 			Date d=  getNowOutDay(out_day);
-			if(d.compareTo(afBorrowBillLast.getGmtOutDay())<=0){
+			if( getYearMonth(d) <= getYearMonth(afBorrowBillLast.getGmtOutDay())){
 				Calendar c = Calendar.getInstance();
 				c.setTime(afBorrowBillLast.getGmtOutDay());
 				c.add(Calendar.MONTH,1);
@@ -706,6 +706,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		return list;
 	}
 
+	private Integer getYearMonth(Date date){
+		String[] billDay1 = DateUtil.formatDate(date, DateUtil.MONTH_PATTERN).split("-");
+		return Integer.parseInt(billDay1[0]+billDay1[1]);
+	}
 
 	private Date getNowOutDay(int day){
 		Calendar c = Calendar.getInstance();
