@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 
 /**
  * '第三方-上树请求记录Service
@@ -11,5 +13,5 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityDo;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfBoluomeActivityService extends ParentService<AfBoluomeActivityDo, Long>{
-
+    int ggLightActivity(final AfOrderDo afOrder);
 }
