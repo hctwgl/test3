@@ -66,6 +66,7 @@ public enum AfResourceType {
 	agencyRecommendGoods("AGENCY_RECOMMEND_GOODS", "代买推荐商品"),
 	GGTopBanner("GG_TOP_BANNER","逛逛活动点亮顶部轮播"),
 	GGHomeTopBanner("GG_HOME_TOP_BANNER","逛逛活动顶部轮播"),
+	GGPOPUP("GG_POP_UP","逛逛点亮活动弹窗"),
 	HomeCarouseToMany("HOME_CAROUSEL_TO_MANY","首页轮播+N"),
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
 
