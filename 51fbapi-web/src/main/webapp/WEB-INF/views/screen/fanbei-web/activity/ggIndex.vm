@@ -67,21 +67,6 @@
     <div class="finalPrize finalPrize01" @click="finalPrize()" v-else>
         <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元红包</p>
     </div>
-    #*<div class="finalPrize finalPrize01" @click="finalPrize()" v-if="content.superPrizeStatus==='NY'">
-        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元红包</p>
-    </div>
-    <!--已登录+卡片数量够+未领取-->
-    <div class="finalPrize finalPrize01" @click="finalPrize()" v-if="content.superPrizeStatus==='YY'">
-        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元红包</p>
-    </div>
-    <!--已登录+卡片数量不够-->
-    <div class="finalPrize finalPrize02" @click="finalPrize()" v-if="content.superPrizeStatus==='N'">
-        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元红包</p>
-    </div>
-    <!--已登录+已领取-->
-    <div class="finalPrize finalPrize03" @click="finalPrize()" v-if="content.superPrizeStatus==='YN'">
-        <p class="amount" v-for="item in content.normalCouponList">{{item.amount}}元红包</p>
-    </div>*#
     <!--领取终极大奖提示弹窗-->
     <div class="alertFinalPrize">
         <img src="http://f.51fanbei.com/h5/app/activity/08/gg19.jpg">
@@ -101,7 +86,8 @@
         <p class="presentTitle">集齐6张卡片太难？<br/>邀请<span>3位好友</span>，也可吃霸王餐！</p>
         <p class="presentCont"><span></span>通过“找人要卡”，每成功邀请3名好友，在以上6个场景中完成1笔任意金额消费，即可享用1次霸王餐（饿了么外卖，20元红包）。</p>
         <p class="presentCont"><span></span>被邀请的新用户可享受饿了么外卖首单立减优惠（15元红包）。</p>
-        <p class="demandButton"><img src="$src/ggNew10.png"></p></div>
+        <p class="demandButton"><img src="$src/ggNew10.png"></p>
+    </div>
     <p class="ruleInfo" @click="ruleClick()">活动规则详情</p>
     <div class="kong"></div>
     <div class="mask" @click="close()"></div>

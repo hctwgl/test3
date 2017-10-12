@@ -100,7 +100,12 @@ $(function(){
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');
         $('.surePresent').css('background','#fb9659');
-    })
+    });
+    $('.closeAlert').click(function(){
+        $('body').removeClass('overflowChange');
+        $('html').removeClass('overflowChange');
+        $('.surePresent').css('background','#fb9659');
+    });
 });
 
 function getData(slideNub){

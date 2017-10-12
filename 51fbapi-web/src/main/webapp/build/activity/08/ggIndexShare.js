@@ -49,7 +49,7 @@ let vm = new Vue({
                           num=self.content.itemsList[j].num;
                           if(num>=2){
                               $('.card').eq(j).find('.num').css('display','block');
-                              $('.presentCard').attr('present','Y');
+                              //$('.presentCard').attr('present','Y');
                           }                
                       }
                     })
