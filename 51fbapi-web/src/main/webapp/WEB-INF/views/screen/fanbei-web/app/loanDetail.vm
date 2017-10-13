@@ -48,7 +48,7 @@
             <div class="flowChart clearFix">
                 <p class="left" v-for="item in flowCont">
                     <img :src="item.imgUrl">
-                    <span style="font-size: .24rem;">{{item.name}}</span>
+                    <span class="tex">{{item.name}}</span>
                     <span class="line"></span>
                 </p>
             </div>
