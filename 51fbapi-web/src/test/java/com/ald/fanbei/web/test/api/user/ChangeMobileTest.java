@@ -19,8 +19,8 @@ public class ChangeMobileTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://192.168.101.80:8080";
-	String userName = "15968196088";
+	String urlBase = "http://localhost:8080";
+	String userName = "13370127054";
 	
 	
 	/**
@@ -41,7 +41,7 @@ public class ChangeMobileTest extends BaseTest{
 	public void  testGetVerifyCodeApi() {
 		String url = urlBase + "/user/getVerifyCode";
 		Map<String,String> params = new HashMap<>();
-		params.put("mobile", "15968196088");
+		params.put("mobile", "13370127054");
 		params.put("type", "M");
 		testApi(url, params, userName ,true);
 	}
@@ -80,7 +80,7 @@ public class ChangeMobileTest extends BaseTest{
 //		params.put("behavior", "ID_CARD");
 //		params.put("idCard", "3301271990020147330");
 		
-		params.put("newMobile", "15968196089");
+		params.put("newMobile", "15968196088");
 		
 		testApi(url, params, userName);
 	}
@@ -89,7 +89,7 @@ public class ChangeMobileTest extends BaseTest{
 	public void  testChangeMobileSyncConactsApi() {
 		String url = urlBase + "/user/changeMobileSyncConacts";
 		Map<String,String> params = new HashMap<>();
-		params.put("contacts", "陈金虎:15958686524&18857416845,小猪:07966898475,她娘:18656847587");
+		params.put("contacts", "chenjinhu:18656899997,xiaozhu:18656899998,taniang:18656899999");
 		
 		testApi(url, params, userName);
 	}
@@ -98,7 +98,7 @@ public class ChangeMobileTest extends BaseTest{
 	public void  testAuthContactsV1() {
 		String url = urlBase + "/auth/authContactsV1";
 		Map<String,String> params = new HashMap<>();
-		params.put("contacts", "陈金虎:15958686524,小猪:07966898475,她娘:18656847587");
+		params.put("contacts", "陈金虎:18656899997,小猪:18656899998,她娘:18656899999");
 		
 		testApi(url, params, userName);
 	}
