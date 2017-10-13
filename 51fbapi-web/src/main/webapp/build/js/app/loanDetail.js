@@ -39,7 +39,7 @@ let vm = new Vue({
                         {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail04.png','name':'个人信息认证'},
                         {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail05.png','name':'通讯录认证'},
                         {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail06.png','name':'芝麻信用认证'},
-                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail07.png','name':'等待认证'}
+                        {'imgUrl':'http://f.51fanbei.com/h5/app/activity/09/loanDetail07.png','name':'等待放款'}
                     ];
                     let con=self.content.applyProcess.split(',');
                     for(let i=0;i<con.length;i++){
