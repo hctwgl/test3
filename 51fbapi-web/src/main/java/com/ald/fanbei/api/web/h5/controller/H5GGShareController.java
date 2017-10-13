@@ -353,6 +353,10 @@ public class H5GGShareController extends H5Controller {
 				alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
 
 			}
+			if (StringUtil.isBlank(userName)) {
+				alreadyNum = 0;
+			}
+
 
 			data.put("alreadyNum", alreadyNum);
 			data.put("supportedNum", supportedNum);
