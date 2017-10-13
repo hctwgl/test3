@@ -9,7 +9,7 @@ let vm = new Vue({
             timeMin:2,
             timeMax:20,
             lsmName:'51fanbei',
-            payMethod:2,
+            payMethod:1,
             isRegister:0
         },
         flowCont:[]
@@ -59,14 +59,16 @@ let vm = new Vue({
             if(data){
                 if(num){
                     let arr= data.split('；');
-                    arr.length=num;
+                    if(arr.length>num){
+                        arr.length=num;
+                    }
                     return arr
                 }
                 return data.split('；');
             }
         },
         dayMonth(){
-            if(this.content.payMethod==2){
+            if(this.content.payMethod==1){
                 return '月'
             }else{
                 return '日'
