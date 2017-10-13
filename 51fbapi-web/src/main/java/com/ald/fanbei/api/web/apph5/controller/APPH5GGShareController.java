@@ -477,7 +477,9 @@ public class APPH5GGShareController extends BaseController {
 					// 获取已经邀请的人数
 					alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
 				}
-
+				if (userId == null) {
+					alreadyNum = 0;
+				}
 			}
 
 			data.put("alreadyNum", alreadyNum);
