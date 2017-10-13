@@ -84,7 +84,7 @@
     <div class="demandCard ask">
         <p class="presentCardTitle">集齐6张卡片太难？</p>
         <p class="inviteNum01" v-if="content.popupWords" @click="toastClick()">您已成功邀请{{content.alreadyNum}}人，现在去享霸王餐 ></p>
-        <p class="inviteNum02" v-if="!(content.popupWords)&&(((content.alreadyNum)%(content.supportedNum))!=0)">您已邀请<span>{{content.alreadyNum}}人</span>，再邀请<span>{{(content.supportedNum)-((content.alreadyNum)%(content.supportedNum))}}人</span>即享霸王餐</p>
+        <p class="inviteNum01" v-if="!(content.popupWords)&&(((content.alreadyNum)%(content.supportedNum))!=0)">您已邀请<span>{{content.alreadyNum}}人</span>，再邀请<span>{{(content.supportedNum)-((content.alreadyNum)%(content.supportedNum))}}人</span>即享霸王餐</p>
         <p class="inviteNum03" v-else>邀请<span>{{content.supportedNum}}位好友</span>，也可吃霸王餐！</p>
         <p class="presentCont"><span></span>通过“找人要卡”，每成功邀请{{content.supportedNum}}名好友，在以上6个场景中完成1笔任意金额消费，即可享用1次霸王餐（饿了么外卖，20元红包）。</p>
         <p class="presentCont"><span></span>被邀请的新用户可享受饿了么外卖首单立减优惠（15元红包）。</p>
@@ -102,7 +102,9 @@
     <!--赠送或索要卡片弹窗-->
     <div class="alertPresent">
         <p class="title demandTitle">请选择你要索要的卡片</p>
-        <p class="title presentTitle"><span>我在51返呗搜集到了</span><br/><span></span><span>送给你</span></p>
+        <div class="title presentTitle">
+            <p class="presentTitleCont"><span>我在51返呗搜集到了</span><br/><span></span><span>送给你</span></p>
+        </div>
         <div class="imgCont">
             <div id="slide" class="imgList" class="index-slide" alt="star">
 
