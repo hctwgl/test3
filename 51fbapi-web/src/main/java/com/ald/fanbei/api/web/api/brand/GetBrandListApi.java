@@ -79,7 +79,7 @@ public class GetBrandListApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("imageUrl", afResourceDo.getValue());
 		data.put("titleName", afResourceDo.getName());
-		data.put("type", afResourceDo.getType());
+		data.put("type", afResourceDo.getValue1());
 		data.put("content", afResourceDo.getValue2());
 		data.put("sort", afResourceDo.getSort());
 		
