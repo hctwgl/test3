@@ -87,7 +87,15 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     if(data.code==1000){
-                        window.location.href=data.data.return_url
+                        $.ajax({
+                            url:'/fanbei-web/postMaidianInfo',
+                            type:'post',
+                            data:{maidianInfo:'/fanbei-web/app/loanDetail?type=open'},
+                            success:function (data) {
+                                console.log(data)
+                            }
+                        });
+                        window.location.href=data.data.return_url;
                     }else{
                         requestMsg(data.msg)
 
