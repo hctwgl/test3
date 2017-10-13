@@ -65,6 +65,13 @@
 		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status = #{status} and is_out =1;
 	</select>
 
+	<select id="getMonthlyBillByStatusNewV1" resultType="java.math.BigDecimal">
+		SELECT
+		sum(bill_amount)
+		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId}
+		AND status = #{status} and is_out =1;
+	</select>
+
 
 	<select id="getUserFullBillList" resultType="AfBorrowTotalBillDo">
 		SELECT 

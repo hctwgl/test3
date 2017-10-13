@@ -45,6 +45,11 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		return amount == null ? BigDecimal.ZERO : amount;
 	}
 
+	public BigDecimal getMonthlyBillByStatusNewV1(Long userId, String status){
+		BigDecimal amount = afBorrowBillDao.getMonthlyBillByStatusNewV1(userId, status);
+		return amount == null ? BigDecimal.ZERO : amount;
+	}
+
 	@Override
 	public List<AfBorrowTotalBillDo> getUserFullBillList(Long userId) {
 		return afBorrowBillDao.getUserFullBillList(userId);
