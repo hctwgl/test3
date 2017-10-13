@@ -9,6 +9,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 
@@ -269,5 +270,9 @@ public interface AfBorrowService {
 	List<AfBorrowBillDo> buildBorrowBillForNewInterest(AfBorrowDo borrow, String payType);
 
 	int addBorrowBill(List<AfBorrowBillDo> billList);
+
+	List<AfBorrowBillDo> getBorrowBillList(String status, Long userId);
+
+	List<AfBorrowBillDo> getBorrowBillListY(Long userId,Integer billYear,Integer billMonth);
 
 }

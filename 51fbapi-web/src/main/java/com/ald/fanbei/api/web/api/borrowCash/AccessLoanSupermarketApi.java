@@ -3,6 +3,9 @@
  */
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,14 +14,22 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
+import com.ald.fanbei.api.biz.service.AfGameAwardService;
+import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
+import com.ald.fanbei.api.dal.domain.AfGameAwardDo;
+import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
+import com.ald.fanbei.api.dal.domain.query.AfBusinessAccessRecordQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -35,6 +46,12 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 	AfLoanSupermarketService afLoanSupermarketService;
 	@Resource
 	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfGameService afGameService;
+	@Resource
+	AfGameAwardService afGameAwardService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -45,6 +62,8 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 		if(afLoanSupermarket!=null && StringUtil.isNotBlank(afLoanSupermarket.getLinkUrl())){
 			String accessUrl = afLoanSupermarket.getLinkUrl();
 			accessUrl = accessUrl.replaceAll("\\*", "\\&");
+			//int isUnionLogin =  afLoanSupermarket.getIsUnionLogin();
+			//resp.addResponseData("isUnionLogin", isUnionLogin);
 			logger.info("贷款超市请求发起正常，地址："+accessUrl+"-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);
 			try {
 				//访问记入数据库处理
@@ -53,6 +72,8 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 				String channel = getChannel(requestDataVo.getId());
 				afBusinessAccessRecordsDo.setChannel(channel);
 				afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
+				
+				this.sign(userId);
 			} catch (Exception e) {
 				logger.error("贷款超市访问入库异常-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);
 			}
@@ -79,4 +100,34 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
         }
         return "";
     }
+	
+	/**
+	 * 签到 
+	 * 规则（用户每天逛4个借贷超市算签到，否则不算，已签到的不能重复签到）
+	 */
+	private void sign(Long userId){
+		
+		AfGameDo gameDo = afGameService.getByCode("loan_supermaket_sign");
+		// 判断活动时间
+		Date startDate = gameDo.getGmtStart();
+		Date endDate = gameDo.getGmtEnd();
+		Date nowDate = new Date();
+		if(nowDate.before(startDate) || nowDate.after(endDate)) {
+			return; //未开始或者已结束
+		}
+		
+		//判断是否领取过,领取过就活动结束
+		AfGameAwardDo gameAward = afGameAwardService.getLoanSignAward(userId, gameDo.getRid());
+		if(gameAward!=null){
+			return;
+		}
+		
+		//判断今天是否签过到
+		boolean signed = afBusinessAccessRecordsService.checkIsSignToday(userId);
+		if(signed){
+			return; //今天签到过
+		}
+		
+		afBusinessAccessRecordsService.doSign(gameDo,userId);
+	}
 }

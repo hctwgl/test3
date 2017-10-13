@@ -35,8 +35,11 @@ public enum ResourceType {
 	HOME_CAROUSEL_IMAGE("HOME_CAROUSEL_IMAGE", "轮播+N图片"),
 	RESERVATION_ACTIVITY("RESERVATION_ACTIVITY", "预约活动"),
 	APP_UPDATE_WND("APP_UPDATE_WND", "版本升级弹窗"),
-	APP_UPDATE_COUPON("APP_UPDATE_COUPON", "版本升级优惠券");
+	APP_UPDATE_COUPON("APP_UPDATE_COUPON", "版本升级优惠券"),
+	APP_UPGRADE_REGISTER_TIME("APP_UPGRADE_REGISTER_TIME","版本升级新用户注册时间"),
+	FUND_SIDE_BORROW_CASH("FUND_SIDE_BORROW_CASH", "打款时引入资金方配置"),
 	
+	APP_UPDATE_COUPON_NEW("APP_UPDATE_COUPON_NEW","版本升级优惠券（新用户）");
 	private String code;
 
 	private String description;

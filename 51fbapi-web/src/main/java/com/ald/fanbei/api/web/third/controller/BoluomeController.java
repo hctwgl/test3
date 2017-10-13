@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
@@ -78,13 +79,17 @@ public class BoluomeController extends AbstractThird {
 
 	if (sign) {
 	    try {
-		AfOrderDo orderInfo = buildOrderInfo(params);
-		if (orderInfo != null) {
-		    if (orderInfo.getRid() == null) {
-			//补偿订单
-			afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
-		    } else {
-			afOrderService.dealBoluomeOrder(orderInfo);
+		String status = params.get(BoluomeCore.STATUS);
+		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
+		if (orderStatus != OrderStatus.DEALING) {
+		    AfOrderDo orderInfo = buildOrderInfo(params);
+		    if (orderInfo != null) {
+			if (orderInfo.getRid() == null) {
+			    // 补偿订单
+			    afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
+			} else {
+			    afOrderService.dealBoluomeOrder(orderInfo);
+			}
 		    }
 		}
 		retunStr = "Successs";

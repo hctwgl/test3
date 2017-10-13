@@ -23,6 +23,7 @@ import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
@@ -204,6 +205,17 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 							account.setUsedAmount(afBorrowCashDo.getAmount().negate());
 							account.setUserId(afBorrowCashDo.getUserId());
 							afUserAccountDao.updateUserAccount(account);
+							//fmf——增加log记录
+							AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+							accountLog.setUserId(afBorrowCashDo.getUserId());
+							accountLog.setAmount(afBorrowCashDo.getAmount());
+							accountLog.setType("TRANSEDFAIL_USEAMOUNT");
+							accountLog.setRefId(afBorrowCashDo.getRid()+"");
+							try{
+								afUserAccountLogDao.addUserAccountLog(accountLog);
+							}catch(Exception e){
+								throw new FanbeiException("TRANSEDFAIL_USEAMOUNT "+afBorrowCashDo.getRid()+" is fail,"+e);
+							}
 						}
 						
 						//打款失败消息通知用户
@@ -249,6 +261,24 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 	@Override
 	public AfUserAccountDo getUserAccountInfoByUserName(String userName) {
 		return afUserAccountDao.getUserAccountInfoByUserName(userName);
+	}
+
+	@Override
+	public int updateBorrowCashActivity(int money, List<String> userId) {
+		//af_user_account_log添加记录
+		for (String string : userId) {
+			AfUserAccountLogDo userAccountLog=new AfUserAccountLogDo();
+			userAccountLog.setAmount(new BigDecimal(money));
+			userAccountLog.setUserId(Long.parseLong(string));
+			userAccountLog.setType("BORROWCASH_ACTIVITYS");
+			userAccountLog.setRefId(" ");
+			try{
+				afUserAccountLogDao.addUserAccountLog(userAccountLog);
+			}catch(Exception e){
+				throw new FanbeiException("addUserAccountLog "+userId+" is fail,"+e);
+			}
+		}
+		return afUserAccountDao.updateBorrowCashActivity(money, userId);
 	}
 
 }

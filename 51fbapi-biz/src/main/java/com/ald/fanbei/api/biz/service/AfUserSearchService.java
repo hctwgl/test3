@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfUserSearchDo;
 
 /**
@@ -16,4 +18,8 @@ public interface AfUserSearchService {
     * @return
     */
     int addUserSearch(AfUserSearchDo afUserSearchDo);
+
+	List<String> getHistoryByUserId(Long userId);
+
+	void deleteHistory(Long userId);
 }

@@ -142,6 +142,9 @@
 		<if test="majiabaoName != null and majiabaoName !=''">
 			,majiabao_name=#{majiabaoName}
 		</if>
+		<if test="finishDate != null and finishDate !=''">
+			,finish_date=#{finishDate}
+		</if>
 		WHERE id = #{rid}
 	</update>
 
@@ -323,7 +326,7 @@
 	<select id="getBorrowCashByRemcommend" resultType="HashMap">
 		SELECT count(1) 'count' FROM  af_borrow_cash where user_id = #{user_id}  and status in ('TRANSEDING','TRANSED','CLOSED','FINSH')
 	</select>
-	
+
 	<update id="updateBalancedDate" parameterType="AfBorrowCashDo">
 		UPDATE af_borrow_cash SET gmt_modified = NOW()
 		<if test="status != null">
@@ -343,7 +346,7 @@
 		</if>
 		WHERE id=#{rid}
 	</update>
-	
+
 	<select id="getCurrDayTransFailTimes" resultType="java.lang.Integer">
 		SELECT
 		count(*) 
@@ -357,4 +360,55 @@
 		and  gmt_modified  >= CURDATE()
 	</select>
 	
+	<select id="getBorrowCashSumAmount" resultType="java.math.BigDecimal">
+		SELECT
+			SUM(`amount`)
+		FROM
+			`af_borrow_cash`
+		WHERE `is_delete` =0 AND `status` IN ("FINSH","TRANSED")
+	</select>
+
+	<select id="getRandomUser" resultType="String">
+
+        SELECT
+         	user_id
+        FROM
+        	`af_borrow_cash`
+        WHERE
+        	`is_delete` =0
+        AND
+        	`status` ="TRANSED"
+        AND
+        	 `gmt_create`  BETWEEN date_format(date_sub(curdate(),interval 1 day),'%Y-%m-%d %00:%00:%00') AND date_format(date_sub(curdate(),interval 1 day),'%Y-%m-%d %23:%59:%59')
+        ORDER BY
+         Rand() limit 10
+	</select>
+
+	<select id="getNotRandomUser" parameterType="java.util.List" resultType="String">
+		 SELECT
+         	user_id
+        FROM
+        	`af_borrow_cash`
+        WHERE
+        	`is_delete` =0
+        AND
+        	`status` ="TRANSED"
+        AND
+        	 `gmt_create`  BETWEEN date_format(date_sub(curdate(),interval 1 day),'%Y-%m-%d %00:%00:%00') AND date_format(date_sub(curdate(),interval 1 day),'%Y-%m-%d %23:%59:%59')
+        AND
+			user_id
+		NOT IN
+			<foreach collection="list" item="id" open="(" close=")"
+    			separator=",">
+    			#{id}
+    		</foreach>
+	</select>
+	
+	<select id="updateAfBorrowCashService" parameterType="AfBorrowCashDo">
+		UPDATE af_borrow_cash SET gmt_modified = NOW()
+		<if test="overdueStatus != null">
+			,rd_before_overdue_status=#{overdueStatus}
+		</if>
+		WHERE id=#{rid}
+	</select>
 </mapper>

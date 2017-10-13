@@ -27,4 +27,11 @@ public interface AfGameConfService {
 	 * @return
 	 */
 	List<AfGameConfDo> getByGameCode(String gameCode);
+	
+	/**
+	 * 根据id,code获取
+	 * @param id
+	 * @return
+	 */
+	AfGameConfDo getByIdAndCode(Long id,String gameCode);
 }

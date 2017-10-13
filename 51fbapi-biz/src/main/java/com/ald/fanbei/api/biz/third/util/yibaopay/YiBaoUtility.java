@@ -82,8 +82,13 @@ public class YiBaoUtility {
         ret.put("parentMerchantNo",merchantNo);
         ret.put("merchantNo",merchantNo);
         ret.put("orderId",orderId);
-        ret.put("orderAmount",String.valueOf( orderAmount));
-//        ret.put("orderAmount","0.01");
+
+//        if(baseUrl.contains("http://testapp.51fanbei.com")){
+//            ret.put("orderAmount","0.01");
+//        }
+//        else{
+            ret.put("orderAmount",String.valueOf( orderAmount));
+//        }
         ret.put("redirectUrl",redirectUrl);
         ret.put("notifyUrl",notifyUrl);
         ret.put("goodsParamExt",goodsParamExt);
@@ -126,7 +131,6 @@ public class YiBaoUtility {
                 //处理中
                 ret =false;
             }
-
             proessUpdate(afYibaoOrderDo,status,type);
         }
         return ret;

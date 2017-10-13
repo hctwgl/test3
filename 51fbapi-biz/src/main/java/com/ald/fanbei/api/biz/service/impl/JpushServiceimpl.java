@@ -150,7 +150,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 	}
 
-	
+
 	@Override
 	public void refundMobileError(String userName, Date date) {
 		try {
@@ -670,7 +670,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			logger.info("gameShareSuccess error", e);
 		}
 	}
-	
+
 	public void jPushPopupWnd(String type,String userName) {
 		try {
 			logger.info("jPushCoupon type=>" + type + " userName=>" + userName);
@@ -690,6 +690,34 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 	}
 
+	@Override
+	  public void pushBorrowCashActivitys(String userName,String money,String type) {
+	    try {
+	      String pid = userName + "_" + System.currentTimeMillis();
+	      logger.info(StringUtil.appendStrs("pushBorrowCashActivitys,pid=", pid));
+	      String msgContext = null;
+	      String title=null;
+	      if(type.equals("One")){
+	        title="头号“金”喜！";
+	        msgContext ="恭喜成为最幸运“破十五亿”用户，10000元现金红包已发放，立即前往";
+	      } else if (type.equals("Win")){
+	        title="头号“金”喜！";
+	        msgContext = "哇！幸运值爆棚的你在“破十五亿”活动中获得"+money+"元现金红包，快去看看吧";
+	      } else {
+	        title="破十五亿 有“金”喜";
+	        msgContext = "又有10位幸运用户已获得"+money+"元现金红包，快来看看有你吗";
+	      }
+	      Map<String, String> extras = new HashMap<String, String>();
+	      extras.put(PID, pid);
+	      extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+	      extras.put(PUSH_JUMP_TYPE, "231");
+	      extras.put(DATA, "");
+	      jpushUtil.pushNotifyByAlias(title, msgContext, extras, new String[] { userName });
+	    } catch (Exception e) {
+	      logger.info("pushBorrowCashActivitys error", e);
+	    }
+
+	  }
 
 	@Override
 	public void reservationActivity(String userName,String msgContext) {
@@ -702,6 +730,21 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(PUSH_JUMP_TYPE, "231");
 			extras.put(DATA, "");
 			jpushUtil.pushNotifyByAlias("iPhone8预约", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("getSignCycle error", e);
+		}
+	}
+	@Override
+	public void pushSharedTips(String userName,String msgContext) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("pushSharedTips,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "231");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("邀请使用二维码", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("getSignCycle error", e);
 		}

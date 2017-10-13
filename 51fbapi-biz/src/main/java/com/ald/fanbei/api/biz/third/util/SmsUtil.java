@@ -169,7 +169,7 @@ public class SmsUtil extends AbstractThird {
         SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
         return smsResult.isSucc();
     }
-    
+
     /**
      * 强风控通过
      *
@@ -177,7 +177,7 @@ public class SmsUtil extends AbstractThird {
      * @return
      */
     public boolean sendRiskSuccess(String mobile) {
-        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_SUCCESS.getCode());
+        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_SUCCESS.getCode(),false);
     }
 
     /**
@@ -187,7 +187,7 @@ public class SmsUtil extends AbstractThird {
      * @return
      */
     public boolean sendRiskFail(String mobile) {
-        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_FAIL.getCode());
+        return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_FAIL.getCode(),true);
     }
 
     /**
@@ -256,11 +256,16 @@ public class SmsUtil extends AbstractThird {
     	return false;
     }
 
-    private boolean sendSmsByResource(String mobile, String type, String secType) {
+    private boolean sendSmsByResource(String mobile, String type, String secType,boolean isMarket) {
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(type, secType);
         if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
             String content = resourceDo.getValue();
-            SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
+            SmsResult smsResult = null;
+            if(isMarket){
+            	smsResult = sendMarketingSmsToDhst(mobile, content);
+            }else{
+            	smsResult = sendSmsToDhst(mobile, content);
+            }
             return smsResult.isSucc();
         }
         return false;
@@ -434,6 +439,17 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
+     * 借钱抽奖中奖消息通知
+     * @param mobile
+     *
+     * @return
+     * **/
+    public  boolean sendBorrowCashActivitys(String mobile,String content){
+      SmsResult smsResult = sendSmsToDhst(mobile, content);
+      return smsResult.isSucc();
+    }
+    
+    /**
      * 还款失败，通知用户
      * @param mobile
      * @return
@@ -461,6 +477,7 @@ public class SmsUtil extends AbstractThird {
 		}
         return false;
     }
+
     
     /**
      * 对单个手机号发送普通短信
@@ -472,6 +489,7 @@ public class SmsUtil extends AbstractThird {
         if (!CommonUtil.isMobile(mobile)) {
             throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
         }
+        System.out.println("发送手机号："+mobile);
         sendSmsToDhst(mobile, content);
     }
 
@@ -728,8 +746,13 @@ public class SmsUtil extends AbstractThird {
         return password;
     }
 
-    public void sendDefaultPassword(String phone, String password) {
-        sendSmsToDhst(phone, String.format(DEFAULT_PASSWORD, password));
+    public void sendDefaultPassword(String phone, String password,String channelCode) {
+       SmsResult smsResult= sendSmsToDhst(phone, String.format(DEFAULT_PASSWORD, password));
+       if(smsResult.isSucc()){
+           thirdLog.info("union login sms success channel:"+channelCode+",phone:"+phone);
+       }else{
+           thirdLog.error("union login sms error channel:"+channelCode+",phone:"+phone);
+       }
     }
 }
 

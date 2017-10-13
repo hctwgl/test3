@@ -44,7 +44,7 @@ public class FanbeiController extends BaseController {
 	AfResourceService afResourceService;
 
     @RequestMapping(value ={
-    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
+    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList","/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -118,6 +118,8 @@ public class FanbeiController extends BaseController {
     		"/borrow/getCashConfirmInfo","/borrow/applyCash","/borrow/getBorrowHomeInfo","/borrow/getConsumeConfirmInfo","/borrow/applyConsume",
     		"/bill/getMyBillHomeInfo","/bill/getMyBillList","/bill/getBillDetailList","/bill/getBillDetailInfo","/repay/getRepaymentConfirmInfo",
             "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo","/borrow/getOtherPayWay"
+            ,"/borrow/getRepaymentInfo","/borrow/submitRepaymentByYiBao","/bill/getRepayMentAmountByMonth","/repay/getRepaymentConfirmInfoV1"
+            ,"/bill/getBillListByStatus"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -175,11 +177,11 @@ public class FanbeiController extends BaseController {
      * @throws IOException
      */
     @RequestMapping(value = {"/borrowCash/getBorrowCashHomeInfo","/borrowCash/getBowCashLogInInfo","/borrowCash/getConfirmBorrowInfo","/borrowCash/applyBorrowCash",
-    		"/borrowCash/getBorrowCashDetail","/borrowCash/getBorrowCashList","/borrowCash/getBorrowOverdueList","/repayCash/getConfirmRepayInfo",
+    		"/borrowCash/getBorrowCashDetail","/borrowCash/getBorrowCashList","/borrowCash/getBorrowOverdueList","/repayCash/getConfirmRepayInfo","/good/deleteHistory",
     		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList",
     		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket","borrowCash/applyBorrowCashV1",
             "/repayCash/getConfirmRepayInfoV1","/borrowCash/confirmRenewalPayV1","/repayCash/getRepayCashByOrderId",
-            "/borrowCash/getLoanSupermarketTabList","/borrowCash/getLoanSupermarketListByTab","/borrowCash/tearPacket"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+            "/borrowCash/getLoanSupermarketTabList","/borrowCash/getLoanSupermarketListByTab","/borrowCash/tearPacket","/instalments/getInstalmentsAd"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -270,12 +272,12 @@ public class FanbeiController extends BaseController {
 	@RequestMapping(value = { "re1fla5shLoc3alReesC8a1sh" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")
 	public void reflashLocalResCash(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String randomParam1 = request.getParameter("926d4e62fe23c77e");
-		String randomParam2 = request.getParameter("21603C8898E194C5");
-		String value1= "4Sr221Obo03cM89Q";
-		String value2= "9pF20aF49221b603Ce8s8";
-		if(StringUtil.equals(randomParam1, value1)&&StringUtil.equals(randomParam2, value2)){
-			afResourceService.cleanLocalCache();
-		}
+        String randomParam2 = request.getParameter("21603C8898E194C5");
+        String value1= "4Sr221Obo03cM89Q";
+        String value2= "9pF20aF49221b603Ce8s8";
+        if(StringUtil.equals(randomParam1, value1)&&StringUtil.equals(randomParam2, value2)){
+            afResourceService.cleanLocalCache();
+        }
 	}
 
 }

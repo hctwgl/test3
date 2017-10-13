@@ -24,10 +24,10 @@ import java.util.Map;
  */
 public class SqlmapDomainTest {
 	
-    String url = "jdbc:mysql://192.168.101.85:3306/51fanbei_app" ;    
+    String url = "jdbc:mysql://192.168.106.76:3306/51fanbei_app" ;
     String username = "51fanbei" ;   
     String password = "Hello1234" ;   
-    private static String tableName = "af_yibao_order";
+    private static String tableName = "af_repayment_detal";
     private static String beanName = "";
     private static int tableNamePreLen = 2;
 	Connection con = null;

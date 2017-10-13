@@ -44,7 +44,7 @@ public class AfLoanSupermarketServiceImpl extends BaseService implements AfLoanS
 	}
 
 	@Override
-	public List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label) {
-		return afLoanSupermarketDao.getLoanSupermarketByLabel(label);
+	public List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label,Integer systemType) {
+		return afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType);
 	}
 }

@@ -41,6 +41,6 @@ public interface AfLoanSupermarketService {
 	 * @param label
 	 * @return
 	 */
-	List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label);
+	List<AfLoanSupermarketDo> getLoanSupermarketByLabel(String label,Integer systemType);
 
 }

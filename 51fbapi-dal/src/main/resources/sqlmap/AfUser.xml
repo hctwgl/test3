@@ -4,7 +4,7 @@
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_name,password,salt,gender,nick,avatar,real_name,
 		mobile,email,birthday,province,city,county,address,recommend_id,fail_count,
-		recommend_code
+		recommend_code,majiabao_name
 	</sql>
 	
 	<sql id="queryRecommendAllFields">
@@ -124,6 +124,22 @@
 			user_name = #{userName}
 	</select>
 
+	<select id="getUserNameByUserId" parameterType="java.util.List" resultType="String">
+		SELECT
+    		user_name 
+		FROM 
+    		af_user 
+       WHERE 
+       	id 
+       IN 
+    <foreach collection="list" item="id" open="(" close=")"
+    separator=",">
+    #{id}
+    </foreach>
+	
+	
+	</select>
+	
 	<update id="updateUser" parameterType="AfUserDo">
 		UPDATE
 			af_user

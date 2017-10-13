@@ -95,7 +95,7 @@ public class Constants {
 	public static final String DEFAULT_REFUND_PURPOSE = "退款";
 	public static final String DEFAULT_PAY_PURPOSE = "付款";
 	public static final String DEFAULT_WX_PAY_NAME = "微信";
-	public static final String DEFAULT_ZFB_PAY_NAME = "支付宝";
+	public static final String DEFAULT_ZFB_PAY_NAME ="支付宝";
 	public static final String DEFAULT_USER_ACCOUNT = "账户余额";
 	public static final String DEFAULT_BANK_PAY = "银行卡";
 	public static final String DEFAULT_SERVICE_PHONE = "0571-88193918";
@@ -216,9 +216,9 @@ public class Constants {
 	public static final String CONFKEY_TONGDUN_PARTNER_HOST = "fbapi.tongdun.partner.host";
 	public static final String CONFKEY_TONGDUN_PARTNER_CODE = "fbapi.tongdun.partner.code";
 	public static final String CONFKEY_TONGDUN_PARTNER_KEY = "fbapi.tongdun.partner.key";
-	
+
 	public static final String CONFKEY_THIRD_BOLUOME_APPKEY = "third.offer.boluome.appKey";
-	
+
 
 	public static final String CONFKEY_TONGDUN_PARTNER_WEBHOST = "fbapi.tongdun.partner.webhost";
 
@@ -236,6 +236,7 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_LIANMENG_SECRET = "fbapi.taobao.lianmeng.secret";
 	public static final String CONFKEY_SMS_DHST_PASSWORD = "fbapi.sms.dhst.password";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS = "taobao.tbk.item.get.fields";
+	public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET = "taobao.tbk.item.info.get";
 
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS = "taobao.tae.item.list.fields";
@@ -348,11 +349,20 @@ public class Constants {
 	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "ala_apply_borrow_cash_lock";
 	
 	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "ala_apply_strong_risk_lock";
-	
+
 	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
 	
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
+
+	//借贷超市签到锁
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "ala_loan_supermarket_sign_lock$";
+	//借贷超市签到领奖锁
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
+
+	//借钱抽取
+	public static final String BORROWCASH_ACTIVITYS_TYPR="BORROWCASH_ TO_DRAW";
+	public static final String BORROWCASH_ACTIVITYS_SECTYPR="BORROWCASH_ACTIVITYS";
 
 	//联合登陆相关 现金超人
 	public static final String UNIONLOGIN_XJCR_SECRET = "fbapi.unionlogin.xjcr.secret";
