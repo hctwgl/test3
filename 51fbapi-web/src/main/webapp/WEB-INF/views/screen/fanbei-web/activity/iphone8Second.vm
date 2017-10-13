@@ -4,7 +4,7 @@
     #set($version="20170929")
     #set($src="https://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
-    <title>iPhone8</title>
+    <title>苹果秋季新品</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/09/iphone8Second.css">
 </head>
 <body>
