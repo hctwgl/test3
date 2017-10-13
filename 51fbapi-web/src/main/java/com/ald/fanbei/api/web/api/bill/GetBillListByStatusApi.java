@@ -5,8 +5,10 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -32,6 +34,8 @@ public class GetBillListByStatusApi implements ApiHandle {
     AfUserOutDayDao afUserOutDayDao;
     @Resource
     AfBorrowService afBorrowService;
+    @Resource
+    AfBorrowBillDao afBorrowBillDao;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         Long userId = context.getUserId();
@@ -52,17 +56,28 @@ public class GetBillListByStatusApi implements ApiHandle {
 
         map.put("repayDate",simpleDateFormat.format(repayDate));
 
-        AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
-        if(afUserOutDayDo!=null){
+        Calendar n = Calendar.getInstance();
+        n.add(Calendar.MONTH,-1);
+        String _n =simpleDateFormat.format(n.getTime());
+
+        String[] __n = _n.split("-");
+        AfBorrowTotalBillDo afBorrowTotalBillDo = afBorrowBillDao.getBorrowBillTotalNow(userId,Integer.parseInt( __n[0]),Integer.parseInt(__n[1]));
+        if(afBorrowTotalBillDo !=null){
+            map.put("repayDate",simpleDateFormat.format(afBorrowTotalBillDo.getGmtPayTime()));
+        }
+        else {
             String[] d = map.get("repayDate").toString().split("-");
-            String payDay = "";
-            if(afUserOutDayDo.getPayDay()>=10){
-                payDay = afUserOutDayDo.getPayDay().toString();
+            AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+            if (afUserOutDayDo != null) {
+
+                String payDay = "";
+                if (afUserOutDayDo.getPayDay() >= 10) {
+                    payDay = afUserOutDayDo.getPayDay().toString();
+                } else {
+                    payDay = "0" + afUserOutDayDo.getPayDay().toString();
+                }
+                map.put("repayDate", d[0] + "-" + d[1] + "-" + payDay);
             }
-            else{
-                payDay = "0"+afUserOutDayDo.getPayDay().toString();
-            }
-            map.put("repayDate",d[0]+"-"+d[1]+"-"+payDay);
         }
 
 

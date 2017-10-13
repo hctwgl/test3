@@ -351,4 +351,17 @@
 		where user_id = #{userId}  and is_out = 1 and is_delete = 0 order by gmt_out_day desc limit 0,1;
 	</select>
 
+	<select id="getBorrowBillTotalNow" resultType="AfBorrowTotalBillDo">
+		SELECT
+		*
+		FROM
+		af_borrow_total_bill
+		WHERE is_delete = 0
+		AND user_id = #{userId}
+		AND bill_year = #{billYear}
+		AND bill_month = #{billMonth}
+		ORDER BY id desc, bill_year DESC,
+		bill_month DESC LIMIT 0,1
+	</select>
+
 </mapper>

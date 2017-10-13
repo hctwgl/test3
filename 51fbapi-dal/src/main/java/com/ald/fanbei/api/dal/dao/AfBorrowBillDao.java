@@ -262,4 +262,6 @@ public interface AfBorrowBillDao {
 	List<AfBorrowBillDo> getBorrowBillListY(@Param("userId") Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
 
 	AfBorrowBillDo getLastOutBill(@Param("userId")Long userId);
+
+	AfBorrowTotalBillDo getBorrowBillTotalNow(@Param("userId")Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
 }
