@@ -289,9 +289,9 @@ public class UnionLoginController extends BaseController {
     @ResponseBody
     public JSONObject fanbeiLogin(String phone, String channel, String sign) throws Exception {
         try {
+            phone=phone.replace(" ","+");
             Map<String, String[]> paramsMap = request.getParameterMap();
             String paramsJsonStr = JSONObject.toJSONString(paramsMap);
-
             String fanbeiChannelCode = channel;
             addLogs(fanbeiChannelCode, paramsJsonStr);
 
@@ -436,7 +436,7 @@ public class UnionLoginController extends BaseController {
             if (!key.equals("sign")) {
                 for (String value : values) {
                     if (!StringUtils.isEmpty(value)) {
-                        signMap.put(key, value);
+                        signMap.put(key, value.replace(" ","+"));
                     }
                 }
             }
