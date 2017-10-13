@@ -31,7 +31,7 @@ let vm = new Vue({
                         self.content = data.data;
                         console.log(self.content);
                         //console.log(self.content.superPrizeStatus);
-                        self.$nextTick(function () {
+                        self.$nextTick(function () { //判断优惠券
                             for(var k=0;k<self.content.boluomeCouponList.length;k++){
                                 //alert(self.content.boluomeCouponList[k].isHas)
                                 if(self.content.boluomeCouponList[k].isHas=='Y'){
@@ -69,7 +69,14 @@ let vm = new Vue({
                                     }
                                 }
                             }
-                        })//终极大奖+是否可赠送
+                        })
+                        //判断toast
+                        self.$nextTick(function(){
+                            if((self.content.popupWords)){
+                                $('.toast').show();
+                                $('.mask').show();
+                            }
+                        })
                     }
                 }
             })
@@ -139,7 +146,7 @@ let vm = new Vue({
         },
         //点击卡片
         cardClick:function(e){
-            var shopId=e.refId;
+            let shopId=e.refId;
             $.ajax({
                 type: 'post',
                 url: '/fanbei-web/getBrandUrlV1',
@@ -222,9 +229,32 @@ let vm = new Vue({
             $('.alertRule').css('display','none');
             $('.mask').css('display','none');
             $('.alertFinalPrize').css('display','none');
+            $('.toast').css('display','none');
         },
         fixImgUrl:function(i){
             return "http://f.51fanbei.com/h5/app/activity/10/ggNewCard0"+i+".png";
+        },
+        //点击toast跳转
+        toastClick(){
+            let self=this;
+            let toastShopId=self.content.shopId;
+            $.ajax({
+                type: 'post',
+                url: '/fanbei-web/getBrandUrlV1',
+                data:{'shopId':toastShopId},
+                dataType:'JSON',
+                success: function (returnData) {
+                    //console.log(returnData)
+                    if(returnData.success){
+                        location.href=returnData.url;
+                    }else{
+                        location.href=returnData.url;
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            })
         }
     }
 })
