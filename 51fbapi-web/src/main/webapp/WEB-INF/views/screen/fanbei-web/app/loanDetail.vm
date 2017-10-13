@@ -17,7 +17,7 @@
              <p class="name">{{content.lsmName}}</p>
              <p class="peopleNum">{{content.marketPoint.replace(',','')}}</p>
              <p class="feature">
-                 <span v-for="data of fen(content.slogan)">{{data}}</span>
+                 <span v-for="data of fen(content.slogan,3)">{{data}}</span>
              </p>
          </div>
          <div class="fanbeiDes">{{content.lsmIntro}}</div>
