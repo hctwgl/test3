@@ -64,6 +64,7 @@ body{
 .loanDetail .header .top .feature span{
   border:1px solid #47a6f9;
   border-radius: .28rem;
+  font-weight: 600;
   padding:0 .15rem;
   margin-right:.2rem;
 }
@@ -75,13 +76,13 @@ body{
 }
 /*main-------------------------------*/
 .loanDetail .main{
-  width:94%;
+  width:92%;
   margin:0 auto;
   padding:.36rem 0 .5rem 0;
 }
 .loanDetail .main .amountLimit{
   width:3.28rem;
-  height:.64rem;
+  height:1rem;
   position:relative;
   float:left;
 }
@@ -104,6 +105,8 @@ body{
 }
 .loanDetail .main .timeLimit{
   float:right;
+  border-left:0.5px solid #dedede ;
+
 }
 .loanDetail .main .payMoney{
   width:100%;
@@ -130,13 +133,14 @@ body{
   margin:0;
 }
 .desList li:nth-of-type(odd)>p {
-  border-left: 2px solid #ff6e34;
+  border-left: 3px solid #ff6e34;
 }
 .desList li:nth-of-type(even)>p {
-  border-left: 2px solid #47a6f9;
+  border-left: 3px solid #47a6f9;
 }
 .desList li>p:nth-child(1){
   font-size:.36rem;
+  font-weight: 600;
   color:#646464;
   height:.5rem;
   line-height: .5rem;
@@ -160,13 +164,24 @@ body{
   padding:.26rem 0 .32rem 0;
 }
 .loanDetail .applyCont .applyFlow .flowChart{
-  width:88%;
+  width:100%;
+  padding-bottom: .3rem;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left{
   color:#969696;
   float:left;
-  margin: 0 .15rem .3rem;
+  width: 1.2rem;
+  margin: 0 .2rem .7rem;
   position:relative;
+
+}
+.tex{
+  position: absolute;
+  width: 1.6rem;
+  left:50%;
+  margin-left: -.8rem;
+  font-size: .24rem;
+  text-align: center;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left:last-child .line{
   display: none;
@@ -180,22 +195,22 @@ body{
   top: .23rem;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(1) .line{
-  left:86%;
+  left:87%;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(2) .line{
-  left:82%;
+  left:86%;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(3) .line{
-  left:77%;
+  left:84%;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(4) .line{
-  left:88%;
+  left:91%;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(5) .line{
-  left:79%;
+  left:82%;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left:nth-of-type(6) .line{
-  left:83%;
+  left:84%;
 }
 .loanDetail .applyCont .applyFlow .flowChart .left img{
   width:.6rem;
@@ -249,8 +264,7 @@ body{
   padding-bottom: .3rem;
   float:left;
   margin:0;
-  margin-left: 3%;
-  margin-right: 6%;
+  margin-right: 9%;
 
 }
 .loanDetail .applyCont .needCont .everyCont span{
