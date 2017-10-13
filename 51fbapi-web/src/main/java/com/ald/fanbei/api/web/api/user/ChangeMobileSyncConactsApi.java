@@ -124,6 +124,8 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 					
 					//状态更新失败不影响核心业务，日志打点即可
 					try {
+						bizCacheUtil.delCache(Constants.CACHEKEY_USER_NAME + context.getUserName());//操作成功，删除原用户缓存
+						
 						AfUserAuthDo authDoForMod = new AfUserAuthDo();
 						authDoForMod.setUserId(uid);
 						authDoForMod.setTeldirStatus(YesNoStatus.YES.getCode());
