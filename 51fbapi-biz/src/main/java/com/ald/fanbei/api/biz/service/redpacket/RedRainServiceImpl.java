@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.redpacket;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -9,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -18,7 +20,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.redpacket.RedPacketPoolService.Redpacket;
+import com.ald.fanbei.api.common.enums.UserCouponSource;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfRedRainPoolDao;
 import com.ald.fanbei.api.dal.dao.AfRedRainRoundDao;
@@ -26,11 +32,17 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfRedRainPoolDo;
 import com.ald.fanbei.api.dal.domain.AfRedRainRoundDo;
 import com.ald.fanbei.api.dal.domain.AfRedRainRoundDo.AfRedRainRoundStatusEnum;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 @Service("redpacketService")
 public class RedRainServiceImpl implements IRedRainService{
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	
+	private static final int MAX_NUM_HIT_REDPACKET = 9;
+	
+	private ScheduledExecutorService scheduler ;
+	private Map<String,AtomicInteger> counters;
 	
 	@Resource
 	private RedPacketPoolService redPacketPoolService;
@@ -39,16 +51,19 @@ public class RedRainServiceImpl implements IRedRainService{
 	@Resource 
 	private AfRedRainRoundDao afRedRainRoundDao;
 	
-	private ScheduledExecutorService scheduler ;
-	
-	private Map<String,Integer> counter;
+	@Resource
+    private AfUserService afUserService;
+	@Resource
+	private AfUserCouponService afUserCouponService;
+	@Resource
+	private BoluomeUtil boluomeUtil;
 	
 	@PostConstruct
 	public void init() {
-		this.counter = new ConcurrentHashMap<>(8096);
+		this.counters = new ConcurrentHashMap<>(8096);
 		this.scheduler = Executors.newSingleThreadScheduledExecutor();
 		
-		//没5分钟启动扫描
+		//每5分钟启动扫描
 		this.scheduler.scheduleAtFixedRate(new Runnable() {
 			public void run() {
 				scanAndInjected();
@@ -58,7 +73,7 @@ public class RedRainServiceImpl implements IRedRainService{
 		//每天0点清空计数器
 		this.scheduler.scheduleAtFixedRate(new Runnable() {
 			public void run() {
-				counter.clear();
+				counters.clear();
 			}
 		}, DateUtil.getIntervalFromNowInSec(DateUtil.getEndOfDate(new Date())), 24*60*60, TimeUnit.SECONDS);
 	}
@@ -67,6 +82,26 @@ public class RedRainServiceImpl implements IRedRainService{
 	public AfCouponDo apply(String userName) {
 		Assert.hasText(userName);
 		
+		AtomicInteger counter;
+		synchronized (userName.intern()) { //防刷
+			counter = this.counters.get(userName);
+			if(counter == null) this.counters.put(userName, counter = new AtomicInteger());
+			if(counter.incrementAndGet() > MAX_NUM_HIT_REDPACKET) { //假设用户一定可以得到一个红包
+				return null;
+			}
+		}
+		
+		Redpacket rp = this.redPacketPoolService.apply();
+		if(rp != null) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if("BOLUOMI".equals(rp.getType())) {
+				boluomeUtil.grantCoupon(rp.getCoupon_id(), new HashMap<String,Object>(), user.getRid());
+			}else {
+				afUserCouponService.grantCoupon(user.getRid(), rp.getCoupon_id(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
+			}
+		}
+		
+		counter.decrementAndGet(); //未获取，回滚计数器-1
 		return null;
 	}
 
@@ -131,7 +166,7 @@ public class RedRainServiceImpl implements IRedRainService{
 				public void run() {
 					clearAndStatisic(round.getId());
 				}
-			}, DateUtil.getIntervalFromNowInSec(round.getGmtStart())+5, TimeUnit.SECONDS);
+			}, DateUtil.getIntervalFromNowInSec(round.getGmtStart())+300, TimeUnit.SECONDS);
 		}catch (Exception e) {
 			this.logger.error(e.getMessage(),e);
 			this.redPacketPoolService.emptyPacket();
