@@ -85,7 +85,7 @@ let vm = new Vue({
         imgSwiper(){
             let mySwiper = new Swiper ('.banner', {
                 loop: true,
-                speed:1000,
+                speed:1300,
                 autoplay :2000,
                 autoplayDisableOnInteraction : false
             });
