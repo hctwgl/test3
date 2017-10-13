@@ -325,6 +325,11 @@ public class H5GGShareController extends H5Controller {
 						itemsDoo.setNum(-1);
 					}
 				}
+			}else {
+				// 未登录则终极大奖状态不变，并且卡片个数是-1
+				for (AfBoluomeActivityItemsDo itemsDoo : itemsList) {
+					itemsDoo.setNum(-1);
+				}
 			}
 			// 获取文案的信息
 			String popupWords = "";
