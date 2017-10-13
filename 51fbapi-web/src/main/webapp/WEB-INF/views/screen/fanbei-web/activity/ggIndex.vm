@@ -118,9 +118,7 @@
     </div>
     <!--温馨提示-->
     <div class="toast">
-        <p class="toastTitle">温馨提示</p>
-        <p class="toastCont">{{content.popupWords}}</p>
-        <p class="toastButton" @click="toastClick()">点击这里，即尝美食</p>
+        <img :src="content.popupWords" @click="toastClick()">
         <p class="closeToast" @click="close()">X</p>
     </div>
 </div>
