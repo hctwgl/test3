@@ -370,14 +370,16 @@ public class H5GGShareController extends H5Controller {
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc());
 			logger.error("initHomePage", e);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage());
 			logger.error("initHomePage", exception);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		}
-		doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -571,6 +573,7 @@ public class H5GGShareController extends H5Controller {
 				data.put("itemsList", itemsList);
 				data.put("userItemsList", resultList);
 				resultStr = H5CommonResponse.getNewInstance(true, "赠送卡片初始化成功", "", data);
+				doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			}
 
 		} catch (FanbeiException e) {
@@ -580,7 +583,6 @@ public class H5GGShareController extends H5Controller {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage());
 			logger.error("sendItems" + context, e);
 		}
-		doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -619,6 +621,7 @@ public class H5GGShareController extends H5Controller {
 			}
 
 			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc());
 			logger.error("doSendItems" + context, e);
@@ -627,7 +630,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("doSendItems" + context, e);
 		}
 
-		 doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -753,6 +755,7 @@ public class H5GGShareController extends H5Controller {
 					data.put("fakeFinal", fakeFinal);
 					data.put("fakeJoin", fakeJoin);
 					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data);
+					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 				}
 			}
 
@@ -764,7 +767,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("ggSendItems error", e);
 		}
 
-		 doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -864,6 +866,7 @@ public class H5GGShareController extends H5Controller {
 							updateUserItemsStatus(resourceUserItemsId, "SENT");
 						}
 						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功");
+						doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 					} else {
 						return H5CommonResponse.getNewInstance(true, "你已领走卡片，无需重复领取").toString();
 					}
@@ -878,7 +881,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("pickUpItems" + context, e);
 		}
 
-		 doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -912,6 +914,7 @@ public class H5GGShareController extends H5Controller {
 			}
 			data.put("userName", userName);
 			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc());
 			logger.error("lightItems" + context, e);
@@ -920,7 +923,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("lightItems" + context, e);
 		}
 
-		 doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -957,6 +959,7 @@ public class H5GGShareController extends H5Controller {
 			Map<String, Object> data = new HashMap<>();
 			data.put("itemsList", itemsList);
 			resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功", "", data);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc());
 			logger.error("askForItems" + context, e);
@@ -965,7 +968,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("askForItems" + context, e);
 		}
 
-		 doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -1036,8 +1038,8 @@ public class H5GGShareController extends H5Controller {
 					insertDo.setItemsId(resourceUserItemsDo.getItemsId());
 					insertDo.setGmtSended(new Date());
 					afBoluomeActivityUserItemsService.saveRecord(insertDo);
-
 					resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
+					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 				}
 			}
 		} catch (FanbeiException e) {
@@ -1048,7 +1050,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("sendToFriend" + context, e);
 		}
 
-	        doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -1105,6 +1106,7 @@ public class H5GGShareController extends H5Controller {
 					data.put("fakeJoin", fakeJoin);
 					logger.info("data=" + JSONObject.toJSONString(data));
 					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data);
+					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 				}
 			}
 
@@ -1116,7 +1118,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("ggAskForItems error", e);
 		}
 
-	        doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -1168,6 +1169,7 @@ public class H5GGShareController extends H5Controller {
 				data.put("rebateNumber", rebateNumber);
 				data.put("rankList", rankList);
 				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data);
+				doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			}
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc());
@@ -1177,7 +1179,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("listRank", e);
 		}
 
-		doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -1268,7 +1269,7 @@ public class H5GGShareController extends H5Controller {
 							afUserAccountService.updateUserAccount(accountDo);
 							// 从用户卡片去掉活动卡片的一个。
 							resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功，请前往  我的-返利金额  查看");
-
+							doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 						}
 
 					}
@@ -1283,7 +1284,6 @@ public class H5GGShareController extends H5Controller {
 			logger.error("pickUpSuperPrize" + context, e);
 		}
 
-		 doMaidianLog(request, resultStr);
 		return resultStr.toString();
 	}
 
@@ -1366,7 +1366,9 @@ public class H5GGShareController extends H5Controller {
 			} else if (!"0".equals(code)) {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			}
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+			
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
