@@ -214,6 +214,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 						AfBoluomeActivityUserRebateQuery RebateQueryResult  = afBoluomeActivityUserRebateDao.getRebateCountNumber(userRebateQuery);
 						logger.info("activityUserRebateQuery ",RebateQueryResult);
 						if(RebateQueryResult.getFanLiRecordTime()<1){
+						        
 							//进行返利
 							AfBoluomeActivityUserRebateDo refMessage = new AfBoluomeActivityUserRebateDo();
 							refMessage.setUserId(userId);
@@ -243,10 +244,11 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 						}
 					}
 				}
+				//在卡片场景中
+				boluomeActivitySendCoupon(afOrder,afBoluomeActivityDo);
+				
 			}
 		}
-		//在活动中的几个场景？
-		boluomeActivitySendCoupon(afOrder,afBoluomeActivityDo);
 		return 0;
 	}
 	
