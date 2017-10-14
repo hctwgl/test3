@@ -391,9 +391,10 @@ public class BoluomeUtil extends AbstractThird{
 		if (CollectionUtils.isEmpty(activityCouponList)) {
 			return false;
 		}
-		Integer nextPageNo = 1;
+		Integer nextPageNo = 0;
 		boolean constains = false;
-		do {
+		do {    
+		        nextPageNo++;
 			List<BrandCouponResponseBo> couponList = getUserCouponList(userId, type, nextPageNo, BoluomeCore.DEALFT_PAGE_SIZE);
 			if (CollectionUtils.isNotEmpty(couponList)) {
 				for (BrandCouponResponseBo userCoupon : couponList) {
@@ -408,7 +409,7 @@ public class BoluomeUtil extends AbstractThird{
 					}
 				}
 			}
-		} while ((nextPageNo = getNextPageNo(userId, type, 1, BoluomeCore.DEALFT_PAGE_SIZE)) > 0);
+		} while ((nextPageNo = getNextPageNo(userId, type, nextPageNo, BoluomeCore.DEALFT_PAGE_SIZE)) > 0);
 		return constains;
 	}
 	

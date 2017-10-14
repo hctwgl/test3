@@ -318,8 +318,7 @@ public class APPH5GGShareController extends BaseController {
 												Long userId = convertUserNameToUserId(userName);
 												if (userId != null) {
 													// 判断用户是否拥有该优惠券
-													if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
-															|| bo.getDistributed() >= bo.getTotal()) {
+													if (boluomeUtil.isUserHasCoupon(uri, userId, 1)) {
 														BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 													} else {
 														BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());

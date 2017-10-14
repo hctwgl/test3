@@ -195,8 +195,7 @@ public class H5GGShareController extends H5Controller {
 											BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 											if (userId != null) {
 												// 判断用户是否拥有该优惠券 或者已经被领取完毕
-												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
-														|| bo.getDistributed() >= bo.getTotal()) {
+												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)) {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 												} else {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
