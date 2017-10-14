@@ -48,8 +48,6 @@ public class GetGoodsRateInfo implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-
-
         Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);
 
         //基本数据对象map
@@ -63,10 +61,19 @@ public class GetGoodsRateInfo implements ApiHandle {
         data.put(reply,"没有一点点防备，也没有一丝顾虑，您就这样出现在我的世界里，带给我惊喜，情不自己~您的惊喜是有愉快的购物体验，芝华仕伴你同行~ 　　　　————芝华仕官方旗舰店");
         data.put(rateTime,"2017-10-06 14:29:03");
         data.put(auctionSku,"颜色分类：紫色  尺码：S");
-        Map<String,Object> rateDetail = new HashMap<>();
 
-        rateDetail.put(picUrl,"https://img.alicdn.com/imgextra/i1/0/TB2BtIUaPlxYKJjSZFuXXaYlVXa_!!0-rate.jpg_400x400.jpg");
-        data.put("rateDetail",rateDetail);
+        Map<String,Object> rateDetail1 = new HashMap<>();
+        rateDetail1.put(picUrl,"https://img.alicdn.com/imgextra/i1/0/TB2BtIUaPlxYKJjSZFuXXaYlVXa_!!0-rate.jpg_400x400.jpg");
+        Map<String,Object> rateDetail2 = new HashMap<>();
+        rateDetail2.put(picUrl,"https://img.alicdn.com/imgextra/i3/0/TB2JEVCdfBNTKJjy1zdXXaScpXa_!!0-rate.jpg_400x400.jpg");
+        Map<String,Object> rateDetail3 = new HashMap<>();
+        rateDetail3.put(picUrl,"https://img.alicdn.com/imgextra/i3/0/TB2JEVCdfBNTKJjy1zdXXaScpXa_!!0-rate.jpg_400x400.jpg");
+        List<Object> rateDetailList = new ArrayList<>();
+        rateDetailList.add(rateDetail1);
+        rateDetailList.add(rateDetail2);
+        rateDetailList.add(rateDetail3);
+        data.put("rateDetail",rateDetailList);
+
         ratedataList.add(data);
         ratedataListMap.put("ratedataList",ratedataList);
 
