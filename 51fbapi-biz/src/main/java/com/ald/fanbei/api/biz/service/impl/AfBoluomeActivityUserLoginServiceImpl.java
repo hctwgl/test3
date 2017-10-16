@@ -33,4 +33,10 @@ public class AfBoluomeActivityUserLoginServiceImpl extends ParentServiceImpl<AfB
 	public BaseDao<AfBoluomeActivityUserLoginDo, Long> getDao() {
 		return afBoluomeActivityUserLoginDao;
 	}
+
+		@Override
+		public Integer getBindingNum(Long activityId, Long refUserId) {
+			
+			return afBoluomeActivityUserLoginDao.getBindingNum(activityId,refUserId);
+		}
 }
