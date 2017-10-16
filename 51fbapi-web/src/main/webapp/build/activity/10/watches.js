@@ -11,7 +11,7 @@ let vm = new Vue({
     data: {
         content: '',
         renderdata: [],
-        couponCont:{},
+        couponCont:'',
         list:{}
     },
     created: function () {
@@ -70,8 +70,6 @@ let vm = new Vue({
                 data:{'groupId':groupId},
                 success: function (data) {
                     self.couponCont = eval('(' + data + ')').data.couponInfoList;
-                    console.log(self.couponCont);
-                    console.log(self.couponCont.couponId);
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");
@@ -79,9 +77,10 @@ let vm = new Vue({
             });
         },
         //点击领券
-        couponClick:function() {
+        couponClick:function(couponList) {
             let self = this;
-            let couponId = self.couponCont.couponId;
+            let couponId = couponList.couponId;
+            // alert(couponId)
             $.ajax({
                 url: "/fanbei-web/pickCoupon",
                 type: "POST",
@@ -90,6 +89,7 @@ let vm = new Vue({
                     couponId: couponId
                 },
                 success: function (returnData) {
+                    // alert(returnData);
                     if (returnData.success) {
                         requestMsg("优惠劵领取成功");
                     } else {

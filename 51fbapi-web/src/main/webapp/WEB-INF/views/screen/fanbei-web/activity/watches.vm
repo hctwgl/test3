@@ -14,7 +14,7 @@
         <img src="$src/watch-banner.png" alt="">
     </div>
     <!--优惠券 !-->
-    <div class="coupon" @click="couponClick()" v-for="couponList in couponCont">
+    <div class="coupon" @click="couponClick(couponList)" v-for="couponList in couponCont">
         <span class="unit">￥</span>
         <div class="coupon-left">
             <span class="number">{{couponList.amount}}</span>
