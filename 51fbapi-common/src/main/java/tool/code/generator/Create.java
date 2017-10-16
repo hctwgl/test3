@@ -17,15 +17,15 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 		//String table = "tt_test";
-		String table = "af_union_login_register";
+		String table = "af_fund_side_account";
 
 		
 		
 		
 		// 配置作者及Domain说明
-		String classAuthor = "maqiaopan-template";
+		String classAuthor = "chegnkang";
 		//TODO:String classAuthor = " jinhu.chenjh";
-		String functionName = "'联合登录用户登录日志表";
+		String functionName = " 资金方账户信息表";
 		
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName ="";

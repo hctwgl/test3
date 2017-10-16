@@ -86,7 +86,7 @@ let vm = new Vue({
                     self.$nextTick(function () {
                         $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
-                            placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
+                            placeholder : "https://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
                             effect : "fadeIn",  // 载入使用的效果
                             threshold: 200 // 提前开始加载
                         });
@@ -165,7 +165,7 @@ function alaShareData(){
         "type": "share", // 此页面的类型
         "shareAppTitle": "iPhone 8 预约立减100",  // 分享的title
         'shareAppContent': "十周年 翘首以待！1元预约立减100，每日限抽取5名成功分享用户获iPhone 8大奖，限时秒杀iPhone 6 仅1999元！",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/09/iphone8_06.jpg",  // 分享右边小图
+        "shareAppImage": "https://f.51fanbei.com/h5/app/activity/09/iphone8_06.jpg",  // 分享右边小图
         "shareAppUrl": domainName+"/fanbei-web/activity/iphone8Share?modelId="+modelId+"&title="+title,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "iphone8Share" // 分享的页面

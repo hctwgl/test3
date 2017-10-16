@@ -153,7 +153,7 @@ img {
   transform: translateY(-50%);
   width: 0.3rem;
   height: 0.3rem;
-  background-image: url("http://f.51fanbei.com/h5/app/activity/08/backMoney.png");
+  background-image: url("https://f.51fanbei.com/h5/app/activity/08/backMoney.png");
   border-radius: 50%;
   -webkit-background-size: cover;
   background-size: cover;
@@ -182,7 +182,7 @@ img {
 }
 .stripe {
   float: left;
-  background-image: url("http://f.51fanbei.com/h5/app/activity/08/product.png");
+  background-image: url("https://f.51fanbei.com/h5/app/activity/08/product.png");
   width: 3.44rem;
   height: 4.53rem;
   -webkit-background-size: cover;

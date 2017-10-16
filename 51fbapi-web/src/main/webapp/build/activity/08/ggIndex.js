@@ -213,7 +213,7 @@ let vm = new Vue({
             $('.alertFinalPrize').css('display','none');
         },
         fixImgUrl:function(i){
-            return "http://f.51fanbei.com/h5/app/activity/08/gg000"+i+".png";
+            return "https://f.51fanbei.com/h5/app/activity/08/gg000"+i+".png";
         }
     }
 })
@@ -236,7 +236,7 @@ function alaShareData(){
         "type": "share", // 此页面的类型
         "shareAppTitle": "全民集卡片 领取51元大奖",  // 分享的title
         'shareAppContent': "我正在51返呗收集卡片，助我一臂之力，免费领取51元啦~",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/gg31.png",  // 分享右边小图
+        "shareAppImage": "https://f.51fanbei.com/h5/app/activity/08/gg31.png",  // 分享右边小图
         "shareAppUrl": domainName+"/fanbei-web/activity/ggIndexShare?loginSource=F&activityId="+activityId+"&userName="+userName+"&sharePage=ggIndexShare",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggIndexShare" // 分享的页面
