@@ -382,8 +382,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 账单日
 
-		int default_out_day = NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10);
-		int default_pay_day = NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20);
+		int default_out_day = 10;//NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_CREATE_TIME), 10);
+		int default_pay_day = 20;//NumberUtil.objToIntDefault(ConfigProperties.get(Constants.CONFKEY_BILL_REPAY_TIME), 20);
 
 		if(afUserOutDayDo !=null){
 			default_out_day = afUserOutDayDo.getOutDay();
@@ -575,7 +575,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		BigDecimal billAmount = perAmount;
 		BigDecimal money = borrow.getAmount();// 借款金额
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
-		
+
 		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
 		if(afBorrowBillLast !=null){
 			boolean needPlus = false;
