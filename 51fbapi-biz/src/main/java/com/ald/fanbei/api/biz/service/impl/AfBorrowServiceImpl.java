@@ -575,6 +575,42 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		BigDecimal billAmount = perAmount;
 		BigDecimal money = borrow.getAmount();// 借款金额
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
+		
+		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
+		if(afBorrowBillLast !=null){
+			boolean needPlus = false;
+			int out_day = 10;
+			int pay_day = 20;
+			if(afUserOutDayDo !=null){
+				out_day = afUserOutDayDo.getOutDay();
+				pay_day = afUserOutDayDo.getPayDay();
+			}
+			Date d=  getNowOutDay(out_day);
+			if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
+				Calendar c = Calendar.getInstance();
+				c.setTime(afBorrowBillLast.getGmtOutDay());
+				c.add(Calendar.MONTH,1);
+				now = c.getTime();
+				needPlus =true;
+			}
+
+			if(!needPlus){
+				//还款日比较
+				Date p = new Date();
+				if(pay_day < out_day) {
+					p = DateUtil.addMonths(p,1);
+				}
+				p = getPayDate(pay_day,p);
+				if(getYearMonth(p).intValue() <= getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
+					Calendar c = Calendar.getInstance();
+					c.setTime(afBorrowBillLast.getGmtOutDay());
+					c.add(Calendar.MONTH,1);
+					now = c.getTime();
+					needPlus =true;
+				}
+			}
+		}
+
 		// 计算本息总计
 		for (int i = 1; i <= borrow.getNper(); i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
