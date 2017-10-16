@@ -1,5 +1,6 @@
 body {
   color: white;
+  background-color: #f6f6f6;
 }
 .credit-two {
   background: url("https://f.51fanbei.com/h5/app/activity/10/credit-05.png") no-repeat;
@@ -78,9 +79,15 @@ body {
 }
 .last-img {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(-50%);
   width: 0.64rem;
   height: 0.64rem;
+}
+.four-word {
+  position: absolute;
+  top: 60%;
+  left: 42%;
+  color: #969696;
 }

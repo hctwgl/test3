@@ -27,6 +27,7 @@
         </div>
         <div class="credit-four">
             <img class="last-img" src="$src/credit-07.png" alt="">
+            <span class="four-word">敬请期待</span>
         </div>
     </div>
 </body>
