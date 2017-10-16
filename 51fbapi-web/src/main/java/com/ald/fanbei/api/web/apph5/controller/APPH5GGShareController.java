@@ -456,6 +456,8 @@ public class APPH5GGShareController extends BaseController {
 
 			// 获取文案的信息
 			String popupWords = null;
+			String despotCoupon = null;
+		        Map<String, String> map = new HashMap<String, String>();
 
 			// 获取饿了么场景Id
 			Long shopId = null;
@@ -472,7 +474,11 @@ public class APPH5GGShareController extends BaseController {
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null) {
 					// TODO:获取弹框文案；
-					popupWords = afBoluomeActivityService.activityOffical(userId);
+					map = afBoluomeActivityService.activityOffical(userId);
+					if(map!=null){
+					    popupWords =  map.get("officalText");
+					    despotCoupon =  map.get("despotCoupon");
+					}
 					// 获取已经邀请的人数
 					alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
 				}
@@ -480,7 +486,7 @@ public class APPH5GGShareController extends BaseController {
 					alreadyNum = 0;
 				}
 			}
-
+			data.put("despotCoupon", despotCoupon);
 			data.put("alreadyNum", alreadyNum);
 			data.put("supportedNum", supportedNum);
 			data.put("shopId", shopId);

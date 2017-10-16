@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Map;
+
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -14,5 +16,5 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
  */
 public interface AfBoluomeActivityService extends ParentService<AfBoluomeActivityDo, Long>{
     int ggLightActivity(final AfOrderDo afOrder);
-    String activityOffical(Long userId);
+    Map<String, String> activityOffical(Long userId);
 }

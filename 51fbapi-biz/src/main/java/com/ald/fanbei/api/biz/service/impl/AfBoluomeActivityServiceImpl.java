@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -382,55 +385,100 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 		accountLog.setType(logType.getCode());
 		return accountLog;
 	}
-	public String activityOffical(Long userId){
+	public Map<String, String> activityOffical(Long userId){
+	    
+	    Map<String, String> map = new HashMap<String, String>();
 	    String officalText = null;
-	    // 如果该用户在平台没有订单，则送券
+	    List<AfBoluomeActivityCouponDo> sentOldCoupons = new ArrayList<AfBoluomeActivityCouponDo>();
+	    List<AfBoluomeActivityCouponDo> sentNewCoupons = new ArrayList<AfBoluomeActivityCouponDo>();
 	    AfOrderDo queryCount = new AfOrderDo();
 	    queryCount.setUserId(userId);
 	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
 	    logger.info("orderCount = {}", orderCount);
 	    // <1?
-	    AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
-	    queryCoupon.setType("B");
-	    if (orderCount < 1) {
-		//新用户
-		queryCoupon.setScopeApplication("INVITEE");
-	    }else{
-		//老用户
-		queryCoupon.setScopeApplication("INVITER");
-	    }
-		
-		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
-		logger.info("sentCoupons=", sentCoupons);
-		if (sentCoupons.size() > 0) {
-		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
-			long resourceId = sentCoupon.getCouponId();
-			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+	    AfResourceDo resourceInfo = new AfResourceDo();
+	    long resourceId =0;
+	    String oldCouponstatus = "";
+	    String newCouponstatus = "";
+	    AfBoluomeActivityCouponDo queryOldCoupon = new AfBoluomeActivityCouponDo();
+	    AfBoluomeActivityCouponDo queryNewCoupon = new AfBoluomeActivityCouponDo();
+	    queryOldCoupon.setType("B");
+	    queryNewCoupon.setType("B");
+	    queryOldCoupon.setScopeApplication("INVITEE");
+	    queryNewCoupon.setScopeApplication("INVITEE");
+	    sentOldCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryOldCoupon);
+            sentNewCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryNewCoupon);
+            
+            if (sentOldCoupons.size() > 0) {
+		    for (AfBoluomeActivityCouponDo sentOldCoupon : sentOldCoupons) {
+		        resourceId = sentOldCoupon.getCouponId();
+		        resourceInfo = afResourceService.getResourceByResourceId(resourceId);
 			logger.info("resourceInfo = {}", resourceInfo);
 			// 查询是否已有该券，有显示文案
-			String status = getCouponYesNoStatus(resourceInfo, userId);
-			if(status!= null){
-			    if ("Y".equals(status)) {
-				if (resourceInfo != null) {
+		         oldCouponstatus = getCouponYesNoStatus(resourceInfo, userId);
+		    }
+	    }
+            
+	   if (sentNewCoupons.size() > 0) {
+		    for (AfBoluomeActivityCouponDo sentNewCoupon : sentNewCoupons) {
+			resourceId = sentNewCoupon.getCouponId();
+		        resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+			logger.info("resourceInfo = {}", resourceInfo);
+			// 查询是否已有该券，有显示文案
+			newCouponstatus = getCouponYesNoStatus(resourceInfo, userId);
+		    }
+	    }
+		    
+	   if(orderCount<1){
+			//新用户，先看有没有霸王餐券，有，则优先显示，没有，则显示新人立减券
+	               if("Y".equals(oldCouponstatus)){
+	        	   if (resourceInfo != null) {
 				//设置文案
 				    String  type = "GG_LIGHT";
-				    String  secType = "";
-				    if(orderCount<1){
-					secType = "GG_POP_UP_NEW";
-				    }else{
-					secType = "GG_POP_UP_OLD";
-				    }
-				AfResourceDo resourceDo =     afResourceService.getConfigByTypesAndSecType(type, secType);
+				    String  secType = "GG_POP_UP_OLD";
+				    AfResourceDo resourceDo =     afResourceService.getConfigByTypesAndSecType(type, secType);
 					if(resourceDo!=null){
 					    officalText = resourceDo.getValue();
+					    map.put("officalText", officalText);
+					    map.put("despotCoupon", "Y");
 					}
 				}
-			    }
-			}
-		}
-	    }
-		return officalText;
-	    
+		       } else if("N".equals(oldCouponstatus)){
+	        	   if("Y".equals(newCouponstatus)){
+	        	       if (resourceInfo != null) {
+					//设置文案
+					    String  type = "GG_LIGHT";
+					    String  secType = "GG_POP_UP_NEW";
+					    AfResourceDo resourceDo =     afResourceService.getConfigByTypesAndSecType(type, secType);
+						if(resourceDo!=null){
+						    officalText = resourceDo.getValue();
+						    map.put("officalText", officalText);
+						//  map.put("despotCoupon", "N");
+					     }
+	        	       		}
+	        	   	}
+	        	   }
+	               
+	   	}
+	   	if(orderCount>0){
+	   	    if("Y".equals(oldCouponstatus)){
+	        	   if (resourceInfo != null) {
+				//设置文案
+				    String  type = "GG_LIGHT";
+				    String  secType = "GG_POP_UP_OLD";
+				    AfResourceDo resourceDo =     afResourceService.getConfigByTypesAndSecType(type, secType);
+					if(resourceDo!=null){
+					    officalText = resourceDo.getValue();
+					    map.put("officalText", officalText);
+					    map.put("despotCoupon", "Y");
+					}
+				}
+	   	       }
+	   	    
+	   	}
+            
+		return map;
+		
 	}
 	 private String getCouponYesNoStatus(AfResourceDo resourceInfo,  Long userId) {
 
