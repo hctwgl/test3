@@ -15,6 +15,7 @@ var itemsListRid;
 var itemsId;
 var userItemsList;
 var numClick01;
+var numClick02;
 var numClick03;//左右滑动时img3卡片数量
 var hasTouchInit=false;//是否初始化过滑动事件监听
 $(function(){
@@ -24,7 +25,7 @@ $(function(){
                 url: "/H5GG/sendItems",
                 data:{'activityId':activityId},
                 success: function (returnData) {
-                    returnData = eval('(' + returnData + ')');
+                    //returnData = eval('(' + returnData + ')');
                     console.log(returnData);
                     if(returnData.data.loginUrl){
                         location.href = returnData.data.loginUrl;
@@ -86,6 +87,7 @@ $(function(){
         var arr=[];
         name = $('.img.img3').attr('name');
         itemsListRid=$('.img.img3').attr('rid');
+        numClick02=$('.img.img3').attr('numClick');
         for(var i=0;i<userItemsList.length;i++){
             itemsId=userItemsList[i].itemsId;
             if(itemsId==itemsListRid){
@@ -95,7 +97,15 @@ $(function(){
         cardRid=arr[0];
         let dat='{"shareAppTitle":"全民集卡片 领取51元大奖","shareAppContent":"你的好友赠送了一张'+name+'卡给你，助你赢得51元大奖，速来领走吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/08/gg31.png","shareAppUrl":"'+ domainName + '/fanbei-web/activity/ggpresents?loginSource=Z&userName='+userName+'&activityId='+activityId+'&userItemsId='+cardRid+'&sharePage=ggpresents_userItemsId_'+cardRid+'","shareCodeUrl":"'+domainName+'/H5GGShare/submitShareCode?userItemsId='+cardRid+'&shareAppUrl='+domainName+'/fanbei-web/activity/ggpresents?loginSource=Z_userName='+userName+'_activityId='+activityId+'_userItemsId='+cardRid+'","isSubmit":"Y","sharePage":"ggpresents_userItemsId_'+cardRid+'"}';
         let base64 = BASE64.encoder(dat);
-        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
+        if($('.presentButton').attr('superPrize')=='Y'){
+            if(numClick02>=1){
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
+            }
+        }else{
+            if(numClick02>=2){
+                window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
+            }
+        }
     });
     $('.mask').click(function(){
         $('body').removeClass('overflowChange');
