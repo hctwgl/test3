@@ -404,7 +404,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	    AfBoluomeActivityCouponDo queryNewCoupon = new AfBoluomeActivityCouponDo();
 	    queryOldCoupon.setType("B");
 	    queryNewCoupon.setType("B");
-	    queryOldCoupon.setScopeApplication("INVITEE");
+	    queryOldCoupon.setScopeApplication("INVITER");
 	    queryNewCoupon.setScopeApplication("INVITEE");
 	    sentOldCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryOldCoupon);
             sentNewCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryNewCoupon);
