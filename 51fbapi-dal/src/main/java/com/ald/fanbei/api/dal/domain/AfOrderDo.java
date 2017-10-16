@@ -75,7 +75,16 @@ public class AfOrderDo extends AbstractSerial{
 	
 	private BigDecimal lat;//支付时纬度
 	private BigDecimal lng;//支付时经度
+	private String orderStatus;
 	
+	
+	
+	public String getOrderStatus() {
+	    return orderStatus;
+	}
+	public void setOrderStatus(String orderStatus) {
+	    this.orderStatus = orderStatus;
+	}
 	public Long getGoodsPriceId() {
 		return goodsPriceId;
 	}

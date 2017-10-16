@@ -103,21 +103,41 @@ body {
 }
 
 .money p:nth-child(2) span {
-    color: #fe963b;
+    color: #f2404d;
     margin-right: 0.1rem;
 }
-
-.banner img {
+.super-big{
+    position: relative;
+    height: 7.06rem;
+    margin-top: 0.7rem;
+}
+.banner img{
+    width:3.46rem;
+     height:5.06rem; 
+    /* background-color:pink; */
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+}
+banner .banner-bottom{
+    width:6.25rem;
+    height:2.97rem;
+}
+.banner-bottom img{
     width: 6.25rem;
-     height: 6.2rem; 
-    /* background-color: pink; */
-    margin-left: 9%;
+    height: 2.97rem;
+    position:absolute;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+
 }
 
 .ask {
     width: 2.86rem;
     height: .88rem;
-    background: #fb9659;
+    background: #f2404d;
     box-shadow: 0 .06rem .13rem 0 rgba(212, 195, 185, 0.87);
     border-radius: 1rem;
     margin-top: .5rem;
@@ -138,7 +158,7 @@ body {
     /*width: 100%;*/
     /* height: 6rem; */
     /* background-color: yellow; */
-    margin-bottom: 0.84rem;
+    /* margin-bottom: 0.84rem; */
 }
 
 #presents .presents-bottom {
@@ -199,14 +219,14 @@ body {
     position: relative;
 }
 
-#presents .presents-bottom .presents-bottom-left .rules {
+#presents .rules {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.28rem;
+    font-size: 0.32rem;
 }
 
-#presents .presents-bottom .presents-bottom-left .rules a {
+#presents .rules a {
     color: #5cb4e2;
     text-decoration: underline;
 }
@@ -214,7 +234,7 @@ body {
 .alertRule{
     width:6.8rem;
     height:8.34rem;
-    background-color:white;
+    background-color:#ea582a;
     padding:0 .3rem;
     position:absolute;
     top:43%;
@@ -231,7 +251,7 @@ body {
 }
 .word{
     font-size:0.4rem;
-    color:#fe8744;
+    color:#fff;
     margin:0 0.25rem;
 }
 .dian{
@@ -265,7 +285,7 @@ body {
 .alertRule .ruleCont{
     margin:0 auto;
     font-size:.26rem;
-    color:#4a4a4a;
+    color:#fff;
     line-height:.45rem;
     height:6.2rem;
     text-align: justify;

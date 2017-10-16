@@ -294,5 +294,6 @@ public interface AfOrderService {
 	 * @param orderInfo
 	 */
     void syncOrderInfo(String orderId, String plantform, AfOrderDo orderInfo);
+    int getOrderCountByStatusAndUserId(AfOrderDo queryCount);
 	
 }
