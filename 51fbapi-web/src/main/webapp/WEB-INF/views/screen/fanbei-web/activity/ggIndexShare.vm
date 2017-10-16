@@ -75,15 +75,18 @@
         <p class="closePrize" @click="close()"></p>
     </div>
     <div class="presentCard ask">
-        <p class="presentTitle">集齐6张卡片<span>领取51元现金</span></p>
+        <p class="presentCardTitle" v-for="item in content.normalCouponList">集齐6张卡片<span>领取{{item.amount}}元现金</span></p>
         <p class="presentCont"><span></span>完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利。</p>
         <p class="presentCont"><span></span>向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你。</p>
-        <p class="presentCont"><span></span>集齐全部专属卡片，即可兑换51元现金红包。</p>
+        <p class="presentCont" v-for="item in content.normalCouponList"><span></span>集齐全部专属卡片，即可兑换{{item.amount}}元现金红包。</p>
         <p class="presentButton" @click="presentClick()"><img src="$src/ggNew09.png"></p>
     </div>
     <div class="demandCard ask">
-        <p class="presentTitle">集齐6张卡片太难？<br/>邀请<span>3位好友</span>，也可吃霸王餐！</p>
-        <p class="presentCont"><span></span>通过“找人要卡”，每成功邀请3名好友，在以上6个场景中完成1笔任意金额消费，即可享用1次霸王餐（饿了么外卖，20元红包）。</p>
+        <p class="presentCardTitle">集齐6张卡片太难？</p>
+        <p class="inviteNum01" v-if="content.despotCoupon==='Y'" @click="toastClick()">您已成功邀请<span>{{content.alreadyNum}}人</span>，现在去享霸王餐 ></p>
+        <p class="inviteNum01" v-if="!(content.despotCoupon)&&(((content.alreadyNum)%(content.supportedNum))!=0)">您已邀请<span>{{content.alreadyNum}}人</span>，再邀请<span>{{(content.supportedNum)-((content.alreadyNum)%(content.supportedNum))}}人</span>即享霸王餐</p>
+        <p class="inviteNum03" v-if="!(content.despotCoupon)&&(((content.alreadyNum)%(content.supportedNum))===0)">邀请<span>{{content.supportedNum}}位好友</span>，也可吃霸王餐！</p>
+        <p class="presentCont"><span></span>通过“找人要卡”，每成功邀请{{content.supportedNum}}名好友，在以上6个场景中完成1笔任意金额消费，即可享用1次霸王餐（饿了么外卖，20元红包）。</p>
         <p class="presentCont"><span></span>被邀请的新用户可享受饿了么外卖首单立减优惠（15元红包）。</p>
         <p class="demandButton" @click="demandClick()"><img src="$src/ggNew10.png"></p>
     </div>

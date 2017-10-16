@@ -129,7 +129,7 @@ public class H5GGShareController extends H5Controller {
 	@ResponseBody
 	@RequestMapping(value = "/initHomePage", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = " ";
+		H5CommonResponse resultStr;
 		FanbeiH5Context context = new FanbeiH5Context();
 		context = doH5Check(request, false);
 		// TODO:获取活动的id
@@ -195,8 +195,7 @@ public class H5GGShareController extends H5Controller {
 											BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 											if (userId != null) {
 												// 判断用户是否拥有该优惠券 或者已经被领取完毕
-												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
-														|| bo.getDistributed() >= bo.getTotal()) {
+											    if (boluomeUtil.isUserHasCoupon(uri, userId, 1) || bo.getDistributed() >= bo.getTotal()) {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 												} else {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
@@ -333,6 +332,8 @@ public class H5GGShareController extends H5Controller {
 			}
 			// 获取文案的信息
 			String popupWords = "";
+			String despotCoupon = "";
+		        Map<String, String> map = new HashMap<String, String>();
 
 			// 获取饿了么场景Id
 			Long shopId = null;
@@ -348,12 +349,20 @@ public class H5GGShareController extends H5Controller {
 			if (StringUtil.isNotBlank(userName)) {
 				Long userId = convertUserNameToUserId(userName);
 				// TODO:获取弹框文案；
-				popupWords = afBoluomeActivityService.activityOffical(userId);
+				map = afBoluomeActivityService.activityOffical(userId);
+				if(map!=null){
+				    popupWords =  map.get("officalText");
+				    despotCoupon =  map.get("despotCoupon");
+				}
 				// 获取已经邀请的人数
 				alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
 
 			}
+			if (StringUtil.isBlank(userName)) {
+				alreadyNum = 0;
+			}
 
+			data.put("despotCoupon", despotCoupon);
 			data.put("alreadyNum", alreadyNum);
 			data.put("supportedNum", supportedNum);
 			data.put("shopId", shopId);
@@ -366,19 +375,18 @@ public class H5GGShareController extends H5Controller {
 			data.put("normalCouponList", normalCouponList);
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
-			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
+			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc());
 			logger.error("initHomePage", e);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		} catch (Exception exception) {
-			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage());
 			logger.error("initHomePage", exception);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		}
-
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	private List<AfBoluomeActivityItemsDo> addNumber(Long activityId, Long userId) {
@@ -528,7 +536,7 @@ public class H5GGShareController extends H5Controller {
 	@ResponseBody
 	public String sendItems(HttpServletRequest request, HttpServletResponse response)
 			throws UnsupportedEncodingException {
-		String resultStr = "";
+		H5CommonResponse resultStr = null ;
 		FanbeiH5Context context = new FanbeiH5Context();
 
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -570,18 +578,18 @@ public class H5GGShareController extends H5Controller {
 				Map<String, Object> data = new HashMap<>();
 				data.put("itemsList", itemsList);
 				data.put("userItemsList", resultList);
-				resultStr = H5CommonResponse.getNewInstance(true, "赠送卡片初始化成功", "", data).toString();
+				resultStr = H5CommonResponse.getNewInstance(true, "赠送卡片初始化成功", "", data);
+				doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			}
 
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getErrorCode().getDesc());
 			logger.error("sendItems" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片初始化失败", "", e.getMessage());
 			logger.error("sendItems" + context, e);
 		}
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	/**
@@ -597,7 +605,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/doSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String doSendItems(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr ;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -618,21 +626,17 @@ public class H5GGShareController extends H5Controller {
 				updateUserItemsStatus(userItemsId, "FROZEN");
 			}
 
-			// 埋点
-			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
-			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
+			resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc());
 			logger.error("doSendItems" + context, e);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getMessage());
 			logger.error("doSendItems" + context, e);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	/**
@@ -698,6 +702,7 @@ public class H5GGShareController extends H5Controller {
 				 * activityId = request.getParameter("activityId");
 				 */
 				String redirectShareAppUrl = shareAppUrl;
+				doMaidianLog(request,H5CommonResponse.getNewInstance(true, redirectShareAppUrl));
 				response.sendRedirect(redirectShareAppUrl);
 			}
 		} catch (Exception exception) {
@@ -719,7 +724,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/ggSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String ggSendItems(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr = null ;
 		try {
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			AfBoluomeActivityUserItemsDo userItemsDo = afBoluomeActivityUserItemsService.getById(userItemsId);
@@ -755,20 +760,20 @@ public class H5GGShareController extends H5Controller {
 					data.put("userItemsDo", userItemsDo);
 					data.put("fakeFinal", fakeFinal);
 					data.put("fakeJoin", fakeJoin);
-					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data);
+					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 				}
 			}
 
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc());
 			logger.error("ggSendItems error", e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getMessage());
 			logger.error("ggSendItems error", e);
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	private Long convertUserNameToUserId(String userName) {
@@ -797,7 +802,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/pickUpItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pickUpItems(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr = null ;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -866,7 +871,8 @@ public class H5GGShareController extends H5Controller {
 						if (prevousDo != null && "FROZEN".equals(prevousDo.getStatus())) {
 							updateUserItemsStatus(resourceUserItemsId, "SENT");
 						}
-						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功").toString();
+						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功");
+						doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 					} else {
 						return H5CommonResponse.getNewInstance(true, "你已领走卡片，无需重复领取").toString();
 					}
@@ -874,15 +880,14 @@ public class H5GGShareController extends H5Controller {
 				}
 			}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "领取卡片失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "领取卡片失败", "", e.getErrorCode().getDesc());
 			logger.error("pickUpItems" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "领取卡片失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "领取卡片失败", "", e.getMessage());
 			logger.error("pickUpItems" + context, e);
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	/**
@@ -898,7 +903,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/lightItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String lightItems(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr ;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -914,17 +919,17 @@ public class H5GGShareController extends H5Controller {
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
 			data.put("userName", userName);
-			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+			resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getErrorCode().getDesc());
 			logger.error("lightItems" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送卡片失败", "", e.getMessage());
 			logger.error("lightItems" + context, e);
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	/**
@@ -941,7 +946,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/askForItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String askForItems(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr ;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -959,20 +964,17 @@ public class H5GGShareController extends H5Controller {
 			List<AfBoluomeActivityItemsDo> itemsList = getActivityItems(activityId);
 			Map<String, Object> data = new HashMap<>();
 			data.put("itemsList", itemsList);
-			resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功", "", data).toString();
-			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
+			resultStr = H5CommonResponse.getNewInstance(true, "获取卡片成功", "", data);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc());
 			logger.error("askForItems" + context, e);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage());
 			logger.error("askForItems" + context, e);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	/**
@@ -988,7 +990,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/sendToFriend", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String sendToFriend(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr = null ;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -1042,24 +1044,19 @@ public class H5GGShareController extends H5Controller {
 					insertDo.setItemsId(resourceUserItemsDo.getItemsId());
 					insertDo.setGmtSended(new Date());
 					afBoluomeActivityUserItemsService.saveRecord(insertDo);
-
-					resultStr = H5CommonResponse.getNewInstance(true, "赠送成功").toString();
-					// 埋点
-					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "success"));
+					resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
+					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 				}
 			}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc());
 			logger.error("sendToFriend" + context, e);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getMessage());
 			logger.error("sendToFriend" + context, e);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	/**
@@ -1073,7 +1070,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/ggAskForItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String doAskForItems(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr = null ;
 		try {
 
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
@@ -1114,20 +1111,20 @@ public class H5GGShareController extends H5Controller {
 					data.put("fakeFinal", fakeFinal);
 					data.put("fakeJoin", fakeJoin);
 					logger.info("data=" + JSONObject.toJSONString(data));
-					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+					resultStr = H5CommonResponse.getNewInstance(true, "成功", "", data);
+					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 				}
 			}
 
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getErrorCode().getDesc());
 			logger.error("ggAskForItems error", e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "失败", "", e.getMessage());
 			logger.error("ggAskForItems error", e);
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	private String changePhone(String userName) {
@@ -1153,7 +1150,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/listRank", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String listBank(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr = null ;
 		try {
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			List<BoluomeUserRebateBankDo> rankList = afBoluomeActivityUserRebateService.getBankList(activityId);
@@ -1177,24 +1174,24 @@ public class H5GGShareController extends H5Controller {
 				 */
 				data.put("rebateNumber", rebateNumber);
 				data.put("rankList", rankList);
-				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data).toString();
+				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data);
+				doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc());
 			logger.error("listRank", e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage());
 			logger.error("listRank", e);
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	@RequestMapping(value = "/pickUpSuperPrize", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pickUpSuperPrize(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
+		H5CommonResponse resultStr = null ;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -1277,8 +1274,8 @@ public class H5GGShareController extends H5Controller {
 							accountDo.setUserId(userId);
 							afUserAccountService.updateUserAccount(accountDo);
 							// 从用户卡片去掉活动卡片的一个。
-							resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功，请前往  我的-返利金额  查看").toString();
-
+							resultStr = H5CommonResponse.getNewInstance(true, "红包领取成功，请前往  我的-返利金额  查看");
+							doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 						}
 
 					}
@@ -1286,15 +1283,14 @@ public class H5GGShareController extends H5Controller {
 			}
 
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getErrorCode().getDesc()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getErrorCode().getDesc());
 			logger.error("pickUpSuperPrize" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getMessage()).toString();
+			resultStr = H5CommonResponse.getNewInstance(false, "红包领取失败", "", e.getMessage());
 			logger.error("pickUpSuperPrize" + context, e);
 		}
 
-		// doMaidianLog(request, resultStr);
-		return resultStr;
+		return resultStr.toString();
 	}
 
 	@Resource
@@ -1376,7 +1372,9 @@ public class H5GGShareController extends H5Controller {
 			} else if (!"0".equals(code)) {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			}
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+			
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());

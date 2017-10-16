@@ -85,7 +85,7 @@ let vm = new Vue({
         imgSwiper(){
             let mySwiper = new Swiper ('.banner', {
                 loop: true,
-                speed:1000,
+                speed:1300,
                 autoplay :2000,
                 autoplayDisableOnInteraction : false
             });
@@ -163,7 +163,16 @@ let vm = new Vue({
                 error: function(){
                     requestMsg("请求失败");
                 }
-            })
+            });
+            //点击卡片加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggIndex?activityId=1&type=card'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击获取终极大奖
         finalPrize:function(){
