@@ -20,8 +20,10 @@ public class ChangeMobileTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = "13370127054";
+	String userName = "13656640522";
 	
+	String oldMobile = "13656640522";
+	String newMobile = "13656640521";
 	
 	/**
 	 * 自动注入登陆令牌
@@ -41,7 +43,7 @@ public class ChangeMobileTest extends BaseTest{
 	public void  testGetVerifyCodeApi() {
 		String url = urlBase + "/user/getVerifyCode";
 		Map<String,String> params = new HashMap<>();
-		params.put("mobile", "13370127054");
+		params.put("mobile", oldMobile);
 		params.put("type", "M");
 		testApi(url, params, userName ,true);
 	}
@@ -61,7 +63,7 @@ public class ChangeMobileTest extends BaseTest{
 		String url = urlBase + "/user/changeMobileCheckVerifyCode";
 		Map<String,String> params = new HashMap<>();
 		params.put("verifyCode", String.valueOf(888888));
-		params.put("newMobile", "15968196088");
+		params.put("newMobile", newMobile);
 		params.put("type", "M");
 		
 		testApi(url, params, userName);
@@ -72,7 +74,7 @@ public class ChangeMobileTest extends BaseTest{
 		String url = urlBase + "/user/changeMobileVerify";
 		Map<String,String> params = new HashMap<>();
 //		params.put("behavior", "PAY_PWD");
-//		params.put("payPwd", DigestUtils.md5Hex("123456"));
+//		params.put("payPwd", DigestUtils.md5Hex("a123456"));
 		
 		params.put("behavior", "OLD_MOBILE");
 		params.put("verifyCode", "888888");
@@ -80,7 +82,7 @@ public class ChangeMobileTest extends BaseTest{
 //		params.put("behavior", "ID_CARD");
 //		params.put("idCard", "3301271990020147330");
 		
-		params.put("newMobile", "15968196088");
+		params.put("newMobile", newMobile);
 		
 		testApi(url, params, userName);
 	}

@@ -35,6 +35,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
 
 /**
  * @类描述：更改手机——新手机号入库&同步新手机号和通讯录到风控，原子操作
@@ -124,8 +125,6 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 					
 					//状态更新失败不影响核心业务，日志打点即可
 					try {
-						bizCacheUtil.delCache(Constants.CACHEKEY_USER_NAME + context.getUserName());//操作成功，删除原用户缓存
-						
 						AfUserAuthDo authDoForMod = new AfUserAuthDo();
 						authDoForMod.setUserId(uid);
 						authDoForMod.setTeldirStatus(YesNoStatus.YES.getCode());
@@ -139,6 +138,7 @@ public class ChangeMobileSyncConactsApi implements ApiHandle {
 			}
 		});
 		
+		bizCacheUtil.delCache(Constants.CACHEKEY_USER_NAME + context.getUserName());//操作成功，删除原用户缓存
 		bizCacheUtil.hdel(Constants.CACHEKEY_CHANGE_MOBILE, uidStr);
 		return resp;
 	}
