@@ -1387,10 +1387,10 @@ public class H5GGShareController extends H5Controller {
 			} else if ("10305".equals(code)) {
 				return H5CommonResponse.getNewInstance(true, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
 			} else if (!"0".equals(code)) {
-			    //存入缓存
-			        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid(),afUserDo.getUserName());
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			}
+			    //存入缓存
+		        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid(),afUserDo.getUserName());
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
 
