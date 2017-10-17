@@ -424,12 +424,11 @@ public class BoluomeUtil extends AbstractThird{
 	 */
 	public boolean isHasCoupon(String resourceId ,String userName ){
 		boolean result = false;
-		List<String> userNameList = bizCacheUtil.getObjectList(resourceId);
-		if (userNameList != null && userNameList.size()>0) {
-			if (userNameList.contains(userName)) {
-				result = true;
-			}
+		Object resultObj = bizCacheUtil.getObject("boluome:coupon:"+resourceId+userName);
+		if (resultObj != null ) {
+			result = true;
 		}
+
 		return result;
 	}
 	

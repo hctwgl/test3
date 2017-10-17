@@ -386,9 +386,7 @@ public class BizCacheUtil extends AbstractThird {
 		return setOps.isMember(key, value);
 	}
 	
-	public static void main(String[] args) {
-		
-	}
+
 	
 	
 	/**
