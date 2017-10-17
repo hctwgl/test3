@@ -592,7 +592,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			logger.info("check billMonth1 "+getYearMonth(d).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue());
 			if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
 				Calendar c = Calendar.getInstance();
-				c.setTime(afBorrowBillLast.getGmtOutDay());
+				c.setTime(now);
 				c.add(Calendar.MONTH,1);
 				now = c.getTime();
 				logger.info("billMonth plus 1 first");
@@ -609,7 +609,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				logger.info("check billMonth2 "+getYearMonth(p).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue());
 				if(getYearMonth(p).intValue() <= getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
 					Calendar c = Calendar.getInstance();
-					c.setTime(afBorrowBillLast.getGmtOutDay());
+					c.setTime(now);
 					c.add(Calendar.MONTH,1);
 					logger.info("billMonth plus 1 second");
 					now = c.getTime();
