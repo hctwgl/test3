@@ -1390,7 +1390,7 @@ public class H5GGShareController extends H5Controller {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			}
 			    //存入缓存
-		        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid(),afUserDo.getUserName());
+		        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y");
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
 
