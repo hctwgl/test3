@@ -128,6 +128,7 @@ public class Constants {
 	public static final String CACHEKEY_USER_LOGIN_WIFI_MAC = "login_wifi_mac$";
 	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
 	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
+	public static final String CACHEKEY_CHANGE_MOBILE = "change_mobile";
 	
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";

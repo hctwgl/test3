@@ -148,7 +148,6 @@
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
-				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
 				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
 				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />
 				<entry key="/user/getPayPwdVerifyCode" value-ref="getPayPwdVerifyCodeApi" />
@@ -176,6 +175,11 @@
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
+				<entry key="/user/changeMobile" value-ref="changeMobileApi"/>
+				<entry key="/user/changeMobileIfAble" value-ref="changeMobileIfAbleApi"/>
+				<entry key="/user/changeMobileCheckVerifyCode" value-ref="changeMobileCheckVerifyCodeApi"/>
+				<entry key="/user/changeMobileVerify" value-ref="changeMobileVerifyApi"/>
+				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />

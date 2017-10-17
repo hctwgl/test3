@@ -10,6 +10,8 @@ public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 
+    VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，前往应用市场更新到最新版本获得更好体验"),
+
     ZFB_NOT_USERD("PARAM_ERROR", 1145, "param error", "支付宝支付正在维护中,请用其它支付方式"),
     WEBCHAT_NOT_USERD("PARAM_ERROR", 1142, "param error", "微信支付正在维护中,请用其它支付方式"),
     // PARAM_CODE 1001-1099
@@ -24,25 +26,20 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CALCULATE_SHA_256_ERROR("CALCULATE_SHA_256_ERROR",1009,"cal sha 265 error","系统错误"),
     SYSTEM_REPAIRING_ERROR("SYSTEM_REPAIRING_ERROR",1010,"system repairing","系统维护中"),
     REQUEST_PARAM_ILLEGAL ("REQUEST_PARAM_ILLEGAL", 1011, "request param illegal", "请求参数不合法"),
-    REQUEST_PARAM_TOKEN_TIMEOUT("REQUEST_PARAM_TOKEN_ERROR", 1141, "token is invalid", "您的登录已超时, 请重新登录"),
-    
-    // user mode code from 1100 - 1199
-    USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"), 
+    REQUEST_PARAM_TOKEN_TIMEOUT("REQUEST_PARAM_TOKEN_ERROR", 1012, "token is invalid", "您的登录已超时, 请重新登录"),
     USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1015,"user not exist error","用户不存在"),
     USER_LOGIN_SMS_NOTEXIST("USER_LOGIN_SMS_NOTEXIST",1016,"user login sms not exist","请获取短信验证码"),
     USER_LOGIN_SMS_WRONG_ERROR("USER_LOGIN_SMS_WRONG_ERROR",1017,"user login sms wrong error","验证码不正确"),
     
+    // user mode code from 1100 - 1199
+    USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"), 
     USER_INVALID_MOBILE_NO("USER_INVALID_MOBILE_NO",1101,"invalid mobile number","无效手机号"),
     USER_HAS_REGIST_ERROR("USER_HAS_REGIST_ERROR",1102,"user has been regist","该号码已经注册"),
     USER_PASSWORD_ERROR("USER_PASSWORD_ERROR",1103,"user or password error","用户名或密码不正确"),
     USER_PASSWORD_ERROR_GREATER_THAN5("USER_PASSWORD_ERROR_GREATER_THAN5",1104,"user password error count to max","密码错误次数超过限制锁定2小时"),
     USER_REGIST_SMS_NOTEXIST("USER_REGIST_SMS_NOTEXIST",1105,"user regist sms not exist","验证码不正确"),
     USER_REGIST_SMS_ERROR("USER_REGIST_SMS_ERROR",1106,"user regist sms error","验证码不正确"),
-    USER_REGIST_CHANNEL_NOTEXIST("USER_REGIST_SMS_NOTEXIST",1138,"user regist channel code not exist","渠道编号不正确"),
-    USER_REGIST_IMAGE_NOTEXIST("USER_REGIST_IMAGE_NOTEXIST",1139,"user regist image not exist","图片验证码不正确"),
-    USER_REGIST_IMAGE_ERROR("USER_REGIST_IMAGE_ERROR",1140,"user regist image error","图片验证码不正确"),
-    USER_REGIST_IMAGE_ERROR2("USER_REGIST_IMAGE_ERROR",1141,"user regist image error","图片验证码不正确"),
-
+    
     USER_REGIST_SMS_OVERDUE("USER_REGIST_SMS_OVERDUE",1107,"user regist sms overdue","验证码已经过期"),
     USER_REGIST_ACCOUNT_EXIST("USER_REGIST_ACCOUNT_EXIST",1108,"user regist account exist","用户已存在"),
 
@@ -79,8 +76,17 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_PASSWORD_ERROR_FIFTH("USER_PASSWORD_ERROR_FIFTH",1135,"user password error fifth","密码输入有误,剩余次数(1)"),
     USER_PASSWORD_ERROR_ZERO("USER_PASSWORD_ERROR_SIXTH",1136,"user password error sixth","密码输入有误,剩余次数(6)"),
     USER_PASSWORD_OLD_ERROR("USER_PASSWORD_OLD_ERROR",1137,"user password old error","旧密码输入有误"),
-    CHANGE_BIND_MOBILE_LIMIT("CHANGE_BIND_MOBILE_LIMIT",1138,"chnage bind mobile limit","该功能正在维护中,如需改绑请联系客服:0571-88193918"),
-
+    
+    USER_REGIST_CHANNEL_NOTEXIST("USER_REGIST_SMS_NOTEXIST",1138,"user regist channel code not exist","渠道编号不正确"),
+    USER_REGIST_IMAGE_NOTEXIST("USER_REGIST_IMAGE_NOTEXIST",1139,"user regist image not exist","图片验证码不正确"),
+    CHANGE_MOBILE_PASSWORD_ERROR_EXCEED_THRESHOLD("CHANGE_MOBILE_PASSWORD_ERROR_EXCEED_THRESHOLD",1140,"Wrong password entered more than three times","您已尝试超过5次，帐号将被锁定，请在24小时后重试。"),
+    CHANGE_MOBILE_IDENTITY_CARD_ERROR_EXCEED_THRESHOLD("CHANGE_MOBILE_IDENTITY_CARD_ERROR_EXCEED_THRESHOLD",1141,"ENTER AN IDENTITY CARD ERROR MORE THAN THREE TIMES","您已尝试超过5次，帐号将被锁定，请在24小时后重试。"),
+    CHANGE_BIND_MOBILE_LIMIT("CHANGE_BIND_MOBILE_LIMIT",1142,"chnage bind mobile limit","该功能正在维护中,如需改绑请联系客服:0571-88193918"),
+    CHANGE_MOBILE_TARGET_LOST("CHANGE_MOBILE_TARGET_LOST", 1143, "change mobile target lost", "要更换的新手机号已丢失，请重新操作"),
+    USER_REGIST_IMAGE_ERROR("USER_REGIST_IMAGE_ERROR",1144,"user regist image error","图片验证码不正确"),
+    USER_REGIST_IMAGE_ERROR2("USER_REGIST_IMAGE_ERROR",1145,"user regist image error","图片验证码不正确"),
+    
+    // 1200 -
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     //优惠券不可用，不能修改code
     USER_COUPON_ERROR("USER_COUPON_ERROR",1201,"user coupon error ","优惠券不可用"),
@@ -90,6 +96,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_COUPON_PICK_OVER_ERROR("USER_COUPON_PICK_OVER_ERROR",1213,"pick coupon over error ","优惠券已领取完"),
     USER_GET_SIGN_AWARD_ERROR("USER_GET_SIGN_AWARD_ERROR",1214,"user get sign award error ","签到奖励已领取"),
     
+    // 1300 -
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     USER_MAIN_BANKCARD_NOT_EXIST_ERROR("USER_MAIN_BANKCARD_NOT_EXIST_ERROR",1301,"user main bankcard not exist error","您未绑定主卡"),
     USER_BANKCARD_NOT_EXIST_ERROR("USER_BANKCARD_NOT_EXIST_ERROR",1302,"user bankcard not exist error","用户银行卡不存在"),
@@ -97,8 +104,6 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_BANKCARD_EXIST_ERROR("USER_BANKCARD_EXIST_ERROR",1304,"user bankcard exist error","用户银行卡已被绑定"),
     USER_REALNAME_AUTH_ERROR("USER_REALNAME_AUTH_ERROR",1305,"user realname auth error","用户实名认证失败"),
     
-
-
     USER_CARD_AUTH_ERROR("USER_CARD_AUTH_ERROR",1306,"user card auth error","身份证图片获取失败,请重试!"),
     USER_CARD_INFO_EXIST_ERROR("USER_CARD_INFO_EXIST_ERROR",1307,"user card exist error","请先完成实名信息提交!"),
     USER_CARD_INFO_ATYPISM_ERROR("USER_CARD_INFO_ATYPISM_ERROR",1308,"user card info atypism error","身份证信息与实名信息不符!"),
@@ -219,6 +224,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     QUERY_OVERDUE_ORDER_ERROR("QUERY_OVERDUE_ORDER_ERROR",1919,"query overdue order error","查询逾期账单失败"),
     RISK_USERLAY_RATE_ERROR("RISK_USERLAY_RATE_ERROR",1920,"risk userlay rate error","获取用户手续费率失败"),
     RISK_SYN_LOGIN_VERIFY_ERROR("RISK_SYN_LOGIN_VERIFY_ERROR",1921,"risk syn login verify error","风控同步登陆失败"),
+    RISK_SYNC_CONTACTS_ERROR("RISK_MODIFY_CONTACTS_ERROR", 1922, "risk_modify contacts error", "风控同步通讯录失败"),
     
     //2000-2100
     BORROW_CASH_AMOUNT_ERROR("BORROW_CASH_AMOUNT_ERROR",2000,"borrow cash amount or day error","借钱金额或者时间有误"),

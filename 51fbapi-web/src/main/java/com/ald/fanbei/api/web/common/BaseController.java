@@ -17,6 +17,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -78,6 +80,8 @@ public abstract class BaseController {
     @Resource
     AfShopService afShopService;
 
+    @Resource
+    private AfResourceService afResourceService;
     /**
      * 解析request
      *
@@ -105,6 +109,34 @@ public abstract class BaseController {
 
             // 验证参数、签名
             FanbeiContext contex = doCheck(requestDataVo);
+
+            //判断版本更新 后台控制
+            try {
+                AfResourceDo afResourceDo = afResourceService.getAfResourceAppVesion();
+                if (afResourceDo != null && afResourceDo.getValue().toLowerCase().equals("true")) {
+                    if (contex.getAppVersion() < Integer.parseInt(afResourceDo.getValue1()) && requestDataVo.getId().endsWith("www")) {
+                        if (!(request.getRequestURI().toString().toLowerCase().contains("/system/appupgrade") || request.getRequestURI().toLowerCase().contains("/system/checkversion"))) {
+                            throw new FanbeiException("version is letter 391", FanbeiExceptionCode.VERSION_ERROR);
+                        }
+                    }
+                }
+            }
+            catch (Exception e){
+                if(e instanceof  FanbeiException){
+                    FanbeiException fanebei1 = (FanbeiException)e;
+                    if(fanebei1.getErrorCode().getCode().equals("VERSION_ERROR")){
+                       throw e;
+                    }
+                    else{
+                        logger.info("update version error", e.toString());
+                        logger.error("update version error", e);
+                    }
+                }
+                else {
+                    logger.info("update version error", e.toString());
+                    logger.error("update version error", e);
+                }
+            }
 
             // 处理业务
             exceptionresponse = doProcess(requestDataVo, contex, request);
@@ -486,7 +518,7 @@ public abstract class BaseController {
         if (!needToken) {
             TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
             if (token == null) {
-                throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+                throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
             }
 
             // refresh token
@@ -535,7 +567,7 @@ public abstract class BaseController {
         if (Constants.SWITCH_OFF.equals(ConfigProperties.get(Constants.CONFKEY_CHECK_SIGN_SWITCH))) {
             if (needToken) {//需要登录的接口必须加token
                 if (token == null) {
-                    throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
+                    throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
                 }
                 webContext.setLogin(true);
             } else {//否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token

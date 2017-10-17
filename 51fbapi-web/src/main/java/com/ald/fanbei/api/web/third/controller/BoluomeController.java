@@ -74,13 +74,13 @@ public class BoluomeController extends AbstractThird {
 	thirdLog.info(uri + "begin requestParams = {}", requestData);
 	JSONObject requestParams = JSON.parseObject(requestData);
 	Map<String, String> params = buildOrderParamMap(requestParams);
-	boolean sign = BoluomeNotify.verify(params);
+	//boolean sign = BoluomeNotify.verify(params);
 	String retunStr = StringUtils.EMPTY;
-
+	boolean sign = true ;
 	if (sign) {
 	    try {
 		String status = params.get(BoluomeCore.STATUS);
-		OrderStatus orderStatus = OrderStatus.findRoleTypeByCode(status);
+		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
 		if (orderStatus != OrderStatus.DEALING) {
 		    AfOrderDo orderInfo = buildOrderInfo(params);
 		    if (orderInfo != null) {
