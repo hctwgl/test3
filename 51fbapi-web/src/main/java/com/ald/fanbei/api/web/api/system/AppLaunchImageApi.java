@@ -5,9 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserToutiaoService;
+import com.ald.fanbei.api.biz.service.AppOpenLogService;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
+import com.ald.fanbei.api.dal.domain.AppOpenLogDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -40,9 +42,12 @@ public class AppLaunchImageApi implements ApiHandle{
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	AppOpenLogService appOpenLogService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
+		addAppOpenLog(requestDataVo,context);
 		ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String appVersion = context.getAppVersion()!=null?context.getAppVersion()+"":"";
@@ -69,6 +74,28 @@ public class AppLaunchImageApi implements ApiHandle{
 		ToutiaoAdOpen(requestDataVo,context);
 		
 		return response;
+	}
+
+	private void addAppOpenLog(RequestDataVo requestDataVo, FanbeiContext context) {
+		try {
+			String userName = context.getUserName();
+			String id = ObjectUtils.toString(requestDataVo.getId(), "");
+			String phoneType =  "";
+			if(id.startsWith("i")){
+				phoneType = "ios";
+			}else if(id.startsWith("a")){
+				phoneType = "android";
+			}
+			String appVersion = context.getAppVersion()!=null?context.getAppVersion()+"":"";
+			AppOpenLogDo appOpenLogDo = new AppOpenLogDo();
+			appOpenLogDo.setAppVersion(appVersion);
+			appOpenLogDo.setPhoneType(phoneType);
+			appOpenLogDo.setUserName(userName);
+			appOpenLogDo.setGmtCreate(new Date());
+			appOpenLogService.saveRecord(appOpenLogDo);
+		}catch (Exception e){
+			logger.error("addAppOpenLog:catch error",e);
+		}
 	}
 
 	private void ToutiaoAdOpen(RequestDataVo requestDataVo, FanbeiContext context) {
@@ -99,7 +126,7 @@ public class AppLaunchImageApi implements ApiHandle{
 				}
 			}
 		}catch (Exception e){
-			logger.error("toutiaoopen:catch error",e);
+			logger.error("toutiaoopen:catch error",e.getMessage());
 		}
 	}
 
