@@ -87,6 +87,8 @@ gulp.task('dev-es', function() {
         .pipe(sourcemaps.init())
         .pipe(plumber())
         .pipe(babel({presets: ['es2015']}))
+        .pipe(cached('js'))
+        .pipe(uglify())                  //压缩
         .pipe(sourcemaps.write('_srcmap'))
         .pipe(gulp.dest('dist'))
         .pipe(reload({stream: true}))
@@ -95,7 +97,11 @@ gulp.task('dev-es', function() {
 gulp.task('dev-less', function() {
     return gulp.src(['build/**/*.less','build/**/*.css'])
         .pipe(watch(['build/**/*.less','build/**/*.css']))  
+        .pipe(plumber())
         .pipe(less())
+        .pipe(cached('less'))
+        .pipe(autoprefixer('last 6 version'))
+        .pipe(cleancss())
         .pipe(gulp.dest('dist'))
         .pipe(reload({stream: true}))
 })
