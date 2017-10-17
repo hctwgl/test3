@@ -1008,35 +1008,39 @@ public class H5GGShareController extends H5Controller {
 					userItemsDo.setStatus("NORMAL");
 					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
 							.getListByCommonCondition(userItemsDo);
-					if (userItemsList == null || userItemsList.size() < 2) {
-						return H5CommonResponse.getNewInstance(true, "抱歉，你暂时没有足够此卡片").toString();
-					}
-					// 若大于一张则，
-					// 登录用户卡片选一张，然后赠状态设为已经赠送
-					AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
-					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService
-							.getById(resourceUserItemsDo.getRid());
-					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+					if (userItemsList != null && userItemsList.size()>0) {
+						AfBoluomeActivityUserItemsDo userdoo =  userItemsList.get(0);
+						boolean isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId, userdoo.getBoluomeActivityId());
+						
+						//若获取了终极大奖，则只有一个都可以赠送，若没有获取终极大奖，则必须是两个
+						
+						if (userItemsList == null || (!isGetSuperPrize && userItemsList.size() < 2) || (isGetSuperPrize && userItemsList.size() < 1) ) {
+							return H5CommonResponse.getNewInstance(false, "抱歉，你暂时没有足够此卡片").toString();
+						}
+						// 若大于一张则，
+						// 登录用户卡片选一张，然后赠状态设为已经赠送
+						AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
 						updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
-					}
 
-					// 朋友的userItems表中增加一条卡片记录
-					AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
-					insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
-					AfUserDo insertUser = afUserService.getUserById(friendId);
-					if (insertUser == null) {
-						return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
+						// 朋友的userItems表中增加一条卡片记录
+						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
+						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
+						AfUserDo insertUser = afUserService.getUserById(friendId);
+						if (insertUser == null) {
+							return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
+						}
+						insertDo.setUserName(insertUser.getUserName());
+						insertDo.setUserId(friendId);
+						insertDo.setStatus("NORMAL");
+						insertDo.setSourceId(resourceUserItemsDo.getRid());
+						insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
+						insertDo.setItemsId(resourceUserItemsDo.getItemsId());
+						insertDo.setGmtSended(new Date());
+						afBoluomeActivityUserItemsService.saveRecord(insertDo);
+						resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
+						doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 					}
-					insertDo.setUserName(insertUser.getUserName());
-					insertDo.setUserId(friendId);
-					insertDo.setStatus("NORMAL");
-					insertDo.setSourceId(resourceUserItemsDo.getRid());
-					insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
-					insertDo.setItemsId(resourceUserItemsDo.getItemsId());
-					insertDo.setGmtSended(new Date());
-					afBoluomeActivityUserItemsService.saveRecord(insertDo);
-					resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
-					doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
+				
 				}
 			}
 		} catch (FanbeiException e) {
