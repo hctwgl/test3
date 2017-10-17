@@ -27,7 +27,7 @@ body {
 .zheshang-word {
   font-size: 0.1rem;
   position: absolute;
-  top: .35rem;
+  top: .6rem;
   left: 2.5rem;
 }
 .zheshang-des {
@@ -60,7 +60,7 @@ body {
 .nonghang-word {
   font-size: 0.1rem;
   position: absolute;
-  top: .35rem;
+  top: .6rem;
   left: 3.2rem;
 }
 .nonghang-des {
