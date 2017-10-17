@@ -822,9 +822,9 @@ public class H5GGShareController extends H5Controller {
 					}
 
 					Long reourceUserId = resourceUserItemsDo.getUserId();
-					// 你没有权限领取此卡片
+					// 您没有权限领取此卡片
 					if (reourceUserId.equals(userId)) {
-						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
+						return H5CommonResponse.getNewInstance(true, "您没有权限领取此卡片").toString();
 					}
 
 					// 查看是否已经领走
@@ -865,7 +865,7 @@ public class H5GGShareController extends H5Controller {
 						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功");
 						doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 					} else {
-						return H5CommonResponse.getNewInstance(true, "你已领走卡片，无需重复领取").toString();
+						return H5CommonResponse.getNewInstance(true, "您已领走卡片，无需重复领取").toString();
 					}
 
 				}
@@ -1015,7 +1015,7 @@ public class H5GGShareController extends H5Controller {
 						//若获取了终极大奖，则只有一个都可以赠送，若没有获取终极大奖，则必须是两个
 						
 						if (userItemsList == null || (!isGetSuperPrize && userItemsList.size() < 2) || (isGetSuperPrize && userItemsList.size() < 1) ) {
-							return H5CommonResponse.getNewInstance(false, "抱歉，你暂时没有足够此卡片").toString();
+							return H5CommonResponse.getNewInstance(false, "抱歉，您暂时没有足够此卡片").toString();
 						}
 						// 若大于一张则，
 						// 登录用户卡片选一张，然后赠状态设为已经赠送
@@ -1367,7 +1367,7 @@ public class H5GGShareController extends H5Controller {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			}
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
-			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+			return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());

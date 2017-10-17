@@ -729,11 +729,11 @@ public class APPH5GGShareController extends BaseController {
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
-			resultStr = H5CommonResponse.getNewInstance(false, "抱歉你暂时没有可以赠送的卡片", "", e.getErrorCode().getDesc());
+			resultStr = H5CommonResponse.getNewInstance(false, "抱歉您暂时没有可以赠送的卡片", "", e.getErrorCode().getDesc());
 
 			logger.error("sendItems" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "抱歉你暂时没有可以赠送的卡片", "", e.getMessage());
+			resultStr = H5CommonResponse.getNewInstance(false, "抱歉您暂时没有可以赠送的卡片", "", e.getMessage());
 			logger.error("sendItems" + context, e);
 		}
 		return resultStr.toString();
@@ -910,9 +910,9 @@ public class APPH5GGShareController extends BaseController {
 						.getById(resourceUserItemsId);// old卡片的内容
 				if (resourceUserItemsDo != null) {
 					Long destUserId = resourceUserItemsDo.getUserId();
-					// 你没有权限领取此卡片
+					// 您没有权限领取此卡片
 					if (destUserId.equals(userId)) {
-						return H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片").toString();
+						return H5CommonResponse.getNewInstance(true, "您没有权限领取此卡片").toString();
 					}
 					// 查看是否已经领走
 					AfBoluomeActivityUserItemsDo newUserItemsDoCondition = new AfBoluomeActivityUserItemsDo();
@@ -946,7 +946,7 @@ public class APPH5GGShareController extends BaseController {
 						resultStr = H5CommonResponse.getNewInstance(true, "领取卡片成功");
 						doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 					} else {
-						resultStr = H5CommonResponse.getNewInstance(true, "你没有权限领取此卡片");
+						resultStr = H5CommonResponse.getNewInstance(true, "您没有权限领取此卡片");
 						return resultStr.toString();
 					}
 
@@ -1118,7 +1118,7 @@ public class APPH5GGShareController extends BaseController {
 						//若获取了终极大奖，则只有一个都可以赠送，若没有获取终极大奖，则必须是两个
 						
 						if (userItemsList == null || (!isGetSuperPrize && userItemsList.size() < 2) || (isGetSuperPrize && userItemsList.size() < 1) ) {
-							return H5CommonResponse.getNewInstance(false, "抱歉，你暂时没有足够此卡片").toString();
+							return H5CommonResponse.getNewInstance(false, "抱歉，您暂时没有足够此卡片").toString();
 						}
 						// 若大于一张则，
 						// 登录用户卡片选一张，然后赠状态设为已经赠送
