@@ -613,7 +613,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 						Calendar c = Calendar.getInstance();
 						c.setTime(now);
 						c.set(Calendar.YEAR,_oldPay[0]);
-						c.set(Calendar.MONTH,_oldPay[1]);
+						c.set(Calendar.MONTH,_oldPay[1]-1);
 						now = c.getTime();
 						now = DateUtil.addMonths(now,1);
 						logger.info("billMonth plus 1 first now:"+now );
@@ -744,7 +744,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 						Calendar c = Calendar.getInstance();
 						c.setTime(now);
 						c.set(Calendar.YEAR,_oldPay[0]);
-						c.set(Calendar.MONTH,_oldPay[1]);
+						c.set(Calendar.MONTH,_oldPay[1]-1);
 						now = c.getTime();
 						now = DateUtil.addMonths(now,1);
 						logger.info("billMonth plus 1 first now:"+now );
