@@ -593,6 +593,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		if(startDate.before(now)){
 			now = DateUtil.addMonths(now,1);
 		}
+
 		if(afBorrowBillLast !=null){
 			if(getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue() != getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
 				//己出，且跨月
@@ -629,7 +630,6 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				}
 			}
 		}
-
 
 		logger.info("check billMonth time "+now);
 		logger.info("check billMonth time yearAndMonth "+getYearMonth(now));
