@@ -543,27 +543,36 @@ public class H5GGShareController extends H5Controller {
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
+			
+			
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			if (userId != null && activityId != null) {
 				// 选出itemsId
-				List<AfBoluomeActivityUserItemsDo> resultList = new ArrayList<>();
+				
+				AfBoluomeActivityUserItemsDo condition = new AfBoluomeActivityUserItemsDo();
+				condition.setBoluomeActivityId(activityId);
+				condition.setUserId(userId);
+				condition.setStatus("NORMAL");
+				List<AfBoluomeActivityUserItemsDo> resultList = afBoluomeActivityUserItemsService.getListByCommonCondition(condition);
+				
 				List<AfBoluomeActivityItemsDo> itemsList = new ArrayList<>();
-				List<Long> tempItemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId,
-						userId);// 大于1张卡片的用户记录
-				if (tempItemsList != null && tempItemsList.size() > 0) {
-					itemsList = addNumber(activityId, userId);
+			/*	List<Long> tempItemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId,
+						userId);// 大于1张卡片的用户记录--》update，改成所有的。
+*/				
+				
+				// 根据是否领取终极大奖不同个逻辑
+				boolean isGetSuperPrize = false;
+				isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId, activityId);
+				if (isGetSuperPrize) {// 已经获得终极大奖了则所有的卡片都可以赠送了
+					if (resultList != null && resultList.size() > 0) {
+						itemsList = addNumber(activityId, userId);
+					}
+				} else {
+					// 若没有领取周终极大奖，则逻辑不变
 
-					for (Long itemsId : tempItemsList) {
-						AfBoluomeActivityUserItemsDo t = new AfBoluomeActivityUserItemsDo();
-						t.setUserId(userId);
-						t.setBoluomeActivityId(activityId);
-						t.setItemsId(itemsId);
-						t.setStatus("NORMAL");
-						List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
-								.getListByCommonCondition(t);
-						if (userItemsList != null && userItemsList.size() > 0) {
-							resultList.addAll(userItemsList);
-						}
+					if (resultList != null && resultList.size() > 1) {// 此时判断是否大于1则。。
+						itemsList = addNumber(activityId, userId);
+
 					}
 				}
 				Map<String, Object> data = new HashMap<>();
