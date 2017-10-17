@@ -225,7 +225,8 @@ $(function () {
                     "smsCode":smsCode,
                     "password":password_md5,
                     "urlName":urlName,
-                    token:token
+                    token:token,
+                    'activityId':activityId
                 },
                 success: function (returnData) {
                     console.log(returnData);
