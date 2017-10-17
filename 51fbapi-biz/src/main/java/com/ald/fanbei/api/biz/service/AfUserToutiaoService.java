@@ -18,7 +18,7 @@ public interface AfUserToutiaoService {
 
     AfUserToutiaoDo getUser(String imei, String androidid, String idfa);
 
-    Long uptUserActive(Long rid);
+    Long uptUserActive(Long rid,Long userIdToutiao);
 
     AfUserToutiaoDo getUserActive(String imeiMd5, String androidId, String idfa);
 }

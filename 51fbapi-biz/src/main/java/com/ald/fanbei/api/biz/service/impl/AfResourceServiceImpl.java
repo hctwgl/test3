@@ -446,16 +446,16 @@ public class AfResourceServiceImpl implements AfResourceService {
 	
 	public List<AfResourceDo> getCarouselToManyResourceOrderByType(String type) {
 		List<AfResourceDo> list;
-		HashMap<String, List<AfResourceDo>> data = (HashMap<String, List<AfResourceDo>>) bizCacheUtil
+		/*HashMap<String, List<AfResourceDo>> data = (HashMap<String, List<AfResourceDo>>) bizCacheUtil
 				.getObject(CacheConstants.RESOURCE.HOME_CAROUSEL_TO_MANY_TYPE_LIST.getCode());
 		data = (data == null ? new HashMap<String, List<AfResourceDo>>() : data);
-		if (data.get(type) == null) {
+		if (data.get(type) == null) {*/
 			list = afResourceDao.getCarouselToManyResourceOrderByType(type);
-			data.put(type, list);
+			/*data.put(type, list);
 			bizCacheUtil.saveObject(CacheConstants.RESOURCE.HOME_CAROUSEL_TO_MANY_TYPE_LIST.getCode(), data);
 		} else {
 			list = data.get(type);
-		}
+		}*/
 		return list;
 	}
 
