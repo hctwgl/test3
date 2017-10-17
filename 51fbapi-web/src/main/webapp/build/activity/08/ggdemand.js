@@ -69,6 +69,8 @@ $(function(){
                             }else{
                                 requestMsg(outputData.msg)
                             }
+                    }else{
+                        requestMsg(outputData.msg);
                     }
                 }
             })

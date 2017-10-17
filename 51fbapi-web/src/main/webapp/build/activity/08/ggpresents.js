@@ -108,6 +108,8 @@ $(function () {
                      requestMsg(outputData.msg);
                       console.log(outputData.msg)
                     } 
+                }else{
+                    requestMsg(outputData.msg);
                 }
             }
         })

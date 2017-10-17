@@ -103,8 +103,7 @@ body{
 }
 .money p:nth-child(2) span{
   color:#f2404d;
-  /* margin-left:0.1rem; */
-   margin-left: 2%; 
+
 }
 .money .combo{
     margin-left:1%;
