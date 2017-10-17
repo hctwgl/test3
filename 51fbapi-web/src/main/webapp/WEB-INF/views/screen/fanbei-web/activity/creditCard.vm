@@ -3,7 +3,7 @@
 <head>
     #set($src="https://f.51fanbei.com/h5/app/activity/10")
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no ">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>信用卡中心</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/10/creditCard.css">

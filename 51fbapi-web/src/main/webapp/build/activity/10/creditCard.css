@@ -2,6 +2,9 @@ body {
   color: white;
   background-color: #f6f6f6;
 }
+.first-one {
+  width: 100%;
+}
 .credit-two {
   background: url("https://f.51fanbei.com/h5/app/activity/10/credit-05.png") no-repeat;
   background-size: cover;
@@ -13,7 +16,7 @@ body {
 }
 .credit-img {
   position: absolute;
-  top: 0.2rem;
+  top: 0.25rem;
   left: 0.15rem;
   width: 0.64rem;
   height: 0.64rem;
@@ -25,14 +28,14 @@ body {
   left: 1rem;
 }
 .zheshang-word {
-  font-size: 0.1rem;
+  font-size: 0.25rem;
   position: absolute;
-  top: .35rem;
+  top: .4rem;
   left: 2.5rem;
 }
 .zheshang-des {
   position: absolute;
-  top: 1rem;
+  top: 1.2rem;
   left: 1rem;
 }
 .credit-three {
@@ -46,7 +49,7 @@ body {
 }
 .nonghang-img {
   position: absolute;
-  top: 0.2rem;
+  top: 0.25rem;
   left: 0.15rem;
   width: 0.64rem;
   height: 0.64rem;
@@ -58,14 +61,14 @@ body {
   left: 1rem;
 }
 .nonghang-word {
-  font-size: 0.1rem;
+  font-size: 0.25rem;
   position: absolute;
-  top: .35rem;
+  top: .4rem;
   left: 3.2rem;
 }
 .nonghang-des {
   position: absolute;
-  top: 1rem;
+  top: 1.2rem;
   left: 1rem;
 }
 .credit-four {
