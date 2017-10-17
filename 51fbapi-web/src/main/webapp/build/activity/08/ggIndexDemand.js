@@ -35,7 +35,7 @@ $(function() {
                     var presentCardList = returnData.itemsList;
                     var str = '';
                     for (var j = 0; j < presentCardList.length; j++) {
-                        str += '<div class="img" name="'+presentCardList[j].name+'" rid="' + presentCardList[j].rid + '"><img src="' + presentCardList[j].iconUrl + '"></div>';
+                        str += '<div class="img" name="'+presentCardList[j].name+'" rid="' + presentCardList[j].rid + '"><img src="' + presentCardList[j].iconUrl + '"><img class="cardBlur" src="'+presentCardList[j].iconUrl+'"></div>';
                     }
                     $('.imgList').append(str);
                     slideNub = $(".imgList .img").size();//获取轮播图片数量
