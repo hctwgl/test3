@@ -406,6 +406,9 @@ public class H5BoluomeActivityController extends BaseController {
 		appDownLoadUrl = resourceCodeDo.getValue();
 	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
+	    
+	    
+	    if (refUserName != null && !"".equals(refUserName)){
 	    AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
 	    AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
 	    if (!refUserName.equals(mobile)) {
@@ -462,6 +465,8 @@ public class H5BoluomeActivityController extends BaseController {
 		    }
 		}
 	    }
+	    
+	   
 	    // 注册成功进行埋点
 	    if (registerSource != null) {
 		String register = "";
@@ -476,9 +481,13 @@ public class H5BoluomeActivityController extends BaseController {
 		}
 		String reqData = request.toString();
 		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null), request.getMethod(), rmtIp, exeT, "/H5GGShare/commitBouomeActivityRegister", request.getParameter("registerMobile"), register, "", "", "", "");
-	    } else {
-		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
 	    }
+	   }
+	    
+	    
+//           else {
+//		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
+//	    }
 	    // 注册成功给用户发送注册短信
 	    // smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 	    return resultStr;
