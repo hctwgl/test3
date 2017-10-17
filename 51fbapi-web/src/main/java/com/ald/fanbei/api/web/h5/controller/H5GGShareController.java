@@ -1032,7 +1032,7 @@ public class H5GGShareController extends H5Controller {
 
 				if (userItemsList == null || (!isGetSuperPrize && userItemsList.size() < 2)
 						|| (isGetSuperPrize && userItemsList.size() < 1)) {
-					return H5CommonResponse.getNewInstance(false, "抱歉，您暂时没有足够此卡片").toString();
+					return H5CommonResponse.getNewInstance(false, "抱歉，您还没有可赠送的卡片").toString();
 				}
 				// 若大于一张则，
 				// 登录用户卡片选一张，然后赠状态设为已经赠送
@@ -1059,10 +1059,10 @@ public class H5GGShareController extends H5Controller {
 			}
 
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc());
+			resultStr = H5CommonResponse.getNewInstance(false, "您还没有可赠送的卡片", "", e.getErrorCode().getDesc());
 			logger.error("sendToFriend" + context, e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getMessage());
+			resultStr = H5CommonResponse.getNewInstance(false, "您还没有可赠送的卡片", "", e.getMessage());
 			logger.error("sendToFriend" + context, e);
 		}
 
