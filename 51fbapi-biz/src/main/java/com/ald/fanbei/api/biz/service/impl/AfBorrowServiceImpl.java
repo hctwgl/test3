@@ -608,7 +608,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				logger.info("check billMonth2 "+getYearMonth(p).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue());
 				if(getYearMonth(p).intValue() <= getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
 					now = DateUtil.addMonths(now,1);
-					logger.info("billMonth plus 1 second");
+					logger.info("billMonth plus 1 second now:"+now);
 					needPlus =true;
 				}
 			}
@@ -671,7 +671,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
 		Date now = new Date();// 当前时间
 		//生成时间
-
+		logger.info("check now time"+now);
 		Integer nper = borrow.getNper();
 		Integer freeNper = borrow.getFreeNper();
 		String borrowRate = borrow.getBorrowRate();
@@ -705,11 +705,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			Date d=  getNowOutDay(out_day);
 			logger.info("check billMonth1 "+getYearMonth(d).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue());
 			if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
-				Calendar c = Calendar.getInstance();
-				c.setTime(afBorrowBillLast.getGmtOutDay());
-				c.add(Calendar.MONTH,1);
-				now = c.getTime();
-				logger.info("billMonth plus 1 first");
+				logger.info("check now time start"+now);
+				now = DateUtil.addMonths(now,1);
+				logger.info("billMonth plus 1 first now:"+now );
 				needPlus =true;
 			}
 
@@ -722,11 +720,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				p = getPayDate(pay_day,p);
 				logger.info("check billMonth2 "+getYearMonth(p).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue());
 				if(getYearMonth(p).intValue() <= getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
-					Calendar c = Calendar.getInstance();
-					c.setTime(afBorrowBillLast.getGmtOutDay());
-					c.add(Calendar.MONTH,1);
-					now = c.getTime();
-					logger.info("billMonth plus 1 second");
+					now = DateUtil.addMonths(now,1);
+					logger.info("billMonth plus 1 second now:"+now);
 					needPlus =true;
 				}
 			}
