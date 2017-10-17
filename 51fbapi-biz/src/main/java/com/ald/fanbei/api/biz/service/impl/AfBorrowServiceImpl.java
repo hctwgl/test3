@@ -581,39 +581,55 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
 
 		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
-		logger.info("check now time"+now);
-		if(afBorrowBillLast !=null){
-			boolean needPlus = false;
-			int out_day = 10;
-			int pay_day = 20;
-			if(afUserOutDayDo !=null){
-				out_day = afUserOutDayDo.getOutDay();
-				pay_day = afUserOutDayDo.getPayDay();
-			}
-			Date d=  getNowOutDay(out_day);
-			logger.info("check billMonth1 "+getYearMonth(d).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue());
-			if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
-				logger.info("check now time start"+now);
-				now = DateUtil.addMonths(now,1);
-				logger.info("billMonth plus 1 first now:"+now );
-				needPlus =true;
-			}
+		int out_day = 10;
+		int pay_day = 20;
+		if(afUserOutDayDo !=null){
+			out_day = afUserOutDayDo.getOutDay();
+			pay_day = afUserOutDayDo.getPayDay();
+		}
 
-			if(!needPlus){
-				//还款日比较
-				Date p = new Date();
-				if(pay_day < out_day) {
-					p = DateUtil.addMonths(p,1);
+		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
+				out_day - 1);
+		if(startDate.before(now)){
+			now = DateUtil.addMonths(now,1);
+		}
+		if(afBorrowBillLast !=null){
+			if(getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue() != getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
+				//己出，且跨月
+				Date d=  getNowOutDay(now,out_day);
+				if(pay_day<out_day){
+					//只比较出帐日
+					if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
+						now = DateUtil.addMonths(now,1);
+						logger.info("billMonth plus 1 first now:"+now );
+					}
 				}
-				p = getPayDate(pay_day,p);
-				logger.info("check billMonth2 "+getYearMonth(p).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue());
-				if(getYearMonth(p).intValue() <= getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
-					now = DateUtil.addMonths(now,1);
-					logger.info("billMonth plus 1 second now:"+now);
-					needPlus =true;
+				else{
+					//比较还款日
+					int oldPayDate = getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue();
+					int newPayDate = getYearMonth(now).intValue();
+					if( oldPayDate>=newPayDate){
+						Integer [] _oldPay =  getYearMonthV(afBorrowBillLast.getGmtPayTime());
+						Calendar c = Calendar.getInstance();
+						c.setTime(now);
+						c.set(Calendar.YEAR,_oldPay[0]);
+						c.set(Calendar.MONTH,_oldPay[1]);
+						now = c.getTime();
+						now = DateUtil.addMonths(now,1);
+						logger.info("billMonth plus 1 first now:"+now );
+					}
+				}
+
+			}else {
+				//只比较出帐日
+				Date d = getNowOutDay(now, out_day);
+				if (getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()) {
+					now = DateUtil.addMonths(now, 1);
+					logger.info("billMonth plus 1 first now:" + now);
 				}
 			}
 		}
+
 
 		logger.info("check billMonth time "+now);
 		logger.info("check billMonth time yearAndMonth "+getYearMonth(now));
@@ -695,44 +711,58 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 
 		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
-		boolean needPlus = false;
 		int out_day = 10;
 		int pay_day = 20;
 		if(afUserOutDayDo !=null){
 			out_day = afUserOutDayDo.getOutDay();
 			pay_day = afUserOutDayDo.getPayDay();
 		}
-		if(afBorrowBillLast !=null){
 
-			Date d=  getNowOutDay(out_day);
-			logger.info("check billMonth1 "+getYearMonth(d).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue());
-			if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
-				logger.info("check now time start"+now);
-				now = DateUtil.addMonths(now,1);
-				logger.info("billMonth plus 1 first now:"+now );
-				needPlus =true;
-			}
-
-			if(!needPlus){
-				//还款日比较
-				Date p = new Date();
-				if(pay_day < out_day) {
-					p = DateUtil.addMonths(p,1);
-				}
-				p = getPayDate(pay_day,p);
-				logger.info("check billMonth2 "+getYearMonth(p).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue());
-				if(getYearMonth(p).intValue() <= getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
-					now = DateUtil.addMonths(now,1);
-					logger.info("billMonth plus 1 second now:"+now);
-					needPlus =true;
-				}
-			}
-
-
+		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
+				out_day - 1);
+		if(startDate.before(now)){
+			now = DateUtil.addMonths(now,1);
 		}
 
+		if(afBorrowBillLast !=null){
+			if(getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue() != getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
+				//己出，且跨月
+				Date d=  getNowOutDay(now,out_day);
+				if(pay_day<out_day){
+					//只比较出帐日
+					if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
+						now = DateUtil.addMonths(now,1);
+						logger.info("billMonth plus 1 first now:"+now );
+					}
+				}
+				else{
+					//比较还款日
+					int oldPayDate = getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue();
+					int newPayDate = getYearMonth(now).intValue();
+					if( oldPayDate>=newPayDate){
+						Integer [] _oldPay =  getYearMonthV(afBorrowBillLast.getGmtPayTime());
+						Calendar c = Calendar.getInstance();
+						c.setTime(now);
+						c.set(Calendar.YEAR,_oldPay[0]);
+						c.set(Calendar.MONTH,_oldPay[1]);
+						now = c.getTime();
+						now = DateUtil.addMonths(now,1);
+						logger.info("billMonth plus 1 first now:"+now );
+					}
+				}
+
+			}else {
+				//只比较出帐日
+				Date d = getNowOutDay(now, out_day);
+				if (getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()) {
+					now = DateUtil.addMonths(now, 1);
+					logger.info("billMonth plus 1 first now:" + now);
+				}
+			}
+		}
 		logger.info("check billMonth time "+now);
 		logger.info("check billMonth time yearAndMonth "+getYearMonth(now));
+
 
 
 		for (int i = 1; i <= nper; i++) {
@@ -780,6 +810,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		String[] billDay1 = DateUtil.formatDate(date, DateUtil.MONTH_PATTERN).split("-");
 		return Integer.parseInt(billDay1[0]+billDay1[1]);
 	}
+	private Integer[] getYearMonthV(Date date){
+		String[] billDay1 = DateUtil.formatDate(date, DateUtil.MONTH_PATTERN).split("-");
+		Integer [] out = new Integer[2];
+		out[0] = Integer.parseInt(billDay1[0]);
+		out[1] = Integer.parseInt(billDay1[1]);
+		return out;
+	}
 
 	private Date getPayDate(int day,Date time){
 		Calendar c = Calendar.getInstance();
@@ -791,8 +828,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		return c.getTime();
 	}
 
-	private Date getNowOutDay(int day){
+	private Date getNowOutDay(Date d, int day){
 		Calendar c = Calendar.getInstance();
+		c.setTime(d);
 		c.set(Calendar.DAY_OF_MONTH,day);
 		c.set(Calendar.HOUR_OF_DAY,0);
 		c.set(Calendar.MINUTE,0);
