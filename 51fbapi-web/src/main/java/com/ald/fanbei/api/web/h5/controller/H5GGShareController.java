@@ -195,7 +195,8 @@ public class H5GGShareController extends H5Controller {
 											BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 											if (userId != null) {
 												// 判断用户是否拥有该优惠券 或者已经被领取完毕
-											    if (boluomeUtil.isUserHasCoupon(uri, userId, 1) || bo.getDistributed() >= bo.getTotal()) {
+												if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
+														|| bo.getDistributed() >= bo.getTotal()) {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 												} else {
 													BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
@@ -324,7 +325,7 @@ public class H5GGShareController extends H5Controller {
 						itemsDoo.setNum(-1);
 					}
 				}
-			}else {
+			} else {
 				// 未登录则终极大奖状态不变，并且卡片个数是-1
 				for (AfBoluomeActivityItemsDo itemsDoo : itemsList) {
 					itemsDoo.setNum(-1);
@@ -333,7 +334,7 @@ public class H5GGShareController extends H5Controller {
 			// 获取文案的信息
 			String popupWords = "";
 			String despotCoupon = "";
-		        Map<String, String> map = new HashMap<String, String>();
+			Map<String, String> map = new HashMap<String, String>();
 
 			// 获取饿了么场景Id
 			Long shopId = null;
@@ -350,9 +351,9 @@ public class H5GGShareController extends H5Controller {
 				Long userId = convertUserNameToUserId(userName);
 				// TODO:获取弹框文案；
 				map = afBoluomeActivityService.activityOffical(userId);
-				if(map!=null){
-				    popupWords =  map.get("officalText");
-				    despotCoupon =  map.get("despotCoupon");
+				if (map != null) {
+					popupWords = map.get("officalText");
+					despotCoupon = map.get("despotCoupon");
 				}
 				// 获取已经邀请的人数
 				alreadyNum = afBoluomeActivityUserLoginService.getBindingNum(activityId, userId);
@@ -478,31 +479,20 @@ public class H5GGShareController extends H5Controller {
 			if (addFakeFinal != null) {
 				fakeFinal += addFakeFinal;
 			}
-			/*
-			 * AfBoluomeActivityResultDo t = new AfBoluomeActivityResultDo();
-			 * t.setBoluomeActivityId(activityId);
-			 * List<AfBoluomeActivityResultDo> listResult =
-			 * afBoluomeActivityResultService.getListByCommonCondition(t); if
-			 * (listResult != null && listResult.size() > 0) { fakeFinal +=
-			 * listResult.size(); }
-			 */
-			// TOOD:resource +表中获取参与人数（user_items）
+
+			// resource +表中获取参与人数（user_items）
 			String fakeJoinStr = fakeResourceDo.getValue1();
 			Integer fakeJoin = new Integer(fakeJoinStr);
 			Integer addFakeJoin = afBoluomeActivityUserItemsService.geFakeJoin(activityId);
 			if (addFakeJoin != null) {
 				fakeJoin += addFakeJoin;
 			}
-			/*
-			 * AfBoluomeActivityUserItemsDo itemsDo = new
-			 * AfBoluomeActivityUserItemsDo();
-			 * itemsDo.setBoluomeActivityId(activityId);
-			 * itemsDo.setStatus("NORMAL"); List<AfBoluomeActivityUserItemsDo>
-			 * listItems =
-			 * afBoluomeActivityUserItemsService.getListByCommonCondition(
-			 * itemsDo); if (listItems != null && listItems.size() > 0) {
-			 * fakeJoin += listItems.size(); }
-			 */
+
+			// resource
+			String fakeRebateStr = fakeResourceDo.getValue3();
+			Integer fakeRebate = new Integer(fakeRebateStr);
+
+			resultMap.put("fakeRebate", fakeRebate);
 			resultMap.put("fakeFinal", fakeFinal);
 			resultMap.put("fakeJoin", fakeJoin);
 		}
@@ -536,7 +526,7 @@ public class H5GGShareController extends H5Controller {
 	@ResponseBody
 	public String sendItems(HttpServletRequest request, HttpServletResponse response)
 			throws UnsupportedEncodingException {
-		H5CommonResponse resultStr = null ;
+		H5CommonResponse resultStr = null;
 		FanbeiH5Context context = new FanbeiH5Context();
 
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -605,7 +595,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/doSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String doSendItems(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr ;
+		H5CommonResponse resultStr;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -702,7 +692,7 @@ public class H5GGShareController extends H5Controller {
 				 * activityId = request.getParameter("activityId");
 				 */
 				String redirectShareAppUrl = shareAppUrl;
-				doMaidianLog(request,H5CommonResponse.getNewInstance(true, redirectShareAppUrl));
+				doMaidianLog(request, H5CommonResponse.getNewInstance(true, redirectShareAppUrl));
 				response.sendRedirect(redirectShareAppUrl);
 			}
 		} catch (Exception exception) {
@@ -724,7 +714,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/ggSendItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String ggSendItems(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr = null ;
+		H5CommonResponse resultStr = null;
 		try {
 			Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
 			AfBoluomeActivityUserItemsDo userItemsDo = afBoluomeActivityUserItemsService.getById(userItemsId);
@@ -802,7 +792,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/pickUpItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pickUpItems(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr = null ;
+		H5CommonResponse resultStr = null;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -903,7 +893,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/lightItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String lightItems(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr ;
+		H5CommonResponse resultStr;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -946,7 +936,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/askForItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String askForItems(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr ;
+		H5CommonResponse resultStr;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -990,7 +980,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/sendToFriend", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String sendToFriend(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr = null ;
+		H5CommonResponse resultStr = null;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -1070,7 +1060,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/ggAskForItems", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String doAskForItems(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr = null ;
+		H5CommonResponse resultStr = null;
 		try {
 
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
@@ -1150,7 +1140,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/listRank", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String listBank(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr = null ;
+		H5CommonResponse resultStr = null;
 		try {
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			List<BoluomeUserRebateBankDo> rankList = afBoluomeActivityUserRebateService.getBankList(activityId);
@@ -1164,14 +1154,13 @@ public class H5GGShareController extends H5Controller {
 				}
 
 				Map<String, Object> data = new HashMap<>();
-				/*
-				 * Map<String, Integer> fakeMap = getFakePerson(activityId);
-				 * Integer fakeFinal = fakeMap.get("fakeFinal");
-				 */
-				int rebateNumber = rankList.size();
-				/*
-				 * if (fakeFinal != null) { rebateNumber += fakeFinal; }
-				 */
+				int rebateNumber = 25;// 初始人数是25个
+
+				Map<String, Integer> fakeDo = getFakePerson(activityId);
+				if (fakeDo != null) {
+					rebateNumber = fakeDo.get("fakeRebate");
+				}
+
 				data.put("rebateNumber", rebateNumber);
 				data.put("rankList", rankList);
 				resultStr = H5CommonResponse.getNewInstance(true, "获取排行榜成功", "", data);
@@ -1191,7 +1180,7 @@ public class H5GGShareController extends H5Controller {
 	@RequestMapping(value = "/pickUpSuperPrize", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String pickUpSuperPrize(HttpServletRequest request, HttpServletResponse response) {
-		H5CommonResponse resultStr = null ;
+		H5CommonResponse resultStr = null;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, false);
@@ -1374,7 +1363,6 @@ public class H5GGShareController extends H5Controller {
 			}
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
-			
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
