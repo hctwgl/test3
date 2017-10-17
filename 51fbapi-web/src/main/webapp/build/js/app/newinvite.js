@@ -1,10 +1,12 @@
-
 window.onload = ()=>{
+  let clipboard = new Clipboard('.invitecode')   
+
+  clipboard.on('success', function(e) {
+    console.log(e)
+  })
+
   $('.copycode').on('click', ()=>{
-    const clipboard = new Clipboard('.invitecode')    
-    clipboard.on('success', function(e) {
-      alert('已复制，可粘贴')
-    })
+    alert('已复制到剪贴板，可粘贴')
   })
 
   $('.rightown').on('click', ()=>{

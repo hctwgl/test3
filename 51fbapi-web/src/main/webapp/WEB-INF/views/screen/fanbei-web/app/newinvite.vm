@@ -16,7 +16,7 @@
       <div class="rule">活动规则</div>
     </div>
     <div class="rightown"></div>
-    <div class="copycode">点击复制邀请码：<span class="invitecode" data-clipboard-text="测试艺">23123</span></div>
+    <div class="copycode">点击复制邀请码：<span class="invitecode" data-clipboard-text="23123">23123</span></div>
     <div class="level level1">
       <div class="box"></div>
     </div>
