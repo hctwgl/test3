@@ -250,7 +250,6 @@ public class APPH5GGShareController extends BaseController {
 
 			context = doWebCheck(request, false);
 			// TODO:banner轮播图后台增加一个类型，和配置。GG_TOP_BANNER.根据类型和活动id去取。
-			// List<Object> bannerList = new ArrayList<>();
 			List<AfResourceDo> bannerList = afResourceService
 					.getResourceHomeListByTypeOrderBy(AfResourceType.GGTopBanner.getCode());
 
@@ -270,8 +269,6 @@ public class APPH5GGShareController extends BaseController {
 			bDo.setScopeApplication("LIGHT");
 			List<AfBoluomeActivityCouponDo> bList = afBoluomeActivityCouponService.getListByCommonCondition(bDo);
 
-			// List<BoluomeCouponResponseBo> boluomeCouponList = new
-			// ArrayList<>();
 			List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
 			if (bList != null && bList.size() > 0) {
 				for (AfBoluomeActivityCouponDo bCouponDo : bList) {
