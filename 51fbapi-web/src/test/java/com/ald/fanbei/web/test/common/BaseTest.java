@@ -53,7 +53,36 @@ public class BaseTest {
     protected void testApi(String urlString, Map<String,String> params, String userName){
     	testApi(urlString, params, userName ,false);
     }
+    
+    protected void testH5(String urlString, Map<String,String> params, String userName){
+    	testApi(urlString, params, userName ,false);
+    }
 	
+    /**
+	 * @param urlString
+	 * @param params
+	 * @param userName
+	 * @param beforeLogin 对应web-main.xml中的定义,true即无需token
+	 */
+    protected void testH5(String urlString, Map<String,String> params, String userName, boolean beforeLogin){
+    	Map<String,String> header = createBaseHeader();
+    	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
+    	
+    	String signStrPrefix = createSignPrefix(header);
+    	if(beforeLogin) {
+    	}else {
+    		signStrPrefix += tokenBo.getToken();
+    	}
+    	String sign = sign(params, signStrPrefix);
+    	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
+    	
+		try {
+			httpPost(urlString, JSONObject.toJSONString(params), header);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    
 	/**
 	 * @param urlString
 	 * @param params

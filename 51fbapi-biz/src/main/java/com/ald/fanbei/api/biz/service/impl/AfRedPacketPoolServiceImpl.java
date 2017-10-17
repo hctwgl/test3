@@ -39,7 +39,7 @@ public class AfRedPacketPoolServiceImpl implements AfRedPacketPoolService {
         for(BlockingQueue<Redpacket> queue : list) {
         	Redpacket peek = queue.peek();
         	log.append("[queue").append(list.indexOf(queue)).append(",")
-        	.append(peek.getCoupon_name()).append(",")
+        	.append(peek.getCouponName()).append(",")
         	.append(peek.getType()).append(",")
         	.append(queue.size()).append("]\r\n");
         }

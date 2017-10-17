@@ -103,9 +103,9 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 		if(rp != null) {
 			AfUserDo user = afUserService.getUserByUserName(userName);
 			if("BOLUOMI".equals(rp.getType())) {
-				boluomeUtil.grantCoupon(rp.getCoupon_id(), new HashMap<String,Object>(), user.getRid());
+				boluomeUtil.grantCoupon(rp.getCouponId(), new HashMap<String,Object>(), user.getRid());
 			}else {
-				afUserCouponService.grantCoupon(user.getRid(), rp.getCoupon_id(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
+				afUserCouponService.grantCoupon(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
 			}
 			
 			return rp;

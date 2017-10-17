@@ -124,6 +124,8 @@
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
+				
+				<value>/resource/getRedRainRounds</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -341,6 +343,7 @@
 				<entry key="/agencyBuy/getTradeNperInfo" value-ref="GetTradeNperInfoApi" />
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
+				<entry key="/resource/getRedRainRounds" value-ref="getRedRainRoundsApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />

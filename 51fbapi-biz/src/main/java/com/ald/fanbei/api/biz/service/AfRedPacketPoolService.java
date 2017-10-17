@@ -30,14 +30,14 @@ public interface AfRedPacketPoolService {
 	
 	static class Redpacket{
 		private String type;
-		private String coupon_name;
-		private Long coupon_id;
+		private String couponName;
+		private Long couponId;
 		private Integer redRainRoundId;
 
 		public Redpacket(String type, String couponName, Long couponId, Integer redRainRoundId){
 			this.type = type;
-			this.coupon_name = couponName;
-			this.coupon_id = couponId;
+			this.couponName = couponName;
+			this.couponId = couponId;
 			this.redRainRoundId = redRainRoundId;
 		}
 		
@@ -49,20 +49,20 @@ public interface AfRedPacketPoolService {
 			this.type = type;
 		}
 
-		public String getCoupon_name() {
-			return coupon_name;
+		public String getCouponName() {
+			return couponName;
 		}
 
-		public void setCoupon_name(String coupon_name) {
-			this.coupon_name = coupon_name;
+		public void setCouponName(String couponName) {
+			this.couponName = couponName;
 		}
 
-		public Long getCoupon_id() {
-			return coupon_id;
+		public Long getCouponId() {
+			return couponId;
 		}
 
-		public void setCoupon_id(Long coupon_id) {
-			this.coupon_id = coupon_id;
+		public void setCouponId(Long couponId) {
+			this.couponId = couponId;
 		}
 
 		public Integer getRedRainRoundId() {
