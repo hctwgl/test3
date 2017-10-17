@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfModelH5Service;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.H5ItemModelType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -37,6 +39,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5Do;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
@@ -73,11 +76,18 @@ public class AppGoodsControler extends BaseController {
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfCouponService afCouponService;
 
 	@RequestMapping(value = { "goodsListModel" }, method = RequestMethod.GET)
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
 		Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
-        doWebCheck(request, false);
+		
+		// 根据modelId 取优惠券信息
+		List<AfCouponDo> couponList = afCouponService.getCouponByActivityIdAndType(modelId,ActivityType.H5_TEMPLATE.getCode());
+		model.put("couponList", couponList);
+		
+		doWebCheckNoAjax(request, false);
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
 		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService.getModelH5ItemCategoryListByModelIdAndModelType(modelId);
@@ -278,7 +288,6 @@ public class AppGoodsControler extends BaseController {
 
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -300,7 +309,6 @@ public class AppGoodsControler extends BaseController {
 
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfActivityModelService;
 import com.ald.fanbei.api.biz.service.AfActivityService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -35,6 +37,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -73,6 +76,8 @@ public class AppH5EncoreController extends BaseController {
 	AfSchemeGoodsService afSchemeGoodsService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	AfCouponService afCouponService;
 	
     String  opennative = "/fanbei-web/opennative?name=";
     
@@ -85,11 +90,18 @@ public class AppH5EncoreController extends BaseController {
          Integer appVersion = Integer.parseInt(appInfo.get("appVersion").toString());
     	
     	Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 0);
+    	
+    	
     	if(activityId == 0) {
     		return H5CommonResponse.getNewInstance(false, "请上送活动id").toString();
     	}
     	try{
     		JSONObject jsonObj = new JSONObject();
+    		// 根据活动Id和类型查询优惠券信息
+        	List<AfCouponDo> couponList = afCouponService.getCouponByActivityIdAndType(activityId, ActivityType.ENCORE_TEMPLATE.getCode());
+        	jsonObj.put("couponList", couponList);
+        	
+        	
         	String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
     		jsonObj.put("notifyUrl", notifyUrl);
     		// 获取活动信息
