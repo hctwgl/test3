@@ -383,10 +383,12 @@ public class APPH5GGShareController extends BaseController {
 			String superPrizeStatus = "NY";
 			// 用户没登陆的时候默认是只灰色状态（已经领取过了）
 			// String userName = request.getParameter("userName");
-			if (!StringUtil.isBlank(userName)) {
-				superPrizeStatus = "N";// 若是已经登录了则是初始化为N的状态
+			if (!StringUtil.isBlank(userName) ) {
+				
 				Long userId = convertUserNameToUserId(userName);
+				
 				if (userId != null && userId > 0) {
+					superPrizeStatus = "N";// 若是已经登录了则是初始化为N的状态
 					useritemsDo.setUserId(userId);
 					useritemsDo.setBoluomeActivityId(activityId);
 					useritemsDo.setStatus("NORMAL");
