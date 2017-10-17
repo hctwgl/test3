@@ -392,12 +392,13 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
 				default_out_day - 1);
-		logger.info("billdate compare1"+ now);
-		logger.info("billdate compare2"+ startDate);
-		if (now.before(startDate)) {// 账单日前面
-			startDate = DateUtil.addMonths(startDate, -1);
-			logger.info("billdate compare3 true");
-		}
+		startDate = DateUtil.addMonths(startDate, -1);
+//		logger.info("billdate compare1"+ now);
+//		logger.info("billdate compare2"+ startDate);
+//		if (now.before(startDate)) {// 账单日前面
+//			startDate = DateUtil.addMonths(startDate, -1);
+//			logger.info("billdate compare3 true");
+//		}
 		int billYear = 0, billMonth = 0;
 		String[] billDay = DateUtil.formatDate(startDate, DateUtil.MONTH_PATTERN).split("-");
 		if (billDay.length == 2) {
@@ -694,14 +695,15 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 
 		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
+		boolean needPlus = false;
+		int out_day = 10;
+		int pay_day = 20;
+		if(afUserOutDayDo !=null){
+			out_day = afUserOutDayDo.getOutDay();
+			pay_day = afUserOutDayDo.getPayDay();
+		}
 		if(afBorrowBillLast !=null){
-			boolean needPlus = false;
-			int out_day = 10;
-			int pay_day = 20;
-			if(afUserOutDayDo !=null){
-				out_day = afUserOutDayDo.getOutDay();
-				pay_day = afUserOutDayDo.getPayDay();
-			}
+
 			Date d=  getNowOutDay(out_day);
 			logger.info("check billMonth1 "+getYearMonth(d).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue());
 			if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
@@ -726,10 +728,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				}
 			}
 
+
 		}
 
 		logger.info("check billMonth time "+now);
 		logger.info("check billMonth time yearAndMonth "+getYearMonth(now));
+
 
 		for (int i = 1; i <= nper; i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
