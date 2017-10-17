@@ -261,7 +261,7 @@ public class H5GGShareController extends H5Controller {
 			// 用户没登陆的时候默认是只灰色状态（已经领取过了）
 			// String userName = request.getParameter("userName");
 			if (!StringUtil.isBlank(userName)) {
-				
+
 				Long userId = convertUserNameToUserId(userName);
 				if (userId != null && userId > 0) {
 					superPrizeStatus = "N";// 若是已经登录了则是初始化为N的状态
@@ -543,23 +543,25 @@ public class H5GGShareController extends H5Controller {
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
-			
-			
+
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			if (userId != null && activityId != null) {
 				// 选出itemsId
-				
+
 				AfBoluomeActivityUserItemsDo condition = new AfBoluomeActivityUserItemsDo();
 				condition.setBoluomeActivityId(activityId);
 				condition.setUserId(userId);
 				condition.setStatus("NORMAL");
-				List<AfBoluomeActivityUserItemsDo> resultList = afBoluomeActivityUserItemsService.getListByCommonCondition(condition);
-				
+				List<AfBoluomeActivityUserItemsDo> resultList = afBoluomeActivityUserItemsService
+						.getListByCommonCondition(condition);
+
 				List<AfBoluomeActivityItemsDo> itemsList = new ArrayList<>();
-			/*	List<Long> tempItemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId,
-						userId);// 大于1张卡片的用户记录--》update，改成所有的。
-*/				
-				
+				/*
+				 * List<Long> tempItemsList =
+				 * afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(
+				 * activityId, userId);// 大于1张卡片的用户记录--》update，改成所有的。
+				 */
+
 				// 根据是否领取终极大奖不同个逻辑
 				boolean isGetSuperPrize = false;
 				isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId, activityId);
@@ -993,6 +995,7 @@ public class H5GGShareController extends H5Controller {
 		H5CommonResponse resultStr = null;
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
+
 			context = doH5Check(request, false);
 			String userName = context.getUserName();
 			// String userName = request.getParameter("userName");
@@ -1004,54 +1007,57 @@ public class H5GGShareController extends H5Controller {
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
+
 			Long itemsId = NumberUtil.objToLong(request.getParameter("itemsId"));
 			String friendName = request.getParameter("friendName");
 			Long friendId = convertUserNameToUserId(friendName);
-			if (userId != null) {
-				AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
-				if (itemsDo != null) {
-					// 验证登录用户该卡片是否大于1张
-					AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
-					userItemsDo.setUserId(userId);
-					userItemsDo.setItemsId(itemsId);
-					userItemsDo.setStatus("NORMAL");
-					List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
-							.getListByCommonCondition(userItemsDo);
-					if (userItemsList != null && userItemsList.size()>0) {
-						AfBoluomeActivityUserItemsDo userdoo =  userItemsList.get(0);
-						boolean isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId, userdoo.getBoluomeActivityId());
-						
-						//若获取了终极大奖，则只有一个都可以赠送，若没有获取终极大奖，则必须是两个
-						
-						if (userItemsList == null || (!isGetSuperPrize && userItemsList.size() < 2) || (isGetSuperPrize && userItemsList.size() < 1) ) {
-							return H5CommonResponse.getNewInstance(false, "抱歉，您暂时没有足够此卡片").toString();
-						}
-						// 若大于一张则，
-						// 登录用户卡片选一张，然后赠状态设为已经赠送
-						AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
-						updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
 
-						// 朋友的userItems表中增加一条卡片记录
-						AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
-						insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
-						AfUserDo insertUser = afUserService.getUserById(friendId);
-						if (insertUser == null) {
-							return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
-						}
-						insertDo.setUserName(insertUser.getUserName());
-						insertDo.setUserId(friendId);
-						insertDo.setStatus("NORMAL");
-						insertDo.setSourceId(resourceUserItemsDo.getRid());
-						insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
-						insertDo.setItemsId(resourceUserItemsDo.getItemsId());
-						insertDo.setGmtSended(new Date());
-						afBoluomeActivityUserItemsService.saveRecord(insertDo);
-						resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
-						doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
-					}
-				
-				}
+			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
+			if (itemsDo != null) {
+				resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", "");
 			}
+			// 验证登录用户该卡片是否大于1张
+			AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
+			userItemsDo.setUserId(userId);
+			userItemsDo.setItemsId(itemsId);
+			userItemsDo.setStatus("NORMAL");
+			List<AfBoluomeActivityUserItemsDo> userItemsList = afBoluomeActivityUserItemsService
+					.getListByCommonCondition(userItemsDo);
+			if (userItemsList != null && userItemsList.size() > 0) {
+				AfBoluomeActivityUserItemsDo userdoo = userItemsList.get(0);
+				boolean isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId,
+						userdoo.getBoluomeActivityId());
+
+				// 若获取了终极大奖，则只有一个都可以赠送，若没有获取终极大奖，则必须是两个
+
+				if (userItemsList == null || (!isGetSuperPrize && userItemsList.size() < 2)
+						|| (isGetSuperPrize && userItemsList.size() < 1)) {
+					return H5CommonResponse.getNewInstance(false, "抱歉，您暂时没有足够此卡片").toString();
+				}
+				// 若大于一张则，
+				// 登录用户卡片选一张，然后赠状态设为已经赠送
+				AfBoluomeActivityUserItemsDo resourceUserItemsDo = userItemsList.get(0);
+				updateUserItemsStatus(resourceUserItemsDo.getRid(), "SENT");
+
+				// 朋友的userItems表中增加一条卡片记录
+				AfBoluomeActivityUserItemsDo insertDo = new AfBoluomeActivityUserItemsDo();
+				insertDo.setBoluomeActivityId(resourceUserItemsDo.getBoluomeActivityId());
+				AfUserDo insertUser = afUserService.getUserById(friendId);
+				if (insertUser == null) {
+					return H5CommonResponse.getNewInstance(false, "用户账号异常").toString();
+				}
+				insertDo.setUserName(insertUser.getUserName());
+				insertDo.setUserId(friendId);
+				insertDo.setStatus("NORMAL");
+				insertDo.setSourceId(resourceUserItemsDo.getRid());
+				insertDo.setSourceUserId(resourceUserItemsDo.getUserId());
+				insertDo.setItemsId(resourceUserItemsDo.getItemsId());
+				insertDo.setGmtSended(new Date());
+				afBoluomeActivityUserItemsService.saveRecord(insertDo);
+				resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
+				doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
+			}
+
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", e.getErrorCode().getDesc());
 			logger.error("sendToFriend" + context, e);
