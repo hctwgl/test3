@@ -38,6 +38,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -113,6 +114,8 @@ public class H5GGShareController extends H5Controller {
 	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
 	@Resource
 	AfBoluomeActivityUserRebateService afBoluomeActivityUserRebateService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	String opennative = "/fanbei-web/opennative?name=";
 
@@ -1360,6 +1363,8 @@ public class H5GGShareController extends H5Controller {
 			} else if ("10305".equals(code)) {
 				return H5CommonResponse.getNewInstance(true, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
 			} else if (!"0".equals(code)) {
+			    //存入缓存
+			        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid(),afUserDo.getUserName());
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			}
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));

@@ -186,46 +186,46 @@ public class H5BoluomeActivityController extends BaseController {
 	    }
 
 	    // 如果该用户在平台没有订单，则送券
-	    AfOrderDo queryCount = new AfOrderDo();
-	    queryCount.setUserId(UserDo.getRid());
-	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
-	    logger.info("orderCount = {}", orderCount);
-	    // <1?
-	    if (orderCount < 1) {
-		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
-		queryCoupon.setScopeApplication("INVITEE");
-		queryCoupon.setType("B");
-		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
-		logger.info("sentCoupons=", sentCoupons);
-		if (sentCoupons.size() > 0) {
-		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
-			long resourceId = sentCoupon.getCouponId();
-			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
-			logger.info("resourceInfo = {}", resourceInfo);
-			// 查询是否已有该券，有，则不发
-			String status = getCouponYesNoStatus(resourceInfo, UserDo);
-			if ("N".equals(status)) {
-			    if (resourceInfo != null) {
-				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
-				bo.setUser_id(UserDo.getRid() + StringUtil.EMPTY);
-				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
-				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
-			   
-				  //发送短信
-	                	  String sendMessage = "";
-	    			   //设置文案
-	    		          String  type = "GG_LIGHT";
-	    			  String  secType = "GG_SMS_NEW";
-	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
-	    					if(resourceDo!=null){
-	    					  sendMessage = resourceDo.getValue();
-	    		                	  smsUtil.sendSms(UserDo.getMobile(),sendMessage);
-	    			     }
-			       }
-			 }
-		    }
-		}
-	    }
+//	    AfOrderDo queryCount = new AfOrderDo();
+//	    queryCount.setUserId(UserDo.getRid());
+//	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
+//	    logger.info("orderCount = {}", orderCount);
+//	    // <1?
+//	    if (orderCount < 1) {
+//		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
+//		queryCoupon.setScopeApplication("INVITEE");
+//		queryCoupon.setType("B");
+//		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
+//		logger.info("sentCoupons=", sentCoupons);
+//		if (sentCoupons.size() > 0) {
+//		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
+//			long resourceId = sentCoupon.getCouponId();
+//			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+//			logger.info("resourceInfo = {}", resourceInfo);
+//			// 查询是否已有该券，有，则不发
+//			String status = getCouponYesNoStatus(resourceInfo, UserDo);
+//			if ("N".equals(status)) {
+//			    if (resourceInfo != null) {
+//				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+//				bo.setUser_id(UserDo.getRid() + StringUtil.EMPTY);
+//				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+//				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+//			   
+//				  //发送短信
+//	                	  String sendMessage = "";
+//	    			   //设置文案
+//	    		          String  type = "GG_LIGHT";
+//	    			  String  secType = "GG_SMS_NEW";
+//	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+//	    					if(resourceDo!=null){
+//	    					  sendMessage = resourceDo.getValue();
+//	    		                	  smsUtil.sendSms(UserDo.getMobile(),sendMessage);
+//	    			     }
+//			       }
+//			 }
+//		    }
+//		}
+//	    }
 
 	    // 登录成功进行埋点
 	    if (loginSource != null) {
@@ -325,11 +325,14 @@ public class H5BoluomeActivityController extends BaseController {
 
 	try {
 	    String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
+	    String refUserName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
 	    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
 	    String registerSource = ObjectUtils.toString(request.getParameter("urlName"), "").toString();
+	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
+	    
 	    if (registerSource == null || "".equals(registerSource)) {
 		if (CookieUtil.getCookie(request, "urlName") != null) {
 		    registerSource = CookieUtil.getCookie(request, "urlName").getValue();
@@ -403,7 +406,62 @@ public class H5BoluomeActivityController extends BaseController {
 		appDownLoadUrl = resourceCodeDo.getValue();
 	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
-
+	    AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
+	    AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
+	    if (!refUserName.equals(mobile)) {
+		// 绑定关系mobile
+		if(afUserDo !=  null && refUserDo != null){
+		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
+		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
+		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
+		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
+		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
+		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
+		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+		}
+	    }
+	     //只有注册成功时送券
+	     //如果该用户在平台没有订单，则送券
+	    AfOrderDo queryCount = new AfOrderDo();
+	    queryCount.setUserId(afUserDo.getRid());
+	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
+	    logger.info("orderCount = {}", orderCount);
+	    // <1?
+	    if (orderCount < 1) {
+		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
+		queryCoupon.setScopeApplication("INVITEE");
+		queryCoupon.setType("B");
+		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
+		logger.info("sentCoupons=", sentCoupons);
+		if (sentCoupons.size() > 0) {
+		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
+			long resourceId = sentCoupon.getCouponId();
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+			logger.info("resourceInfo = {}", resourceInfo);
+			// 查询是否已有该券，有，则不发
+			String status = getCouponYesNoStatus(resourceInfo, afUserDo);
+			if ("N".equals(status)) {
+			    if (resourceInfo != null) {
+				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			   
+				  //发送短信
+	                	  String sendMessage = "";
+	    			   //设置文案
+	    		          String  type = "GG_LIGHT";
+	    			  String  secType = "GG_SMS_NEW";
+	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+	    					if(resourceDo!=null){
+	    					  sendMessage = resourceDo.getValue();
+	    		                	  smsUtil.sendSms(afUserDo.getMobile(),sendMessage);
+	    			     }
+			       }
+			 }
+		    }
+		}
+	    }
 	    // 注册成功进行埋点
 	    if (registerSource != null) {
 		String register = "";
