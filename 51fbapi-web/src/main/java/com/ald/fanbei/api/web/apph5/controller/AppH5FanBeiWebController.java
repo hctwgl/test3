@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.service.*;
 
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
@@ -52,14 +53,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -82,7 +75,8 @@ public class AppH5FanBeiWebController extends BaseController {
 
 	@Resource
 	AfUserDao afUserDao;
-
+	@Resource
+	AfPopupsService afPopupsService;
 	@Resource
 	AfCouponService afCouponService;
 	@Resource
