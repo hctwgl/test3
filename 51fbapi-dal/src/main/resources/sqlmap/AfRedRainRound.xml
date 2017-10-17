@@ -13,6 +13,7 @@
 		  AND gmt_start &lt; #{gmtStart}
 	</select>
 	
+<<<<<<< HEAD
 	<select id="queryByGmtStartInToday" resultType="AfRedRainRoundDo" parameterType="Map" >
         SELECT 
             <include refid="queryFields"/>
@@ -21,6 +22,8 @@
           AND gmt_start BETWEEN #{gmtMin} AND #{gmtMax}
     </select>
 	
+=======
+>>>>>>> refs/remotes/origin/version_redRain
 	<update id="update" parameterType="AfRedRainRoundDo" >
 		UPDATE af_red_rain_round 
 		SET status = #{status},

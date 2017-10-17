@@ -2,7 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfRedRainPoolDao">
 	<sql id="queryFields">
+<<<<<<< HEAD
 		id,num,coupon_id,coupon_name,coupon_type,gmt_create,gmt_modified,creator,modifier,is_delete
+=======
+		id,num,coupon_id,coupon_name,coupon_type,gmt_start,gmt_create,gmt_modified,creator,modifier,is_delete
+>>>>>>> refs/remotes/origin/version_redRain
 	</sql>
 	
 	<select id="queryAll" resultType="AfRedRainPoolDo">
