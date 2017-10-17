@@ -392,6 +392,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
 				default_out_day - 1);
+		logger.info("billdate compare1"+ now);
+		logger.info("billdate compare1"+ startDate);
 		if (now.before(startDate)) {// 账单日前面
 			startDate = DateUtil.addMonths(startDate, -1);
 		}
@@ -615,6 +617,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			}
 		}
 
+		logger.info("check billMonth time "+now);
+		logger.info("check billMonth time yearAndMonth "+getYearMonth(now));
+
 		// 计算本息总计
 		for (int i = 1; i <= borrow.getNper(); i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
@@ -730,6 +735,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			}
 
 		}
+
+		logger.info("check billMonth time "+now);
+		logger.info("check billMonth time yearAndMonth "+getYearMonth(now));
 
 		for (int i = 1; i <= nper; i++) {
 			AfBorrowBillDo bill = new AfBorrowBillDo();
