@@ -46,9 +46,9 @@ public class AppH5RedRainController extends BaseController {
     		
     		Redpacket rp = redRainService.apply(context.getUserName());
     		if(rp == null) {
-    			H5CommonResponse.getNewInstance(false, "命中失败");
+    			resp = H5CommonResponse.getNewInstance(false, "命中失败");
     		}else {
-    			H5CommonResponse.getNewInstance(true, "命中成功", "", rp);
+    			resp = H5CommonResponse.getNewInstance(true, "命中成功", "", rp);
     		}
     		
     		doLog(request, resp, context.getAppInfo(), 0, context.getUserName()); //日志打点

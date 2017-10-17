@@ -99,16 +99,19 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			}
 		}
 		
-		Redpacket rp = this.redPacketPoolService.apply();
-		if(rp != null) {
-			AfUserDo user = afUserService.getUserByUserName(userName);
-			if("BOLUOMI".equals(rp.getType())) {
-				boluomeUtil.grantCoupon(rp.getCouponId(), new HashMap<String,Object>(), user.getRid());
-			}else {
-				afUserCouponService.grantCoupon(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
+		try {
+			Redpacket rp = this.redPacketPoolService.apply();
+			if(rp != null) {
+				AfUserDo user = afUserService.getUserByUserName(userName);
+				if("BOLUOMI".equals(rp.getType())) {
+					boluomeUtil.grantCoupon(rp.getCouponId(), new HashMap<String,Object>(), user.getRid());
+				}else {
+					afUserCouponService.grantCoupon(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
+				}
+				return rp;
 			}
-			
-			return rp;
+		}catch (Exception e) {
+			logger.error(e.getMessage(), e);
 		}
 		
 		counter.decrementAndGet(); //未获取，回滚计数器-1
@@ -131,7 +134,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 		try {
 			Map<String, Integer> info = this.redPacketPoolService.informationPacket();
 			int sum = info.get("count");
-			int sumGrabed = info.get("listNumber");
+			int sumGrabed = sum - info.get("listNumber");
 			logger.info("redRainService.clearAndStatisic,roundId={},sum={},sumGrabed={}", roundId, sum, sumGrabed);
 			
 			AfRedRainRoundDo roundForMod = new AfRedRainRoundDo();

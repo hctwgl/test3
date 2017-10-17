@@ -1,5 +1,8 @@
 package com.ald.fanbei.web.test.api.user;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,9 +23,16 @@ public class RedRainTest extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void  testGetRedRainRoundsApi() {
 		String url = urlBase + "/resource/getRedRainRounds";
 		testApi(url, null, userName, true);
+	}
+	
+	@Test
+	public void  testApplyHitH5() {
+		String url = urlBase + "/fanbei-web/redRain/applyHit";
+		Map<String,String> params = new HashMap<>();
+ 		testH5(url, params, userName);
 	}
 }

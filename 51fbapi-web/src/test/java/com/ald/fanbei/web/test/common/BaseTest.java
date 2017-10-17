@@ -1,6 +1,8 @@
 package com.ald.fanbei.web.test.common;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,7 @@ import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -55,7 +58,7 @@ public class BaseTest {
     }
     
     protected void testH5(String urlString, Map<String,String> params, String userName){
-    	testApi(urlString, params, userName ,false);
+    	testH5(urlString, params, userName ,false);
     }
 	
     /**
@@ -63,21 +66,28 @@ public class BaseTest {
 	 * @param params
 	 * @param userName
 	 * @param beforeLogin 对应web-main.xml中的定义,true即无需token
+     * @throws UnsupportedEncodingException 
 	 */
     protected void testH5(String urlString, Map<String,String> params, String userName, boolean beforeLogin){
-    	Map<String,String> header = createBaseHeader();
-    	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
+    	try {
+	    	Map<String,String> header = createBaseHeader();
+	    	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
+	    	
+	    	String signStrPrefix = createSignPrefix(header);
+	    	if(beforeLogin) {
+	    	}else {
+	    		signStrPrefix += tokenBo.getToken();
+	    	}
+	    	String sign = sign(params, signStrPrefix);
+	    	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
     	
-    	String signStrPrefix = createSignPrefix(header);
-    	if(beforeLogin) {
-    	}else {
-    		signStrPrefix += tokenBo.getToken();
-    	}
-    	String sign = sign(params, signStrPrefix);
-    	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
-    	
-		try {
-			httpPost(urlString, JSONObject.toJSONString(params), header);
+	    	params.putAll(header);
+	    	
+	    	StringBuilder referer = new StringBuilder();
+			referer.append(urlString).append("?_appInfo").append("=").append(URLEncoder.encode(JSON.toJSONString(params), "UTF-8"));
+	    	header.put("Referer", referer.toString());
+	    	
+			httpPost(urlString, "", header);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

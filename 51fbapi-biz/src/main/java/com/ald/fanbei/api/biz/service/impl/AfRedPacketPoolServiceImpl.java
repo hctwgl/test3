@@ -49,6 +49,10 @@ public class AfRedPacketPoolServiceImpl implements AfRedPacketPoolService {
 
     @Override
     public Redpacket apply() {
+    	if(typeCount == 0) {
+    		return null;
+    	}
+    	
         int rand = (int)(Math.random() * typeCount)/1;
         BlockingQueue<Redpacket> redpackets = list.get(rand);
         Redpacket r = redpackets.poll();
