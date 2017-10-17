@@ -1017,7 +1017,7 @@ public class H5GGShareController extends H5Controller {
 
 			AfBoluomeActivityItemsDo itemsDo = afBoluomeActivityItemsService.getById(itemsId);
 			if (itemsDo != null) {
-				resultStr = H5CommonResponse.getNewInstance(false, "赠送失败", "", "");
+				resultStr = H5CommonResponse.getNewInstance(false, "您还没有可赠送的卡片", "", "");
 			}
 			// 验证登录用户该卡片是否大于1张
 			AfBoluomeActivityUserItemsDo userItemsDo = new AfBoluomeActivityUserItemsDo();
