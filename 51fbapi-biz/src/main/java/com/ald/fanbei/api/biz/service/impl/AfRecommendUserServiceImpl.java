@@ -31,6 +31,9 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
 
+	@Resource
+	AfUserDao afUserDao;
+
 	private BigDecimal getAddMoney() {
 		List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_MONEY");
 		if (list != null && list.size() > 0) {
@@ -128,6 +131,21 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 			logger.error("update updateRecommendCash userId=" + userId, e);
 			return 1;
 		}
+	}
+
+	@Override
+	public List<String> getActivityRule(String type) {
+		return afResourceDao.getActivityRule(type);
+	}
+
+	@Override
+	public String getUserRecommendCode(long userId) {
+		return afUserDao.getUserRecommendCode(userId);
+	}
+
+	@Override
+	public double getSumPrizeMoney(long userId) {
+		return afRecommendUserDao.getSumPrizeMoney(userId);
 	}
 
 	public HashMap getRecommedData(long userId) {

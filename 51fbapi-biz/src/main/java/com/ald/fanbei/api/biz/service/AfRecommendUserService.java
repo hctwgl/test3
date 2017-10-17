@@ -62,5 +62,25 @@ public interface AfRecommendUserService {
 
     int updateRecommendCash(long userId);
 
+    /**
+     * 获取活动规则
+     * @param type
+     * @return
+     */
 
+    List<String> getActivityRule(String type);
+
+    /**
+     * 用户的邀请码
+     * @param userId
+     * @return
+     */
+    String getUserRecommendCode(long userId);
+
+    /**
+     * 用户总共的奖励金额
+     * @param userId
+     * @return
+     */
+    double getSumPrizeMoney(long userId);
 }

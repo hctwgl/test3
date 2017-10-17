@@ -115,4 +115,8 @@
 	<select id="getRecommendSharedById" resultType="HashMap">
 		SELECT  a.*,b.user_name from af_recommend_shared a left join af_user b  on a.user_id = b.id where a.id = #{id}
 	</select>
+
+	<select id="getSumPrizeMoney" resultType="double">
+		select sum(prize_money) from af_recommend_user where is_delete =0 and parentId = #{userId}
+	</select>
 </mapper>

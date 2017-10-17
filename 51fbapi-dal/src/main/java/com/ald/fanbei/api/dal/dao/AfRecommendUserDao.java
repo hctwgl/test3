@@ -22,4 +22,6 @@ public interface AfRecommendUserDao {
 
     HashMap getRecommendSharedById(@Param("id") String id);
 
+    double getSumPrizeMoney(@Param("userId") Long userId);
+
 }
