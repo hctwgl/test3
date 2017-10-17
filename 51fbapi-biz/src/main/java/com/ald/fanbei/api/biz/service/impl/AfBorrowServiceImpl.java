@@ -393,9 +393,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
 				default_out_day - 1);
 		logger.info("billdate compare1"+ now);
-		logger.info("billdate compare1"+ startDate);
+		logger.info("billdate compare2"+ startDate);
 		if (now.before(startDate)) {// 账单日前面
 			startDate = DateUtil.addMonths(startDate, -1);
+			logger.info("billdate compare3 true");
 		}
 		int billYear = 0, billMonth = 0;
 		String[] billDay = DateUtil.formatDate(startDate, DateUtil.MONTH_PATTERN).split("-");
