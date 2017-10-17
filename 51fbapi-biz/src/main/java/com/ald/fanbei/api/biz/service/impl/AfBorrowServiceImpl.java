@@ -580,6 +580,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
 
 		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
+		logger.info("check now time"+now);
 		if(afBorrowBillLast !=null){
 			boolean needPlus = false;
 			int out_day = 10;
@@ -591,11 +592,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 			Date d=  getNowOutDay(out_day);
 			logger.info("check billMonth1 "+getYearMonth(d).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue());
 			if( getYearMonth(d).intValue() <= getYearMonth(afBorrowBillLast.getGmtOutDay()).intValue()){
-				Calendar c = Calendar.getInstance();
-				c.setTime(now);
-				c.add(Calendar.MONTH,1);
-				now = c.getTime();
-				logger.info("billMonth plus 1 first");
+				logger.info("check now time start"+now);
+				now = DateUtil.addMonths(now,1);
+				logger.info("billMonth plus 1 first now:"+now );
 				needPlus =true;
 			}
 
@@ -608,11 +607,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 				p = getPayDate(pay_day,p);
 				logger.info("check billMonth2 "+getYearMonth(p).intValue()+" ,out:"+ getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue());
 				if(getYearMonth(p).intValue() <= getYearMonth(afBorrowBillLast.getGmtPayTime()).intValue()){
-					Calendar c = Calendar.getInstance();
-					c.setTime(now);
-					c.add(Calendar.MONTH,1);
+					now = DateUtil.addMonths(now,1);
 					logger.info("billMonth plus 1 second");
-					now = c.getTime();
 					needPlus =true;
 				}
 			}
