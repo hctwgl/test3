@@ -46,6 +46,7 @@ $(function () {
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
     var loginSource = param['loginSource'];
+    var refUserName=param['refUserName'];//邀请者用户名
 
     var timerInterval;
     var timerS = 60;
@@ -234,7 +235,7 @@ $(function () {
                         var urlName = param['urlName'];
                          requestMsg("注册成功");
                          setTimeout(function () {
-                            window.location.href = "gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word+ "&loginSource=" + loginSource;
+                            window.location.href = "gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word+ "&loginSource=" + loginSource+"&refUserName="+refUserName;
                         }, 1500);
                         
                     }else if(a.url=="Register"){
