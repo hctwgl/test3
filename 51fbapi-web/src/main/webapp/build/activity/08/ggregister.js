@@ -229,8 +229,46 @@ $(function () {
                         var urlName = param['urlName'];
                          requestMsg("注册成功");
                          setTimeout(function () {
-                            //window.location.href = "gglogin?urlName="+urlName+"&refUserName="+refUserName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word+ "&loginSource=" + loginSource+"&refUserName="+refUserName;
+                            window.location.href = "gglogin?urlName="+urlName+"&refUserName="+refUserName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word+ "&loginSource=" + loginSource+"&refUserName="+refUserName;
                         }, 1500);
+
+                        //调用登录接口
+                        $.ajax({
+                            url: "/H5GGShare/boluomeActivityLogin",
+                            type: 'POST',
+                            dataType: 'JSON',
+                            data: {
+                                userName: userNamePhone,
+                                password: password_md5,
+                                activityId: activityId,
+                                refUserName: userName,
+                                urlName: urlName,
+                                token:token
+                                
+                            },
+                            success: function (data) {
+                                // alert(urlName);
+                                console.log(data)
+                                if (data.success) {
+                                    if (word == "Z") {
+                                        window.location.href = urlName + "?userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId;
+                                    } else if (word == "S") {
+                                        window.location.href = urlName + "?userName=" + userName + "&itemsId=" + itemsId + "&activityId=" + activityId;
+                                    } else {
+                                        window.location.href =urlName + "?activityId=" + activityId + "&userName=" + userName+ "&word=" + loginSource+ "&urlName=" + urlName;
+                                    }
+                                } else if (data.url == "Login") {
+                                    requestMsg(data.msg);
+
+                                } else if (data.url == "DownLoad") {
+                                    requestMsg(data.msg);
+                                    //跳转延迟
+                                    setTimeout(function () {
+                                        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+                                    }, 1500);
+                                }
+                            }
+                        })
                         
                     }else if(a.url=="Register"){
                         requestMsg(a.msg);
