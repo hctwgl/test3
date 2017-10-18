@@ -278,7 +278,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		if(listData!=null){
 			for (AfRecommendUserDo af: listData) {
 				//加上状态
-				AfRecommendUserDo afRecommendUserDo =afRecommendUserDao.getARecommendUserById(af.getUser_id());
+				AfRecommendUserDo afRecommendUserDo =afRecommendUserDao.getARecommendUserByIdAndType(af.getUserId(),1);
 				if(afRecommendUserDo.isIs_loan()){
 					af.setStatus("已借款");
 				}else{
@@ -290,7 +290,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 					}
 				}
 				//加上userName
-				AfUserDo afUserDo =afUserDao.getUserById(af.getUser_id());
+				AfUserDo afUserDo =afUserDao.getUserById(af.getUserId());
 				af.setUserName(afUserDo.getUserName());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 				String createTime = sdf.format(afUserDo.getGmtCreate());
