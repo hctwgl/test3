@@ -340,7 +340,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			} 
 			  //存入缓存
 		        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.MONTH_OF_YEAR);
-			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+		return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());

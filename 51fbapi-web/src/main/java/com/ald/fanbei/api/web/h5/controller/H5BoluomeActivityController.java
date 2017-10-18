@@ -174,6 +174,14 @@ public class H5BoluomeActivityController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
 
 	    }
+	   
+	     //如果该用户在平台没有订单，绑定关系(注册和登录只能绑定一次)
+	    AfOrderDo queryCount = new AfOrderDo();
+	    queryCount.setUserId(UserDo.getRid());
+	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
+	    logger.info("orderCount = {}", orderCount);
+	    // <1?
+	    if (orderCount > 0) {
 	    if (!userName.equals(refUseraName)) {
 		// 绑定关系refUserDo
 		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
@@ -184,7 +192,7 @@ public class H5BoluomeActivityController extends BaseController {
 		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
 		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
 	    }
-
+	    }
 	    // 如果该用户在平台没有订单，则送券
 //	    AfOrderDo queryCount = new AfOrderDo();
 //	    queryCount.setUserId(UserDo.getRid());
@@ -388,6 +396,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    userDo.setNick("");
 	    userDo.setPassword(password);
 	    userDo.setRecommendId(0l);
+	    //邀请码
 	    if (!StringUtils.isBlank(recommendCode)) {
 		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 		userDo.setRecommendId(userRecommendDo.getRid());
@@ -400,29 +409,18 @@ public class H5BoluomeActivityController extends BaseController {
 	    afUserService.updateUser(userDo);
 
 	    // 获取邀请分享地址
-	    AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
+	   // AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
 	    String appDownLoadUrl = "";
-	    if (resourceCodeDo != null) {
-		appDownLoadUrl = resourceCodeDo.getValue();
-	    }
+//	    if (resourceCodeDo != null) {
+//		appDownLoadUrl = resourceCodeDo.getValue();
+//	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 	    
 	    
-	    if (refUserName != null && !"".equals(refUserName)){
+	    
 	    AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
 	    AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
-	    if (!refUserName.equals(mobile)) {
-		// 绑定关系mobile
-		if(afUserDo !=  null && refUserDo != null){
-		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
-		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
-		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
-		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
-		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
-		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
-		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
-		}
-	    }
+	  
 	     //只有注册成功时送券
 	     //如果该用户在平台没有订单，则送券
 	    AfOrderDo queryCount = new AfOrderDo();
@@ -465,7 +463,7 @@ public class H5BoluomeActivityController extends BaseController {
 		    }
 		}
 	    }
-	    
+	    //渠道注册进行更新
 	   
 	    // 注册成功进行埋点
 	    if (registerSource != null) {
@@ -480,10 +478,23 @@ public class H5BoluomeActivityController extends BaseController {
 		    register = "suoyao";
 		}
 		String reqData = request.toString();
-		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null), request.getMethod(), rmtIp, exeT, "/H5GGShare/commitBouomeActivityRegister", request.getParameter("registerMobile"), register, "", "", "", "");
+		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", null), request.getMethod(), rmtIp, exeT, "/H5GGShare/commitBouomeActivityRegister", request.getParameter("registerMobile"), register, "", "", "", "");
 	    }
-	   }
-	    
+	   //非渠道的可以绑定关系
+	    if (refUserName != null && !"".equals(refUserName)){
+	    if (!refUserName.equals(mobile)) {
+	  		// 绑定关系mobile
+	  		if(afUserDo !=  null && refUserDo != null){
+	  		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
+	  		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
+	  		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
+	  		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
+	  		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
+	  		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
+	  		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+	  		}
+	  	    }
+	    }
 	    
 //           else {
 //		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
