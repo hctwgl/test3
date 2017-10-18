@@ -121,6 +121,9 @@ public class AppLaunchImageApi implements ApiHandle{
 					String userNameToutiao = context.getUserName()==null?"":context.getUserName();
 					afUserToutiaoService.uptUserOpen(rid,userIdToutiao,userNameToutiao);
 					String callbackUrl = tdo.getCallbackUrl();
+					if(callbackUrl.indexOf("&event_type")==-1){
+						callbackUrl+="&event_type=0";
+					}
 					String result= HttpUtil.doGet(callbackUrl,20);
 					logger.error("toutiaoopen:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);
 				}

@@ -275,6 +275,9 @@ public class LoginApi implements ApiHandle {
 						String userNameToutiao = context.getUserName()==null?"":context.getUserName();
 						afUserToutiaoService.uptUserActive(rid,userIdToutiao,userNameToutiao);
 						String callbackUrl = tdo.getCallbackUrl();
+						if(callbackUrl.indexOf("&event_type")==-1){
+							callbackUrl+="&event_type=1";
+						}
 						String result= HttpUtil.doGet(callbackUrl,20);
 						logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
 					}
