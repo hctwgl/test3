@@ -121,7 +121,7 @@ public class LoginApi implements ApiHandle {
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
 		loginDo.setUuid(uuid);
-		ToutiaoAdActive(requestDataVo);
+		ToutiaoAdActive(requestDataVo,context);
 		// check login failed count,if count greater than 5,lock specify hours
 		AfResourceDo lockHourResource = afResourceService
 				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
@@ -264,7 +264,7 @@ public class LoginApi implements ApiHandle {
 		return resp;
 	}
 
-	private void ToutiaoAdActive(RequestDataVo requestDataVo) {
+	private void ToutiaoAdActive(RequestDataVo requestDataVo, FanbeiContext context) {
 		try {
 			String imei = ObjectUtils.toString(requestDataVo.getParams().get("IMEI"), null);
 			String androidId = ObjectUtils.toString(requestDataVo.getParams().get("AndroidID"), null);
@@ -278,7 +278,8 @@ public class LoginApi implements ApiHandle {
 				AfUserToutiaoDo tdo = afUserToutiaoService.getUserActive(imeiMd5,androidId,idfa);
 				if(tdo!=null){
 					Long rid = tdo.getRid();
-					afUserToutiaoService.uptUserActive(rid);
+					Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
+					afUserToutiaoService.uptUserActive(rid,userIdToutiao);
 					String callbackUrl = tdo.getCallbackUrl();
 					String result= HttpUtil.doGet(callbackUrl,20);
 					logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);

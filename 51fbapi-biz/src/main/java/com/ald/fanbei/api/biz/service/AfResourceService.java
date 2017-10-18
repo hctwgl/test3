@@ -167,5 +167,7 @@ public interface AfResourceService {
 	List<AfResourceDo> getConfigsByTypesAndSecType(String type, String secType);
 	
 	List<AfResourceDo> getCarouselToManyResourceOrderByType(String code);
+
+	AfResourceDo getAfResourceAppVesion();
 	
 }

@@ -38,7 +38,7 @@ let vm = new Vue({
                         });
                         $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
-                            placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
+                            placeholder : "https://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
                             effect : "fadeIn",  // 载入使用的效果
                             threshold: 200 // 提前开始加载
                         });

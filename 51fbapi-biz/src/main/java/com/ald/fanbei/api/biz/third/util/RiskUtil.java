@@ -891,6 +891,7 @@ public class RiskUtil extends AbstractThird {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
 	      			authDo.setRiskStatus(RiskStatus.YES.getCode());
+	      			authDo.setBasicStatus("Y");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
 	      			
@@ -909,6 +910,7 @@ public class RiskUtil extends AbstractThird {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
 	      			authDo.setRiskStatus(RiskStatus.NO.getCode());
+					authDo.setBasicStatus("N");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
 	      			

@@ -112,8 +112,8 @@ public class GetUserRecommedApi implements ApiHandle {
                         public void run() {
                             logger.error("getUserRecommedApi 391 tips：" + mobile);
 
-                            smsUtil.sendSms(mobile, "报！由于系统升级您当前的版本只支持二维码方式邀请，您可以截图二维码发送给您的好友扫码识别后即可完成邀请。其他分享方式最新版本更新后即可体验，预计明日可恢复正常。");
-                            jpushService.pushSharedTips(mobile, "报！由于系统升级您当前的版本只支持二维码方式邀请，您可以截图二维码发送给您的好友扫码识别后即可完成邀请。其他分享方式最新版本更新后即可体验，预计明日可恢复正常。");
+                            smsUtil.sendSms(mobile, "报！由于系统升级当前版本只支持二维码方式分享。马上前往应用市场升级到最新版本即可，今日升级还有大礼相送，百分百有奖！");
+                            jpushService.pushSharedTips(mobile, "报！由于系统升级当前版本只支持二维码方式分享。马上前往应用市场升级到最新版本即可，今日升级还有大礼相送，百分百有奖！");
                             this.cancel();
                         }
                     }, 1000 * 5);

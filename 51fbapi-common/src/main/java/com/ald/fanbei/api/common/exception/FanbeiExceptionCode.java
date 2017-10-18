@@ -10,6 +10,8 @@ public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 
+    VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，前往应用市场更新到最新版本获得更好体验"),
+
     ZFB_NOT_USERD("PARAM_ERROR", 1145, "param error", "支付宝支付正在维护中,请用其它支付方式"),
     WEBCHAT_NOT_USERD("PARAM_ERROR", 1142, "param error", "微信支付正在维护中,请用其它支付方式"),
     // PARAM_CODE 1001-1099
@@ -110,7 +112,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CANOT_FIND_DIRECTORY_ERROR("CANOT_FIND_DIRECTORY_ERROR",1314,"canot find directory error","请重新设置紧急联系人!"),
     NEED_AGAIN_DIRECTORY_PROOF_ERROR("NEED_AGAIN_DIRECTORY_PROOF_ERROR",1315,"need again directory proof error","请重新通讯录认证!"),
     RISK_OREADY_FINISH_ERROR("RISK_OREADY_FINISH_ERROR",1316,"risk oready finish error","正在认证中，请耐心等待!"),
-    
+    PLEASE_PASS_THE_BASIC_CERTIFICATION("PLEASE_PASS_THE_BASIC_CERTIFICATION",1317,"please pass the basic certification","请先通过基础认证审核!"),
+
+
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
     

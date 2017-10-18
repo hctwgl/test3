@@ -2,7 +2,7 @@
 <html>
 <head>
     #set($version="20170562302")
-    #set($commonUrl="http://f.51fanbei.com/h5")
+    #set($commonUrl="https://f.51fanbei.com/h5")
     <title>$!{modelName}</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/goods/goodsListModel.css?version=$version">
 </head>

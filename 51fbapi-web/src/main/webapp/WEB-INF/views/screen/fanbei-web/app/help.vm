@@ -2,7 +2,7 @@
 <html>
 <head>
     #set($version="201708101600")
-    #set($commonUrl="http://f.51fanbei.com/h5")
+    #set($commonUrl="https://f.51fanbei.com/h5")
     <title>服务中心</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/help.css?version=$version">
 </head>

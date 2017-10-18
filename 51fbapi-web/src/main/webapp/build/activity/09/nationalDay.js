@@ -1,6 +1,7 @@
 
 let activityId=getUrl("activityId");//获取活动Id
 let groupId=getUrl('groupId');//获取优惠券列表
+let shopId=getUrl('shopId');//获取场景Id
 //获取数据
 let vm = new Vue({
     el: '#nationalDay',
@@ -36,7 +37,7 @@ let vm = new Vue({
                         });
                         $(".loadingMask").fadeOut();
                         $("img.lazy").lazyload({
-                            placeholder : "http://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
+                            placeholder : "https://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
                             effect : "fadeIn",  // 载入使用的效果
                             threshold: 200 // 提前开始加载
                         });
@@ -110,7 +111,26 @@ let vm = new Vue({
         },
         //点击最后大图进入场景
         fourthContClick(){
-            window.location.href='https://91ala.otosaas.com/menpiao';
+            //window.location.href='https://91ala.otosaas.com/menpiao';
+            $.ajax({
+                url: "/fanbei-web/getBrandUrlV1",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    'shopId':shopId
+                },
+                success: function (returnData) {
+                    console.log(returnData);
+                    if(returnData.success){
+                        location.href=returnData.url;
+                    }else{
+                        location.href=returnData.url;
+                    }
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
+                }
+            })
         }
     }
 });

@@ -225,7 +225,7 @@ public class HttpUtil {
             // 把数据写入请求的Body
             out.write(param);
             out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"utf-8"));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
@@ -443,7 +443,65 @@ public class HttpUtil {
         String repString = new String(buffer.toByteArray());
         return repString;
     }
+    /**
+     * 发送HTTPS的POST请求，并且忽略证书验证,将参数放置到BODY里边
+     *
+     * @param urlString
+     * @param query
+     * @return
+     */
+    public static String doHttpsPostIgnoreCertUrlencoded(String urlString, String query) {
 
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(512);
+        try {
+            URL url = new URL(urlString);
+            /*
+             * use ignore host name verifier
+             */
+            HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("charset", "utf-8");
+            // Prepare SSL Context
+            TrustManager[] tm = { ignoreCertificationTrustManger };
+            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+            sslContext.init(null, tm, new java.security.SecureRandom());
+            // 设置doOutput属性为true表示将使用此urlConnection写入数据
+            connection.setDoOutput(true);
+            // 从上述SSLContext对象中得到SSLSocketFactory对象
+            SSLSocketFactory ssf = sslContext.getSocketFactory();
+            connection.setSSLSocketFactory(ssf);
+
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(),"utf-8");
+            // 把数据写入请求的Body
+            out.write(query);
+            out.flush();
+            out.close();
+
+            InputStream reader = connection.getInputStream();
+            byte[] bytes = new byte[512];
+            int length = reader.read(bytes);
+
+            do {
+                buffer.write(bytes, 0, length);
+                length = reader.read(bytes);
+            } while (length > 0);
+
+            reader.close();
+            connection.disconnect();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+        }
+        try {
+            String repString = new String(buffer.toByteArray(),"utf-8");
+            return repString;
+        }  catch (Exception e){
+            return e.getMessage();
+        }
+
+
+    }
     /**
      * 忽视证书HostName
      */
