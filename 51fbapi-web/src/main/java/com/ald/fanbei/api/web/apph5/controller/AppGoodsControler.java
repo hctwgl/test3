@@ -29,8 +29,11 @@ import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfModelH5Service;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.H5ItemModelType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
@@ -39,12 +42,13 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5Do;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfTypeCountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserH5ItmeGoodsDto;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -65,7 +69,7 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @RequestMapping("/app/goods/")
 public class AppGoodsControler extends BaseController {
-    String  opennative = "/fanbei-web/opennative?name=";
+	String opennative = "/fanbei-web/opennative?name=";
 	@Resource
 	AfModelH5ItemService afModelH5ItemService;
 	@Resource
@@ -78,29 +82,49 @@ public class AppGoodsControler extends BaseController {
 	AfResourceService afResourceService;
 	@Resource
 	AfCouponService afCouponService;
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 
 	@RequestMapping(value = { "goodsListModel" }, method = RequestMethod.GET)
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
 		Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
-		
+
 		// 根据modelId 取优惠券信息
-		List<AfCouponDo> couponList = afCouponService.getCouponByActivityIdAndType(modelId,ActivityType.H5_TEMPLATE.getCode());
+		List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(modelId,
+				ActivityType.H5_TEMPLATE.getCode());
 		model.put("couponList", couponList);
+
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		String userName = webContext.getUserName();
+		AfUserDo userDo = afUserService.getUserByUserName(userName);
 		
-		doWebCheckNoAjax(request, false);
+		for(AfCouponDto couponDto : couponList) {
+			if(userDo == null) {
+				couponDto.setUserAlready(0);
+			} else {
+				int pickCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userDo.getRid(), couponDto.getRid());
+				couponDto.setUserAlready(pickCount);
+			}
+		}
+		// 判断用户是否领
+
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
-		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService.getModelH5ItemCategoryListByModelIdAndModelType(modelId);
+		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService
+				.getModelH5ItemCategoryListByModelIdAndModelType(modelId);
 		List<AfTypeCountDto> sortCountList = afModelH5ItemService
 				.getModelH5ItemGoodsCountListCountByModelIdAndSort(modelId);
 		List<Object> categoryList = getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(categoryDbList,
 				sortCountList);
-		AfModelH5Do h5Do =  afModelH5Service.selectMordelH5ById(modelId);
-		model.put("modelName", h5Do.getName()==null?"":h5Do.getName());
+		AfModelH5Do h5Do = afModelH5Service.selectMordelH5ById(modelId);
+		model.put("modelName", h5Do.getName() == null ? "" : h5Do.getName());
 		model.put("bannerList", bannerList);
 		model.put("categoryList", categoryList);
-		
-		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+				+ H5OpenNativeType.GoodsInfo.getCode();
 		model.put("notifyUrl", notifyUrl);
 
 		Integer pageCount = 20;// 每一页显示20条数据
@@ -110,68 +134,70 @@ public class AppGoodsControler extends BaseController {
 			AfModelH5ItemDo afModelH5ItemDo = categoryDbList.get(0);
 			type = ObjectUtils.toString(afModelH5ItemDo.getRid(), "").toString();
 		}
-		List<AfUserH5ItmeGoodsDto> goodsDoList = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
-				type, 0, pageCount);
+		List<AfUserH5ItmeGoodsDto> goodsDoList = afModelH5ItemService
+				.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId, type, 0, pageCount);
 		// 判断商品是否在优惠方案中
 		List goodsList = new ArrayList();
-		for(AfUserH5ItmeGoodsDto goodsDto : goodsDoList) {
+		for (AfUserH5ItmeGoodsDto goodsDto : goodsDoList) {
 			Map goodsInfoMap = CollectionConverterUtil.convertObjToMap(goodsDto);
 			goodsInfoMap.put("goodsType", "0");
 			String goodsId = goodsDto.getGoodsId();
-			
-			if(goodsId != null && !"".equals(goodsId)) {
+
+			if (goodsId != null && !"".equals(goodsId)) {
 				AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(Long.parseLong(goodsId));
 				JSONArray interestFreeArray = null;
-		        if(null != afSchemeGoodsDo){
-		        	Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
-			        AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
-			        if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
-			            interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
-			        }
-		        }
-		        //获取借款分期配置信息
-		        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-		        JSONArray array = JSON.parseArray(resource.getValue());
-		        //删除2分期
-		        if (array == null) {
-		        	goodsList.add(goodsInfoMap);
-		        	continue;
-		        }
-		        removeSecondNper(array);
-		        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-		        		goodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
-		        if(nperList!= null){
-		        	goodsInfoMap.put("goodsType", "1");
+				if (null != afSchemeGoodsDo) {
+					Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
+					AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
+					if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
+						interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
+					}
+				}
+				// 获取借款分期配置信息
+				AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+						Constants.RES_BORROW_CONSUME);
+				JSONArray array = JSON.parseArray(resource.getValue());
+				// 删除2分期
+				if (array == null) {
+					goodsList.add(goodsInfoMap);
+					continue;
+				}
+				removeSecondNper(array);
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
+						BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),
+						resource.getValue2());
+				if (nperList != null) {
+					goodsInfoMap.put("goodsType", "1");
 					Map nperMap = nperList.get(nperList.size() - 1);
 					goodsInfoMap.put("nperMap", nperMap);
 				}
-		       
+
 			}
-	        goodsList.add(goodsInfoMap);
+			goodsList.add(goodsInfoMap);
 		}
-		
-		doMaidianLog(request,H5CommonResponse.getNewInstance(true,"","",model));
+
+		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "", "", model));
 		logger.info("list++++++====" + JSON.toJSONString(goodsList));
 
 		model.put("goodsList", goodsList);
 		model.put("typeCurrent", type);
 		logger.info(JSON.toJSONString(model));
 	}
-	
-	private void removeSecondNper(JSONArray array) {
-        if (array == null) {
-            return;
-        }
-        Iterator<Object> it = array.iterator();
-        while (it.hasNext()) {
-            JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-                it.remove();
-                break;
-            }
-        }
 
-    }
+	private void removeSecondNper(JSONArray array) {
+		if (array == null) {
+			return;
+		}
+		Iterator<Object> it = array.iterator();
+		while (it.hasNext()) {
+			JSONObject json = (JSONObject) it.next();
+			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+				it.remove();
+				break;
+			}
+		}
+
+	}
 
 	/**
 	 * 获取主题下面的商品
@@ -191,44 +217,50 @@ public class AppGoodsControler extends BaseController {
 			String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
 
 			Integer pageCount = 20;// 每一页显示20条数据
-			List<AfUserH5ItmeGoodsDto> goodsDoList = afModelH5ItemService.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId,
-					type, (pageCurrent - 1) * pageCount, pageCount);
-			
+			List<AfUserH5ItmeGoodsDto> goodsDoList = afModelH5ItemService
+					.getModelH5ItemGoodsListCountByModelIdAndCategory(modelId, type, (pageCurrent - 1) * pageCount,
+							pageCount);
+
 			// 判断商品是否在优惠方案中
 			List goodsList = new ArrayList();
-			for(AfUserH5ItmeGoodsDto goodsDto : goodsDoList) {
+			for (AfUserH5ItmeGoodsDto goodsDto : goodsDoList) {
 				Map goodsInfoMap = CollectionConverterUtil.convertObjToMap(goodsDto);
 				goodsInfoMap.put("goodsType", "0");
 				String goodsId = goodsDto.getGoodsId();
-				
-				if(goodsId != null && !"".equals(goodsId)) {
-					JSONArray interestFreeArray = null;
-					AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(Long.parseLong(goodsId));
-			        if(null != afSchemeGoodsDo){
-			        	Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
-				        AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
-				        if (null != afInterestFreeRulesDo && StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
-				            interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
-				        }
-			        }
-			        //获取借款分期配置信息
-			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-			        JSONArray array = JSON.parseArray(resource.getValue());
-			        //删除2分期
-			        if (array == null) {
-			        	goodsList.add(goodsInfoMap);
-			        	continue;
-			        }
-			        removeSecondNper(array);
 
-			        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-			        		goodsDto.getSaleAmount(), resource.getValue1(), resource.getValue2());
-			        if(nperList!= null){
-			        	goodsInfoMap.put("goodsType", "1");
+				if (goodsId != null && !"".equals(goodsId)) {
+					JSONArray interestFreeArray = null;
+					AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService
+							.getSchemeGoodsByGoodsId(Long.parseLong(goodsId));
+					if (null != afSchemeGoodsDo) {
+						Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
+						AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService
+								.getById(interestFreeId);
+						if (null != afInterestFreeRulesDo
+								&& StringUtils.isNotBlank(afInterestFreeRulesDo.getRuleJson())) {
+							interestFreeArray = JSON.parseArray(afInterestFreeRulesDo.getRuleJson());
+						}
+					}
+					// 获取借款分期配置信息
+					AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+							Constants.RES_BORROW_CONSUME);
+					JSONArray array = JSON.parseArray(resource.getValue());
+					// 删除2分期
+					if (array == null) {
+						goodsList.add(goodsInfoMap);
+						continue;
+					}
+					removeSecondNper(array);
+
+					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
+							BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),
+							resource.getValue2());
+					if (nperList != null) {
+						goodsInfoMap.put("goodsType", "1");
 						Map nperMap = nperList.get(nperList.size() - 1);
 						goodsInfoMap.put("nperMap", nperMap);
 					}
-			        
+
 				}
 				goodsList.add(goodsInfoMap);
 			}
@@ -242,9 +274,6 @@ public class AppGoodsControler extends BaseController {
 		}
 
 	}
-
-
-
 
 	private List<Object> getH5ItemCategoryListObjectWithAfModelH5ItemDoListAndSortCount(
 			List<AfModelH5ItemDo> categoryList, List<AfTypeCountDto> sortCountList) {
@@ -308,7 +337,8 @@ public class AppGoodsControler extends BaseController {
 	}
 
 	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+			HttpServletRequest httpServletRequest) {
 		return null;
 	}
 

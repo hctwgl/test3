@@ -37,12 +37,12 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -98,7 +98,7 @@ public class AppH5EncoreController extends BaseController {
     	try{
     		JSONObject jsonObj = new JSONObject();
     		// 根据活动Id和类型查询优惠券信息
-        	List<AfCouponDo> couponList = afCouponService.getCouponByActivityIdAndType(activityId, ActivityType.ENCORE_TEMPLATE.getCode());
+        	List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(activityId, ActivityType.ENCORE_TEMPLATE.getCode());
         	jsonObj.put("couponList", couponList);
         	
         	

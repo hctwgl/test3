@@ -34,7 +34,9 @@ public class AfCouponDo extends AbstractSerial {
 	private Integer quotaAlready;
 	private Long quota;
 	private String useRange;
-	
+	private String activityType;
+	private Long activityId;
+	private Integer isGlobal;
 	
 	/**
 	 * @return the rid
@@ -238,4 +240,23 @@ public class AfCouponDo extends AbstractSerial {
 	public void setUseRange(String useRange) {
 		this.useRange = useRange;
 	}
+	public String getActivityType() {
+		return activityType;
+	}
+	public void setActivityType(String activityType) {
+		this.activityType = activityType;
+	}
+	public Long getActivityId() {
+		return activityId;
+	}
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+	public Integer getIsGlobal() {
+		return isGlobal;
+	}
+	public void setIsGlobal(Integer isGlobal) {
+		this.isGlobal = isGlobal;
+	}
+	
 }
