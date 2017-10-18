@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -52,9 +53,10 @@ public class AppH5InvitationActivityController extends BaseController {
         String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
         //用户的总共奖励金额
         double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId);
+        DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
         map.put("listRule",listRule);
         map.put("invitationCode",invitationCode);
-        map.put("sumPrizeMoney",sumPrizeMoney);
+        map.put("sumPrizeMoney",df.format(sumPrizeMoney));
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
         return ret;
