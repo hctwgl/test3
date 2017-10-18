@@ -175,13 +175,13 @@ public class H5BoluomeActivityController extends BaseController {
 
 	    }
 	   
-	     //如果该用户在平台没有订单，绑定关系(注册和登录只能绑定一次)
+	     //如果该用户在平台没有订单，绑定关系(注册和登录只能绑定一次)去掉？
 	    AfOrderDo queryCount = new AfOrderDo();
 	    queryCount.setUserId(UserDo.getRid());
 	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
 	    logger.info("orderCount = {}", orderCount);
 	    // <1?
-	    if (orderCount > 0) {
+//	    if (orderCount > 0) {
 	    if (!userName.equals(refUseraName)) {
 		// 绑定关系refUserDo
 		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
@@ -192,48 +192,7 @@ public class H5BoluomeActivityController extends BaseController {
 		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
 		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
 	    }
-	    }
-	    // 如果该用户在平台没有订单，则送券
-//	    AfOrderDo queryCount = new AfOrderDo();
-//	    queryCount.setUserId(UserDo.getRid());
-//	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
-//	    logger.info("orderCount = {}", orderCount);
-//	    // <1?
-//	    if (orderCount < 1) {
-//		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
-//		queryCoupon.setScopeApplication("INVITEE");
-//		queryCoupon.setType("B");
-//		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
-//		logger.info("sentCoupons=", sentCoupons);
-//		if (sentCoupons.size() > 0) {
-//		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
-//			long resourceId = sentCoupon.getCouponId();
-//			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
-//			logger.info("resourceInfo = {}", resourceInfo);
-//			// 查询是否已有该券，有，则不发
-//			String status = getCouponYesNoStatus(resourceInfo, UserDo);
-//			if ("N".equals(status)) {
-//			    if (resourceInfo != null) {
-//				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
-//				bo.setUser_id(UserDo.getRid() + StringUtil.EMPTY);
-//				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
-//				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
-//			   
-//				  //发送短信
-//	                	  String sendMessage = "";
-//	    			   //设置文案
-//	    		          String  type = "GG_LIGHT";
-//	    			  String  secType = "GG_SMS_NEW";
-//	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
-//	    					if(resourceDo!=null){
-//	    					  sendMessage = resourceDo.getValue();
-//	    		                	  smsUtil.sendSms(UserDo.getMobile(),sendMessage);
-//	    			     }
-//			       }
-//			 }
-//		    }
-//		}
-//	    }
+//	   }
 
 	    // 登录成功进行埋点
 	    if (loginSource != null) {
@@ -415,56 +374,9 @@ public class H5BoluomeActivityController extends BaseController {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
-	    
-	    
-	    
 	    AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
 	    AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
-	  
-	     //只有注册成功时送券
-	     //如果该用户在平台没有订单，则送券
-	    AfOrderDo queryCount = new AfOrderDo();
-	    queryCount.setUserId(afUserDo.getRid());
-	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
-	    logger.info("orderCount = {}", orderCount);
-	    // <1?
-	    if (orderCount < 1) {
-		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
-		queryCoupon.setScopeApplication("INVITEE");
-		queryCoupon.setType("B");
-		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
-		logger.info("sentCoupons=", sentCoupons);
-		if (sentCoupons.size() > 0) {
-		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
-			long resourceId = sentCoupon.getCouponId();
-			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
-			logger.info("resourceInfo = {}", resourceInfo);
-			// 查询是否已有该券，有，则不发
-			String status = getCouponYesNoStatus(resourceInfo, afUserDo);
-			if ("N".equals(status)) {
-			    if (resourceInfo != null) {
-				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
-				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
-				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
-				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
-			   
-				  //发送短信
-	                	  String sendMessage = "";
-	    			   //设置文案
-	    		          String  type = "GG_LIGHT";
-	    			  String  secType = "GG_SMS_NEW";
-	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
-	    					if(resourceDo!=null){
-	    					  sendMessage = resourceDo.getValue();
-	    		                	  smsUtil.sendSms(afUserDo.getMobile(),sendMessage);
-	    			     }
-			       }
-			 }
-		    }
-		}
-	    }
-	    //渠道注册进行更新
-	   
+	    
 	    // 注册成功进行埋点
 	    if (registerSource != null) {
 		String register = "";

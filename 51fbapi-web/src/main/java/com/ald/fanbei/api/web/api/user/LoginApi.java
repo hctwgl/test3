@@ -78,6 +78,8 @@ public class LoginApi implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	AfUserToutiaoService afUserToutiaoService;
+	@Resource
+	AfBoluomeActivityService afBoluomeActivityService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -226,7 +228,15 @@ public class LoginApi implements ApiHandle {
 		}else{
 			jo.put("borrowed", "N");
 		}
-		
+		//逛逛活动新用户送券
+		try{
+		  int  result =  afBoluomeActivityService.sentNewUserBoluomeCoupon(afUserDo);
+		  if(result==0){
+		      logger.info("sentNewUserBoluomeCoupon success");
+		    }
+		}catch (Exception e){
+			logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
+		}
 		
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {

@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserLoginService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
@@ -108,6 +109,8 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	private SmsUtil smsUtil;
 	@Resource
 	AfOrderService afOrderService;
+	@Resource
+	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
         private static final Logger logger = LoggerFactory.getLogger(AfBoluomeActivityServiceImpl.class);
         private static String couponUrl = null;
 
@@ -539,5 +542,106 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 		    return couponUrl;
 		}
 		return couponUrl;
+	    }
+
+	@Override
+	public int sentNewUserBoluomeCoupon(AfUserDo afUserDo) {
+	    // TODO Auto-generated method stub
+	     //平台没有订单且有一条绑定记录时送券
+	    AfOrderDo queryCount = new AfOrderDo();
+	    queryCount.setUserId(afUserDo.getRid());
+	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
+	    logger.info("orderCount = {}", orderCount);
+	    // <1?
+	    if (orderCount < 1) {
+		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLoginDo = new AfBoluomeActivityUserLoginDo();
+	        afBoluomeActivityUserLoginDo.setUserId(afUserDo.getRid());
+		List<AfBoluomeActivityUserLoginDo>  userLogin =  afBoluomeActivityUserLoginService.getListByCommonCondition(afBoluomeActivityUserLoginDo) ;
+		//一条绑定记录
+		if(userLogin.size()>0){
+    		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
+    		queryCoupon.setScopeApplication("INVITEE");
+    		queryCoupon.setType("B");
+    		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
+		logger.info("sentCoupons=", sentCoupons);
+		if (sentCoupons.size() > 0) {
+		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
+			long resourceId = sentCoupon.getCouponId();
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+			logger.info("resourceInfo = {}", resourceInfo);
+			// 查询是否已有该券，有，则不发
+			String status = getCouponYesNoStatus(resourceInfo, afUserDo);
+			if ("N".equals(status)) {
+			    if (resourceInfo != null) {
+				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			   
+				  //发送短信
+	                	  String sendMessage = "";
+	    			   //设置文案
+	    		          String  type = "GG_LIGHT";
+	    			  String  secType = "GG_SMS_NEW";
+	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+	    					if(resourceDo!=null){
+	    					  sendMessage = resourceDo.getValue();
+	    		                	  smsUtil.sendSms(afUserDo.getMobile(),sendMessage);
+	    			     }
+			       }
+			 }
+		    }
+		}
+	    }
+	  }
+	    
+	    return 0;
+	}
+	 private String getCouponYesNoStatus(AfResourceDo resourceInfo, AfUserDo UserDo) {
+
+		String uri = resourceInfo.getValue();
+		String[] pieces = uri.split("/");
+		if (pieces.length > 9) {
+		    String app_id = pieces[6];
+		    String campaign_id = pieces[8];
+		    String user_id = "0";
+		    // 获取boluome的券的内容
+		    String url = getCouponUrl() + "?" + "app_id=" + app_id + "&user_id=" + user_id + "&campaign_id=" + campaign_id;
+		    String reqResult = HttpUtil.doGet(url, 10);
+		    if (!StringUtil.isBlank(reqResult)) {
+			ThirdResponseBo thirdResponseBo = JSONObject.parseObject(reqResult, ThirdResponseBo.class);
+			if (thirdResponseBo != null && "0".equals(thirdResponseBo.getCode())) {
+			    List<BoluomeCouponResponseParentBo> listParent = JSONArray.parseArray(thirdResponseBo.getData(), BoluomeCouponResponseParentBo.class);
+			    if (listParent != null && listParent.size() > 0) {
+				BoluomeCouponResponseParentBo parentBo = listParent.get(0);
+				if (parentBo != null) {
+				    String activityCoupons = parentBo.getActivity_coupons();
+				    String result = activityCoupons.substring(1, activityCoupons.length() - 1);
+				    String replacement = "," + "\"sceneId\":" + resourceInfo.getRid() + "}";
+				    String rString = result.replaceAll("}", replacement);
+				    // 字符串转为json对象
+				    BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject.parseObject(rString, BoluomeCouponResponseBo.class);
+				    Long userId = UserDo.getRid();
+				    List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(uri);
+				    BrandActivityCouponResponseBo bo = activityCouponList.get(0);
+				    if (userId != null) {
+					// 判断用户是否拥有该优惠券 或者已经被领取完毕
+					if (boluomeUtil.isUserHasCoupon(uri, userId, 1) || bo.getDistributed() >= bo.getTotal()) {
+					    // BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
+					    //
+					    return YesNoStatus.YES.getCode();
+
+					} else {
+					    // BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
+					    return YesNoStatus.NO.getCode();
+					}
+				    }
+
+				}
+			    }
+			}
+		    }
+		}
+		return null;
 	    }
 }
