@@ -12,4 +12,5 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
  */
 public interface AfBoluomeActivityUserLoginService extends ParentService<AfBoluomeActivityUserLoginDo, Long>{
 
+	Integer getBindingNum (Long activityId , Long refUserId);
 }

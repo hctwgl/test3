@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017052302")
-    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/09")
+    #set($commonUrl="https://f.51fanbei.com/h5/app/activity/09")
 <title>借贷超市</title>
 <link rel="stylesheet" type="text/css" href="/dist/activity/09/borrowDetails.css">
 </head>

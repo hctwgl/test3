@@ -1,4 +1,4 @@
-@url: "http://f.51fanbei.com/h5/app/activity/08";
+@url: "https://f.51fanbei.com/h5/app/activity/08";
 .clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
 .clearFix{zoom:1;}
 *{
@@ -89,6 +89,11 @@ body{
   left: 50%;
   width: 6rem;
   transform: translateX(-50%);
+  transform: translateX(-50%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 5rem;
   
 }
 .money p:nth-child(2){
@@ -97,8 +102,8 @@ body{
   margin-left:0.1rem;
 }
 .money p:nth-child(2) span{
-  color:#fe963b;
-  /* margin-left:0.1rem; */
+  color:#f2404d;
+
 }
 .money .combo{
     margin-left:1%;
@@ -106,16 +111,38 @@ body{
 .money .demand{
     margin-left:-1%;
 }
+.super-big{
+    position: relative;
+    height: 7.06rem;
+    margin-top: 0.7rem;
+}
 .banner img{
-    width:6.25rem;
-     height:6.2rem; 
+    width:3.46rem;
+     height:5.06rem; 
     /* background-color:pink; */
-    margin-left:9%;
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+}
+banner .banner-bottom{
+    width:6.25rem;
+    height:2.97rem;
+    
+}
+.banner-bottom img{
+    width: 6.25rem;
+    height: 2.97rem;
+    position:absolute;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+
 }
 .ask{
   width:2.86rem;
   height:.88rem;
-  background:#fb9659;
+  background:#f2404d;
   box-shadow:0 .06rem .13rem 0 rgba(212,195,185,0.87);
   border-radius:1rem;
   margin-top:.5rem;
@@ -135,7 +162,7 @@ body{
     /*width: 100%;*/
     /* height: 6rem; */
     /* background-color: yellow; */
-    margin-bottom: 0.84rem;
+    /* margin-bottom: 0.84rem; */
 }
 #presents .presents-bottom {
     margin-bottom:30%;
@@ -190,14 +217,14 @@ body{
     font-size:0.3rem;
     position:relative;
 }
-#presents .presents-bottom .presents-bottom-left .rules{
+#presents .rules{
     position:absolute;
     left:50%;
     transform:translateX(-50%);
-    font-size:0.28rem;
+    font-size:0.32rem;
     
 }
-#presents .presents-bottom .presents-bottom-left .rules a{
+#presents .rules a{
     color:#5cb4e2;
     text-decoration: underline;
 }
@@ -205,7 +232,7 @@ body{
 .alertRule{
     width:6.8rem;
     height:8.34rem;
-    background-color:white;
+    background-color:#ea582a;
     padding:0 .3rem;
     position:absolute;
     top:43%;
@@ -222,7 +249,7 @@ body{
 }
 .word{
     font-size:0.4rem;
-    color:#fe8744;
+    color:#fff;
     margin:0 0.25rem;
 }
 .dian{
@@ -256,7 +283,7 @@ body{
 .alertRule .ruleCont{
     margin:0 auto;
     font-size:.26rem;
-    color:#4a4a4a;
+    color:#fff;
     line-height:.45rem;
     height:6.2rem;
     text-align: justify;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017090501")
-    #set($src="http://f.51fanbei.com/h5/app/activity/08")
+    #set($src="https://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -23,17 +23,20 @@
             </div>
             <div class="money">
                 <p><i class="friend"></i>正在51返呗收集卡片</p>
-                <p><span class="combo"></span><span class="give">送给你</span></p>
+                <p><span class="combo"></span><span class="miss">卡</span>送给你</p>
             </div>
-            <div class="banner">
-                <img src="" alt="" class="banner-img">
+            <div class="super-big">
+                 <div class="banner">
+                    <img src="" alt="" class="banner-img">
+                </div>
+                <span class="banner-bottom"><img src="$src/pengbg.png" alt="" class="banner-img"></span>
             </div>
             <div class="send">
                 <div class="presentCard ask">领走卡片</div>
-                <div class="demandCard ask">我也要点亮</div>
+                <div class="demandCard ask">我也要集卡</div>
             </div>
         </div>
-        <div class="presents-bottom clearFix">
+        <!--<div class="presents-bottom clearFix">
             <div class="presents-bottom-right">
                 <div class="line">
                     <span class="number-one">1</span>
@@ -54,11 +57,12 @@
                 </p>
                 <div class="rules"><a href="#">活动规则详情</a></div>
             </div>
-        </div>
+        </div>!-->
+        <div class="rules"><a href="#">活动规则详情</a></div>
         <!--活动规则弹框!-->
         <div class="mask">
             <div class="alertRule">
-                <p class="ruleTitle"><span class="dian"></span><span class="word">活动规则</span><span class="dian"></span></p>
+                <p class="ruleTitle"><!--<span class="dian"></span>!--><span class="word">活动规则</span><!--<span class="dian"></span>!--></p>
                 <p class="ruleCont"></p>
                 <p class="close">X</p>
             </div>

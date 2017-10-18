@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     #set($version="2017071001")
-    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    #set($commonUrl="https://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>男人都需要一块表</title>
     <style>

@@ -4,20 +4,25 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -36,6 +41,8 @@ public class GetBrandListApi implements ApiHandle {
          public static final int PAGE_SIZE = 50;
 	@Resource
 	AfShopService afShopService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -57,11 +64,30 @@ public class GetBrandListApi implements ApiHandle {
 				}
 			});
 		}
+		List<AfResourceDo> bannerList1 = afResourceService
+				.getResourceHomeListByTypeOrderBy(AfResourceType.GGHomeTopBanner.getCode());
+		List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
+		resp.addResponseData("bannerList", bannerList);
 		resp.addResponseData("shopList", resultList);
 		resp.addResponseData("pageNo", pageNo);
 		return resp;
 	}
-	
+	private List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+		List<Object> bannerList = new ArrayList<Object>();
+		
+		for (AfResourceDo afResourceDo : bannerResclist) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("imageUrl", afResourceDo.getValue());
+		data.put("titleName", afResourceDo.getName());
+		data.put("type", afResourceDo.getValue1());
+		data.put("content", afResourceDo.getValue2());
+		data.put("sort", afResourceDo.getSort());
+		
+		bannerList.add(data);
+		
+		}
+		return bannerList;
+		}
 	private AfShopVo parseDoToVo(AfShopDo shopInfo,int appVersion) {
 		AfShopVo vo = new AfShopVo();
 		vo.setRid(shopInfo.getRid());

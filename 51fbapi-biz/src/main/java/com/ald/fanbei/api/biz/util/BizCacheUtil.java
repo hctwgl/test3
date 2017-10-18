@@ -386,6 +386,9 @@ public class BizCacheUtil extends AbstractThird {
 		return setOps.isMember(key, value);
 	}
 	
+
+	
+	
 	/**
 	 * 锁住某个key值几分钟，需要解锁时删除即可
 	 * @param key

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -107,6 +108,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
 	@Resource
 	AfOrderLogisticsService afOrderLogisticsService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	/**
 	 * 首页弹窗页面
 	 * @param request
@@ -335,7 +338,9 @@ public class AppH5FanBeiWebController extends BaseController {
 			else if (!"0".equals(code)) {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			} 
-			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+			  //存入缓存
+		  bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.SECOND_OF_ONE_MONTH);
+		return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());

@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     #set($version="2017082301")
-    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/08")
+    #set($commonUrl="https://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <title>Apple助力七夕 惊喜双倍返</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/selfHome.css?version=$version">
     <style>
         img[lazy-src]{
-            background: url("http://f.51fanbei.com/h5/app/images/sys/bitmap.png") no-repeat center center;
+            background: url("https://f.51fanbei.com/h5/app/images/sys/bitmap.png") no-repeat center center;
             -webkit-background-size: 70%;
             background-size: 70%;
         }

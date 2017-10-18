@@ -2,7 +2,7 @@
 <html>
 <head>
     #set($version="201708212130")
-    #set($commonUrl="http://f.51fanbei.com/h5")
+    #set($commonUrl="https://f.51fanbei.com/h5")
     <title>物流信息</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/delivery.css?version=$version">
 </head>
