@@ -116,7 +116,7 @@ public class H5BoluomeActivityController extends BaseController {
 	Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 	String refUseraName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
 	String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
-
+     try{
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
 	  AfUserDo refUserDo = new AfUserDo();
 	if (refUseraName == null || "".equals(refUseraName)) {
@@ -220,6 +220,9 @@ public class H5BoluomeActivityController extends BaseController {
 
 	} else {
 	    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "Login", "").toString();
+	}
+     }catch (Exception e){
+		logger.error("boluomeActivityLogin error",e.getMessage());
 	}
 	return H5CommonResponse.getNewInstance(true, "登录成功", "", "").toString();
     }
