@@ -116,15 +116,17 @@ public class AppLaunchImageApi implements ApiHandle{
 			if(StringUtils.isNotBlank(imei)||StringUtils.isNotBlank(androidId)||StringUtils.isNotBlank(idfa)){
 				AfUserToutiaoDo tdo = afUserToutiaoService.getUserOpen(imeiMd5,androidId,idfa);
 				if(tdo!=null){
-					Long rid = tdo.getRid();
-					Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
-					String userNameToutiao = context.getUserName()==null?"":context.getUserName();
-					afUserToutiaoService.uptUserOpen(rid,userIdToutiao,userNameToutiao);
 					String callbackUrl = tdo.getCallbackUrl();
 					if(callbackUrl.indexOf("&event_type")==-1){
 						callbackUrl+="&event_type=0";
 					}
 					String result= HttpUtil.doGet(callbackUrl,20);
+					if(result.indexOf("success")>-1){
+						Long rid = tdo.getRid();
+						Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
+						String userNameToutiao = context.getUserName()==null?"":context.getUserName();
+						afUserToutiaoService.uptUserOpen(rid,userIdToutiao,userNameToutiao);
+					}
 					logger.error("toutiaoopen:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);
 				}
 			}
