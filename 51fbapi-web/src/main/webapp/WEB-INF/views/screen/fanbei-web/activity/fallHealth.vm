@@ -4,7 +4,7 @@
     #set($version="20171018")
     #set($src="https://f.51fanbei.com/h5/app/activity/10")
     <meta charset="UTF-8">
-    <title>秋季养生</title>
+    <title>秋季养生好物</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/10/fallHealth.css">
 </head>
 <body>
