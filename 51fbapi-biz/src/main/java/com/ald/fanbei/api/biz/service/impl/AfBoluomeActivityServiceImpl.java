@@ -577,7 +577,9 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
 				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
 				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
-			   
+				JSONObject resultJson = JSONObject.parseObject(resultString);
+				String code = resultJson.getString("code");
+		        	 if ("0".equals(code)) {
 				  //发送短信
 	                	  String sendMessage = "";
 	    			   //设置文案
@@ -589,6 +591,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	    		                	  smsUtil.sendSms(afUserDo.getMobile(),sendMessage);
 	    			     }
 			       }
+			    }
 			 }
 		    }
 		}
