@@ -373,6 +373,8 @@
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 				<!--分期广告位-->
 				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
+				<!-- 统计点击量 -->
+				<entry key="/clickAmount/clickAmount" value-ref="clickAmountApi" />
 			</map>
 		</constructor-arg>
 	</bean>
