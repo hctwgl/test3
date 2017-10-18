@@ -53,7 +53,7 @@
 	<select id="getARecommendUserById" resultType="AfRecommendUserDo">
 		select
 			<include refid="queryFields" />
-		from af_recommend_user where user_id = #{user_id}
+		from af_recommend_user where is_delete =0 and user_id = #{user_id}
 	</select>
 
 	<update id="updateLoanById" parameterType="AfRecommendUserDo">
@@ -117,6 +117,16 @@
 	</select>
 
 	<select id="getSumPrizeMoney" resultType="double">
-		select sum(prize_money) from af_recommend_user where is_delete =0 and parentId = #{userId}
+		select IFNULL(sum(money),0) from af_recommend_money where parent_id = #{userId}
+	</select>
+
+	<select id="firstRewardQuery" resultType="AfRecommendUserDo">
+		select a.user_id userId,a.parent_id parentId,a.money prizeMoney from af_recommend_money a left join af_recommend_user b on a.user_id=b.user_id
+        where b.parentId = #{userId}
+	</select>
+	<select id="twoLevelRewardQuery" resultType="AfRecommendUserDo">
+		select a.user_id userId,a.parent_id parentId,a.money prizeMoney from af_recommend_money a left join af_recommend_user b on a.user_id=b.user_id
+        LEFT JOIN af_recommend_user c on  b.parentId=c.user_id
+        where c.parentId =#{userId}
 	</select>
 </mapper>

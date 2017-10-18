@@ -10,6 +10,8 @@ import sun.awt.geom.AreaOp;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +148,39 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	@Override
 	public double getSumPrizeMoney(long userId) {
 		return afRecommendUserDao.getSumPrizeMoney(userId);
+	}
+
+	@Override
+	public List<AfRecommendUserDo> rewardQuery(long userId, String type) {
+		List<AfRecommendUserDo> listData= new ArrayList<>();
+		if("1".equals(type)){
+			listData =afRecommendUserDao.firstRewardQuery(userId);
+		}else if("2".equals(type)){
+			listData = afRecommendUserDao.twoLevelRewardQuery(userId);
+		}
+		if(listData!=null){
+			for (AfRecommendUserDo af: listData) {
+				//加上状态
+				AfRecommendUserDo afRecommendUserDo =afRecommendUserDao.getARecommendUserById(af.getUser_id());
+				if(afRecommendUserDo.isIs_loan()){
+					af.setStatus("已借款");
+				}else{
+					int compare=afRecommendUserDo.getPrize_money().compareTo(BigDecimal.ZERO);
+					if(compare==1){
+						af.setStatus("提交信用审核");
+					}else{
+						af.setStatus("已注册");
+					}
+				}
+				//加上userName
+				AfUserDo afUserDo =afUserDao.getUserById(af.getUser_id());
+				af.setUserName(afUserDo.getUserName());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+				String createTime = sdf.format(afUserDo.getGmtCreate());
+				af.setCreateTime(createTime);
+			}
+		}
+		return listData;
 	}
 
 	public HashMap getRecommedData(long userId) {

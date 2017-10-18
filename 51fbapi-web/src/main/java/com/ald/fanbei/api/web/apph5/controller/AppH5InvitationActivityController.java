@@ -2,8 +2,11 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -46,14 +49,38 @@ public class AppH5InvitationActivityController extends BaseController {
         //查看活动规则
         List listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
         //用户的邀请码
-        String InvitationCode=afRecommendUserService.getUserRecommendCode(userId);
+        String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
         //用户的总共奖励金额
         double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId);
         map.put("listRule",listRule);
-        map.put("InvitationCode",InvitationCode);
+        map.put("invitationCode",invitationCode);
         map.put("sumPrizeMoney",sumPrizeMoney);
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
+        return ret;
+    }
+
+    /**
+     * 奖励详细查询
+     * @param request
+     * @param userId
+     * @param type
+     * @return
+     */
+
+    @ResponseBody
+    @RequestMapping(value = "rewardQuery", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String rewardQuery(HttpServletRequest request,long userId,String type){
+        String ret = null;
+        List<AfRecommendUserDo> rewardQueryList =new ArrayList<>();
+        if("1".equals(type)||"2".equals(type)){
+            rewardQueryList=afRecommendUserService.rewardQuery(userId,type);
+            ret =JSON.toJSONString(rewardQueryList);
+        }else{
+            H5CommonResponse resp = H5CommonResponse.getNewInstance();
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null);
+            ret =resp.toString();
+        }
         return ret;
     }
 
