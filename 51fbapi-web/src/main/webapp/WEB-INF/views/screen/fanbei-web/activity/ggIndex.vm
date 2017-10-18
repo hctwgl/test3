@@ -121,6 +121,8 @@
         <img :src="content.popupWords" @click="toastClick()">
         <p class="closeToast" @click="close()">X</p>
     </div>
+    <!--微信提示-->
+    <div class="weixinToast"></div>
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
