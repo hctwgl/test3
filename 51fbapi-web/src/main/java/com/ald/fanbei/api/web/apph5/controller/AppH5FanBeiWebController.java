@@ -339,7 +339,7 @@ public class AppH5FanBeiWebController extends BaseController {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			} 
 			  //存入缓存
-		        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y");
+		        bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.MONTH_OF_YEAR);
 			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
 
 		} catch (Exception e) {
