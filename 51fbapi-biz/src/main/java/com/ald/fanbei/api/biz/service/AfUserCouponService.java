@@ -93,6 +93,15 @@ public interface AfUserCouponService {
 	void grantCoupon(Long userId,Long couponId,String sourceType,String sourceRef);
 
 	/**
+	 * 发放优惠券，不启用事务但做到数据安全，较少DB开销，专用于红包雨功能
+	 * @param userId
+	 * @param couponId
+	 * @param source_type 来源类型
+	 * @param source_ref  来源关联id
+	 */
+	void grantCouponForRedRain(Long userId,Long couponId,String sourceType,String sourceRef);
+	
+	/**
 	 * 获取用户专场可使用满减券
 	 * @param userId
 	 * @param amount

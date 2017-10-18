@@ -106,7 +106,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 				if("BOLUOMI".equals(rp.getType())) {
 					boluomeUtil.grantCoupon(rp.getCouponId(), new HashMap<String,Object>(), user.getRid());
 				}else {
-					afUserCouponService.grantCoupon(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
+					afUserCouponService.grantCouponForRedRain(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
 				}
 				return rp;
 			}
