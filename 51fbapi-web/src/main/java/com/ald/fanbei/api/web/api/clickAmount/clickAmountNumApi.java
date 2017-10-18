@@ -47,8 +47,8 @@ public class clickAmountNumApi implements ApiHandle{
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
-		String id = request.getParameter("popupsId");
-		AfPopupsDo afPopupsDo = afPopupsService.selectPopups(Long.valueOf(id).longValue());
+		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
+		AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
 		if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
 			String sysModeId = "";
 			String channel = getChannel(sysModeId);
