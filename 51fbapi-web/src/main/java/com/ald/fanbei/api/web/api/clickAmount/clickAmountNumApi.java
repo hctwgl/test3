@@ -3,14 +3,10 @@
  */
 package com.ald.fanbei.api.web.api.clickAmount;
 
-import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
-import com.ald.fanbei.api.biz.bo.BrandUserCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfPopupsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -22,17 +18,11 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfBrandCouponVo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * 
@@ -41,7 +31,7 @@ import java.util.*;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("clickAmountNumApi")
-public class clickAmountNumApi implements ApiHandle{
+public class ClickAmountNumApi implements ApiHandle{
 
 
 	@Resource
