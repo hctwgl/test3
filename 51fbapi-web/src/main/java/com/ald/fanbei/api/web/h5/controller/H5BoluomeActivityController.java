@@ -119,7 +119,7 @@ public class H5BoluomeActivityController extends BaseController {
      try{
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
 	  AfUserDo refUserDo = new AfUserDo();
-	if (refUseraName == null || "".equals(refUseraName)) {
+	if (refUseraName != null || !"".equals(refUseraName)) {
 	     refUserDo = afUserService.getUserByUserName(refUseraName);
 	}
 
@@ -384,7 +384,7 @@ public class H5BoluomeActivityController extends BaseController {
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
 	    AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
-	    AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
+	
 	    
 	    // 注册成功进行埋点
 	    if (registerSource != null) {
@@ -405,6 +405,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    if (refUserName != null && !"".equals(refUserName)){
 	    if (!refUserName.equals(mobile)) {
 	  		// 绑定关系mobile
+		        AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
 	  		if(afUserDo !=  null && refUserDo != null){
 	  		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
 	  		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
