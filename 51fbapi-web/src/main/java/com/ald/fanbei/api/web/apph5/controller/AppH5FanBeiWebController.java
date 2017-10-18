@@ -982,9 +982,9 @@ public class AppH5FanBeiWebController extends BaseController {
 				String id = request.getParameter("popupsId");
 				AfPopupsDo afPopupsDo = afPopupsService.selectPopups(Long.valueOf(id).longValue());
 				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
-					String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
-					String channel = getChannel(sysModeId);
-					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
+						String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+						String channel = getChannel(sysModeId);
+						String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
 					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
