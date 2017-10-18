@@ -79,6 +79,16 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			String searchBoxBgImage = serchBoxInfo.getValue();
 			data.put("searchBoxBgImage", searchBoxBgImage);
 		}
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		String value = "";
+		if(null == isWorm){
+			value = "0" ;
+		}else{
+			value = isWorm.getValue();
+		}
+
+
 		// 顶部导航信息
 		List<Object> topBannerList = new ArrayList<Object>();
 		//正式环境和预发布环境区分
@@ -136,6 +146,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
     			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
     			goodsInfo.put("goodsType", "0");
     			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+				goodsInfo.put("isWorm", value);
     			// 如果是分期免息商品，则计算分期
     			Long goodsId = goodsDo.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = null;
@@ -189,6 +200,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
 			goodsInfo.put("goodsType", "0");
 			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+			goodsInfo.put("isWorm", value);
 			// 如果是分期免息商品，则计算分期
 			Long goodsId = goodsDo.getRid();
 			AfSchemeGoodsDo  schemeGoodsDo = null;
@@ -234,14 +246,6 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		data.put("activityInfoList", activityInfoList);
 		// 更多商品
 		data.put("moreGoodsInfo", moreGoodsInfo);
-
-		//爬取商品开关
-		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
-		if(null != isWorm){
-			data.put("isWorm",isWorm.getValue());
-		}else{
-			data.put("isWorm",0);
-		}
 
 		resp.setResponseData(data);
 		return resp;

@@ -87,8 +87,10 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		}else{
 			resp.addResponseData("isWorm",0);
 		}
-
+		
+		resp.addResponseData("goodsId", afOrderDo.getGoodsId());
 		resp.setResponseData(agentOrderDetailVo);
+		
 		return resp;
 		
 	}

@@ -13,8 +13,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.common.Constants;
+
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -22,6 +24,7 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -42,6 +45,9 @@ public class GetRecommendGoodsApi implements ApiHandle {
 	
 	@Resource
 	AfResourceService  afResourceService;
+	
+	@Resource
+	private AfGoodsService afGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -60,6 +66,7 @@ public class GetRecommendGoodsApi implements ApiHandle {
 				List<NTbkItem>	nTbkItemList = taobaoApiUtil.executeTaeItemRecommendSearch(numId).getResults();
 				goodsInfoWithTbkItemList(nTbkItemList,list, rateRebate);
 
+				AfGoodsDo afGoodsDo = afGoodsService.getGoodsByNumId(numId);
 			}
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
