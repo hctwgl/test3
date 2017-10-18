@@ -56,6 +56,12 @@
 		from af_recommend_user where user_id = #{user_id}
 	</select>
 
+	<select id="getARecommendUserByIdAndType" resultType="AfRecommendUserDo">
+		select
+		<include refid="queryFields" />
+		from af_recommend_user where user_id = #{user_id} and type = #{type}
+	</select>
+
 	<update id="updateLoanById" parameterType="AfRecommendUserDo">
 		UPDATE af_recommend_user
 		set
@@ -119,4 +125,16 @@
 	<select id="getSumPrizeMoney" resultType="double">
 		select sum(prize_money) from af_recommend_user where is_delete =0 and parentId = #{userId}
 	</select>
+
+	<insert id="addRecommendMoney" parameterType="AfRecommendMoneyDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_recommend_money(user_id , parent_id , gmt_create , type , money)
+		VALUES (
+		#{userId},
+		#{parentId},
+		NOW(),
+		#{type},
+		#{money}
+		)
+	</insert>
+
 </mapper>

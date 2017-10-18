@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.AfRecommendMoneyDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import org.apache.ibatis.annotations.Param;
@@ -23,5 +24,9 @@ public interface AfRecommendUserDao {
     HashMap getRecommendSharedById(@Param("id") String id);
 
     double getSumPrizeMoney(@Param("userId") Long userId);
+
+    int addRecommendMoney(AfRecommendMoneyDo afRecommendMoneyDo);
+
+    AfRecommendUserDo  getARecommendUserByIdAndType(@Param("user_id") Long user_id,@Param("type") int type);
 
 }
