@@ -87,5 +87,12 @@ public interface AfRecommendUserService {
      * @param type
      * @return
      */
-    List<AfRecommendUserDo> rewardQuery(long userId,String type);
+    List<AfRecommendUserDo> rewardQuery(long userId,String type,Integer currentPage, Integer pageSize);
+
+    /**
+     * 总奖励查询总条数
+     * @param userId
+     * @return
+     */
+    int rewardQueryCount(long userId,String type);
 }

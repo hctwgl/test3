@@ -268,12 +268,16 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	}
 
 	@Override
-	public List<AfRecommendUserDo> rewardQuery(long userId, String type) {
+	public List<AfRecommendUserDo> rewardQuery(long userId, String type,Integer currentPage, Integer pageSize) {
 		List<AfRecommendUserDo> listData= new ArrayList<>();
+		if(pageSize==null){
+			pageSize=5;
+		}
+		long pageNo=(currentPage-1)*pageSize;
 		if("1".equals(type)){
-			listData =afRecommendUserDao.firstRewardQuery(userId);
+			listData =afRecommendUserDao.firstRewardQuery(userId,pageNo,pageSize);
 		}else if("2".equals(type)){
-			listData = afRecommendUserDao.twoLevelRewardQuery(userId);
+			listData = afRecommendUserDao.twoLevelRewardQuery(userId,pageNo,pageSize);
 		}
 		if(listData!=null){
 			for (AfRecommendUserDo af: listData) {
@@ -281,12 +285,15 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				AfRecommendUserDo afRecommendUserDo =afRecommendUserDao.getARecommendUserByIdAndType(af.getUserId(),1);
 				if(afRecommendUserDo.isIs_loan()){
 					af.setStatus("已借款");
+					af.setColor("1");
 				}else{
 					int compare=afRecommendUserDo.getPrize_money().compareTo(BigDecimal.ZERO);
 					if(compare==1){
 						af.setStatus("提交信用审核");
+						af.setColor("1");
 					}else{
 						af.setStatus("已注册");
+						af.setColor("0");
 					}
 				}
 				//加上userName
@@ -298,6 +305,17 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 			}
 		}
 		return listData;
+	}
+
+	@Override
+	public int rewardQueryCount(long userId, String type) {
+		int i =0;
+		if("1".equals(type)){
+			 i =afRecommendUserDao.firstRewardQueryCount(userId);
+		}else if("2".equals(type)){
+			i = afRecommendUserDao.twoLevelRewardQueryCount(userId);
+		}
+		return i;
 	}
 
 	public HashMap getRecommedData(long userId) {

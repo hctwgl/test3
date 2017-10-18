@@ -67,9 +67,23 @@ public class AfRecommendUserDo extends AbstractSerial {
     private Date gmtModified;
 
     /**
+     * 颜色加重 前台展示用的
+     */
+    private String color;
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    /**
      * 状态 前台展示用的
      */
     private String status;
+
     /**
      * 注册时间 前台展示用的
      */

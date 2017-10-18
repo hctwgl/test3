@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -72,12 +73,22 @@ public class AppH5InvitationActivityController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "rewardQuery", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
-    public String rewardQuery(HttpServletRequest request,long userId,String type){
+    public String rewardQuery(HttpServletRequest request, long userId, String type,Integer currentPage, Integer pageSize){
+        if(currentPage==null){
+            currentPage=1;
+        }
         String ret = null;
+        HashMap<String,Object> map =new HashMap<>();
+        List<HashMap> hashMapList =new ArrayList<>();
         List<AfRecommendUserDo> rewardQueryList =new ArrayList<>();
         if("1".equals(type)||"2".equals(type)){
-            rewardQueryList=afRecommendUserService.rewardQuery(userId,type);
-            ret =JSON.toJSONString(rewardQueryList);
+            rewardQueryList=afRecommendUserService.rewardQuery(userId,type,currentPage,pageSize);
+            Integer count =afRecommendUserService.rewardQueryCount(userId,type);
+            map.put("rewardQueryList",rewardQueryList);
+            map.put("count",count);
+            map.put("currentPage",currentPage);
+            hashMapList.add(map);
+            ret =JSON.toJSONString(hashMapList);
         }else{
             H5CommonResponse resp = H5CommonResponse.getNewInstance();
             resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null);
