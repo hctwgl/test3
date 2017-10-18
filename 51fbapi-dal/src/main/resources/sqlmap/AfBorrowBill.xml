@@ -370,5 +370,136 @@
 		ORDER BY id desc, bill_year DESC,
 		bill_month DESC LIMIT 0,1
 	</select>
+	<select id="getOverdueDataToRiskByBillIds" resultType="AfOverdueOrderDto">
+		SELECT distinct ao.`id` orderId,
+			ao.order_no orderNo,
+			ao.order_type orderType,
+			ao.shop_name shopName,
+			ao.goods_name goodsName,
+			ao.count count,
+			ao.price_amount priceAmount,
+			ao.sale_amount saleAmount,
+			ao.actual_amount actualAmount,
+			ao.borrow_amount borrowAmount,
+			ao.bank_amount bankAmount,
+			ao.pay_type payType,
+			ao.gmt_pay gmtPay,
+			ao.nper nper,
+			ao.consignee consignee,
+			ao.consignee_mobile consigneeMobile,
+			ao.address consigneeAddress,
+			aub.`card_number` bankCard,
+            aub.`bank_name` bankName,
+            ao.bank_id bankId
+		  FROM `af_order` ao
+		  LEFT JOIN `af_borrow` ab on ab.`order_id`= ao.`id`
+		  LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
+		  LEFT JOIN `af_user_bankcard` aub on aub.`user_id` = ao.`user_id` 
+			WHERE ao.`is_delete` = 0
+			AND ab.`is_delete` = 0
+			AND abb.`is_delete` = 0
+			AND aub.`is_delete` = 0
+			AND aub.`is_main` = 'Y'
+			AND aub.`status` = 'B'
+			AND abb.id IN
+			   <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+					#{item}
+			   </foreach>
+			ORDER BY ao.`id` 
+	</select>
+	
+	<select id="getAfOverdueBillDtoByBillIds" resultType="AfOverdueBillDto">
+	  SELECT ab.`id` borrowId,
+	   abb.id billId,
+       abb.borrow_no borrowNo,
+       ab.gmt_create gmtBorrow,
+       abb.bill_year billYear,
+       abb.bill_month billMonth,
+       abb.nper nper,
+       abb.bill_nper billNper,
+       abb.bill_amount billAmount,
+       abb.status status,
+       abb.remark remark,
+       abb.overdue_days overdueDays,
+       abb.principle_amount principleAmount,
+       abb.interest_amount interestAmount,
+       abb.overdue_interest_amount overdueInterestAmount,
+       abb.poundage_amount poundageAmount,
+       abb.overdue_poundage_amount overduePoundageAmount
+	  FROM `af_borrow` ab 
+	  LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
+	 WHERE ab.`is_delete`= 0
+	   AND abb.`is_delete`= 0
+	   AND abb.id IN
+	   <foreach collection="items" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+	   </foreach>
+	   AND ab.`order_id` = #{orderId}
+	 ORDER BY abb.bill_year DESC,
+			 abb.bill_month DESC
+	</select>
 
+	<select id="getOverdueDataToRiskByConsumerNo" resultType="AfOverdueOrderDto">
+		SELECT distinct ao.`id` orderId,
+		ao.order_no orderNo,
+		ao.order_type orderType,
+		ao.shop_name shopName,
+		ao.goods_name goodsName,
+		ao.count count,
+		ao.price_amount priceAmount,
+		ao.sale_amount saleAmount,
+		ao.actual_amount actualAmount,
+		ao.borrow_amount borrowAmount,
+		ao.bank_amount bankAmount,
+		ao.pay_type payType,
+		ao.gmt_pay gmtPay,
+		ao.nper nper,
+		ao.consignee consignee,
+		ao.consignee_mobile consigneeMobile,
+		ao.address consigneeAddress,
+		aub.`card_number` bankCard,
+		aub.`bank_name` bankName,
+		ao.bank_id bankId
+		FROM `af_order` ao
+		LEFT JOIN `af_borrow` ab on ab.`order_id`= ao.`id`
+		LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
+		LEFT JOIN `af_user_bankcard` aub on aub.`user_id` = ao.`user_id`
+		WHERE ao.`is_delete` = 0
+		AND ab.`is_delete` = 0
+		AND abb.`is_delete` = 0
+		AND aub.`is_delete` = 0
+		AND aub.`is_main` = 'Y'
+		AND aub.`status` = 'B'
+		AND abb.`type` = 'CONSUME'
+		AND ab.`status` = 'TRANSED'
+		AND ab.user_id = #{consumerNo}
+		ORDER BY ao.`id`
+	</select>
+
+	<select id="getAfOverdueBillDtoByConsumerNo" resultType="AfOverdueBillDto">
+		SELECT ab.`id` borrowId,
+		abb.id billId,
+		abb.borrow_no borrowNo,
+		ab.gmt_create gmtBorrow,
+		abb.bill_year billYear,
+		abb.bill_month billMonth,
+		abb.nper nper,
+		abb.bill_nper billNper,
+		abb.bill_amount billAmount,
+		abb.status status,
+		abb.remark remark,
+		abb.overdue_days overdueDays,
+		abb.principle_amount principleAmount,
+		abb.interest_amount interestAmount,
+		abb.overdue_interest_amount overdueInterestAmount,
+		abb.poundage_amount poundageAmount,
+		abb.overdue_poundage_amount overduePoundageAmount
+		FROM `af_borrow` ab
+		LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
+		WHERE ab.`is_delete`= 0
+		AND abb.`is_delete`= 0
+		AND ab.`order_id` = #{orderId}
+		ORDER BY abb.bill_year DESC,
+		abb.bill_month DESC
+	</select>
 </mapper>
