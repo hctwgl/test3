@@ -66,6 +66,44 @@ public class AfRecommendUserDo extends AbstractSerial {
      */
     private Date gmtModified;
 
+    /**
+     * 状态 前台展示用的
+     */
+    private String status;
+    /**
+     * 注册时间 前台展示用的
+     */
+    private String createTime;
+
+    /**
+     * userName 手机号码 前台展示用的
+     */
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
     public int getId() {
         return id;

@@ -23,7 +23,12 @@ public interface AfRecommendUserDao {
 
     HashMap getRecommendSharedById(@Param("id") String id);
 
-    double getSumPrizeMoney(@Param("userId") Long userId);
+    double getSumPrizeMoney(@Param("userId") long userId);
+
+    List<AfRecommendUserDo> firstRewardQuery(@Param("userId") long userId);
+
+    List<AfRecommendUserDo> twoLevelRewardQuery(@Param("userId") long userId);
+
 
     int addRecommendMoney(AfRecommendMoneyDo afRecommendMoneyDo);
 
