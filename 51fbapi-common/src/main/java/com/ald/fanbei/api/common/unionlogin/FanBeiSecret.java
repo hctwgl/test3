@@ -225,7 +225,7 @@ public class FanBeiSecret {
 
 
         String secret_key = "2SA4WGA857FFCC23"; //加密签名通用秘钥
-        String phone = "15990182388";
+        String phone = "15990182307";
         String channel = "QwEr";
 
 

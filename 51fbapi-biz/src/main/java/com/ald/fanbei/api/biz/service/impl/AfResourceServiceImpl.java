@@ -446,16 +446,16 @@ public class AfResourceServiceImpl implements AfResourceService {
 	
 	public List<AfResourceDo> getCarouselToManyResourceOrderByType(String type) {
 		List<AfResourceDo> list;
-		HashMap<String, List<AfResourceDo>> data = (HashMap<String, List<AfResourceDo>>) bizCacheUtil
+		/*HashMap<String, List<AfResourceDo>> data = (HashMap<String, List<AfResourceDo>>) bizCacheUtil
 				.getObject(CacheConstants.RESOURCE.HOME_CAROUSEL_TO_MANY_TYPE_LIST.getCode());
 		data = (data == null ? new HashMap<String, List<AfResourceDo>>() : data);
-		if (data.get(type) == null) {
+		if (data.get(type) == null) {*/
 			list = afResourceDao.getCarouselToManyResourceOrderByType(type);
-			data.put(type, list);
+			/*data.put(type, list);
 			bizCacheUtil.saveObject(CacheConstants.RESOURCE.HOME_CAROUSEL_TO_MANY_TYPE_LIST.getCode(), data);
 		} else {
 			list = data.get(type);
-		}
+		}*/
 		return list;
 	}
 
@@ -463,6 +463,17 @@ public class AfResourceServiceImpl implements AfResourceService {
 	public List<AfResourceDo> getConfigsByTypesAndSecType(String type, String secType) {
 		// TODO Auto-generated method stub
 		return afResourceDao.getConfigsByTypesAndSecType(type,secType);
+	}
+
+	public AfResourceDo getAfResourceAppVesion(){
+		AfResourceDo afResourceDo =  (AfResourceDo) bizCacheUtil.getObject("check_app_version");
+		if(afResourceDo !=null) return afResourceDo;
+		List<AfResourceDo> list = afResourceDao.getResourceListByType("check_app_version");
+		if(list !=null && list.size()>0){
+			afResourceDo = list.get(0);
+			bizCacheUtil.saveObject("check_app_version",afResourceDo);
+		}
+		return afResourceDo;
 	}
 
 	

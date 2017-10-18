@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($commonUrl="http://f.51fanbei.com/h5/app/images/sys")
+    #set($commonUrl="https://f.51fanbei.com/h5/app/images/sys")
     <title>还款方式</title>
-    <style type="text/css">
-        .line{
-            width:100%;
-            height:0.2rem;
-        }
-    </style>
+    <link rel="stylesheet" href="/dist/css/app/otherRepaymentType.css">
 </head>
 <body scroll=no style="overflow:hidden">
-<p class="line"></p>
-<img src="$commonUrl/other_repayment_type1_2.png">
-<p class="line"></p>
-<img src="$commonUrl/other_repayment_type2_2.png">
-<p class="line"></p>
-<img src="$commonUrl/other_repayment_type3_2.png">
+<div class="line">
+    <p style="font-size: .32rem;margin-top: .62rem"><i class="icon icon1" style="background-image: url('$commonUrl/repay.png')"></i>请在转账时备注</p>
+    <p style="font-size: .26rem;margin: .28rem 0 .44rem">您的返呗账号（即注册手机号）</p>
+</div>
+<div class="line">
+    <div class="block">
+        <p style="margin-top: .3rem"><i class="icon" style="background-image: url('$commonUrl/repay1.png')"></i>支付宝账号</p>
+        <p style="margin: .2rem 0 .44rem .6rem;color:#646464;">13777564272@163.com</p>
+    </div>
+    <div class="block" style="border-top:1px solid #e4e4e4 ">
+        <p style="margin-top: .3rem"><i class="icon" style="background-image: url('$commonUrl/repay2.png')"></i>银行账号</p>
+        <p style="margin: .2rem 0 0 .6rem;color:#646464;">户&nbsp;&nbsp;&nbsp;&nbsp;名：浙江阿拉丁电子商务股份有限公司</p>
+        <p style="margin: .14rem 0 0 .6rem;color:#646464;">开户行：招商银行杭州钱塘支行</p>
+        <p style="margin: .14rem 0 .44rem .6rem;color:#646464;">账&nbsp;&nbsp;&nbsp;&nbsp;号：5719 0851 8510 808</p>
+    </div>
+
+</div>
+<div class="line">
+    <div class="block">
+        <p style="margin-top: .3rem"><i class="icon" style="background-image: url('$commonUrl/repay3.png')"></i>温馨提示</p>
+        <p class="rule"><i class="yuan"></i>线下还款每天下午15:00前的当天处理，15:00后的第二天处理。</p>
+        <p class="rule"><i class="yuan"></i>时间紧急建议使用51返呗线上还款，即时到账，方便省心。</p>
+        <p class="rule" style="margin-bottom:.44rem;"><i class="yuan"></i>若有疑问请联系客服电话：400-002-5151</p>
+    </div>
+</div>
+##<img src="$commonUrl/other_repayment_type1_2.png">
+##<p class="line"></p>
+##<img src="$commonUrl/other_repayment_type2_2.png">
+##<p class="line"></p>
+##<img src="$commonUrl/other_repayment_type3_2.png">
 </body>
 </html>

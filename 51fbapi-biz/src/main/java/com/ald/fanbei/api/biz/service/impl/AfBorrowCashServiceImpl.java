@@ -7,14 +7,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -25,7 +25,8 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
@@ -34,7 +35,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
 /**
  * @类描述：
@@ -77,7 +78,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	SmsUtil smsUtil;
 	@Resource
 	JpushService jpushService;
-
+	@Resource
+	AfFundSideBorrowCashService afFundSideBorrowCashService;
+	
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -92,7 +95,8 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	 * @return
 	 */
 	public int borrowSuccess(final AfBorrowCashDo afBorrowCashDo) {
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+		int resultValue = 0;
+		resultValue =  transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus transactionStatus) {
 				logger.info("borrowSuccess--begin");
@@ -118,6 +122,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 						List<String> userName = afUserService.getUserNameByUserId(users);
 						// 保存破十亿中奖用户
 						bizCacheUtil.saveObject("Billion_Win_User", userName.get(0), 60 * 60 * 24 * 7);
+						logger.info("1500000000 is win,user_name= "+userName.get(0));
 					}
 					bizCacheUtil.saveObject("BorrowCash_Sum_Amount", amount, 60 * 60 * 24 * 7);
 				} else {
@@ -127,6 +132,24 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				return 1;
 			}
 		});
+		
+		if(resultValue == 1){
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.FUND_SIDE_BORROW_CASH.getCode(), AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
+			if (resourceDo != null && "1".equals(resourceDo.getValue())) {
+				//业务处理成功,和资金方关联处理添加
+				logger.info("borrowSuccess ,begin rela fund site info,borrowCashId:"+afBorrowCashDo.getRid());
+				boolean matchResult = afFundSideBorrowCashService.matchFundAndBorrowCash(afBorrowCashDo.getRid());
+				if(matchResult){
+					logger.info("borrowSuccess ,end rela fund site info success,borrowCashId:"+afBorrowCashDo.getRid());
+				}else{
+					logger.info("borrowSuccess ,end rela fund site info fail,borrowCashId:"+afBorrowCashDo.getRid());
+				}
+			}else{
+				//资金方开关关闭，跳过关联
+				logger.info("borrowSuccess ,rela fund site info is off,and jump it ,borrowCashId:"+afBorrowCashDo.getRid());
+			}
+		}
+		return resultValue;
 	}
 
 	@Override
@@ -242,5 +265,10 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public int getCurrDayTransFailTimes(Long userId){
 		return afBorrowCashDao.getCurrDayTransFailTimes(userId);
+	}
+
+	@Override
+	public int updateAfBorrowCashService(AfBorrowCashDo afBorrowCashDo) {
+		return afBorrowCashDao.updateAfBorrowCashService(afBorrowCashDo);
 	}
 }

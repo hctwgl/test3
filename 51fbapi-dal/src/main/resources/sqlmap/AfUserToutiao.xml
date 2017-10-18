@@ -228,6 +228,7 @@
         UPDATE af_user_toutiao
         <set>
             gmt_modified = now(),
+            user_id = #{userIdToutiao},
             active='1'
         </set>
         where is_delete = 0 AND id=#{id}

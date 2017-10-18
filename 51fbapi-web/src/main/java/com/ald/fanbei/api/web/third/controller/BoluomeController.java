@@ -79,7 +79,7 @@ public class BoluomeController extends AbstractThird {
 	if (sign) {
 	    try {
 		String status = params.get(BoluomeCore.STATUS);
-		OrderStatus orderStatus = OrderStatus.findRoleTypeByCode(status);
+		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
 		if (orderStatus != OrderStatus.DEALING) {
 		    AfOrderDo orderInfo = buildOrderInfo(params);
 		    if (orderInfo != null) {

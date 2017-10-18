@@ -118,7 +118,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (addressDo == null) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ADDRESS_NOT_EXIST);
 		}
-		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo);
+		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo,count);
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
 
@@ -191,7 +191,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		return resp;
 	}
 
-	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo) {
+	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo,int count) {
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setConsignee(addressDo.getConsignee());
 		afOrder.setConsigneeMobile(addressDo.getMobile());
@@ -217,7 +217,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setOpenId(goodsDo.getOpenId());
 		afOrder.setNumId(goodsDo.getNumId());
 		afOrder.setShopName(goodsDo.getShopName());
-		afOrder.setRebateAmount(goodsDo.getRebateAmount());
+		afOrder.setRebateAmount(goodsDo.getRebateAmount().multiply(new BigDecimal(count)));
 		afOrder.setMobile("");
 
 		afOrder.setBankId(0L);

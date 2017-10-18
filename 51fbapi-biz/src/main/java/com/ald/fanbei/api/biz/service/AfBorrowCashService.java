@@ -172,4 +172,11 @@ public interface AfBorrowCashService {
 	 * @return
 	 */
 	int getCurrDayTransFailTimes(Long userId);
+	
+	/**
+	 * 更新续借前的逾期状态
+	 * @param borrowId
+	 * @return
+	 * **/
+	int updateAfBorrowCashService(AfBorrowCashDo afBorrowCashDo);
 }
