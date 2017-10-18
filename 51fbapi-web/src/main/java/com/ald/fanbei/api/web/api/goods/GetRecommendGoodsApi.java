@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.Constants;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -62,6 +63,14 @@ public class GetRecommendGoodsApi implements ApiHandle {
 			}
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
+
+			//爬取商品开关
+			AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+			if(null != isWorm){
+				data.put("isWorm",isWorm.getValue());
+			}else{
+				data.put("isWorm",0);
+			}
 			resp.setResponseData(data);
 			return resp;
 

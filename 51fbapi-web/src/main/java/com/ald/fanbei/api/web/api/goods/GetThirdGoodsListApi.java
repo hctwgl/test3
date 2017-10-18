@@ -131,6 +131,14 @@ public class GetThirdGoodsListApi implements ApiHandle {
 					}
 		        }
 
+				//爬取商品开关
+				AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+				if(null != isWorm){
+					resp.addResponseData("isWorm",isWorm.getValue());
+				}else{
+					resp.addResponseData("isWorm",0);
+				}
+
 				resp.addResponseData("goodsList", result);
 				resp.addResponseData("pageNo", buildParams.get("pageNo"));
 			}

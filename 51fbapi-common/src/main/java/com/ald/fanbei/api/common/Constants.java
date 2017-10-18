@@ -352,4 +352,9 @@ public class Constants {
 	//催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 
+	//第三方自建开关_是否是爬取商品
+	public static final String THIRD_GOODS_TYPE = "third_goods";
+
+	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
+
 }

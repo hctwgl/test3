@@ -30,7 +30,7 @@ public class GetThirdGoodsDetailInfo implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);
+        Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);        Long userId = context.getUserId();
 
         //基本数据对象map
         Map<String, Object> auctionListMap = new HashMap<>();
@@ -44,32 +44,65 @@ public class GetThirdGoodsDetailInfo implements ApiHandle {
         auctionListMap.put("freeNper",3);
         auctionListMap.put("saleAmount",new BigDecimal("198"));
         auctionListMap.put("realAmount",new BigDecimal("150"));
-        auctionListMap.put("specification","风格: 通勤通勤: 韩版组合形式: 单件裙长: 中长裙款式: 其他/other袖长: 长袖领型: V领袖型: 衬衫袖腰型: 高腰衣门襟: 拉链裙型: 一步裙图案: 纯色流行元素/工艺: 露背 系带 拉链品牌: 苋茜成分含量: 81%(含)-90%(含)材质: 涤纶适用年龄: 25-29周岁年份季节: 2017年冬季颜色分类: 紫色 黑色 姜黄色尺码: S M L\n" +
-                " \t\n" +
-                "￥119.00\n" +
-                " \t\n" +
-                "￥129.00\n" +
-                " \t\n" +
-                "￥139.00\n" +
-                " \n" +
-                " \n" +
-                " \t\n" +
-                "￥119.00\n" +
-                " \t\n" +
-                "￥129.00\n" +
-                " \t\n" +
-                "￥123.00\n" +
-                " \n" +
-                " \n" +
-                " \t\n" +
-                "￥119.00\n" +
-                " \t\n" +
-                "￥118.00\n" +
-                " \t\n" +
-                "￥129.00\n" +
-                " \n" +
-                " \n");
-        auctionListMap.put("businessName","苋茜 原创女装专橱");
+        auctionListMap.put("goodsId","110543");
+
+        HashMap<String,Object> specificationMap = new HashMap<>();
+        specificationMap.put("specificationKey","风格");
+        specificationMap.put("specificationValue","通勤");
+
+        HashMap<String,Object> specificationMap1 = new HashMap<>();
+        specificationMap1.put("specificationKey","通勤");
+        specificationMap1.put("specificationValue","韩版");
+
+        HashMap<String,Object> specificationMap2 = new HashMap<>();
+        specificationMap2.put("specificationKey","组合形式");
+        specificationMap2.put("specificationValue","单件");
+
+        HashMap<String,Object> specificationMap3 = new HashMap<>();
+        specificationMap3.put("specificationKey","裙长");
+        specificationMap3.put("specificationValue","中长裙");
+
+        HashMap<String,Object> specificationMap4 = new HashMap<>();
+        specificationMap4.put("specificationKey","款式");
+        specificationMap4.put("specificationValue","其他/other");
+
+        HashMap<String,Object> specificationMap5 = new HashMap<>();
+        specificationMap5.put("specificationKey","袖长");
+        specificationMap5.put("specificationValue","长袖");
+
+        HashMap<String,Object> specificationMap6 = new HashMap<>();
+        specificationMap6.put("specificationKey","领型");
+        specificationMap6.put("specificationValue","V领");
+
+        HashMap<String,Object> specificationMap7 = new HashMap<>();
+        specificationMap7.put("specificationKey","适用年龄");
+        specificationMap7.put("specificationValue","25-29周岁");
+
+        HashMap<String,Object> specificationMap8 = new HashMap<>();
+        specificationMap8.put("specificationKey","成分含量");
+        specificationMap8.put("specificationValue","81%(含)-90%(含)");
+
+        HashMap<String,Object> specificationMap9 = new HashMap<>();
+        specificationMap9.put("specificationKey","尺码");
+        specificationMap9.put("specificationValue","S M L");
+        
+        HashMap<String,Object> specificationMap10 = new HashMap<>();
+        specificationMap10.put("specificationKey","尺码");
+        specificationMap10.put("specificationValue","颜色分类: 紫色 黑色 姜黄色");
+
+        List<Object> specificationList = new ArrayList<>();
+        specificationList.add(specificationMap);
+        specificationList.add(specificationMap1);
+        specificationList.add(specificationMap2);
+        specificationList.add(specificationMap3);
+        specificationList.add(specificationMap4);
+        specificationList.add(specificationMap5);
+        specificationList.add(specificationMap6);
+        specificationList.add(specificationMap7);
+        specificationList.add(specificationMap8);
+        specificationList.add(specificationMap9);
+
+        auctionListMap.put("specificationList",specificationList);
 
         //商品主图
         Map<String, Object> data = new HashMap<>();
@@ -84,12 +117,20 @@ public class GetThirdGoodsDetailInfo implements ApiHandle {
 
         Map<String,Object> data3 = new HashMap<>();
         data3.put("deatailImg","https://img.alicdn.com/imgextra/i3/1107822861/TB2En1BaY1K.eBjSsphXXcJOXXa_!!1107822861.jpg");
+        data3.put("width","400");
+        data3.put("height","400");
         Map<String,Object> data4 = new HashMap<>();
         data4.put("deatailImg","https://img.alicdn.com/imgextra/i3/1107822861/TB2En1BaY1K.eBjSsphXXcJOXXa_!!1107822861.jpg");
+        data4.put("width","400");
+        data4.put("height","400");
         Map<String,Object> data5 = new HashMap<>();
         data5.put("deatailImg","https://img.alicdn.com/imgextra/i3/1107822861/TB2En1BaY1K.eBjSsphXXcJOXXa_!!1107822861.jpg");
+        data5.put("width","400");
+        data5.put("height","400");
         Map<String,Object> data6 = new HashMap<>();
         data6.put("deatailImg","https://img.alicdn.com/imgextra/i3/1107822861/TB2En1BaY1K.eBjSsphXXcJOXXa_!!1107822861.jpg");
+        data6.put("width","400");
+        data6.put("height","400");
         List<Object> detailImgList = new ArrayList<>();
         detailImgList.add(data3);
         detailImgList.add(data4);

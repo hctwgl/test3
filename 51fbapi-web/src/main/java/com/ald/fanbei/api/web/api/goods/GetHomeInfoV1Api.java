@@ -234,6 +234,15 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		data.put("activityInfoList", activityInfoList);
 		// 更多商品
 		data.put("moreGoodsInfo", moreGoodsInfo);
+
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if(null != isWorm){
+			data.put("isWorm",isWorm.getValue());
+		}else{
+			data.put("isWorm",0);
+		}
+
 		resp.setResponseData(data);
 		return resp;
 	}

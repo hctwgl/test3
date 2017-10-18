@@ -80,7 +80,14 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 		AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
 		
 		AfAgentOrederDetailInforVo agentOrderDetailVo = getAgentOrderDetailInforVo(afOrderDo, afAgentOrderDo, context);
-		
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if(null != isWorm){
+			resp.addResponseData("isWorm",isWorm.getValue());
+		}else{
+			resp.addResponseData("isWorm",0);
+		}
+
 		resp.setResponseData(agentOrderDetailVo);
 		return resp;
 		

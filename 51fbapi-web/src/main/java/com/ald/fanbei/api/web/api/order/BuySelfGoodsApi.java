@@ -3,28 +3,8 @@
  */
 package com.ald.fanbei.api.web.api.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAddressService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -37,17 +17,21 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAddressDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @类描述：自营商品下单（oppr11） @author suweili 2017年6月16日下午3:44:12
@@ -179,6 +163,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 		data.put("isEnoughAmount", isEnoughAmount);
 		data.put("isNoneQuota", isNoneQuota);
 
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if(null != isWorm){
+			data.put("isWorm",isWorm.getValue());
+		}else{
+			data.put("isWorm",0);
+		}
+
 		if (couponId > 0) {
 			AfUserCouponDto couponDo = afUserCouponService.getUserCouponById(couponId);
 			if (couponDo.getGmtEnd().before(new Date()) || StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode())) {
@@ -187,6 +179,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(couponId);
 		}
+
 		
 		resp.setResponseData(data);
 		return resp;
