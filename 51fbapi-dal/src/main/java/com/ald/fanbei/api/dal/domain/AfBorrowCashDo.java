@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
  */
 public class AfBorrowCashDo extends AbstractSerial {
 
+
 	private static final long serialVersionUID = 1L;
 
 	private Long rid;
@@ -22,6 +23,7 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String type;
 	private BigDecimal amount;
 	private String status;
+	
 	private String remark;
 	private String cardNumber;
 	private String cardName;
@@ -46,7 +48,8 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private String overdueStatus;
 	private String reviewStatus;
 	private String address;
-
+	private String finishDate;//订单为FINSH时记录该时间
+	private String rdBeforeOverdueStatus;//记录续期前的订单状态
 	private String rishOrderNo;
 
 	private Date gmtPlanRepayment;// 预计还款时间
@@ -60,6 +63,13 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private BigDecimal baseBankRate;// 央行基准利率
 	private String majiabaoName;//马甲包名称www为APP,其余的为马甲包名称
 	
+	
+
+	
+
+
+
+
 	/**
 	 * @return the gmtClose
 	 */
@@ -612,7 +622,22 @@ public class AfBorrowCashDo extends AbstractSerial {
 	public void setMajiabaoName(String majiabaoName) {
 		this.majiabaoName = majiabaoName;
 	}
+	
+	public String getFinishDate() {
+		return finishDate;
+	}
 
+	public void setFinishDate(String finishDate) {
+		this.finishDate = finishDate;
+	}
+	
+	public String getRdBeforeOverdueStatus() {
+		return rdBeforeOverdueStatus;
+	}
+
+	public void setRdBeforeOverdueStatus(String rdBeforeOverdueStatus) {
+		this.rdBeforeOverdueStatus = rdBeforeOverdueStatus;
+	}
 	@Override
 	public String toString() {
 		return "AfBorrowCashDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", borrowNo=" + borrowNo + ", userId=" + userId + ", type=" + type + ", amount=" + amount + ", status=" + status + ", remark=" + remark + ", cardNumber=" + cardNumber + ", cardName=" + cardName + ", overdueDay=" + overdueDay + ", overdueAmount=" + overdueAmount + ", arrivalAmount=" + arrivalAmount + ", gmtArrival=" + gmtArrival + ", reviewName=" + reviewName + ", reviewUserName=" + reviewUserName + ", reviewDetails=" + reviewDetails + ", gmtReview=" + gmtReview + ", gmtClose=" + gmtClose + ", poundage=" + poundage + ", rateAmount=" + rateAmount + ", repayAmount=" + repayAmount + ", latitude=" + latitude + ", longitude=" + longitude + ", province=" + province + ", city=" + city + ", county=" + county + ", overdueStatus=" + overdueStatus + ", reviewStatus=" + reviewStatus + ", address=" + address + ", rishOrderNo=" + rishOrderNo + ", gmtPlanRepayment=" + gmtPlanRepayment

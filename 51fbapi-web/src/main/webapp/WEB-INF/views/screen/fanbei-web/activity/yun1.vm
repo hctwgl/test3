@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	#set($version="2017051101")
-    #set($commonUrl="http://f.51fanbei.com/h5/app/activity/09")
+    #set($commonUrl="https://f.51fanbei.com/h5/app/activity/09")
 	<meta charset="UTF-8">
 	<title>51返呗</title>
 </head>

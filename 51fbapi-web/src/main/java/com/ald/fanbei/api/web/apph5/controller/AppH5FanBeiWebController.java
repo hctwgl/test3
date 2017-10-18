@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.service.*;
 
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
@@ -52,14 +53,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -82,7 +75,8 @@ public class AppH5FanBeiWebController extends BaseController {
 
 	@Resource
 	AfUserDao afUserDao;
-
+	@Resource
+	AfPopupsService afPopupsService;
 	@Resource
 	AfCouponService afCouponService;
 	@Resource
@@ -980,6 +974,33 @@ public class AppH5FanBeiWebController extends BaseController {
 					model.put("redirectUrl", accessUrl);
 				}else{
 					logger.error("贷款超市app点击banner请求发起异常-贷款超市不存在或跳转链接为空，lsmNo："+lsmNo+"-userId:"+afUserDo.getRid());
+					model.put("redirectUrl", "/static/error404.html");
+				}
+			}else if(ThirdPartyLinkType.HOME_POPUP_WND.getCode().equals(linkType)){
+				context = doWebCheckNoAjax(request, true);
+				AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+				String id = request.getParameter("popupsId");
+				AfPopupsDo afPopupsDo = afPopupsService.selectPopups(Long.valueOf(id).longValue());
+				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+					String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+					String channel = getChannel(sysModeId);
+					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
+					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
+					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
+					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
+					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET_BANNER.getCode());
+					afBusinessAccessRecordsDo.setRefId(afPopupsDo.getId());
+					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
+					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.HOME_POPUP_WND.getCode());
+					afBusinessAccessRecordsDo.setChannel(channel);
+					afBusinessAccessRecordsDo.setRedirectUrl(afPopupsDo.getUrl());
+					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
+					int count = afPopupsDo.getClickAmount()+1;
+					afPopupsDo.setClickAmount(count);
+					afPopupsService.updatePopups(afPopupsDo);
+					model.put("redirectUrl", afPopupsDo.getUrl());
+				}else{
+					logger.error("首页极光推送跳转失败，popupsId："+id+"-userId:"+afUserDo.getRid());
 					model.put("redirectUrl", "/static/error404.html");
 				}
 			}else if(ThirdPartyLinkType.H5_LOAN_BANNER.getCode().equals(linkType)||ThirdPartyLinkType.H5_LOAN_LIST.getCode().equals(linkType)){ //h5端借贷超市

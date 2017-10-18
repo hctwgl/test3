@@ -55,5 +55,12 @@ public interface AfRenewalDetailDao {
 	 * @return
 	 */
 	public AfRenewalDetailDo getRenewalDetailByBorrowId(@Param("borrowId") Long borrowId);
+	
+	/**
+	 *查询续期表中是否有续期成功的订单
+	 * @param borrowId
+	 * @return
+	 * **/
+	public List<AfRenewalDetailDo> getRenewalDetailListByBorrowId(Long borrowId);
 
 }

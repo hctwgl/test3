@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -65,9 +66,12 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         }
         List<AfLoanSupermarketDto> afLoanSupermarketDtoList = new ArrayList<AfLoanSupermarketDto>();
         List<AfLoanSupermarketDo> sourceSupermarketList = afLoanSupermarketDao.getLoanSupermarketByLabel(label,systemType);
+        AfResourceDo afResourceDo = new AfResourceDo();
+        afResourceDo = afResourceDao.getSingleResourceBytype("unionregister");
+        String unionRegisterUrl = afResourceDo.getValue();
         HashMap<String,String> hashMap = new HashMap<String,String>();
         for(int n=0;n<sourceSupermarketList.size();n++){
-            AfLoanSupermarketDto afLoanSupermarketDto = getDto(sourceSupermarketList.get(n));
+            AfLoanSupermarketDto afLoanSupermarketDto = getDto(sourceSupermarketList.get(n),unionRegisterUrl,true);
             afLoanSupermarketDtoList.add(afLoanSupermarketDto);
         }
         //查询是否存在借贷超市活动
@@ -99,7 +103,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
     	List<AfLoanSupermarketDto> desSupermarketList = new ArrayList<AfLoanSupermarketDto>();
     	for (AfLoanSupermarketDto tempLoanMarket : sourceSupermarketList) {
     		String linkUrl = StringUtil.null2Str(tempLoanMarket.getLinkUrl()).replaceAll("\\*", "\\&");
-            AfLoanSupermarketDto afLoanSupermarketDto = getDto(tempLoanMarket);
+            AfLoanSupermarketDto afLoanSupermarketDto = getDto(tempLoanMarket,"",false);
             afLoanSupermarketDto.setLinkUrl(linkUrl);
             if(flag){
                 AfLoanSupermarketDto Dto = new AfLoanSupermarketDto();
@@ -122,7 +126,7 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
 
 	}
 
-    public AfLoanSupermarketDto getDto(AfLoanSupermarketDo tempLoanMarket){
+    public AfLoanSupermarketDto getDto(AfLoanSupermarketDo tempLoanMarket,String unionRegisterUrl,boolean unionProcess){
         AfLoanSupermarketDto afLoanSupermarketDto = new AfLoanSupermarketDto();
         String linkUrl = tempLoanMarket.getLinkUrl();
         String lsmNo = tempLoanMarket.getLsmNo();
@@ -134,13 +138,19 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         Long id = tempLoanMarket.getId();
         afLoanSupermarketDto.setRemake("");
         afLoanSupermarketDto.setLabel(Label);
-        afLoanSupermarketDto.setLinkUrl(linkUrl);
         afLoanSupermarketDto.setLsmIntro(lsmIntro);
         afLoanSupermarketDto.setIconUrl(iconUrl);
         afLoanSupermarketDto.setLsmName(lsmName);
         afLoanSupermarketDto.setMarketPoint(marketPoint);
         afLoanSupermarketDto.setLsmNo(lsmNo);
         afLoanSupermarketDto.setId(id);
+        int isUnionLogin = tempLoanMarket.getIsUnionLogin();
+        if(unionProcess){
+            if(isUnionLogin==1){
+                linkUrl = unionRegisterUrl + "?lsmNo=" + lsmNo;
+            }
+        }
+        afLoanSupermarketDto.setLinkUrl(linkUrl);
         return afLoanSupermarketDto;
     }
 
@@ -167,16 +177,13 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
             if (confList != null && confList.size() > 0) {
                 if (1 <= signDays && signDays < 5) {
                     count = 5 - signDays;
-                    String item = "2";
-                    prompt = prompt(confList, count, item);
+                    prompt = "继续签到"+count+"天即可获得" + "20元红包和3元现金";
                 } else if (5 <= signDays && signDays < 10) {
                     count = 10 - signDays;
-                    String item = "3";
-                    prompt = prompt(confList, count, item);
+                    prompt = "继续签到"+count+"天即可获得" + "50元红包和15元现金";
                 } else if (10 <= signDays && signDays < 15) {
                     count = 15 - signDays;
-                    String item = "4";
-                    prompt = prompt(confList, count, item);
+                    prompt = "继续签到"+count+"天即可获得" + "75元红包和25元现金，并且有机会获得888现金";
                 }
             }
         }
@@ -184,37 +191,5 @@ public class GetLoanSupermarketListByTabApi implements ApiHandle {
         return map;
     }
 
-    public String prompt(List<AfGameConfDo> confList,int count,String itemStr){
-        String prompt = "继续签到"+count+"天即可获得";
-        for(AfGameConfDo conf :confList){
-            String rule = conf.getRule();
-            JSONObject result = JSONObject.parseObject(rule);
-            String item = ObjectUtils.toString(result.get("item"), null);
-            if(item.toString().equals(itemStr)){
-                JSONArray prizeArray = result.getJSONArray("prize");
-                for (int i = 0; i < prizeArray.size(); i++) {
-                    JSONObject prize =  prizeArray.getJSONObject(i);
-                    String prizeId = prize.getString("prizeId");
-                    String type = prize.getString("type");
-                    if("BOLUOMI".equals(type)){
-                        AfResourceDo afResourceDo = afResourceDao.getResourceByResourceId(Long.parseLong(prizeId));
-                        if(i>0){
-                            prompt = prompt +"和"+ afResourceDo.getName();
-                        }else if(i==0){
-                            prompt = prompt + afResourceDo.getName();
-                        }
-                    }else{
-                        AfCouponDo afCouponDo = afCouponDao.getCouponById(Long.parseLong(prizeId));
-                        if(i>0){
-                            prompt = prompt +"和"+ afCouponDo.getName();
-                        }else if(i==0){
-                            prompt = prompt + afCouponDo.getName();
-                        }
-                    }
-                }
-            }
-        }
-        return prompt;
-    }
 
 }

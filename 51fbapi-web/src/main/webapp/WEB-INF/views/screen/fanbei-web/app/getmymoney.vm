@@ -2,7 +2,7 @@
 <html>
 <head>
     #set($version="201709291526")
-    #set($commonUrl="http://f.51fanbei.com/h5")
+    #set($commonUrl="https://f.51fanbei.com/h5")
     <title>国庆提钱玩</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/app/getmymoney.css?version=$version">
 </head>

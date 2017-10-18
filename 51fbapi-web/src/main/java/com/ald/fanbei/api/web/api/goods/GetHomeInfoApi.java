@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -61,6 +63,9 @@ public class GetHomeInfoApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	
 	@Resource
+	AfUserService afUserService;
+	
+	@Resource
 	BizCacheUtil bizCacheUtil;
 	
 	private FanbeiContext contextApp;
@@ -85,6 +90,16 @@ public class GetHomeInfoApi implements ApiHandle {
 			String userName = context.getUserName();
 			Long userId = context.getUserId();
 			if(userName != null && userId != null) {
+				//获取后台配置的注册时间
+				String regTime = "";
+				List<AfResourceDo> regTimeList = afResourceService.getConfigByTypes(ResourceType.APP_UPGRADE_REGISTER_TIME.getCode());
+				if(regTimeList != null && !regTimeList.isEmpty()) {
+					AfResourceDo regTimeInfo  = regTimeList.get(0);
+					regTime = regTimeInfo.getValue();
+				}
+				Date regDate = DateUtil.stringToDate(regTime);
+				AfUserDo userDo = afUserService.getUserById(userId);
+				Date gmtCreate = userDo.getGmtCreate();
 				// 用户已登录,将登录信息存放到缓存中
 				String ltStoreKey = "GET_HOME_INFO_LT" + userName;
 				Object ltSaveObj = bizCacheUtil.getObject(ltStoreKey);
@@ -109,7 +124,15 @@ public class GetHomeInfoApi implements ApiHandle {
 				String gtStoreKey = "GET_HOME_INFO_GT" + userName;
 				Object gtSaveObj = bizCacheUtil.getObject(gtStoreKey);
 				// 获取后台配置的优惠券信息
-				List<AfResourceDo> couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON.getCode());
+				List<AfResourceDo>  couponsList= null;
+				
+				if(gmtCreate.after(regDate)) {
+					// 新用户
+					couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON_NEW.getCode());
+				} else {
+					// 老用户
+					couponsList = afResourceService.getConfigByTypes(ResourceType.APP_UPDATE_COUPON.getCode());
+				}
 				if(couponsList != null && !couponsList.isEmpty()) {
 					AfResourceDo couponInfoRes = couponsList.get(0);
 					String couponIdStr = couponInfoRes.getValue();

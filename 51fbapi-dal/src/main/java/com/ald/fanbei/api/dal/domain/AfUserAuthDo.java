@@ -54,6 +54,15 @@ public class AfUserAuthDo extends AbstractSerial {
 	private Date gmtAlipay;
 	private String faceType;//YITU：依图 FACE_PLUS:face++
 	private Date gmtFaces;//人脸识别时间
+	private String basicStatus;//基础认证状态
+
+	public String getBasicStatus() {
+		return basicStatus;
+	}
+
+	public void setBasicStatus(String basicStatus) {
+		this.basicStatus = basicStatus;
+	}
 
 	public Long getRid() {
 		return rid;
