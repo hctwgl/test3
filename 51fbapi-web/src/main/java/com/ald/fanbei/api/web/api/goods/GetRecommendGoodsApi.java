@@ -67,6 +67,11 @@ public class GetRecommendGoodsApi implements ApiHandle {
 				goodsInfoWithTbkItemList(nTbkItemList,list, rateRebate);
 
 				AfGoodsDo afGoodsDo = afGoodsService.getGoodsByNumId(numId);
+				if(afGoodsDo == null){
+					logger.info("111111111111111111111111111111111111111111");
+				}else{
+					logger.info("111111111111111111111111111111111111111111:"+afGoodsDo.getRid());
+				}
 			}
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("goodsList", list);
