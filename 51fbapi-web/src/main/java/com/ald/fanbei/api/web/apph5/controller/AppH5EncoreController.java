@@ -26,8 +26,11 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -41,6 +44,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfActivityGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -78,6 +82,10 @@ public class AppH5EncoreController extends BaseController {
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	@Resource
 	AfCouponService afCouponService;
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfUserCouponService afUserCouponService;
 	
     String  opennative = "/fanbei-web/opennative?name=";
     
@@ -99,6 +107,19 @@ public class AppH5EncoreController extends BaseController {
     		JSONObject jsonObj = new JSONObject();
     		// 根据活动Id和类型查询优惠券信息
         	List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(activityId, ActivityType.ENCORE_TEMPLATE.getCode());
+        	FanbeiWebContext webContext = doWebCheck(request, false);
+    		String userName = webContext.getUserName();
+    		AfUserDo userDo = afUserService.getUserByUserName(userName);
+    		
+    		for(AfCouponDto couponDto : couponList) {
+    			// 判断用户是否领
+    			if(userDo == null) {
+    				couponDto.setUserAlready(0);
+    			} else {
+    				int pickCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userDo.getRid(), couponDto.getRid());
+    				couponDto.setUserAlready(pickCount);
+    			}
+    		}
         	jsonObj.put("couponList", couponList);
         	
         	
@@ -235,6 +256,24 @@ public class AppH5EncoreController extends BaseController {
          }
          try{
     		JSONObject jsonObj = new JSONObject();
+    		
+    		List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(activityId, ActivityType.ENCORE_TEMPLATE.getCode());
+        	FanbeiWebContext webContext = doWebCheck(request, false);
+    		String userName = webContext.getUserName();
+    		AfUserDo userDo = afUserService.getUserByUserName(userName);
+    		
+    		for(AfCouponDto couponDto : couponList) {
+    			// 判断用户是否领
+    			if(userDo == null) {
+    				couponDto.setUserAlready(0);
+    			} else {
+    				int pickCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userDo.getRid(), couponDto.getRid());
+    				couponDto.setUserAlready(pickCount);
+    			}
+    		}
+        	jsonObj.put("couponList", couponList);
+        	
+        	
         	String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
     		jsonObj.put("notifyUrl", notifyUrl);
     		// 获取活动信息

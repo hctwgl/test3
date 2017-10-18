@@ -94,13 +94,14 @@ public class AppGoodsControler extends BaseController {
 		// 根据modelId 取优惠券信息
 		List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(modelId,
 				ActivityType.H5_TEMPLATE.getCode());
-		model.put("couponList", couponList);
+		
 
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = webContext.getUserName();
 		AfUserDo userDo = afUserService.getUserByUserName(userName);
 		
 		for(AfCouponDto couponDto : couponList) {
+			// 判断用户是否领
 			if(userDo == null) {
 				couponDto.setUserAlready(0);
 			} else {
@@ -108,8 +109,8 @@ public class AppGoodsControler extends BaseController {
 				couponDto.setUserAlready(pickCount);
 			}
 		}
-		// 判断用户是否领
-
+		model.put("couponList", couponList);
+		
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
 		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService
