@@ -112,11 +112,13 @@ $(function(){
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');
         $('.surePresent').css('background','#f2404d');
+        $('.weixinToast').hide();
     });
     $('.closeAlert').click(function(){
         $('body').removeClass('overflowChange');
         $('html').removeClass('overflowChange');
         $('.surePresent').css('background','#f2404d');
+        $('.weixinToast').hide();
     });
 });
 
