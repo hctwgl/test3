@@ -118,7 +118,11 @@ public class H5BoluomeActivityController extends BaseController {
 	String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
 
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
-	AfUserDo refUserDo = afUserService.getUserByUserName(refUseraName);
+	  AfUserDo refUserDo = new AfUserDo();
+	if (refUseraName == null || "".equals(refUseraName)) {
+	     refUserDo = afUserService.getUserByUserName(refUseraName);
+	}
+
 	if (loginSource == null || "".equals(loginSource)) {
 	    if (CookieUtil.getCookie(request, "urlName") != null) {
 		loginSource = CookieUtil.getCookie(request, "urlName").getValue();
@@ -170,10 +174,10 @@ public class H5BoluomeActivityController extends BaseController {
 
 	    bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
 
-	    if (refUserDo == null) {
-		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
-
-	    }
+//	    if (refUserDo == null) {
+//		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
+//
+//	    }
 	   
 	     //如果该用户在平台没有订单，绑定关系(注册和登录只能绑定一次)去掉？
 	    AfOrderDo queryCount = new AfOrderDo();
@@ -181,6 +185,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
 	    logger.info("orderCount = {}", orderCount);
 	    // <1?
+	    if(refUserDo!=null ){
 //	    if (orderCount > 0) {
 	    if (!userName.equals(refUseraName)) {
 		// 绑定关系refUserDo
@@ -191,6 +196,7 @@ public class H5BoluomeActivityController extends BaseController {
 		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
 		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
 		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+	    }
 	    }
 //	   }
 

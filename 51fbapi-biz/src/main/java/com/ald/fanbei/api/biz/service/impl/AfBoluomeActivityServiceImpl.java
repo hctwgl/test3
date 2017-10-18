@@ -547,7 +547,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	@Override
 	public int sentNewUserBoluomeCoupon(AfUserDo afUserDo) {
 	    // TODO Auto-generated method stub
-	     //平台没有订单且有一条绑定记录时送券
+	     //平台没有订单且有绑定记录时送券
 	    AfOrderDo queryCount = new AfOrderDo();
 	    queryCount.setUserId(afUserDo.getRid());
 	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
