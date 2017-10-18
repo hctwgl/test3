@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,6 +62,9 @@ public class GetThirdGoodsListApi implements ApiHandle {
 	@Resource
 	private AfUserSearchService afUserSearchService;
 
+	@Resource
+	private AfGoodsService afGoodsService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -76,43 +81,66 @@ public class GetThirdGoodsListApi implements ApiHandle {
 
 			if (CollectionUtils.isNotEmpty(list)) {
 
-				List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
-					@Override
-					public AfSearchGoodsVo convert(NTbkItem source) {
-					//	System.out.println(source.getTitle());
-						if(virtualGoods !=null&&isVirtualWithKey(source.getTitle() ,virtualGoods.getValue())){
-							return null;
-						}
-						if(null == resource){
-							return parseToVo(source,BigDecimal.ZERO,BigDecimal.ZERO);
-						}else{
-							return parseToVo(source,NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
-									NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO));
-						}
-					}
-				});
-				
-				//获取借款分期配置信息
-		        AfResourceDo res = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-		        JSONArray array = JSON.parseArray(res.getValue());
-		        //删除2分期
-		        if (array == null) {
-		            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-		        }
-		        removeSecondNper(array);
+                List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
+                    @Override
+                    public AfSearchGoodsVo convert(NTbkItem source) {
+                        //	System.out.println(source.getTitle());
+                        if (virtualGoods != null && isVirtualWithKey(source.getTitle(), virtualGoods.getValue())) {
+                            return null;
+                        }
+                        if (null == resource) {
+                            return parseToVo(source, BigDecimal.ZERO, BigDecimal.ZERO);
+                        } else {
+                            return parseToVo(source, NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
+                                    NumberUtil.objToBigDecimalDefault(resource.getValue1(), BigDecimal.ZERO));
+                        }
+                    }
+                });
 
-		        for(AfSearchGoodsVo goodsInfo : result) {
-		        	List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
-		        			goodsInfo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-					if(nperList!= null){
-						Map<String,Object> nperMap = nperList.get(nperList.size() - 1);
-						goodsInfo.setNperMap(nperMap);
-					}
-		        }
+                // 判断是否有自建商品存在，如果有，替换数据
+                for (AfSearchGoodsVo afSearchGoodsVo : result) {
+                    AfGoodsDo query = afGoodsService.checkIsSelfBuild(afSearchGoodsVo.getNumId());
+                    if (query != null && StringUtil.isNotEmpty(query.getNumId())) {
+                        afSearchGoodsVo.setGoodsIcon(query.getGoodsIcon());
+                        afSearchGoodsVo.setGoodsName(query.getName());
+                        afSearchGoodsVo.setGoodsUrl(query.getGoodsUrl());
+                        afSearchGoodsVo.setRealAmount(query.getSaleAmount().toString());
+                        afSearchGoodsVo.setRebateAmount(query.getRebateAmount().toString());
+                        afSearchGoodsVo.setSaleAmount(query.getPriceAmount());
+                        afSearchGoodsVo.setThumbnailIcon(query.getThumbnailIcon());
+                    }
 
-				resp.addResponseData("goodsList", result);
-				resp.addResponseData("pageNo", buildParams.get("pageNo"));
-			}
+                    //获取借款分期配置信息
+                    AfResourceDo res = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+                    JSONArray array = JSON.parseArray(res.getValue());
+                    //删除2分期
+                    if (array == null) {
+                        throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+                    }
+                    removeSecondNper(array);
+
+                    for (AfSearchGoodsVo goodsInfo : result) {
+                        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
+                                goodsInfo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+                        if (nperList != null) {
+                            Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+                            goodsInfo.setNperMap(nperMap);
+                        }
+                    }
+
+
+                    //爬取商品开关
+                    AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE, Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+                    if (null != isWorm) {
+                        resp.addResponseData("isWorm", isWorm.getValue());
+                    } else {
+                        resp.addResponseData("isWorm", 0);
+                    }
+
+                    resp.addResponseData("goodsList", result);
+                    resp.addResponseData("pageNo", buildParams.get("pageNo"));
+                }
+            }
 		} catch (ApiException e) {
 			return new ApiHandleResponse("searchGoods failed", FanbeiExceptionCode.FAILED);
 		}
@@ -133,6 +161,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
         }
 
     }
+
 	private boolean isVirtualWithKey(String key, String virtualGoodsValue){
 		List<String> virtual = StringUtil.splitToList(virtualGoodsValue,",") ;
 		for (String string : virtual) {

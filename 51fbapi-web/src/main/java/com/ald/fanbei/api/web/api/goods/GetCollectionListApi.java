@@ -3,24 +3,26 @@
  */
 package com.ald.fanbei.api.web.api.goods;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.stereotype.Component;
-
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfuserCollectionService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCollectionDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @类描述：收藏列表
@@ -32,6 +34,8 @@ public class GetCollectionListApi implements ApiHandle {
 	@Resource
 	AfuserCollectionService afuserCollectionService;
 
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -42,14 +46,33 @@ public class GetCollectionListApi implements ApiHandle {
 		}
 		Map<String, Object> data = new HashMap<String, Object>();
 
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		String value = "";
+		if(null != isWorm){
+			value = isWorm.getValue();
+		}else{
+			value = "0";
+		}
+
 		if (context.getAppVersion() < 350) {
 			List<AfUserCollectionDo> list= afuserCollectionService.getUserGoodsIdCollectionListByUserId(userId);
+			List<AfUserCollectionDo> newList = new ArrayList<>();
+			for(AfUserCollectionDo afUserCollectionDo : list){
+				afUserCollectionDo.setIsWorm(value);
+				newList.add(afUserCollectionDo);
+			}
 			data.put("collectionList", JSON.toJSON(list));
 
 		}else{
 			List<AfUserCollectionDo> list= afuserCollectionService.getUserCollectionListByUserId(userId);
-			
-			data.put("collectionList", JSON.toJSON(list));
+			List<AfUserCollectionDo> newList = new ArrayList<>();
+			for(AfUserCollectionDo afUserCollectionDo : list){
+				afUserCollectionDo.setIsWorm(value);
+				newList.add(afUserCollectionDo);
+			}
+
+			data.put("collectionList", JSON.toJSON(newList));
 		}
 		
 		resp.setResponseData(data);
