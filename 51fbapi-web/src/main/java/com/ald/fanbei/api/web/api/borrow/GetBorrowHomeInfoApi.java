@@ -61,7 +61,7 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 		AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String,Integer> map = afBorrowService.getCurrentTermYearAndMonth("",now);
-		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatus(userId, map.get(Constants.DEFAULT_YEAR), map.get(Constants.DEFAULT_MONTH), YesNoStatus.NO.getCode()),userDto, authDo,context);
+		AfBorrowHomeVo data = getBorrowHomeInfo(now,afBorrowBillService.getMonthlyBillByStatusNewV1(userId, YesNoStatus.NO.getCode()),userDto, authDo,context);
 		resp.setResponseData(data);
 		return resp;
 	}

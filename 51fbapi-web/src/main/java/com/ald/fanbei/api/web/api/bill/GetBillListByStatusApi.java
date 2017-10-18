@@ -5,7 +5,11 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -27,7 +31,11 @@ import java.util.*;
 @Component("getBillListByStatusApi")
 public class GetBillListByStatusApi implements ApiHandle {
     @Resource
+    AfUserOutDayDao afUserOutDayDao;
+    @Resource
     AfBorrowService afBorrowService;
+    @Resource
+    AfBorrowBillDao afBorrowBillDao;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         Long userId = context.getUserId();
@@ -45,7 +53,33 @@ public class GetBillListByStatusApi implements ApiHandle {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         //本期还款日
         Date repayDate = afBorrowService.getReyLimitDate("C",new Date());
+
         map.put("repayDate",simpleDateFormat.format(repayDate));
+
+        Calendar n = Calendar.getInstance();
+        n.add(Calendar.MONTH,-1);
+        String _n =simpleDateFormat.format(n.getTime());
+
+        String[] __n = _n.split("-");
+        AfBorrowTotalBillDo afBorrowTotalBillDo = afBorrowBillDao.getBorrowBillTotalNow(userId,Integer.parseInt( __n[0]),Integer.parseInt(__n[1]));
+        if(afBorrowTotalBillDo !=null){
+            map.put("repayDate",simpleDateFormat.format(afBorrowTotalBillDo.getGmtPayTime()));
+        }
+        else {
+            String[] d = map.get("repayDate").toString().split("-");
+            AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+            if (afUserOutDayDo != null) {
+
+                String payDay = "";
+                if (afUserOutDayDo.getPayDay() >= 10) {
+                    payDay = afUserOutDayDo.getPayDay().toString();
+                } else {
+                    payDay = "0" + afUserOutDayDo.getPayDay().toString();
+                }
+                map.put("repayDate", d[0] + "-" + d[1] + "-" + payDay);
+            }
+        }
+
 
         //处理己还的
         Map<String,Integer> map22 = afBorrowService.getCurrentTermYearAndMonth("C",new Date());
@@ -116,13 +150,14 @@ public class GetBillListByStatusApi implements ApiHandle {
     private HashMap getBillByStatus(AfBorrowBillDo afBorrowBillDo,int status){
         HashMap map = new HashMap();
         if(afBorrowBillDo.getStatus().equals("Y")){
-            return map;
+            return null;
         }
         if(status ==1){
             if(afBorrowBillDo.getOverdueStatus().equals("Y")){
-                return map;
+                return null;
             }
-            if(isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+//            if(isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+            if(afBorrowBillDo.getIsOut().intValue() ==1){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
                 map.put("billId",afBorrowBillDo.getRid());
@@ -144,7 +179,8 @@ public class GetBillListByStatusApi implements ApiHandle {
             return map;
         }
         else if (status ==3){
-            if(!isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+//            if(!isOut(afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth())){
+            if(afBorrowBillDo.getIsOut().intValue() == 0){
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String date = simpleDateFormat.format(afBorrowBillDo.getGmtCreate());
                 map.put("billId",afBorrowBillDo.getRid());
