@@ -5,9 +5,8 @@ function getinfo(fn) {
       'userId': 178
     },
     type: 'POST',
-    succuess: (data) => {
-      data=eval('(' + data + ')')
-
+    dataType: 'JSON',
+    success: (data) => {
       fn(data[0])
     },
     error: (err) => {
@@ -77,17 +76,23 @@ window.onload = ()=>{
   let levelonepage = 1
   let leveltwopage = 1
   let off_on = true
-
+  let pagecount = null
   function returnlist(arr) {
+    function exnum(str) {
+      let _strtoarr = str.split('')
+      _strtoarr.splice(3, 4, "****")
+      return _strtoarr.join('')
+    }
     let newarr = arr.map((item, i)=>{
-      return `<div class="item"><div>${arr.a}</div><div>${arr.a}</div><div>${arr.a}</div><div>${arr.a}</div></div>`
+      return `<div class="item"><div>${exnum(item.userName)}</div><div>${item.createTime.slice(0,10)}</div><div class=${item.color==="0"?"":"red"}>${item.status}</div><div class=${item.color==="0"?"":"red"}>${item.prize_money}</div></div>`
     })
+    return newarr
   }
 
 
   function getlist(page, type, fn) {
     $.ajax({
-      url: '/fanbei-web/activityUserInfo',
+      url: '/fanbei-web/rewardQuery',
       data: {
         'userId': 178,
         'type': type,
@@ -95,9 +100,10 @@ window.onload = ()=>{
         'currentPage': page
       },
       type: 'POST',
-      succuess: (data) => {
-        data=eval('(' + data + ')')
-  
+      dataType: 'JSON',
+      success: (data) => {
+        console.log(data[0])
+        pagecount = data[0].count
         fn(data[0], type)
       },
       error: (err) => {
@@ -118,7 +124,9 @@ window.onload = ()=>{
     }
 
     $('.list').html(html)
-    off_on = true
+    setTimeout(()=>{
+      off_on = true
+    },0)
   }
 
   function appendhtml(data, type) {
@@ -132,8 +140,12 @@ window.onload = ()=>{
     }
 
     $('.list').append(html)
-    off_on = true
+    setTimeout(()=>{
+      off_on = true
+    },0)
   }
+
+  getlist(1, 1, replacehtml)
 
   $('.buttons div').on('click', (e)=>{
     var nodecl = e.target.className
@@ -147,13 +159,16 @@ window.onload = ()=>{
 
 
   $('.con').scroll(function() {
+    console.log(off_on,pagecount)
     if (($(this)[0].scrollTop + $(this).height() + 40) >= $(this)[0].scrollHeight) {
-      if (off_on) {
+      if (off_on && $(this).find('.item').length<pagecount) {
           off_on = false;
           if($('.levelone').hasClass('active')) {
-            getlist(1, 1, appendhtml)
+            levelonepage++
+            getlist(levelonepage, 1, appendhtml)
           } else {
-            getlist(1, 2, appendhtml)
+            leveltwopage++
+            getlist(leveltwopage, 2, appendhtml)
           }
       }
     }
