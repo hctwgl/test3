@@ -122,11 +122,12 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	@Override
 	public int ggLightActivity(AfOrderDo afOrder) {
 		    // TODO Auto-generated method stub
-            
+	    logger.info("ggLightActivity start");
 	//若在菠萝觅活动期间内则返利
 	AfBoluomeActivityDo activityDo = new AfBoluomeActivityDo();
 	activityDo.setStatus("O");
 	AfBoluomeActivityDo afBoluomeActivityDo =  afBoluomeActivityDao.getByCommonCondition(activityDo);
+	   logger.info("afBoluomeActivityDo = ",afBoluomeActivityDo);
 	if(afBoluomeActivityDo !=null){
         	Date startTime = afBoluomeActivityDo.getGmtCreate();
         	Date endTime = afBoluomeActivityDo.getGmtEnd();
