@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.omg.CORBA.StringHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -122,13 +121,6 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 
 	@Override
 	public int ggLightActivity(AfOrderDo afOrder) {
-	    
-	    String orderState = afOrder.getStatus();
-	    afOrder.setStatus("GGLIGHT");
-	    orderDao.updateOrder(afOrder);
-	    
-	    afOrder.setStatus(orderState);
-	    
 		    // TODO Auto-generated method stub
 	    logger.info("ggLightActivity start");
 	//若在菠萝觅活动期间内则返利
