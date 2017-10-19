@@ -41,13 +41,14 @@ $(function () {
     var param = getUrlParam(currentUrl);
     var word = param['word'];
     var urlName = param['urlName'];//邀请者用户名
+    var userName = param['userName'];
     var refUserName = param['userName'];
     var activityId = param['activityId'];
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
     var loginSource = param['loginSource'];
     console.log(activityId);
-    console.log(refUserName);
+    //console.log(refUserName);
     console.log(currentUrl)
 
     var timerInterval;
@@ -229,7 +230,7 @@ $(function () {
                         var urlName = param['urlName'];
                          requestMsg("注册成功");
                          setTimeout(function () {
-                            window.location.href = "gglogin?urlName="+urlName+"&refUserName="+refUserName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word+ "&loginSource=" + loginSource+"&refUserName="+refUserName;
+                            window.location.href = "gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word+ "&loginSource=" + loginSource;
                         }, 1500);
                         
                     }else if(a.url=="Register"){
