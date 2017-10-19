@@ -47,28 +47,16 @@ public class ClickAmountNumApi implements ApiHandle{
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
-		AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
-		if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
-			String sysModeId = "";
-			String channel = getChannel(sysModeId);
-			String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
-			AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
-			afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
-			afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
-			afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET_BANNER.getCode());
-			afBusinessAccessRecordsDo.setRefId(afPopupsDo.getId());
-			afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
-			afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.HOME_POPUP_WND.getCode());
-			afBusinessAccessRecordsDo.setChannel(channel);
-			afBusinessAccessRecordsDo.setRedirectUrl(afPopupsDo.getUrl());
-			afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
-			int count = afPopupsDo.getClickAmount()+1;
-			afPopupsDo.setClickAmount(count);
-			afPopupsService.updatePopups(afPopupsDo);
-		}else{
-			logger.error("首页极光推送跳转失败，popupsId："+id+"-userId:"+afUserDo.getRid());
+		synchronized (this) {
+			AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
+			if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+				int count = afPopupsDo.getClickAmount()+1;
+				afPopupsDo.setClickAmount(count);
+				afPopupsService.updatePopups(afPopupsDo);
+			}else{
+				logger.error("首页极光推送跳转失败，popupsId："+id);
+			}
 		}
 		return resp;
 	}
