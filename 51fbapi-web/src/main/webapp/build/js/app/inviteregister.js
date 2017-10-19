@@ -96,7 +96,7 @@ let checkpwd = () => {
 }
 
 let checkverify = () => {
-  if ($('#verify').val().length !== 4) {
+  if ($('#verify').val().length !== 6) {
     return false
   } else {
     return true
