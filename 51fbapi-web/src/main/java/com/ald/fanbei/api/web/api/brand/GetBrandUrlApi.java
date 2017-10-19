@@ -70,7 +70,7 @@ public class GetBrandUrlApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl());
+		String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl().trim());
 		
 		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
 		buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());
