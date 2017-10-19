@@ -77,7 +77,6 @@ public class AppH5InvitationActivityController extends BaseController {
      * @param type
      * @return
      */
-
     @ResponseBody
     @RequestMapping(value = "rewardQuery", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String rewardQuery(HttpServletRequest request, FanbeiContext context, String type,Integer currentPage, Integer pageSize){
