@@ -40,12 +40,13 @@ public class AppH5InvitationActivityController extends BaseController {
     /**
      * 活动页面的基本信息
      * @param request
-     * @param context
+     * @param
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "activityUserInfo", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
-    public String activityUserInfo(HttpServletRequest request,FanbeiContext context){
+    public String activityUserInfo(HttpServletRequest request){
+        FanbeiContext context =new FanbeiContext();
         Long userId =context.getUserId();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         if(userId==null){
@@ -78,13 +79,14 @@ public class AppH5InvitationActivityController extends BaseController {
     /**
      * 奖励详细查询
      * @param request
-     * @param context
+     * @param currentPage
      * @param type
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "rewardQuery", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
-    public String rewardQuery(HttpServletRequest request, FanbeiContext context, String type,Integer currentPage, Integer pageSize){
+    public String rewardQuery(HttpServletRequest request,String type,Integer currentPage, Integer pageSize){
+        FanbeiContext context =new FanbeiContext();
         Long userId =context.getUserId();
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         if(userId==null){
