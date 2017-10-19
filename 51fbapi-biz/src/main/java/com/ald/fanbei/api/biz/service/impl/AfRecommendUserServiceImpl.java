@@ -305,7 +305,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				//加上userName
 				AfUserDo afUserDo =afUserDao.getUserById(af.getUserId());
 				af.setUserName(afUserDo.getUserName());
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String createTime = sdf.format(afUserDo.getGmtCreate());
 				af.setCreateTime(createTime);
 			}

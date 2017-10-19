@@ -64,6 +64,9 @@ public class AppH5InvitationActivityController extends BaseController {
                 if(afUser != null){
                     userId = afUser.getRid();
                 }
+            }else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
             }
         }catch  (Exception e) {
             logger.error("commitChannelRegister", e);
@@ -106,6 +109,7 @@ public class AppH5InvitationActivityController extends BaseController {
     public String rewardQuery(HttpServletRequest request,String type,Integer currentPage, Integer pageSize){
         FanbeiWebContext context = new FanbeiWebContext();
         Long userId = -1l;
+        //Long userId = 178l;
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         AfUserDo afUser = null;
         try{
@@ -115,6 +119,9 @@ public class AppH5InvitationActivityController extends BaseController {
                 if(afUser != null){
                     userId = afUser.getRid();
                 }
+             }else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
             }
         }catch  (Exception e) {
             logger.error("commitChannelRegister", e);
