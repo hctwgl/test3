@@ -24,7 +24,7 @@ public class RateBo implements Serializable {
 
     private String reply;    //店主评论内容
 
-    private Date rateTime;  //评论时间
+    private String rateTime;  //评论时间
 
     private String auctionSku;    //评论商品规格参数
 
@@ -62,11 +62,11 @@ public class RateBo implements Serializable {
         this.reply = reply;
     }
 
-    public Date getRateTime() {
+    public String getRateTime() {
         return rateTime;
     }
 
-    public void setRateTime(Date rateTime) {
+    public void setRateTime(String rateTime) {
         this.rateTime = rateTime;
     }
 
