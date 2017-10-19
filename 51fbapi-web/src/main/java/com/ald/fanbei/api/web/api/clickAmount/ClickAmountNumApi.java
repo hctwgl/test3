@@ -6,6 +6,7 @@ package com.ald.fanbei.api.web.api.clickAmount;
 import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfPopupsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
@@ -39,14 +40,14 @@ public class ClickAmountNumApi implements ApiHandle{
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
-	AfUserDao afUserDao;
+	AfUserService afUserService;
 	@Resource
 	AfPopupsService afPopupsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+		AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
 		AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
 		if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
