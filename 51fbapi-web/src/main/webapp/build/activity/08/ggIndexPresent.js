@@ -45,17 +45,17 @@ $(function(){
                             if($('.presentButton').attr('superPrize')=='Y'){//已领取终极大奖 num>=1 就可赠送 显示为亮
                                 for(var k=0;k<presentCardList.length;k++){
                                     if(presentCardList[k].num>=1){
-                                        str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'" rid="'+presentCardList[k].rid+'"><img src="'+presentCardList[k].iconUrl+'"><img class="cardBlur" src="'+presentCardList[k].iconUrl+'"><p class="num">x'+presentCardList[k].num+'</p>'+ '</div>';
+                                        str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'卡" rid="'+presentCardList[k].rid+'"><img src="'+presentCardList[k].iconUrl+'"><img class="cardBlur" src="'+presentCardList[k].iconUrl+'"><p class="num">x'+presentCardList[k].num+'</p>'+ '</div>';
                                     }else{
-                                        str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'" rid="'+presentCardList[k].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[k].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[k].rid+'.png">'+ '</div>';
+                                        str+='<div class="img" numClick="'+presentCardList[k].num+'" name="'+presentCardList[k].name+'卡" rid="'+presentCardList[k].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[k].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[k].rid+'.png">'+ '</div>';
                                     }
                                 }
                             }else{ //未已领取终极大奖 num>=2 就可赠送 显示为亮
                                 for(var j=0;j<presentCardList.length;j++){
                                     if(presentCardList[j].num>=2){
-                                        str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="cardBlur" src="'+presentCardList[j].iconUrl+'"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
+                                        str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'卡" rid="'+presentCardList[j].rid+'"><img src="'+presentCardList[j].iconUrl+'"><img class="cardBlur" src="'+presentCardList[j].iconUrl+'"><p class="num">x'+(presentCardList[j].num-1)+'</p>'+ '</div>';
                                     }else{
-                                        str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'" rid="'+presentCardList[j].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[j].rid+'.png">'+ '</div>';
+                                        str+='<div class="img" numClick="'+presentCardList[j].num+'" name="'+presentCardList[j].name+'卡" rid="'+presentCardList[j].rid+'"><img class="garyCard" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[j].rid+'.png"><img class="cardBlur" src="http://f.51fanbei.com/h5/app/activity/10/ggNewCard0'+presentCardList[j].rid+'.png">'+ '</div>';
                                     }
                                 }
                             }
@@ -85,6 +85,9 @@ $(function(){
     //确定赠送
     $('.surePresent').click(function(){
         $('.weixinToast').show();
+        setTimeout(function () {
+            $(".weixinToast").hide();
+        }, 3000);
         var arr=[];
         name = $('.img.img3').attr('name');
         itemsListRid=$('.img.img3').attr('rid');
