@@ -287,14 +287,20 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 					af.setStatus("已借款");
 					af.setColor("1");
 				}else{
-					int compare=afRecommendUserDo.getPrize_money().compareTo(BigDecimal.ZERO);
-					if(compare==1){
-						af.setStatus("提交信用审核");
-						af.setColor("1");
+					if("1".equals(type)){
+						int compare=afRecommendUserDo.getPrize_money().compareTo(BigDecimal.ZERO);
+						if(compare==1){
+							af.setStatus("提交信用审核");
+							af.setColor("1");
+						}else{
+							af.setStatus("已注册");
+							af.setColor("0");
+						}
 					}else{
 						af.setStatus("已注册");
 						af.setColor("0");
 					}
+
 				}
 				//加上userName
 				AfUserDo afUserDo =afUserDao.getUserById(af.getUserId());
