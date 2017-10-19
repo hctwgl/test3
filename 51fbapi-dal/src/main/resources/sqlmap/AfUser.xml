@@ -203,4 +203,9 @@
 			id = #{rid}
 	</update>
 
+	<select id="getUserRecommendCode" resultType="String">
+		SELECT recommend_code from af_user
+		where is_delete = 0 and id =#{userId}
+	</select>
+
 </mapper>

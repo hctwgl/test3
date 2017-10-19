@@ -63,4 +63,11 @@ public interface AfUserDao {
 	 * @return
 	 * **/
 	List<String> getUserNameByUserId(List<String> users);
+
+	/**
+	 * 根据用户id查询邀请码
+	 * @param userId
+	 * @return
+	 */
+	String getUserRecommendCode(@Param("userId")long userId);
 }
