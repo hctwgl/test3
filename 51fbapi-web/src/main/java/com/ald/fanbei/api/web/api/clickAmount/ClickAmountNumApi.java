@@ -10,6 +10,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.RedisLock;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
@@ -20,6 +21,8 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
@@ -51,15 +54,14 @@ public class ClickAmountNumApi implements ApiHandle{
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
-		try{
+		String userType = ObjectUtils.toString(requestDataVo.getParams().get("userType"), "").toString();
+		if(!("".equals(userType)) && !("4".equals(userType))){
 			AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
 			if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
 				afPopupsService.updatePopups(afPopupsDo);
 			}else{
 				logger.error("首页极光推送跳转失败，popupsId："+id);
 			}
-		} catch (Exception e) {
-			logger.error(e.getMessage());
 		}
 		return resp;
 	}
