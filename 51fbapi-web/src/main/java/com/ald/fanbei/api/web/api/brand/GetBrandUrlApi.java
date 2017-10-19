@@ -70,7 +70,7 @@ public class GetBrandUrlApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl().trim());
+		String shopUrl = shopInfo.getShopUrl().trim();
 		
 		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
 		buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());
@@ -82,15 +82,6 @@ public class GetBrandUrlApi implements ApiHandle {
 		
 		resp.addResponseData("shopUrl", shopUrl + paramsStr);
 		return resp;
-	}
-	
-	//根据测试，线上环境区别地址
-	private String parseBoluomeUrl(String baseUrl) {
-		String type = baseUrl.substring(baseUrl.lastIndexOf("/") + 1, baseUrl.length());
-		 if ("didi".equals(type)) {
-			type = "yongche/" + type;
-		 }
-		return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/"+ type + "?";
 	}
 
 }
