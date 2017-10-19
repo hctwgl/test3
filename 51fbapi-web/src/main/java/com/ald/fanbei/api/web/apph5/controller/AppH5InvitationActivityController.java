@@ -48,14 +48,20 @@ public class AppH5InvitationActivityController extends BaseController {
     public String activityUserInfo(HttpServletRequest request,long userId){
         HashMap<String,Object> map =new HashMap<>();
         List<HashMap> hashMapList =new ArrayList<>();
-        //查看活动规则
+        //查看活动规则,图片,标题,描述
         List listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
+        List listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
+        List listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
+        List listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
         //用户的邀请码
         String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
         //用户的总共奖励金额
         double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId);
         DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
         map.put("listRule",listRule);
+        map.put("listPic",listPic);
+        map.put("listTitle",listTitle);
+        map.put("listDesc",listDesc);
         map.put("invitationCode",invitationCode);
         map.put("sumPrizeMoney",df.format(sumPrizeMoney));
         hashMapList.add(map);
