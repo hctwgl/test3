@@ -74,4 +74,14 @@ public class AfCouponServiceImpl implements AfCouponService {
 		return afCouponDao.getCouponNames(ids);
 	}
 
+	@Override
+	public int updateCouponquotaById(AfCouponDo couponDo) {
+		return afCouponDao.updateCouponquotaAndCouponquotaAlreadyById(couponDo);
+	}
+
+	@Override
+	public AfCouponDo getCoupon(Long couponId) {
+		return afCouponDao.getCouponById(couponId);
+	}
+
 }
