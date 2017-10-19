@@ -25,7 +25,7 @@ import java.util.Map;
  * @date 2017/10/12 15:52
  */
 @Component("getThirdGoodsDetailInfoApi")
-public class GetThirdGoodsDetailInfo implements ApiHandle {
+public class GetThirdGoodsDetailInfoApi implements ApiHandle {
     
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
