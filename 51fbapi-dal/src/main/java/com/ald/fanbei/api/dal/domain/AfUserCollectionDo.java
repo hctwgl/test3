@@ -32,6 +32,7 @@ public class AfUserCollectionDo extends AbstractSerial {
 
 	private BigDecimal priceAmount;
 	private String actualAmount;
+	private String isWorm;
 	/**
 	 * @return the rid
 	 */
@@ -177,5 +178,11 @@ public class AfUserCollectionDo extends AbstractSerial {
 		this.rebateAmount = rebateAmount;
 	}
 
-	
+	public String getIsWorm() {
+		return isWorm;
+	}
+
+	public void setIsWorm(String isWorm) {
+		this.isWorm = isWorm;
+	}
 }

@@ -130,8 +130,8 @@ public class Constants {
 	public static final String CACHEKEY_USER_LOGIN_WIFI_MAC = "login_wifi_mac$";
 	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
 	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
-	public static final String CACHEKEY_CHANGE_MOBILE = "change_mobile";
-	
+    public static final String CACHEKEY_CHANGE_MOBILE = "change_mobile";
+
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
 	public static final String BOLUOME_LOGIN_ERROR_TIMES  = "boluome_login_error_times$";
@@ -239,7 +239,7 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_LIANMENG_SECRET = "fbapi.taobao.lianmeng.secret";
 	public static final String CONFKEY_SMS_DHST_PASSWORD = "fbapi.sms.dhst.password";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS = "taobao.tbk.item.get.fields";
-	public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
+    public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET = "taobao.tbk.item.info.get";
 
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS = "taobao.tae.item.list.fields";
@@ -352,7 +352,7 @@ public class Constants {
 	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "ala_apply_borrow_cash_lock";
 	
 	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "ala_apply_strong_risk_lock";
-
+	
 	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
 	
 	//催收系统
@@ -371,5 +371,10 @@ public class Constants {
 	public static final String UNIONLOGIN_XJCR_SECRET = "fbapi.unionlogin.xjcr.secret";
 	//联合登陆相关 借点钱
 	public static final String UNIONLOGIN_JDQ_SECRET = "fbapi.unionlogin.jdq.secret";
+
+	//第三方自建开关_是否是爬取商品
+	public static final String THIRD_GOODS_TYPE = "third_goods";
+
+	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
 
 }

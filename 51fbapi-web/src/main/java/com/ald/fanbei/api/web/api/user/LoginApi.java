@@ -270,12 +270,17 @@ public class LoginApi implements ApiHandle {
 					Date tdate = tdo.getGmtModified();
 					Date udate = afUserDo.getGmtCreate();
 					if(tdate.getTime()<udate.getTime()){
-						Long rid = tdo.getRid();
-						Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
-						String userNameToutiao = context.getUserName()==null?"":context.getUserName();
-						afUserToutiaoService.uptUserActive(rid,userIdToutiao,userNameToutiao);
 						String callbackUrl = tdo.getCallbackUrl();
+						if(callbackUrl.indexOf("&event_type")==-1){
+							callbackUrl+="&event_type=1";
+						}
 						String result= HttpUtil.doGet(callbackUrl,20);
+						if(result.indexOf("success")>-1){
+							Long rid = tdo.getRid();
+							Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
+							String userNameToutiao = context.getUserName()==null?"":context.getUserName();
+							afUserToutiaoService.uptUserActive(rid,userIdToutiao,userNameToutiao);
+						}
 						logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
 					}
 				}

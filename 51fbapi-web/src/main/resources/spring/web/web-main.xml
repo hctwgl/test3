@@ -110,6 +110,9 @@
 				<value>/good/getGoodsDetailInfo</value>
 				<value>/good/getGoodsTkRate</value>
 				<value>/goods/getGoodsInfoByNumId</value>
+				<value>/goods/getGoodsRateInfo</value>
+				<value>/goods/getThirdGoodsAuction</value>
+				<value>/goods/getThirdGoodsDetailInfo</value>
 
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
@@ -206,6 +209,11 @@
 				<entry key="/bill/getRepayMentAmountByMonth" value-ref="getRepayMentAmountByMonthApi"/>
 				<entry key="/repay/getRepaymentConfirmInfoV1" value-ref="getRepaymentConfirmInfoV1Api"/>
 				<entry key="/bill/getBillListByStatus" value-ref="getBillListByStatusApi"/>
+
+				<!-- 第三方商品自建 -->
+				<entry key ="/goods/getGoodsRateInfo" value-ref="getGoodsRateInfoApi"></entry>
+				<entry key ="/goods/getThirdGoodsAuction" value-ref="getThirdGoodsAuctionApi"></entry>
+				<entry key ="/goods/getThirdGoodsDetailInfo" value-ref="getThirdGoodsDetailInfoApi"></entry>
 
 
 				<!-- 订单Order -->
@@ -373,6 +381,8 @@
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 				<!--分期广告位-->
 				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
+				<!-- 统计点击量 -->
+				<entry key="/clickAmount/clickAmountNum" value-ref="clickAmountNumApi" />
 			</map>
 		</constructor-arg>
 	</bean>
