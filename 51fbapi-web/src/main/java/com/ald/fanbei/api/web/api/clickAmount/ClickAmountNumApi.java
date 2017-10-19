@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfPopupsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.RedisLock;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
@@ -43,20 +44,28 @@ public class ClickAmountNumApi implements ApiHandle{
 	AfUserService afUserService;
 	@Resource
 	AfPopupsService afPopupsService;
+	@Resource
+	RedisLock redisLock;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
-		synchronized (this) {
-			AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
-			if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
-				int count = afPopupsDo.getClickAmount()+1;
-				afPopupsDo.setClickAmount(count);
-				afPopupsService.updatePopups(afPopupsDo);
-			}else{
-				logger.error("首页极光推送跳转失败，popupsId："+id);
+		try{
+			if(redisLock.lock("ClickAmountNumApi")) {
+				AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
+				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+					int count = afPopupsDo.getClickAmount()+1;
+					afPopupsDo.setClickAmount(count);
+					afPopupsService.updatePopups(afPopupsDo);
+				}else{
+					logger.error("首页极光推送跳转失败，popupsId："+id);
+				}
 			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		} finally {
+			redisLock.unlock();
 		}
 		return resp;
 	}
