@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>注册</title>
+    <title>注册页面</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/08/ggregister.css?version=$version">
 </head>
 <body>
@@ -58,6 +58,6 @@
 </body>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
-<script type="text/javascript" src="/dist/activity/08/ggregister.js?ver=123123"></script>
+<script type="text/javascript" src="/dist/activity/08/ggregister.js?ver=1233"></script>
 <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </html>
