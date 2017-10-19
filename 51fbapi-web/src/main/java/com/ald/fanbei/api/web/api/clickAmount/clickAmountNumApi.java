@@ -6,6 +6,7 @@ package com.ald.fanbei.api.web.api.clickAmount;
 import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfPopupsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author chefeipeng 2017年10月28日下午3:40:31
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("clickAmountNumApi")
+@Component("clickAmountNum")
 public class ClickAmountNumApi implements ApiHandle{
 
 
@@ -39,14 +40,14 @@ public class ClickAmountNumApi implements ApiHandle{
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
-	AfUserDao afUserDao;
+	AfUserService afUserService;
 	@Resource
 	AfPopupsService afPopupsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+		AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
 		AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
 		if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
