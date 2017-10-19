@@ -77,7 +77,7 @@
     <div class="presentCard ask">
         <p class="presentCardTitle" v-for="item in content.normalCouponList">集齐6张卡片<span>领取{{item.amount}}元现金</span></p>
         <p class="presentCont"><span></span>完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利。</p>
-        <p class="presentCont"><span></span>向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到你。</p>
+        <p class="presentCont"><span></span>向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到您。</p>
         <p class="presentCont" v-for="item in content.normalCouponList"><span></span>集齐全部专属卡片，即可兑换{{item.amount}}元现金红包。</p>
         <p class="presentButton"><img src="$src/ggNew09.png"></p>
     </div>
@@ -101,9 +101,9 @@
     </div>
     <!--赠送或索要卡片弹窗-->
     <div class="alertPresent">
-        <p class="title demandTitle">请选择你要索要的卡片</p>
+        <p class="title demandTitle">请选择您要索要的卡片</p>
         <div class="title presentTitle">
-            <p class="presentTitleCont"><span>我在51返呗搜集到了</span><br/><span></span><span>送给你</span></p>
+            <p class="presentTitleCont"><span>我在51返呗搜集到了</span><br/><span></span><span>送给您</span></p>
         </div>
         <div class="imgCont">
             <div id="slide" class="imgList" class="index-slide" alt="star">
@@ -122,7 +122,7 @@
         <p class="closeToast" @click="close()">X</p>
     </div>
     <!--微信提示-->
-    <div class="weixinToast"></div>
+    <div class="weixinToast"><img src="$src/ggNew17.png"></div>
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
