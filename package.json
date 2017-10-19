@@ -11,9 +11,11 @@
     "gulp-autoprefixer": "^3.1.1",
     "gulp-babel": "^6.1.2",
     "gulp-cached": "^1.1.1",
+    "gulp-changed": "^3.1.0",
     "gulp-clean": "^0.3.2",
     "gulp-clean-css": "^3.4.2",
     "gulp-less": "^3.3.0",
+    "gulp-livereload": "^3.8.1",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-rev": "^7.1.2",
@@ -21,6 +23,7 @@
     "gulp-sequence": "^0.4.6",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-sync": "^0.1.4",
-    "gulp-uglify": "^2.1.2"
+    "gulp-uglify": "^2.1.2",
+    "gulp-watch": "^4.3.11"
   }
 }

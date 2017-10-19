@@ -5,10 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowTempDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -96,7 +93,7 @@ public interface AfBorrowService {
 	 *            当前时间
 	 * @return
 	 */
-	Map<String, Integer> getCurrentYearAndMonth(Date now);
+	Map<String, Object> getCurrentYearAndMonth(Date now,AfUserOutDayDo afUserOutDayDo);
 
 	/**
 	 * 获取本期下期年月 year month

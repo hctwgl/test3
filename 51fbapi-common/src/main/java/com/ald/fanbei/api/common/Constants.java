@@ -62,6 +62,8 @@ public class Constants {
 	public static final String SEMICOLON = ";";
 	public static final String DEFAULT_YEAR = "year";
 	public static final String DEFAULT_MONTH = "month";
+	public static final String OUT_DATETIME = "outdatetime";
+	public static final String PAY_DATETIME = "paydatetime";
 	public static final String DEFAULT_NPER = "nper";
 	public static final String DEFAULT_RATE = "rate";
 	/**免息期数json key**/

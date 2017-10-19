@@ -1,13 +1,16 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.AfFeedBackService;
 import com.ald.fanbei.api.biz.service.JpushService;
-import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
-import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -20,12 +23,6 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -55,6 +52,9 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
+
+	@Resource
+	AfUserOutDayDao afUserOutDayDao;
 	@Override
 	public int addUser(final AfUserDo afUserDo) {
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -86,6 +86,9 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					}
 					//#endregion
 
+					//处理帐单日，还款日
+					addOutDay(afUserDo.getRid());
+
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -97,6 +100,46 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	}
 
+	/**
+	 * 帐单日处理
+	 * @param userId
+	 */
+	private void addOutDay(long userId){
+		try {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH, 7);
+			int out_day = calendar.get(Calendar.DAY_OF_MONTH);
+			List<Integer> _nodays = new ArrayList<>();
+			_nodays.add(19);
+			_nodays.add(20);
+			List<Integer> _nodays1 = new ArrayList<>();
+			_nodays1.add(29);
+			_nodays1.add(30);
+			_nodays1.add(31);
+			AfUserOutDayDo afUserOutDayDo = new AfUserOutDayDo();
+			int pay_day = 0;
+			if (_nodays.contains(out_day)) {
+				out_day = 21;
+				pay_day = 1;
+
+			} else if (_nodays1.contains(out_day)) {
+				out_day = 1;
+				pay_day = 11;
+			} else {
+				pay_day = out_day + 10;
+				if (pay_day > 30) pay_day = pay_day - 30;
+
+			}
+			afUserOutDayDo.setUserId(userId);
+			afUserOutDayDo.setOutDay(out_day);
+			afUserOutDayDo.setPayDay(pay_day);
+			afUserOutDayDao.addserOutDay(afUserOutDayDo);
+		}
+		catch (Exception e){
+			logger.info("add out_day error:", e);
+			logger.error("add out_day error",e);
+		}
+	}
 
 
 

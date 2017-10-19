@@ -4,14 +4,14 @@
 	<sql id="queryFields">
 		id rid,gmt_create,gmt_modified,user_id,borrow_id,borrow_no,name,gmt_borrow,bill_year,bill_month,nper,bill_nper,bill_amount,type,
 		status,overdue_status,overdue_days,repayment_id,principle_amount,interest_amount,overdue_interest_amount,poundage_amount,overdue_poundage_amount,
-		rebate_amount,is_free_interest
+		rebate_amount,is_free_interest,is_out,gmt_out_day,gmt_pay_time
 		
 	</sql>
 	
 	<sql id="queryWithFields">
 		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.borrow_id,b.borrow_no,b.name,b.gmt_borrow,b.bill_year,b.bill_month,
 		b.nper,b.bill_nper,b.bill_amount,b.type,b.status,b.overdue_status,b.overdue_days,b.repayment_id,b.principle_amount,b.interest_amount,
-		b.rebate_amount,b.is_free_interest,
+		b.rebate_amount,b.is_free_interest,b.is_out,b.gmt_out_day,b.gmt_pay_time,
 		b.overdue_interest_amount,b.poundage_amount,b.overdue_poundage_amount,w.order_id,w.order_no
 	</sql>
 	
@@ -57,6 +57,22 @@
 		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId} 
 		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status = #{status}
     </select>
+
+	<select id="getMonthlyBillByStatusNew" resultType="java.math.BigDecimal">
+		SELECT
+		sum(bill_amount)
+		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId}
+		AND bill_year = #{billYear} AND bill_month = #{billMonth} AND status = #{status} and is_out =1;
+	</select>
+
+	<select id="getMonthlyBillByStatusNewV1" resultType="java.math.BigDecimal">
+		SELECT
+		sum(bill_amount)
+		FROM af_borrow_bill WHERE is_delete = 0 AND user_id=#{userId}
+		AND status = #{status} and is_out =1;
+	</select>
+
+
 	<select id="getUserFullBillList" resultType="AfBorrowTotalBillDo">
 		SELECT 
 		  bill_amount,
@@ -335,6 +351,24 @@
 		<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
 			#{item}
 		</foreach>
+	</select>
+
+	<select id="getLastOutBill" resultType="AfBorrowBillDo">
+		SELECT <include refid="queryFields"/> from af_borrow_bill
+		where user_id = #{userId}  and is_out = 1 and is_delete = 0 order by gmt_out_day desc limit 0,1;
+	</select>
+
+	<select id="getBorrowBillTotalNow" resultType="AfBorrowTotalBillDo">
+		SELECT
+		*
+		FROM
+		af_borrow_total_bill
+		WHERE is_delete = 0
+		AND user_id = #{userId}
+		AND bill_year = #{billYear}
+		AND bill_month = #{billMonth}
+		ORDER BY id desc, bill_year DESC,
+		bill_month DESC LIMIT 0,1
 	</select>
 
 </mapper>
