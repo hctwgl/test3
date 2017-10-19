@@ -129,9 +129,10 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	AfBoluomeActivityDo afBoluomeActivityDo =  afBoluomeActivityDao.getByCommonCondition(activityDo);
 	   logger.info("afBoluomeActivityDo = ",afBoluomeActivityDo);
 	if(afBoluomeActivityDo !=null){
-        	Date startTime = afBoluomeActivityDo.getGmtCreate();
+        	Date startTime = afBoluomeActivityDo.getGmtStart();
         	Date endTime = afBoluomeActivityDo.getGmtEnd();
-	        if(DateUtil.afterDay(endTime,afOrder.getGmtCreate()) && DateUtil.afterDay(afOrder.getGmtCreate(),startTime)){
+        	
+	        if(DateUtil.afterDay(endTime,new Date()) && DateUtil.afterDay(new Date(),startTime)){
 	    	   boluomeActivity(afOrder,afBoluomeActivityDo);
           }
     }
