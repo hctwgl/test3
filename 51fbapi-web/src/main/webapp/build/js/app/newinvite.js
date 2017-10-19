@@ -89,7 +89,7 @@ window.onload = ()=>{
         shareAppTitle: shareinfo.listTitle,
         shareAppContent: shareinfo.listDesc,
         shareAppImage: shareinfo.listPic,
-        shareAppUrl: location.origin + '/fanbei-web/app/inviteRegister',
+        shareAppUrl: location.origin + '/fanbei-web/app/inviteregister',
         isSubmit: 'Y',
         sharePage: 'inviteShare'
       }
