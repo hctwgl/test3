@@ -256,6 +256,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
     			goodsInfo.put("goodsType", "0");
     			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
 				goodsInfo.put("isWorm", value);
+				logger.info("2222222222222222222222："+value);
     			// 如果是分期免息商品，则计算分期
     			Long goodsId = goodsDo.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = null;
@@ -310,6 +311,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			goodsInfo.put("goodsType", "0");
 			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
 			goodsInfo.put("isWorm", value);
+			logger.info("2222222222222222222222："+value);
 			// 如果是分期免息商品，则计算分期
 			Long goodsId = goodsDo.getRid();
 			AfSchemeGoodsDo  schemeGoodsDo = null;
