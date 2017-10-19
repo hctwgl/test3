@@ -40,12 +40,13 @@ public class AppH5InvitationActivityController extends BaseController {
     /**
      * 活动页面的基本信息
      * @param request
-     * @param userId
+     * @param context
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "activityUserInfo", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
-    public String activityUserInfo(HttpServletRequest request,long userId){
+    public String activityUserInfo(HttpServletRequest request,FanbeiContext context){
+        long userId =context.getUserId();
         HashMap<String,Object> map =new HashMap<>();
         List<HashMap> hashMapList =new ArrayList<>();
         //查看活动规则,图片,标题,描述
@@ -72,14 +73,15 @@ public class AppH5InvitationActivityController extends BaseController {
     /**
      * 奖励详细查询
      * @param request
-     * @param userId
+     * @param context
      * @param type
      * @return
      */
 
     @ResponseBody
     @RequestMapping(value = "rewardQuery", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
-    public String rewardQuery(HttpServletRequest request, long userId, String type,Integer currentPage, Integer pageSize){
+    public String rewardQuery(HttpServletRequest request, FanbeiContext context, String type,Integer currentPage, Integer pageSize){
+        long userId =context.getUserId();
         if(currentPage==null){
             currentPage=1;
         }
