@@ -109,7 +109,7 @@ public class AppH5InvitationActivityController extends BaseController {
     public String rewardQuery(HttpServletRequest request,String type,Integer currentPage, Integer pageSize){
         FanbeiWebContext context = new FanbeiWebContext();
         Long userId = -1l;
-        //Long userId = 178l;
+        //Long userId = 73772l;
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         AfUserDo afUser = null;
         try{
