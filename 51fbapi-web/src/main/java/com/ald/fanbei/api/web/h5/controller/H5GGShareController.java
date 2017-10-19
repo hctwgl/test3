@@ -501,7 +501,7 @@ public class H5GGShareController extends H5Controller {
 			String fakeRebateStr = fakeResourceDo.getValue3();
 			Integer fakeRebate = new Integer(fakeRebateStr);
 
-			resultMap.put("fakeRebate", fakeRebate);
+			resultMap.put("fakeRebate", fakeJoin);
 			resultMap.put("fakeFinal", fakeFinal);
 			resultMap.put("fakeJoin", fakeJoin);
 		}
@@ -1182,7 +1182,7 @@ public class H5GGShareController extends H5Controller {
 				}
 
 				Map<String, Object> data = new HashMap<>();
-				int rebateNumber = 25;// 初始人数是25个
+				int rebateNumber = 0;// 初始人数是25个
 
 				Map<String, Integer> fakeDo = getFakePerson(activityId);
 				if (fakeDo != null) {
@@ -1195,10 +1195,10 @@ public class H5GGShareController extends H5Controller {
 				doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 			}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getErrorCode().getDesc());
+			resultStr = H5CommonResponse.getNewInstance(false, "获取排行榜片失败", "", e.getErrorCode().getDesc());
 			logger.error("listRank", e);
 		} catch (Exception e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "索要初卡片失败", "", e.getMessage());
+			resultStr = H5CommonResponse.getNewInstance(false, "获取排行榜失败", "", e.getMessage());
 			logger.error("listRank", e);
 		}
 
