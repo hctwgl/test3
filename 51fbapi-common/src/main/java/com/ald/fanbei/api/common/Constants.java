@@ -128,7 +128,8 @@ public class Constants {
 	public static final String CACHEKEY_USER_LOGIN_WIFI_MAC = "login_wifi_mac$";
 	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
 	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
-	
+    public static final String CACHEKEY_CHANGE_MOBILE = "change_mobile";
+
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
 	public static final String BOLUOME_LOGIN_ERROR_TIMES  = "boluome_login_error_times$";
@@ -236,6 +237,7 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_LIANMENG_SECRET = "fbapi.taobao.lianmeng.secret";
 	public static final String CONFKEY_SMS_DHST_PASSWORD = "fbapi.sms.dhst.password";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS = "taobao.tbk.item.get.fields";
+    public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET = "taobao.tbk.item.info.get";
 
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS = "taobao.tae.item.list.fields";
