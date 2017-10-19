@@ -18,7 +18,9 @@ public enum AfResourceType {
 	HomeOneToTwo2("HOME_ONE_TO_TWO2", "首页一对二(1大上2小下)模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	HomeTabbar("HOME_TABBAR", "首页tabbar"),
-	
+	HomeNavigationUpOne("HOME_NAVIGATION_UP","快捷导航上方活动专场"),
+	HomeNavigationDownTwo("HOME_NAVIGATION_DOWN","快捷导航下方活动专场"),
+
 	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
 	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),

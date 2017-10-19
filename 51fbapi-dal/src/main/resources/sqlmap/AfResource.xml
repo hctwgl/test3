@@ -184,6 +184,32 @@
 		ORDER BY
 		sort ,id
 	</select>
+
+	<select id="getNavigationUpOneResourceDoList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND
+		is_delete = 0
+		ORDER BY
+		sort
+	</select>
+
+	<select id="getNavigationDownTwoResourceDoList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND
+		is_delete = 0
+		ORDER BY
+		sort
+	</select>
 	
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT

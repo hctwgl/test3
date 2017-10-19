@@ -476,5 +476,14 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDo;
 	}
 
-	
+	@Override
+	public List<AfResourceDo> getNavigationUpOneResourceDoList(String code) {
+		return afResourceDao.getNavigationUpOneResourceDoList(code);
+	}
+
+	@Override
+	public List<AfResourceDo> getNavigationDownTwoResourceDoList(String code) {
+		return afResourceDao.getNavigationUpOneResourceDoList(code);
+	}
+
 }
