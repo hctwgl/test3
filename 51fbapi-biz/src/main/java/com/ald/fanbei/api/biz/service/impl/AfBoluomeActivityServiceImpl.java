@@ -589,7 +589,9 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	    					if(resourceDo!=null){
 	    					  sendMessage = resourceDo.getValue();
 	    		                	  smsUtil.sendSms(afUserDo.getMobile(),sendMessage);
+	    		                	  logger.info("sentBoluomeCoupon sendSms:", afUserDo.getMobile(),sendMessage);
 	    			     }
+	    					  return 0;
 			       }
 			    }
 			 }
@@ -598,7 +600,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	    }
 	  }
 	    
-	    return 0;
+	    return -1;
 	}
 	 private String getCouponYesNoStatus(AfResourceDo resourceInfo, AfUserDo UserDo) {
 
