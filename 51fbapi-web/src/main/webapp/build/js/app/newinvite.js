@@ -20,7 +20,7 @@ function getinfo(fn) {
   $.ajax({
     url: '/fanbei-web/activityUserInfo',
     data: {
-      'userId': 178
+      // 'userId': 178
     },
     type: 'POST',
     dataType: 'JSON',
@@ -85,7 +85,17 @@ window.onload = ()=>{
     
 
     $('.rightown').on('click', ()=>{
-      window.location.href=`/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":${shareinfo.listTitle},"shareAppContent":${shareinfo.listDesc},"shareAppImage":${shareinfo.listPic},"shareAppUrl":"${location.origin}/fanbei-web/app/inviteShare","isSubmit":"Y","sharePage":"inviteShare"})`
+      var dat = {
+        shareAppTitle: shareinfo.listTitle,
+        shareAppContent: shareinfo.listDesc,
+        shareAppImage: shareinfo.listPic,
+        shareAppUrl: location.origin + '/fanbei-web/app/inviteRegister',
+        isSubmit: 'Y',
+        sharePage: 'inviteShare'
+      }
+      dat = JSON.stringify(dat)
+      var base64 = BASE64.encoder(dat)
+      window.location.href='/fanbei-web/opennative?name=APP_SHARE&params=' + base64
     })
   }
 
@@ -129,7 +139,7 @@ window.onload = ()=>{
     $.ajax({
       url: '/fanbei-web/rewardQuery',
       data: {
-        'userId': 178,
+        // 'userId': 178,
         'type': type,
         'pageSize': 5,
         'currentPage': page
@@ -148,7 +158,12 @@ window.onload = ()=>{
 
   function replacehtml(data, type) {
     let list = data.rewardQueryList
-    let html = returnlist(list)
+    let html
+    if(list.length > 0) {
+      html = returnlist(list)
+    }else {
+      html = `<div class="nodata">您暂无邀请！</div>`
+    }
     $('.list').html(html)
     
     if(type == 1) {
