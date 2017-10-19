@@ -119,7 +119,7 @@ public class H5BoluomeActivityController extends BaseController {
      try{
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
 	  AfUserDo refUserDo = new AfUserDo();
-	if (refUseraName != null || !"".equals(refUseraName)) {
+	if (refUseraName != null && StringUtil.isNotBlank(refUseraName)) {
 	     refUserDo = afUserService.getUserByUserName(refUseraName);
 	}
 
