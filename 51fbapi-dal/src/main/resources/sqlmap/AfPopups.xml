@@ -14,7 +14,7 @@
 	
 	<update id="updatePopups" parameterType="AfPopupsDo">
 		UPDATE af_popups SET
-		click_amount = #{clickAmount,jdbcType=INTEGER}
+		click_amount = click_amount + 1
 		WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
 
 	</update>

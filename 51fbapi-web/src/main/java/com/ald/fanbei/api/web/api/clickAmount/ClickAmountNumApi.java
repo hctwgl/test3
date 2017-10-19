@@ -7,8 +7,10 @@ import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
 import com.ald.fanbei.api.biz.service.AfPopupsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.RedisLock;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ThirdPartyLinkType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
@@ -19,6 +21,8 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
@@ -43,32 +47,21 @@ public class ClickAmountNumApi implements ApiHandle{
 	AfUserService afUserService;
 	@Resource
 	AfPopupsService afPopupsService;
+	@Resource
+	RedisLock redisLock;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		AfUserDo afUserDo = afUserService.getUserByUserName(context.getUserName());
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
-		AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
-		if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
-			String sysModeId = "";
-			String channel = getChannel(sysModeId);
-			String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
-			AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
-			afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
-			afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
-			afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET_BANNER.getCode());
-			afBusinessAccessRecordsDo.setRefId(afPopupsDo.getId());
-			afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
-			afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.HOME_POPUP_WND.getCode());
-			afBusinessAccessRecordsDo.setChannel(channel);
-			afBusinessAccessRecordsDo.setRedirectUrl(afPopupsDo.getUrl());
-			afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
-			int count = afPopupsDo.getClickAmount()+1;
-			afPopupsDo.setClickAmount(count);
-			afPopupsService.updatePopups(afPopupsDo);
-		}else{
-			logger.error("首页极光推送跳转失败，popupsId："+id+"-userId:"+afUserDo.getRid());
+		String userType = ObjectUtils.toString(requestDataVo.getParams().get("userType"), "").toString();
+		if(!("".equals(userType)) && !("4".equals(userType))){
+			AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
+			if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+				afPopupsService.updatePopups(afPopupsDo);
+			}else{
+				logger.error("首页极光推送跳转失败，popupsId："+id);
+			}
 		}
 		return resp;
 	}
