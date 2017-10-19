@@ -356,6 +356,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		// 更多商品
 		data.put("moreGoodsInfo", moreGoodsInfo);
 
+		data.put("1111", "1111");
+
 		resp.setResponseData(data);
 		return resp;
 	}
