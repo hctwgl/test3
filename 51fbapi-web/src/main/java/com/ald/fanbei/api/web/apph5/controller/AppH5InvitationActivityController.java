@@ -46,7 +46,12 @@ public class AppH5InvitationActivityController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "activityUserInfo", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String activityUserInfo(HttpServletRequest request,FanbeiContext context){
-        long userId =context.getUserId();
+        Long userId =context.getUserId();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        if(userId==null){
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+            return resp.toString();
+        }
         HashMap<String,Object> map =new HashMap<>();
         List<HashMap> hashMapList =new ArrayList<>();
         //查看活动规则,图片,标题,描述
@@ -80,7 +85,12 @@ public class AppH5InvitationActivityController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "rewardQuery", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
     public String rewardQuery(HttpServletRequest request, FanbeiContext context, String type,Integer currentPage, Integer pageSize){
-        long userId =context.getUserId();
+        Long userId =context.getUserId();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        if(userId==null){
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+            return resp.toString();
+        }
         if(currentPage==null){
             currentPage=1;
         }
@@ -97,7 +107,6 @@ public class AppH5InvitationActivityController extends BaseController {
             hashMapList.add(map);
             ret =JSON.toJSONString(hashMapList);
         }else{
-            H5CommonResponse resp = H5CommonResponse.getNewInstance();
             resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null);
             ret =resp.toString();
         }
