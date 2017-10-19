@@ -52,20 +52,14 @@ public class ClickAmountNumApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
 		try{
-			if(redisLock.lock("ClickAmountNumApi")) {
-				AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
-				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
-					int count = afPopupsDo.getClickAmount()+1;
-					afPopupsDo.setClickAmount(count);
-					afPopupsService.updatePopups(afPopupsDo);
-				}else{
-					logger.error("首页极光推送跳转失败，popupsId："+id);
-				}
+			AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
+			if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+				afPopupsService.updatePopups(afPopupsDo);
+			}else{
+				logger.error("首页极光推送跳转失败，popupsId："+id);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-		} finally {
-			redisLock.unlock();
 		}
 		return resp;
 	}
