@@ -269,6 +269,14 @@ public class Constants {
 	public static final String CACHEKEY_ORDER_PAY_NO_LOCK = "ala_order_pay_no_lock";
 	public static final String CACHEKEY_ORDER_PAY_NO = "ala_order_pay_no";
 
+	//redis -- key
+	public static final String RESERVATION_IPHONEX_RESERVATION_COUNT="reservation_count";
+	public static final String RESERVATION_IPHONEX_COUPON1_COUNT="coupon1_count_";
+	public static final String RESERVATION_IPHONEX_COUPON2_COUNT="coupon2_count_";
+	public static final String RESERVATION_IPHONEX_COUPON3_COUNT="coupon3_count_";
+	public static final String RESERVATION_IPHONEX_COUPON_STATUS="coupon_status_";
+	public static final String RESERVATION_IPHONEX_COUPON_ID="coupon_id";
+	public static final String RESERVATION_IPHONEX_SUM_COUNT="sum_coupon_count_";
 	// 发送邮箱
 	public static final String EMAIL_SEND_USERNAME = "fbapi.email.username";
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";

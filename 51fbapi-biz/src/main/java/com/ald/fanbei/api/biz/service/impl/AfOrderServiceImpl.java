@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -38,6 +39,7 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -60,6 +62,7 @@ import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -98,6 +101,7 @@ import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -108,6 +112,7 @@ import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
@@ -211,6 +216,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	private AfGoodsReservationService afGoodsReservationService;
 	@Resource
 	JpushService jpushService;
+	@Resource
+	AfCouponService afCouponService;
+	@Resource
+	AfUserCouponService afUserCouponService;
+	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
 		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -1218,7 +1228,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		});
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
-			//iPhone预约
+			//iPhonX预约
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
 			logger.info("iPhone8 reservationActivity" +(goods!=null?goods.getRid():0L));
 			if(goods != null){
@@ -1238,6 +1248,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					jpushMsgInfo = StringUtil.null2Str(jsonObjRes.get("jpushMsgInfo"));
 					String aId=StringUtil.null2Str(jsonObjRes.get("activityId"));
 					String gId=StringUtil.null2Str(jsonObjRes.get("goodsId"));
+					String cId=StringUtil.null2Str(jsonObjRes.get("couponId"));
+					long couponId = Long.parseLong(cId);
 					long activityId = Long.parseLong(aId);
 					long goodsId = Long.parseLong(gId);
 					String rsvNo = OrderNoUtils.getInstance().getSerialNumber();
@@ -1247,6 +1259,35 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						logger.info("iPhone8 reservationActivity is fail");
 						return result;
 					}
+					//统计预约成功数量
+					String str = (String) bizCacheUtil.getObject(Constants.RESERVATION_IPHONEX_RESERVATION_COUNT);
+						if(str != null){
+						int couponCount = Integer.parseInt(str);
+							try {
+								couponCount ++;
+								bizCacheUtil.saveObject(Constants.RESERVATION_IPHONEX_RESERVATION_COUNT, couponCount+"", 60 * 60 * 24 * 13);
+							} catch (Exception e) {
+								logger.error("统计预约成功数量失败，数量为：" + couponCount + ",", e);
+							}
+						} else {
+								bizCacheUtil.saveObject(Constants.RESERVATION_IPHONEX_RESERVATION_COUNT, 1+"", 60 * 60 * 24 * 13);
+					}
+					//预约成功，发送优惠券
+					try{
+						AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+						AfUserCouponDo userCoupon = new AfUserCouponDo();
+						userCoupon.setCouponId(couponDo.getRid());
+						userCoupon.setGmtCreate(new Date());
+						userCoupon.setGmtStart(couponDo.getGmtStart());
+						userCoupon.setGmtEnd(couponDo.getGmtEnd());
+						userCoupon.setUserId(afUserDo.getRid());
+						userCoupon.setStatus("NOUSE");
+						userCoupon.setSourceType(CouponSenceRuleType.RESERVATION.getCode());
+						afUserCouponService.addUserCoupon(userCoupon);
+					} catch (Exception e) {
+						logger.error("活动产品预约成功发送优惠券异常userId：" + afUserDo.getRid() + ",", e);
+					}
+					
 					// 预约成功，短信通知
 					if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
 						try {
