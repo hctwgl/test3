@@ -42,6 +42,8 @@
           <div>奖励</div>
         </div>
         <div class="con">
+          <div class="loadall" style="display:none">最后一条数据了哦~</div>
+          <div class="loading" style="display:none"></div>
           <div class="list">
         
           </div>
