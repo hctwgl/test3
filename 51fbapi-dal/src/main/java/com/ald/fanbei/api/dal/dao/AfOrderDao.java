@@ -160,4 +160,6 @@ public interface AfOrderDao {
 	List<AfOrderDo> getStatusByGoodsAndUserId(@Param("goodsId")Long goodsId ,@Param("userId") long userId);
 
 	int getOrderCountByStatusAndUserId(AfOrderDo queryCount);
+
+	List<AfOrderDo> getOrderByTimeAndType(@Param("startTime")Date startTime,@Param("endTime")Date endTime);
 }

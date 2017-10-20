@@ -19,7 +19,11 @@ public interface AfUserToutiaoDao extends BaseDao<AfUserToutiaoDo, Long> {
 
     AfUserToutiaoDo getUser(@Param("imei")String imei, @Param("androidid1")String androidid1, @Param("idfa")String idfa);
 
-    Long uptUserActive(@Param("id")Long id,@Param("userIdToutiao")Long userIdToutiao);
+    Long uptUserActive(@Param("id")Long id,@Param("userIdToutiao")Long userIdToutiao, @Param("userNameToutiao")String userNameToutiao);
 
     AfUserToutiaoDo getUserActive(@Param("imei")String imei, @Param("androidid1")String androidid1, @Param("idfa")String idfa);
+
+    AfUserToutiaoDo getUserOpen(@Param("imei")String imei, @Param("androidid1")String androidid1, @Param("idfa")String idfa);
+
+    Long uptUserOpen(@Param("id")Long rid, @Param("userIdToutiao")Long userIdToutiao, @Param("userNameToutiao")String userNameToutiao);
 }

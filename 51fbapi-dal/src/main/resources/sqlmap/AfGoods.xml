@@ -140,4 +140,13 @@
 			id = #{rid}
 	</update>
 	
+	<select id="checkIsSelfBuild"  resultType="AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE is_delete = 0
+		AND source = 'SELFBUILD'
+		AND is_grab_success = 0
+		AND num_id = #{numId}
+	</select>	
 </mapper>

@@ -16,4 +16,5 @@
 			<value>props/config.properties</value>
 		</property>
 	</bean>
+	
 </beans>
