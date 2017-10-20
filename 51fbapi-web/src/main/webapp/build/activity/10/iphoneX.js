@@ -252,7 +252,7 @@ function alaShareData() {
         "shareAppTitle": " iPhone X 1元预约立减200", // 分享的title
         'shareAppContent': "iPhone X 预约活动震撼开启！1元预约立减200元！前50名下单iPhone X用户享188元官方配件大礼包！速来抢购", // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/09/iphone8_06.jpg", // 分享右边小图
-        "shareAppUrl": domainName + "/fanbei-web/activity/iphoneXShare?modelId=" + modelId +"&title="+title , // 分享后的链接
+        "shareAppUrl": domainName + "/fanbei-web/activity/iphoneXShare?modelId="+modelId +"&title="+title , // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "iphoneXShare" // 分享的页面
     };
