@@ -75,6 +75,7 @@
         <p class="closePrize" @click="close()"></p>
     </div>
     <div class="presentCard ask">
+        <img class="askImg" src="$src/ggNew08.png">
         <p class="presentCardTitle" v-for="item in content.normalCouponList">集齐6张卡片<span>领取{{item.amount}}元现金</span></p>
         <p class="presentCont"><span></span>完成1笔消费订单且满足消费规则时，即可获得1张场景专属卡片，更有高额返利。</p>
         <p class="presentCont"><span></span>向好友索要、与好友互换，即可获取不同种类的专属卡片；分享后，好友消费后更有同等返利给到您。</p>
@@ -82,6 +83,7 @@
         <p class="presentButton" @click="presentClick()"><img src="$src/ggNew09.png"></p>
     </div>
     <div class="demandCard ask">
+        <img class="askImg" src="$src/ggNew08.png">
         <p class="presentCardTitle">集齐6张卡片太难？</p>
         <p class="inviteNum01" v-if="content.despotCoupon==='Y'" @click="presentClick()">您已成功邀请<span>{{content.alreadyNum}}人</span>，现在去享霸王餐 ></p>
         <p class="inviteNum01" v-if="!(content.despotCoupon)&&(((content.alreadyNum)%(content.supportedNum))!=0)">您已邀请<span>{{content.alreadyNum}}人</span>，再邀请<span>{{(content.supportedNum)-((content.alreadyNum)%(content.supportedNum))}}人</span>即享霸王餐</p>
