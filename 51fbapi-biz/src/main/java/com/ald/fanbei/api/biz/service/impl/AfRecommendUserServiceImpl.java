@@ -190,7 +190,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		afRecommendUserDao.addRecommendMoney(afRecommendMoneyDo);
 
 		if(len<1){
-			len ++;
+			len = len +1;
 			AfRecommendUserDo _afRecommendUserDo = afRecommendUserDao.getARecommendUserByIdAndType(afRecommendUserDo.getParentId(),1);
 			if(_afRecommendUserDo !=null){
 				addRecommendBorrowMoney(afResourceDo, afBorrowCashDo,  _afRecommendUserDo,len);
