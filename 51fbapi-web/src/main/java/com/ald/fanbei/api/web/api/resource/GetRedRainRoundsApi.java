@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.resource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +34,9 @@ public class GetRedRainRoundsApi implements ApiHandle{
 			FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		List<AfRedRainRoundDo> rounds = redRainService.fetchTodayRounds();
-		resp.setResponseData(rounds);
+		Map<String,Object> data = new HashMap<>();
+		data.put("rounds", rounds);
+		resp.setResponseData(data);
 		return resp;
 	}
 
