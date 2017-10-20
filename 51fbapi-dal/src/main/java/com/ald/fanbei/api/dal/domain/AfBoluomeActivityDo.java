@@ -67,13 +67,18 @@ import java.util.Date;
     private Date gmtEnd;
 
 
-    /**
-     * 获取主键Id
-     *
-     * @return id
-     */
-
+   private String activityRule;
     
+
+   
+   
+    public String getActivityRule() {
+    return activityRule;
+}
+
+public void setActivityRule(String activityRule) {
+    this.activityRule = activityRule;
+}
 
     /**
      * 获取创建时间

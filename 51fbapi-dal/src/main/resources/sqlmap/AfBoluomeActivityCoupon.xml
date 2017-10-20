@@ -38,6 +38,10 @@ id,gmt_create,gmt_modified,creator,modifier,boluome_activity_id,coupon_id,status
         <if test="type != null and type != ''">
             AND type = #{type,jdbcType=VARCHAR}
         </if>
+        <if test="scopeApplication != null and scopeApplication != ''">
+            AND scope_application = #{scopeApplication,jdbcType=VARCHAR}
+        </if>
+        
     </sql>
 
     

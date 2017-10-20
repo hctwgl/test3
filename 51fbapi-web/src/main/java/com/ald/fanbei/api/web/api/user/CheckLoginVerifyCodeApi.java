@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
@@ -62,6 +63,8 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 	AfSmsRecordService afSmsRecordService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfBoluomeActivityService afBoluomeActivityService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -176,6 +179,15 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0",
 				loginTime, ip, phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
 		resp.setResponseData(jo);
+		//逛逛活动新用户送券
+		try{
+		  int  result =  afBoluomeActivityService.sentNewUserBoluomeCoupon(afUserDo);
+		  if(result==0){
+		      logger.info("sentNewUserBoluomeCoupon success");
+		    }
+		}catch (Exception e){
+			logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
+		}
 		
 		return resp;
 	}

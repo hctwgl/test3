@@ -76,7 +76,6 @@ public class BoluomeController extends AbstractThird {
 	Map<String, String> params = buildOrderParamMap(requestParams);
 	boolean sign = BoluomeNotify.verify(params);
 	String retunStr = StringUtils.EMPTY;
-
 	if (sign) {
 	    try {
 		String status = params.get(BoluomeCore.STATUS);

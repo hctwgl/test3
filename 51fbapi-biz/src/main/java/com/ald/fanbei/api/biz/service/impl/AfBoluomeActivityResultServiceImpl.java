@@ -1,14 +1,18 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfBoluomeActivityResultDao;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
+
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityResultService;
+import com.ald.fanbei.api.dal.dao.AfBoluomeActivityResultDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityResultDo;
 
 
 
@@ -33,4 +37,17 @@ public class AfBoluomeActivityResultServiceImpl extends ParentServiceImpl<AfBolu
 	public BaseDao<AfBoluomeActivityResultDo, Long> getDao() {
 		return afBoluomeActivityResultDao;
 	}
+
+		@Override
+		public boolean isGetSuperPrize(Long userId, Long activityId) {
+			boolean result = false;
+			int intResult ;
+			List<AfBoluomeActivityResultDo> list = new  ArrayList<AfBoluomeActivityResultDo>();
+			list = afBoluomeActivityResultDao.isGetSuperPrize(userId,activityId);
+			intResult = list.size();
+			if (intResult > 0 ) {
+				result = true;
+			}
+			return result;
+		}
 }

@@ -54,7 +54,23 @@ import java.util.Date;
      */
 
     private Long boluomeActivityId;
+    /**
+     * 邀请消费成功，绑定关系 N:解除绑定关系,Y:绑定关系
+     *
+     * 
+     */
+    
+    private String bindingFlag;
+    
+    
 
+    public String getBindingFlag() {
+        return bindingFlag;
+    }
+
+    public void setBindingFlag(String bindingFlag) {
+        this.bindingFlag = bindingFlag;
+    }
 
     public Long getBoluomeActivityId() {
 		return boluomeActivityId;

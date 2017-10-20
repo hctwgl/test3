@@ -13,6 +13,10 @@ public enum CouponWebFailStatus {
 	 UserNotexist("USER_NOT_EXIST", "用户不存在"), 
 	 CouponOver("OVER", "优惠券个数超过最大领券个数"),
 	 MoreThanCoupon("MORE_THAN", "优惠券已领取完"),
+	 COUPONCONTEXT1("COUPONCONTEXT1","您已经领取，别太贪心哦!"),
+	 COUPONCONTEXT2("COUPONCONTEXT2","恭喜您已经领取成功，快去使用吧!"),
+	 COUPONCONTEXT3("COUPONCONTEXT3","今日优惠券已发放完毕，明日再来领取吧!"),
+	 COUPONCONTEXT4("COUPONCONTEXT4","该优惠券暂时未发放!"),
 	 CouponNotExist("COUPON_NOT_EXIST", "优惠券不存在");
     
     private String code;

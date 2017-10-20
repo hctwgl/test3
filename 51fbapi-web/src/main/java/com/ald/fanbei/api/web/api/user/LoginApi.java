@@ -79,6 +79,7 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	AfUserToutiaoService afUserToutiaoService;
 
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		String SUCC = "1";
@@ -226,7 +227,6 @@ public class LoginApi implements ApiHandle {
 		}else{
 			jo.put("borrowed", "N");
 		}
-		
 		
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {

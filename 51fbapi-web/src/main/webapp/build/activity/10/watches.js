@@ -1,3 +1,4 @@
+
 let modelId=getUrl('modelId');//获取模板id
 let groupId=getUrl('groupId');//获取优惠券组id
 //获取域名
@@ -123,4 +124,3 @@ let vm = new Vue({
         }
     }
 });
-
