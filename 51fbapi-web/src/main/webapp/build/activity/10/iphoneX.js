@@ -50,7 +50,7 @@ function time() {
 }
 //title
 var title = decodeURI(getUrl('title'));
-//console.logconsole.log(title)
+console.log(title);
 document.title = title;
 var modelId = getUrl("modelId"); //获取活动Id
 var protocol = window.location.protocol;
@@ -249,8 +249,8 @@ function alaShareData() {
     var dataObj = { // 分享内容
         "appLogin": "Y", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
-        "shareAppTitle": "iPhone X 预约立减100", // 分享的title
-        'shareAppContent': "十周年 翘首以待！1元预约立减100，每日限抽取5名成功分享用户获iPhone X大奖，限时秒杀iPhone 6 仅1999元！", // 分享的内容
+        "shareAppTitle": "iPhone X 预约立减200", // 分享的title
+        'shareAppContent': "iPhone X 预约活动震撼开启！1元预约立减200元！前50名下单用户享188元官方配件大礼包！速来抢购", // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/09/iphone8_06.jpg", // 分享右边小图
         "shareAppUrl": domainName + "/fanbei-web/activity/iphoneXShare?modelId=" + modelId + "&title=" , // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要

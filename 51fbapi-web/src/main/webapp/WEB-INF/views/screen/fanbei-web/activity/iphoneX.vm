@@ -4,7 +4,7 @@
     #set($version="20170909")
     #set($src="https://f.51fanbei.com/h5/app/activity/10")
     <meta charset="UTF-8">
-    <title>iPhoneX</title>
+    <title>iPhoneX新品预约</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/10/iphoneX.css">
 </head>
 <body>
