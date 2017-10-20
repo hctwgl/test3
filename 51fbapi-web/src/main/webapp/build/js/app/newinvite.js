@@ -74,7 +74,7 @@ window.onload = ()=>{
     let invitationCode = data.invitationCode
     let sum = data.sumPrizeMoney
     let rulehtml = rule.map((item, i)=>{
-      return `<p>${i+1}.${item}item</p>`
+      return `<p>${i+1}、${item}</p>`
     })
 
     $('.rulewindow .content').append(rulehtml.join(''))
