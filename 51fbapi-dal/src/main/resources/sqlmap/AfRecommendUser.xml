@@ -133,7 +133,7 @@
 	</select>
 	<select id="twoLevelRewardQuery" resultType="AfRecommendUserDo">
 	   select a.user_id userId,a.parentId parentId,IFNULL(b.money,0.00) prizeMoney from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
-	   where a.parentId in (SELECT user_id from af_recommend_user where is_delete=0 and parentId =#{userId} and type =1)
+	   where  b.parent_id = #{userId} and a.parentId in (SELECT user_id from af_recommend_user where is_delete=0 and parentId =#{userId} and type =1)
        limit #{pageNo},#{pageSize}
 	</select>
 
@@ -143,7 +143,7 @@
 	</select>
 	<select id="twoLevelRewardQueryCount" resultType="int">
 	   select count(1) from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
-	   where a.parentId in (SELECT user_id from af_recommend_user where is_delete=0 and parentId =#{userId} and type =1)
+	   where b.parent_id = #{userId} and a.parentId in (SELECT user_id from af_recommend_user where is_delete=0 and parentId =#{userId} and type =1)
 	</select>
 
 	<insert id="addRecommendMoney" parameterType="AfRecommendMoneyDo" useGeneratedKeys="true" keyProperty="rid">
