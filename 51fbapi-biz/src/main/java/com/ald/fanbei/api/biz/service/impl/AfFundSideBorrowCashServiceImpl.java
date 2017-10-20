@@ -119,4 +119,15 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 			}
 		});
 	}
+	
+	@Override
+	public AfFundSideInfoDo getLenderInfoByBorrowCashId(Long borrowId){
+		AfFundSideBorrowCashDo fsCashDo = afFundSideBorrowCashDao.getRecordByBorrowCashId(borrowId);
+		AfFundSideInfoDo afFundSideInfoDo = null;
+		if(fsCashDo!=null){
+			//取资金方信息
+			afFundSideInfoDo =afFundSideInfoDao.getById(fsCashDo.getFundSideInfoId());
+		}
+		return afFundSideInfoDo;
+	}
 }
