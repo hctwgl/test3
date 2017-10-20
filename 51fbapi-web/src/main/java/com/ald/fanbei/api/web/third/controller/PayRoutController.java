@@ -475,6 +475,7 @@ public class PayRoutController {
 
 			Calendar cal=Calendar.getInstance();
 			cal.set(Calendar.YEAR, 2017);
+			cal.set(Calendar.MONTH,10);
 			cal.set(Calendar.DAY_OF_MONTH, 19);
 			cal.set(Calendar.HOUR_OF_DAY, 13);
 			cal.set(Calendar.MINUTE, 0);
@@ -482,10 +483,12 @@ public class PayRoutController {
 
 			Calendar cal1=Calendar.getInstance();
 			cal1.set(Calendar.YEAR, 2017);
+			cal1.set(Calendar.MONTH,10);
 			cal1.set(Calendar.DAY_OF_MONTH, 20);
 			cal1.set(Calendar.HOUR_OF_DAY, 15);
 			cal1.set(Calendar.MINUTE, 0);
 			cal1.set(Calendar.SECOND, 0);
+
 
 
 			SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
