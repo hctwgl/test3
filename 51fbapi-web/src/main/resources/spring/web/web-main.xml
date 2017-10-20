@@ -396,4 +396,5 @@
 			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
 
+	<bean class="com.ald.fanbei.api.web.application.SpringInit"/>
 </beans>
