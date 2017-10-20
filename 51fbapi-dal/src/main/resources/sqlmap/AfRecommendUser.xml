@@ -128,7 +128,7 @@
 
 	<select id="firstRewardQuery" resultType="AfRecommendUserDo">
 	    select a.user_id userId,a.parentId parentId,IFNULL(b.money,0.00) prizeMoney from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
-        where a.is_delete=0 and a.parentId = #{userId} and a.type =1
+        where a.is_delete=0 and a.parentId = #{userId} and a.type =1 and (b.parent_id =#{userId} or b.parent_id is null)
         limit #{pageNo},#{pageSize}
 	</select>
 	<select id="twoLevelRewardQuery" resultType="AfRecommendUserDo">
@@ -139,7 +139,7 @@
 
 	<select id="firstRewardQueryCount" resultType="int">
         select count(1) from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
-        where a.is_delete=0 and a.parentId = #{userId} and a.type =1
+        where a.is_delete=0 and a.parentId = #{userId} and a.type =1 and (b.parent_id =#{userId} or b.parent_id is null)
 	</select>
 	<select id="twoLevelRewardQueryCount" resultType="int">
 	   select count(1) from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
