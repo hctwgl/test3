@@ -143,7 +143,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 							_afu.setPrize_money(addMoney);
 							afRecommendUserDao.updateLoanById(afRecommendUserDo);
 							// 修改返现金额
-							addRecommendBorrowMoney(afResourceDo,afBorrowCashDo,afRecommendUserDo,0);
+							addRecommendBorrowMoney(afResourceDo,afBorrowCashDo,afRecommendUserDo,0,afRecommendUserDo.getUserId());
 						}
 						catch (Exception e){
 							status.setRollbackOnly();
@@ -166,7 +166,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 
 	int lenCount = 2;
 
-	private void addRecommendBorrowMoney(AfResourceDo afResourceDo, AfBorrowCashDo afBorrowCashDo, AfRecommendUserDo afRecommendUserDo,int len){
+	private void addRecommendBorrowMoney(AfResourceDo afResourceDo, AfBorrowCashDo afBorrowCashDo, AfRecommendUserDo afRecommendUserDo,int len,long userId){
 		BigDecimal money = getBorrowMoney(afBorrowCashDo,afResourceDo, len);
 
 		long pid = afRecommendUserDo.getParentId();
@@ -179,13 +179,13 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		afUserAccountLogDo.setAmount(money);
 		afUserAccountLogDo.setUserId(pid);
 		afUserAccountLogDo.setType(userLongType[len]);
-		afUserAccountLogDo.setRefId(String.valueOf(afRecommendUserDo.getId()));
+		afUserAccountLogDo.setRefId(String.valueOf(userId));
 		afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
 
 		AfRecommendMoneyDo afRecommendMoneyDo = new AfRecommendMoneyDo();
 		afRecommendMoneyDo.setType(recommendMoneyType[len]);
 		afRecommendMoneyDo.setMoney(money);
-		afRecommendMoneyDo.setUserId(afRecommendUserDo.getUserId());
+		afRecommendMoneyDo.setUserId(userId);
 		afRecommendMoneyDo.setParentId(afRecommendUserDo.getParentId());
 		afRecommendUserDao.addRecommendMoney(afRecommendMoneyDo);
 
@@ -193,7 +193,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 			len = len +1;
 			AfRecommendUserDo _afRecommendUserDo = afRecommendUserDao.getARecommendUserByIdAndType(afRecommendUserDo.getParentId(),1);
 			if(_afRecommendUserDo !=null){
-				addRecommendBorrowMoney(afResourceDo, afBorrowCashDo,  _afRecommendUserDo,len);
+				addRecommendBorrowMoney(afResourceDo, afBorrowCashDo,  _afRecommendUserDo,len,userId);
 			}
 		}
 
