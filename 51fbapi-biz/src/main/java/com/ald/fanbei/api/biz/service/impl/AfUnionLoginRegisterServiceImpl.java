@@ -46,7 +46,7 @@ public class AfUnionLoginRegisterServiceImpl extends ParentServiceImpl<AfUnionLo
     @Override
     public String register(String channel,String phone,String paramsJsonStr) throws Exception {
         String salt = UserUtil.getSalt();
-        String defaultPassword= CommonUtil.getStringRandom(6);
+        String defaultPassword= CommonUtil.getRandomNumber(6);
         String randomPassword = DigestUtil.MD5(defaultPassword);
 
         String password = UserUtil.getPassword(randomPassword, salt);

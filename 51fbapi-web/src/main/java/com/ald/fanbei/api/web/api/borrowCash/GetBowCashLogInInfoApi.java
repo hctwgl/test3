@@ -458,6 +458,14 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else {
 			data.put("poundageRate", rate.get("poundage").toString());
 		}
+
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if(null != isWorm){
+			data.put("isWorm",isWorm.getValue());
+		}else{
+			data.put("isWorm",0);
+		}
 		
 		resp.setResponseData(data);
 		return resp;

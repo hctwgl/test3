@@ -335,6 +335,17 @@
                 <br>(3)销售时已明示的临近保质期的商品、有瑕疵的商品。
             </div>
         </li>
+        <li>
+            <div class="itemTitle">
+                <div class="title">账期、还款日能修改吗？
+                    <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent2 hide">您好，每年每人有一次修改账期、还款日的机会。
+                <br>您可以致电客服修改。
+                <br>修改后的账单日、还款日，可能在本月，也可能在下个月生效，请关注消息通知。
+            </div>
+        </li>
     </ul>
     <ul id="thirdList" class="listMainContent hide">
         <li>
