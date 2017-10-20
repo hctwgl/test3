@@ -215,6 +215,23 @@
         limit 0,1
     </select>
 
+    <select id="getUserOpen" resultType="AfUserToutiaoDo">
+        SELECT
+        id rid,active,gmt_modified,callback_url
+        FROM af_user_toutiao
+        where is_delete = 0 and active='0' and isopen='0' and <![CDATA[ DATEDIFF(NOW(),gmt_modified)<='7'  ]]>
+        <if test="imei !=null and imei!=''">
+            AND imei=#{imei}
+        </if>
+        <if test="idfa !=null and idfa!=''">
+            AND idfa=#{idfa}
+        </if>
+        <if test="androidid1 !=null and androidid1!=''">
+            AND androidid1=#{androidid1}
+        </if>
+        limit 0,1
+    </select>
+
 
     <update id="uptUser"  parameterType="AfUserToutiaoDo">
         UPDATE af_user_toutiao
@@ -229,7 +246,19 @@
         <set>
             gmt_modified = now(),
             user_id = #{userIdToutiao},
+            user_name = #{userNameToutiao},
             active='1'
+        </set>
+        where is_delete = 0 AND id=#{id}
+    </update>
+
+    <update id="uptUserOpen"  parameterType="AfUserToutiaoDo">
+        UPDATE af_user_toutiao
+        <set>
+            gmt_modified = now(),
+            user_id = #{userIdToutiao},
+            user_name = #{userNameToutiao},
+            isopen='1'
         </set>
         where is_delete = 0 AND id=#{id}
     </update>

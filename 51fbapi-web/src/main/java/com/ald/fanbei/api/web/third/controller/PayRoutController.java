@@ -2,14 +2,16 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
-import java.util.Map;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,16 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderRefundService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRepaymentService;
-import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
@@ -48,12 +40,6 @@ import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -466,6 +452,94 @@ public class PayRoutController {
 		catch (Exception e){
 			logger.error("yibaoUpdate error",e);
 			return e.toString();
+		}
+	}
+
+
+
+
+
+	/**
+	 * 处理错误数据
+	 */
+	@RequestMapping(value = { "/updateOrderLen" })
+	@ResponseBody
+	public String updateOrderLen(){
+		try {
+			final String key = "getyiBao_success_repayCash111";
+			long count = redisTemplate.opsForValue().increment(key, 1);
+			redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+			if (count != 1) {
+				return "error";
+			}
+
+			Calendar cal=Calendar.getInstance();
+			cal.set(Calendar.YEAR, 2017);
+			cal.set(Calendar.MONTH,8);
+			cal.set(Calendar.DAY_OF_MONTH, 19);
+			cal.set(Calendar.HOUR_OF_DAY, 13);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+
+			Calendar cal1=Calendar.getInstance();
+			cal1.set(Calendar.YEAR, 2017);
+			cal1.set(Calendar.MONTH,8);
+			cal1.set(Calendar.DAY_OF_MONTH, 20);
+			cal1.set(Calendar.HOUR_OF_DAY, 15);
+			cal1.set(Calendar.MINUTE, 0);
+			cal1.set(Calendar.SECOND, 0);
+
+
+
+			SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date start =  cal.getTime();//new Date(2017,8,19,17,00,00);
+			Date end =  cal1.getTime();//new Date(2017,8,20,17,00,00);
+			List<AfOrderDo> list = afOrderDao.getOrderByTimeAndType(start,end);
+			for(AfOrderDo afOrderDo :list) {
+				if (afOrderDo.getPayType().equals("CP")) {
+					if( afOrderDo.getPayStatus().toLowerCase().equals("p")) {
+						addBorrowBill(afOrderDo,PayType.AGENT_PAY.getCode());
+					}
+					else if(afOrderDo.getPayType().toLowerCase().equals("d")){
+						addBorrowBill(afOrderDo,PayType.COMBINATION_PAY.getCode());
+					}
+				}
+				else if(afOrderDo.getPayType().equals(PayType.AGENT_PAY.getCode())){
+					if( afOrderDo.getPayStatus().toLowerCase().equals("p")) {
+						addBorrowBill(afOrderDo,PayType.AGENT_PAY.getCode());
+					}
+				}
+			}
+			thirdLog.info("updateOrderLen start ");
+			//yiBaoUtility.updateYiBaoAllNotCheck();
+
+
+
+			thirdLog.info("updateOrderLen end ");
+			redisTemplate.delete(key);
+			return "success";
+		}
+		catch (Exception e){
+			logger.error("updateOrderLen error",e);
+			return e.toString();
+		}
+	}
+
+
+
+
+	@Resource
+	AfBorrowBillService afBorrowBillService;
+
+	private void addBorrowBill(AfOrderDo afOrderDo,String payType){
+		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+		if(afBorrowDo !=null){
+			//查询是否己产生
+			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+			if(borrowList == null || borrowList.size()==0 ){
+				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, payType);
+				afBorrowService.addBorrowBill(billList);
+			}
 		}
 	}
 

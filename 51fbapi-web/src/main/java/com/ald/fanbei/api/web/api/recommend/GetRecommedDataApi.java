@@ -29,6 +29,8 @@ public class GetRecommedDataApi implements ApiHandle {
         Long userId = context.getUserId();
         HashMap map = afRecommendUserService.getRecommedData(userId);
         resp.setResponseData(map);
-        return  resp;
+        //return resp;
+        ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ACTIVE_CLOSE);
+        return  resp1;
     }
 }

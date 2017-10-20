@@ -74,14 +74,13 @@ public class GetAgencyBuyOrderDetailApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 			 
 		}
-		
-		
 		AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
 		AfAgentOrderDo afAgentOrderDo = afAgentOrderService.getAgentOrderByOrderId(orderId);
 		
 		AfAgentOrederDetailInforVo agentOrderDetailVo = getAgentOrderDetailInforVo(afOrderDo, afAgentOrderDo, context);
-		
+
 		resp.setResponseData(agentOrderDetailVo);
+		
 		return resp;
 		
 	}

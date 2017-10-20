@@ -52,13 +52,20 @@ public class GetVerifyCodeApi implements ApiHandle {
 		if (!CommonUtil.isMobile(mobile)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_INVALID_MOBILE_NO);
 		}
-
-		SmsType type = SmsType.findByCode(typeParam);
-
+		
 		AfUserDo afUserDo = null;
+		SmsType type = SmsType.findByCode(typeParam);
+		if(SmsType.REGIST.equals(type) || SmsType.MOBILE_BIND.equals(type)) {// 除了注册和更换手机号功能，其余须检查手机号是否存在
+		}else {
+			afUserDo = afUserService.getUserByUserName(mobile);
+			if (afUserDo == null) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			}
+		}
+		
+		boolean resultSms = false;
 		switch (type) {
 		case REGIST:// 注册短信
-			
 			if (context.getAppVersion() >= 340) {
 				if (StringUtils.isBlank(blackBox)) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -70,58 +77,30 @@ public class GetVerifyCodeApi implements ApiHandle {
 			}
 
 			afUserDo = afUserService.getUserByUserName(mobile);
-
 			if (afUserDo != null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_HAS_REGIST_ERROR);
 			}
-			boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
-			if (!resultReg) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
-			}
-
+			resultSms = smsUtil.sendRegistVerifyCode(mobile);
 			break;
 		case FORGET_PASS:// 忘记密码
-			afUserDo = afUserService.getUserByUserName(mobile);
-
-			if (afUserDo == null) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-			}
-
-			boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
-			if (!resultForget) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
-			}
+			resultSms = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
 			break;
 		case LOGIN:
-			afUserDo = afUserService.getUserByUserName(mobile);
-			if (afUserDo == null) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-			}
-			boolean resultLogin = smsUtil.sendLoginVerifyCode(mobile,afUserDo.getRid());
-			if (!resultLogin) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
-			}
+			resultSms = smsUtil.sendLoginVerifyCode(mobile,afUserDo.getRid());
 			break;
 		case MOBILE_BIND:// 更换手机号
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CHANGE_BIND_MOBILE_LIMIT);
-			 
-//			String userName = ObjectUtils.toString(requestDataVo.getSystem().get("userName"));
-//
-//			afUserDo = afUserService.getUserByUserName(userName);
-//
-//			if (afUserDo == null) {
-//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-//			}
-//
-//			boolean resultMobileBind = smsUtil.sendMobileBindVerifyCode(mobile, afUserDo.getRid());
-//			if (!resultMobileBind) {
-//				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
-//			}s
-//			break;
+			resultSms = smsUtil.sendMobileBindVerifyCode(mobile);
+			break;
 		default:
+			logger.error("type is invalid,type = " + typeParam);
 			break;
 		}
+		
+		if (!resultSms) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
+		}
+		
 		return resp;
 	}
-
+	
 }

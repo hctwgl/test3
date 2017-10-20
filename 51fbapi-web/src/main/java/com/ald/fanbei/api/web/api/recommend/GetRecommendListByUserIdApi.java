@@ -43,6 +43,8 @@ public class GetRecommendListByUserIdApi implements ApiHandle {
         map.put("result",list);
 
         resp.setResponseData(map);
-        return  resp;
+        //return resp;
+        ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ACTIVE_CLOSE);
+        return  resp1;
     }
 }

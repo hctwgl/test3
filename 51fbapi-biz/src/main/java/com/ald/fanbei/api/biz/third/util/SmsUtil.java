@@ -339,7 +339,7 @@ public class SmsUtil extends AbstractThird {
      * @param userId 用户id
      * @return
      */
-    public boolean sendMobileBindVerifyCode(String mobile, Long userId) {
+    public boolean sendMobileBindVerifyCode(String mobile) {
         if (!CommonUtil.isMobile(mobile)) {
             throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
         }
@@ -353,7 +353,7 @@ public class SmsUtil extends AbstractThird {
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = BIND_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = sendSmsToDhst(mobile, content);
-        this.addSmsRecord(SmsType.MOBILE_BIND, mobile, verifyCode, userId, smsResult);
+        this.addSmsRecord(SmsType.MOBILE_BIND, mobile, verifyCode, 1L, smsResult);
         return smsResult.isSucc();
     }
 

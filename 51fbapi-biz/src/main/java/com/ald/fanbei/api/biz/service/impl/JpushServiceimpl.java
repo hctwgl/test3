@@ -245,13 +245,13 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("repayRenewalSuccess,pid=", pid));
-			String msgContext = "恭喜，您的续借申请已通过！";
+			String msgContext = "恭喜，您的续期申请已通过！";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "212");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("续借申请成功", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("续期申请成功", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("repayRenewalSuccess error:", e);
 		}
@@ -262,13 +262,13 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		try {
 			String pid = userName + "_" + System.currentTimeMillis();
 			logger.info(StringUtil.appendStrs("repayRenewalFail,pid=", pid));
-			String msgContext = "亲，您的续借申请失败，请重新申请！";
+			String msgContext = "亲，您的续期申请失败，请重新申请！";
 			Map<String, String> extras = new HashMap<String, String>();
 			extras.put(PID, pid);
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "213");
 			extras.put(DATA, "");
-			jpushUtil.pushNotifyByAlias("续借申请失败", msgContext, extras, new String[] { userName });
+			jpushUtil.pushNotifyByAlias("续期申请失败", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("repayRenewalFail error", e);
 		}

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRescourceLogService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -36,8 +37,10 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfFundSideInfoDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceLogDo;
@@ -75,6 +78,8 @@ public class AppH5ProtocolController extends BaseController {
 	AfUserAccountService afUserAccountService;	
 	@Resource
 	AfRescourceLogService afRescourceLogService;
+	@Resource
+	AfFundSideBorrowCashService afFundSideBorrowCashService;
 
 
 	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
@@ -195,14 +200,20 @@ public class AppH5ProtocolController extends BaseController {
 					Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 					Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
 					Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
-					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 					model.put("repaymentDay", repaymentDay);
-					model.put("lender", lenderDo.getValue());// 出借人
 					model.put("lenderIdNumber", rate.get("lenderIdNumber"));
 					model.put("lenderIdAmount", afBorrowCashDo.getAmount());
 					model.put("gmtPlanRepayment", afBorrowCashDo.getGmtPlanRepayment());
+					
+					//查看有无和资金方关联，有的话，替换里面的借出人信息
+					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
+					if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
+						model.put("lender", fundSideInfo.getName());// 出借人
+					}else{
+						AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+						model.put("lender", lenderDo.getValue());// 出借人
+					}
 				}
-
 			}
 		}
 		
@@ -266,8 +277,14 @@ public class AppH5ProtocolController extends BaseController {
 					model.put("gmtBorrowEnd", repaymentDay);//借款结束日	 
 					model.put("amountCapital", toCapital(afBorrowCashDo.getAmount().doubleValue()));
 					model.put("amountLower", afBorrowCashDo.getAmount());
-					AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-					model.put("lender", lenderDo.getValue());// 出借人
+					//查看有无和资金方关联，有的话，替换里面的借出人信息
+					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
+					if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
+						model.put("lender", fundSideInfo.getName());// 出借人
+					}else{
+						AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+						model.put("lender", lenderDo.getValue());// 出借人
+					}
 				}
 			}
 			
