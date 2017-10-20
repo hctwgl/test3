@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao">
+	
+	<sql id="activitySqlField">
+		id,gmt_create,gmt_modified,creator,modifier,name,parent_id,is_show,sort,imgurl,level
+	</sql>
+
+	<insert id="addGoodsCategory" parameterType="AfGoodsCategoryDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_goods_category(gmt_create , gmt_modified , creator , modifier , name , parent_id , is_show , sort , imgUrl , level)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{creator},
+    		#{modifier},
+    		#{name},
+    		#{parentId},
+    		#{isShow},
+    		#{sort},
+    		#{imgUrl},
+    		#{level},
+		)
+	</insert>
+
+	<update id="updateGoodsCategory" parameterType="AfGoodsCategoryDo" >
+		UPDATE af_goods_category SET gmt_modified = NOW()
+		<if test="isDelete != null">
+			,is_delete=#{isDelete}
+		</if>
+		<if test="creator != null">
+			,creator=#{creator}
+		</if>
+		<if test="modifier != null">
+			,modifier=#{modifier}
+		</if>
+		<if test="name != null">
+			,name=#{name}
+		</if>
+		<if test="parentId != null">
+			,parent_id=#{parentId}
+		</if>
+		<if test="isShow != null">
+			,is_show=#{isShow}
+		</if>
+		<if test="sort != null">
+			,sort=#{sort}
+		</if>
+		<if test="imgurl != null">
+			,imgurl=#{imgurl}
+		</if>
+		<if test="level != null">
+			,level=#{level}
+		</if>
+		WHERE id = #{rid}
+	</update>
+
+	<update id="deleteGoodsCategory" parameterType="java.lang.Long" >
+		UPDATE af_goods_category SET is_delete = 1 WHERE id=#{rid}
+	</update>
+
+	<select id="selectOneLevel" resultType="AfGoodsCategoryDo">
+		SELECT
+			<include refid="activitySqlField"></include>
+		FROM af_goods_categroy where level = 1 and is_delete = 0 and is_show = 0 ORDER BY sort
+	</select>
+
+	<select id="selectSecondLevel" resultType="AfGoodsCategoryDo" parameterType="java.lang.Long">
+		SELECT
+			<include refid="activitySqlField"></include>
+		FROM af_goods_categroy
+		where parent_id = #{rid}
+		and is_delete = 0
+		and is_show = 0
+		AND level = 2
+		ORDER BY sort
+	</select>
+
+	<select id="selectThirdLevel" resultType="AfGoodsCategoryDo" parameterType="java.lang.Long">
+		SELECT
+		<include refid="activitySqlField"></include>
+		FROM af_goods_categroy
+		where parent_id = #{rid}
+		and is_delete = 0
+		and is_show = 0
+		AND level = 3
+		ORDER BY sort
+	</select>
+	
+</mapper>
