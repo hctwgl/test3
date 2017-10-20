@@ -267,3 +267,11 @@ text-align:left;
     font-size: 0.32rem;
     margin: 0.4rem 0.25rem 0;
 }
+.goLogin{
+    font-size:.3rem;
+    color:#999;
+    text-align: center;
+    text-decoration: underline;
+    padding-top:.6rem;
+}
+

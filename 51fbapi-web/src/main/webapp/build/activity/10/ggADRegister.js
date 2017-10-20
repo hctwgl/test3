@@ -39,21 +39,10 @@ $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
     var param = getUrlParam(currentUrl);
-    var word = param['word'];
-    var urlName = param['urlName'];//邀请者用户名
-    var userName = param['userName'];
-    var refUserName = param['userName'];
-    var activityId = param['activityId'];
-    var userItemsId = param['userItemsId'];
-    var itemsId = param['itemsId'];
-    var loginSource = param['loginSource'];
-    console.log(activityId);
-    //console.log(refUserName);
-    console.log(currentUrl)
-
+    var urlName = param['urlName'];//主页
+    var activityId=param['activityId'];
     var timerInterval;
     var timerS = 60;
-
 
     $('.yhicon').click(function(){
         $(".yhinp").val('');
@@ -74,14 +63,10 @@ $(function () {
 
     $('.big-one').click(function(){
         $("#mobile").val('');
-        // console.log( $("#mobile").val());
-        // $('.mmicon').css("display","none");
     });
 
     $('.big-two').click(function(){
         $("#password").val('');
-        // console.log( $("#mobile").val());
-        // $('.mmicon').css("display","none");
     });
 
     function timeFunction() { // 60s倒计时
@@ -200,16 +185,12 @@ $(function () {
         var smsCode = $(".check").val();//获取短信
         var registerMoblie = $(".mobile").val();//获取手机号
         var password=$("#password").val();//获取密码
-        console.log(password);
-        console.log(smsCode);
-        console.log(registerMoblie);
         var yzcheck=$('#yzcheck').val();//获取验证码
-        //var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(registerMoblie));
         var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(registerMoblie)); //手机号正则验证11位
         var yztrue=(/^\d{6}$/.test(yzcheck));//6位数字正则验证 验证码
         var mmtrue=/^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);
+        var password_md5 = String(CryptoJS.MD5(password));//md5加密
         if (( (userck) && yztrue&&yzcheck!='')&& ( mmtrue&& password!=undefined)) {
-            var password_md5 = String(CryptoJS.MD5(password));//md5加密
             $.ajax({
                 url: "/H5GGShare/commitBouomeActivityRegister",
                 type: 'post',
@@ -219,20 +200,41 @@ $(function () {
                     "password":password_md5,
                     "urlName":urlName,
                     token:token,
-                    'activityId':activityId,
-                    'refUserName':refUserName
+                    'activityId':activityId
                 },
                 success: function (returnData) {
                     console.log(returnData);
                     var a=JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        var urlName = param['urlName'];
                          requestMsg("注册成功");
-                         setTimeout(function () {
-                            window.location.href = "gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word+ "&loginSource=" + loginSource;
-                        }, 1500);
-                        
+                         var userName=registerMoblie;
+                        $.ajax({
+                            url: "/H5GGShare/boluomeActivityLogin",
+                            type: 'POST',
+                            dataType: 'JSON',
+                            data: {
+                                userName: userName,
+                                password: password_md5,
+                                activityId: activityId,
+                                urlName: urlName,
+                                token:token
+
+                            },
+                            success: function (data) {
+                                // alert(urlName);
+                                console.log(data)
+                                if (data.success) {
+                                    window.location.href =urlName + "?activityId=" + activityId;
+                                } else if (data.url == "DownLoad") {
+                                    requestMsg(data.msg);
+                                    //跳转延迟
+                                    setTimeout(function () {
+                                        window.location.href = "ggadregister?activityId=" + activityId + "&urlName=" + urlName;
+                                    }, 1500);
+                                }
+                            }
+                        })
                     }else if(a.url=="Register"){
                         requestMsg(a.msg);
                     }
@@ -251,6 +253,11 @@ $(function () {
             }
         }
     });
+
+    //已有账号 立即登录
+    $('.goLogin').click(function(){
+        window.location.href ="ggADLogin?activityId="+activityId+"&urlName="+urlName;
+    })
 });
 
 //截取字符串方法

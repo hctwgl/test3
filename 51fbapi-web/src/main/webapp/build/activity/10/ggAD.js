@@ -73,7 +73,7 @@ let vm = new Vue({
         bannerClick:function(){
             userName=getCookie('userName');
             if(userName=='' || !userName){
-                window.location.href="gglogin?urlName="+urlName;
+                window.location.href="ggadregister?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             }
@@ -107,14 +107,14 @@ let vm = new Vue({
                     }
                 });
             }else{
-                window.location.href="gglogin?urlName="+urlName;
+                window.location.href="ggadregister?urlName="+urlName;
             }
         },
         //点击卡片
         cardClick:function(){
             userName=getCookie('userName');
             if(userName=='' || !userName){
-                window.location.href="gglogin?urlName="+urlName;
+                window.location.href="ggadregister?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             }
@@ -124,7 +124,7 @@ let vm = new Vue({
             let self = this;
             userName=getCookie('userName');
             if(userName=='' || !userName){
-                window.location.href="gglogin?urlName="+urlName;//未登录
+                window.location.href="ggadregister?urlName="+urlName;//未登录
             }else{
                 $.ajax({
                     type: 'get',
@@ -169,7 +169,7 @@ let vm = new Vue({
         presentClick:function(){
             userName=getCookie('userName');
             if(userName=='' || !userName){
-                window.location.href="gglogin?urlName="+urlName;
+                window.location.href="ggadregister?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             }
@@ -177,7 +177,7 @@ let vm = new Vue({
         demandClick:function(){
             userName=getCookie('userName');
             if(userName=='' || !userName){
-                window.location.href="gglogin?urlName="+urlName;
+                window.location.href="ggadregister?urlName="+urlName;
             }else{
                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
             }

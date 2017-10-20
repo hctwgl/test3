@@ -3,12 +3,8 @@ $(function(){
         //获取页面名称传到登录页
         var currentUrl = window.location.href;
         var param = getUrlParam(currentUrl);
-        var word = param['word'];
         var urlName = param['urlName'];
-        var userName = param['userName'];
         var activityId = param['activityId'];
-        var userItemsId = param['userItemsId'];
-        var itemsId = param['itemsId'];
         var number=localStorage.getItem('user');//接收上个页面的手机号
         var mesg=localStorage.getItem('mesg');//接收上个页面的短信验证  
         //   var password = $(".blank-in").val();//获取登录密码
@@ -34,7 +30,7 @@ $(function(){
                             success: function (data) {
                                 console.log(data)
                                 if(data.success){
-                                    window.location.href ="gglogin?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;;
+                                    window.location.href ="ggADLogin?urlName="+urlName+"&activityId="+activityId;
                                 }else{
                                     requestMsg(data.msg);
                                 }

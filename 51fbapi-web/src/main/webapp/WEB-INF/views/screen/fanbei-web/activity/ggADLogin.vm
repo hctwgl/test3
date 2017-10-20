@@ -30,7 +30,7 @@
             立即登录
         </div>
         <div class="lspdiv clearFix">
-            <span class="spl"><span id="gg_register" >我要注册</span></span>
+            #*<span class="spl"><span id="gg_register" >我要注册</span></span>*#
             <span class="spr"><span id="gg_forget" >忘记密码</span></span>
         </div>
     </div>

@@ -41,12 +41,8 @@ $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
     var param = getUrlParam(currentUrl);
-    var word = param['word'];
     var urlName = param['urlName'];
-    var userName = param['userName'];
     var activityId = param['activityId'];
-    var userItemsId = param['userItemsId'];
-    var itemsId = param['itemsId'];
     //倒计时
     var timerInterval;
     var timerS = 60;
@@ -171,21 +167,6 @@ $(function () {
     $('.nextStep').click(function () {
         var mesg = $(".mesg-right").val(); //获取验证码 
         var userName = $(".phoneNumber-right").val(); //获取手机号
-        // var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(userName)); //手机号正则验证
-
-        // if (userck) {
-        //     requestMsg("请填写正确的手机号");
-        //     return false;
-        // }
-        // if (mesg == '') {
-        //     requestMsg("请填写正确的验证码");
-        //     return false;
-        // }
-        //  if (mesg.replace(/\s/g, '') == '') {
-        //     requestMsg("验证码不能为空");
-        //     return false;
-        // }
-
         $.ajax({
             url: "/H5GGShare/boluomeActivityCheckVerifyCode",
             type: 'POST',
@@ -205,7 +186,7 @@ $(function () {
                     return false;
                 }
                 localStorage.setItem("mesg", mesg); //将短信验证码存储到本地
-                window.location.href= "ggForgetP?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;;
+                window.location.href= "ggADForgetP?urlName="+urlName+"&activityId="+activityId;
             },
             error: function () {
                 requestMsg("请求失败")

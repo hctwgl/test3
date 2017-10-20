@@ -39,15 +39,9 @@ $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
     var param = getUrlParam(currentUrl);
-    var word = param['word'];
     var urlName = param['urlName'];
-    var userName = param['userName'];
     var activityId = param['activityId'];
-    var userItemsId = param['userItemsId'];
-    var itemsId = param['itemsId'];
-    var loginSource = param['loginSource'];
-    console.log(param)
-    
+    console.log(urlName)
     //用戶名叉叉點擊清楚所有文字
     $('.yhicon').click(function () {
         $("#yhinp").val('');
@@ -83,7 +77,6 @@ $(function () {
         var userNamePhone = $("#yhinp").val(); //获取手机号
         var password = $(".check").val(); //获取密码
 
-        //var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userNamePhone));
         var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(userNamePhone)); //手机号正则验证11位
         if (userck && /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password)) {
 
@@ -96,7 +89,6 @@ $(function () {
                     userName: userNamePhone,
                     password: password_md5,
                     activityId: activityId,
-                    refUserName: userName,
                     urlName: urlName,
                     token:token
                     
@@ -105,21 +97,12 @@ $(function () {
                     // alert(urlName);
                     console.log(data)
                     if (data.success) {
-                        if (word == "Z") {
-                            window.location.href = urlName + "?userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId;
-                        } else if (word == "S") {
-                            window.location.href = urlName + "?userName=" + userName + "&itemsId=" + itemsId + "&activityId=" + activityId;
-                        } else {
-                            window.location.href =urlName + "?activityId=" + activityId + "&userName=" + userName+ "&word=" + loginSource+ "&urlName=" + urlName;
-                        }
-                    } else if (data.url == "Login") {
-                        requestMsg(data.msg);
-
+                        window.location.href =urlName + "?activityId=" + activityId;
                     } else if (data.url == "DownLoad") {
                         requestMsg(data.msg);
                         //跳转延迟
                         setTimeout(function () {
-                            window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+                            window.location.href = "ggregister?activityId=" + activityId + "&urlName=" + urlName;
                         }, 1500);
                     }
                 }
@@ -137,16 +120,16 @@ $(function () {
     });
 
 
-    //注册
+    /*//注册
     $("#gg_register").click(function () {
         //  alert(word);
-        window.location.href = "ggregister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&loginSource=" + loginSource;
-    });
+        window.location.href = "ggadregister?activityId=" + activityId + "&urlName=" + urlName;
+    });*/
 
     //忘记密码
     $("#gg_forget").click(function () {
         // alert(word);
-        window.location.href = "ggVerify?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+        window.location.href = "ggADVerify?activityId=" + activityId + "&urlName=" + urlName;
     });
 })
 //截取字符串方法
