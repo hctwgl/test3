@@ -239,7 +239,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 
 
 				AfRecommendMoneyDo afRecommendMoneyDo = new AfRecommendMoneyDo();
-				afRecommendMoneyDo.setType(0);
+				afRecommendMoneyDo.setType(1);
 				afRecommendMoneyDo.setMoney(money);
 				afRecommendMoneyDo.setUserId(afRecommendUserDo.getUserId());
 				afRecommendMoneyDo.setParentId(afRecommendUserDo.getParentId());
