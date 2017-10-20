@@ -1,12 +1,33 @@
+//截取字符串方法
+function getUrlParam(url) {
+  var param = new Object();
+  if (url.indexOf("?") != -1) {
+      var str = url.substr(url.indexOf("?") + 1, url.length);
+      var strs = [];
+      strs = str.split("&");
+      for (var i = 0; i < strs.length; i++) {
+          param[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+      }
+  }
+  return param;
+}
+
+window.shareinfo = {}
+window.userId = getUrlParam('userId')
+
+
 function getinfo(fn) {
   $.ajax({
     url: '/fanbei-web/activityUserInfo',
     data: {
-      'userId': 178
+      // 'userId': 178
     },
     type: 'POST',
     dataType: 'JSON',
     success: (data) => {
+      shareinfo.listDesc = data[0].listDesc[0]
+      shareinfo.listTitle = data[0].listTitle[0]
+      shareinfo.listPic = data[0].listPic[0]
       fn(data[0])
     },
     error: (err) => {
@@ -46,9 +67,7 @@ window.onload = ()=>{
     alert('已复制到剪贴板，可粘贴')
   })
 
-  $('.rightown').on('click', ()=>{
-    window.location.href='/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"引爆年中抓娃娃，100％中大奖","shareAppContent":"抓娃娃次数无上限100％中奖，集齐5娃，平分1亿大奖，最高888红包雨在等你，有且只在51返呗！","shareAppImage":"http://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"http://f.51fanbei.com/fanbei-web/activity/gameShare","isSubmit":"Y","sharePage":"gameShare"})'
-  })
+
 
   function exec(data) {
     let rule = data.listRule
@@ -62,13 +81,39 @@ window.onload = ()=>{
     $('.invitecode').text(invitationCode)
     $('.invitecode')[0].dataset.clipboardText = invitationCode
     $('.myreward span').text(sum)
+
+    
+
+    $('.rightown').on('click', ()=>{
+      var dat = {
+        shareAppTitle: shareinfo.listTitle,
+        shareAppContent: shareinfo.listDesc,
+        shareAppImage: shareinfo.listPic,
+        shareAppUrl: location.origin + '/fanbei-web/app/inviteregister',
+        isSubmit: 'Y',
+        sharePage: 'inviteShare'
+      }
+      dat = JSON.stringify(dat)
+      var base64 = BASE64.encoder(dat)
+      window.location.href='/fanbei-web/opennative?name=APP_SHARE&params=' + base64
+    })
   }
 
   getinfo(exec)
 
-
+  /**
+   * 分享
+   */
   function share() {
     window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"引爆年中抓娃娃，100％中大奖","shareAppContent":"抓娃娃次数无上限100％中奖，集齐5娃，平分1亿大奖，最高888红包雨在等你，有且只在51返呗！","shareAppImage":"http://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"http://f.51fanbei.com/fanbei-web/activity/gameShare","isSubmit":"Y","sharePage":"gameShare"}'
+  }
+
+
+  function offonloadall() {
+    $('.loadall').show()
+    setTimeout(()=>{
+      $('.loadall').hide()
+    }, 1500)
   }
 
 
@@ -94,7 +139,7 @@ window.onload = ()=>{
     $.ajax({
       url: '/fanbei-web/rewardQuery',
       data: {
-        'userId': 178,
+        // 'userId': 178,
         'type': type,
         'pageSize': 5,
         'currentPage': page
@@ -102,7 +147,6 @@ window.onload = ()=>{
       type: 'POST',
       dataType: 'JSON',
       success: (data) => {
-        console.log(data[0])
         pagecount = data[0].count
         fn(data[0], type)
       },
@@ -114,7 +158,12 @@ window.onload = ()=>{
 
   function replacehtml(data, type) {
     let list = data.rewardQueryList
-    let html = returnlist(list)
+    let html
+    if(list.length > 0) {
+      html = returnlist(list)
+    }else {
+      html = `<div class="nodata">您暂无邀请！</div>`
+    }
     $('.list').html(html)
     
     if(type == 1) {
@@ -126,6 +175,7 @@ window.onload = ()=>{
     $('.list').html(html)
     setTimeout(()=>{
       off_on = true
+      $('.loading').hide()
     },0)
   }
 
@@ -142,12 +192,14 @@ window.onload = ()=>{
     $('.list').append(html)
     setTimeout(()=>{
       off_on = true
+      $('.loading').hide()
     },0)
   }
 
   getlist(1, 1, replacehtml)
 
   $('.buttons div').on('click', (e)=>{
+    $('.loading').show()
     var nodecl = e.target.className
     if(nodecl.indexOf('levelone') > -1) {
       getlist(1, 1, replacehtml)
@@ -159,10 +211,10 @@ window.onload = ()=>{
 
 
   $('.con').scroll(function() {
-    console.log(off_on,pagecount)
     if (($(this)[0].scrollTop + $(this).height() + 40) >= $(this)[0].scrollHeight) {
       if (off_on && $(this).find('.item').length<pagecount) {
           off_on = false;
+          $('.loading').show()
           if($('.levelone').hasClass('active')) {
             levelonepage++
             getlist(levelonepage, 1, appendhtml)
@@ -170,6 +222,8 @@ window.onload = ()=>{
             leveltwopage++
             getlist(leveltwopage, 2, appendhtml)
           }
+      } else if($(this).find('.item').length == pagecount) {
+        offonloadall()
       }
     }
   })

@@ -127,23 +127,23 @@
 	</select>
 
 	<select id="firstRewardQuery" resultType="AfRecommendUserDo">
-		select a.user_id userId,a.parent_id parentId,a.money prizeMoney from af_recommend_money a
-		where a.user_id in (SELECT user_id from af_recommend_user where is_delete = 0 and parentId =#{userId})
+	    select a.user_id userId,a.parentId parentId,IFNULL(b.money,0.00) prizeMoney from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
+        where a.is_delete=0 and a.parentId = #{userId} and a.type =1
         limit #{pageNo},#{pageSize}
 	</select>
 	<select id="twoLevelRewardQuery" resultType="AfRecommendUserDo">
-	select a.user_id userId,a.parent_id parentId,a.money prizeMoney  from af_recommend_money a left join af_recommend_user b on a.user_id=b.user_id
-    where b.parentId in (SELECT user_id from af_recommend_user where is_delete = 0 and parentId =#{userId})
-    limit #{pageNo},#{pageSize}
+	   select a.user_id userId,a.parentId parentId,IFNULL(b.money,0.00) prizeMoney from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
+	   where a.parentId in (SELECT user_id from af_recommend_user where is_delete=0 and parentId =#{userId} and type =1)
+       limit #{pageNo},#{pageSize}
 	</select>
 
 	<select id="firstRewardQueryCount" resultType="int">
-		select count(1) from af_recommend_money a
-		where a.user_id in (SELECT user_id from af_recommend_user where is_delete = 0 and parentId =#{userId})
+        select count(1) from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
+        where a.is_delete=0 and a.parentId = #{userId} and a.type =1
 	</select>
 	<select id="twoLevelRewardQueryCount" resultType="int">
-	   select count(1) from af_recommend_money a left join af_recommend_user b on a.user_id=b.user_id
-       where b.parentId in (SELECT user_id from af_recommend_user where is_delete = 0 and parentId =#{userId})
+	   select count(1) from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
+	   where a.parentId in (SELECT user_id from af_recommend_user where is_delete=0 and parentId =#{userId} and type =1)
 	</select>
 
 	<insert id="addRecommendMoney" parameterType="AfRecommendMoneyDo" useGeneratedKeys="true" keyProperty="rid">

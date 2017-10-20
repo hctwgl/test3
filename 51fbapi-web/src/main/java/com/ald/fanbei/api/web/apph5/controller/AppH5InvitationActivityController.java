@@ -1,9 +1,13 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -36,22 +40,40 @@ public class AppH5InvitationActivityController extends BaseController {
     @Resource
     AfRecommendUserService afRecommendUserService;
 
+    @Resource
+    AfUserService afUserService;
+
 
     /**
      * 活动页面的基本信息
      * @param request
-     * @param context
+     * @param
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "activityUserInfo", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
-    public String activityUserInfo(HttpServletRequest request,FanbeiContext context){
-        Long userId =context.getUserId();
+    public String activityUserInfo(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        Long userId = -1l;
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        if(userId==null){
-            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+        AfUserDo afUser = null;
+        try{
+            context = doWebCheck(request, false);
+            if(context.isLogin()){
+                afUser = afUserService.getUserByUserName(context.getUserName());
+                if(afUser != null){
+                    userId = afUser.getRid();
+                }
+            }else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+        }catch  (Exception e) {
+            logger.error("commitChannelRegister", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
+
         HashMap<String,Object> map =new HashMap<>();
         List<HashMap> hashMapList =new ArrayList<>();
         //查看活动规则,图片,标题,描述
@@ -78,17 +100,32 @@ public class AppH5InvitationActivityController extends BaseController {
     /**
      * 奖励详细查询
      * @param request
-     * @param context
+     * @param currentPage
      * @param type
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "rewardQuery", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
-    public String rewardQuery(HttpServletRequest request, FanbeiContext context, String type,Integer currentPage, Integer pageSize){
-        Long userId =context.getUserId();
+    public String rewardQuery(HttpServletRequest request,String type,Integer currentPage, Integer pageSize){
+        FanbeiWebContext context = new FanbeiWebContext();
+        Long userId = -1l;
+        //Long userId = 73772l;
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        if(userId==null){
-            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+        AfUserDo afUser = null;
+        try{
+            context = doWebCheck(request, false);
+            if(context.isLogin()){
+                afUser = afUserService.getUserByUserName(context.getUserName());
+                if(afUser != null){
+                    userId = afUser.getRid();
+                }
+             }else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+        }catch  (Exception e) {
+            logger.error("commitChannelRegister", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
         if(currentPage==null){
@@ -121,11 +158,22 @@ public class AppH5InvitationActivityController extends BaseController {
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        return null;
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
     }
 
     @Override
     public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+        // TODO Auto-generated method stub
         return null;
     }
 }
