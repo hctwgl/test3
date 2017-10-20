@@ -15,11 +15,13 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -64,8 +66,18 @@ public class GetBrandListApi implements ApiHandle {
 				}
 			});
 		}
-		List<AfResourceDo> bannerList1 = afResourceService
+		 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		 List<AfResourceDo> bannerList1 = new ArrayList<AfResourceDo>();
+		//线上为开启状态
+		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+		 bannerList1 = afResourceService
 				.getResourceHomeListByTypeOrderBy(AfResourceType.GGHomeTopBanner.getCode());
+		 }
+		 else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+		//预发为关闭状态
+		 bannerList1 = afResourceService
+				.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.GGHomeTopBanner.getCode());
+		 }
 		List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
 		resp.addResponseData("bannerList", bannerList);
 		resp.addResponseData("shopList", resultList);
