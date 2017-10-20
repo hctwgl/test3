@@ -74,7 +74,7 @@ public class GetBrandListApi implements ApiHandle {
 				.getResourceHomeListByTypeOrderBy(AfResourceType.GGHomeTopBanner.getCode());
 		 }
 		 else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
-		//预发为关闭状态
+		//预发不区分状态
 		 bannerList1 = afResourceService
 				.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.GGHomeTopBanner.getCode());
 		 }
