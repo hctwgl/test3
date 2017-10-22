@@ -210,16 +210,13 @@ public class H5BoluomeActivityController extends BaseController {
 		}
 		String reqData = request.toString();
 		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/boluomeActivityLogin", request.getParameter("userName"), login, "", "", "", "");
-	   }else {
-	       if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
-		 String reqData = request.toString();
-		 doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/boluomeActivityLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
-	       }
-	      }	   
+	      } 
 	    } else {
-		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Login", "").toString();
-	   }
-
+		if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
+		    String reqData = request.toString();
+		    doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/boluomeActivityLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
+		}
+          }	  
 	} else {
 	    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "Login", "").toString();
 	}
