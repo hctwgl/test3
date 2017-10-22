@@ -91,9 +91,9 @@ $(function () {
                     userName: userNamePhone,
                     password: password_md5,
                     activityId: activityId,
-                    urlName: urlName,
-                    token:token
-                    
+                    token:token,
+                    'typeFrom':typeFrom,
+                    'typeFromNum':typeFromNum
                 },
                 success: function (data) {
                     // alert(urlName);

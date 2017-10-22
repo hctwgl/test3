@@ -27,7 +27,9 @@ $(function(){
                             data: {
                                 password: password_md5,                       	
                                 mobile:number,
-                                verifyCode:mesg
+                                verifyCode:mesg,
+                                'typeFrom':typeFrom,
+                                'typeFromNum':typeFromNum
                             },
                             success: function (data) {
                                 console.log(data)

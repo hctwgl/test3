@@ -201,9 +201,10 @@ $(function () {
                     "registerMobile": registerMobile,
                     "smsCode":smsCode,
                     "password":password_md5,
-                    "urlName":urlName,
                     token:token,
-                    'activityId':activityId
+                    'activityId':activityId,
+                    'typeFrom':typeFrom,
+                    'typeFromNum':typeFromNum
                 },
                 success: function (returnData) {
                     console.log(0);
@@ -212,33 +213,6 @@ $(function () {
                     if (a.success) {
                         requestMsg("注册成功");
                         window.location.href =urlName + "?activityId=" + activityId+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
-                         //var userName=registerMoblie;
-                        /*$.ajax({
-                            url: "/H5GGShare/boluomeActivityLogin",
-                            type: 'POST',
-                            dataType: 'JSON',
-                            data: {
-                                userName: userName,
-                                password: password_md5,
-                                activityId: activityId,
-                                urlName: urlName,
-                                token:token
-
-                            },
-                            success: function (data) {
-                                // alert(urlName);
-                                console.log(data)
-                                if (data.success) {
-                                    window.location.href =urlName + "?activityId=" + activityId;
-                                } else if (data.url == "DownLoad") {
-                                    requestMsg(data.msg);
-                                    //跳转延迟
-                                    setTimeout(function () {
-                                        window.location.href = "ggadregister?activityId=" + activityId + "&urlName=" + urlName;
-                                    }, 1500);
-                                }
-                            }
-                        })*/
                     }else{
                         requestMsg(a.msg);
                     }

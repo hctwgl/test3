@@ -176,7 +176,9 @@ $(function () {
             data: {
                 mobile: userName,
                 verifyCode: mesg,
-                token:token
+                token:token,
+                'typeFrom':typeFrom,
+                'typeFromNum':typeFromNum
             },
             success: function (data) {
                 if(data.url=="ForgetPwd"){
