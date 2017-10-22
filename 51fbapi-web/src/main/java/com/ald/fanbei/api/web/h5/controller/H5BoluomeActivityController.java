@@ -116,6 +116,8 @@ public class H5BoluomeActivityController extends BaseController {
 	Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 	String refUseraName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
 	String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
+        String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
      try{
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
 	  AfUserDo refUserDo = new AfUserDo();
@@ -174,19 +176,15 @@ public class H5BoluomeActivityController extends BaseController {
 
 	    bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
 
-//	    if (refUserDo == null) {
-//		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
-//
-//	    }
+
 	   
 	     //如果该用户在平台没有订单，绑定关系(注册和登录只能绑定一次)去掉？
 	    AfOrderDo queryCount = new AfOrderDo();
 	    queryCount.setUserId(UserDo.getRid());
 	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
 	    logger.info("orderCount = {}", orderCount);
-	    // <1?
+	
 	    if(refUserDo!=null ){
-//	    if (orderCount > 0) {
 	    if (!userName.equals(refUseraName)) {
 		// 绑定关系refUserDo
 		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
@@ -197,9 +195,6 @@ public class H5BoluomeActivityController extends BaseController {
 		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
 		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
 	    }
-	    }
-//	   }
-
 	    // 登录成功进行埋点
 	    if (loginSource != null) {
 		String login = "";
@@ -214,9 +209,15 @@ public class H5BoluomeActivityController extends BaseController {
 		}
 		String reqData = request.toString();
 		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/boluomeActivityLogin", request.getParameter("userName"), login, "", "", "", "");
+	   }else {
+	       if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
+		 String reqData = request.toString();
+		 doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/boluomeActivityLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
+	       }
+	      }	   
 	    } else {
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Login", "").toString();
-	    }
+	   }
 
 	} else {
 	    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "Login", "").toString();
@@ -291,7 +292,7 @@ public class H5BoluomeActivityController extends BaseController {
 
     // 提交菠萝觅活动注册
     @ResponseBody
-    @RequestMapping(value = "/bouomeActivityRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/boluomeActivityRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String bouomeActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
 	// 执行时间
 	String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
@@ -393,6 +394,8 @@ public class H5BoluomeActivityController extends BaseController {
 	    //进行相应的埋点，送券
 	    if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
 		//埋点
+		 String reqData = request.toString();
+		 doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/bouomeActivityRegisterLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
 	    }
 	    
 	    return resultStr;
