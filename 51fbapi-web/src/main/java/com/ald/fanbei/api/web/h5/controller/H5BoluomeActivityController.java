@@ -58,6 +58,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -377,7 +378,6 @@ public class H5BoluomeActivityController extends BaseController {
 	    String inviteCode = Long.toString(invteLong, 36);
 	    userDo.setRecommendCode(inviteCode);
 	    afUserService.updateUser(userDo);
-
 	    // 获取邀请分享地址
 	    String appDownLoadUrl = "";
 //	    AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
@@ -386,18 +386,27 @@ public class H5BoluomeActivityController extends BaseController {
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
 	    // save token to cache
-        String  token1 = UserUtil.generateToken(moblie);
+            String  token1 = UserUtil.generateToken(moblie);
 	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
 	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
 	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
 	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
 	    //进行相应的埋点，送券
 	    if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
+		//送券
+		try{
+		     AfUserDo afUserDo = afUserService.getUserByUserName(moblie);
+		     if (afUserDo != null) {
+			        sentNewUserBoluomeCouponForChannel(afUserDo);
+		     }
+		   }catch (Exception e){
+				logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
+		}
 		//埋点
 		 String reqData = request.toString();
-		 doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/bouomeActivityRegisterLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
+		 doLog(reqData, H5CommonResponse.getNewInstance(true, "注册成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/bouomeActivityRegisterLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
 	    }
-	    
+	  
 	    return resultStr;
 
 	} catch (FanbeiException e) {
@@ -414,6 +423,63 @@ public class H5BoluomeActivityController extends BaseController {
 
     }
 
+    private int sentNewUserBoluomeCouponForChannel(AfUserDo afUserDo) {
+	    // TODO Auto-generated method stub
+	     //平台没有订单且有绑定记录时送券
+	    AfOrderDo queryCount = new AfOrderDo();
+	    queryCount.setUserId(afUserDo.getRid());
+	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
+	    logger.info("orderCount = {}", orderCount);
+	    // <1?
+	    if (orderCount < 1) {
+		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
+		queryCoupon.setScopeApplication("INVITEE");
+		queryCoupon.setType("B");
+		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
+		logger.info("sentCoupons=", sentCoupons);
+		if (sentCoupons.size() > 0) {
+		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
+			long resourceId = sentCoupon.getCouponId();
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+			logger.info("resourceInfo = {}", resourceInfo);
+			// 查询是否已有该券，有，则不发
+			String status = getCouponYesNoStatus(resourceInfo, afUserDo);
+			if ("N".equals(status)) {
+			    if (resourceInfo != null) {
+				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+				JSONObject resultJson = JSONObject.parseObject(resultString);
+				String code = resultJson.getString("code");
+		        	 if ("0".equals(code)) {
+				  //发送短信
+	                	  String sendMessage = "";
+	    			   //设置文案
+	    		          String  type = "GG_LIGHT";
+	    			  String  secType = "GG_SMS_NEW";
+	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+	    					if(resourceDo!=null){
+	    					  sendMessage = resourceDo.getValue();
+	    		                	  smsUtil.sendSms(afUserDo.getMobile(),sendMessage);
+	    		                	  logger.info("sentBoluomeCoupon sendSms:", afUserDo.getMobile(),sendMessage);
+	    			     }
+	    					  logger.info("sentBoluomeCoupon success", afUserDo.getMobile());
+	    					  return 0;
+			        }else{
+			            		 logger.info("sentBoluomeCoupon fail", afUserDo.getMobile(),resultString);
+			        }
+			    }
+			 }
+		    
+		   }
+	    }
+	  }
+	    
+	    return -1;
+	}
+    
+    
     // 菠萝觅活动忘记密码获取短信验证码
     @ResponseBody
     @RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
