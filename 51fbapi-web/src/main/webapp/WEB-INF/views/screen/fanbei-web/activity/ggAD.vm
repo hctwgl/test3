@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201710201347")
+    #set($version="201710221347")
     #set($src="http://f.51fanbei.com/h5/app/activity/10")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>

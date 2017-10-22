@@ -41,6 +41,8 @@ $(function () {
     var param = getUrlParam(currentUrl);
     var urlName = param['urlName'];
     var activityId = param['activityId'];
+    var typeFrom=param['typeFrom'];//渠道类型
+    var typeFromNum=param['typeFromNum'];//渠道类型数
     console.log(urlName)
     //用戶名叉叉點擊清楚所有文字
     $('.yhicon').click(function () {
@@ -97,12 +99,12 @@ $(function () {
                     // alert(urlName);
                     console.log(data)
                     if (data.success) {
-                        window.location.href =urlName + "?activityId=" + activityId;
+                        window.location.href =urlName + "?activityId=" + activityId+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
                     } else if (data.url == "DownLoad") {
                         requestMsg(data.msg);
                         //跳转延迟
                         setTimeout(function () {
-                            window.location.href = "ggregister?activityId=" + activityId + "&urlName=" + urlName;
+                            window.location.href = "ggadregister?activityId=" + activityId + "&urlName=" + urlName+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
                         }, 1500);
                     }
                 }
@@ -129,13 +131,14 @@ $(function () {
     //忘记密码
     $("#gg_forget").click(function () {
         // alert(word);
-        window.location.href = "ggADVerify?activityId=" + activityId + "&urlName=" + urlName;
+        window.location.href = "ggADVerify?activityId=" + activityId + "&urlName=" + urlName+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
     });
 })
 //截取字符串方法
 function getUrlParam(url) {
     var param = new Object();
     if (url.indexOf("?") != -1) {
+        var str = url.substr(url.indexOf("?") + 1, url.length);
         var str = url.substr(url.indexOf("?") + 1, url.length);
         var strs = [];
         strs = str.split("&");

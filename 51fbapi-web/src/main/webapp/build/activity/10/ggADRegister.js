@@ -43,6 +43,8 @@ $(function () {
     var activityId=param['activityId'];
     var timerInterval;
     var timerS = 60;
+    var typeFrom=param['typeFrom'];//渠道类型
+    var typeFromNum=param['typeFromNum'];//渠道类型数
 
     $('.yhicon').click(function(){
         $(".yhinp").val('');
@@ -183,19 +185,20 @@ $(function () {
     // 完成注册提交
     $(".loginbtn").click(function () {
         var smsCode = $(".check").val();//获取短信
-        var registerMoblie = $(".mobile").val();//获取手机号
+        var registerMobile = $(".mobile").val();//获取手机号
         var password=$("#password").val();//获取密码
         var yzcheck=$('#yzcheck').val();//获取验证码
-        var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(registerMoblie)); //手机号正则验证11位
+        var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(registerMobile)); //手机号正则验证11位
         var yztrue=(/^\d{6}$/.test(yzcheck));//6位数字正则验证 验证码
         var mmtrue=/^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password);
         var password_md5 = String(CryptoJS.MD5(password));//md5加密
+        console.log(registerMobile)
         if (( (userck) && yztrue&&yzcheck!='')&& ( mmtrue&& password!=undefined)) {
             $.ajax({
-                url: "/H5GGShare/commitBouomeActivityRegister",
+                url: "/H5GGShare/boluomeActivityRegisterLogin",
                 type: 'post',
                 data: {
-                    "registerMobile": registerMoblie,
+                    "registerMobile": registerMobile,
                     "smsCode":smsCode,
                     "password":password_md5,
                     "urlName":urlName,
@@ -203,13 +206,14 @@ $(function () {
                     'activityId':activityId
                 },
                 success: function (returnData) {
+                    console.log(0);
                     console.log(returnData);
                     var a=JSON.parse(returnData);
-                    console.log(a);
                     if (a.success) {
-                         requestMsg("注册成功");
-                         var userName=registerMoblie;
-                        $.ajax({
+                        requestMsg("注册成功");
+                        window.location.href =urlName + "?activityId=" + activityId+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
+                         //var userName=registerMoblie;
+                        /*$.ajax({
                             url: "/H5GGShare/boluomeActivityLogin",
                             type: 'POST',
                             dataType: 'JSON',
@@ -234,8 +238,8 @@ $(function () {
                                     }, 1500);
                                 }
                             }
-                        })
-                    }else if(a.url=="Register"){
+                        })*/
+                    }else{
                         requestMsg(a.msg);
                     }
                 } ,
@@ -256,7 +260,7 @@ $(function () {
 
     //已有账号 立即登录
     $('.goLogin').click(function(){
-        window.location.href ="ggADLogin?activityId="+activityId+"&urlName="+urlName;
+        window.location.href ="ggADLogin?activityId="+activityId+"&urlName="+urlName+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
     })
 });
 

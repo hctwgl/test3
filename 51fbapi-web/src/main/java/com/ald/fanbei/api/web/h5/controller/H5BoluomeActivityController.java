@@ -301,7 +301,7 @@ public class H5BoluomeActivityController extends BaseController {
 	String resultStr = "";
 
 	try {
-	    String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+	    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 	  //  String refUserName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
 	    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
@@ -317,12 +317,12 @@ public class H5BoluomeActivityController extends BaseController {
 //		}
 //	    }
 
-	    AfUserDo eUserDo = afUserService.getUserByUserName(userName);
+	    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
 	    if (eUserDo != null) {
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "Register", null).toString();
 
 	    }
-	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.REGIST.getCode());
+	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
 	    if (smsDo == null) {
 		logger.error("sms record is empty");
 		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "Register", null).toString();
@@ -347,7 +347,7 @@ public class H5BoluomeActivityController extends BaseController {
 
 	    }
 	    try {
-		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), userName, userName, "");
+		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
 	    } catch (Exception e) {
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
@@ -361,8 +361,8 @@ public class H5BoluomeActivityController extends BaseController {
 
 	    AfUserDo userDo = new AfUserDo();
 	    userDo.setSalt(salt);
-	    userDo.setUserName(userName);
-	    userDo.setMobile(userName);
+	    userDo.setUserName(moblie);
+	    userDo.setMobile(moblie);
 	    userDo.setNick("");
 	    userDo.setPassword(password);
 	    userDo.setRecommendId(0l);
@@ -386,9 +386,9 @@ public class H5BoluomeActivityController extends BaseController {
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
 	    // save token to cache
-            String  token1 = UserUtil.generateToken(userName);
-	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + userName;
-	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, userName, Constants.SECOND_OF_HALF_HOUR_INT);
+        String  token1 = UserUtil.generateToken(moblie);
+	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
+	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
 	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
 	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
 	    //进行相应的埋点，送券

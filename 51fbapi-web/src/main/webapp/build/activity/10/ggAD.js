@@ -7,6 +7,15 @@ var index=currentUrl.lastIndexOf('/');
 var urlName=currentUrl.slice(index+1);
 urlName=urlName.replace(/\?/g,'&');
 var num;//卡片数量
+var typeFrom=getUrl("typeFrom");//渠道类型
+var typeFromNum=getUrl("typeFromNum");//渠道类型数
+$(function(){
+    if(typeFrom=='Jrtt'||typeFrom=='Jmtt'){
+        $('.companyWord02').show();
+    }else{
+        $('.companyWord01').show();
+    }
+});
 //获取数据
 let vm = new Vue({
     el: '#ggAD',

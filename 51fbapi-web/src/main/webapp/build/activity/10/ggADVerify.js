@@ -43,6 +43,8 @@ $(function () {
     var param = getUrlParam(currentUrl);
     var urlName = param['urlName'];
     var activityId = param['activityId'];
+    var typeFrom=param['typeFrom'];//渠道类型
+    var typeFromNum=param['typeFromNum'];//渠道类型数
     //倒计时
     var timerInterval;
     var timerS = 60;
@@ -186,7 +188,7 @@ $(function () {
                     return false;
                 }
                 localStorage.setItem("mesg", mesg); //将短信验证码存储到本地
-                window.location.href= "ggADForgetP?urlName="+urlName+"&activityId="+activityId;
+                window.location.href= "ggADForgetP?urlName="+urlName+"&activityId="+activityId+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
             },
             error: function () {
                 requestMsg("请求失败")

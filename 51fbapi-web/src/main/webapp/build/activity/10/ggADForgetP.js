@@ -5,6 +5,8 @@ $(function(){
         var param = getUrlParam(currentUrl);
         var urlName = param['urlName'];
         var activityId = param['activityId'];
+        var typeFrom=param['typeFrom'];//渠道类型
+        var typeFromNum=param['typeFromNum'];//渠道类型数
         var number=localStorage.getItem('user');//接收上个页面的手机号
         var mesg=localStorage.getItem('mesg');//接收上个页面的短信验证  
         //   var password = $(".blank-in").val();//获取登录密码
@@ -30,7 +32,7 @@ $(function(){
                             success: function (data) {
                                 console.log(data)
                                 if(data.success){
-                                    window.location.href ="ggADLogin?urlName="+urlName+"&activityId="+activityId;
+                                    window.location.href ="ggADLogin?urlName="+urlName+"&activityId="+activityId+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
                                 }else{
                                     requestMsg(data.msg);
                                 }
