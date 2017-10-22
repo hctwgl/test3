@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>忘记密码</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/10/ggADForgetP.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/10/ggADForgetP.css?$version">
 </head>
 <body>
     <div id="lock">
