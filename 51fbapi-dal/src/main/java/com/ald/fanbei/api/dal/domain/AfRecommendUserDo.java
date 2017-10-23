@@ -66,6 +66,58 @@ public class AfRecommendUserDo extends AbstractSerial {
      */
     private Date gmtModified;
 
+    /**
+     * 颜色加重 前台展示用的
+     */
+    private String color;
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    /**
+     * 状态 前台展示用的
+     */
+    private String status;
+
+    /**
+     * 注册时间 前台展示用的
+     */
+    private String createTime;
+
+    /**
+     * userName 手机号码 前台展示用的
+     */
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
     public int getId() {
         return id;
@@ -75,9 +127,7 @@ public class AfRecommendUserDo extends AbstractSerial {
         this.id = id;
     }
 
-    public Long getUser_id() {
-        return userId;
-    }
+
 
     public void setUser_id(Long user_id) {
         this.userId = user_id;
@@ -161,5 +211,13 @@ public class AfRecommendUserDo extends AbstractSerial {
 
     public void setGmt_modified(Date gmt_modified) {
         this.gmtModified = gmt_modified;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

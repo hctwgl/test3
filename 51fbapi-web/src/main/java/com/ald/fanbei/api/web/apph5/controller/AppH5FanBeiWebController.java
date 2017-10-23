@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -101,6 +102,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
 	@Resource
 	AfOrderLogisticsService afOrderLogisticsService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	/**
 	 * 首页弹窗页面
 	 * @param request
@@ -329,7 +332,9 @@ public class AppH5FanBeiWebController extends BaseController {
 			else if (!"0".equals(code)) {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			} 
-			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+			  //存入缓存
+		  bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.SECOND_OF_ONE_MONTH);
+		return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
@@ -350,8 +355,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	@RequestMapping(value = "/getBrandUrlV1", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String getBrandUrlV1(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
+
 			Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
-			//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 			FanbeiWebContext context = doWebCheck(request, true);
 		
 			if (context.isLogin()) {
@@ -374,7 +379,7 @@ public class AppH5FanBeiWebController extends BaseController {
 							.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
 							.toString();
 				}
-				String shopUrl = shopInfo.getShopUrl() + "?";
+				String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl().trim());
 				
 				buildParams.put(BoluomeCore.CUSTOMER_USER_ID, afUserDo.getRid() + StringUtil.EMPTY);
 				buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, afUserDo.getMobile());
@@ -383,7 +388,7 @@ public class AppH5FanBeiWebController extends BaseController {
 				String sign =  BoluomeCore.buildSignStr(buildParams);
 				buildParams.put(BoluomeCore.SIGN, sign);
 				String paramsStr = BoluomeCore.createLinkString(buildParams);
-				
+				logger.info("getBrandUrlV1"+shopUrl+paramsStr);
 				return H5CommonResponse.getNewInstance(true, "成功", shopUrl + paramsStr, null).toString();
 			} else {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
@@ -402,7 +407,15 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
-	
+	  //根据测试，线上环境区别地址
+	  private String parseBoluomeUrl(String baseUrl) {
+	    String type = baseUrl.substring(baseUrl.lastIndexOf("/") + 1, baseUrl.length());
+	     if ("didi".equals(type)) {
+	      type = "yongche/" + type;
+	     }
+	    return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/"+ type + "?";
+	  }
+
 	@ResponseBody
 	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickBoluomeCoupon(HttpServletRequest request, ModelMap model) throws IOException {

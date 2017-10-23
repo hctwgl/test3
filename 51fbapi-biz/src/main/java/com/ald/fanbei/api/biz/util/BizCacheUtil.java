@@ -37,7 +37,8 @@ public class BizCacheUtil extends AbstractThird {
 
 	@Resource
 	private RedisTemplate<String, Object> redisTemplate;
-
+	@Resource(name = "redisIntegerTemplate")
+	private RedisTemplate<String,Integer> redisIntegerTemplate;
 	@Resource(name = "redisTemplate")
 	private SetOperations<String, Object> setOps;
 	
@@ -55,7 +56,7 @@ public class BizCacheUtil extends AbstractThird {
 	public void saveObject(final String key, final Serializable seriObj) {
 		this.saveObject(key, seriObj, Constants.SECOND_OF_TEN_MINITS);
 	}
-
+	
 	/**
 	 * 保存到缓存，并设定过期时间
 	 * 
@@ -83,7 +84,21 @@ public class BizCacheUtil extends AbstractThird {
 			logger.error("saveObject", e);
 		}
 	}
-
+	
+	/**
+	 * 执行jedis的incr命令
+	 * 
+	 * **/
+	public long incr(final String key){
+		try {
+			Long r = redisIntegerTemplate.opsForValue().increment(key, 1);
+			return r;
+		} catch (Exception e) {
+			logger.error("decr", e);
+		}
+		return 0l;
+	}
+	
 	public void saveObjectForever(final String key, final Serializable seriObj) {
 		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || seriObj == null) {
 			return;

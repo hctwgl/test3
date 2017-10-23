@@ -98,6 +98,13 @@ public class GetBorrowCashHomeInfoApi extends GetBorrowCashBase implements ApiHa
 		BigDecimal nums = new BigDecimal((String) rate.get("nums")) ;
 		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
 		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if(null != isWorm){
+			data.put("isWorm",isWorm.getValue());
+		}else{
+			data.put("isWorm",0);
+		}
 		resp.setResponseData(data);
 		return resp;
 	}

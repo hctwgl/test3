@@ -40,12 +40,16 @@ $(function () {
     var currentUrl = window.location.href;
     var param = getUrlParam(currentUrl);
     var word = param['word'];
-    var urlName = param['urlName'];
+    var urlName = param['urlName'];//邀请者用户名
     var userName = param['userName'];
+    var refUserName = param['userName'];
     var activityId = param['activityId'];
     var userItemsId = param['userItemsId'];
     var itemsId = param['itemsId'];
     var loginSource = param['loginSource'];
+    console.log(activityId);
+    //console.log(refUserName);
+    console.log(currentUrl)
 
     var timerInterval;
     var timerS = 60;
@@ -79,16 +83,6 @@ $(function () {
         // console.log( $("#mobile").val());
         // $('.mmicon').css("display","none");
     });
-
-
-    /* 
-    $("#mobile").keyup(function(){
-    if($("#mobile").val()==''){
-        $('.mmicon').css("display","none");
-    }else{
-        $('.mmicon').css("display","block");
-    }
-    }); */
 
     function timeFunction() { // 60s倒计时
         timerS--;
@@ -224,7 +218,9 @@ $(function () {
                     "smsCode":smsCode,
                     "password":password_md5,
                     "urlName":urlName,
-                    token:token
+                    token:token,
+                    'activityId':activityId,
+                    'refUserName':refUserName
                 },
                 success: function (returnData) {
                     console.log(returnData);

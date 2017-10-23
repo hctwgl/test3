@@ -7,7 +7,9 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -35,6 +37,9 @@ public interface AfBorrowBillService {
 	 */
 	BigDecimal getMonthlyBillByStatus(Long userId, int billYear, int billMonth, String status);
 
+	BigDecimal getMonthlyBillByStatusNew(Long userId, int billYear, int billMonth, String status);
+
+	BigDecimal getMonthlyBillByStatusNewV1(Long userId, String status);
 	/**
 	 * 用户全部账单
 	 */
@@ -195,5 +200,23 @@ public interface AfBorrowBillService {
 	List<HashMap> getBorrowBillNoPaySumByUserId( long userId);
 
 	AfBorrowBillDo getTotalMonthlyBillByIds(@Param("userId") Long userId,@Param("ids") List<Long > ids );
+	/**
+	 * 根据billId查询数据，消费分期推送风控使用
+	 * @author yuyue
+	 * @Time 2017年10月10日 下午4:45:04
+	 * @param billIds
+	 * @return
+	 */
+	List<AfOverdueOrderDto> getOverdueDataToRiskByBillIds(List<Long> billIds);
+
+	/**
+	 * 根据userId查询数据，消费分期推送风控使用
+	 * @author yuyue
+	 * @Time 2017年10月10日 下午4:45:07
+	 * @param consumerNo
+	 * @return
+	 */
+	List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(Long consumerNo);
+	
 	
 }

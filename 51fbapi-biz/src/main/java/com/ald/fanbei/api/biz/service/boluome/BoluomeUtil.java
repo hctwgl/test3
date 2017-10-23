@@ -32,6 +32,7 @@ import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -76,6 +77,8 @@ public class BoluomeUtil extends AbstractThird{
 	GeneratorClusterNo generatorClusterNo;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	@Resource
 	AfResourceService afResourceService;
@@ -390,6 +393,7 @@ public class BoluomeUtil extends AbstractThird{
 	 * @param type 优惠券类型，1可使用，2未使用，3已过期
 	 * @return
 	 */
+	
 	public boolean isUserHasCoupon(String url, Long userId, Integer type) {
 		Map<String, String> map = parseAppIdAndCampaignId(url);
 		if (map == null) {
@@ -420,7 +424,21 @@ public class BoluomeUtil extends AbstractThird{
 		} while ((nextPageNo = getNextPageNo(userId, type, nextPageNo, BoluomeCore.DEALFT_PAGE_SIZE)) > 0);
 		return constains;
 	}
-	
+	/**
+	 * 逛逛点亮活动
+	 * @param resourceId
+	 * @param userName
+	 * @return
+	 */
+	public boolean isHasCoupon(String resourceId ,String userName ){
+		boolean result = false;
+		Object resultObj = bizCacheUtil.getObject("boluome:coupon:"+resourceId+userName);
+		if (resultObj != null ) {
+			result = true;
+		}
+
+		return result;
+	}
 	
 		
 	/**

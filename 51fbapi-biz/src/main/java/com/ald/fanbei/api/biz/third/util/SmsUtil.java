@@ -166,7 +166,7 @@ public class SmsUtil extends AbstractThird {
         if (StringUtil.isBlank(content)) {
             content = IPHONE_RESERVATION_SUCCESS;
         }
-        SmsResult smsResult = sendMarketingSmsToDhst(mobile, content);
+        SmsResult smsResult = sendSmsToDhst(mobile, content);
         return smsResult.isSucc();
     }
 

@@ -5,6 +5,7 @@ import java.util.Map;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 /**
  * '第三方-上树请求记录Service
@@ -17,4 +18,5 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 public interface AfBoluomeActivityService extends ParentService<AfBoluomeActivityDo, Long>{
     int ggLightActivity(final AfOrderDo afOrder);
     Map<String, String> activityOffical(Long userId);
+    int sentNewUserBoluomeCoupon(AfUserDo afUserDo);
 }

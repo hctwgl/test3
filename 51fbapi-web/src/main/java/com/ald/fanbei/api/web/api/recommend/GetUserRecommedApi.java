@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
@@ -124,7 +125,9 @@ public class GetUserRecommedApi implements ApiHandle {
         } catch (Exception e) {
 
         }
-        return resp;
+        //return resp;
+        ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ACTIVE_CLOSE);
+        return  resp1;
     }
 
 

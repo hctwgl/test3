@@ -190,4 +190,6 @@ public interface AfBorrowCashDao {
 	 * @return
 	 * **/
 	int updateAfBorrowCashService(AfBorrowCashDo afBorrowCashDo);
+
+	AfBorrowCashDo getBorrowCash(@Param("userId") long userId);
 }

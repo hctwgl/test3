@@ -21,8 +21,8 @@
                 <p class="joinAmount"><span class="join"></span>人参与</p>
             </div>
             <div class="money">
-                <p><i class="friend">你的好友</i>正在51返呗收集卡片</p>
-                <p>向你要<span class="demand">饿了么卡</span><!--<span class="combo">!--></span></p>
+                <p><i class="friend">您的好友</i>正在51返呗收集卡片</p>
+                <p>向您要<span class="combo"></span><span class="miss">卡</span></p>
             </div>
             <div class="super-big">
                  <div class="banner">
@@ -32,7 +32,7 @@
             </div>
             <div class="send">
                 <div class="presentCard ask">赠送好友</div>
-                <div class="demandCard ask">我也要点亮</div>
+                <div class="demandCard ask">我也要集卡</div>
             </div>
         </div>
         <!--<div class="presents-bottom clearFix">
@@ -49,7 +49,7 @@
                     <span>每个场景完成1笔订单，且消费<br/>满足限制条件时，均可得到1张<br/>该场景的专属卡片，更有高额返<br/>利（<i class="cost">消费可选选择直接支付或分<i><br/></i class="cost">期</i>）</span>
                 </p>
                 <p class="word-two">
-                    <span>向好友索要、与好友互换，即可<br/>获取不同种类的专属卡片；分享<br/>后，好友消费后更有同等返利给<br/>到你</span>
+                    <span>向好友索要、与好友互换，即可<br/>获取不同种类的专属卡片；分享<br/>后，好友消费后更有同等返利给<br/>到您</span>
                 </p>
                 <p class="word-three">
                     <span>集齐全部专属卡片，即可领取<br/>终极大奖51元现金红包</span>

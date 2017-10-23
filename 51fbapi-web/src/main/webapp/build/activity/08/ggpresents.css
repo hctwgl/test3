@@ -1,4 +1,4 @@
-@url: "https://f.51fanbei.com/h5/app/activity/08";
+@url: "http://f.51fanbei.com/h5/app/activity/08";
 .clearFix:after {
     display: block;
     clear: both;
@@ -94,6 +94,11 @@ body {
     left: 50%;
     width: 6rem;
     transform: translateX(-50%);
+    transform: translateX(-50%);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 5rem;
 }
 
 .money p:nth-child(2) {
@@ -104,7 +109,6 @@ body {
 
 .money p:nth-child(2) span {
     color: #f2404d;
-    margin-right: 0.1rem;
 }
 .super-big{
     position: relative;
