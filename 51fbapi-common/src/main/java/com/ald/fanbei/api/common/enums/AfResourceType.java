@@ -20,6 +20,7 @@ public enum AfResourceType {
 	HomeTabbar("HOME_TABBAR", "首页tabbar"),
 	HomeNavigationUpOne("HOME_NAVIGATION_UP","快捷导航上方活动专场"),
 	HomeNavigationDownTwo("HOME_NAVIGATION_DOWN","快捷导航下方活动专场"),
+	NewHomeCarouseToMany("NewHomeCarouseToMany","显示双十一东西"),
 
 	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
@@ -69,6 +70,8 @@ public enum AfResourceType {
 	GGTopBanner("GG_TOP_BANNER","逛逛活动点亮顶部轮播"),
 	HomeCarouseToMany("HOME_CAROUSEL_TO_MANY","首页轮播+N"),
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
+	MANY_PICUTRES("MANY_PICUTRES","N-3/6/9运营位"),
+
 
 	SelfSupportGoods("SELFSUPPORT_GOODS", "自营商品相关配置"),
 	

@@ -459,6 +459,14 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 
+	public List<AfResourceDo> getManyPricutresResourceDoList(String type) {
+		List<AfResourceDo> list;
+
+		list = afResourceDao.getManyPricutresResourceDoList(type);
+
+		return list;
+	}
+
 	@Override
 	public List<AfResourceDo> getConfigsByTypesAndSecType(String type, String secType) {
 		// TODO Auto-generated method stub
