@@ -1,0 +1,62 @@
+package com.ald.fanbei.api.web.apph5.controller;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+/**
+ * 
+ * <p>
+ * Title:AppH5CutPriceController
+ * <p>
+ * <p>
+ * Description:
+ * <p>
+ * 
+ * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
+ * @author qiao
+ * @date 2017-10-23 11:42:07
+ *
+ */
+@RestController("/activity/de")
+public class AppH5CutPriceController extends BaseController{
+
+	@Override
+	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+		try {
+			RequestDataVo reqVo = new RequestDataVo();
+
+			JSONObject jsonObj = JSON.parseObject(requestData);
+			reqVo.setId(jsonObj.getString("id"));
+			reqVo.setMethod(request.getRequestURI());
+			reqVo.setSystem(jsonObj);
+
+			return reqVo;
+		} catch (Exception e) {
+			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
+	}
+
+	@Override
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+			HttpServletRequest httpServletRequest) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}
