@@ -79,6 +79,7 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	AfUserToutiaoService afUserToutiaoService;
 
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		String SUCC = "1";
@@ -119,7 +120,7 @@ public class LoginApi implements ApiHandle {
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
 		loginDo.setUuid(uuid);
-		ToutiaoAdActive(requestDataVo,context);
+		ToutiaoAdActive(requestDataVo,context,afUserDo);
 		// check login failed count,if count greater than 5,lock specify hours
 		AfResourceDo lockHourResource = afResourceService
 				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
@@ -227,7 +228,6 @@ public class LoginApi implements ApiHandle {
 			jo.put("borrowed", "N");
 		}
 		
-		
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {
 			if (StringUtils.isBlank(blackBox)) {
@@ -254,7 +254,7 @@ public class LoginApi implements ApiHandle {
 		return resp;
 	}
 
-	private void ToutiaoAdActive(RequestDataVo requestDataVo, FanbeiContext context) {
+	private void ToutiaoAdActive(RequestDataVo requestDataVo, FanbeiContext context, AfUserDo afUserDo) {
 		try {
 			String imei = ObjectUtils.toString(requestDataVo.getParams().get("IMEI"), null);
 			String androidId = ObjectUtils.toString(requestDataVo.getParams().get("AndroidID"), null);
@@ -267,12 +267,22 @@ public class LoginApi implements ApiHandle {
 			if(StringUtils.isNotBlank(imei)||StringUtils.isNotBlank(androidId)||StringUtils.isNotBlank(idfa)){
 				AfUserToutiaoDo tdo = afUserToutiaoService.getUserActive(imeiMd5,androidId,idfa);
 				if(tdo!=null){
-					Long rid = tdo.getRid();
-					Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
-					afUserToutiaoService.uptUserActive(rid,userIdToutiao);
-					String callbackUrl = tdo.getCallbackUrl();
-					String result= HttpUtil.doGet(callbackUrl,20);
-					logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
+					Date tdate = tdo.getGmtModified();
+					Date udate = afUserDo.getGmtCreate();
+					if(tdate.getTime()<udate.getTime()){
+						String callbackUrl = tdo.getCallbackUrl();
+						if(callbackUrl.indexOf("&event_type")==-1){
+							callbackUrl+="&event_type=1";
+						}
+						String result= HttpUtil.doGet(callbackUrl,20);
+						if(result.indexOf("success")>-1){
+							Long rid = tdo.getRid();
+							Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
+							String userNameToutiao = context.getUserName()==null?"":context.getUserName();
+							afUserToutiaoService.uptUserActive(rid,userIdToutiao,userNameToutiao);
+						}
+						logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
+					}
 				}
 			}
 		}catch (Exception e){

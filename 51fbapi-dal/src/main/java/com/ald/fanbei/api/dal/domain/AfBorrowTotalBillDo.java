@@ -23,6 +23,8 @@ public class AfBorrowTotalBillDo extends AbstractSerial{
 	private Integer billMonth;
 	private BigDecimal billAmount;
 	private String status;
+	private Date gmtOutDay;
+	private Date gmtPayTime;
 	public Long getRid() {
 		return rid;
 	}
@@ -71,5 +73,20 @@ public class AfBorrowTotalBillDo extends AbstractSerial{
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
+	public Date getGmtOutDay() {
+		return gmtOutDay;
+	}
+
+	public void setGmtOutDay(Date gmtOutDay) {
+		this.gmtOutDay = gmtOutDay;
+	}
+
+	public Date getGmtPayTime() {
+		return gmtPayTime;
+	}
+
+	public void setGmtPayTime(Date gmtPayTime) {
+		this.gmtPayTime = gmtPayTime;
+	}
 }

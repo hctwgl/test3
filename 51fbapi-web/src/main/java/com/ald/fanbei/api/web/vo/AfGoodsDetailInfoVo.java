@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.vo;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 
@@ -28,7 +29,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private List<GoodsDetailPicInfoVo> goodsDetail;
 	private Integer saleCount;
 	private List<String> goodsPics;
-	
+	private Map<String,Object> nperMap;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -107,6 +108,12 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	}
 	public void setGoodsDetail(List<GoodsDetailPicInfoVo> goodsDetail) {
 		this.goodsDetail = goodsDetail;
+	}
+	public Map<String, Object> getNperMap() {
+		return nperMap;
+	}
+	public void setNperMap(Map<String, Object> nperMap) {
+		this.nperMap = nperMap;
 	}
 	
 }

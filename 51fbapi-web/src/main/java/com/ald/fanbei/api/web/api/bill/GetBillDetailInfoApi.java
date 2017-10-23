@@ -3,13 +3,12 @@ package com.ald.fanbei.api.web.api.bill;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
@@ -45,7 +44,10 @@ public class GetBillDetailInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfOrderService afOrderService;
-	
+
+	@Resource
+	AfResourceService afResourceService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -56,6 +58,14 @@ public class GetBillDetailInfoApi implements ApiHandle{
 			throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
 		}
 		AfBillDetailInfoVo billVo = getBorrowBillVo(billDto);
+
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if(null != isWorm){
+			resp.addResponseData("isWorm",isWorm.getValue());
+		}else{
+			resp.addResponseData("isWorm",0);
+		}
 		resp.setResponseData(billVo);
 		return resp;
 	}
@@ -101,7 +111,8 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		vo.setOverdueAmount(billDto.getOverdueInterestAmount());
 		vo.setPoundageAmount(billDto.getPoundageAmount());
 		vo.setOverduePoundageAmount(billDto.getOverduePoundageAmount());
-		vo.setRefundDate(afBorrowService.getReyLimitDate(billDto.getBillYear(),billDto.getBillMonth()));
+		//vo.setRefundDate(afBorrowService.getReyLimitDate(billDto.getBillYear(),billDto.getBillMonth()));
+		vo.setRefundDate(billDto.getGmtPayTime());
 		return vo;
 	}
 }

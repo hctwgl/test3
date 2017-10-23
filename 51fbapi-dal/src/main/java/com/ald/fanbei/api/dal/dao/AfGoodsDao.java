@@ -69,4 +69,13 @@ public interface AfGoodsDao {
 	 * @return
 	 */
 	int updateSelfSupportGoods(@Param("rid")Long rid,@Param("addSaleCount")Integer addSaleCount);
+
+	/**
+	 * 根据numId查询是否有自建商品
+	 * @author yuyue
+	 * @Time 2017年9月12日 下午6:47:44
+	 * @param numId
+	 * @return
+	 */
+	AfGoodsDo checkIsSelfBuild(String numId);
 }

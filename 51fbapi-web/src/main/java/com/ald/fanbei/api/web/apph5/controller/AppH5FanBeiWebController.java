@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.service.*;
 
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -52,14 +54,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -82,7 +76,8 @@ public class AppH5FanBeiWebController extends BaseController {
 
 	@Resource
 	AfUserDao afUserDao;
-
+	@Resource
+	AfPopupsService afPopupsService;
 	@Resource
 	AfCouponService afCouponService;
 	@Resource
@@ -107,6 +102,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	AfBusinessAccessRecordsService afBusinessAccessRecordsService;
 	@Resource
 	AfOrderLogisticsService afOrderLogisticsService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	/**
 	 * 首页弹窗页面
 	 * @param request
@@ -335,7 +332,9 @@ public class AppH5FanBeiWebController extends BaseController {
 			else if (!"0".equals(code)) {
 				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
 			} 
-			return H5CommonResponse.getNewInstance(true, "恭喜你领券成功").toString();
+			  //存入缓存
+		  bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.SECOND_OF_ONE_MONTH);
+		return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
 
 		} catch (Exception e) {
 			logger.error("pick brand coupon failed , e = {}", e.getMessage());
@@ -356,8 +355,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	@RequestMapping(value = "/getBrandUrlV1", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String getBrandUrlV1(HttpServletRequest request, ModelMap model) throws IOException {
 		try {
+
 			Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
-			//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 			FanbeiWebContext context = doWebCheck(request, true);
 		
 			if (context.isLogin()) {
@@ -380,7 +379,7 @@ public class AppH5FanBeiWebController extends BaseController {
 							.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
 							.toString();
 				}
-				String shopUrl = shopInfo.getShopUrl() + "?";
+				String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl().trim());
 				
 				buildParams.put(BoluomeCore.CUSTOMER_USER_ID, afUserDo.getRid() + StringUtil.EMPTY);
 				buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, afUserDo.getMobile());
@@ -389,7 +388,7 @@ public class AppH5FanBeiWebController extends BaseController {
 				String sign =  BoluomeCore.buildSignStr(buildParams);
 				buildParams.put(BoluomeCore.SIGN, sign);
 				String paramsStr = BoluomeCore.createLinkString(buildParams);
-				
+				logger.info("getBrandUrlV1"+shopUrl+paramsStr);
 				return H5CommonResponse.getNewInstance(true, "成功", shopUrl + paramsStr, null).toString();
 			} else {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
@@ -408,7 +407,15 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
-	
+	  //根据测试，线上环境区别地址
+	  private String parseBoluomeUrl(String baseUrl) {
+	    String type = baseUrl.substring(baseUrl.lastIndexOf("/") + 1, baseUrl.length());
+	     if ("didi".equals(type)) {
+	      type = "yongche/" + type;
+	     }
+	    return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/"+ type + "?";
+	  }
+
 	@ResponseBody
 	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String pickBoluomeCoupon(HttpServletRequest request, ModelMap model) throws IOException {
@@ -980,6 +987,33 @@ public class AppH5FanBeiWebController extends BaseController {
 					model.put("redirectUrl", accessUrl);
 				}else{
 					logger.error("贷款超市app点击banner请求发起异常-贷款超市不存在或跳转链接为空，lsmNo："+lsmNo+"-userId:"+afUserDo.getRid());
+					model.put("redirectUrl", "/static/error404.html");
+				}
+			}else if(ThirdPartyLinkType.HOME_POPUP_WND.getCode().equals(linkType)){
+				context = doWebCheckNoAjax(request, true);
+				AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+				String id = request.getParameter("popupsId");
+				AfPopupsDo afPopupsDo = afPopupsService.selectPopups(Long.valueOf(id).longValue());
+				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+					String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+					String channel = getChannel(sysModeId);
+					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
+					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
+					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
+					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));
+					afBusinessAccessRecordsDo.setRefType(AfBusinessAccessRecordsRefType.LOANSUPERMARKET_BANNER.getCode());
+					afBusinessAccessRecordsDo.setRefId(afPopupsDo.getId());
+					afBusinessAccessRecordsDo.setExtraInfo(extraInfo);
+					afBusinessAccessRecordsDo.setRemark(ThirdPartyLinkType.HOME_POPUP_WND.getCode());
+					afBusinessAccessRecordsDo.setChannel(channel);
+					afBusinessAccessRecordsDo.setRedirectUrl(afPopupsDo.getUrl());
+					afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
+					int count = afPopupsDo.getClickAmount()+1;
+					afPopupsDo.setClickAmount(count);
+					afPopupsService.updatePopups(afPopupsDo);
+					model.put("redirectUrl", afPopupsDo.getUrl());
+				}else{
+					logger.error("首页极光推送跳转失败，popupsId："+id+"-userId:"+afUserDo.getRid());
 					model.put("redirectUrl", "/static/error404.html");
 				}
 			}else if(ThirdPartyLinkType.H5_LOAN_BANNER.getCode().equals(linkType)||ThirdPartyLinkType.H5_LOAN_LIST.getCode().equals(linkType)){ //h5端借贷超市

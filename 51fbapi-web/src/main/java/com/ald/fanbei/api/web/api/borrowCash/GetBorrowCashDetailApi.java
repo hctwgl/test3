@@ -21,6 +21,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -157,7 +158,13 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 
 		data.put("overdueDay", afBorrowCashDo.getOverdueDay());
 		data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
-		data.put("overdueStatus", afBorrowCashDo.getOverdueStatus());
+		//overdueStatus处理，根据预计还款时间来做，主要用于前端app展示
+		if(DateUtil.afterDay(afBorrowCashDo.getGmtPlanRepayment(), new Date())){
+			data.put("overdueStatus", YesNoStatus.NO.getCode());
+		}else{
+			data.put("overdueStatus", YesNoStatus.YES.getCode());
+		}
+		
 		data.put("rid", afBorrowCashDo.getRid());
 		data.put("renewalNum", afBorrowCashDo.getRenewalNum());
 		

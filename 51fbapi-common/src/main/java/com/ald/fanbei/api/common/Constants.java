@@ -62,6 +62,8 @@ public class Constants {
 	public static final String SEMICOLON = ";";
 	public static final String DEFAULT_YEAR = "year";
 	public static final String DEFAULT_MONTH = "month";
+	public static final String OUT_DATETIME = "outdatetime";
+	public static final String PAY_DATETIME = "paydatetime";
 	public static final String DEFAULT_NPER = "nper";
 	public static final String DEFAULT_RATE = "rate";
 	/**免息期数json key**/
@@ -128,7 +130,8 @@ public class Constants {
 	public static final String CACHEKEY_USER_LOGIN_WIFI_MAC = "login_wifi_mac$";
 	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
 	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
-	
+    public static final String CACHEKEY_CHANGE_MOBILE = "change_mobile";
+
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
 	public static final String BOLUOME_LOGIN_ERROR_TIMES  = "boluome_login_error_times$";
@@ -236,7 +239,7 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_LIANMENG_SECRET = "fbapi.taobao.lianmeng.secret";
 	public static final String CONFKEY_SMS_DHST_PASSWORD = "fbapi.sms.dhst.password";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET_FIELDS = "taobao.tbk.item.get.fields";
-	public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
+    public static final String CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS = "taobao.tbk.shop.get.fields";
 	public static final String CONFKEY_TAOBAO_TBK_ITEM_GET = "taobao.tbk.item.info.get";
 
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS = "taobao.tae.item.list.fields";
@@ -267,6 +270,14 @@ public class Constants {
 	public static final String CACHEKEY_ORDER_PAY_NO_LOCK = "ala_order_pay_no_lock";
 	public static final String CACHEKEY_ORDER_PAY_NO = "ala_order_pay_no";
 
+	//redis -- key
+	public static final String RESERVATION_IPHONEX_RESERVATION_COUNT="reservation_count";
+	public static final String RESERVATION_IPHONEX_COUPON1_COUNT="coupon1_count_";
+	public static final String RESERVATION_IPHONEX_COUPON2_COUNT="coupon2_count_";
+	public static final String RESERVATION_IPHONEX_COUPON3_COUNT="coupon3_count_";
+	public static final String RESERVATION_IPHONEX_COUPON_STATUS="coupon_status_";
+	public static final String RESERVATION_IPHONEX_COUPON_ID="coupon_id";
+	public static final String RESERVATION_IPHONEX_SUM_COUNT="sum_coupon_count_";
 	// 发送邮箱
 	public static final String EMAIL_SEND_USERNAME = "fbapi.email.username";
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
@@ -368,5 +379,10 @@ public class Constants {
 	public static final String UNIONLOGIN_XJCR_SECRET = "fbapi.unionlogin.xjcr.secret";
 	//联合登陆相关 借点钱
 	public static final String UNIONLOGIN_JDQ_SECRET = "fbapi.unionlogin.jdq.secret";
+
+	//第三方自建开关_是否是爬取商品
+	public static final String THIRD_GOODS_TYPE = "third_goods";
+
+	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
 
 }

@@ -670,6 +670,58 @@
 		order by gmt_create desc
 	</select>
 	
+	<select id="getOrderCountByStatusAndUserId" resultType="java.lang.Integer" parameterType="AfOrderDo">
+		SELECT
+			count(0)
+		FROM
+			af_order
+		WHERE
+			is_delete=0 and user_id = #{userId} 
+		<if test="orderStatus == 'WC'" >
+			and (status = 'NEW' or status = 'PAID')
+		</if>
+		<if test="orderStatus == 'WR'">
+			and status = 'FINISHED'
+		</if>
+		<if test="orderStatus == 'AR'">
+			and status = 'REBATED'
+		</if>
+		<if test="orderStatus == 'NEW'">
+			and status in('NEW','PAYFAIL')
+		</if>
+		<if test="orderStatus == 'DEALING'">
+			and status = 'DEALING'
+		</if>
+		<if test="orderStatus == 'TOREVIEW'">
+			and status = 'PAID' and order_type='AGENTBUY'
+		</if>
+		<if test="orderStatus == 'REVIEWING'">
+			and status = 'REVIEW' and order_type='AGENTBUY'
+		</if>
+		<if test="orderStatus == 'TODELIVER'">
+			and (( status = 'PAID' and order_type!='AGENTBUY' ) or status = 'AGENCYCOMPLETED')
+		</if>
+		<if test="orderStatus == 'DELIVERED'">
+			and status = 'DELIVERED'
+		</if>
+		<if test="orderStatus == 'TOREBATE'">
+			and status = 'FINISHED' and rebate_amount <![CDATA[ > ]]> 0
+		</if>
+		<if test="orderStatus == 'FINISHED'">
+			and ((status = 'FINISHED' and rebate_amount <![CDATA[ = ]]> 0) or status = 'REBATED')
+		</if>
+		<if test="orderStatus == 'CLOSED'">
+			and status = 'CLOSED'
+		</if>
+		<if test="orderStatus == 'WAIT_REFUND'">
+			and status = 'WAIT_REFUND'
+		</if>
+		<if test="orderStatus == 'DEAL_REFUNDING'">
+			and status = 'DEAL_REFUNDING'
+		</if>
+		
+	</select>
+	
 	<update id="updateOrder" parameterType="AfOrderDo" >
 		UPDATE 
 			af_order 
@@ -913,5 +965,12 @@
  	 		goods_id=#{goodsId}
  	 	AND
  	 		user_id=#{userId}
+	</select>
+
+
+
+	<select id="getOrderByTimeAndType" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryFields"/> FROM af_order WHERE is_delete = 0 AND gmt_create &gt;=#{startTime} and gmt_create &lt;=#{endTime}
 	</select>
 </mapper>

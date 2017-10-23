@@ -56,7 +56,17 @@ import java.util.Date;
      * 备注说明
      */
     private String remark;
-    
+
+    private String redirectUrl;
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
     /**
      * 渠道
      * www ：来自 app

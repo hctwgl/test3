@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 
 /**
@@ -62,6 +65,10 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	public BigDecimal getMonthlyBillByStatus(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth, @Param("status") String status);
+
+	BigDecimal getMonthlyBillByStatusNew(@Param("userId") Long userId, @Param("billYear") int billYear, @Param("billMonth") int billMonth, @Param("status") String status);
+
+	BigDecimal getMonthlyBillByStatusNewV1(@Param("userId") Long userId,  @Param("status") String status);
 
 	/**
 	 * 获取用户全部账单
@@ -258,4 +265,44 @@ public interface AfBorrowBillDao {
 	AfBorrowBillDo getTotalMonthlyBillByIds(@Param("userId") Long userId,@Param("ids") List<Long > ids );
 
 	List<AfBorrowBillDo> getBorrowBillListY(@Param("userId") Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
+
+	AfBorrowBillDo getLastOutBill(@Param("userId")Long userId);
+
+	AfBorrowTotalBillDo getBorrowBillTotalNow(@Param("userId")Long userId,@Param("billYear") Integer billYear,@Param("billMonth") Integer billMonth);
+	/**
+	 * 查询消费分期逾期order数据，消费分期推送风控使用
+	 * @author yuyue
+	 * @Time 2017年10月10日 下午4:58:52
+	 * @param billIds
+	 * @return
+	 */
+	List<AfOverdueOrderDto> getOverdueDataToRiskByBillIds(@Param("items")List<Long> billIds);
+
+	/**
+	 * 查询消费分期逾期bill数据，消费分期推送风控使用
+	 * @author yuyue
+	 * @Time 2017年10月10日 下午4:59:37
+	 * @param billIds
+	 * @param orderId
+	 * @return
+	 */
+	List<AfOverdueBillDto> getAfOverdueBillDtoByBillIds(@Param("items")List<Long> billIds, @Param("orderId")Long orderId);
+
+	/**
+	 * 根据userId查询消费分期未完成的order数据，消费分期推送风控使用
+	 * @author yuyue
+	 * @Time 2017年10月10日 下午4:59:53
+	 * @param consumerNo
+	 * @return
+	 */
+	List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(@Param("consumerNo")Long consumerNo);
+
+	/**
+	 * 查询消费分期未完成的bill数据，消费分期推送风控使用
+	 * @author yuyue
+	 * @Time 2017年10月10日 下午5:00:14
+	 * @param orderId
+	 * @return
+	 */
+	List<AfOverdueBillDto> getAfOverdueBillDtoByConsumerNo(@Param("orderId")Long orderId);
 }

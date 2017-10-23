@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -36,13 +38,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfResourceLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.NperDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -73,7 +68,8 @@ public class AppH5SysController extends BaseController {
 	AfUserAccountService afUserAccountService;	
 	@Resource
 	AfRescourceLogService afRescourceLogService;
-
+	@Resource
+	AfUserOutDayDao afUserOutDayDao;
 
 	@RequestMapping(value = { "fenqiServiceProtocol" }, method = RequestMethod.GET)
 	public void fenqiServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
@@ -127,6 +123,13 @@ public class AppH5SysController extends BaseController {
 				model.put("overdueRate", nperDo.getRate());
 			}
 		}
+
+		int repayDay = 20;
+		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
+		if(afUserOutDayDo !=null) {
+			repayDay = afUserOutDayDo.getPayDay();
+		}
+		model.put("repayDay", repayDay);
 
 		logger.info(JSON.toJSONString(model));
 	}
