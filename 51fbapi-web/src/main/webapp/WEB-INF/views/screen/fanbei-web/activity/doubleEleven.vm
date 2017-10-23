@@ -1,72 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    #set($src="https://f.51fanbei.com/h5/app/activity/11")    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>惊艳双十一一触即发</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/doubleEleven.css">
 </head>
 <body>
     <div id="doubleEleven">
         <div class="doubleEleven-top">
-            <p class="top-word">全民砍价</p>
-            <p class="top-word">11.1-11.11</p>
-            <p class="vertical-line"></p>
-            <p class="cutdown-word">活动倒计时：</p>
-            <p class="countDown-one">
-                <span>02</span>
-                <span>:</span>
-                <span>02</span>
-                <span>:</span>
-                <span>02</span>
-                <span>:</span>
-                <span>02</span>
-            </p>
+            <div class="topLeft">
+                <span class="top-word">全民砍价</span>
+                <span class="top-num">11.1-11.11</span>
+                <span class="vertical-line"></span>
+                <span class="cutdown-word">活动倒计时：</span>
+                <span class="countDown-one">
+                    <span class="black-blank">02</span>
+                    <span>:</span>
+                    <span class="black-blank">02</span>
+                    <span>:</span>
+                    <span class="black-blank">02</span>
+                    <span>:</span>
+                    <span class="black-blank">02</span>
+                </span>
+            </div>
             <p class="calender">
-                <img src="" alt="">
-                <span>活动日历</span>
+                <img class="calender-img" src="$src/meeting_06.png" alt="">
+                <span class="calender-word">活动日历</span>
             </p>
             <div class="processBar">
                 <span class="dateOne">11.1-11.11</span>
                 <span class="dateTwo">11.9-11.11</span>
                 <span class="dateThree">11.11狂欢盛</span>
                 <span class="dateFour">11.13</span>
-                <img class="line" src="" alt="">
+                <img class="line" src="$src/meeting_14.png" alt="">
                 <span class="wordOne">全民砍价</span>
                 <span class="wordTwo">千万红包雨</span>
                 <span class="wordThree">分期+返利</span>
-                <span class="wordFour">‘再’见双十一</span>
+                <span class="wordFour">'再'见双十一</span>
             </div>
         </div>
+        <!--banner部分!-->
         <div class="doubleEleven-banner">
-            <div class="marquee"><img src="" alt=""></div>
-            <div class="fireworks"></div>
+            <div class="marquee"><img src="$src/meeting_01.png" alt=""></div>
+            <div class="marqueeBling"><img src="$src/meeting_05.gif" alt=""></div>
+            <div class="fireworks"><img src="$src/meeting_12.gif" alt=""></div>
         </div>
         <div class="doubleEleven-activity">
-            <div class="coupon"></div>
-            <div class="bargain"></div>
-            <div class="redRain"></div>
-        </div>
-        <div class="doubleEleven-brand">
-            <div class="brandTitle">各大品牌专题</div>
-            <div class="brandDetail">
-                <span class="arrowLeft"><</span>
-                <span class="arrowRight">></span>
-                <div class="brandProduct">
-                    <span class="brandDes">苹果</span>
-                </div>
-                <div class="brandProduct">
-                    <span class="brandDes">苹果</span>
-                </div>
-                <div class="brandProduct">
-                    <span class="brandDes">苹果</span>
-                </div>
-                <div class="brandProduct">
-                    <span class="brandDes">苹果</span>
+            <!--优惠券部分!-->            
+            <div class="coupon">
+                <span class="ten">神劵不是天天有！10:00开抢</span>
+                <span class="couponPrice"><i class="daiwei">￥</i>100 <i class="yuan">元</i></span>
+                <span class="all">全场通用</span>
+                <span class="full">满499使用</span>
+                <span class="end">(每日限1000张，抢完为止)</span>
+                <span class="click">点击<br/>领取</span>
+            </div>
+            <div class="bargain">
+                <span class="makeDown">全面砍价</span>
+                <span class="leave">距离活动开始还剩</span>
+                <span class="countTwo">05天：06时：00分：00秒</span>
+            </div>
+            <div class="redRain">
+                <span class="makeDown">天降红包雨</span>
+                <span class="leave">即将开始</span>
+                <span class="countThree">05天：06时：00分：00秒</span>
+            </div>
+             <!--品牌专题!-->
+            <div class="doubleEleven-brand">
+                <div class="brandTitle">各大品牌专题</div>
+                <div class="brandDetail clearFix">
+                    <span class="arrowLeft"><</span>
+                    <span class="arrowRight">></span>
+                    <div class="brandProduct">
+                        <img class="brand-img" src="" alt="">
+                        <span class="brandDes">苹果</span>
+                    </div>
+                    <div class="brandProduct">
+                        <img class="brand-img" src="" alt="">
+                        <span class="brandDes">苹果</span>
+                    </div>
+                    <div class="brandProduct">
+                        <img class="brand-img" src="" alt="">
+                        <span class="brandDes">苹果</span>
+                    </div>
+                    <div class="brandProduct">
+                        <img class="brand-img" src="" alt="">
+                        <span class="brandDes">苹果</span>
+                    </div>
+                    <div class="brandProduct">
+                        <img class="brand-img" src="" alt="">
+                        <span class="brandDes">苹果</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="product-detail"></div>
+        <!--商品详情部分!-->
+        <div class="product-detail clearFix">
+            <div class="cont">
+                    <p class="goodImg"><img class="lazy" src=""></p>
+                    <div class="product-bottom">
+                        <p class="goodName">帮宝适透气干爽纸尿裤干爽一整天</p>
+                        <p class="price">
+                            <span class="salePrice">￥3699.00</span>
+                            <span class="fan-img">返</span>
+                            <span class="fanMoney">￥300.00</span>
+                        </p>
+                        <p class="monthPrice">月供 ￥14.00 起</p>
+                    </div>
+            </div>
+            <div class="cont">
+                    <p class="goodImg"><img class="lazy" src=""></p>
+                    <div class="product-bottom">
+                        <p class="goodName">帮宝适透气干爽纸尿裤干爽一整天</p>
+                        <p class="price">
+                            <span class="salePrice">￥3699.00</span>
+                            <span class="fan-img">返</span>
+                            <span class="fanMoney">￥300.00</span>
+                        </p>
+                        <p class="monthPrice">月供 ￥14.00 起</p>
+                    </div>
+            </div>     
+        </div>
     </div>
 </body>
+<script type="text/javascript" src="/dist/activity/11/doubleEleven.js?version=$version"></script>
 </html>
