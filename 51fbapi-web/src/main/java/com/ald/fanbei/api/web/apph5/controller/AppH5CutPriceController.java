@@ -25,6 +25,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -77,6 +78,9 @@ public class AppH5CutPriceController extends BaseController {
 			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}",userName,goodsPriceId);
 			Long userId = convertUserNameToUserId(userName);
 			//查处改用户的所有的砍价商品
+			AfDeUserGoodsDo goodsDo = new AfDeUserGoodsDo();
+			goodsDo.setUserid(userId);
+			goodsDo.setGoodspriceid(goodsPriceId);
 			
 			
 			//判断是否是
