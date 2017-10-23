@@ -31,28 +31,56 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        List<AfGoodsCategoryDo> secondLevelList = new ArrayList<AfGoodsCategoryDo>();
+        List<AfGoodsCategoryDo> secondList = new ArrayList<AfGoodsCategoryDo>();
         List<AfGoodsCategoryDo> list = new ArrayList<AfGoodsCategoryDo>();
-        List<List<AfGoodsCategoryDo>> thirdLevelList = new ArrayList<List<AfGoodsCategoryDo>>();
+        List<Object> oneLevelList = new ArrayList<Object>();
+        List<Object> secondLevelList = new ArrayList<Object>();
+        List<Object> thirdLevelList = new ArrayList<Object>();
         Map<String,Object> data = new HashMap<String,Object>();
+        String name = "";
+        Long rid = 0l;
+        Long secondRid = 0l;
+        String secondName = "";
         //查出一级
-        List<AfGoodsCategoryDo> oneLevelList = afGoodsCategoryService.selectOneLevel();
+        List<AfGoodsCategoryDo> oneList = afGoodsCategoryService.selectOneLevel();
         //查出二级
-        if(null != oneLevelList && oneLevelList.size()>0){
-            Long rid = oneLevelList.get(0).getRid();
-            secondLevelList = afGoodsCategoryService.selectSecondLevel(rid);
-            //查出三级
-            if(null != secondLevelList && secondLevelList.size()>0){
-                for(int i=0;i<secondLevelList.size();i++){
-                    Long newRid = secondLevelList.get(i).getRid();
-                    list = afGoodsCategoryService.selectThirdLevel(newRid);
-                    thirdLevelList.add(list);
+        if(null != oneList && oneList.size()>0){
+            for(int x=0;x<secondList.size();x++){
+                List<Object> objFirst = new ArrayList<Object>();
+                rid = oneList.get(x).getRid();
+                name = oneList.get(x).getName();
+                secondList = afGoodsCategoryService.selectSecondLevel(rid);
+                //查出三级
+                if(null != secondList && secondList.size()>0){
+                    for(int i=0;i<secondList.size();i++){
+                        List<Object> objSecond = new ArrayList<Object>();
+                        secondRid = secondList.get(i).getRid();
+                        secondName = secondList.get(i).getName();
+                        list = afGoodsCategoryService.selectThirdLevel(secondRid);
+                        if(null != list && list.size()>0){
+                            for(int k=0;k<secondList.size();k++){
+                                List<Object> objThird = new ArrayList<Object>();
+                                String thirdName = list.get(k).getName();
+                                Long thirdRid = list.get(k).getRid();
+                                String thirdImgUrl = list.get(k).getImgUrl();
+                                objThird.add(thirdName);
+                                objThird.add(thirdImgUrl);
+                                objThird.add(thirdRid);
+                                thirdLevelList.add(objThird);
+                            }
+                        }
+                        objSecond.add(secondName);
+                        objSecond.add(thirdLevelList);
+                        secondLevelList.add(objSecond);
+                    }
                 }
+                objFirst.add(name);
+                objFirst.add(secondLevelList);
+                oneLevelList.add(objFirst);
             }
+
         }
         data.put("oneLevelList",oneLevelList);
-        data.put("secondLevelList",secondLevelList);
-        data.put("thirdLevelList",thirdLevelList);
         resp.setResponseData(data);
         return resp;
     }
