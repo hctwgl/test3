@@ -1306,7 +1306,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	}
 
 
-	public String addHomeBorrow(final Long orderId,final int nper, final Long userId,BigDecimal amount) {
+	public HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId,BigDecimal amount) {
 		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
 		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
 				nper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
@@ -1315,6 +1315,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		HashMap<String ,Object> map = new HashMap<String,Object>();
 		map.put("borrow",borrow);
 		map.put("bill",list);
-		return JSON.toJSONString(map);
+		//return JSON.toJSONString(map);
+		return map;
 	}
 }
