@@ -401,7 +401,7 @@ public class H5BoluomeActivityController extends BaseController {
 		}
 		//埋点
 		 String reqData = request.toString();
-		 doLog(reqData, H5CommonResponse.getNewInstance(true, "注册成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/bouomeActivityRegisterLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
+		 doLog(reqData, H5CommonResponse.getNewInstance(true, "注册成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/bouomeActivityRegisterLogin", moblie, typeFrom, typeFrom+typeFromNum, "", "", "");
 	    }
 	  
 	    return resultStr;
