@@ -231,9 +231,9 @@ window.onload = ()=>{
 
 function maidian(scene) {
   $.ajax({
-    url: '/fanbei-web/postMaidianInfo',
+    url: '/fanbei-web/shareActivity',
     data: {
-      'maidianInfo': 'sharewith'+ scene
+      'shareWith': 'sharewith'+ scene
     },
     type: 'POST',
     succuess: (data) => {
