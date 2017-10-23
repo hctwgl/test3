@@ -38,6 +38,8 @@ $(document).ready(function() {
                     url:'/fanbei-web/redRain/applyHit',
                     type:'post',
                     success:function (data) {
+                        data=JSON.parse(data);
+                        console.log(data);
                         if(data.success){
                             couponArr.push(data.data);
                             self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain4.png)';
