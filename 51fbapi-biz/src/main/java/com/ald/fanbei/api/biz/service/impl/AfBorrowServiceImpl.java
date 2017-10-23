@@ -120,6 +120,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	AfRecommendUserService afRecommendUserService;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
+	@Resource
+	AfOrderDao afOrderDao;
+
 
 	@Override
 	public Date getReyLimitDate(String billType, Date now) {
@@ -1303,17 +1306,15 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	}
 
 
-	public int addHomeBorrow(final Long userId,BigDecimal amount,final int payDay) throws Exception{
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				try{
-					return 3;
-				}
-				catch (Exception e){
-					throw e;
-				}
-			}
-		});
+	public String addHomeBorrow(final Long orderId,final int nper, final Long userId,BigDecimal amount) {
+		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
+		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
+				nper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
+
+		List<AfBorrowBillDo> list = buildBorrowBillForNewInterest(borrow,PayType.AGENT_PAY.getCode());
+		HashMap<String ,Object> map = new HashMap<String,Object>();
+		map.put("borrow",borrow);
+		map.put("bill",list);
+		return JSON.toJSONString(map);
 	}
 }

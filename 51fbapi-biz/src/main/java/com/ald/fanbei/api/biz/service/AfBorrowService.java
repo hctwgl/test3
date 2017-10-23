@@ -272,4 +272,6 @@ public interface AfBorrowService {
 
 	List<AfBorrowBillDo> getBorrowBillListY(Long userId,Integer billYear,Integer billMonth);
 
+	String addHomeBorrow(final Long orderId,final int nper, final Long userId,BigDecimal amount);
+
 }

@@ -374,6 +374,7 @@
 	</bean>
 
 	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" />
+	<bean  class="com.ald.fanbei.api.web.application.SpringInit" />
 
 	<bean id="healthCheck" class="com.ald.fanbei.api.biz.bo.common.HealthCheck" />
 	<!-- task job -->
