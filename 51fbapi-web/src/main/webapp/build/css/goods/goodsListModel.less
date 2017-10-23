@@ -4,6 +4,7 @@
 * @Last Modified by:   yoe
 * @Last Modified time: 2017-04-07 15:00:51
 */
+@url:"https://f.51fanbei.com/h5/common/images/";
 .fixTop{
   position: fixed !important;
   background: white;
@@ -154,4 +155,33 @@
 
 .goodsListModel_main_hide{
     display: none;
+}
+.couponWrap{
+  padding: .1rem;
+  display: flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+}
+.coupon{
+  width: 3.52rem;
+  height: 1.34rem;
+  background: url("@{url}ncli.png") no-repeat center;
+  background-size: 100%;
+  color:#ef4e40;
+  margin-bottom: .08rem;
+  &>p{
+    font-size: .24rem;
+    margin-left: .65rem;
+    line-height: .4rem;
+  }
+  &>p:first-child{
+    font-size: .6rem;
+    font-weight: 900;
+    margin-top: .4rem;
+  }
+
+}
+.couponclose{
+  background-image: url("@{url}ocli.png");
+  color:#d8d8d8;
 }

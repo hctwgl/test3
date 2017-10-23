@@ -11,6 +11,7 @@
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
     <input type="hidden" id="goodsList" value='$jsonUtil.toJSONString(${goodsList})'>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
+    <input type="hidden" id="couponList" name="couponList" value="$!{couponList}">
 
     #if($!{goodsList.size()}==0)
         <div class="nullPrompt">
@@ -34,6 +35,21 @@
                     </li>
                 #end
             </ul>
+        </div>
+
+        <div class="couponWrap">
+            <div class="coupon">
+                <p>6000</p>
+                <p>满300元减20</p>
+            </div>
+            <div class="coupon couponclose">
+                <p>6000</p>
+                <p>满300元减20</p>
+            </div>
+            <div class="coupon couponclose">
+                <p>6000</p>
+                <p>满300元减20</p>
+            </div>
         </div>
 
         <div class="swiper-container">
