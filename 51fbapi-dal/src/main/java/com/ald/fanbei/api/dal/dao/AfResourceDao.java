@@ -141,4 +141,9 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getCarouselToManyResourceOrderByType(@Param("type")String type);
 
+	/**
+	 * 	查询一个活动规则信息
+	 */
+	List<String> getActivityRule(@Param("type")String type);
+
 }
