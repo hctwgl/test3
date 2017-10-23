@@ -121,4 +121,6 @@ public interface AfUserCouponService {
 
 	AfUserCouponDto getSubjectUserCouponByAmountAndCouponId(Long userId, BigDecimal actualAmount, String couponId);
 
+	List<AfUserCouponDto> getActivitySpecialCouponByAmount(Long userId, BigDecimal actualAmount,Long activityId, String activityType);
+
 }

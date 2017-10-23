@@ -3,12 +3,15 @@
  */
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfActivityModelService;
 import com.ald.fanbei.api.dal.dao.AfActivityModelDao;
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 
 /**
@@ -30,6 +33,11 @@ public class AfActivityModelServiceImpl  implements AfActivityModelService {
 	@Override
 	public int addActivityModel(AfActivityModelDo activityModel) {
 		return afActivityModelDao.addActivityModel(activityModel);
+	}
+
+	@Override
+	public List<AfActivityModelDo> getActivityModelByGoodsId(Long goodsId) {
+		return afActivityModelDao.getActivityModelByGoodsId(goodsId);
 	}
 
 	

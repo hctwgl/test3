@@ -3,6 +3,9 @@
  */
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 
 
@@ -16,5 +19,7 @@ public interface AfActivityModelService {
 	int deleteActivityGoodsByActivityId(Long activityId);
 
 	int addActivityModel(AfActivityModelDo activityModel);
+
+	List<AfActivityModelDo> getActivityModelByGoodsId(Long goodsId);
 	
 }

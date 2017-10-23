@@ -108,4 +108,5 @@
 			id = #{activityId}
 	</update>
 	
+	
 </mapper>

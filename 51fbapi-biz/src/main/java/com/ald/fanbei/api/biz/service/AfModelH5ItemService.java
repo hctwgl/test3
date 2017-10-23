@@ -58,6 +58,9 @@ public interface AfModelH5ItemService {
 	 * @return
 	 */
 	List<AfUserH5ItmeGoodsDto> getModelH5ItemGoodsListCountByModelId(Long modelId,Integer start, Integer end);
+	
+	
+	List<AfModelH5ItemDo> getModelH5ItemByGoodsId(Long goodsId);
 
 	
 }

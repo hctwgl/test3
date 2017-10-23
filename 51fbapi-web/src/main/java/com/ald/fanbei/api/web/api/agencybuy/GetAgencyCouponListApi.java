@@ -4,7 +4,6 @@
 package com.ald.fanbei.api.web.api.agencybuy;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,24 +13,25 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfActivityModelService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfSubjectDo;
+import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
+import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 
 /**
  * @类描述：代买订单可使用优惠券列表获取
@@ -50,6 +50,10 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	AfCouponCategoryService afCouponCategoryService;
 	@Resource
 	AfCouponService afCouponService;
+	@Resource
+	AfModelH5ItemService afModelH5ItemService;
+	@Resource
+	AfActivityModelService afActivityModelService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -58,7 +62,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"), 0);
-		
+		/*
 		List<AfSubjectGoodsDo> subjectGoods = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
 		List<AfUserCouponDto> subjectUserCouponList  = new ArrayList<AfUserCouponDto>();
 		if(!CollectionUtil.isEmpty(subjectGoods)){
@@ -84,9 +88,37 @@ public class GetAgencyCouponListApi implements ApiHandle {
 				}
 			}
 		}
-			
-		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
+		
 		list.addAll(subjectUserCouponList);
+		*/	
+		
+		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
+		
+		// 查询商品是否在H5活动中
+		List<AfModelH5ItemDo> modelH5ItemList = afModelH5ItemService.getModelH5ItemByGoodsId(goodsId);
+		for(AfModelH5ItemDo afModelH5ItemDo : modelH5ItemList) {
+			Long modelId = afModelH5ItemDo.getModelId();
+			// 查询
+			List<AfUserCouponDto> h5TemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,modelId,ActivityType.H5_TEMPLATE.getCode());
+			list.addAll(h5TemplateCouponList);
+		}
+		
+		// 查询商品是否在返场活动模版中
+		List<AfActivityModelDo> activityModelList = afActivityModelService.getActivityModelByGoodsId(goodsId);
+		for(AfActivityModelDo afActivityModelDo :activityModelList) {
+			Long activityId = afActivityModelDo.getActivityId();
+			List<AfUserCouponDto> encodeTemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,activityId,ActivityType.ENCORE_TEMPLATE.getCode());
+			list.addAll(encodeTemplateCouponList);
+		}
+		// 查询商品是否在会场活动模版中
+		
+		List<AfSubjectGoodsDo> subjectGoodsList = afSubjectGoodsService.getSubjectGoodsByGoodsId(goodsId);
+		for(AfSubjectGoodsDo afSubjectGoodsDo : subjectGoodsList) {
+			String subjectId = afSubjectGoodsDo.getSubjectId();
+			List<AfUserCouponDto> activityTemplateCouponList =  afUserCouponService.getActivitySpecialCouponByAmount(userId,actualAmount,Long.parseLong(subjectId),ActivityType.ENCORE_TEMPLATE.getCode());
+			list.addAll(activityTemplateCouponList);
+		}
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("couponList", JSON.toJSON(list));
 		data.put("pageNo", 1);

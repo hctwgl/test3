@@ -131,5 +131,17 @@
 		LIMIT #{start},#{end}
 	</select>
 	
+	<select id="getModelH5ItemByGoodsId" resultType="AfModelH5ItemDo">
+		SELECT
+			<include refid = "queryAllFields" />
+		FROM
+			af_model_h5_item 
+		WHERE
+			item_type = 'GOODS_ID'
+		AND
+			item_value = #{goodsId}
+		AND 
+			is_delete = 0
+	</select>
 	
 </mapper>

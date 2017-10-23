@@ -1,5 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 
 
@@ -13,4 +18,6 @@ public interface AfActivityModelDao {
 	int deleteActivityGoodsByActivityId(Long activityId);
 
 	int addActivityModel(AfActivityModelDo activityModel);
+
+	List<AfActivityModelDo> getActivityModelByGoodsId(@Param("goodsId")Long goodsId);
 }

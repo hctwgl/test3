@@ -3,6 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfActivityModelDao">
 	
 	<sql id="activityModelSqlField">
+		id,is_delete,gmt_create,gmt_modified,goods_id,activity_id,goods_type,double_rebate
 	</sql>
 	
 	
@@ -35,4 +36,16 @@
 				#{goodsType}
 			)
 	</insert>
+	
+	
+	<select id="getActivityModelByGoodsId" parameterType="java.lang.Long" resultType="AfActivityModelDo">
+		SELECT
+			<include refid="activityModelSqlField"/>
+		FROM
+			af_activity_model
+		WHERE
+			is_delete = 0
+		AND
+			goods_id = #{goodsId}
+	</select>
 </mapper>
