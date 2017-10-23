@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -62,7 +63,7 @@ import com.taobao.api.domain.XItem;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afBorrowService")
-public class AfBorrowServiceImpl extends BaseService implements AfBorrowService {
+public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,HomeBorrowService {
 
 	@Resource
 	AfBorrowDao afBorrowDao;
@@ -1299,5 +1300,20 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 	public List<AfBorrowBillDo> getBorrowBillListY( Long userId,  Integer billYear, Integer billMonth){
 		return  afBorrowBillDao.getBorrowBillListY(userId,billYear,billMonth);
+	}
+
+
+	public int addHomeBorrow(final Long userId,BigDecimal amount,final int payDay) throws Exception{
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try{
+					return 3;
+				}
+				catch (Exception e){
+					throw e;
+				}
+			}
+		});
 	}
 }
