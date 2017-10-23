@@ -88,8 +88,8 @@ body {
   font-size: 0.2rem;
 }
 .line {
-  width: 5.37rem;
-  height: 0.08rem;
+  width: 5.5rem;
+  height: 0.07rem;
   margin-left: 7%;
   margin-top: 0.5%;
 }
@@ -110,6 +110,8 @@ body {
 .dateThree,
 .dateFour {
   margin-bottom: 0.1rem;
+  border: 1px solid #fff;
+  border-radius: .2rem;
 }
 .wordOne,
 .wordTwo,
@@ -119,8 +121,8 @@ body {
 }
 .processBar span {
   font-size: 0.18rem;
-  border: 1px solid white;
-  border-radius: 0.2rem;
+  /*     border: 1px solid white;
+    border-radius: 0.2rem; */
   padding: 0rem 0.1rem;
 }
 .doubleEleven-banner {
