@@ -37,6 +37,7 @@ body {
   left: 0;
   font-size: 0.2rem;
   padding: 0.2rem 0.56rem;
+  display: none;
 }
 .top-word {
   position: absolute;
@@ -124,6 +125,13 @@ body {
   /*     border: 1px solid white;
     border-radius: 0.2rem; */
   padding: 0rem 0.1rem;
+}
+.tangle {
+  height: 0px;
+  width: 0px;
+  border-top: 50px solid #006633;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
 }
 .doubleEleven-banner {
   background: url('http://f.51fanbei.com/h5/app/activity/11/meeting_09.jpg') no-repeat;

@@ -27,7 +27,7 @@
                 </span>
             </div>
             <p class="calender">
-                <img class="calender-img" src="$src/meeting_06.png" alt="">
+                <img class="calender-img" src="$src/meeting_06.png" alt="" @click="noShow()">
                 <span class="calender-word">活动日历</span>
             </p>
             <div class="processBar">

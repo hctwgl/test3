@@ -1,2 +1,2 @@
-"use strict";
+"use strict";var vm=new Vue({el:"#doubleEleven",data:{content:"",isShow:!0},created:function(){this.logData()},methods:{logData:function logData(){var self=this;$.ajax({type:"post",url:"/fanbei-web/partActivityInfo",data:{modelId:modelId},success:function success(data){data=eval("("+data+")"),self.content=data.data;var m=self.content.qualityGoodsList,c=JSON.stringify(m);m=JSON.parse(c),self.renderdata=m,self.list=self.content.qualityGoodsList},error:function(){requestMsg("哎呀，出错了！")}})},noShow:function(){this.isShow=!this.isShow,this.isShow?$(".processBar").show():$(".processBar").hide()}}});
 //# sourceMappingURL=../../_srcmap/activity/11/doubleEleven.js.map
