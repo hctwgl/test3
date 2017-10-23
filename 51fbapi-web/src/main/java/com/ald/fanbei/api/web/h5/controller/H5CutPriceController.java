@@ -21,15 +21,11 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * 
- * <p>
- * Title:H5CutPriceController
- * <p>
- * Description:
- * <p>
- * 
- * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
+ * @ClassName: H5CutPriceController
+ * @Description: TODO(这里用一句话描述这个类的作用)
  * @author qiao
- * @date 2017-10-23 11:42:07
+ * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
+ * @date 2017年10月23日 下午4:28:04
  *
  */
 @RestController
@@ -37,11 +33,11 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class H5CutPriceController extends H5Controller {
 
 	String opennative = "/fanbei-web/opennative?name=";
-	
+
 	/**
 	 * 
 	 * @Title: cutPrice @Description: 砍价接口 @param requst @param response @return
-	 * String 返回类型 @throws
+	 *         String 返回类型 @throws
 	 */
 	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
 	public String cutPrice(HttpServletRequest requst, HttpServletResponse response) {

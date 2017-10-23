@@ -27,16 +27,11 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
- * <p>
- * Title:AppH5CutPriceController
- * <p>
- * <p>
- * Description:
- * <p>
- * 
- * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
+ * @ClassName: AppH5CutPriceController
+ * @Description: TODO(这里用一句话描述这个类的作用)
  * @author qiao
- * @date 2017-10-23 11:42:07
+ * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
+ * @date 2017年10月23日 下午4:27:46
  *
  */
 @RestController
@@ -48,7 +43,7 @@ public class AppH5CutPriceController extends BaseController {
 	/**
 	 * 
 	 * @Title: share @Description: 砍价接口 @param request @param response @return
-	 * String @throws
+	 *         String @throws
 	 */
 	@RequestMapping(value = "/share", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
 	public String share(HttpServletRequest request, HttpServletResponse response) {
