@@ -41,5 +41,4 @@
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
 <script type="text/javascript" src="/dist/activity/10/ggADLogin.js?version=$version"></script>
-</body>
 </html>
