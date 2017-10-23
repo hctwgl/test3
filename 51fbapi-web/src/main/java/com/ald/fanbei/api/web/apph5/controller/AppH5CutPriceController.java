@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,6 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfDeGoodsCouponService;
+import com.ald.fanbei.api.biz.service.AfDeGoodsService;
+import com.ald.fanbei.api.biz.service.AfDeUserCutInfoService;
+import com.ald.fanbei.api.biz.service.AfDeUserGoodsService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -18,6 +24,8 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -38,8 +46,21 @@ import com.alibaba.fastjson.JSONObject;
 @RequestMapping("/activity/de")
 public class AppH5CutPriceController extends BaseController {
 
+	@Resource 
+	AfUserService afUserService;
+	@Resource
+	AfDeGoodsService afDeGoodsService;
+	@Resource 
+	AfDeGoodsCouponService afDeGoodsCouponService;
+	@Resource 
+	AfDeUserCutInfoService afDeUserCutInfoService;
+	@Resource 
+	AfDeUserGoodsService afDeUserGoodsService;
+	
+	
 	String opennative = "/fanbei-web/opennative?name=";
 
+	
 	/**
 	 * 
 	 * @Title: share @Description: 砍价接口 @param request @param response @return
@@ -51,7 +72,16 @@ public class AppH5CutPriceController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, true);
+			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
+			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}",userName,goodsPriceId);
+			Long userId = convertUserNameToUserId(userName);
+			//查处改用户的所有的砍价商品
+			
+			
+			//判断是否是
+			
+			
 
 		} catch (FanbeiException e) {
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
@@ -71,6 +101,26 @@ public class AppH5CutPriceController extends BaseController {
 		return resultStr;
 	}
 
+	/**
+	 * 
+	* @Title: convertUserNameToUserId
+	* @Description: 
+	* @param userName
+	* @return Long   
+	* @throws
+	 */
+	private Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
+
+		}
+		return userId;
+	}
+	
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
