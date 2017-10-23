@@ -97,6 +97,7 @@ public class AppH5InvitationActivityController extends BaseController {
         return ret;
     }
 
+
     /**
      * 奖励详细查询
      * @param request
@@ -119,7 +120,7 @@ public class AppH5InvitationActivityController extends BaseController {
                 if(afUser != null){
                     userId = afUser.getRid();
                 }
-             }else{
+            }else{
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
@@ -149,6 +150,60 @@ public class AppH5InvitationActivityController extends BaseController {
         }
         return ret;
     }
+
+
+    /**
+     *点击分享的时候 插入数据
+     * @param request
+     * @param shareWith
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "shareActivity", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String shareActivity(HttpServletRequest request,String shareWith){
+        FanbeiWebContext context = new FanbeiWebContext();
+        Long userId = -1l;
+        //Long userId = 55555l;
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        AfUserDo afUser = null;
+        Integer type=null;
+        try{
+            context = doWebCheck(request, false);
+            if(context.isLogin()){
+                afUser = afUserService.getUserByUserName(context.getUserName());
+                if(afUser != null){
+                    userId = afUser.getRid();
+                }
+            }else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+        }catch  (Exception e) {
+            logger.error("commitChannelRegister", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+        if("sharewithWEIXIN_CIRCLE".equals(shareWith)){
+            type=0;
+        }else if("sharewithWEIXIN".equals(shareWith)){
+            type=1;
+        }else if("sharewithQZONE".equals(shareWith)){
+            type=2;
+        }else{
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null);
+            return resp.toString();
+        }
+        String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
+        String uuid = UUID.randomUUID().toString(); //获取UUID并转化为String对象
+        uuid = uuid.replace("-", "");
+        if(afRecommendUserService.insertShareWithData(uuid,userId,type,invitationCode)>0){
+            resp = H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", null);
+        }else{
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.CALCULATE_SHA_256_ERROR.getDesc(), "", null);
+        }
+        return resp.toString();
+    }
+
 
 
     @Override

@@ -37,4 +37,5 @@ public interface AfRecommendUserDao {
 
     AfRecommendUserDo  getARecommendUserByIdAndType(@Param("user_id") Long user_id,@Param("type") int type);
 
+    int insertShareWithData(@Param("uuid")String uuid, @Param("userId")long userId, @Param("type")Integer type, @Param("invitationCode")String invitationCode);
 }
