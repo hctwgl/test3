@@ -120,4 +120,43 @@
         <include refid="commonCondition"/>
     </select>
     
+    <resultMap type="com.ald.fanbei.api.dal.domain.dto.UserDeGoods" id="userDeGoods">
+    	<id column="goodsPriceId" property="goodsPriceId" />
+		<result column="image" property="image" />
+		<result column="image" property="image" />
+		<result column="image" property="image" />
+		<result column="image" property="image" />
+		<collection property="values" ofType="com.ald.fanbei.api.dal.domain.dto.UserDeGoodsCoupon"  column="couponId"  >
+			<id column="couponId" property="couponId" />
+			<result column="couponName" property="couponName" />
+			<result column="threshold" property="threshold" />
+			<result column="state" property="state" /> 
+		</collection>    
+    </resultMap>
+    
+    <select id ="getUserDeGoodsList" resultMap="userDeGoods">
+	    SELECT
+			p.id AS goodsPriceId,
+			g.goods_icon AS image,
+			p.actual_amount AS originalPrice,
+			d.lowestPrice,
+			IF(u.cutPrice is null,0,u.cutprice) as cutprice,
+			d.type,
+			if(u.userId is null, 0,1) as `share`,
+			g.`name`,
+			o.`name` as couponName,
+			o.id as couponId,
+			c.threshold as threshold,
+			IF(u.cutCount is null,0, IF( u.cutCount > c.threshold and uc.id is NULL, 2, 1)) as state
+		FROM
+			af_goods g
+		JOIN af_goods_price p ON g.id = p.goods_id and p.is_delete = 0 and g.is_delete = 0
+		JOIN af_de_goods d ON p.id = d.goodsPriceId and d.is_delete = 0
+		LEFT JOIN af_de_user_goods u on u.goodsPriceId = d.goodsPriceId and u.userId = #{userId} and u.is_delete = 0
+		LEFT JOIN af_de_goods_coupon c on d.goodsPriceId = c.goodsPriceId and c.is_delete = 0
+		LEFT JOIN af_coupon o on c.couponId = o.id and o.is_delete = 0
+		left join af_user_coupon uc on o.id = uc.coupon_id and uc.user_id = #{userId} and uc.is_delete = 0
+		order by goodsPriceId desc,threshold ASC
+    </select>
+    
 </mapper>

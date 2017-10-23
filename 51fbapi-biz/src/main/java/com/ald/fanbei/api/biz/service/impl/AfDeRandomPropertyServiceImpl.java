@@ -5,10 +5,11 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfDeRandomPropertyDao;
 import com.ald.fanbei.api.dal.domain.AfDeRandomPropertyDo;
-import com.ald.fanbei.api.biz.service.AfDeRandomPropertyService;
+import com.ald.fanbei.api.biz.service.de.AfDeRandomPropertyService;
 
 
 

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -11,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.service.AfDeGoodsCouponService;
-import com.ald.fanbei.api.biz.service.AfDeGoodsService;
-import com.ald.fanbei.api.biz.service.AfDeUserCutInfoService;
-import com.ald.fanbei.api.biz.service.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
+import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -27,6 +28,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -47,116 +49,130 @@ import com.alibaba.fastjson.JSONObject;
 @RequestMapping("/activity/de")
 public class AppH5CutPriceController extends BaseController {
 
-	@Resource 
-	AfUserService afUserService;
-	@Resource
-	AfDeGoodsService afDeGoodsService;
-	@Resource 
-	AfDeGoodsCouponService afDeGoodsCouponService;
-	@Resource 
-	AfDeUserCutInfoService afDeUserCutInfoService;
-	@Resource 
-	AfDeUserGoodsService afDeUserGoodsService;
-	
-	
-	String opennative = "/fanbei-web/opennative?name=";
+    @Resource
+    AfUserService afUserService;
+    @Resource
+    AfDeGoodsService afDeGoodsService;
+    @Resource
+    AfDeGoodsCouponService afDeGoodsCouponService;
+    @Resource
+    AfDeUserCutInfoService afDeUserCutInfoService;
+    @Resource
+    AfDeUserGoodsService afDeUserGoodsService;
 
-	
-	/**
-	 * 
-	 * @Title: share 
-	 * @Description: 砍价接口
-	 *  @param request 
-	 *  @param response 
-	 *  @return
-	 *         String 
-	 *  @throws
-	 */
-	@RequestMapping(value = "/share", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
-	public String share(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = "";
-		FanbeiWebContext context = new FanbeiWebContext();
-		try {
-			context = doWebCheck(request, true);
-			String userName = context.getUserName();
-			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
-			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}",userName,goodsPriceId);
-			Long userId = convertUserNameToUserId(userName);
-			//查处改用户的所有的砍价商品
-			AfDeUserGoodsDo goodsDo = new AfDeUserGoodsDo();
-			goodsDo.setUserid(userId);
-			goodsDo.setGoodspriceid(goodsPriceId);
-			
-			
-			//判断是否是
-			
-			
+    String opennative = "/fanbei-web/opennative?name=";
 
-		} catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
-				Map<String, Object> data = new HashMap<>();
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				logger.error("/activity/de/share" + context + "login error ");
-				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-			}
-		} catch (Exception e) {
-			logger.error("/activity/de/share" + context + "error = {}", e.getStackTrace());
-			resultStr = H5CommonResponse.getNewInstance(false, "分享砍价商品失败").toString();
-			return resultStr;
-		}
+    /**
+     * 
+     * @Title: share
+     * @Description: 砍价接口
+     * @param request
+     * @param response
+     * @return String
+     * @throws
+     */
+    @RequestMapping(value = "/share", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+    public String share(HttpServletRequest request, HttpServletResponse response) {
+	String resultStr = "";
+	FanbeiWebContext context = new FanbeiWebContext();
+	try {
+	    context = doWebCheck(request, true);
+	    String userName = context.getUserName();
+	    Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
+	    logger.info("activity/de/share params: userName ={} , goodsPriceId = {}", userName, goodsPriceId);
+	    Long userId = convertUserNameToUserId(userName);
+	    // 查处改用户的所有的砍价商品
+	    AfDeUserGoodsDo goodsDo = new AfDeUserGoodsDo();
+	    goodsDo.setUserid(userId);
+	    goodsDo.setGoodspriceid(goodsPriceId);
 
-		return resultStr;
+	    // 判断是否是
+
+	} catch (FanbeiException e) {
+	    if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+		Map<String, Object> data = new HashMap<>();
+		String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+		data.put("loginUrl", loginUrl);
+		logger.error("/activity/de/share" + context + "login error ");
+		resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+	    }
+	} catch (Exception e) {
+	    logger.error("/activity/de/share" + context + "error = {}", e.getStackTrace());
+	    resultStr = H5CommonResponse.getNewInstance(false, "分享砍价商品失败").toString();
+	    return resultStr;
 	}
 
-	/**
-	 * 
-	* @Title: convertUserNameToUserId
-	* @Description: 
-	* @param userName
-	* @return Long   
-	* @throws
-	 */
-	private Long convertUserNameToUserId(String userName) {
-		Long userId = null;
-		if (!StringUtil.isBlank(userName)) {
-			AfUserDo user = afUserService.getUserByUserName(userName);
-			if (user != null) {
-				userId = user.getRid();
-			}
+	return resultStr;
+    }
 
-		}
-		return userId;
+    @RequestMapping(value = "/goods", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+    public String getGoodsList(HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	FanbeiWebContext context = new FanbeiWebContext();
+	try {
+	    context = doWebCheck(request, true);
+	    String userName = context.getUserName();
+	    Long userId = convertUserNameToUserId(userName);
+
+	    List<UserDeGoods> userDeGoodsList = afDeGoodsService.getUserDeGoodsList(userId);
+	    data.put("goodsList", userDeGoodsList);
+
+	    data.put("endTime", System.currentTimeMillis() / 1000 + 10000);
+	    data.put("totalCount", "100");
+
+	    return H5CommonResponse.getNewInstance(true, "查询成功", "", data).toString();
+	} catch (Exception e) {
+	    logger.error("/activity/de/goods" + context + "error = {}", e);
+	    return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败").toString();
 	}
-	
-	@Override
-	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-		// TODO Auto-generated method stub
-		return null;
+    }
+
+    /**
+     * 
+     * @Title: convertUserNameToUserId
+     * @Description:
+     * @param userName
+     * @return Long
+     * @throws
+     */
+    private Long convertUserNameToUserId(String userName) {
+	Long userId = null;
+	if (!StringUtil.isBlank(userName)) {
+	    AfUserDo user = afUserService.getUserByUserName(userName);
+	    if (user != null) {
+		userId = user.getRid();
+	    }
+
 	}
+	return userId;
+    }
 
-	@Override
-	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		try {
-			RequestDataVo reqVo = new RequestDataVo();
+    @Override
+    public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
+    @Override
+    public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+	try {
+	    RequestDataVo reqVo = new RequestDataVo();
 
-			return reqVo;
-		} catch (Exception e) {
-			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-		}
+	    JSONObject jsonObj = JSON.parseObject(requestData);
+	    reqVo.setId(jsonObj.getString("id"));
+	    reqVo.setMethod(request.getRequestURI());
+	    reqVo.setSystem(jsonObj);
+
+	    return reqVo;
+	} catch (Exception e) {
+	    throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 	}
+    }
 
-	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
-			HttpServletRequest httpServletRequest) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
 }

@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.service.AfDeGoodsCouponService;
-import com.ald.fanbei.api.biz.service.AfDeGoodsService;
-import com.ald.fanbei.api.biz.service.AfDeRandomPropertyService;
-import com.ald.fanbei.api.biz.service.AfDeUserCutInfoService;
-import com.ald.fanbei.api.biz.service.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
+import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
+import com.ald.fanbei.api.biz.service.de.AfDeRandomPropertyService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;

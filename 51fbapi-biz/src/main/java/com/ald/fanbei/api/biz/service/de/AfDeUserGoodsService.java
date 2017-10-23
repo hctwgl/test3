@@ -1,5 +1,6 @@
-package com.ald.fanbei.api.biz.service;
+package com.ald.fanbei.api.biz.service.de;
 
+import com.ald.fanbei.api.biz.service.ParentService;
 import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 
 /**
