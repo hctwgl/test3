@@ -185,7 +185,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
 	    logger.info("orderCount = {}", orderCount);
 	
-	    if(refUserDo!=null ){
+	    if(refUseraName != null && StringUtil.isNotBlank(refUseraName) ){
 	    if (!userName.equals(refUseraName)) {
 		// 绑定关系refUserDo
 		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
