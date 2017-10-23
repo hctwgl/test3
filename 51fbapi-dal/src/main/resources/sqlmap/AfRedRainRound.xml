@@ -10,7 +10,7 @@
 			<include refid="queryFields"/>
 		FROM af_red_rain_round WHERE is_delete = 0
 		  AND status = #{status}
-		  AND gmt_start &lt; #{gmtStart}
+		  AND gmt_start &lt; #{gmtStart} LIMIT 1 FOR UPDATE
 	</select>
 	
 	<select id="queryByGmtStartInToday" resultType="AfRedRainRoundDo" parameterType="Map" >

@@ -13,37 +13,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfRedPacketPoolService;
+import com.alibaba.fastjson.JSON;
 
 @Service("redPacketPoolService")
 public class AfRedPacketPoolServiceImpl implements AfRedPacketPoolService {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-    public  List<BlockingQueue<Redpacket>> list;
+    public  List<BlockingQueue<String>> list;
     public  int count;
     public  int typeCount;
 
 
     @PostConstruct
     public void init(){
-        list = new ArrayList<BlockingQueue<Redpacket>>();
+        list = new ArrayList<BlockingQueue<String>>();
         count = 0;
         typeCount = 0;
     }
     @Override
-    public void inject(BlockingQueue<Redpacket> packets)  {
+    public void inject(BlockingQueue<String> packets)  {
         count = count + packets.size();
         list.add(packets);
         typeCount = list.size();
         
-        StringBuilder log = new StringBuilder();
-        for(BlockingQueue<Redpacket> queue : list) {
-        	Redpacket peek = queue.peek();
-        	log.append("[queue").append(list.indexOf(queue)).append(",")
-        	.append(peek.getCouponName()).append(",")
-        	.append(peek.getType()).append(",")
-        	.append(queue.size()).append("]\r\n");
-        }
-        logger.info("redPacketPoolService.inject,final pool=\r\n{}", log);
+        logger.info("redPacketPoolService.inject success");
         
     }
 
@@ -54,9 +47,12 @@ public class AfRedPacketPoolServiceImpl implements AfRedPacketPoolService {
     	}
     	
         int rand = (int)(Math.random() * typeCount)/1;
-        BlockingQueue<Redpacket> redpackets = list.get(rand);
-        Redpacket r = redpackets.poll();
-        return r;
+        BlockingQueue<String> redpackets = list.get(rand);
+        
+        Object o = redpackets.poll();
+        if(o == null) return null;
+        
+        return JSON.parseObject(o.toString(), Redpacket.class);
     }
 
     @Override

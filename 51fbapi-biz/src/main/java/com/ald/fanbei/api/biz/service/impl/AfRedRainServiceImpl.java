@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -18,6 +16,9 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import com.ald.fanbei.api.biz.service.AfRedPacketPoolService;
@@ -26,6 +27,8 @@ import com.ald.fanbei.api.biz.service.AfRedRainService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserCouponSource;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfRedRainPoolDao;
@@ -48,10 +51,11 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	private static final int DELAY_OF_ACTIVATE_CLEAR = 300;//激活清空红包池任务的延时, 300s
 	
 	private ScheduledExecutorService scheduler ;
-	private Map<String,AtomicInteger> counters;
 	
 	@Resource
-	private AfRedPacketPoolService redPacketPoolService;
+	private BizCacheUtil bizCacheUtil;
+	@Resource
+	private AfRedPacketPoolService redPacketRedisPoolService;
 	@Resource 
 	private AfRedRainPoolDao afRedRainPoolDao;
 	@Resource 
@@ -63,10 +67,11 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	private AfUserCouponService afUserCouponService;
 	@Resource
 	private BoluomeUtil boluomeUtil;
+	@Resource
+	TransactionTemplate transactionTemplate;
 	
 	@PostConstruct
 	public void init() {
-		this.counters = new ConcurrentHashMap<>(8096);
 		this.scheduler = Executors.newSingleThreadScheduledExecutor();
 		
 		//每5分钟启动扫描
@@ -79,7 +84,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 		//每天0点清空计数器
 		this.scheduler.scheduleAtFixedRate(new Runnable() {
 			public void run() {
-				counters.clear();
+				bizCacheUtil.delCache(Constants.CACHEKEY_REDRAIN_COUNTERS);
 			}
 		}, DateUtil.getIntervalFromNowInSec(DateUtil.getEndOfDate(new Date())), INTERVAL_CLEAR_COUNTER, TimeUnit.SECONDS);
 	}
@@ -88,19 +93,20 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	public Redpacket apply(String userName) {
 		Assert.hasText(userName);
 		
-		AtomicInteger counter;
+		Integer counter;
 		synchronized (userName.intern()) { //防刷
-			counter = this.counters.get(userName);
-			if(counter == null) this.counters.put(userName, counter = new AtomicInteger());
-			logger.info("redRainService.apply,userName={},raw counter={}", userName, counter.get());
+			String val = this.bizCacheUtil.hget(Constants.CACHEKEY_REDRAIN_COUNTERS, userName);
+			if(val == null) this.bizCacheUtil.hset(Constants.CACHEKEY_REDRAIN_COUNTERS, userName, String.valueOf(counter = 0));
+			else counter = Integer.valueOf(val);
+			logger.info("redRainService.apply,userName={},raw counter={}", userName, counter);
 			
-			if(counter.incrementAndGet() > MAX_NUM_HIT_REDPACKET) { //假设用户一定可以得到一个红包
+			if(++counter > MAX_NUM_HIT_REDPACKET) { 
 				return null;
 			}
 		}
 		
 		try {
-			Redpacket rp = this.redPacketPoolService.apply();
+			Redpacket rp = this.redPacketRedisPoolService.apply();
 			if(rp != null) {
 				AfUserDo user = afUserService.getUserByUserName(userName);
 				if("BOLUOMI".equals(rp.getType())) {
@@ -108,13 +114,13 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 				}else {
 					afUserCouponService.grantCouponForRedRain(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
 				}
+				this.bizCacheUtil.hincrBy(Constants.CACHEKEY_REDRAIN_COUNTERS, userName, 1L);
 				return rp;
 			}
 		}catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 		
-		counter.decrementAndGet(); //未获取，回滚计数器-1
 		return null;
 	}
 
@@ -132,7 +138,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	@Override
 	public void clearAndStatisic(Integer roundId) {
 		try {
-			Map<String, Integer> info = this.redPacketPoolService.informationPacket();
+			Map<String, Integer> info = this.redPacketRedisPoolService.informationPacket();
 			int sum = info.get("count");
 			int sumGrabed = sum - info.get("listNumber");
 			logger.info("redRainService.clearAndStatisic,roundId={},sum={},sumGrabed={}", roundId, sum, sumGrabed);
@@ -146,7 +152,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			roundForMod.setId(roundId);
 			afRedRainRoundDao.update(roundForMod);
 			
-			this.redPacketPoolService.emptyPacket();
+			this.redPacketRedisPoolService.emptyPacket();
 		}catch (Exception e) {
 			this.logger.error(e.getMessage(),e);
 		}
@@ -154,47 +160,53 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	
 	@Override
 	public void scanAndInjected() {
-		try {
-			//扫描
-			AfRedRainRoundDo paramRound = new AfRedRainRoundDo();
-			Date gmtStart = DateUtil.addMins(new Date(), 10);
-			paramRound.setGmtStart(gmtStart);
-			paramRound.setStatus(AfRedRainRoundStatusEnum.PREPARE.name());
-			final AfRedRainRoundDo round = afRedRainRoundDao.fetch(paramRound);
-			
-			logger.info("redRainService.scanAndInjected, query gmtStart={}, fetchRound={}", gmtStart, JSON.toJSONString(round, SerializerFeature.UseISO8601DateFormat));
-			
-			if(round == null) return;
-			
-			//注入
-			List<AfRedRainPoolDo> pools = afRedRainPoolDao.queryAll();
-			for(AfRedRainPoolDo pool : pools) {
-				int num = pool.getNum();
-				BlockingQueue<Redpacket> queue = new ArrayBlockingQueue<>(num);
-				String couponType = pool.getCouponType();
-				String couponName = pool.getCouponName();
-				Long couponId = pool.getCouponId();
-				Integer roundId = round.getId();
-				for(int i = 0; i<num; i++) {
-					queue.offer(new Redpacket(couponType, couponName, couponId, roundId));
+		// 同步风控数据
+		transactionTemplate.execute(new TransactionCallback<Integer>() { public Integer doInTransaction(TransactionStatus status) {
+			try {
+				//扫描
+				AfRedRainRoundDo paramRound = new AfRedRainRoundDo();
+				Date gmtStart = DateUtil.addMins(new Date(), 10);
+				paramRound.setGmtStart(gmtStart);
+				paramRound.setStatus(AfRedRainRoundStatusEnum.PREPARE.name());
+				final AfRedRainRoundDo round = afRedRainRoundDao.fetch(paramRound);
+				
+				logger.info("redRainService.scanAndInjected, query gmtStart={}, fetchRound={}", gmtStart, JSON.toJSONString(round, SerializerFeature.UseISO8601DateFormat));
+				
+				if(round == null) return 1;
+				
+				//注入
+				List<AfRedRainPoolDo> pools = afRedRainPoolDao.queryAll();
+				for(AfRedRainPoolDo pool : pools) {
+					int num = pool.getNum();
+					BlockingQueue<String> queue = new ArrayBlockingQueue<>(num);
+					String couponType = pool.getCouponType();
+					String couponName = pool.getCouponName();
+					Long couponId = pool.getCouponId();
+					Integer roundId = round.getId();
+					for(int i = 0; i<num; i++) {
+						queue.offer(JSON.toJSONString(new Redpacket(couponType, couponName, couponId, roundId)));
+					}
+					redPacketRedisPoolService.inject(queue);
 				}
-				redPacketPoolService.inject(queue);
+				
+				//更新数据库状态
+				round.setStatus(AfRedRainRoundStatusEnum.INJECTED.name());
+				afRedRainRoundDao.update(round);
+				
+				//场次开始时间5分钟后清场
+				scheduler.schedule(new Runnable() {
+					public void run() {
+						clearAndStatisic(round.getId());
+					}
+				}, DateUtil.getIntervalFromNowInSec(round.getGmtStart())+DELAY_OF_ACTIVATE_CLEAR, TimeUnit.SECONDS);
+			}catch (Exception e) {
+				logger.error(e.getMessage(),e);
+				redPacketRedisPoolService.emptyPacket();
 			}
 			
-			//更新数据库状态
-			round.setStatus(AfRedRainRoundStatusEnum.INJECTED.name());
-			afRedRainRoundDao.update(round);
-			
-			//场次开始时间5分钟后清场
-			this.scheduler.schedule(new Runnable() {
-				public void run() {
-					clearAndStatisic(round.getId());
-				}
-			}, DateUtil.getIntervalFromNowInSec(round.getGmtStart())+DELAY_OF_ACTIVATE_CLEAR, TimeUnit.SECONDS);
-		}catch (Exception e) {
-			this.logger.error(e.getMessage(),e);
-			this.redPacketPoolService.emptyPacket();
-		}
+			return 1;
+		}});
+		
 	}
 	
 }

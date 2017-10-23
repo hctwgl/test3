@@ -11,7 +11,7 @@ public interface AfRedPacketPoolService {
 	 * 注入红包
 	 * @param 
 	 */
-	public void inject(BlockingQueue<Redpacket> packets);
+	public void inject(BlockingQueue<String> packets);
 	
 	/**
 	 * 申请一个红包
@@ -40,6 +40,8 @@ public interface AfRedPacketPoolService {
 			this.couponId = couponId;
 			this.redRainRoundId = redRainRoundId;
 		}
+		
+		public Redpacket() {}
 		
 		public String getType() {
 			return type;
