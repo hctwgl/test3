@@ -38,18 +38,27 @@
         </div>
 
         <div class="couponWrap">
-            <div class="coupon">
-                <p>6000</p>
-                <p>满300元减20</p>
-            </div>
-            <div class="coupon couponclose">
-                <p>6000</p>
-                <p>满300元减20</p>
-            </div>
-            <div class="coupon couponclose">
-                <p>6000</p>
-                <p>满300元减20</p>
-            </div>
+            #foreach($item in $!{couponList})
+                #if(${item.userAlready}=='0')
+                    <div class="coupon" onclick="couponClick($!{item.rid},$(this))">
+                        <p>$!{item.amount}</p>
+                        #if(${item.limitAmount}=='0')
+                            <p>无门槛</p>
+                        #else
+                            <p>满$!{item.limitAmount}元减$!{item.amount}</p>
+                         #end
+                    </div>
+                 #else
+                     <div class="coupon couponclose" onclick="couponClick($!{item.rid},$(this))">
+                         <p>$!{item.amount}</p>
+                         #if(${item.limitAmount}=='0')
+                             <p>无门槛</p>
+                         #else
+                             <p>满$!{item.limitAmount}元减$!{item.amount}</p>
+                         #end
+                     </div>
+                #end
+            #end
         </div>
 
         <div class="swiper-container">
