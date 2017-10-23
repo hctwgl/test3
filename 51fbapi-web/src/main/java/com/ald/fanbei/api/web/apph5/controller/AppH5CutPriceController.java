@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -27,8 +30,16 @@ import com.alibaba.fastjson.JSONObject;
  * @date 2017-10-23 11:42:07
  *
  */
-@RestController("/activity/de")
+@RestController
+@RequestMapping("/activity/de")
 public class AppH5CutPriceController extends BaseController{
+	
+	@RequestMapping(value = "/cutPrice" ,method = RequestMethod.POST,produces = "text/html;charset = UTF-8")
+	public String share(HttpServletRequest request,HttpServletResponse response){
+		String resultStr = "";
+		
+		return resultStr;
+	}
 
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
