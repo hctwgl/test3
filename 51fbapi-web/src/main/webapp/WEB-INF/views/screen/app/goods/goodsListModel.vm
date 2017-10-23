@@ -11,6 +11,7 @@
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
     <input type="hidden" id="goodsList" value='$jsonUtil.toJSONString(${goodsList})'>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
+    <input type="hidden" id="couponList" name="couponList" value="$!{couponList}">
 
     #if($!{goodsList.size()}==0)
         <div class="nullPrompt">
@@ -34,6 +35,30 @@
                     </li>
                 #end
             </ul>
+        </div>
+
+        <div class="couponWrap">
+            #foreach($item in $!{couponList})
+                #if(${item.userAlready}=='0')
+                    <div class="coupon" onclick="couponClick($!{item.rid},$(this))">
+                        <p>$!{item.amount}</p>
+                        #if(${item.limitAmount}=='0')
+                            <p>无门槛</p>
+                        #else
+                            <p>满$!{item.limitAmount}元减$!{item.amount}</p>
+                         #end
+                    </div>
+                 #else
+                     <div class="coupon couponclose" onclick="couponClick($!{item.rid},$(this))">
+                         <p>$!{item.amount}</p>
+                         #if(${item.limitAmount}=='0')
+                             <p>无门槛</p>
+                         #else
+                             <p>满$!{item.limitAmount}元减$!{item.amount}</p>
+                         #end
+                     </div>
+                #end
+            #end
         </div>
 
         <div class="swiper-container">
