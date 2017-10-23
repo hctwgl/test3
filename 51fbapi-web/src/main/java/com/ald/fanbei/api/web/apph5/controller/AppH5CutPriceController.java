@@ -64,8 +64,13 @@ public class AppH5CutPriceController extends BaseController {
 	
 	/**
 	 * 
-	 * @Title: share @Description: 砍价接口 @param request @param response @return
-	 *         String @throws
+	 * @Title: share 
+	 * @Description: 砍价接口
+	 *  @param request 
+	 *  @param response 
+	 *  @return
+	 *         String 
+	 *  @throws
 	 */
 	@RequestMapping(value = "/share", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
 	public String share(HttpServletRequest request, HttpServletResponse response) {

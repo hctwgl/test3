@@ -41,25 +41,30 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 @RequestMapping("/activityH5/de")
 public class H5CutPriceController extends H5Controller {
 
-	@Resource 
+	@Resource
 	AfUserService afUserService;
 	@Resource
 	AfDeGoodsService afDeGoodsService;
-	@Resource 
+	@Resource
 	AfDeGoodsCouponService afDeGoodsCouponService;
-	@Resource 
+	@Resource
 	AfDeUserCutInfoService afDeUserCutInfoService;
-	@Resource 
+	@Resource
 	AfDeUserGoodsService afDeUserGoodsService;
 	@Resource
 	AfDeRandomPropertyService afDeRandomPropertyService;
-	
+
 	String opennative = "/fanbei-web/opennative?name=";
 
 	/**
 	 * 
-	 * @Title: cutPrice @Description: 砍价接口 @param requst @param response @return
-	 *         String 返回类型 @throws
+	 * @Title: cutPrice 
+	 * @Description: 砍价接口 
+	 * @param requst 
+	 * @param response 
+	 * @return
+	 *         String 返回类型
+	 * @throws
 	 */
 	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
 	public String cutPrice(HttpServletRequest requst, HttpServletResponse response) {
@@ -83,14 +88,11 @@ public class H5CutPriceController extends H5Controller {
 
 		return resultStr;
 	}
-	
+
 	/**
 	 * 
-	* @Title: convertUserNameToUserId
-	* @Description: 
-	* @param userName
-	* @return Long   
-	* @throws
+	 * @Title: convertUserNameToUserId @Description: @param userName @return
+	 * Long @throws
 	 */
 	private Long convertUserNameToUserId(String userName) {
 		Long userId = null;
