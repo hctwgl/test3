@@ -8,7 +8,65 @@
 </head>
 <body>
     <div id="doubleEleven">
-        
+        <div class="doubleEleven-top">
+            <p class="top-word">全民砍价</p>
+            <p class="top-word">11.1-11.11</p>
+            <p class="vertical-line"></p>
+            <p class="cutdown-word">活动倒计时：</p>
+            <p class="countDown-one">
+                <span>02</span>
+                <span>:</span>
+                <span>02</span>
+                <span>:</span>
+                <span>02</span>
+                <span>:</span>
+                <span>02</span>
+            </p>
+            <p class="calender">
+                <img src="" alt="">
+                <span>活动日历</span>
+            </p>
+            <div class="processBar">
+                <span class="dateOne">11.1-11.11</span>
+                <span class="dateTwo">11.9-11.11</span>
+                <span class="dateThree">11.11狂欢盛</span>
+                <span class="dateFour">11.13</span>
+                <img class="line" src="" alt="">
+                <span class="wordOne">全民砍价</span>
+                <span class="wordTwo">千万红包雨</span>
+                <span class="wordThree">分期+返利</span>
+                <span class="wordFour">‘再’见双十一</span>
+            </div>
+        </div>
+        <div class="doubleEleven-banner">
+            <div class="marquee"><img src="" alt=""></div>
+            <div class="fireworks"></div>
+        </div>
+        <div class="doubleEleven-activity">
+            <div class="coupon"></div>
+            <div class="bargain"></div>
+            <div class="redRain"></div>
+        </div>
+        <div class="doubleEleven-brand">
+            <div class="brandTitle">各大品牌专题</div>
+            <div class="brandDetail">
+                <span class="arrowLeft"><</span>
+                <span class="arrowRight">></span>
+                <div class="brandProduct">
+                    <span class="brandDes">苹果</span>
+                </div>
+                <div class="brandProduct">
+                    <span class="brandDes">苹果</span>
+                </div>
+                <div class="brandProduct">
+                    <span class="brandDes">苹果</span>
+                </div>
+                <div class="brandProduct">
+                    <span class="brandDes">苹果</span>
+                </div>
+            </div>
+        </div>
+        <div class="product-detail"></div>
     </div>
 </body>
 </html>
