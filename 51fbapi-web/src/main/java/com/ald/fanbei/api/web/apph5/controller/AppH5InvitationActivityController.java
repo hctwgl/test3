@@ -178,7 +178,7 @@ public class AppH5InvitationActivityController extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
-        }catch  (Exception e) {
+        }catch(Exception e) {
             logger.error("commitChannelRegister", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
