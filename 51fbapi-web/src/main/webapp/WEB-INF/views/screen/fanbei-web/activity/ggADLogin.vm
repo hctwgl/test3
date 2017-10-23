@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017123456789")
+    #set($version="201710231500")
     #set($src="https://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>登录</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/10/ggADlogin.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/10/ggadlogin.css?version=$version">
 </head>
 <body>
     <div id="login" class="login">
@@ -40,5 +40,5 @@
 </body>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
-<script type="text/javascript" src="/dist/activity/10/ggADlogin.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/10/ggadlogin.js?version=$version"></script>
 </html>
