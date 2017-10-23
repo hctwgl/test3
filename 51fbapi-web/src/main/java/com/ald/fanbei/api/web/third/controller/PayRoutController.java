@@ -480,8 +480,11 @@ public class PayRoutController {
 	 */
 	@RequestMapping(value = { "/addHomeBorrow" })
 	@ResponseBody
-	public  String addHomeBorrow(final Long orderId,final int nper, final Long userId,BigDecimal amount){
-		return afBorrowService.addHomeBorrow(orderId,nper,userId,amount);
+	public  String addHomeBorrow(final Long orderId,final int nper, final Long userId,BigDecimal amount) throws Exception {
+
+		String ret= afBorrowService.addHomeBorrow(orderId,nper,userId,amount);
+		String a =new String(ret.getBytes(),"UTF-8");
+		return a;
 	}
 
 }
