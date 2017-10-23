@@ -58,6 +58,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -116,6 +117,8 @@ public class H5BoluomeActivityController extends BaseController {
 	Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 	String refUseraName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
 	String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
+        String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
      try{
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
 	  AfUserDo refUserDo = new AfUserDo();
@@ -174,19 +177,15 @@ public class H5BoluomeActivityController extends BaseController {
 
 	    bizCacheUtil.saveObject(tokenKey, token, Constants.SECOND_OF_HALF_HOUR);
 
-//	    if (refUserDo == null) {
-//		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
-//
-//	    }
+
 	   
 	     //如果该用户在平台没有订单，绑定关系(注册和登录只能绑定一次)去掉？
 	    AfOrderDo queryCount = new AfOrderDo();
 	    queryCount.setUserId(UserDo.getRid());
 	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
 	    logger.info("orderCount = {}", orderCount);
-	    // <1?
-	    if(refUserDo!=null ){
-//	    if (orderCount > 0) {
+	
+	    if(refUseraName != null && StringUtil.isNotBlank(refUseraName) ){
 	    if (!userName.equals(refUseraName)) {
 		// 绑定关系refUserDo
 		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
@@ -197,9 +196,6 @@ public class H5BoluomeActivityController extends BaseController {
 		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
 		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
 	    }
-	    }
-//	   }
-
 	    // 登录成功进行埋点
 	    if (loginSource != null) {
 		String login = "";
@@ -214,10 +210,13 @@ public class H5BoluomeActivityController extends BaseController {
 		}
 		String reqData = request.toString();
 		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/boluomeActivityLogin", request.getParameter("userName"), login, "", "", "", "");
+	      } 
 	    } else {
-		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Login", "").toString();
-	    }
-
+		if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
+		    String reqData = request.toString();
+		    doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/boluomeActivityLogin", request.getParameter("userName"), typeFrom, typeFrom+typeFromNum, "", "", "");
+		}
+          }	  
 	} else {
 	    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5.getDesc(), "Login", "").toString();
 	}
@@ -289,6 +288,328 @@ public class H5BoluomeActivityController extends BaseController {
 	return couponUrl;
     }
 
+    // 提交菠萝觅活动注册
+    @ResponseBody
+    @RequestMapping(value = "/boluomeActivityRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String bouomeActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	// 执行时间
+	String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
+	// IP
+	String rmtIp = CommonUtil.getIpAddr(request);
+	String resultStr = "";
+
+	try {
+	    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
+	  //  String refUserName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
+	    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
+	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
+	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
+	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+	//    String registerSource = ObjectUtils.toString(request.getParameter("urlName"), "").toString();
+	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
+	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
+	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
+//	    if (registerSource == null || "".equals(registerSource)) {
+//		if (CookieUtil.getCookie(request, "urlName") != null) {
+//		    registerSource = CookieUtil.getCookie(request, "urlName").getValue();
+//		}
+//	    }
+
+	    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
+	    if (eUserDo != null) {
+		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "Register", null).toString();
+
+	    }
+	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
+	    if (smsDo == null) {
+		logger.error("sms record is empty");
+		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "Register", null).toString();
+		return resultStr;
+	    }
+
+	    String realCode = smsDo.getVerifyCode();
+	    if (!StringUtils.equals(verifyCode, realCode)) {
+		logger.error("verifyCode is invalid");
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "Register", null).toString();
+		return resultStr;
+	    }
+	    if (smsDo.getIsCheck() == 1) {
+		logger.error("verifyCode is already invalid");
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "Register", null).toString();
+		return resultStr;
+	    }
+	    // 判断验证码是否过期
+	    if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "Register", null).toString();
+		return resultStr;
+
+	    }
+	    try {
+		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
+	    } catch (Exception e) {
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
+		return resultStr;
+	    }
+
+	    // 更新为已经验证
+	    afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+
+	    String salt = UserUtil.getSalt();
+	    String password = UserUtil.getPassword(passwordSrc, salt);
+
+	    AfUserDo userDo = new AfUserDo();
+	    userDo.setSalt(salt);
+	    userDo.setUserName(moblie);
+	    userDo.setMobile(moblie);
+	    userDo.setNick("");
+	    userDo.setPassword(password);
+	    userDo.setRecommendId(0l);
+	    //邀请码
+	    if (!StringUtils.isBlank(recommendCode)) {
+		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+		userDo.setRecommendId(userRecommendDo.getRid());
+	    }
+	    afUserService.addUser(userDo);
+
+	    Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+	    String inviteCode = Long.toString(invteLong, 36);
+	    userDo.setRecommendCode(inviteCode);
+	    afUserService.updateUser(userDo);
+	    // 获取邀请分享地址
+	    String appDownLoadUrl = "";
+//	    AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
+//	    if (resourceCodeDo != null) {
+//		appDownLoadUrl = resourceCodeDo.getValue();
+//	    }
+	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
+	    // save token to cache
+            String  token1 = UserUtil.generateToken(moblie);
+	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
+	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
+	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
+	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
+	    //进行相应的埋点，送券
+	    if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
+		//送券
+		try{
+		     AfUserDo afUserDo = afUserService.getUserByUserName(moblie);
+		     if (afUserDo != null) {
+			        sentNewUserBoluomeCouponForChannel(afUserDo);
+		     }
+		   }catch (Exception e){
+				logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
+		}
+		//埋点
+		 String reqData = request.toString();
+		 doLog(reqData, H5CommonResponse.getNewInstance(true, "注册成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/bouomeActivityRegisterLogin", moblie, typeFrom, typeFrom+typeFromNum, "", "", "");
+	    }
+	  
+	    return resultStr;
+
+	} catch (FanbeiException e) {
+	    logger.error("commitRegister fanbei exception" + e.getMessage());
+	    resultStr = H5CommonResponse.getNewInstance(false, "失败", "Register", null).toString();
+	    return resultStr;
+	} catch (Exception e) {
+	    logger.error("commitRegister exception", e);
+	    resultStr = H5CommonResponse.getNewInstance(false, "失败", "Register", null).toString();
+	    return resultStr;
+	} finally {
+
+	}
+
+    }
+
+    private int sentNewUserBoluomeCouponForChannel(AfUserDo afUserDo) {
+	    // TODO Auto-generated method stub
+	     //平台没有订单且有绑定记录时送券
+	    AfOrderDo queryCount = new AfOrderDo();
+	    queryCount.setUserId(afUserDo.getRid());
+	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
+	    logger.info("orderCount = {}", orderCount);
+	    // <1?
+	    if (orderCount < 1) {
+		AfBoluomeActivityCouponDo queryCoupon = new AfBoluomeActivityCouponDo();
+		queryCoupon.setScopeApplication("INVITEE");
+		queryCoupon.setType("B");
+		List<AfBoluomeActivityCouponDo> sentCoupons = afBoluomeActivityCouponService.getListByCommonCondition(queryCoupon);
+		logger.info("sentCoupons=", sentCoupons);
+		if (sentCoupons.size() > 0) {
+		    for (AfBoluomeActivityCouponDo sentCoupon : sentCoupons) {
+			long resourceId = sentCoupon.getCouponId();
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(resourceId);
+			logger.info("resourceInfo = {}", resourceInfo);
+			// 查询是否已有该券，有，则不发
+			String status = getCouponYesNoStatus(resourceInfo, afUserDo);
+			if ("N".equals(status)) {
+			    if (resourceInfo != null) {
+				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+				JSONObject resultJson = JSONObject.parseObject(resultString);
+				String code = resultJson.getString("code");
+		        	 if ("0".equals(code)) {
+				  //发送短信
+	                	  String sendMessage = "";
+	    			   //设置文案
+	    		          String  type = "GG_LIGHT";
+	    			  String  secType = "GG_SMS_NEW";
+	    			  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+	    					if(resourceDo!=null){
+	    					  sendMessage = resourceDo.getValue();
+	    		                	  smsUtil.sendSms(afUserDo.getMobile(),sendMessage);
+	    		                	  logger.info("sentBoluomeCoupon sendSms:", afUserDo.getMobile(),sendMessage);
+	    			     }
+	    					  logger.info("sentBoluomeCoupon success", afUserDo.getMobile());
+	    					  return 0;
+			        }else{
+			            		 logger.info("sentBoluomeCoupon fail", afUserDo.getMobile(),resultString);
+			        }
+			    }
+			 }
+		    
+		   }
+	    }
+	  }
+	    
+	    return -1;
+	}
+    
+    
+    // 菠萝觅活动忘记密码获取短信验证码
+    @ResponseBody
+    @RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String boluomeActivityForgetPwd(HttpServletRequest request, ModelMap model) throws IOException {
+	String resultStr = "";
+	try {
+	    String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+	    String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
+	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+
+	    AfUserDo afUserDo = new AfUserDo();
+	    afUserDo = afUserService.getUserByUserName(mobile);
+
+	    if (afUserDo == null) {
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "ForgetPwd", null).toString();
+	    }
+	    try {
+		tongdunUtil.getPromotionForgetPwdSmsResult(token, null, null, CommonUtil.getIpAddr(request), mobile, mobile, "");
+	    } catch (Exception e) {
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGISTER_PWD_ERROR.getDesc(), "Register", null).toString();
+		return resultStr;
+	    }
+	    // 发送短信前,加入图片验证码验证
+	    String realCode = bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile).toString();
+
+	    if (!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())) {// 图片验证码不正确
+
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null).toString();
+		return resultStr;
+	    }
+	    bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
+	    if (afUserDo != null) {
+		boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
+		if (!resultForget) {
+		    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "ForgetPwd", null).toString();
+		} else {
+		    resultStr = H5CommonResponse.getNewInstance(true, "用户发送验证码成功", "ForgetPwd", null).toString();
+		}
+	    }
+	} catch (Exception e) {
+	    resultStr = H5CommonResponse.getNewInstance(false, e.getMessage(), "ForgetPwd", null).toString();
+	    logger.error("boluomeActivityForgetPwd fanbei exception" + e.getMessage());
+	}
+	return resultStr;
+    }
+
+    // 菠萝觅校验验证码
+    @ResponseBody
+    @RequestMapping(value = "/boluomeActivityCheckVerifyCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String checkVerifyCode(HttpServletRequest request, ModelMap model) throws IOException {
+	String resultStr = "";
+	try {
+	    String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
+	    String userName = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
+	    if (smsDo == null) {
+		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "ForgetPwd", null).toString();
+		return resultStr;
+	    }
+	    // 判断验证码是否一致并且验证码是否已经做过验证
+	    String realCode = smsDo.getVerifyCode();
+	    if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1) {
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "ForgetPwd", null).toString();
+		return resultStr;
+	    }
+	    // 判断验证码是否过期
+	    if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "ForgetPwd", null).toString();
+		return resultStr;
+	    }
+
+	} catch (Exception e) {
+	    return H5CommonResponse.getNewInstance(false, "boluomeActivityCheckVerifyCode fanbei exception", "ForgetPwd", null).toString();
+	}
+	return H5CommonResponse.getNewInstance(true, "验证码校验成功", "ResetPwd", null).toString();
+    }
+
+    // 菠萝觅活动重置密码
+    @ResponseBody
+    @RequestMapping(value = "/boluomeActivityResetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String boluomeActivityResetPwd(HttpServletRequest request, ModelMap model) throws IOException {
+	// String mobile = ObjectUtils.toString(request.getParameter("mobile"),
+	// "").toString();
+	String userName = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+	String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
+	String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
+	String resultStr = "";
+
+	if (StringUtil.isBlank(passwordSrc)) {
+	    resultStr = H5CommonResponse.getNewInstance(false, "密码为空", "ResetPwd", null).toString();
+	    return resultStr;
+	}
+
+	AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
+	if (smsDo == null) {
+	    resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "ResetPwd", null).toString();
+	    return resultStr;
+	}
+
+	// 判断验证码是否一致并且验证码是否已经做过验证
+	String realCode = smsDo.getVerifyCode();
+	if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1) {
+	    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "ResetPwd", null).toString();
+	    return resultStr;
+	}
+	// 判断验证码是否过期
+	if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+	    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "ResetPwd", null).toString();
+	    return resultStr;
+	}
+
+	AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+	if (afUserDo == null) {
+	    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "Register", null).toString();
+	    return resultStr;
+	}
+
+	String salt = UserUtil.getSalt();
+	String password = UserUtil.getPassword(passwordSrc, salt);
+	AfUserDo userDo = new AfUserDo();
+	userDo.setRid(afUserDo.getRid());
+	userDo.setSalt(salt);
+	userDo.setPassword(password);
+	userDo.setFailCount(0);
+	userDo.setUserName(userName);
+	afUserService.updateUser(userDo);
+	resultStr = H5CommonResponse.getNewInstance(true, "重置密码成功", "Login", null).toString();
+	// 验证码改为已验证
+	afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+	return resultStr;
+    }
+
+    
     // 提交菠萝觅活动注册
     @ResponseBody
     @RequestMapping(value = "/commitBouomeActivityRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -439,138 +760,8 @@ public class H5BoluomeActivityController extends BaseController {
 
     }
 
-    // 菠萝觅活动忘记密码获取短信验证码
-    @ResponseBody
-    @RequestMapping(value = "/boluomeActivityForgetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String boluomeActivityForgetPwd(HttpServletRequest request, ModelMap model) throws IOException {
-	String resultStr = "";
-	try {
-	    String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
-	    String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
-	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-
-	    AfUserDo afUserDo = new AfUserDo();
-	    afUserDo = afUserService.getUserByUserName(mobile);
-
-	    if (afUserDo == null) {
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "ForgetPwd", null).toString();
-	    }
-	    try {
-		tongdunUtil.getPromotionForgetPwdSmsResult(token, null, null, CommonUtil.getIpAddr(request), mobile, mobile, "");
-	    } catch (Exception e) {
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGISTER_PWD_ERROR.getDesc(), "Register", null).toString();
-		return resultStr;
-	    }
-	    // 发送短信前,加入图片验证码验证
-	    String realCode = bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile).toString();
-
-	    if (!realCode.toLowerCase().equals(verifyImgCode.toLowerCase())) {// 图片验证码不正确
-
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null).toString();
-		return resultStr;
-	    }
-	    bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
-	    if (afUserDo != null) {
-		boolean resultForget = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
-		if (!resultForget) {
-		    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "ForgetPwd", null).toString();
-		} else {
-		    resultStr = H5CommonResponse.getNewInstance(true, "用户发送验证码成功", "ForgetPwd", null).toString();
-		}
-	    }
-	} catch (Exception e) {
-	    resultStr = H5CommonResponse.getNewInstance(false, e.getMessage(), "ForgetPwd", null).toString();
-	    logger.error("boluomeActivityForgetPwd fanbei exception" + e.getMessage());
-	}
-	return resultStr;
-    }
-
-    // 菠萝觅校验验证码
-    @ResponseBody
-    @RequestMapping(value = "/boluomeActivityCheckVerifyCode", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String checkVerifyCode(HttpServletRequest request, ModelMap model) throws IOException {
-	String resultStr = "";
-	try {
-	    String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
-	    String userName = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
-	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
-	    if (smsDo == null) {
-		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "ForgetPwd", null).toString();
-		return resultStr;
-	    }
-	    // 判断验证码是否一致并且验证码是否已经做过验证
-	    String realCode = smsDo.getVerifyCode();
-	    if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1) {
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "ForgetPwd", null).toString();
-		return resultStr;
-	    }
-	    // 判断验证码是否过期
-	    if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "ForgetPwd", null).toString();
-		return resultStr;
-	    }
-
-	} catch (Exception e) {
-	    return H5CommonResponse.getNewInstance(false, "boluomeActivityCheckVerifyCode fanbei exception", "ForgetPwd", null).toString();
-	}
-	return H5CommonResponse.getNewInstance(true, "验证码校验成功", "ResetPwd", null).toString();
-    }
-
-    // 菠萝觅活动重置密码
-    @ResponseBody
-    @RequestMapping(value = "/boluomeActivityResetPwd", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String boluomeActivityResetPwd(HttpServletRequest request, ModelMap model) throws IOException {
-	// String mobile = ObjectUtils.toString(request.getParameter("mobile"),
-	// "").toString();
-	String userName = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
-	String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
-	String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
-	String resultStr = "";
-
-	if (StringUtil.isBlank(passwordSrc)) {
-	    resultStr = H5CommonResponse.getNewInstance(false, "密码为空", "ResetPwd", null).toString();
-	    return resultStr;
-	}
-
-	AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(userName, SmsType.FORGET_PASS.getCode());
-	if (smsDo == null) {
-	    resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "ResetPwd", null).toString();
-	    return resultStr;
-	}
-
-	// 判断验证码是否一致并且验证码是否已经做过验证
-	String realCode = smsDo.getVerifyCode();
-	if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 1) {
-	    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "ResetPwd", null).toString();
-	    return resultStr;
-	}
-	// 判断验证码是否过期
-	if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-	    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "ResetPwd", null).toString();
-	    return resultStr;
-	}
-
-	AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-	if (afUserDo == null) {
-	    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), "Register", null).toString();
-	    return resultStr;
-	}
-
-	String salt = UserUtil.getSalt();
-	String password = UserUtil.getPassword(passwordSrc, salt);
-	AfUserDo userDo = new AfUserDo();
-	userDo.setRid(afUserDo.getRid());
-	userDo.setSalt(salt);
-	userDo.setPassword(password);
-	userDo.setFailCount(0);
-	userDo.setUserName(userName);
-	afUserService.updateUser(userDo);
-	resultStr = H5CommonResponse.getNewInstance(true, "重置密码成功", "Login", null).toString();
-	// 验证码改为已验证
-	afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
-	return resultStr;
-    }
-
+    
+    
     public FanbeiExceptionCode getErrorCountCode(Integer errorCount) {
 	if (errorCount == 0) {
 	    return FanbeiExceptionCode.USER_PASSWORD_ERROR_ZERO;
