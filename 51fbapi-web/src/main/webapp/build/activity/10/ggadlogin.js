@@ -106,6 +106,8 @@ $(function () {
                         setTimeout(function () {
                             window.location.href = "ggadregister?activityId=" + activityId + "&urlName=" + urlName+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
                         }, 1500);
+                    }else if (data.url == "Login") {
+                        requestMsg(data.msg);
                     }
                 }
             })
