@@ -324,7 +324,12 @@ public class PayRoutController {
 				}
 			} else if(TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					String errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+					String errorWarnMsg = "";
+					if(StringUtil.isNotBlank(respDesc)){
+						errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+					}else{
+						errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+					}
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
