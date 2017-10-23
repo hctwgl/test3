@@ -100,6 +100,21 @@ html,body{
   top:50%;
   left:50%;
   margin: -2.8rem 0 0 -2.74rem;
+  .goBack{
+    position:absolute;
+    bottom:0;
+    left: 2rem;
+    width: 1.77rem;
+    height: .8rem;
+  }
+  .goAct{
+    position:absolute;
+    bottom: 1.5rem;
+    width: 3.77rem;
+    left: 1rem;
+    height: 1.1rem;
+    display: block;
+  }
 }
 .ward{
   width:5.77rem;
@@ -107,6 +122,7 @@ html,body{
   top:2rem;
   left:50%;
   margin: 0 0 0 -2.74rem;
+  display: none;
   .wardHeader{
     width: 5.77rem;
     height:1.55rem;
@@ -145,12 +161,19 @@ html,body{
       }
     }
   }
-  .wardBtn{
+  .goAct{
     width: 5.77rem;
     height:1.5rem;
     background: url("@{url}redRain10.png") no-repeat center;
     background-size:  100%;
   }
-  display: none;
-
+  .goBack{
+    width: .65rem;
+    height:.65rem;
+    background: url("@{url}redRain13.png") no-repeat center;
+    background-size:  100%;
+    position: absolute;
+    left:2.5rem;
+    bottom:-1.5rem;
+  }
 }

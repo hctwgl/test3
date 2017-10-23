@@ -17,10 +17,13 @@
     <div class="backward">
         <span></span>
     </div>
-    <div class="close"></div>
+    <a href="#" class="close"></a>
 
     <div class="gameWard">
-        <div class="noWard"></div>
+        <div class="noWard">
+            <a class="goAct" href="#"></a>
+            <a class="goBack" href="#"></a>
+        </div>
         <div class="ward">
             <div class="wardHeader"></div>
             <div class="wardContent">
@@ -29,7 +32,9 @@
                     <span class="wardTxt">获得50元现金红包</span>
                 </div>
             </div>
-            <div class="wardBtn"></div>
+            <a class="goAct" href="#"></a>
+            <a class="goBack" href="#"></a>
+
         </div>
     </div>
 </div>
