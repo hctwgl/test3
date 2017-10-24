@@ -477,6 +477,11 @@ public class AfResourceServiceImpl implements AfResourceService {
 	}
 
 	@Override
+	public List<AfResourceDo> getBackGroundByType(String code) {
+		return afResourceDao.getBackGroundByType(code);
+	}
+
+	@Override
 	public List<AfResourceDo> getNavigationUpOneResourceDoList(String code) {
 		return afResourceDao.getNavigationUpOneResourceDoList(code);
 	}

@@ -287,4 +287,13 @@
 		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
 		and value_4 ='O';
 	</select>
+
+	<select id="getBackGroundByType" resultType="AfResourceDo">
+		SELECT
+		name,value,value_1,value_3,sort
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND sec_type = '1'
+	</select>
 </mapper>

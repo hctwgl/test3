@@ -173,5 +173,6 @@ public interface AfResourceService {
 	List<AfResourceDo> getNavigationDownTwoResourceDoList(String code);
 
 	AfResourceDo getAfResourceAppVesion();
-	
+
+	List<AfResourceDo> getBackGroundByType(String code);
 }

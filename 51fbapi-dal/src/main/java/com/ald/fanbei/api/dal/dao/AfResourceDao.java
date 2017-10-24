@@ -145,4 +145,5 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getNavigationDownTwoResourceDoList(@Param("type")String type);
 
+    List<AfResourceDo> getBackGroundByType(String code);
 }

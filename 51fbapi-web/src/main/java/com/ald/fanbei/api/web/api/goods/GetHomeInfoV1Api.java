@@ -337,6 +337,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		}
 		moreGoodsInfo.put("moreGoodsList", moreGoodsList);
 		moreGoodsInfo.put("titleName", "更多商品");
+		//背景图配置
+		List<AfResourceDo> backgroundList = afResourceService.getBackGroundByType(ResourceType.HOMEPAGE_BACKGROUND.getCode());
+
 		// 顶部轮播
 		data.put("topBannerList", topBannerList);
 		// 快速导航
@@ -349,6 +352,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		data.put("activityInfoList", activityInfoList);
 		// 更多商品
 		data.put("moreGoodsInfo", moreGoodsInfo);
+		// 首页背景图
+		data.put("backgroundSet", backgroundList);
 		resp.setResponseData(data);
 		return resp;
 	}
