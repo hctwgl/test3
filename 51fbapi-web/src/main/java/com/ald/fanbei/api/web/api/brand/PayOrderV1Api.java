@@ -200,6 +200,8 @@ public class PayOrderV1Api implements ApiHandle {
 							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
 						}
 					}
+					
+					//更新砍价
 				} else {
 					FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
 					ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);

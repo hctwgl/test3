@@ -1,10 +1,5 @@
 package com.ald.fanbei.api.web.h5.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,16 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
-import com.ald.fanbei.api.biz.service.de.AfDeRandomPropertyService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiH5Context;
-import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -53,8 +42,6 @@ public class H5CutPriceController extends H5Controller {
 	AfDeUserCutInfoService afDeUserCutInfoService;
 	@Resource
 	AfDeUserGoodsService afDeUserGoodsService;
-	@Resource
-	AfDeRandomPropertyService afDeRandomPropertyService;
 
 	String opennative = "/fanbei-web/opennative?name=";
 
