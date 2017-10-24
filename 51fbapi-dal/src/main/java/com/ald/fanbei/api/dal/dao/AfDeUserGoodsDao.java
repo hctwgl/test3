@@ -15,6 +15,7 @@ public interface AfDeUserGoodsDao extends BaseDao<AfDeUserGoodsDo, Long> {
 
     /**
      * 获取用户可以购买的商品类型的价格
+     * 
      * @author gaojb
      * @Time 2017年10月24日 下午3:56:40
      * @param userId
@@ -23,4 +24,13 @@ public interface AfDeUserGoodsDao extends BaseDao<AfDeUserGoodsDo, Long> {
      */
     AfDeUserGoodsDo getUserGoodsPrice(@Param("userId") Long userId, @Param("goodsPriceId") Long goodsPriceId);
 
+    /**
+     * 更新砍价商品是否已经购买
+     * @author gaojb
+     * @Time 2017年10月24日 下午5:37:53
+     * @param id
+     * @param isBuy
+     * @return
+     */
+    int updateIsBuyById(@Param("rid") Long id, @Param("isbuy") Integer isBuy);
 }

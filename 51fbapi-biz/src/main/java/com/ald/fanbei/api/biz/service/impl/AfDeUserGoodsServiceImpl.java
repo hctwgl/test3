@@ -37,4 +37,10 @@ public class AfDeUserGoodsServiceImpl extends ParentServiceImpl<AfDeUserGoodsDo,
 
 	return afDeUserGoodsDao.getUserGoodsPrice(userId, goodsPriceId);
     }
+
+    @Override
+    public int updateIsBuyById(Long id, Integer isBuy) {
+
+	return afDeUserGoodsDao.updateIsBuyById(id, isBuy);
+    }
 }

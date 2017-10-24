@@ -20,5 +20,7 @@ public interface AfDeUserGoodsService extends ParentService<AfDeUserGoodsDo, Lon
      * @param goodsPriceId
      * @return
      */
-    AfDeUserGoodsDo getUserGoodsPrice(Long userId, Long goodsPriceId);
+    AfDeUserGoodsDo getUserGoodsPrice(Long userId, Long goodsPriceId);    
+    
+    int updateIsBuyById( Long id,  Integer isBuy);
 }

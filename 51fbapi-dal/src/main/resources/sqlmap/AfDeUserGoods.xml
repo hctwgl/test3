@@ -144,6 +144,12 @@
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
+    
+    <update id="updateIsBuyById">
+        UPDATE af_de_user_goods
+        set gmt_modified = sysdate(), isbuy = #{isbuy,jdbcType=INTEGER}
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
         SELECT
