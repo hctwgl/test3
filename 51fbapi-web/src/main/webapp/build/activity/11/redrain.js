@@ -171,7 +171,7 @@ let counttime = (order)=>{
       counttime(order)
     },20000)
   }, timestamp)
-}
+};
 
 window.onload = ()=>{
   //将当前时间的时间赋值给window.localtime,之后用后台请求数据替换
@@ -181,14 +181,23 @@ window.onload = ()=>{
         type:'post',
         success:function (data) {
             data=JSON.parse(data);
-            console.log(data)
+            console.log(data);
+            let currentTime=new Date().getTime();
+            let arr=data.data;
+            for(let i=0;i<arr.length;i++){
+              if(arr[i].gmtStart<currentTime){
+
+              }else{
+
+              }
+            }
         }
     });
-  window.localtime = new Date('2017/10/15 20:24:21')
+  window.localtime = new Date('2017/10/15 20:24:21');
 
-  let lateststatus = adjuststatus(checkorder(order))
+  let lateststatus = adjuststatus(checkorder(order));
 
-  execstatsu(order, lateststatus)
+  execstatsu(order, lateststatus);
 
   counttime(order)
-}
+};
