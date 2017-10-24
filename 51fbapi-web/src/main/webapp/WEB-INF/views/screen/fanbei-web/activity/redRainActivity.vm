@@ -17,12 +17,12 @@
     <div class="backward">
         <span></span>
     </div>
-    <a href="#" class="close"></a>
+    <a href="/fanbei-web/opennative?name= APP_CLOSE_H5" class="close"></a>
 
     <div class="gameWard">
         <div class="noWard">
-            <a class="goAct" href="#"></a>
-            <a class="goBack" href="#"></a>
+            <a class="goAct" href="redrain"></a>
+            <a class="goBack" href="/fanbei-web/opennative?name= APP_CLOSE_H5"></a>
         </div>
         <div class="ward">
             <div class="wardHeader"></div>
@@ -32,8 +32,8 @@
                     <span class="wardTxt">获得50元现金红包</span>
                 </div>
             </div>
-            <a class="goAct" href="#"></a>
-            <a class="goBack" href="#"></a>
+            <a class="goAct" href="redrain"></a>
+            <a class="goBack" href="/fanbei-web/opennative?name= APP_CLOSE_H5"></a>
 
         </div>
     </div>
