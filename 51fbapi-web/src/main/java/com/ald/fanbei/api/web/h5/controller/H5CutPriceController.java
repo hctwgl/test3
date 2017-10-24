@@ -29,7 +29,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 /**
  * 
  * @ClassName: H5CutPriceController
- * @Description: TODO(这里用一句话描述这个类的作用)
+ * @Description: 双十一砍价 H5
  * @author qiao
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @date 2017年10月23日 下午4:28:04
