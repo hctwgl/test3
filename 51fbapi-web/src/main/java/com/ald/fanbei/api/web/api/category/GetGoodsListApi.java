@@ -50,8 +50,7 @@ public class GetGoodsListApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Map<String, Object> data = new HashMap<String, Object>();
-        String level = ObjectUtils.toString(requestDataVo.getParams().get("level"),"3");
-        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),4l);
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
         Map<String,Object> activityData = new HashMap<String,Object> ();
         AfGoodsCategoryQuery query = getCheckParam(requestDataVo);
         List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);
@@ -109,7 +108,7 @@ public class GetGoodsListApi implements ApiHandle {
 
     private AfGoodsCategoryQuery getCheckParam(RequestDataVo requestDataVo){
         Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
-        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),4l);
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
         AfGoodsCategoryQuery query = new AfGoodsCategoryQuery();
         query.setPageNo(pageNo);
         query.setId(id);
