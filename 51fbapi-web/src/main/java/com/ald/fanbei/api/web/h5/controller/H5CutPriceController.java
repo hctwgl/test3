@@ -38,7 +38,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  *
  */
 @RestController
-@RequestMapping("/activityH5/de")
+@RequestMapping(value="/activityH5/de", produces = "application/json;charset=UTF-8")
 public class H5CutPriceController extends H5Controller {
 
 	@Resource
@@ -66,7 +66,7 @@ public class H5CutPriceController extends H5Controller {
 	 *         String 返回类型
 	 * @throws
 	 */
-	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST)
 	public String cutPrice(HttpServletRequest requst, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
