@@ -30,10 +30,10 @@
             AND cutmaxcount = #{cutmaxcount,jdbcType=INTEGER}
         </if>
         <if test="pricemin != null and pricemin != ''">
-            AND pricemin = #{pricemin,jdbcType=INTEGER}
+            AND pricemin = #{pricemin,jdbcType=DECIMAL}
         </if>
         <if test="pricemax != null and pricemax != ''">
-            AND pricemax = #{pricemax,jdbcType=INTEGER}
+            AND pricemax = #{pricemax,jdbcType=DECIMAL}
         </if>
     </sql>
 
@@ -85,10 +85,10 @@
 		       #{cutmaxcount,jdbcType=INTEGER},
 		    </if>
 		    <if test="pricemin != null" >
-		       #{pricemin,jdbcType=INTEGER},
+		       #{pricemin,jdbcType=DECIMAL},
 		    </if>
 		    <if test="pricemax != null" >
-		       #{pricemax,jdbcType=INTEGER},
+		       #{pricemax,jdbcType=DECIMAL},
 		    </if>
         </trim>
     </insert>

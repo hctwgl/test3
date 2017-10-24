@@ -50,12 +50,12 @@ import java.math.BigDecimal;
     /**
      * 砍价金额最小随机数
      */
-    private Integer pricemin;
+    private BigDecimal pricemin;
 
     /**
      * 砍价金额最大随机数
      */
-    private Integer pricemax;
+    private BigDecimal pricemax;
 
 
     /**
@@ -167,40 +167,22 @@ import java.math.BigDecimal;
       this.cutmaxcount = cutmaxcount;
     }
 
-    /**
-     * 获取砍价金额最小随机数
-     *
-     * @return 砍价金额最小随机数
-     */
-    public Integer getPricemin(){
-      return pricemin;
-    }
+	public BigDecimal getPricemin() {
+		return pricemin;
+	}
 
-    /**
-     * 设置砍价金额最小随机数
-     * 
-     * @param pricemin 要设置的砍价金额最小随机数
-     */
-    public void setPricemin(Integer pricemin){
-      this.pricemin = pricemin;
-    }
+	public void setPricemin(BigDecimal pricemin) {
+		this.pricemin = pricemin;
+	}
 
-    /**
-     * 获取砍价金额最大随机数
-     *
-     * @return 砍价金额最大随机数
-     */
-    public Integer getPricemax(){
-      return pricemax;
-    }
+	public BigDecimal getPricemax() {
+		return pricemax;
+	}
 
-    /**
-     * 设置砍价金额最大随机数
-     * 
-     * @param pricemax 要设置的砍价金额最大随机数
-     */
-    public void setPricemax(Integer pricemax){
-      this.pricemax = pricemax;
-    }
+	public void setPricemax(BigDecimal pricemax) {
+		this.pricemax = pricemax;
+	}
+
+   
 
 }

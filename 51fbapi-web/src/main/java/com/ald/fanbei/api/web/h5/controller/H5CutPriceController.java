@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,8 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
@@ -65,24 +69,23 @@ public class H5CutPriceController extends H5Controller {
 	 * @throws
 	 */
 	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST)
-	public String cutPrice(HttpServletRequest requst, HttpServletResponse response) {
+	public String cutPrice(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
-		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(requst, true);
-
-		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "没有登录").toString();
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
-				Map<String, Object> data = new HashMap<>();
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				logger.error("/activityH5/cutPrice" + context + "login error ");
-				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			String userIdStr = request.getParameter("userId");
+			String openId = request.getParameter("openId");
+			String nickName = request.getParameter("nickName");
+			String headImagUrl = request.getParameter("headImgUrl");
+			if (StringUtil.isAllNotEmpty(userIdStr,openId,nickName,headImagUrl)) {
+				
+				
 			}
+		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "砍价失败").toString();
+			logger.error("/activity/de/share error = {}", e.getStackTrace());
+			
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error("/activity/de/share error = {}", e.getStackTrace());
 		}
 
 		return resultStr;
