@@ -74,6 +74,7 @@ public class H5CutPriceController extends H5Controller {
 			context = doH5Check(requst, true);
 
 		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "没有登录").toString();
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
@@ -87,23 +88,6 @@ public class H5CutPriceController extends H5Controller {
 		}
 
 		return resultStr;
-	}
-
-	/**
-	 * 
-	 * @Title: convertUserNameToUserId @Description: @param userName @return
-	 * Long @throws
-	 */
-	private Long convertUserNameToUserId(String userName) {
-		Long userId = null;
-		if (!StringUtil.isBlank(userName)) {
-			AfUserDo user = afUserService.getUserByUserName(userName);
-			if (user != null) {
-				userId = user.getRid();
-			}
-
-		}
-		return userId;
 	}
 
 	@Override
