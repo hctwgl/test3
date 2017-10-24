@@ -13,7 +13,7 @@ public class RedRainTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = "13656640521";
+	String userName = "13370127054";
 	
 	/**
 	 * 自动注入登陆令牌
