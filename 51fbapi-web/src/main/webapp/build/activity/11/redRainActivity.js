@@ -81,10 +81,9 @@ $(document).ready(function() {
             let str='';
             for(let i=0;i<couponArr.length;i++){
                 str+=`<div class="wardCoupon">
-                          <span class="wardMoney"><span>￥</span>${couponArr[i].couponName}</span>
+                          <span class="wardMoney"><span>￥</span>${couponArr[i].amount}</span>
                           <span class="wardTxt">${couponArr[i].couponName}</span>
-        
-                </div>`;
+                      </div>`;
             }
             $('.wardCoupon').html(str);
             $(".gameWard").show();
