@@ -1,16 +1,7 @@
 /**
  * Created by nizhiwei-labtop on 2017/7/18.
  */
-$(".first").each(function() {
-    var img = $(this);
-    img.load(function () {
-        $(".loadingMask").fadeOut();
-        console.log(2)
-    });
-    setTimeout(function () {
-        $(".loadingMask").fadeOut();
-    },1000)
-});
+
 let vue=new Vue({
     el:'#vueCon',
     data:{
@@ -39,6 +30,14 @@ let vue=new Vue({
         sp(a,b){
             let data=a.split(',');
             return data[b]
+        },
+        imgSwiper(){
+            let mySwiper = new Swiper ('.banner', {
+                loop: true,
+                autoplay : 4000,
+                pagination: '.img-pagination',
+
+            });
         },
         swiper(){
             let title=[this.content.tabList[0].name,this.content.tabList[1].name,this.content.tabList[2].name,this.content.tabList[3].name];
@@ -84,6 +83,7 @@ let vue=new Vue({
                         self.barShow=false
                     }
                     self.$nextTick(function(){
+                        self.imgSwiper();
                         self.swiper();
                         if(getBlatFrom()==2){
                             window.addEventListener('touchstart', self.handleScroll);

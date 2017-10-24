@@ -5,10 +5,9 @@
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/07")
     <title>借贷超市</title>
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
-    <link rel="stylesheet" type="text/css" href="/dist/activity/wy/wyBorrow.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/07/otherBorrow.css">
 </head>
 <body>
-<div class="loadingMask"><i class="loading"></i></div>
 <div id="vueCon">
     <div class="bar" v-if="barShow">
         <img class="fl" src="$commonUrl/lb.png">
