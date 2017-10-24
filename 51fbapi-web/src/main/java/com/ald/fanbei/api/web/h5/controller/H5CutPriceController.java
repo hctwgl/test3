@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.ui.context.Theme;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,16 +21,10 @@ import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
-import com.ald.fanbei.api.biz.service.de.AfDeRandomPropertyService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiH5Context;
-import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfDeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfDeUserCutInfoDo;
@@ -62,8 +56,7 @@ public class H5CutPriceController extends H5Controller {
 	AfDeUserCutInfoService afDeUserCutInfoService;
 	@Resource
 	AfDeUserGoodsService afDeUserGoodsService;
-	@Resource
-	AfDeRandomPropertyService afDeRandomPropertyService;
+
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
 

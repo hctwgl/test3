@@ -144,6 +144,12 @@
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
+    
+    <update id="updateIsBuyById">
+        UPDATE af_de_user_goods
+        set gmt_modified = sysdate(), isbuy = #{isbuy,jdbcType=INTEGER}
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
         SELECT
@@ -166,6 +172,14 @@
         <include refid="queryFields" />
         FROM af_de_user_goods
         <include refid="commonCondition"/>
+    </select>
+    
+    <select id="getUserGoodsPrice" resultType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_de_user_goods
+        Where
+        where g.userId = #{userId} and g.goodsPriceId = #{goodsPriceId} and g.isBuy = 0 and g.is_delete = 0
     </select>
     
 </mapper>

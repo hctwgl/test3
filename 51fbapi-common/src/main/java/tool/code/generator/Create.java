@@ -19,7 +19,7 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 
-		String tables = "af_de_goods,af_de_goods_coupon,af_de_random_property,af_de_user_cutInfo,af_de_user_goods";//"af_maoyan_order,af_maoyan_filmlist,af_maoyan_filmcrawl,af_maoyan_showlist,af_maoyan_hotcomment,af_maoyan_cinemafeature,af_maoyan_cinema,af_maoyan_city,af_maoyan_district,af_maoyan_film,af_maoyan_filmmember,af_maoyan_filmsp,af_maoyan_filmtrailer,af_maoyan_hall,af_maoyan_hallseat";
+		String tables = "af_de_order_cutprice,af_de_goods,af_de_goods_coupon,af_de_random_property,af_de_user_cutInfo,af_de_user_goods";//"af_maoyan_order,af_maoyan_filmlist,af_maoyan_filmcrawl,af_maoyan_showlist,af_maoyan_hotcomment,af_maoyan_cinemafeature,af_maoyan_cinema,af_maoyan_city,af_maoyan_district,af_maoyan_film,af_maoyan_filmmember,af_maoyan_filmsp,af_maoyan_filmtrailer,af_maoyan_hall,af_maoyan_hallseat";
 
 		// 配置作者及Domain说明
 		String classAuthor = "gaojibin_temple";
