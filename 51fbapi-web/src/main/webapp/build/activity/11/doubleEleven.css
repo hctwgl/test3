@@ -14,6 +14,9 @@
 body {
   background-color: #fe181a;
 }
+.hide {
+  display: none;
+}
 .doubleEleven-top {
   background: url('http://f.51fanbei.com/h5/app/activity/11/meeting_08.jpg') no-repeat;
   background-size: contain;
@@ -37,7 +40,10 @@ body {
   left: 0;
   font-size: 0.2rem;
   padding: 0.2rem 0.56rem;
-  display: none;
+}
+.active01 {
+  background-color: white;
+  color: rgba(85, 14, 92, 0.8);
 }
 .top-word {
   position: absolute;
@@ -167,7 +173,7 @@ body {
 }
 .ten {
   position: absolute;
-  left: 31%;
+  left: 33%;
   top: 0.3rem;
   font-size: 0.21rem;
   color: white;
@@ -243,7 +249,7 @@ body {
 .countTwo {
   position: absolute;
   left: 10%;
-  top: 67%;
+  top: 69%;
   font-size: .21rem;
   color: black;
 }
@@ -261,7 +267,7 @@ body {
 .countThree {
   position: absolute;
   left: 10%;
-  top: 63%;
+  top: 64%;
   font-size: .21rem;
   color: black;
 }
@@ -283,13 +289,20 @@ body {
   text-align: center;
   line-height: 2.4rem;
 }
-.brandDetail {
+.brandBox {
   position: absolute;
   top: 4.2rem;
   left: 0;
-  margin-left: 0.5%;
+  width: 7.5rem;
+  height: 3.7rem;
+  overflow: hidden;
+}
+.brandDetail {
+  top: 4.2rem;
+  left: 0;
   background-color: pink;
-  padding: 0 0.1rem;
+  width: 15rem;
+  height: 3.7rem;
 }
 .brandProduct {
   display: inline-block;
@@ -309,6 +322,7 @@ body {
   color: #747474;
   margin-top: -0.5rem;
   margin-left: 0.8rem;
+  float: inherit;
 }
 .arrowLeft {
   position: absolute;
@@ -328,17 +342,59 @@ body {
   color: #8e8e8e;
   z-index: 999;
 }
+ul {
+  padding-left: 0.1rem;
+  overflow: hidden;
+  height: 3.7rem;
+}
+ul li {
+  float: left;
+  margin-right: 0.05rem;
+}
+.product-nav {
+  height: 0.55rem;
+  width: 7.5rem;
+  font-size: 0.274rem;
+  color: #f9a37d;
+  padding-left: 0.52rem;
+  overflow: hidden;
+}
+.product-nav span {
+  height: 0.52rem;
+  margin-right: 0.35rem;
+}
+.product-nav .caizhuang {
+  margin-right: 0.2rem;
+}
+.product-nav .arrow-end {
+  width: 0.47rem;
+  height: 0.13rem;
+  margin-right: 0.2rem;
+}
+.product-nav .bottomLine {
+  border-bottom: 1px solid white;
+}
 .product-detail {
   background: url('http://f.51fanbei.com/h5/app/activity/11/meeting_11.png') no-repeat;
   background-size: contain;
   width: 100%;
   height: 9rem;
 }
+.content-detail {
+  background: url('https://f.51fanbei.com/h5/app/activity/11/meeting_10.png') no-repeat;
+  background-size: contain;
+  width: 7.5rem;
+  height: 8.29rem;
+}
 .cont {
+  width: 100%;
+}
+.contentDetail {
   width: 46%;
+  height: 5.29rem;
+  float: left;
   margin: 0 0 .2rem 2.66%;
   background: #fff;
-  float: left;
 }
 .cont .goodImg {
   width: 2.8rem;

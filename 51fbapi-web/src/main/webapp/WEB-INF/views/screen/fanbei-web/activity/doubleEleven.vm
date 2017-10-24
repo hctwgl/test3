@@ -31,10 +31,10 @@
                 <span class="calender-word">活动日历</span>
             </p>
             <div class="processBar">
-                <span class="dateOne">11.1-11.11</span>
-                <span class="dateTwo">11.9-11.11</span>
-                <span class="dateThree">11.11狂欢盛</span>
-                <span class="dateFour">11.13</span>
+                <span class="dateOne active active01">11.1-11.11</span><!--<span class="tangle"></span>!-->
+                <span class="dateTwo active">11.9-11.11</span>
+                <span class="dateThree active">11.11狂欢盛</span>
+                <span class="dateFour active">11.13</span>
                 <img class="line" src="$src/meeting_14.png" alt="">
                 <span class="wordOne">全民砍价</span>
                 <span class="wordTwo">千万红包雨</span>
@@ -49,17 +49,17 @@
             <div class="fireworks"><img src="$src/meeting_12.gif" alt=""></div>
         </div>
         <div class="doubleEleven-activity">
-            <!--优惠券部分!-->            
-            <div class="coupon">
+            <!--优惠券部分!-->         
+            <div class="coupon" v-for="item in m"  @click="couponClick(item)">
                 <span class="ten">神劵不是天天有！10:00开抢</span>
-                <span class="couponPrice"><i class="daiwei">￥</i>100 <i class="yuan">元</i></span>
+                <span class="couponPrice"><i class="daiwei">￥</i>{{item.amount}} <i class="yuan">元</i></span>
                 <span class="all">全场通用</span>
-                <span class="full">满499使用</span>
-                <span class="end">(每日限1000张，抢完为止)</span>
+                <span class="full">满{{item.limitAmount}}使用</span>
+                <span class="end">（每日限1000张，抢完为止！）</span>
                 <span class="click">点击<br/>领取</span>
             </div>
             <div class="bargain">
-                <span class="makeDown">全面砍价</span>
+                <span class="makeDown">全民砍价</span>
                 <span class="leave">距离活动开始还剩</span>
                 <span class="countTwo">05天：06时：00分：00秒</span>
             </div>
@@ -71,58 +71,138 @@
              <!--品牌专题!-->
             <div class="doubleEleven-brand">
                 <div class="brandTitle">各大品牌专题</div>
-                <div class="brandDetail clearFix">
-                    <span class="arrowLeft"><</span>
-                    <span class="arrowRight">></span>
-                    <div class="brandProduct">
-                        <img class="brand-img" src="" alt="">
-                        <span class="brandDes">苹果</span>
-                    </div>
-                    <div class="brandProduct">
-                        <img class="brand-img" src="" alt="">
-                        <span class="brandDes">苹果</span>
-                    </div>
-                    <div class="brandProduct">
-                        <img class="brand-img" src="" alt="">
-                        <span class="brandDes">苹果</span>
-                    </div>
-                    <div class="brandProduct">
-                        <img class="brand-img" src="" alt="">
-                        <span class="brandDes">苹果</span>
-                    </div>
-                    <div class="brandProduct">
-                        <img class="brand-img" src="" alt="">
-                        <span class="brandDes">苹果</span>
-                    </div>
+                <div class="brandBox">
+                    <ul class="brandDetail clearFix">
+                        <span class="arrowLeft"><</span>
+                        <span class="arrowRight">></span>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="brandProduct">
+                                <img class="brand-img" src="" alt="">
+                                <span class="brandDes">苹果</span>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
         <!--商品详情部分!-->
         <div class="product-detail clearFix">
-            <div class="cont">
-                    <p class="goodImg"><img class="lazy" src=""></p>
-                    <div class="product-bottom">
-                        <p class="goodName">帮宝适透气干爽纸尿裤干爽一整天</p>
-                        <p class="price">
-                            <span class="salePrice">￥3699.00</span>
-                            <span class="fan-img">返</span>
-                            <span class="fanMoney">￥300.00</span>
-                        </p>
-                        <p class="monthPrice">月供 ￥14.00 起</p>
-                    </div>
+            <div class="product-nav">
+                <span class="bottomLine" v-for="(item,i) in productList" @click="tabClick(i)">{{item.name}}</span>
+                <!--<span>男装</span>
+                <span>女装</span>
+                <span>运动</span>
+                <span>手表</span>
+                <span class="caizhuang">彩妆</span>!-->
+                <i class="arrow-end" @click="tabClickTwo()"><img src="$src/arrow_end.png" alt=""></i>
             </div>
-            <div class="cont">
-                    <p class="goodImg"><img class="lazy" src=""></p>
-                    <div class="product-bottom">
-                        <p class="goodName">帮宝适透气干爽纸尿裤干爽一整天</p>
-                        <p class="price">
-                            <span class="salePrice">￥3699.00</span>
-                            <span class="fan-img">返</span>
-                            <span class="fanMoney">￥300.00</span>
-                        </p>
-                        <p class="monthPrice">月供 ￥14.00 起</p>
-                    </div>
-            </div>     
+            <div calss="content-detail">
+                <div class="cont" v-for="(item,i) in productList" :class="i+1 ===tab?'':'hide'">
+                    <div class="contentDetail" v-for="p in item.activityGoodsList" >
+                        <p class="goodImg"><img class="lazy" :src="p.goodsIcon"></p>
+                        <div class="product-bottom">
+                            <p class="goodName">{{p.goodName}}</p>
+                            <p class="price">
+                                <span class="salePrice">￥{{p.saleAmount}}</span>
+                                <span class="fan-img">返</span>
+                                <span class="fanMoney">￥{{p.rebateAmount}}</span>
+                            </p>
+                            <p class="monthPrice" v-if="p.nperMap.isFree==='0'">月供 ￥{{itpem.nperMap.amount}} 起</p>
+                            <p class="monthPrice" v-if="p.nperMap.isFree==='1' || p.nperMap.isFree==='2'">月供 ￥{{p.nperMap.freeAmount}} 起</p>
+                        </div>
+                    </div>   
+                </div>
+            </div>    
         </div>
     </div>
 </body>
