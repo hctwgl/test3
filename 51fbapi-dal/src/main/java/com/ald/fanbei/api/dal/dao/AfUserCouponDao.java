@@ -116,6 +116,16 @@ public interface AfUserCouponDao {
 	 * 批量发给用户优惠券
 	 */
 	void batchAddUserCoupon(@Param("userCouponList") List<AfUserCouponDo> userCouponList);
+	
+	/**
+	 * 根据用户Id和couponId查询用户的优惠券
+	 * @param userId
+	 * @param couponId
+	 * @return
+	 * 
+	 * **/
+	List<AfUserCouponDto> getUserCouponListByUserIdAndCouponId(@Param("userId")Long userId,@Param("couponId")Long couponId);
+	
 
 	List<AfUserCouponDto> getActivitySpecialCouponByAmount(@Param("userId")Long userId, @Param("amount")BigDecimal amount,
 			@Param("activityId")Long activityId, @Param("activityType")String activityType);

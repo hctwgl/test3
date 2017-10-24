@@ -121,6 +121,17 @@ public interface AfUserCouponService {
 
 	AfUserCouponDto getSubjectUserCouponByAmountAndCouponId(Long userId, BigDecimal actualAmount, String couponId);
 
+	/**
+	 * 根据用户Id和couponId查询用户的优惠券
+	 * @param userId
+	 * @param couponId
+	 * @return
+	 * 
+	 * **/
+	List<AfUserCouponDto> getUserCouponListByUserIdAndCouponId(Long userId,Long couponId);
+
 	List<AfUserCouponDto> getActivitySpecialCouponByAmount(Long userId, BigDecimal actualAmount,Long activityId, String activityType);
+
+	void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef);
 
 }

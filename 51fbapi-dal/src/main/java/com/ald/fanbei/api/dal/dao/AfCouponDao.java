@@ -22,10 +22,16 @@ public interface AfCouponDao {
 	AfCouponDo getCouponById(@Param("couponId")Long couponId);
 	
 	int updateCouponquotaAlreadyById(AfCouponDo couponDo);
-
+	
 	AfCouponDo getCouponInfoById(@Param("couponId")Long couponId);
 
 	List<String> getCouponNames(@Param("ids")List<String> ids);
+	
+	/**
+	 * 根据优惠券id更新券的数量
+	 * @ param couponDo
+	 * **/
+	int updateCouponquotaAndCouponquotaAlreadyById(AfCouponDo couponDo);
 
 	List<AfCouponDto> getCouponByActivityIdAndType(@Param("activityId")Long activityId, @Param("activityType")String activityType);
 

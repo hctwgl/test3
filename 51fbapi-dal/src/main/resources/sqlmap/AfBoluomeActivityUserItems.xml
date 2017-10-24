@@ -177,7 +177,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
         <include refid="commonCondition"/>
     </select>
     <select id="getItemsByActivityIdUserId" resultType="java.lang.Long">
-    	SELECT
+ 	SELECT
 		items_id
 		FROM
 			(
@@ -187,11 +187,10 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,status,sour
 				FROM
 					af_boluome_activity_user_items
 				WHERE
-					boluome_activity_id = #{activityId} 
-				AND user_id = #{userId} GROUP BY items_id
+					boluome_activity_id = #{activityId}
+				AND user_id = #{userId} 
+				and is_delete =0 GROUP BY items_id
 			) AS t
-		WHERE
-			num > 1
     </select>
     
     

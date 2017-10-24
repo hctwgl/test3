@@ -191,5 +191,12 @@
         FROM af_fund_side_borrow_cash
         <include refid="commonCondition"/>
     </select>
+               
+    <select id="getRecordByBorrowCashId" resultType="com.ald.fanbei.api.dal.domain.AfFundSideBorrowCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_fund_side_borrow_cash
+        WHERE  borrow_cash_id=#{borrowCashId} limit 1
+    </select>
     
 </mapper>

@@ -120,7 +120,7 @@ public class DigestUtil{
 	        } 
 	        return stb.toString(); 
 		} catch (NoSuchAlgorithmException e) {
-//			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			throw new FanbeiException("sign is error",FanbeiExceptionCode.SYSTEM_ERROR);
 		}
     }

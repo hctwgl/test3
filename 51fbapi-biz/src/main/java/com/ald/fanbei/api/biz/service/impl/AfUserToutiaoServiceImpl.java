@@ -44,12 +44,22 @@ public class AfUserToutiaoServiceImpl implements AfUserToutiaoService {
 	}
 
 	@Override
-	public Long uptUserActive(Long rid,Long userIdToutiao) {
-		return afUserToutiaoDao.uptUserActive(rid,userIdToutiao);
+	public Long uptUserActive(Long rid,Long userIdToutiao, String userNameToutiao) {
+		return afUserToutiaoDao.uptUserActive(rid,userIdToutiao,userNameToutiao);
 	}
 
 	@Override
 	public AfUserToutiaoDo getUserActive(String imei, String androidid, String idfa) {
 		return afUserToutiaoDao.getUserActive(imei,androidid,idfa);
+	}
+
+	@Override
+	public AfUserToutiaoDo getUserOpen(String imei, String androidid, String idfa) {
+		return afUserToutiaoDao.getUserOpen(imei,androidid,idfa);
+	}
+
+	@Override
+	public Long uptUserOpen(Long rid, Long userIdToutiao, String userNameToutiao) {
+		return afUserToutiaoDao.uptUserOpen(rid,userIdToutiao,userNameToutiao);
 	}
 }

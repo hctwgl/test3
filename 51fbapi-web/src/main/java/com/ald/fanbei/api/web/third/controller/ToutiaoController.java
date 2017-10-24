@@ -123,9 +123,9 @@ public class ToutiaoController extends BaseController {
         String timeStamp = ObjectUtils.toString(request.getParameter("timestamp"), null);
         String callbackUrl = ObjectUtils.toString(request.getParameter("callback_url"), null);
         if(StringUtil.isNotEmpty(callbackUrl)){
-            if(callbackUrl.indexOf("&event_type")==-1){
+            /*if(callbackUrl.indexOf("&event_type")==-1){
                 callbackUrl+="&event_type=1";
-            }
+            }*/
             if(os!=null){
                 if(callbackUrl.indexOf("&os")==-1){
                     callbackUrl = callbackUrl + "&os=" + os;

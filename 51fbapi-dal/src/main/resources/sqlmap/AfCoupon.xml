@@ -88,7 +88,24 @@
 		AND
 			id = #{couponId}
 	</update>
-	
+	<update id="updateCouponquotaAndCouponquotaAlreadyById" parameterType="AfCouponDo">
+		UPDATE
+			af_coupon
+		SET
+			gmt_modified = NOW()
+			<if test="quota != null">
+    	  ,quota=quota-#{quota}
+	   </if>
+		<if test="quotaAlready != null">
+    	  ,quota_already=quota_already + #{quotaAlready}
+	   </if>
+		WHERE
+			is_delete = 0
+		And
+			quota >=1
+		AND
+			id = #{rid}
+	</update>
 	<select id="getCouponNames" resultType="String">
 		SELECT
 	   		name

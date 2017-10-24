@@ -97,5 +97,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		}
 		return rowNums;
 	}
+	@Override
+	public AfGoodsDo checkIsSelfBuild(String numId) {
+		return afGoodsDao.checkIsSelfBuild(numId);
+	}
 
 }

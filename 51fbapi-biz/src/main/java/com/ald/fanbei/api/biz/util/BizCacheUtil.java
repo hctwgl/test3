@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.biz.util;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -11,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
@@ -35,9 +40,16 @@ public class BizCacheUtil extends AbstractThird {
 
 	@Resource
 	private RedisTemplate<String, Object> redisTemplate;
-
+	@Resource(name = "redisIntegerTemplate")
+	private RedisTemplate<String,Integer> redisIntegerTemplate;
 	@Resource(name = "redisTemplate")
 	private SetOperations<String, Object> setOps;
+	
+	@Resource(name = "redisStringTemplate")
+	private HashOperations<String, String, String> hashOps;
+	
+	@Resource(name = "redisStringTemplate")
+	private ListOperations<String, String> listOps;
 
 	/**
 	 * 保存到缓存，过期时间为默认过期时间
@@ -50,7 +62,7 @@ public class BizCacheUtil extends AbstractThird {
 	public void saveObject(final String key, final Serializable seriObj) {
 		this.saveObject(key, seriObj, Constants.SECOND_OF_TEN_MINITS);
 	}
-
+	
 	/**
 	 * 保存到缓存，并设定过期时间
 	 * 
@@ -78,7 +90,21 @@ public class BizCacheUtil extends AbstractThird {
 			logger.error("saveObject", e);
 		}
 	}
-
+	
+	/**
+	 * 执行jedis的incr命令
+	 * 
+	 * **/
+	public long incr(final String key){
+		try {
+			Long r = redisIntegerTemplate.opsForValue().increment(key, 1);
+			return r;
+		} catch (Exception e) {
+			logger.error("decr", e);
+		}
+		return 0l;
+	}
+	
 	public void saveObjectForever(final String key, final Serializable seriObj) {
 		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || seriObj == null) {
 			return;
@@ -357,6 +383,22 @@ public class BizCacheUtil extends AbstractThird {
 			return null;
 		}
 	}
+	
+	/**
+	 * 查询keys,正则表达式
+	 * @return 
+	 */
+	public Set<String> keys(String pattern) {
+		return redisTemplate.keys(pattern);
+	}
+	
+	/**
+	 * 批量删除Keys
+	 * @return 
+	 */
+	public void del(Collection<String> keys) {
+		redisTemplate.delete(keys);
+	}
 
 	/**
 	 * 数据类型为List的数据写入缓存
@@ -385,6 +427,60 @@ public class BizCacheUtil extends AbstractThird {
 	public Boolean isRedisSetValue(final String key, final Object value) {
 		return setOps.isMember(key, value);
 	}
+	
+	
+	/**
+	 * Hash 操作
+	 * @param timeout 单位s
+	 */
+	public void hset(String key, String hkey, String value) {
+		hashOps.put(key, hkey, value);
+	}
+	public void hset(String key, String hkey, String value, long timeout) {
+		long curTimeout = redisTemplate.getExpire(key);
+		hashOps.put(key, hkey, value);
+		if(curTimeout == -1) { // -2不存在, -1永久
+			redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+		}
+	}
+	public void hdel(String key, String hkey) {
+		try {
+			hashOps.delete(key, hkey);
+		} catch (Exception e) {
+			logger.error("hdel" + key, e);
+		}
+	}
+	public String hget(String key, String hkey) {
+		try {
+			return hashOps.get(key, hkey);
+		} catch (Exception e) {
+			logger.error("hget" + key, e);
+			return null;
+		}
+	}
+	public void hincrBy(String key, String hkey, Long delta) {
+		try {
+			hashOps.increment(key, hkey, delta);
+		} catch (Exception e) {
+			logger.error("hincr" + key, e);
+		}
+	}
+	
+	
+	/**
+	 * List 操作
+	 */
+	public void lpush(String key, Collection<String> values) {
+		listOps.leftPushAll(key, values);
+	}
+	public Object rpop(String key) {
+		return listOps.rightPop(key);
+	}
+	public long llen(String key) {
+		return listOps.size(key);
+	}
+	
+	
 	
 	/**
 	 * 锁住某个key值几分钟，需要解锁时删除即可

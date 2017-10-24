@@ -110,6 +110,9 @@
 				<value>/good/getGoodsDetailInfo</value>
 				<value>/good/getGoodsTkRate</value>
 				<value>/goods/getGoodsInfoByNumId</value>
+				<value>/goods/getGoodsRateInfo</value>
+				<value>/goods/getThirdGoodsAuction</value>
+				<value>/goods/getThirdGoodsDetailInfo</value>
 
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
@@ -126,6 +129,8 @@
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
 				<value>/category/getAllGoodsCategory</value>
+				
+				<value>/resource/getRedRainRounds</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -151,7 +156,6 @@
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
-				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
 				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
 				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />
 				<entry key="/user/getPayPwdVerifyCode" value-ref="getPayPwdVerifyCodeApi" />
@@ -179,6 +183,11 @@
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
+				<entry key="/user/changeMobile" value-ref="changeMobileApi"/>
+				<entry key="/user/changeMobileIfAble" value-ref="changeMobileIfAbleApi"/>
+				<entry key="/user/changeMobileCheckVerifyCode" value-ref="changeMobileCheckVerifyCodeApi"/>
+				<entry key="/user/changeMobileVerify" value-ref="changeMobileVerifyApi"/>
+				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				
 				
 				<entry key="/user/signin" value-ref="signinApi" />
@@ -205,6 +214,11 @@
 				<entry key="/bill/getRepayMentAmountByMonth" value-ref="getRepayMentAmountByMonthApi"/>
 				<entry key="/repay/getRepaymentConfirmInfoV1" value-ref="getRepaymentConfirmInfoV1Api"/>
 				<entry key="/bill/getBillListByStatus" value-ref="getBillListByStatusApi"/>
+
+				<!-- 第三方商品自建 -->
+				<entry key ="/goods/getGoodsRateInfo" value-ref="getGoodsRateInfoApi"></entry>
+				<entry key ="/goods/getThirdGoodsAuction" value-ref="getThirdGoodsAuctionApi"></entry>
+				<entry key ="/goods/getThirdGoodsDetailInfo" value-ref="getThirdGoodsDetailInfoApi"></entry>
 
 
 				<!-- 订单Order -->
@@ -340,6 +354,7 @@
 				<entry key="/agencyBuy/getTradeNperInfo" value-ref="GetTradeNperInfoApi" />
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
+				<entry key="/resource/getRedRainRounds" value-ref="getRedRainRoundsApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />
@@ -372,6 +387,10 @@
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 				<!--分期广告位-->
 				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
+				
+				<!-- 统计点击量 -->
+				<entry key="/clickAmount/clickAmountNum" value-ref="clickAmountNumApi" />
+				
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
@@ -389,4 +408,5 @@
 			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
 
+	<bean class="com.ald.fanbei.api.web.application.SpringInit"/>
 </beans>

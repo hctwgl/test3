@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfFundSideBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfFundSideInfoDo;
 
 /**
  * 资金方放款与用户借款记录关联表Service
@@ -18,5 +19,12 @@ public interface AfFundSideBorrowCashService extends ParentService<AfFundSideBor
 	 * @return
 	 */
 	public boolean matchFundAndBorrowCash(Long rid);
+
+	/**
+	 * 根据借款id获取资金方，如果没有关联资金方，则返回空串
+	 * @param borrowId
+	 * @return
+	 */
+	public AfFundSideInfoDo getLenderInfoByBorrowCashId(Long borrowId);
 
 }

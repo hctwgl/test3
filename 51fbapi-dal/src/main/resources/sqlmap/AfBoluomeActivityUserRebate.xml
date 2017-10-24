@@ -181,11 +181,11 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,order_id,re
     </select>
 
 	<select id="getRebateCountNumber"  resultType="com.ald.fanbei.api.dal.domain.query.AfBoluomeActivityUserRebateQuery"  parameterType="com.ald.fanbei.api.dal.domain.query.AfBoluomeActivityUserRebateQuery">
-       SELECT count(0) fanLiRecordTime  from af_boluome_activity_user_rebate user
+        SELECT count(0) fanLiRecordTime  from af_boluome_activity_user_rebate user
  	    left JOIN 
 		af_boluome_activity_user_rebate  refUser 
 		on  
-			user.order_id = refUser.ref_order_id
+			user.order_id = refUser.ref_order_id and user.is_delete = 0 and refUser.is_delete = 0 
 		where 
 			refUser.gmt_create 
 		BETWEEN 
@@ -205,6 +205,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,user_id,user_name,order_id,re
 			af_boluome_activity_user_rebate
 		WHERE
 			boluome_activity_id = 1
+			and `is_delete` =0
 		GROUP BY
 			`user_name` 
 		ORDER BY
