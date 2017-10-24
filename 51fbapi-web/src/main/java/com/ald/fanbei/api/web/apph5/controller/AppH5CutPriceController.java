@@ -89,6 +89,7 @@ public class AppH5CutPriceController extends BaseController {
 	    // 判断是否是
 
 	} catch (FanbeiException e) {
+		resultStr = H5CommonResponse.getNewInstance(false, "分享砍价商品失败").toString();
 	    if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
 		Map<String, Object> data = new HashMap<>();
 		String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
@@ -99,7 +100,6 @@ public class AppH5CutPriceController extends BaseController {
 	} catch (Exception e) {
 	    logger.error("/activity/de/share" + context + "error = {}", e.getStackTrace());
 	    resultStr = H5CommonResponse.getNewInstance(false, "分享砍价商品失败").toString();
-	    return resultStr;
 	}
 
 	return resultStr;
