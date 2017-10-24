@@ -131,6 +131,7 @@ public class Constants {
 	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
 	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
     public static final String CACHEKEY_CHANGE_MOBILE = "change_mobile";
+    public static final String CACHEKEY_REDRAIN_MISC = "redrain_misc";
     public static final String CACHEKEY_REDRAIN_COUNTERS = "redrain_counters";
     public static final String CACHEKEY_REDRAIN_QUEUE_NAME_PREFFIX = "redrain_queue_";
     public static final String CACHEKEY_REDRAIN_QUERY_KEYS_PATTERN = CACHEKEY_REDRAIN_QUEUE_NAME_PREFFIX + "*";
