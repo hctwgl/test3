@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -52,5 +53,5 @@ public class AfGoodsCategoryServiceImpl implements AfGoodsCategoryService {
 	}
 
 	@Override
-	public List<AfGoodsCategoryDto> selectGoodsInformation(Long rid) {return afGoodsCategoryDao.selectGoodsInformation(rid);}
+	public List<AfGoodsCategoryDto> selectGoodsInformation(AfGoodsCategoryQuery query) {return afGoodsCategoryDao.selectGoodsInformation(query);}
 }
