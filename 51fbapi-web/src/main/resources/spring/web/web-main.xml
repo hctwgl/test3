@@ -125,6 +125,7 @@
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
+				<value>/category/getAllGoodsCategory</value>
 			</list>
 		</constructor-arg>
 	</bean>

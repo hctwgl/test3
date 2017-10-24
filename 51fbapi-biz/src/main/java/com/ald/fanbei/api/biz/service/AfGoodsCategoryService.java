@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public interface AfGoodsCategoryService {
 	 */
 	List<AfGoodsCategoryDo> selectThirdLevel(Long rid);
 
-	List<AfGoodsCategoryDto> selectGoodsInformation(Long rid);
+	List<AfGoodsCategoryDto> selectGoodsInformation(AfGoodsCategoryQuery query);
 
 
 	

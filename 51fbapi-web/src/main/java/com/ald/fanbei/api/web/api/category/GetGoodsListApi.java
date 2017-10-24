@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -48,10 +50,11 @@ public class GetGoodsListApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Map<String, Object> data = new HashMap<String, Object>();
-        String level = ObjectUtils.toString(requestDataVo.getParams().get("level"),null);
-        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
+        String level = ObjectUtils.toString(requestDataVo.getParams().get("level"),"3");
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),4l);
         Map<String,Object> activityData = new HashMap<String,Object> ();
-        List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(id);
+        AfGoodsCategoryQuery query = getCheckParam(requestDataVo);
+        List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);
         List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -102,6 +105,15 @@ public class GetGoodsListApi implements ApiHandle {
         data.put("goodsList",goodsList);
         resp.setResponseData(data);
         return resp;
+    }
+
+    private AfGoodsCategoryQuery getCheckParam(RequestDataVo requestDataVo){
+        Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),4l);
+        AfGoodsCategoryQuery query = new AfGoodsCategoryQuery();
+        query.setPageNo(pageNo);
+        query.setId(id);
+        return query;
     }
 
 }

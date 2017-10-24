@@ -6,10 +6,6 @@
 		id,gmt_create,gmt_modified,creator,modifier,name,parent_id,is_show,sort,img_url,level
 	</sql>
 
-	<sql id="goodsSqlField">
-		  g.source,g.rebate_amount,g.id,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,s.volume,g.sale_count
-	</sql>
-
 	<insert id="addGoodsCategory" parameterType="AfGoodsCategoryDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_goods_category(gmt_create , gmt_modified , creator , modifier , name , parent_id , is_show , sort , imgUrl , level)
 		VALUES (
@@ -90,11 +86,11 @@
 		ORDER BY sort
 	</select>
 
-	<select id="selectGoodsInformation" parameterType="java.lang.Long" resultType="AfGoodsCategoryDto">
+	<select id="selectGoodsInformation" parameterType="AfGoodsCategoryQuery" resultType="AfGoodsCategoryDto">
 		SELECT
 			g.source,g.rebate_amount,g.id,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,s.volume,g.sale_count
 	    FROM  af_goods g,af_goods_tbk s
-		where s.category_id = #{rid}
+		where s.category_id = #{id}
 		and s.num_id = g.num_id
 		and s.is_delete = 0
 		and g.is_delete = 0
