@@ -47,7 +47,7 @@ import com.alibaba.fastjson.JSONObject;
  *
  */
 @RestController
-@RequestMapping("/activity/de")
+@RequestMapping(value="/activity/de", produces = "application/json;charset=UTF-8")
 public class AppH5CutPriceController extends BaseController {
 
 	@Resource
@@ -68,7 +68,7 @@ public class AppH5CutPriceController extends BaseController {
 	 * @Title: share @Description: 砍价接口 @param request @param response @return
 	 * String @throws
 	 */
-	@RequestMapping(value = "/share", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+    @RequestMapping(value = "/share", method = RequestMethod.POST)
 	public String share(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiWebContext context = new FanbeiWebContext();
@@ -108,7 +108,7 @@ public class AppH5CutPriceController extends BaseController {
 		return resultStr;
 	}
 
-	@RequestMapping(value = "/goods", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+    @RequestMapping(value = "/goods", method = RequestMethod.POST)
 	public String getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		FanbeiWebContext context = new FanbeiWebContext();
