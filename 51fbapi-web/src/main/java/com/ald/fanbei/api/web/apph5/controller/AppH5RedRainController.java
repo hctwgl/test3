@@ -59,6 +59,23 @@ public class AppH5RedRainController extends BaseController {
 		return resp.toString();
     }
     
+    @RequestMapping(value = "fetchRounds", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+    public String fetchRounds(HttpServletRequest request) throws IOException {
+    	H5CommonResponse resp = null;
+    	FanbeiWebContext context;
+    	try{
+    		context = doWebCheck(request, true);
+    		
+    		resp = H5CommonResponse.getNewInstance(true, "成功", "", redRainService.fetchTodayRounds());
+    		
+    		doLog(request, resp, context.getAppInfo(), 0, context.getUserName()); //日志打点
+    	} catch (Exception e){
+    		logger.error(e.getMessage(), e);
+    		resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
+    	}
+		return resp.toString();
+    }
     
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {

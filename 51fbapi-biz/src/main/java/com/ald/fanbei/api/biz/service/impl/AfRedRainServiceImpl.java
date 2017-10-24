@@ -147,7 +147,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			roundForMod.setStatus(AfRedRainRoundStatusEnum.OVER.name());
 			
 			roundForMod.setSum(sum);
-			roundForMod.setSumGrabed(sum - sumGrabed);
+			roundForMod.setSumGrabed(sumGrabed);
 			
 			roundForMod.setId(roundId);
 			afRedRainRoundDao.update(roundForMod);

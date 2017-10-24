@@ -35,7 +35,8 @@ public class AfRedPacketRedisPoolServiceImpl implements AfRedPacketPoolService {
     	queueName = queueName + queueSum;
     	
     	bizCacheUtil.lpush(queueName, packets);
-        
+    	bizCacheUtil.hincrBy(Constants.CACHEKEY_REDRAIN_MISC, "sumPacketsCurRound", (long)packets.size());
+    	
         logger.info("redPacketPoolService.inject success");
     }
 
@@ -59,6 +60,7 @@ public class AfRedPacketRedisPoolServiceImpl implements AfRedPacketPoolService {
     @Override
     public void emptyPacket() {
         bizCacheUtil.del(bizCacheUtil.keys(Constants.CACHEKEY_REDRAIN_QUERY_KEYS_PATTERN));
+        bizCacheUtil.delCache(Constants.CACHEKEY_REDRAIN_MISC);
     }
 
     @Override
@@ -71,9 +73,9 @@ public class AfRedPacketRedisPoolServiceImpl implements AfRedPacketPoolService {
     	
         Map<String,Integer> map = new HashMap<String,Integer>();
         map.put("listNumber",surplus);
-        map.put("count",0);
+        map.put("count", Integer.valueOf(bizCacheUtil.hget(Constants.CACHEKEY_REDRAIN_MISC, "sumPacketsCurRound")));
+        
         return map;
     }
-
 
 }
