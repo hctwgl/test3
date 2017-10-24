@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
@@ -27,9 +28,12 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -41,6 +45,8 @@ import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfSubjectGoodsQuery;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -82,6 +88,15 @@ public class AppH5SubjectController  extends BaseController{
 	
 	@Resource
 	AfGoodsService afGoodsService;
+	
+	@Resource
+	AfCouponService afCouponService;
+	
+	@Resource
+	AfUserService afUserService;
+	
+	@Resource
+	AfUserCouponService afUserCouponService;
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "mainActivityInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
@@ -212,7 +227,7 @@ public class AppH5SubjectController  extends BaseController{
 		Calendar calStart = Calendar.getInstance();
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		try {
-			//context = doWebCheck(request, false);
+			context = doWebCheck(request, false);
 			String modelId = ObjectUtils.toString(request.getParameter("modelId"), null);
 			if(modelId == null || "".equals(modelId)) {
 				resp = H5CommonResponse.getNewInstance(false, "模版id不能为空！");
@@ -221,6 +236,7 @@ public class AppH5SubjectController  extends BaseController{
 			// 数据埋点
 			request.setAttribute("context", context);
 			doMaidianLog(request,H5CommonResponse.getNewInstance(true,"succ"));
+			
 			//获取借款分期配置信息
 	        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
 	        JSONArray array = JSON.parseArray(resource.getValue());
@@ -232,6 +248,24 @@ public class AppH5SubjectController  extends BaseController{
 			
 			JSONObject jsonObj = new JSONObject();
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
+			
+			// 根据modelId 取优惠券信息
+			List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(Long.parseLong(modelId),
+					ActivityType.ACTIVITY_TEMPLATE.getCode());
+			String userName = context.getUserName();
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			
+			for(AfCouponDto couponDto : couponList) {
+				// 判断用户是否领
+				if(userDo == null) {
+					couponDto.setUserAlready(0);
+				} else {
+					int pickCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userDo.getRid(), couponDto.getRid());
+					couponDto.setUserAlready(pickCount);
+				}
+			}
+			jsonObj.put("couponList", couponList);
+						
 			jsonObj.put("notifyUrl", notifyUrl);
 			// 根据modelId查询banner信息
 			List<AfModelH5ItemDo> bannerList =  afModelH5ItemService.getModelH5ItemListByModelIdAndModelType(Long.parseLong(modelId), "BANNER");
@@ -558,7 +592,17 @@ public class AppH5SubjectController  extends BaseController{
 	@Override
 	public RequestDataVo parseRequestData(String requestData,
 			HttpServletRequest request) {
-		return null;
+  	  try {
+          RequestDataVo reqVo = new RequestDataVo();
+          
+          JSONObject jsonObj = JSON.parseObject(requestData);
+          reqVo.setId(jsonObj.getString("id"));
+          reqVo.setMethod(request.getRequestURI());
+          reqVo.setSystem(jsonObj);
+          return reqVo;
+      } catch (Exception e) {
+          throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+      }
 	}
 
 	@Override

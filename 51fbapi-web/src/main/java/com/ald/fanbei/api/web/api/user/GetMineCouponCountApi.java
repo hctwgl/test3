@@ -79,6 +79,7 @@ public class GetMineCouponCountApi implements ApiHandle {
 			JSONObject data = resultJson.getJSONObject(DATA);
 			Integer brandCouponCount = data.getInteger(AVAILABLE_NUM);
 			resultData.put("couponCount", coupleCount + brandCouponCount);
+			resultData.put("brandCouponCount", brandCouponCount);
 		}
 		resultData.put("plantformCouponCount", coupleCount);
 		resp.setResponseData(resultData);
