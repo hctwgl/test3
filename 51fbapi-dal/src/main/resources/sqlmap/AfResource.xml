@@ -185,6 +185,19 @@
 		sort ,id
 	</select>
 
+	<select id="getManyPricutresResourceDoList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND
+		is_delete = 0
+		ORDER BY
+		sort ,id
+	</select>
+
 	<select id="getNavigationUpOneResourceDoList" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
