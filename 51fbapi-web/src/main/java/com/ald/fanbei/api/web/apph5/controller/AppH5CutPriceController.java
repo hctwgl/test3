@@ -109,7 +109,7 @@ public class AppH5CutPriceController extends BaseController {
 	}
 
     @RequestMapping(value = "/goods", method = RequestMethod.POST)
-	public String getGoodsList(HttpServletRequest request, HttpServletResponse response) {
+	public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
@@ -123,10 +123,10 @@ public class AppH5CutPriceController extends BaseController {
 			data.put("endTime", System.currentTimeMillis() / 1000 + 10000);
 			data.put("totalCount", "100");
 
-			return H5CommonResponse.getNewInstance(true, "查询成功", "", data).toString();
+			return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
 		} catch (Exception e) {
 			logger.error("/activity/de/goods" + context + "error = {}", e);
-			return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败").toString();
+			return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败");
 		}
 	}
 
