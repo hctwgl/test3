@@ -219,7 +219,8 @@
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
 				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
 				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
-
+				<entry key="/order/tenementOrder" value-ref="tenementOrderApi" />
+				
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
@@ -364,6 +365,9 @@
 				<entry key="/trade/refund" value-ref="tradeRefundApi" />
 				<entry key="/trade/getIndexData" value-ref="getIndexDataApi" />
 				<entry key="/trade/orderInfo" value-ref="tradeOrderInfoApi" />
+				<entry key="/trade/tradeTenement" value-ref="tradeTenementApi" />
+				<entry key="/trade/tradeAddTenement" value-ref="tradeAddTenementApi" />
+				<entry key="/trade/getTenement" value-ref="getTenementApi" />
 
 				<!--订单物流信息相关-->
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />

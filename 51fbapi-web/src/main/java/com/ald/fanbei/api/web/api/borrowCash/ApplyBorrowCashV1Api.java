@@ -81,10 +81,11 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("applyBorrowCashV1Api")
-public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle {
+public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
+		ApiHandle {
 
-	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
-	
+	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
+
 	@Resource
 	SmsUtil smsUtil;
 	@Resource
@@ -124,88 +125,138 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	BizCacheUtil bizCacheUtil;
 
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+	public ApiHandleResponse process(RequestDataVo requestDataVo,
+			FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
+				FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 
-		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
+		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
+				"amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
-		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
-		String latitude = ObjectUtils.toString(requestDataVo.getParams().get("latitude"));
-		String longitude = ObjectUtils.toString(requestDataVo.getParams().get("longitude"));
-		String province = ObjectUtils.toString(requestDataVo.getParams().get("province"));
-		String city = ObjectUtils.toString(requestDataVo.getParams().get("city"));
-		String county = ObjectUtils.toString(requestDataVo.getParams().get("county"));
-		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
-		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
-		String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
-		if (StringUtils.isBlank(amountStr) || AfBorrowCashType.findRoleTypeByCode(type) == null || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
-				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox)) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+		String type = ObjectUtils.toString(requestDataVo.getParams()
+				.get("type"));
+		String latitude = ObjectUtils.toString(requestDataVo.getParams().get(
+				"latitude"));
+		String longitude = ObjectUtils.toString(requestDataVo.getParams().get(
+				"longitude"));
+		String province = ObjectUtils.toString(requestDataVo.getParams().get(
+				"province"));
+		String city = ObjectUtils.toString(requestDataVo.getParams()
+				.get("city"));
+		String county = ObjectUtils.toString(requestDataVo.getParams().get(
+				"county"));
+		String address = ObjectUtils.toString(requestDataVo.getParams().get(
+				"address"));
+		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get(
+				"blackBox"));
+		String couponId = ObjectUtils.toString(requestDataVo.getParams().get(
+				"couponId"));
+		if (StringUtils.isBlank(amountStr)
+				|| AfBorrowCashType.findRoleTypeByCode(type) == null
+				|| StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
+				|| StringUtils.isBlank(longitude)
+				|| StringUtils.isBlank(blackBox)) {
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 
 		// 密码判断
-		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		AfUserAccountDo accountDo = afUserAccountService
+				.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		// 后台配置的金额限制(用户的借款额度根据可用额度进行限制)
-		AfResourceDo limitRangeResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashRange.getCode());
+		AfResourceDo limitRangeResource = afResourceService
+				.getConfigByTypesAndSecType(
+						AfResourceType.borrowRate.getCode(),
+						AfResourceSecType.BorrowCashRange.getCode());
 		if (limitRangeResource != null) {
-			BigDecimal limitRangeStart = new BigDecimal(limitRangeResource.getValue1());
-			BigDecimal limitRangeEnd = new BigDecimal(limitRangeResource.getValue());
+			BigDecimal limitRangeStart = new BigDecimal(
+					limitRangeResource.getValue1());
+			BigDecimal limitRangeEnd = new BigDecimal(
+					limitRangeResource.getValue());
 			BigDecimal amount = new BigDecimal(amountStr);
-			if (amount.compareTo(limitRangeStart) < 0 || amount.compareTo(limitRangeEnd) > 0) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
+			if (amount.compareTo(limitRangeStart) < 0
+					|| amount.compareTo(limitRangeEnd) > 0) {
+				return new ApiHandleResponse(requestDataVo.getId(),
+						FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
 			}
 		}
 
 		if (accountDo == null || authDo == null) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 		}
 
-		if (StringUtils.equals(authDo.getBankcardStatus(), YesNoStatus.NO.getCode())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
+		if (StringUtils.equals(authDo.getBankcardStatus(),
+				YesNoStatus.NO.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.USER_MAIN_BANKCARD_NOT_EXIST_ERROR);
 		}
 
 		// 认证信息判断
-		if (!StringUtils.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getFacesStatus(), YesNoStatus.YES.getCode())
-				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode()) || !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
+		if (!StringUtils
+				.equals(authDo.getZmStatus(), YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getFacesStatus(),
+						YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getMobileStatus(),
+						YesNoStatus.YES.getCode())
+				|| !StringUtils.equals(authDo.getYdStatus(),
+						YesNoStatus.YES.getCode())
 				// || !StringUtils.equals(authDo.getContactorStatus(),
 				// YesNoStatus.YES.getCode()) /*||
 				// !StringUtils.equals(authDo.getLocationStatus(),
 				// YesNoStatus.YES.getCode())*/
-				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
+				|| !StringUtils.equals(authDo.getTeldirStatus(),
+						YesNoStatus.YES.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 		}
 
-		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
-		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr,
+				BigDecimal.ZERO);
+		AfUserBankcardDo card = afUserBankcardService
+				.getUserMainBankcardByUserId(userId);
 		// ---------------------------------------------
 		// AfUserBankcardDo card = new AfUserBankcardDo();
 		// card.setBankName("中国农业银行");
 		// card.setCardNumber("6228480322828314011");
 		// ---------------------------------------------
 
-		///// 临时处理，如果当天内有申请，以最后一条的状态为准 start hy 2017年5月11日09:54:20//////
+		// /// 临时处理，如果当天内有申请，以最后一条的状态为准 start hy 2017年5月11日09:54:20//////
 
 		// 对风控拒绝通过配置化处理，按配置期限，如果期限内有拒绝，则不可申请，如果期限内无拒绝记录，则可发起申请 start alter by ck
 		// 2017年6月13日17:47:20
 
 		boolean doRish = true;
-		AfBorrowCashDo afnewstBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		AfBorrowCashDo afnewstBorrowCashDo = afBorrowCashService
+				.getBorrowCashByUserId(userId);
 
-		if (afnewstBorrowCashDo != null && AfBorrowCashReviewStatus.refuse.getCode().equals(afnewstBorrowCashDo.getReviewStatus())) {
+		if (afnewstBorrowCashDo != null
+				&& AfBorrowCashReviewStatus.refuse.getCode().equals(
+						afnewstBorrowCashDo.getReviewStatus())) {
 			// 借款被拒绝
-			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(),
-					AfResourceSecType.RejectTimePeriod.getCode());
-			if (afResourceDo != null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())) {
-				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
-				Date desTime = DateUtil.addDays(afnewstBorrowCashDo.getGmtCreate(), rejectTimePeriod);
-				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) {
+			AfResourceDo afResourceDo = afResourceService
+					.getConfigByTypesAndSecType(
+							AfResourceType.RiskManagementBorrowcashLimit
+									.getCode(),
+							AfResourceSecType.RejectTimePeriod.getCode());
+			if (afResourceDo != null
+					&& AfCounponStatus.O.getCode().equals(
+							afResourceDo.getValue4())) {
+				Integer rejectTimePeriod = NumberUtil.objToIntDefault(
+						afResourceDo.getValue1(), 0);
+				Date desTime = DateUtil.addDays(
+						afnewstBorrowCashDo.getGmtCreate(), rejectTimePeriod);
+				if (DateUtil.getNumberOfDatesBetween(
+						DateUtil.formatDateToYYYYMMdd(desTime),
+						DateUtil.getToday()) < 0) {
 					// 风控拒绝日期内
 					doRish = false;
 				}
@@ -214,31 +265,40 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		// 对风控拒绝通过配置化处理，按配置期限，如果期限内有拒绝，则不可申请，如果期限内无拒绝记录，则可发起申请 end alter by ck
 		// 2017年6月13日17:47:20
 
-		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
+		BigDecimal usableAmount = BigDecimalUtil.subtract(
+				accountDo.getAuAmount(), accountDo.getUsedAmount());
 		BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
 		if (accountBorrow.compareTo(amount) < 0) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 
 		}
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
 		boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
-		
+
 		if (!isGetLock) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+			return new ApiHandleResponse(requestDataVo.getId(),
+					FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
 		try {
 			boolean isCanBorrow = afBorrowCashService.isCanBorrowCash(userId);
 
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
-			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios"
+					: "alading_and");
 			String ipAddress = CommonUtil.getIpAddr(request);
-			AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city, province, county, address, userId, currentDay);
-			//用户借钱时app来源区分
-			String majiabaoName = requestDataVo.getId().substring(requestDataVo.getId().lastIndexOf("_") + 1, requestDataVo.getId().length());
+			AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount,
+					type, latitude, longitude, card, city, province, county,
+					address, userId, currentDay);
+			// 用户借钱时app来源区分
+			String majiabaoName = requestDataVo.getId().substring(
+					requestDataVo.getId().lastIndexOf("_") + 1,
+					requestDataVo.getId().length());
 			afBorrowCashDo.setMajiabaoName(majiabaoName);
-			
+
 			if (!isCanBorrow) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+				return new ApiHandleResponse(requestDataVo.getId(),
+						FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 			}
 			// FIXME Add by jrb, 如果有免息券，则实际到账金额为借钱金额
 			BigDecimal orgArrivalAmount = afBorrowCashDo.getArrivalAmount();
@@ -251,14 +311,20 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 						afUserCouponDoTmp.setCouponId(Long.parseLong(couponId));
 						afUserCouponDoTmp.setUserId(userId);
 						logger.error("ApplyBorrowCashApi userId=>" + userId);
-						AfUserCouponDo afUserCouponDo = afUserCouponService.getUserCouponByDo(afUserCouponDoTmp);
+						AfUserCouponDo afUserCouponDo = afUserCouponService
+								.getUserCouponByDo(afUserCouponDoTmp);
 						if (afUserCouponDo != null) {
-							afUserCouponDo.setStatus(CouponStatus.USED.getCode());
-							afBorrowCashDo.setArrivalAmount(afBorrowCashDo.getAmount());
+							afUserCouponDo.setStatus(CouponStatus.USED
+									.getCode());
+							afBorrowCashDo.setArrivalAmount(afBorrowCashDo
+									.getAmount());
 							// 更新券的状态为已使用
 							userCouponId = afUserCouponDo.getRid();
-							logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>" + userCouponId);
-							afUserCouponService.updateUserCouponSatusUsedById(afUserCouponDo.getRid());
+							logger.error("ApplyBorrowCashApi afUserCouponDo.getRid()=>"
+									+ userCouponId);
+							afUserCouponService
+									.updateUserCouponSatusUsedById(afUserCouponDo
+											.getRid());
 						}
 					}
 				}
@@ -267,36 +333,48 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			}
 			afBorrowCashService.addBorrowCash(afBorrowCashDo);
 			// 3.7.6 借过款的放入缓存，借钱按钮不需要高亮显示
-			bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));
+			bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED,
+					String.valueOf(userId));
 
 			Long borrowId = afBorrowCashDo.getRid();
 			AfBorrowCashDo cashDo = new AfBorrowCashDo();
 			cashDo.setRid(borrowId);
 
 			try {
-				/// 临时解决方案
+				// / 临时解决方案
 				if (!doRish) {
 					logger.info("风控拒绝过");
-					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+					throw new FanbeiException(
+							FanbeiExceptionCode.RISK_VERIFY_ERROR);
 				}
 
 				String cardNo = card.getCardNumber();
-				String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+				String riskOrderNo = riskUtil.getOrderNo("vefy",
+						cardNo.substring(cardNo.length() - 4, cardNo.length()));
 				cashDo.setUserId(userId);
 				cashDo.setGmtCreate(new Date(System.currentTimeMillis()));
 				cashDo.setRishOrderNo(riskOrderNo);
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
 				afBorrowCashService.updateBorrowCash(cashDo);
 
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String borrowTime = sdf.format(new Date(System.currentTimeMillis()));
-				RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""), afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName,
-						ipAddress, blackBox, riskOrderNo, accountDo.getUserName(), amount, afBorrowCashDo.getPoundage(), borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null);
+				SimpleDateFormat sdf = new SimpleDateFormat(
+						"yyyy-MM-dd HH:mm:ss");
+				String borrowTime = sdf.format(new Date(System
+						.currentTimeMillis()));
+				RiskVerifyRespBo verybo = riskUtil.verifyNew(
+						ObjectUtils.toString(userId, ""),
+						afBorrowCashDo.getBorrowNo(), type, "50",
+						afBorrowCashDo.getCardNumber(), appName, ipAddress,
+						blackBox, riskOrderNo, accountDo.getUserName(), amount,
+						afBorrowCashDo.getPoundage(), borrowTime, "借钱",
+						StringUtil.EMPTY_STRING, null, null);
 
 				if (verybo.isSuccess()) {
-					delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult());
-					//加入借款埋点信息,来自哪个包等
-					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
+					delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(),
+							verybo.getResult());
+					// 加入借款埋点信息,来自哪个包等
+					doMaidianLog(request, afBorrowCashDo, requestDataVo,
+							context);
 				} else {
 					// Map<String,Object> result = new HashMap<String,Object>();
 					// result.put("success", false);
@@ -304,12 +382,14 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 					// //如果不是因为逾期还款给拒绝的，直接关闭订单
 					// String rejectCode = verybo.getRejectCode();
 					// if (StringUtils.isNotBlank(rejectCode)
-					// && !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode())
+					// &&
+					// !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode())
 					// &&
 					// !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode()))
 					// {
 					cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-					cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+					cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse
+							.getCode());
 					afBorrowCashService.updateBorrowCash(cashDo);
 					// } else {
 					// dealWithPayOrderRiskFailed(result, resp);
@@ -319,21 +399,24 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			} catch (Exception e) {
 				logger.error("apply borrow cash v1 error", e);
 				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse
+						.getCode());
 				cashDo.setArrivalAmount(orgArrivalAmount);
 				afBorrowCashService.updateBorrowCash(cashDo);
 
 				if (!StringUtils.isBlank(couponId)) {
 					// 更新券的状态为未使用
-					logger.error("ApplyBorrowCashApi userCouponId=>" + userCouponId);
-					afUserCouponService.updateUserCouponSatusNouseById(userCouponId);
+					logger.error("ApplyBorrowCashApi userCouponId=>"
+							+ userCouponId);
+					afUserCouponService
+							.updateUserCouponSatusNouseById(userCouponId);
 				}
 				throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 			}
 		} finally {
 			bizCacheUtil.delCache(lockKey);
 		}
-		
+
 	}
 
 	private void delegatePay(String consumerNo, String orderNo, String result) {
@@ -342,28 +425,37 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		// cashDo.setRishOrderNo(orderNo);
 		Date currDate = new Date(System.currentTimeMillis());
 
-		AfUserDo afUserDo = afUserService.getUserById(Long.parseLong(consumerNo));
-		AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(Long.parseLong(consumerNo));
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
+		AfUserDo afUserDo = afUserService.getUserById(Long
+				.parseLong(consumerNo));
+		AfUserAccountDo accountInfo = afUserAccountService
+				.getUserAccountByUserId(Long.parseLong(consumerNo));
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService
+				.getBorrowCashByRishOrderNo(orderNo);
 		cashDo.setRid(afBorrowCashDo.getRid());
 
-		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
+		AfUserBankcardDo card = afUserBankcardService
+				.getUserMainBankcardByUserId(Long.parseLong(consumerNo));
 
 		List<String> whiteIdsList = new ArrayList<String>();
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		// 判断是否在白名单里面
-		AfResourceDo whiteListInfo = afResourceService.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
+		AfResourceDo whiteListInfo = afResourceService
+				.getSingleResourceBytype(Constants.APPLY_BRROW_CASH_WHITE_LIST);
 		if (whiteListInfo != null) {
-			whiteIdsList = CollectionConverterUtil.convertToListFromArray(whiteListInfo.getValue3().split(","), new Converter<String, String>() {
-				@Override
-				public String convert(String source) {
-					return source.trim();
-				}
-			});
+			whiteIdsList = CollectionConverterUtil.convertToListFromArray(
+					whiteListInfo.getValue3().split(","),
+					new Converter<String, String>() {
+						@Override
+						public String convert(String source) {
+							return source.trim();
+						}
+					});
 		}
 
-		if (whiteIdsList.contains(afUserDo.getUserName()) || StringUtils.equals("10", result)) {
-			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
+		if (whiteIdsList.contains(afUserDo.getUserName())
+				|| StringUtils.equals("10", result)) {
+			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(),
+					currDate);
 			String bankNumber = card.getCardNumber();
 			String lastBank = bankNumber.substring(bankNumber.length() - 4);
 
@@ -371,39 +463,53 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			// 审核通过
 			cashDo.setGmtArrival(currDate);
 			cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
-			AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(Long.parseLong(consumerNo));
+			AfUserAccountDto userDto = afUserAccountService
+					.getUserAndAccountByUserId(Long.parseLong(consumerNo));
 			// 打款
-			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(), userDto.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "",
-					card.getMobile(), card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02", UserAccountLogType.BorrowCash.getCode(),
+			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(
+					afBorrowCashDo.getArrivalAmount(), userDto.getRealName(),
+					afBorrowCashDo.getCardNumber(), consumerNo + "",
+					card.getMobile(), card.getBankName(), card.getBankCode(),
+					Constants.DEFAULT_BORROW_PURPOSE, "02",
+					UserAccountLogType.BorrowCash.getCode(),
 					afBorrowCashDo.getRid() + "");
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.agree.getCode());
-			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
+			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType
+					.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo
+					.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
 			cashDo.setGmtPlanRepayment(repaymentDay);
 			if (!upsResult.isSuccess()) {
-				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+				logger.info("upsResult error:"
+						+ FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
 			} else {
 				// 减少额度
-				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount()));
+				accountInfo
+						.setUsedAmount(BigDecimalUtil.add(
+								accountInfo.getUsedAmount(),
+								afBorrowCashDo.getAmount()));
 				afUserAccountService.updateOriginalUserAccount(accountInfo);
 				// 增加日志
-				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash, afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
+				AfUserAccountLogDo accountLog = BuildInfoUtil
+						.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
+								afBorrowCashDo.getAmount(), userId,
+								afBorrowCashDo.getRid());
 				afUserAccountLogDao.addUserAccountLog(accountLog);
 			}
 			afBorrowCashService.updateBorrowCash(cashDo);
 			addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
-		} else/* if (StringUtils.equals("30", result)) */ {
+		} else/* if (StringUtils.equals("30", result)) */{
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
-			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
+			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(),
+					currDate);
 		} /*
-			 * else {
-			 * cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.
-			 * getCode()); }
-			 */
+		 * else { cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.
+		 * getCode()); }
+		 */
 		afBorrowCashService.updateBorrowCash(cashDo);
 	}
 
@@ -417,22 +523,29 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		AfBorrowCacheAmountPerdayDo amountCurrentDay = new AfBorrowCacheAmountPerdayDo();
 		amountCurrentDay.setDay(day);
 		amountCurrentDay.setAmount(amount);
-		afBorrowCacheAmountPerdayService.updateBorrowCacheAmount(amountCurrentDay);
+		afBorrowCacheAmountPerdayService
+				.updateBorrowCacheAmount(amountCurrentDay);
 	}
 
-	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude, AfUserBankcardDo afUserBankcardDo, String city, String province,
+	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount,
+			String type, String latitude, String longitude,
+			AfUserBankcardDo afUserBankcardDo, String city, String province,
 			String county, String address, Long userId, int currentDay) {
 
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> list = afResourceService
+				.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
 
 		this.checkSwitch(rate, currentDay);
 
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
-		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
-		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
+		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble")
+				.toString());
+		BigDecimal bankService = bankRate.multiply(bankDouble).divide(
+				new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
-		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		Object poundageRateCash = bizCacheUtil
+				.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
 			poundage = new BigDecimal(poundageRateCash.toString());
 		}
@@ -443,10 +556,14 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 
 		Integer day = NumberUtil.objToIntDefault(type, 0);
 
-		BigDecimal latitudeBig = NumberUtil.objToBigDecimalDefault(latitude, BigDecimal.ZERO);
-		BigDecimal longitudeBig = NumberUtil.objToBigDecimalDefault(longitude, BigDecimal.ZERO);
-		BigDecimal rateAmount = BigDecimalUtil.multiply(serviceAmountDay, new BigDecimal(day));
-		BigDecimal poundageBig = BigDecimalUtil.multiply(poundageAmountDay, new BigDecimal(day));
+		BigDecimal latitudeBig = NumberUtil.objToBigDecimalDefault(latitude,
+				BigDecimal.ZERO);
+		BigDecimal longitudeBig = NumberUtil.objToBigDecimalDefault(longitude,
+				BigDecimal.ZERO);
+		BigDecimal rateAmount = BigDecimalUtil.multiply(serviceAmountDay,
+				new BigDecimal(day));
+		BigDecimal poundageBig = BigDecimalUtil.multiply(poundageAmountDay,
+				new BigDecimal(day));
 
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
 		afBorrowCashDo.setAmount(amount);
@@ -457,13 +574,15 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 		afBorrowCashDo.setCity(city);
 		afBorrowCashDo.setProvince(province);
 		afBorrowCashDo.setCounty(county);
-		afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type).getName());
+		afBorrowCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type)
+				.getName());
 		afBorrowCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
 		afBorrowCashDo.setUserId(userId);
 		afBorrowCashDo.setRateAmount(rateAmount);
 		afBorrowCashDo.setPoundage(poundageBig);
 		afBorrowCashDo.setAddress(address);
-		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(amount, poundageBig));
+		afBorrowCashDo.setArrivalAmount(BigDecimalUtil.subtract(amount,
+				poundageBig));
 		afBorrowCashDo.setPoundageRate(poundage);
 		afBorrowCashDo.setBaseBankRate(bankRate);
 		return afBorrowCashDo;
@@ -477,11 +596,13 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	 */
 	private void checkSwitch(Map<String, Object> rate, Integer currentDay) {
 
-		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())) {
+		if (!StringUtils.equals(rate.get("supuerSwitch").toString(),
+				YesNoStatus.YES.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 		}
 
-		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
+		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService
+				.getSigninByDay(currentDay);
 		if (currentAmount == null) {
 			AfBorrowCacheAmountPerdayDo temp = new AfBorrowCacheAmountPerdayDo();
 			temp.setAmount(new BigDecimal(0));
@@ -489,7 +610,8 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
-		if (currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
+		if (currentAmount.getAmount().compareTo(
+				new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_SWITCH_NO);
 		}
 	}
@@ -509,40 +631,41 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 	}
 
 	/**
-	  * 记录埋点相关日志日志
-	  * @param request
-	  * @param cashDo
-	  * @param requestDataVo
-	  * @param context
-	  */
-   private void doMaidianLog(HttpServletRequest request, AfBorrowCashDo cashDo,RequestDataVo requestDataVo, FanbeiContext context) {
-      try {
-       	// 获取可变参数
-       	String ext1 = cashDo.getBorrowNo();
-       	String ext2 = cashDo.getUserId()+"";
-       	String ext3 = cashDo.getAmount()+"";
-       	String ext4 = context.getAppVersion()+"";
-       	maidianLog.info(com.ald.fanbei.api.common.util.StringUtil.appendStrs(
-					"	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
-					"	", requestDataVo.getId(),
-					"	rmtIP=", CommonUtil.getIpAddr(request), 
-					"	userName=", context.getUserName(), 
-					"	", 0, 
-					"	", request.getRequestURI(),
-					"	",cashDo.getRid()+"", 
-					"	",DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), 
-					"	", "userBorrowCashApply", 
-					"	", ext1,
-					"	", ext2,
-					"	", ext3,
-					"	", ext4,
-					"	reqD=", "appFlag:"+requestDataVo.getId()+",appVersion:"+context.getAppVersion()+",userId="+cashDo.getUserId()+",cashAmount:"+cashDo.getAmount(), 
-					"	resD=","null"));
-       } catch (Exception e) {
-           logger.error("userBorrowCashApply maidian logger error", e);
-       }
-   }
-   
+	 * 记录埋点相关日志日志
+	 * 
+	 * @param request
+	 * @param cashDo
+	 * @param requestDataVo
+	 * @param context
+	 */
+	private void doMaidianLog(HttpServletRequest request,
+			AfBorrowCashDo cashDo, RequestDataVo requestDataVo,
+			FanbeiContext context) {
+		try {
+			// 获取可变参数
+			String ext1 = cashDo.getBorrowNo();
+			String ext2 = cashDo.getUserId() + "";
+			String ext3 = cashDo.getAmount() + "";
+			String ext4 = context.getAppVersion() + "";
+			maidianLog.info(com.ald.fanbei.api.common.util.StringUtil
+					.appendStrs("	", DateUtil.formatDate(new Date(),
+							DateUtil.DATE_TIME_SHORT), "	", requestDataVo
+							.getId(), "	rmtIP=", CommonUtil.getIpAddr(request),
+							"	userName=", context.getUserName(), "	", 0, "	",
+							request.getRequestURI(), "	", cashDo.getRid() + "",
+							"	", DateUtil.formatDate(new Date(),
+									DateUtil.MONTH_SHOT_PATTERN), "	",
+							"userBorrowCashApply", "	", ext1, "	", ext2, "	",
+							ext3, "	", ext4, "	reqD=", "appFlag:"
+									+ requestDataVo.getId() + ",appVersion:"
+									+ context.getAppVersion() + ",userId="
+									+ cashDo.getUserId() + ",cashAmount:"
+									+ cashDo.getAmount(), "	resD=", "null"));
+		} catch (Exception e) {
+			logger.error("userBorrowCashApply maidian logger error", e);
+		}
+	}
+
 	// /**
 	// * 处理风控逾期借钱或者借款处理
 	// * @param result
