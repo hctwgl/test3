@@ -9,14 +9,17 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsPropertyService;
 import com.ald.fanbei.api.biz.service.AfPropertyValueService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPropertyDo;
 import com.ald.fanbei.api.dal.domain.AfPropertyValueDo;
@@ -52,6 +55,9 @@ public class GetGoodsSpecApi implements ApiHandle {
 
 	@Resource
 	AfPropertyValueService afPropertyValueService;
+	
+	@Autowired
+	AfDeUserGoodsService afDeUserGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -68,6 +74,16 @@ public class GetGoodsSpecApi implements ApiHandle {
 		goodsPriceDo.setGoodsId(goodsId);
 		List<AfGoodsPriceDo> priceDos = afGoodsPriceService.getListByCommonCondition(goodsPriceDo);
 		priceData = convertListForPrice(priceDos);
+				
+		//双十一砍价活动增加逻辑
+		for (AfGoodsPriceDo afGoodsPriceDo : priceDos) {
+		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(context.getUserId(), afGoodsPriceDo.getRid());
+		    if(afDeUserGoodsDo !=null)
+		    {
+			//更新商品价格为砍价后价格
+			afGoodsPriceDo.setActualAmount(afGoodsPriceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice()));
+		    }
+		}
 
 		propertyDo.setGoodsId(goodsId);
 		List<AfGoodsPropertyDo> propertyDos = afGoodsPropertyService.getListByCommonCondition(propertyDo);
