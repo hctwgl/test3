@@ -179,12 +179,8 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 				for(AfRedRainPoolDo pool : pools) {
 					int num = pool.getNum();
 					BlockingQueue<String> queue = new ArrayBlockingQueue<>(num);
-					String couponType = pool.getCouponType();
-					String couponName = pool.getCouponName();
-					Long couponId = pool.getCouponId();
-					Integer roundId = round.getId();
 					for(int i = 0; i<num; i++) {
-						queue.offer(JSON.toJSONString(new Redpacket(couponType, couponName, couponId, roundId)));
+						queue.offer(JSON.toJSONString(new Redpacket(pool.getCouponType(), pool.getCouponName(), pool.getCouponId(), round.getId(), pool.getAmount())));
 					}
 					redPacketRedisPoolService.inject(queue);
 				}
