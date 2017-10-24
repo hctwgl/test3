@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
+import com.ald.fanbei.api.dal.domain.query.AfDeUserGoodsQuery;
 
 /**
  * 双十一砍价Dao
@@ -12,6 +16,8 @@ import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
  */
 public interface AfDeUserGoodsDao extends BaseDao<AfDeUserGoodsDo, Long> {
 
-    
+    AfDeUserGoodsInfoDto getGoodsInfo(AfDeUserGoodsDo afDeUserGoodsDo);
+
+    List<AfDeUserGoodsDo> getAfDeUserGoogsList(AfDeUserGoodsQuery queryGoods);
 
 }

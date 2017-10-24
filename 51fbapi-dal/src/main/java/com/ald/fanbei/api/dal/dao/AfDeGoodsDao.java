@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfDeGoodsDo;
  */
 public interface AfDeGoodsDao extends BaseDao<AfDeGoodsDo, Long> {
 
+    long getActivityTotalCount();
+
     
 
 }

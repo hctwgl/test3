@@ -167,5 +167,50 @@
         FROM af_de_user_goods
         <include refid="commonCondition"/>
     </select>
-    
+    <select id="getGoodsInfo" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_de_user_goods
+        <include refid="commonCondition"/>
+       SELECT 
+       		 ug.cutPrice,goods.image, goods.originalPrice,goods.goods_detail,goods.name
+        FROM(
+              SELECT
+				  p.id AS goodsPriceId,
+				  g.goods_icon AS image,
+				  p.actual_amount AS originalPrice,
+				  d.lowestPrice,
+				  IF(u.cutPrice IS NULL,0,u.cutprice) AS cutprice,
+				  d.type,
+				  IF(u.userId IS NULL, 0,1) AS `share`,
+				  g.`name`,
+				  g.`goods_detail` AS goods_detail,
+				  o.`name` AS couponName,
+				  o.id AS couponId,
+				  c.threshold AS threshold,
+			 	 IF(u.cutCount IS NULL,0, IF( u.cutCount > c.threshold AND uc.id IS NULL, 2, 1)) AS state
+			FROM
+			    af_goods g
+				JOIN af_goods_price p ON g.id = p.goods_id AND p.is_delete = 0 AND g.is_delete = 0
+				JOIN af_de_goods d ON p.id = d.goodsPriceId AND d.is_delete = 0
+				LEFT JOIN af_de_user_goods u ON u.goodsPriceId = d.goodsPriceId AND u.userId = 0 AND u.is_delete = 0
+				LEFT JOIN af_de_goods_coupon c ON d.goodsPriceId = c.goodsPriceId AND c.is_delete = 0
+				LEFT JOIN af_coupon o ON c.couponId = o.id AND o.is_delete = 0
+				LEFT JOIN af_user_coupon uc ON o.id = uc.coupon_id AND uc.user_id = 0 AND uc.is_delete = 0
+        ) goods
+        
+        RIGHT JOIN af_de_user_goods ug 
+        ON goods.goodsPriceId =  ug.goodsPriceId
+        where 
+        ug.user_id = #{userid}
+        ug.goodsPriceId = #{goodspriceid}
+    </select>
+      <select id="getAfDeUserGoogsList" resultType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_de_user_goods
+        <include refid="commonCondition"/>
+        order by cutCount,cutPrice desc 
+    </select>
+
 </mapper>

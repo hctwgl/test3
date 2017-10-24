@@ -1,13 +1,18 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfDeUserGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
+import com.ald.fanbei.api.dal.domain.query.AfDeUserGoodsQuery;
 import com.ald.fanbei.api.biz.service.AfDeUserGoodsService;
 
 
@@ -33,4 +38,17 @@ public class AfDeUserGoodsServiceImpl extends ParentServiceImpl<AfDeUserGoodsDo,
 	public BaseDao<AfDeUserGoodsDo, Long> getDao() {
 		return afDeUserGoodsDao;
 	}
+
+		@Override
+	public AfDeUserGoodsInfoDto getGoodsInfo(AfDeUserGoodsDo afDeUserGoodsDo) {
+		    // TODO Auto-generated method stub
+		return  afDeUserGoodsDao.getGoodsInfo(afDeUserGoodsDo);
+	}
+
+		@Override
+	public List<AfDeUserGoodsDo> getAfDeUserGoogsList(AfDeUserGoodsQuery queryGoods) {
+		    // TODO Auto-generated method stub
+		return afDeUserGoodsDao.getAfDeUserGoogsList(queryGoods);
+	}
+
 }
