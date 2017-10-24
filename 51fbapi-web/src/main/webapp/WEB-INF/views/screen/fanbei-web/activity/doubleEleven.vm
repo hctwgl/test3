@@ -6,7 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>惊艳双十一一触即发</title>
+    <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/doubleEleven.css">
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .swiper-container {
+        width: 7.5rem;
+        height: 3.7rem;
+        background: orange;
+    }
+    </style>
 </head>
 <body>
     <div id="doubleEleven">
@@ -17,13 +30,13 @@
                 <span class="vertical-line"></span>
                 <span class="cutdown-word">活动倒计时：</span>
                 <span class="countDown-one">
-                    <span class="black-blank">02</span>
+                    <span class="black-blank blankOne">02</span>
                     <span>:</span>
-                    <span class="black-blank">02</span>
+                    <span class="black-blank blankTwo">02</span>
                     <span>:</span>
-                    <span class="black-blank">02</span>
+                    <span class="black-blank blankThree">02</span>
                     <span>:</span>
-                    <span class="black-blank">02</span>
+                    <span class="black-blank blankFour">02</span>
                 </span>
             </div>
             <p class="calender">
@@ -72,7 +85,7 @@
             <div class="doubleEleven-brand">
                 <div class="brandTitle">各大品牌专题</div>
                 <div class="brandBox">
-                    <ul class="brandDetail clearFix">
+                    <!--<ul class="brandDetail clearFix">
                         <span class="arrowLeft"><</span>
                         <span class="arrowRight">></span>
                         <li>
@@ -171,7 +184,29 @@
                                 <span class="brandDes">苹果</span>
                             </div>
                         </li>
-                    </ul>
+                    </ul>!-->
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide" v-for="item in arr">
+                                <!--<span  v-for="i in item">
+                                    {{i}}
+                                </span>!-->
+                                <li v-for="i in item">
+                                    <div class="brandProduct">
+                                        <img class="brand-img" src="" alt="">
+                                        <span class="brandDes">苹果{{i}}</span>
+                                    </div>
+                                </li>
+                            </div>
+                        </div>
+                        <!-- 如果需要分页器 -->
+                        <div class="swiper-pagination"></div>
+                        <!-- 如果需要导航按钮 -->
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+                    <!-- 如果需要滚动条 -->
+                    <div class="swiper-scrollbar"></div>
                 </div>
             </div>
         </div>
@@ -206,5 +241,8 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="/dist/activity/11/vue.js?"></script>
 <script type="text/javascript" src="/dist/activity/11/doubleEleven.js?version=$version"></script>
 </html>

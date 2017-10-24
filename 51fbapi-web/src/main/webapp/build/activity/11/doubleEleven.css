@@ -69,6 +69,7 @@ body {
   left: 3.12rem;
   top: .5rem;
   letter-spacing: -0.02rem;
+  text-align: center;
 }
 .black-blank {
   width: 0.32rem;
@@ -375,7 +376,7 @@ ul li {
   border-bottom: 1px solid white;
 }
 .product-detail {
-  background: url('http://f.51fanbei.com/h5/app/activity/11/meeting_11.png') no-repeat;
+  background: url('https://f.51fanbei.com/h5/app/activity/11/meeting_11.png') no-repeat;
   background-size: contain;
   width: 100%;
   height: 9rem;

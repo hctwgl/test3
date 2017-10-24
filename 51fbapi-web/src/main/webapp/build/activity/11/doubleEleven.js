@@ -8,8 +8,7 @@
     let fourTime=Date.parse(new Date('2017/11/12 00:00:00'));
     let fiveTime=Date.parse(new Date('2017/11/11 00:00:00'))
     let sixTime=Date.parse(new Date('2017/11/13 10:00:00'))
-    console.log(currentStarmp);
-    console.log(firstTime);
+    console.log(new Date(currentStarmp))
 
     if (currentStarmp>oneTime && currentStarmp<=threeTime){ //11.1-11.11
         addStyle(0);
@@ -34,53 +33,101 @@
 
 
 //全民倒计时
-// $(function(){
-//     // 结束时间的时间戳
-//     let endDate = new Date("oct 29,2017 23:59:59");
-//     let endStamp = endDate.valueOf();
-//     console.log(new Date(endStamp));
-//     // 获取当前时间的时间戳
-//     let now = new Date();
-//     let nowTimeStamp = now.valueOf();
-//     console.log(new Date(nowTimeStamp));
-//     // 相差的时间戳
-//     let differStamp = endStamp - nowTimeStamp;
-//     let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
+$(function(){
+    // 结束时间的时间戳
+    let endDate = new Date("oct 29,2017 23:59:59");
+    let endStamp = endDate.valueOf();
+    console.log(new Date(endStamp));
+    // 获取当前时间的时间戳
+    let now = new Date();
+    let nowTimeStamp = now.valueOf();
+    console.log(new Date(nowTimeStamp));
+    // 相差的时间戳
+    let differStamp = endStamp - nowTimeStamp;
+    let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
 
-//     function showTimerS( diff ){
-//         var day=0,
-//         hour=0,
-//         minute=0,showTimerS
-//         second=0;//时间默认值
+    function showTimerS( diff ){
+        var day=0,
+        hour=0,
+        minute=0,
+        second=0;//时间默认值
 
-//         if(diff > 0){
-//         day = Math.floor(diff / (60 * 60 * 24));
-//         hour = Math.floor(diff / (60 * 60)) - (day * 24);
-//         minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
-//         second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
-//         }
+        if(diff > 0){
+        day = Math.floor(diff / (60 * 60 * 24));
+        hour = Math.floor(diff / (60 * 60)) - (day * 24);
+        minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
+        second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+        }
+       /*  if (minute <= 9) minute = '0' + minute;
+        if (second <= 9) second = '0' + second;
+        $('#day_show').html(day+"天");
+        $('#hour_show').html('<s id="h"></s>'+hour+'时');
+        $('#minute_show').html('<s></s>'+minute+'分');
+        $('#second_show').html('<s></s>'+second+'秒'); */
 
-//        /*  if (minute <= 9) minute = '0' + minute;
-//         if (second <= 9) second = '0' + second;
-//         $('#day_show').html(day+"天");
-//         $('#hour_show').html('<s id="h"></s>'+hour+'时');
-//         $('#minute_show').html('<s></s>'+minute+'分');
-//         $('#second_show').html('<s></s>'+second+'秒'); */
+        $('.countTwo').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//全民倒计时
+        //顶部倒计时
+        $('.blankOne').html(day);
+        $('.blankTwo').html(hour);
+        $('.blankThree').html(minute);
+        $('.blankFour').html(second);
 
-//         $('.countTwo').html(day+"天"+hour+'时'+minute+'分'+second+'秒');
-//         console.log($('.countTwo'));
-//     };
+    };
 
-//     function timer(intDiff){
-//         showTimerS(intDiff);
-//         intDiff--;
-//         window.setInterval(function(){
-//             showTimerS(intDiff);
-//             intDiff--;
-//         }, 1000);
-//     };
-//     timer(intDiff);
-// });
+    function timer(intDiff){
+        showTimerS(intDiff);
+        intDiff--;
+        window.setInterval(function(){
+            showTimerS(intDiff);
+            intDiff--;
+        }, 1000);
+    };
+    timer(intDiff);
+
+
+    //红包雨倒计时
+    // 结束时间的时间戳
+    let overDate = new Date("oct 28,2017 23:59:59");
+    let endStamp = overDate.valueOf();
+    console.log(new Date(endStamp));
+    // 获取当前时间的时间戳
+    let now = new Date();
+    let nowTimeStamp = now.valueOf();
+    console.log(new Date(nowTimeStamp));
+    // 相差的时间戳
+    let differStamp = endStamp - nowTimeStamp;
+    let diffValue = parseInt(differStamp/1000);//倒计时总秒数量
+
+    function showTimerS( ctime ){
+        var day=0,
+        hour=0,
+        minute=0,
+        second=0;//时间默认值
+
+        if(ctime > 0){
+        day = Math.floor(ctime / (60 * 60 * 24));
+        hour = Math.floor(ctime / (60 * 60)) - (day * 24);
+        minute = Math.floor(ctime / 60) - (day * 24 * 60) - (hour * 60);
+        second = Math.floor(ctime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+        }
+
+        // $('.countThree').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//红包雨
+        $('.countThree').html('who are you');
+        console.log(1111111111);
+
+    };
+
+    function timer(diffValue){
+        showTimerS(diffValue);
+        diffValue--;
+        window.setInterval(function(){
+            showTimerS(diffValue);
+            diffValue--;
+        }, 1000);
+    };
+    timer(diffValue);
+
+});
 
 
 
@@ -97,12 +144,40 @@ let vm=new Vue({
         tab: 1,
         productList:'',
         productListDetail:'',
-        line:1
+        line:1,
+        allData :['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8','图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16','图片17','图片18'],//返回回来的数据
+        htmlStr :'',
+        n : 0,
+                arr : [],//就是把数据转成二维数组。一维是swiper-slide的个数。二维是每个swiper-slide的img的个数和数据，最后转成arr[['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8'],[,'图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16'],['图片17','图片18']]
+        mm : [[1,2,3],[2,3,4]]
     },
     created:function(){
          this.logData();
          this.coupon();
+         var arr = new Array([]);
+            	for(var i =0; i<=Math.floor(this.allData.length/8); i++){
+	            	arr[i]=[];
+	    
+				     arr[i]=this.allData.slice(i*8,i*8+8);
+            	}
+            	
+            this.arr = arr;
+            console.log( this.arr.length );
     },
+    mounted : function(){
+    var mySwiper = new Swiper('.swiper-container', {
+			            loop: true,
+			            // 如果需要分页器
+			            pagination: '.swiper-pagination',
+
+			            // 如果需要前进后退按钮
+			            nextButton: '.swiper-button-next',
+			            prevButton: '.swiper-button-prev',
+
+		        });
+        mySwiper.update()
+            	
+    },    
     methods:{
         //页面初始化信息
          logData() {
