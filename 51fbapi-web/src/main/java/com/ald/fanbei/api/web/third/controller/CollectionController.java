@@ -20,18 +20,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
+import com.alibaba.fastjson.JSON;
 
 /**
  * @类现描述：和催收平台互调
@@ -52,6 +57,9 @@ public class CollectionController {
 	
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+	
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
 	 * @param request
@@ -177,6 +185,117 @@ public class CollectionController {
 			  updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
 			  updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
 			  return updteBo;
+		}
+	}
+	
+	/**
+	 * 催收平台获取借款记录信息用于数据同步刷新bill
+	 * @author yuyue
+	 * @Time 2017年9月19日 上午10:08:33
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/findBorrowBillByBillNo" }, method = RequestMethod.POST)
+	@ResponseBody
+	public CollectionUpdateResqBo findBorrowBillByBillNo(HttpServletRequest request, HttpServletResponse response) {
+		CollectionUpdateResqBo updteBo = new CollectionUpdateResqBo();
+		try {
+			String sign = ObjectUtils.toString(request.getParameter("sign"));
+			List<Long> billIds = JSON.parseArray(request.getParameter("data"),Long.class);
+			if (billIds == null || billIds.size() < 0) {
+				logger.info("findBorrowBillByBillNo error :" + FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getMsg());
+				updteBo.setCode(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getMsg());
+				return updteBo;
+			}
+			logger.info("findBorrowBillByBillNo data=" + billIds + ",sign=" + sign+ "");
+			byte[] salt = DigestUtil.decodeHex("5b3d654201bab83c");
+			byte[] pd = DigestUtil.digestString(billIds.get(0).toString().getBytes("UTF-8"), salt, Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			String checkSign = DigestUtil.encodeHex(pd);
+			if (!StringUtil.equals(sign, checkSign)) {
+				logger.info("findBorrowBillByBillNo sign and sign is fail");
+				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
+				return updteBo;
+			}
+			List<AfOverdueOrderDto> orderList = afBorrowBillService.getOverdueDataToRiskByBillIds(billIds);
+			if (orderList == null || orderList.size() < 1) {
+				logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null");
+				updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
+				return updteBo;
+			}
+			pd = DigestUtil.digestString(orderList.get(0).getOrderNo().getBytes("UTF-8"), salt, Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			sign = DigestUtil.encodeHex(pd);
+			String jsonString = JsonUtil.toJSONString(orderList);
+			updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+			updteBo.setData(jsonString);
+			updteBo.setSign(sign);
+			return updteBo;
+		} catch (Exception e) {
+			logger.error("findBorrowBillByBillNo error : error message " + e);
+			updteBo.setCode(FanbeiThirdRespCode.SYSTEM_ERROR.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SYSTEM_ERROR.getMsg());
+			return updteBo;
+		}
+	}
+
+
+	/**
+	 *  催收平台根据userId获取借款记录信息
+	 * @author caowu
+	 * @Time 2017年10月9日 下午17:20:33
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/findBorrowBillByConsumerNo" }, method = RequestMethod.POST)
+	@ResponseBody
+	public CollectionUpdateResqBo findBorrowBillByConsumerNo(HttpServletRequest request, HttpServletResponse response) {
+		CollectionUpdateResqBo updteBo = new CollectionUpdateResqBo();
+		try {
+			String sign = ObjectUtils.toString(request.getParameter("sign"));
+			Long consumerNo =  NumberUtil.objToLong(request.getParameter("consumerNo"));
+			if (NumberUtil.isNotValidForLong(consumerNo)) {
+				logger.info("findBorrowBillByConsumerNo error :" + FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getMsg());
+				updteBo.setCode(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getMsg());
+				return updteBo;
+			}
+			logger.info("findBorrowBillByConsumerNo data=" + consumerNo + ",sign=" + sign+ "");
+			byte[] salt = DigestUtil.decodeHex("5b3d654201bab83c");
+			byte[] pd = DigestUtil.digestString(consumerNo.toString().getBytes("UTF-8"), salt, Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			String checkSign = DigestUtil.encodeHex(pd);
+			if (!StringUtil.equals(sign, checkSign)) {
+				logger.info("findBorrowBillByConsumerNo sign and sign is fail");
+				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN
+						.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN
+						.getMsg());
+				return updteBo;
+			}
+			List<AfOverdueOrderDto> orderList = afBorrowBillService.getOverdueDataToRiskByConsumerNo(consumerNo);
+			if (orderList == null || orderList.size() < 1) {
+				logger.error("findBorrowBillByConsumerNo afBorrowCashDo is null");
+				updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
+				return updteBo;
+			}
+			pd = DigestUtil.digestString(orderList.get(0).getOrderNo().getBytes("UTF-8"), salt, Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			sign = DigestUtil.encodeHex(pd);
+			String jsonString = JsonUtil.toJSONString(orderList);
+			updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+			updteBo.setData(jsonString);
+			updteBo.setSign(sign);
+			return updteBo;
+		} catch (Exception e) {
+			logger.error("findBorrowBillByConsumerNo error : error message " + e);
+			updteBo.setCode(FanbeiThirdRespCode.SYSTEM_ERROR.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SYSTEM_ERROR.getMsg());
+			return updteBo;
 		}
 	}
 }

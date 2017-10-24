@@ -41,6 +41,9 @@ public class AfBorrowBillDo extends AbstractSerial{
 	private String  type;
 	private Integer count;//数量
 	private String isFreeInterest;//是否免息是否还款状态【Y:免息 N:不免息，】
+	private Integer isOut =0;
+	private Date gmtOutDay;
+	private Date gmtPayTime;
 	
 	public Long getRid() {
 		return rid;
@@ -198,5 +201,28 @@ public class AfBorrowBillDo extends AbstractSerial{
 	public void setIsFreeInterest(String isFreeInterest) {
 		this.isFreeInterest = isFreeInterest;
 	}
-	
+
+	public Integer getIsOut() {
+		return isOut;
+	}
+
+	public void setIsOut(Integer isOut) {
+		this.isOut = isOut;
+	}
+
+	public Date getGmtOutDay() {
+		return gmtOutDay;
+	}
+
+	public void setGmtOutDay(Date gmtOutDay) {
+		this.gmtOutDay = gmtOutDay;
+	}
+
+	public Date getGmtPayTime() {
+		return gmtPayTime;
+	}
+
+	public void setGmtPayTime(Date gmtPayTime) {
+		this.gmtPayTime = gmtPayTime;
+	}
 }

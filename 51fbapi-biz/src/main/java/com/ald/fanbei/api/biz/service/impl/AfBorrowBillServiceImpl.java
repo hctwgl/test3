@@ -10,11 +10,16 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.common.enums.PayType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 
 /**
@@ -28,6 +33,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 	@Resource
 	private AfBorrowBillDao afBorrowBillDao;
+	
+	@Resource
+	private AfUserBankcardDao bankcardDao;
 
 	@Override
 	public List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query) {
@@ -37,6 +45,16 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public BigDecimal getMonthlyBillByStatus(Long userId, int billYear, int billMonth, String status) {
 		BigDecimal amount = afBorrowBillDao.getMonthlyBillByStatus(userId, billYear, billMonth, status);
+		return amount == null ? BigDecimal.ZERO : amount;
+	}
+
+	public BigDecimal getMonthlyBillByStatusNew(Long userId, int billYear, int billMonth, String status){
+		BigDecimal amount = afBorrowBillDao.getMonthlyBillByStatusNew(userId, billYear, billMonth, status);
+		return amount == null ? BigDecimal.ZERO : amount;
+	}
+
+	public BigDecimal getMonthlyBillByStatusNewV1(Long userId, String status){
+		BigDecimal amount = afBorrowBillDao.getMonthlyBillByStatusNewV1(userId, status);
 		return amount == null ? BigDecimal.ZERO : amount;
 	}
 
@@ -180,5 +198,49 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 	public  AfBorrowBillDo getTotalMonthlyBillByIds( Long userId, List<Long > ids ){
 		return  afBorrowBillDao.getTotalMonthlyBillByIds(userId,ids);
+	}
+	
+	@Override
+	public List<AfOverdueOrderDto> getOverdueDataToRiskByBillIds(List<Long> billIds) {
+		List<AfOverdueOrderDto> orderList = afBorrowBillDao.getOverdueDataToRiskByBillIds(billIds);
+		if (orderList != null && orderList.size() > 0) {
+			for (AfOverdueOrderDto order : orderList) {
+				if (PayType.COMBINATION_PAY.getCode().equals(order.getPayType())) {
+					AfUserBankcardDo bankDo = bankcardDao.getUserBankcardById(order.getBankId());
+					if (bankDo != null && bankDo.getRid() != null) {
+						order.setBankCard(bankDo.getCardNumber());
+						order.setBankName(bankDo.getBankName());
+					}
+				}
+				List<AfOverdueBillDto> billList = afBorrowBillDao.getAfOverdueBillDtoByBillIds(billIds,order.getOrderId());
+				if (billList != null && billList.size() > 0) {
+					order.setBorrows(billList);
+				}
+			}
+			return orderList;
+		}
+		return null;
+	}
+
+	@Override
+	public List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(Long consumerNo) {
+		List<AfOverdueOrderDto> orderList = afBorrowBillDao.getOverdueDataToRiskByConsumerNo(consumerNo);
+		if (orderList != null && orderList.size() > 0) {
+			for (AfOverdueOrderDto order : orderList) {
+				if (PayType.COMBINATION_PAY.getCode().equals(order.getPayType())) {
+					AfUserBankcardDo bankDo = bankcardDao.getUserBankcardById(order.getBankId());
+					if (bankDo != null && bankDo.getRid() != null) {
+						order.setBankCard(bankDo.getCardNumber());
+						order.setBankName(bankDo.getBankName());
+					}
+				}
+				List<AfOverdueBillDto> billList = afBorrowBillDao.getAfOverdueBillDtoByConsumerNo(order.getOrderId());
+				if (billList != null && billList.size() > 0) {
+					order.setBorrows(billList);
+				}
+			}
+			return orderList;
+		}
+		return null;
 	}
 }

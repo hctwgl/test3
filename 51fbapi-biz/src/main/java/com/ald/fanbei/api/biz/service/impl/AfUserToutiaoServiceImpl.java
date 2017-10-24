@@ -44,8 +44,8 @@ public class AfUserToutiaoServiceImpl implements AfUserToutiaoService {
 	}
 
 	@Override
-	public Long uptUserActive(Long rid) {
-		return afUserToutiaoDao.uptUserActive(rid);
+	public Long uptUserActive(Long rid,Long userIdToutiao) {
+		return afUserToutiaoDao.uptUserActive(rid,userIdToutiao);
 	}
 
 	@Override
