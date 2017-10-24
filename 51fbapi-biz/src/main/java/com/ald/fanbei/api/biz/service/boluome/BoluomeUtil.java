@@ -479,7 +479,7 @@ public class BoluomeUtil extends AbstractThird{
 		OrderStatus status = null;
 		if (orderStatus == 1 || orderStatus == 2) {
 			status = OrderStatus.NEW;
-		} else if (orderStatus == 3 || orderStatus == 9) {
+		} else if (orderStatus == 3){// || orderStatus == 9) {
 			status = OrderStatus.PAID;
 		} else if (orderStatus == 4 ) {
 			status = OrderStatus.FINISHED;
