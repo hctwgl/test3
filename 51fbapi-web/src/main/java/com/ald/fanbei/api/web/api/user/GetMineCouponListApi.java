@@ -117,6 +117,7 @@ public class GetMineCouponListApi implements ApiHandle{
 		couponVo.setUseRule(afUserCouponDto.getUseRule());
 		couponVo.setType(afUserCouponDto.getType());
 		couponVo.setUseRange(afUserCouponDto.getUseRange());
+		couponVo.setShopUrl(afUserCouponDto.getShopUrl());
 		return couponVo;
 	}
 	

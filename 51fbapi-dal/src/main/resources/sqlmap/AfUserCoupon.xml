@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserCouponDao">
 	<sql id="queryAllFields">
 		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.coupon_id,u.gmt_start,u.gmt_end,
-		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.use_rule,c.type,c.valid_days,c.use_range
+		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.use_rule,c.type,c.valid_days,c.use_range,c.shop_url
 	</sql>
 	
 	<sql id="queryAllUserCouponFields">

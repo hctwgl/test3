@@ -143,6 +143,7 @@
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
 				<entry key="/user/getSysMsgList" value-ref="getSysMsgListApi" />
 				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
+				<entry key="/user/getMineCouponCount" value-ref="getMineCouponCountApi" />
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
