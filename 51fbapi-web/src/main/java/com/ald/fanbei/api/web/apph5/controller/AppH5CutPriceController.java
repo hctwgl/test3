@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
@@ -36,6 +34,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfDeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfDeUserCutInfoDo;
 import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
@@ -49,6 +48,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfDeGoodsInfoVo;
 import com.ald.fanbei.api.web.vo.AfDeUserCutInfoVo;
 import com.ald.fanbei.api.web.vo.AfDeUserGoodsVo;
+import com.ald.fanbei.api.web.vo.AfShopVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -75,13 +75,124 @@ public class AppH5CutPriceController extends BaseController {
 	AfDeUserCutInfoService afDeUserCutInfoService;
 	@Resource
 	AfDeUserGoodsService afDeUserGoodsService;
-	@Resource
-	AfResourceService afResourceService;
-	
 
 	String opennative = "/fanbei-web/opennative?name=";
 
 	/**
+	 * 
+	 * @Title: share @Description: 砍价接口 @param request @param response @return
+	 *         String @throws
+	 */
+	@RequestMapping(value = "/share", method = RequestMethod.POST)
+	public String share(HttpServletRequest request, HttpServletResponse response) {
+		String resultStr = H5CommonResponse.getNewInstance(false, "分享砍价商品失败").toString();
+		FanbeiWebContext context = new FanbeiWebContext();
+		try {
+			context = doWebCheck(request, true);
+			String userName = context.getUserName();
+			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
+			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}", userName, goodsPriceId);
+			Long userId = convertUserNameToUserId(userName);
+			// find all the goods List for this user
+			AfDeUserGoodsDo userGoodsDo = new AfDeUserGoodsDo();
+			userGoodsDo.setUserid(userId);
+			userGoodsDo.setGoodspriceid(goodsPriceId);
+			List<AfDeUserGoodsDo> userGoodsDoList = afDeUserGoodsService.getListByCommonCondition(userGoodsDo);
+			
+			// find goodsPriceId for iphonex
+			AfDeGoodsDo iphoneDo = new AfDeGoodsDo();
+			iphoneDo.setType(1);
+			AfDeGoodsDo iphoneDoo = afDeGoodsService.getByCommonCondition(iphoneDo);
+			if (iphoneDoo != null) {
+				//to judge if the goods is iphoneX
+				if (goodsPriceId.equals(iphoneDoo.getGoodspriceid())) {
+					boolean flag = false;
+					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
+						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
+							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
+								flag = true;
+								break;
+							}
+						}
+						if (!flag) {
+							//insert the user goods
+							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+							insertDo.setUserid(userId);
+							insertDo.setGmtCreate(new Date());
+							insertDo.setGmtModified(new Date());
+							insertDo.setIsbuy(0);
+							afDeUserGoodsService.saveRecord(insertDo);
+						}
+					}
+				//as long as the goods is iphoneX no matter the flag the result is true.
+				resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价成功").toString();
+				}else{
+					//needs to know if this goods has been shared by this user
+					boolean flag = false;
+					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
+						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
+							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
+								flag = true;
+								break;
+							}
+						}
+						if (!flag) {
+							//insert the user goods if this user does'nt have this goods
+							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+							insertDo.setUserid(userId);
+							insertDo.setGmtCreate(new Date());
+							insertDo.setGmtModified(new Date());
+							insertDo.setIsbuy(0);
+							afDeUserGoodsService.saveRecord(insertDo);
+							resultStr = H5CommonResponse.getNewInstance(true, "商品砍价成功").toString();
+						}else{
+							resultStr = H5CommonResponse.getNewInstance(false, "只能砍价两件商品，不要太贪心哦！").toString();
+						}
+					}
+
+					
+				}
+			}
+		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				logger.error("/activity/de/share" + context + "login error ");
+				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			}
+		} catch (Exception e) {
+			logger.error("/activity/de/share" + context + "error = {}", e.getStackTrace());
+		}
+
+		return resultStr;
+	}
+
+
+    @RequestMapping(value = "/goods", method = RequestMethod.POST)
+    public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	FanbeiWebContext context = doWebCheck(request, false);
+	try {
+	    String userName = context.getUserName();
+	    AfUserDo user = afUserService.getUserByUserName(userName);
+	    Long userId = user == null ? -1 : user.getRid();
+
+	    List<UserDeGoods> userDeGoodsList = afDeGoodsService.getUserDeGoodsList(userId);
+	    data.put("goodsList", userDeGoodsList);
+
+	    data.put("endTime", System.currentTimeMillis() / 1000 + 10000);
+	    data.put("totalCount", "100");
+
+	    return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
+	} catch (Exception e) {
+	    logger.error("/activity/de/goods" + context + "error = {}", e);
+	    return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败");
+	}
+    }
+
+    /**
 	 * 
 	 *  @Title: goodsInfo 
 	 *  @Description: 获取商品砍价详情
@@ -324,121 +435,15 @@ public class AppH5CutPriceController extends BaseController {
 		return newUserName;
 	}
 	
-	/**
-	 * 
-	 * @Title: share @Description: 砍价接口 @param request @param response @return
-	 *         String @throws
-	 */
 
-	@RequestMapping(value = "/share", method = RequestMethod.POST)
-	public String share(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = H5CommonResponse.getNewInstance(false, "分享砍价商品失败").toString();
-		FanbeiWebContext context = new FanbeiWebContext();
-		try {
-			context = doWebCheck(request, true);
-			String userName = context.getUserName();
-			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
-			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}", userName, goodsPriceId);
-			Long userId = convertUserNameToUserId(userName);
-			// find all the goods List for this user
-			AfDeUserGoodsDo userGoodsDo = new AfDeUserGoodsDo();
-			userGoodsDo.setUserid(userId);
-			userGoodsDo.setGoodspriceid(goodsPriceId);
-			List<AfDeUserGoodsDo> userGoodsDoList = afDeUserGoodsService.getListByCommonCondition(userGoodsDo);
-			
-			// find goodsPriceId for iphonex
-			AfDeGoodsDo iphoneDo = new AfDeGoodsDo();
-			iphoneDo.setType(1);
-			AfDeGoodsDo iphoneDoo = afDeGoodsService.getByCommonCondition(iphoneDo);
-			if (iphoneDoo != null) {
-				//to judge if the goods is iphoneX
-				if (goodsPriceId.equals(iphoneDoo.getGoodspriceid())) {
-					boolean flag = false;
-					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
-						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
-							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
-								flag = true;
-								break;
-							}
-						}
-						if (!flag) {
-							//insert the user goods
-							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
-							insertDo.setUserid(userId);
-							insertDo.setGmtCreate(new Date());
-							insertDo.setGmtModified(new Date());
-							insertDo.setIsbuy(0);
-							afDeUserGoodsService.saveRecord(insertDo);
-						}
-					}
-				//as long as the goods is iphoneX no matter the flag the result is true.
-				resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价成功").toString();
-				}else{
-					//needs to know if this goods has been shared by this user
-					boolean flag = false;
-					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
-						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
-							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
-								flag = true;
-								break;
-							}
-						}
-						if (!flag) {
-							//insert the user goods if this user does'nt have this goods
-							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
-							insertDo.setUserid(userId);
-							insertDo.setGmtCreate(new Date());
-							insertDo.setGmtModified(new Date());
-							insertDo.setIsbuy(0);
-							afDeUserGoodsService.saveRecord(insertDo);
-							resultStr = H5CommonResponse.getNewInstance(true, "商品砍价成功").toString();
-						}else{
-							resultStr = H5CommonResponse.getNewInstance(false, "只能砍价两件商品，不要太贪心哦！").toString();
-						}
-					}
-
-					
-				}
-			}
-		} catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
-				Map<String, Object> data = new HashMap<>();
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				logger.error("/activity/de/share" + context + "login error ");
-				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-			}
-		} catch (Exception e) {
-			logger.error("/activity/de/share" + context + "error = {}", e.getStackTrace());
-		}
-
-		return resultStr;
+	private AfDeUserCutInfoVo parseDoToVo(AfDeUserCutInfoDo userCutInfo) {
+	    	AfDeUserCutInfoVo vo = new AfDeUserCutInfoVo();
+		vo.setCutprice(userCutInfo.getCutprice());
+		vo.setHeadImgUrl(userCutInfo.getHeadimgurl());
+		vo.setNickname(userCutInfo.getNickname());
+		vo.setRemainPrice(userCutInfo.getRemainprice());
+		return vo;
 	}
-
-
- @RequestMapping(value = "/goods", method = RequestMethod.POST)
-	public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		FanbeiWebContext context = new FanbeiWebContext();
-		try {
-			context = doWebCheck(request, true);
-			String userName = context.getUserName();
-			Long userId = convertUserNameToUserId(userName);
-
-			List<UserDeGoods> userDeGoodsList = afDeGoodsService.getUserDeGoodsList(userId);
-			data.put("goodsList", userDeGoodsList);
-
-			data.put("endTime", System.currentTimeMillis() / 1000 + 10000);
-			data.put("totalCount", "100");
-
-			return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
-		} catch (Exception e) {
-			logger.error("/activity/de/goods" + context + "error = {}", e);
-			return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败");
-		}
-	}
-
 
 	/**
 	 * 
@@ -484,14 +489,6 @@ public class AppH5CutPriceController extends BaseController {
 			HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	private AfDeUserCutInfoVo parseDoToVo(AfDeUserCutInfoDo userCutInfo) {
-	    	AfDeUserCutInfoVo vo = new AfDeUserCutInfoVo();
-		vo.setCutprice(userCutInfo.getCutprice());
-		vo.setHeadImgUrl(userCutInfo.getHeadimgurl());
-		vo.setNickname(userCutInfo.getNickname());
-		vo.setRemainPrice(userCutInfo.getRemainprice());
-		return vo;
 	}
 
 }

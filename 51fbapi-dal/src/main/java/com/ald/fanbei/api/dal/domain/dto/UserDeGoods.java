@@ -77,6 +77,14 @@ public class UserDeGoods {
 	this.lowestPrice = lowestPrice;
     }
 
+    public String getGoodsId() {
+        return goodsId;
+    }
+
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
+    }
+
     private Long goodsPriceId;
     private String image;
     private BigDecimal originalPrice;
@@ -85,12 +93,13 @@ public class UserDeGoods {
     private Integer type;
     private Integer share;
     private String name;
+    private String goodsId;
 
     private List<UserDeGoodsCoupon> couponList;
 
     @Override
     public String toString() {
-	return "UserDeGoods [goodsPriceId=" + goodsPriceId + ", image=" + image + ", originalPrice=" + originalPrice + ", cutPrice=" + cutPrice + ", lowestPrice=" + lowestPrice + ", type=" + type + ", share=" + share + ", name=" + name + ", couponList=" + couponList + "]";
+	return "UserDeGoods [goodsPriceId=" + goodsPriceId + ", image=" + image + ", originalPrice=" + originalPrice + ", cutPrice=" + cutPrice + ", lowestPrice=" + lowestPrice + ", type=" + type + ", share=" + share + ", name=" + name + ", goodsId=" + goodsId + ", couponList=" + couponList + "]";
     }
 
 }

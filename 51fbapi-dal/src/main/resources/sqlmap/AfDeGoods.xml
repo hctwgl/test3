@@ -137,6 +137,7 @@
 		<result column="type" property="type" />
 		<result column="share" property="share" />
 		<result column="name" property="name" />
+		<result column="goodsId" property="goodsId" />
 		<collection property="couponList" ofType="com.ald.fanbei.api.dal.domain.dto.UserDeGoodsCoupon"  column="couponId"  >
 			<id column="couponId" property="couponId" />
 			<result column="couponName" property="couponName" />
@@ -182,6 +183,7 @@
 	    SELECT
 			p.id AS goodsPriceId,
 			g.goods_icon AS image,
+			g.id as goodsId,
 			p.actual_amount AS originalPrice,
 			d.lowestPrice,
 			IF(u.cutPrice is null,0,u.cutprice) as cutPrice,
