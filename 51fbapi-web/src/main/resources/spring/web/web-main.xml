@@ -124,6 +124,7 @@
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
+				<value>/category/getGoodsList</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -372,6 +373,7 @@
 				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
+				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
 
 			</map>
 		</constructor-arg>

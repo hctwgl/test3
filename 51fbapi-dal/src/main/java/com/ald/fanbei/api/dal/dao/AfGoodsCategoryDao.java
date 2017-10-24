@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
+import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -45,4 +46,6 @@ public interface AfGoodsCategoryDao {
 	 * @return
 	 */
 	List<AfGoodsCategoryDo> selectThirdLevel(Long rid);
+
+	List<AfGoodsCategoryDto> selectGoodsInformation(Long rid);
 }

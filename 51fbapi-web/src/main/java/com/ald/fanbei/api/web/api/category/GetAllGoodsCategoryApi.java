@@ -45,40 +45,42 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
         List<AfGoodsCategoryDo> oneList = afGoodsCategoryService.selectOneLevel();
         //查出二级
         if(null != oneList && oneList.size()>0){
-            for(int x=0;x<secondList.size();x++){
-                List<Object> objFirst = new ArrayList<Object>();
-                rid = oneList.get(x).getRid();
+            oneLevelList = new ArrayList<Object>();
+            for(int x=0;x<oneList.size();x++){
+                Map<String,Object> objFirst = new HashMap<String,Object>();
+                rid = oneList.get(x).getId();
                 name = oneList.get(x).getName();
                 secondList = afGoodsCategoryService.selectSecondLevel(rid);
                 //查出三级
                 if(null != secondList && secondList.size()>0){
+                    secondLevelList = new ArrayList<Object>();
                     for(int i=0;i<secondList.size();i++){
-                        List<Object> objSecond = new ArrayList<Object>();
-                        secondRid = secondList.get(i).getRid();
+                        Map<String,Object> objSecond = new HashMap<String,Object>();
+                        secondRid = secondList.get(i).getId();
                         secondName = secondList.get(i).getName();
                         list = afGoodsCategoryService.selectThirdLevel(secondRid);
                         if(null != list && list.size()>0){
+                            thirdLevelList = new ArrayList<Object>();
                             for(int k=0;k<secondList.size();k++){
-                                List<Object> objThird = new ArrayList<Object>();
+                                Map<String,Object> objThird = new HashMap<String,Object>();
                                 String thirdName = list.get(k).getName();
-                                Long thirdRid = list.get(k).getRid();
+                                Long thirdRid = list.get(k).getId();
                                 String thirdImgUrl = list.get(k).getImgUrl();
-                                objThird.add(thirdName);
-                                objThird.add(thirdImgUrl);
-                                objThird.add(thirdRid);
+                                objThird.put("name",thirdName);
+                                objThird.put("imgUrl",thirdImgUrl);
+                                objThird.put("id",thirdRid);
                                 thirdLevelList.add(objThird);
                             }
                         }
-                        objSecond.add(secondName);
-                        objSecond.add(thirdLevelList);
+                        objSecond.put("name",secondName);
+                        objSecond.put("thirdLevelList",thirdLevelList);
                         secondLevelList.add(objSecond);
                     }
                 }
-                objFirst.add(name);
-                objFirst.add(secondLevelList);
+                objFirst.put("name",name);
+                objFirst.put("secondLevelList",secondLevelList);
                 oneLevelList.add(objFirst);
             }
-
         }
         data.put("oneLevelList",oneLevelList);
         resp.setResponseData(data);
