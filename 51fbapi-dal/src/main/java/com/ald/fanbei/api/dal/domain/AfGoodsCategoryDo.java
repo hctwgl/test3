@@ -12,7 +12,7 @@ import java.util.Date;
 public class AfGoodsCategoryDo extends AbstractSerial{
 
 	private static final long serialVersionUID = 2581342775090330559L;
-	private Long rid;
+	private Long id;
 
 	private String name;
 
@@ -36,12 +36,12 @@ public class AfGoodsCategoryDo extends AbstractSerial{
 
 	private String level;
 
-	public Long getRid() {
-		return rid;
+	public Long getId() {
+		return id;
 	}
 
-	public void setRid(Long rid) {
-		this.rid = rid;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {
