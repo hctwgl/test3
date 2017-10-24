@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.IPTransferBo;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.service.wxpay.WxpayConfig;
 import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -37,6 +39,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -75,6 +78,9 @@ public class PayOrderV1Api implements ApiHandle {
 	@Resource
 	UpsUtil upsUtil;
 
+	@Autowired
+	AfDeUserGoodsService afDeUserGoodsService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -100,6 +106,17 @@ public class PayOrderV1Api implements ApiHandle {
 			logger.error("orderId is invalid");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
+		
+		//双十一砍价添加
+		if (orderInfo.getOrderType() == OrderType.SELFSUPPORT.getCode() && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
+		    if(afDeUserGoodsDo!= null && afDeUserGoodsDo.getIsbuy()== 1)
+		    {
+			logger.error(orderInfo.getThirdOrderNo() +":afDeUserGoodsService the goods is buy.");
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CUT_PRICE_ISBUY);
+		    }
+		}
+		//----------------
 		
 		if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
@@ -201,7 +218,10 @@ public class PayOrderV1Api implements ApiHandle {
 						}
 					}
 					
-					//更新砍价
+					//更新砍价商品为已购买(订单为自营且第三方订单号不为空),双十一添加
+                        		if (orderInfo.getOrderType() == OrderType.SELFSUPPORT.getCode() && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+                        		    afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
+                        		}
 				} else {
 					FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
 					ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
