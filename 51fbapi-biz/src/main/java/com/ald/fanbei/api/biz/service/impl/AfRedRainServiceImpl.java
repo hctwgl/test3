@@ -103,22 +103,22 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			if(++counter > MAX_NUM_HIT_REDPACKET) { 
 				return null;
 			}
-		}
 		
-		try {
-			Redpacket rp = this.redPacketRedisPoolService.apply();
-			if(rp != null) {
-				AfUserDo user = afUserService.getUserByUserName(userName);
-				if("BOLUOMI".equals(rp.getType())) {
-					boluomeUtil.grantCoupon(rp.getCouponId(), new HashMap<String,Object>(), user.getRid());
-				}else {
-					afUserCouponService.grantCouponForRedRain(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
+			try {
+				Redpacket rp = this.redPacketRedisPoolService.apply();
+				if(rp != null) {
+					AfUserDo user = afUserService.getUserByUserName(userName);
+					if("BOLUOMI".equals(rp.getType())) {
+						boluomeUtil.grantCoupon(rp.getCouponId(), new HashMap<String,Object>(), user.getRid());
+					}else {
+						afUserCouponService.grantCouponForRedRain(user.getRid(), rp.getCouponId(), UserCouponSource.RED_RAIN.name(), rp.getRedRainRoundId().toString());
+					}
+					this.bizCacheUtil.hincrBy(Constants.CACHEKEY_REDRAIN_COUNTERS, userName, 1L);
+					return rp;
 				}
-				this.bizCacheUtil.hincrBy(Constants.CACHEKEY_REDRAIN_COUNTERS, userName, 1L);
-				return rp;
+			}catch (Exception e) {
+				logger.error(e.getMessage(), e);
 			}
-		}catch (Exception e) {
-			logger.error(e.getMessage(), e);
 		}
 		
 		return null;
@@ -179,12 +179,8 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 				for(AfRedRainPoolDo pool : pools) {
 					int num = pool.getNum();
 					BlockingQueue<String> queue = new ArrayBlockingQueue<>(num);
-					String couponType = pool.getCouponType();
-					String couponName = pool.getCouponName();
-					Long couponId = pool.getCouponId();
-					Integer roundId = round.getId();
 					for(int i = 0; i<num; i++) {
-						queue.offer(JSON.toJSONString(new Redpacket(couponType, couponName, couponId, roundId)));
+						queue.offer(JSON.toJSONString(new Redpacket(pool.getCouponType(), pool.getCouponName(), pool.getCouponId(), round.getId(), pool.getAmount())));
 					}
 					redPacketRedisPoolService.inject(queue);
 				}

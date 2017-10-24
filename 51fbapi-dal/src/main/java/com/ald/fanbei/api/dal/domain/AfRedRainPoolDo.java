@@ -12,6 +12,7 @@ public class AfRedRainPoolDo extends AbstractSerial{
 	private Long couponId;
 	private String couponName;
 	private String couponType;
+	private Integer amount;
 	private Date gmtCreate;
 	private Date gmtModified;
 	private String creator;
@@ -77,6 +78,12 @@ public class AfRedRainPoolDo extends AbstractSerial{
 	}
 	public void setIsDelete(Boolean isDelete) {
 		this.isDelete = isDelete;
+	}
+	public Integer getAmount() {
+		return amount;
+	}
+	public void setAmount(Integer amount) {
+		this.amount = amount;
 	}
 	
 }

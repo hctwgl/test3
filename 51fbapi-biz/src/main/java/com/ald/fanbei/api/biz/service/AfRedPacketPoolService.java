@@ -33,12 +33,14 @@ public interface AfRedPacketPoolService {
 		private String couponName;
 		private Long couponId;
 		private Integer redRainRoundId;
+		private Integer amount;
 
-		public Redpacket(String type, String couponName, Long couponId, Integer redRainRoundId){
+		public Redpacket(String type, String couponName, Long couponId, Integer redRainRoundId, Integer amount){
 			this.type = type;
 			this.couponName = couponName;
 			this.couponId = couponId;
 			this.redRainRoundId = redRainRoundId;
+			this.amount = amount;
 		}
 		
 		public Redpacket() {}
@@ -73,6 +75,14 @@ public interface AfRedPacketPoolService {
 
 		public void setRedRainRoundId(Integer redRainRoundId) {
 			this.redRainRoundId = redRainRoundId;
+		}
+
+		public Integer getAmount() {
+			return amount;
+		}
+
+		public void setAmount(Integer amount) {
+			this.amount = amount;
 		}
 	}
 	
