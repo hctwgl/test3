@@ -85,7 +85,7 @@ $(document).ready(function() {
                           <span class="wardTxt">${couponArr[i].couponName}</span>
                       </div>`;
             }
-            $('.wardCoupon').html(str);
+            $('.wardContent').html(str);
             $(".gameWard").show();
         }
     };
