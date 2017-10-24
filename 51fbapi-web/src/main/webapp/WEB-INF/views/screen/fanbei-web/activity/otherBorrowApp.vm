@@ -19,9 +19,14 @@
         <img class="fr" src="$commonUrl/x.png" @click="barShow=false">
     </div>
     <div class="banner">
-        <a @click="maidian('banner')" :href="banner.content">
-            <img class="first" :src="banner.imageUrl">
-        </a>
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item of content.bannerList">
+                <a @click="maidian('banner')" :href="item.content">
+                    <img :src="item.imageUrl">
+                </a>
+            </div>
+        </div>
+        <div class="img-pagination"></div>
     </div>
     <div class="swiper-container">
         <!-- 如果需要分页器 -->
