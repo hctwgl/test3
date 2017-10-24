@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -271,5 +272,7 @@ public interface AfBorrowService {
 	List<AfBorrowBillDo> getBorrowBillList(String status, Long userId);
 
 	List<AfBorrowBillDo> getBorrowBillListY(Long userId,Integer billYear,Integer billMonth);
+
+	HashMap addHomeBorrow(final Long orderId, final int nper, final Long userId);
 
 }
