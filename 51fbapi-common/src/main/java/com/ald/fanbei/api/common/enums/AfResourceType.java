@@ -15,12 +15,13 @@ public enum AfResourceType {
 	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
 	HomeOneToTwo("HOME_ONE_TO_TWO", "首页一对二(1大左2小右)模块"),
+	NewHomeOneToTwo("NEW_HOME_ONE_TO_TWO","1大左2小右(新版)"),
 	HomeOneToTwo2("HOME_ONE_TO_TWO2", "首页一对二(1大上2小下)模块"),
 	HomeOneImage("HOME_ONE_IMAGE", "首页平铺模块"),
 	HomeTabbar("HOME_TABBAR", "首页tabbar"),
 	HomeNavigationUpOne("HOME_NAVIGATION_UP","快捷导航上方活动专场"),
 	HomeNavigationDownTwo("HOME_NAVIGATION_DOWN","快捷导航下方活动专场"),
-	NewHomeCarouseToMany("NewHomeCarouseToMany","显示双十一东西"),
+	NewHomeCarouseToMany("NEW_HOME_CAROUSEL_TO_MANY","显示双十一东西"),
 
 	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
@@ -70,7 +71,7 @@ public enum AfResourceType {
 	GGTopBanner("GG_TOP_BANNER","逛逛活动点亮顶部轮播"),
 	HomeCarouseToMany("HOME_CAROUSEL_TO_MANY","首页轮播+N"),
 	ResourceTypeSet("SETTING_CONFIG_H5", "设置页面配置"),
-	MANY_PICUTRES("MANY_PICUTRES","N-3/6/9运营位"),
+	ManeyPictrues("MANEY_PICUTRES","3/6/9运营位"),
 
 
 	SelfSupportGoods("SELFSUPPORT_GOODS", "自营商品相关配置"),

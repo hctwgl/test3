@@ -203,14 +203,20 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		
 		// 1大左2小右
-		List<Object> one2TwoInfoList = getOne2TwoObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
-
-		String beforeImage = AfResourceType.HomeCarouseToMany.getCode();
-		if(contextApp.getAppVersion() != 394){
-			beforeImage = AfResourceType.NewHomeCarouseToMany.getCode();
+		//如果是394之前的版本用旧的,364以后是新版本
+		String beforeHomeOneToTwo = AfResourceType.HomeOneToTwo.getCode();
+		if(contextApp.getAppVersion() >= 394){
+			beforeHomeOneToTwo = AfResourceType.NewHomeOneToTwo.getCode();
 		}
-			// 获取轮播 +N信息 旧的
+		List<Object> one2TwoInfoList = getOne2TwoObjectWithResourceDolist(
+				afResourceService.getOneToManyResourceOrderByBytype(beforeHomeOneToTwo));
+
+
+			// 获取轮播 +N信息 旧的394之前版本
+			String beforeImage = AfResourceType.HomeCarouseToMany.getCode();
+			if(contextApp.getAppVersion() >= 394){
+				beforeImage = AfResourceType.NewHomeCarouseToMany.getCode();
+			}
 			Map<String,Object> midBanner2Many = getCarouselToManyWithResourceDoList(
 					afResourceService.getCarouselToManyResourceOrderByType(beforeImage));
 
@@ -218,11 +224,11 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		List<Object> navigationUpOne = getNavigationUpOneResourceDoList(
 				afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOne.getCode()));
 		//新增运营位2,快捷导航下方活动专场
-		List<Object> navigationDownOne = getNavigationUpOneResourceDoList(
+		List<Object> navigationDownOne = getNavigationDownTwoResourceDoList(
 				afResourceService.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwo.getCode()));
 		//    3/6/9运营位
 		Map<String,Object> manyPricutres = getManyPricutresResourceDoList(
-				afResourceService.getManyPricutresResourceDoList(AfResourceType.MANY_PICUTRES.getCode()));
+				afResourceService.getManyPricutresResourceDoList(AfResourceType.ManeyPictrues.getCode()));
 		// 获取首页活动信息
 		//获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -480,7 +486,6 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	private Map<String,Object> getManyPricutresResourceDoList(List<AfResourceDo> rescList) {
 		Map<String,Object> manyPricutres = new HashMap<String,Object>();
 		List<Map<String,Object>> manyPricutresList = new ArrayList<Map<String,Object>> ();
-		List<Map<String,Object>> manyEntityList = new ArrayList<Map<String,Object>> ();
 		for(AfResourceDo afResourceDo : rescList) {
 			Map<String, Object> data = new HashMap<String,Object> ();
 			String value3 = afResourceDo.getValue3();
@@ -497,9 +502,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			}
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
+			manyPricutresList.add(data);
 		}
 		manyPricutres.put("manyPricutresList", manyPricutresList);
-		manyPricutres.put("manyEntityList", manyEntityList);
 		return manyPricutres;
 	}
 
@@ -591,7 +596,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	}
 
 	private List<Object> getNavigationUpOneResourceDoList(List<AfResourceDo> navigationUplist){
-		List<Object> navigationList = new ArrayList<Object>();
+		List<Object> navigationUpOne = new ArrayList<Object>();
 
 		for (AfResourceDo afResourceDo: navigationUplist) {
 			Map<String, Object> data = new HashMap<String, Object>();
@@ -609,9 +614,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
 
-			navigationList.add(data);
+			navigationUpOne.add(data);
 		}
-		return navigationList;
+		return navigationUpOne;
 	}
 
 	private List<Object> getNavigationDownTwoResourceDoList(List<AfResourceDo> navigationUplist){
