@@ -428,8 +428,19 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			backgroundInfo.put("imageUrl", afResourceDo.getValue());
 			backgroundInfo.put("type", AfResourceSecType.NAVIGATION_BACKGROUND.getCode());
 		}
-		
-		for (AfResourceDo afResourceDo : bannerResclist) {
+		int lsize = bannerResclist.size();
+		//for (AfResourceDo afResourceDo : bannerResclist) {
+		for(int i=0;i<lsize;i++){
+			if(lsize>5&&lsize<10){
+				if(i>=5){
+					break;
+				}
+			}else if(lsize>10){
+				if(i>=10){
+					break;
+				}
+			}
+			AfResourceDo afResourceDo = bannerResclist.get(i);
 			String secType = afResourceDo.getSecType();
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
@@ -445,6 +456,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			}
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
+			data.put("color",afResourceDo.getValue3());
 			navigationList.add(data);
 			
 		}
