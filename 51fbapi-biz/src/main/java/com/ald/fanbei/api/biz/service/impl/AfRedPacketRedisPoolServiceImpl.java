@@ -78,5 +78,4 @@ public class AfRedPacketRedisPoolServiceImpl implements AfRedPacketPoolService {
         return map;
     }
 
-
 }
