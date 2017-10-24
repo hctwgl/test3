@@ -53,6 +53,7 @@ public enum OrderType {
         needRecordPayFailCodes.add(OrderType.SELFSUPPORT.getCode());
         needRecordPayFailCodes.add(OrderType.AGENTBUY.getCode());
         needRecordPayFailCodes.add(OrderType.TRADE.getCode());
+        needRecordPayFailCodes.add(OrderType.BOLUOME.getCode());
         return needRecordPayFailCodes;
     }
 

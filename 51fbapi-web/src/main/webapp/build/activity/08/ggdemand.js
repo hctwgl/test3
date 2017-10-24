@@ -32,11 +32,11 @@ $(function(){
                         $('.join').html(join);
                         friend+='<i class="friend">'+data.data.friend+'</i>';
                         $('.friend').html(friend);
-                        pic+= '<img src='+data.data.resourceDo.value+' alt="" class="banner-img">';
-                        $('.banner').html(pic);
+                         pic+= '<img src='+data.data.resourceDo.value+' alt="" class="banner-img">';
+                        $('.banner').html(pic); 
                         light+='<span class="light">'+data.data.fakeFinal+'</span>';
                         $('.light').html(light);
-                        // combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
+                        combo+='<span class="combo">'+data.data.itemsDo.name+'</span>';
                         $('.combo').html(data.data.itemsDo.name);
                         detail+='<p class="ruleCont">'+data.data.description+'</p>'
                         $('.ruleCont').html(detail);
@@ -69,6 +69,8 @@ $(function(){
                             }else{
                                 requestMsg(outputData.msg)
                             }
+                    }else{
+                        requestMsg(outputData.msg);
                     }
                 }
             })

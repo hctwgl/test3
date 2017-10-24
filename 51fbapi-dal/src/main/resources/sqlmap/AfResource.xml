@@ -261,4 +261,8 @@
 		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
 		and value_4 ='O';
 	</select>
+
+	<select id="getActivityRule" resultType="String">
+		SELECT value from af_resource where is_delete = 0 and type =#{type}
+	</select>
 </mapper>

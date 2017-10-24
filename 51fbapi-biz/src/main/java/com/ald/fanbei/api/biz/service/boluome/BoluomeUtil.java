@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -71,6 +72,8 @@ public class BoluomeUtil extends AbstractThird{
 	GeneratorClusterNo generatorClusterNo;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	private static String pushPayUrl = null;
 	private static String pushRefundUrl = null;
@@ -382,6 +385,7 @@ public class BoluomeUtil extends AbstractThird{
 	 * @param type 优惠券类型，1可使用，2未使用，3已过期
 	 * @return
 	 */
+	
 	public boolean isUserHasCoupon(String url, Long userId, Integer type) {
 		Map<String, String> map = parseAppIdAndCampaignId(url);
 		if (map == null) {
@@ -391,9 +395,10 @@ public class BoluomeUtil extends AbstractThird{
 		if (CollectionUtils.isEmpty(activityCouponList)) {
 			return false;
 		}
-		Integer nextPageNo = 1;
+		Integer nextPageNo = 0;
 		boolean constains = false;
-		do {
+		do {    
+		        nextPageNo++;
 			List<BrandCouponResponseBo> couponList = getUserCouponList(userId, type, nextPageNo, BoluomeCore.DEALFT_PAGE_SIZE);
 			if (CollectionUtils.isNotEmpty(couponList)) {
 				for (BrandCouponResponseBo userCoupon : couponList) {
@@ -408,10 +413,24 @@ public class BoluomeUtil extends AbstractThird{
 					}
 				}
 			}
-		} while ((nextPageNo = getNextPageNo(userId, type, 1, BoluomeCore.DEALFT_PAGE_SIZE)) > 0);
+		} while ((nextPageNo = getNextPageNo(userId, type, nextPageNo, BoluomeCore.DEALFT_PAGE_SIZE)) > 0);
 		return constains;
 	}
-	
+	/**
+	 * 逛逛点亮活动
+	 * @param resourceId
+	 * @param userName
+	 * @return
+	 */
+	public boolean isHasCoupon(String resourceId ,String userName ){
+		boolean result = false;
+		Object resultObj = bizCacheUtil.getObject("boluome:coupon:"+resourceId+userName);
+		if (resultObj != null ) {
+			result = true;
+		}
+
+		return result;
+	}
 	
 		
 	/**
@@ -460,7 +479,7 @@ public class BoluomeUtil extends AbstractThird{
 		OrderStatus status = null;
 		if (orderStatus == 1 || orderStatus == 2) {
 			status = OrderStatus.NEW;
-		} else if (orderStatus == 3 || orderStatus == 9) {
+		} else if (orderStatus == 3){// || orderStatus == 9) {
 			status = OrderStatus.PAID;
 		} else if (orderStatus == 4 ) {
 			status = OrderStatus.FINISHED;

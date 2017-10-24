@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -62,5 +59,40 @@ public interface AfRecommendUserService {
 
     int updateRecommendCash(long userId);
 
+    /**
+     * 获取活动规则
+     * @param type
+     * @return
+     */
 
+    List<String> getActivityRule(String type);
+
+    /**
+     * 用户的邀请码
+     * @param userId
+     * @return
+     */
+    String getUserRecommendCode(long userId);
+
+    /**
+     * 用户总共的奖励金额
+     * @param userId
+     * @return
+     */
+    double getSumPrizeMoney(long userId);
+
+    /**
+     * 奖励查询
+     * @param userId
+     * @param type
+     * @return
+     */
+    List<AfRecommendUserDo> rewardQuery(long userId,String type,Integer currentPage, Integer pageSize);
+
+    /**
+     * 总奖励查询总条数
+     * @param userId
+     * @return
+     */
+    int rewardQueryCount(long userId,String type);
 }

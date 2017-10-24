@@ -411,4 +411,8 @@
 		</if>
 		WHERE id=#{rid}
 	</select>
+
+	<select id="getBorrowCash" resultType="AfBorrowCashDo">
+		SELECT <include refid="queryFields" />  FROM  af_borrow_cash where user_id = #{userId}  and status in ('TRANSEDING','TRANSED')
+	</select>
 </mapper>

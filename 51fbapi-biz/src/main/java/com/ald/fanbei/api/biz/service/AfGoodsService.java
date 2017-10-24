@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 
+
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 
@@ -71,4 +72,13 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	int updateSelfSupportGoods(Long rid,Integer addSaleCount);
+
+	/**
+	 * 根据numId查看是否有自建商品
+	 * @author yuyue
+	 * @Time 2017年9月12日 下午6:46:18
+	 * @param numId
+	 * @return
+	 */
+	AfGoodsDo checkIsSelfBuild(String numId);
 }
