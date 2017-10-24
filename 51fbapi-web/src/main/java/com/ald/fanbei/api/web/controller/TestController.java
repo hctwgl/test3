@@ -19,6 +19,7 @@ import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
@@ -51,9 +53,12 @@ import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
@@ -709,7 +714,35 @@ public class TestController {
 		logger.info("boluomeCoupon,end");
 		System.out.println(boluomeUtil.isUserHasCoupon("https://dev-api.otosaas.com/bss/v1/apps/157/campaigns/775/give", 68885L, 1));
 		
+	}	
+	
+    @Resource
+    AfDeGoodsService afDeGoodsService;
+    @Resource
+    AfUserService afUserService;
+    
+    @RequestMapping(value = "/activity/de/goods/test", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public H5CommonResponse getGoodsList(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	try {
+	    JSONObject json = JSONObject.parseObject(body);
+	    String userName = json.getString("userName");
+	    AfUserDo user = afUserService.getUserByUserName(userName);
+	    Long userId = user.getRid();
+
+	    List<UserDeGoods> userDeGoodsList = afDeGoodsService.getUserDeGoodsList(userId);
+	    data.put("goodsList", userDeGoodsList);
+
+	    data.put("endTime", System.currentTimeMillis() / 1000 + 10000);
+	    data.put("totalCount", "100");
+
+	    return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
+	} catch (Exception e) {
+	    logger.error("/activity/de/goods error = {}", e);
+	    return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败");
 	}
+    }	
 	
 	public String getVirtualCode(Map<String, Object> resultMap) {
 		if (resultMap == null) {

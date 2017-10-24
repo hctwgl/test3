@@ -167,13 +167,10 @@
         FROM af_de_user_goods
         <include refid="commonCondition"/>
     </select>
-    <select id="getGoodsInfo" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_de_user_goods
-        <include refid="commonCondition"/>
+    <select id="getUserGoodsInfo" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
+ 
        SELECT 
-       		 ug.cutPrice,goods.image, goods.originalPrice,goods.goods_detail,goods.name
+       		 ug.cutPrice,goods.image, goods.originalPrice,goods.goods_detail goodsDetail,goods.name
         FROM(
               SELECT
 				  p.id AS goodsPriceId,
@@ -202,15 +199,17 @@
         RIGHT JOIN af_de_user_goods ug 
         ON goods.goodsPriceId =  ug.goodsPriceId
         where 
-        ug.user_id = #{userid}
+        ug.userId = #{userid}
+        AND
         ug.goodsPriceId = #{goodspriceid}
     </select>
-      <select id="getAfDeUserGoogsList" resultType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
+      <select id="getAfDeUserGoogsList" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
         SELECT
-        <include refid="queryFields" />
-        FROM af_de_user_goods
-        <include refid="commonCondition"/>
-        order by cutCount,cutPrice desc 
+		g.cutcount,g.cutprice,u.user_name userName,u.mobile
+        FROM af_de_user_goods g
+        LEFT JOIN af_user  u
+        ON u.id = g.userId
+        ORDER BY cutCount,cutPrice DESC 
     </select>
 
 </mapper>

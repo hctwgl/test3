@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,22 +9,26 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.service.AfDeGoodsCouponService;
-import com.ald.fanbei.api.biz.service.AfDeGoodsService;
-import com.ald.fanbei.api.biz.service.AfDeRandomPropertyService;
-import com.ald.fanbei.api.biz.service.AfDeUserCutInfoService;
-import com.ald.fanbei.api.biz.service.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
+import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
+import com.ald.fanbei.api.biz.service.de.AfDeRandomPropertyService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfDeUserCutInfoDo;
@@ -33,18 +38,19 @@ import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
 import com.ald.fanbei.api.dal.domain.query.AfDeUserCutInfoQuery;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfDeUserCutInfoVo;
 
 /**
  * 
  * @ClassName: H5CutPriceController
- * @Description: TODO(这里用一句话描述这个类的作用)
+ * @Description: 双十一砍价 H5
  * @author qiao
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @date 2017年10月23日 下午4:28:04
  *
  */
 @RestController
-@RequestMapping("/activityH5/de")
+@RequestMapping(value="/activityH5/de", produces = "application/json;charset=UTF-8")
 public class H5CutPriceController extends H5Controller {
 
 	@Resource
@@ -71,37 +77,35 @@ public class H5CutPriceController extends H5Controller {
 	 * @return String 返回类型
 	 * @throws
 	 */
-	@RequestMapping(value = "/goodsInfo", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+	@RequestMapping(value = "/goodsInfo", method = RequestMethod.POST)
 	public String goodsInfo(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
-			String userName = context.getUserName();
+			String userName = ObjectUtils.toString(request.getParameter("userName"));
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
-			if(goodsPriceId == null){
+			if(goodsPriceId == null || userName == null || userName.isEmpty() ){
 			    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc(), "", null).toString();
 			    return resultStr;
 			}
-			logger.info("/activity/de/goodsInfo : userName ={} , goodsPriceId = {}",userName,goodsPriceId);
+			logger.info("/activity/de/goodsInfo :  goodsPriceId = {}",goodsPriceId);
 			Long userId = convertUserNameToUserId(userName);
 			//查用户的商品砍价详情
 			AfDeUserGoodsDo  afDeUserGoodsDo = new AfDeUserGoodsDo();
 			afDeUserGoodsDo.setUserid(userId);
 			afDeUserGoodsDo.setGoodspriceid(goodsPriceId);
-			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getGoodsInfo(afDeUserGoodsDo);
-			//转成vo?时间戳转换？
-			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();
-
-		} catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
-				Map<String, Object> data = new HashMap<>();
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				logger.error("/activityH5/cutPrice" + context + "login error ");
-				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getUserGoodsInfo(afDeUserGoodsDo);
+			logger.info("h5 afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
+			//结束时间
+			if(afDeUserGoodsInfoDto != null){
+			    long endTime = afDeGoodsService.getActivityEndTime();
+			    afDeUserGoodsInfoDto.setEndTime(endTime);
+			}else{
+			    resultStr = H5CommonResponse.getNewInstance(false, "获取商品砍价详情失败",null,afDeUserGoodsInfoDto).toString();
+			    return resultStr;
 			}
+			//转成vo?
+			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();
 		} catch (Exception e) {
 			// TODO: handle exception
 		    	logger.error("/activity/de/goodsInfo" + context + "error = {}", e.getStackTrace());
@@ -120,13 +124,13 @@ public class H5CutPriceController extends H5Controller {
 	 * @return String 返回类型
 	 * @throws
 	 */
-	@RequestMapping(value = "/friend", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+	@RequestMapping(value = "/friend", method = RequestMethod.POST)
 	public String friend(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
-			context = doH5Check(request, true);
-			String userName = context.getUserName();
+			//context = doH5Check(request, true);
+		    	String userName = ObjectUtils.toString(request.getParameter("userName"));
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			Integer pageNo = NumberUtil.objToInteger(request.getParameter("pageNo"));
 			
@@ -134,7 +138,7 @@ public class H5CutPriceController extends H5Controller {
 			    resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc(), "", null).toString();
 			    return resultStr;
 			}
-			logger.info("/activity/de/friend : userName ={} , goodsPriceId = {}, goodsPriceId = {}",userName,goodsPriceId);
+			logger.info("/activity/de/friend :ygoodsPriceId = {}, goodsPriceId = {}",goodsPriceId);
 			Long userId = convertUserNameToUserId(userName);
 			//goodsPriceId 和userId 查询 userGoodsId
 			long userGoodsId = 0;
@@ -142,25 +146,29 @@ public class H5CutPriceController extends H5Controller {
 			queryUserGoods.setUserid(userId);
 			queryUserGoods.setGoodspriceid(goodsPriceId);
 			AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getByCommonCondition(queryUserGoods);
+			logger.info("h5 afDeUserGoodsDo = {}",afDeUserGoodsDo);
 			if(afDeUserGoodsDo!=null){
 			    userGoodsId = afDeUserGoodsDo.getRid();
 			}
 			//获取商品砍价详情用户列表
+			Map<String,Object> map = new  HashMap<String,Object>();
 			AfDeUserCutInfoQuery queryCutInfo = new  AfDeUserCutInfoQuery();
 			queryCutInfo.setUsergoodsid(userGoodsId);
 			queryCutInfo.setPageNo(pageNo);
 			List<AfDeUserCutInfoDo> afDeUserCutInfoList = afDeUserCutInfoService.getAfDeUserCutInfoList(queryCutInfo);
-			
-			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情用户列表成功",null,afDeUserCutInfoList).toString();
-		} catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
-				Map<String, Object> data = new HashMap<>();
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-				logger.error("/activityH5/friend" + context + "login error ");
-				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			logger.info("h5 afDeUserCutInfoList = {}",afDeUserCutInfoList);
+			List<AfDeUserCutInfoVo> friendList = new ArrayList<AfDeUserCutInfoVo>();
+			if (CollectionUtil.isNotEmpty(afDeUserCutInfoList)) {
+			    friendList = CollectionConverterUtil.convertToListFromList(afDeUserCutInfoList, new Converter<AfDeUserCutInfoDo, AfDeUserCutInfoVo>() {
+					@Override
+					public AfDeUserCutInfoVo convert(AfDeUserCutInfoDo source) {
+						return parseDoToVo(source);
+					}
+				});
 			}
+			map.put("friendList",friendList);
+			map.put("pageNo", pageNo);
+			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情用户列表成功",null,map).toString();
 		} catch (Exception e) {
 			// TODO: handle exception
 		        logger.error("/activity/de/friend" + context + "error = {}", e.getStackTrace());
@@ -181,7 +189,7 @@ public class H5CutPriceController extends H5Controller {
 	 *         String 返回类型
 	 * @throws
 	 */
-	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST, produces = "text/html;charset = UTF-8")
+	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST)
 	public String cutPrice(HttpServletRequest requst, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiH5Context context = new FanbeiH5Context();
@@ -189,6 +197,7 @@ public class H5CutPriceController extends H5Controller {
 			context = doH5Check(requst, true);
 
 		} catch (FanbeiException e) {
+			resultStr = H5CommonResponse.getNewInstance(false, "没有登录").toString();
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
@@ -203,11 +212,10 @@ public class H5CutPriceController extends H5Controller {
 
 		return resultStr;
 	}
-
 	/**
 	 * 
 	 * @Title: convertUserNameToUserId @Description: @param userName @return
-	 * Long @throws
+	 *         Long @throws
 	 */
 	private Long convertUserNameToUserId(String userName) {
 		Long userId = null;
@@ -231,4 +239,13 @@ public class H5CutPriceController extends H5Controller {
 			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 		}
 	}
+	private AfDeUserCutInfoVo parseDoToVo(AfDeUserCutInfoDo userCutInfo) {
+	    	AfDeUserCutInfoVo vo = new AfDeUserCutInfoVo();
+		vo.setCutprice(userCutInfo.getCutprice());
+		vo.setHeadImgUrl(userCutInfo.getHeadimgurl());
+		vo.setNickname(userCutInfo.getNickname());
+		vo.setRemainPrice(userCutInfo.getRemainprice());
+		return vo;
+	}
+	
 }

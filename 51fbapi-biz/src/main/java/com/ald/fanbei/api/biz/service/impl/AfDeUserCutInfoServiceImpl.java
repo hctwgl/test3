@@ -12,7 +12,8 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfDeUserCutInfoDao;
 import com.ald.fanbei.api.dal.domain.AfDeUserCutInfoDo;
 import com.ald.fanbei.api.dal.domain.query.AfDeUserCutInfoQuery;
-import com.ald.fanbei.api.biz.service.AfDeUserCutInfoService;
+import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
+
 
 
 

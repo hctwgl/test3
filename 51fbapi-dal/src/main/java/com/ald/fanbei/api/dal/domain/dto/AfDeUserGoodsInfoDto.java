@@ -38,7 +38,7 @@ import java.math.BigDecimal;
     /**
      * 结束时间
      */
-    private String endTime;
+    private long endTime;
     
     /**
      * 商品名称
@@ -69,10 +69,11 @@ import java.math.BigDecimal;
     public void setGoodsDetail(String goodsDetail) {
         this.goodsDetail = goodsDetail;
     }
-    public String getEndTime() {
+   
+    public long getEndTime() {
         return endTime;
     }
-    public void setEndTime(String endTime) {
+    public void setEndTime(long endTime) {
         this.endTime = endTime;
     }
     public String getName() {
