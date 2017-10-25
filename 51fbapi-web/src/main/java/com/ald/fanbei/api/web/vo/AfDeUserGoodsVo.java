@@ -20,12 +20,12 @@ import java.math.BigDecimal;
     /**
      * 被砍价总次数（包含已到底价后砍价次数）
      */
-    private Integer cutcount;
+    private Integer cutCount;
 
     /**
      * 已砍金额
      */
-    private BigDecimal cutprice;
+    private BigDecimal cutPrice;
 
     /**
      * 手机号
@@ -37,20 +37,21 @@ import java.math.BigDecimal;
      */
     private Integer index;
 
-    public Integer getCutcount() {
-        return cutcount;
+ 
+    public Integer getCutCount() {
+        return cutCount;
     }
 
-    public void setCutcount(Integer cutcount) {
-        this.cutcount = cutcount;
+    public void setCutCount(Integer cutCount) {
+        this.cutCount = cutCount;
     }
 
-    public BigDecimal getCutprice() {
-        return cutprice;
+    public BigDecimal getCutPrice() {
+        return cutPrice;
     }
 
-    public void setCutprice(BigDecimal cutprice) {
-        this.cutprice = cutprice;
+    public void setCutPrice(BigDecimal cutPrice) {
+        this.cutPrice = cutPrice;
     }
 
     public String getPhone() {

@@ -433,8 +433,8 @@ public class AppH5CutPriceController extends BaseController {
 			    int index = ( (pageNo-1) * (queryGoods.getPageSize()) ) + i;
 			    goodsVo.setIndex(index);
 			    goodsVo.setPhone(phone);
-			    goodsVo.setCutcount(top.getCutcount());
-			    goodsVo.setCutprice(top.getCutprice());
+			    goodsVo.setCutCount(top.getCutcount());
+			    goodsVo.setCutPrice(top.getCutprice());
 			    vo.add(goodsVo);
 			   
 			}
