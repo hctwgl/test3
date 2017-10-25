@@ -945,7 +945,7 @@ public abstract class BaseController {
             // 验证参数
             boolean beforeLogin = apiHandleFactory.checkBeforlogin(requestDataVo.getMethod());
             if (!beforeLogin) { //需要登录的接口
-                String loginKey = Constants.TRADE_LOGIN_BUSINESSID + request.getHeader("businessId");
+                /*String loginKey = Constants.TRADE_LOGIN_BUSINESSID + request.getHeader("businessId");
                 String token = request.getHeader("token");
                 if (StringUtil.isBlank(token) || StringUtil.isBlank(loginKey)) {
                     throw new FanbeiException("business don't exist", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
@@ -955,7 +955,7 @@ public abstract class BaseController {
                     throw new FanbeiException("business is timeout", FanbeiExceptionCode.REQUEST_PARAM_TOKEN_TIMEOUT);
                 }
                 //更新有效时间
-                bizCacheUtil.saveObject(loginKey, (String) value, Constants.SECOND_OF_HALF_HOUR);
+                bizCacheUtil.saveObject(loginKey, (String) value, Constants.SECOND_OF_HALF_HOUR);*/
             }
 
             // 处理业务
