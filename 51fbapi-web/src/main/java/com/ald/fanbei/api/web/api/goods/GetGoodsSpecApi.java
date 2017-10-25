@@ -82,6 +82,7 @@ public class GetGoodsSpecApi implements ApiHandle {
 		    {
 			//更新商品价格为砍价后价格
 			afGoodsPriceDo.setActualAmount(afGoodsPriceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice()));
+			logger.info(afGoodsPriceDo.toString());
 		    }
 		}
 
