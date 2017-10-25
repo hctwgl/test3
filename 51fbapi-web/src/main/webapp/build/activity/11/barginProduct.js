@@ -30,18 +30,15 @@ let vm = new Vue({
         logData:function() {
             let self = this;
             // requestMsg('哎呀，出错了！');
-            let data = {
-                endTime: "2017-11-12 00:00:00",
-                image: 'https://f.51fanbei.com/h5/app/activity/11/image/bargin03.png',
-                originalPrice: 2892,
-                cutPrice: 265,
-                name: "格兰仕微波炉DH78787大容量",
-                totalCount: 2
-            }
-            self.goodsData = data;
-
-            this.progressWidth = 6.2*this.goodsData.cutPrice/this.goodsData.originalPrice; // 计算滚动条长度
-            this.tipLeft = this.progressWidth - 0.74;
+            // let data = {
+            //     endTime: "2017-11-12 00:00:00",
+            //     image: 'https://f.51fanbei.com/h5/app/activity/11/image/bargin03.png',
+            //     originalPrice: 2892,
+            //     cutPrice: 265,
+            //     name: "格兰仕微波炉DH78787大容量",
+            //     totalCount: 2
+            // }
+           
 
             let data2 = {
                 pageNo: 1,
@@ -75,22 +72,23 @@ let vm = new Vue({
             }
             self.friendData = data2
             console.log(self.goodsData)
-            // $.ajax({
-            //     url: '/fanbei-web/activity/de/goodsInfo',
-            //     type: 'POST',
-            //     dataType: 'json',
-            //     data: {goodsPriceId: goodsId, pageNo: 1},
-            //     success: function(data){
-            //         console.log("initData=", data);
-            //         // goodsList = data.goodsList;
-            //         getShareTimes();
-            //     }
-            // });
+            $.ajax({
+                url: '/activity/de/goodsInfo',
+                type: 'POST',
+                dataType: 'json',
+                data: {goodsPriceId: goodsId},
+                success: function(data){
+                    console.log("initData=", data);
+                    self.goodsData = data.data;
+                    this.progressWidth = 6.2*this.goodsData.cutPrice/this.goodsData.originalPrice; // 计算滚动条长度
+                    this.tipLeft = this.progressWidth - 0.74;
+                }
+            });
             // $.ajax({
             //     url: '/fanbei-web/activity/de/friend',
             //     type: 'POST',
             //     dataType: 'json',
-            //     data: {goodsPriceId: goodsId},
+            //     data: {goodsPriceId: goodsId, pageNo: 1, userName: "52133"},
             //     success: function(data){
             //         console.log("initData=", data);
             //         // goodsList = data.goodsList;
