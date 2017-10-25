@@ -95,4 +95,14 @@ public interface AfRecommendUserService {
      * @return
      */
     int rewardQueryCount(long userId,String type);
+
+    /**
+     * 分享时，af_recommend_shared插入一条数据
+     * @param uuid
+     * @param userId
+     * @param type
+     * @param invitationCode
+     * @return
+     */
+    int insertShareWithData(String uuid,long userId,Integer type,String invitationCode);
 }
