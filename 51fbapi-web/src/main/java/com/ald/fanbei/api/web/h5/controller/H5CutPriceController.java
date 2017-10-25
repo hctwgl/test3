@@ -277,17 +277,17 @@ public class H5CutPriceController extends H5Controller {
 									insertDo.setHeadimgurl(headImagUrl);
 									insertDo.setNickname(nickName);
 									insertDo.setOpenid(openId);
-									insertDo.setRemainprice(cutPrice);
+									insertDo.setRemainprice(cutPricee);
 									insertDo.setUsergoodsid(usergoodsResult.getRid());
 									afDeUserCutInfoService.saveRecord(insertDo);
 									
 									int cutCountt = usergoodsResult.getCutcount() + 1;
 									usergoodsResult.setCutcount(cutCountt);
-									usergoodsResult.setCutprice(cutPrice);
+									usergoodsResult.setCutprice(cutPricee);
 									usergoodsResult.setGmtModified(new Date());
 									
 									//if after cutPrice is the lowest price
-									if (lowestPrice.compareTo(originalPrice.subtract(cutPrice)) == 0) {
+									if (lowestPrice.compareTo(originalPrice.subtract(cutPricee)) == 0) {
 										usergoodsResult.setGmtCompletetime(new Date());
 										usergoodsResult.setCompletecount(cutCountt);
 									}
