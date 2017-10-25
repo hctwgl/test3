@@ -110,7 +110,8 @@ let vm = new Vue({
             if (this.isWX) {
                 //todo: 弹窗提示分享
             } else {
-                //window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗邀请有礼，快来参与~","shareAppContent":"我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~","shareAppImage":"https://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+urlHost+'/fanbei-web/activity/barginProduct?goodsId'+this.goodsId+'&productType=product","isSubmit":"Y","sharePage":"barginIndex"}'; 
+                // todo: userName
+                //window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗邀请有礼，快来参与~","shareAppContent":"我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~","shareAppImage":"https://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+urlHost+'/fanbei-web/activity/barginProduct?goodsId'+this.goodsId+'&productType=product&userName=","isSubmit":"Y","sharePage":"barginIndex"}'; 
             }
         },
         toList: function(id) { // 跳转到榜单页

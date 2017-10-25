@@ -29,16 +29,6 @@ let vm = new Vue({
         // get 初始化 信息
         logData:function() {
             let self = this;
-            // requestMsg('哎呀，出错了！');
-            // let data = {
-            //     endTime: "2017-11-12 00:00:00",
-            //     image: 'https://f.51fanbei.com/h5/app/activity/11/image/bargin03.png',
-            //     originalPrice: 2892,
-            //     cutPrice: 265,
-            //     name: "格兰仕微波炉DH78787大容量",
-            //     totalCount: 2
-            // }
-           
 
             let data2 = {
                 pageNo: 1,
@@ -71,30 +61,39 @@ let vm = new Vue({
                 ]
             }
             self.friendData = data2
-            console.log(self.goodsData)
             $.ajax({
                 url: '/activity/de/goodsInfo',
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId},
+                data: {goodsPriceId: goodsId, userName: '1233'},
                 success: function(data){
+                    if (!data.success) {
+                        requestMsg("哎呀，出错了！");
+                        return false;
+                    }
                     console.log("initData=", data);
                     self.goodsData = data.data;
                     this.progressWidth = 6.2*this.goodsData.cutPrice/this.goodsData.originalPrice; // 计算滚动条长度
                     this.tipLeft = this.progressWidth - 0.74;
+                },
+                error: function() {
+                    requestMsg("哎呀，出错了！")
                 }
             });
-            // $.ajax({
-            //     url: '/fanbei-web/activity/de/friend',
-            //     type: 'POST',
-            //     dataType: 'json',
-            //     data: {goodsPriceId: goodsId, pageNo: 1, userName: "52133"},
-            //     success: function(data){
-            //         console.log("initData=", data);
-            //         // goodsList = data.goodsList;
-            //         getShareTimes();
-            //     }
-            // });
+            $.ajax({
+                url: '/activity/de/friend',
+                type: 'POST',
+                dataType: 'json',
+                data: {goodsPriceId: goodsId, pageNo: 1, userName: "52133"},
+                success: function(data){
+                    console.log("initData=", data);
+                    // goodsList = data.goodsList;
+                    getShareTimes();
+                },
+                error: function() {
+                    requestMsg("哎呀，出错了！")
+                }
+            });
 
         },
         showRule: function() {
