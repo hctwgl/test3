@@ -119,6 +119,7 @@ public class AppH5CutPriceController extends BaseController {
 							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
 							insertDo.setUserid(userId);
 							insertDo.setGmtCreate(new Date());
+							insertDo.setGoodspriceid(goodsPriceId);
 							insertDo.setGmtModified(new Date());
 							insertDo.setIsbuy(0);
 							afDeUserGoodsService.saveRecord(insertDo);
@@ -142,6 +143,7 @@ public class AppH5CutPriceController extends BaseController {
 							insertDo.setUserid(userId);
 							insertDo.setGmtCreate(new Date());
 							insertDo.setGmtModified(new Date());
+							insertDo.setGoodspriceid(goodsPriceId);
 							insertDo.setIsbuy(0);
 							afDeUserGoodsService.saveRecord(insertDo);
 							resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
@@ -155,6 +157,7 @@ public class AppH5CutPriceController extends BaseController {
 						insertDo.setGmtCreate(new Date());
 						insertDo.setGmtModified(new Date());
 						insertDo.setIsbuy(0);
+						insertDo.setGoodspriceid(goodsPriceId);
 						afDeUserGoodsService.saveRecord(insertDo);
 						resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
 					}
