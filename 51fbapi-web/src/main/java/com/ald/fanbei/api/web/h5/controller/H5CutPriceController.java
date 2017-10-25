@@ -184,7 +184,31 @@ public class H5CutPriceController extends H5Controller {
 
 		return resultStr;
 	}
-	
+	/**
+   	 * 
+   	 *  @Title: endtime 
+   	 *  @Description: 获取活动结束时间
+   	 *  @param request 
+   	 *  @param response
+   	 *  @return String
+   	 *  @throws
+   	 */
+   	@RequestMapping(value = "/endtime", method = RequestMethod.POST)
+   	public String endtime(HttpServletRequest request, HttpServletResponse response) {
+   		String resultStr = "";
+   		try { 
+   		    	Map<String,Object> map = new  HashMap<String,Object>();
+   		        //结束时间
+   		        long endTime = afDeGoodsService.getActivityEndTime();
+   		        map.put("endTime", endTime);   		        
+   			resultStr = H5CommonResponse.getNewInstance(true, "获取活动结束时间成功",null,map).toString();
+ 
+   		} catch (Exception e) {
+   			logger.error("/activity/de/endtime" + "error = {}", e.getStackTrace());
+   			resultStr = H5CommonResponse.getNewInstance(false, "获取活动结束时间失败").toString();
+   		}
+   		return resultStr;
+   	}
 	/**
 	 * 
 	 * @Title: cutPrice 

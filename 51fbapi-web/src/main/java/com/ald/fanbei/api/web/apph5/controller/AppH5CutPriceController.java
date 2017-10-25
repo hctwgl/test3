@@ -191,7 +191,31 @@ public class AppH5CutPriceController extends BaseController {
 	    return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败");
 	}
     }
-
+    /**
+   	 * 
+   	 *  @Title: endtime 
+   	 *  @Description: 获取活动结束时间
+   	 *  @param request 
+   	 *  @param response
+   	 *  @return String
+   	 *  @throws
+   	 */
+   	@RequestMapping(value = "/endtime", method = RequestMethod.POST)
+   	public String endtime(HttpServletRequest request, HttpServletResponse response) {
+   		String resultStr = "";
+   		try { 
+   		    	Map<String,Object> map = new  HashMap<String,Object>();
+   		        //结束时间
+   		        long endTime = afDeGoodsService.getActivityEndTime();
+   		        map.put("endTime", endTime);   		        
+   			resultStr = H5CommonResponse.getNewInstance(true, "获取活动结束时间成功",null,map).toString();
+ 
+   		} catch (Exception e) {
+   			logger.error("/activity/de/endtime" + "error = {}", e.getStackTrace());
+   			resultStr = H5CommonResponse.getNewInstance(false, "获取活动结束时间失败").toString();
+   		}
+   		return resultStr;
+   	}
     /**
 	 * 
 	 *  @Title: goodsInfo 
@@ -406,12 +430,13 @@ public class AppH5CutPriceController extends BaseController {
 			    i++;
 			    AfDeUserGoodsVo goodsVo = new AfDeUserGoodsVo();
 			    String phone = changePhone(top.getUserName());
-			    int index = (pageNo*queryGoods.getPageSize())+i;
+			    int index = ( (pageNo-1) * (queryGoods.getPageSize()) ) + i;
 			    goodsVo.setIndex(index);
 			    goodsVo.setPhone(phone);
-			    goodsVo.setCutcount(top.getCutcount());
-			    goodsVo.setCutprice(top.getCutprice());
+			    goodsVo.setCutCount(top.getCutcount());
+			    goodsVo.setCutPrice(top.getCutprice());
 			    vo.add(goodsVo);
+			   
 			}
 			map.put("listPerson",vo);
 			map.put("pageNo", pageNo);
