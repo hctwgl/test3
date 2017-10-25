@@ -111,9 +111,6 @@ public class H5CutPriceController extends H5Controller {
 			if(afDeUserGoodsInfoDto != null){
 			    long endTime = afDeGoodsService.getActivityEndTime();
 			    afDeUserGoodsInfoDto.setEndTime(endTime);
-			}else{
-			    resultStr = H5CommonResponse.getNewInstance(false, "获取商品砍价详情失败",null,afDeUserGoodsInfoDto).toString();
-			    return resultStr;
 			}
 			//转成vo?
 			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();
