@@ -61,7 +61,7 @@
 	<select id="selectOneLevel" resultType="AfGoodsCategoryDo">
 		SELECT
 			<include refid="activitySqlField"></include>
-		FROM af_goods_category where level = 1 and is_delete = 0 and is_show = 0 ORDER BY sort
+		FROM af_goods_category where level = 1 and is_delete = 0 and is_show = 'Y' ORDER BY sort
 	</select>
 
 	<select id="selectSecondLevel" resultType="AfGoodsCategoryDo" parameterType="java.lang.Long">
@@ -70,7 +70,7 @@
 		FROM af_goods_category
 		where parent_id = #{id}
 		and is_delete = 0
-		and is_show = 0
+		and is_show = 'Y'
 		AND level = 2
 		ORDER BY sort
 	</select>
@@ -81,7 +81,7 @@
 		FROM af_goods_category
 		where parent_id = #{id}
 		and is_delete = 0
-		and is_show = 0
+		and is_show = 'Y'
 		AND level = 3
 		ORDER BY sort
 	</select>
@@ -94,7 +94,7 @@
 		and s.num_id = g.num_id
 		and s.is_delete = 0
 		and g.is_delete = 0
-		order by gmt_create
+		order by gmt_create DESC
 	</select>
 
 	

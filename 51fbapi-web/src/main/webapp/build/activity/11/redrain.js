@@ -162,7 +162,7 @@ let counttime = (order)=>{
 
 
     setTimeout(()=>{
-      window.localtime = new Date('2017/10/15 03:00:21')
+      window.localtime = new Date()
       
       let lateststatus = adjuststatus(checkorder(order))
       
@@ -175,25 +175,7 @@ let counttime = (order)=>{
 
 window.onload = ()=>{
   //将当前时间的时间赋值给window.localtime,之后用后台请求数据替换
-
-    $.ajax({
-        url:'/fanbei-web/redRain/fetchRounds',
-        type:'post',
-        success:function (data) {
-            data=JSON.parse(data);
-            console.log(data);
-            let currentTime=new Date().getTime();
-            let arr=data.data;
-            for(let i=0;i<arr.length;i++){
-              if(arr[i].gmtStart<currentTime){
-
-              }else{
-
-              }
-            }
-        }
-    });
-  window.localtime = new Date('2017/10/15 20:24:21');
+  window.localtime = new Date();
 
   let lateststatus = adjuststatus(checkorder(order));
 
