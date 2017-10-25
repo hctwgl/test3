@@ -39,7 +39,9 @@ public enum ResourceType {
 	APP_UPGRADE_REGISTER_TIME("APP_UPGRADE_REGISTER_TIME","版本升级新用户注册时间"),
 	FUND_SIDE_BORROW_CASH("FUND_SIDE_BORROW_CASH", "打款时引入资金方配置"),
 	
-	APP_UPDATE_COUPON_NEW("APP_UPDATE_COUPON_NEW","版本升级优惠券（新用户）");
+	APP_UPDATE_COUPON_NEW("APP_UPDATE_COUPON_NEW","版本升级优惠券（新用户）"),
+
+	HOMEPAGE_BACKGROUND("HOMEPAGE_BACKGROUND","首页背景图");
 	private String code;
 
 	private String description;

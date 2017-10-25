@@ -184,6 +184,45 @@
 		ORDER BY
 		sort ,id
 	</select>
+
+	<select id="getManyPricutresResourceDoList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND
+		is_delete = 0
+		ORDER BY
+		sort ,id
+	</select>
+
+	<select id="getNavigationUpOneResourceDoList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND
+		is_delete = 0
+		ORDER BY
+		sort
+	</select>
+
+	<select id="getNavigationDownTwoResourceDoList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND
+		is_delete = 0
+		ORDER BY
+		sort
+	</select>
 	
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
@@ -262,6 +301,15 @@
 		and value_4 ='O';
 	</select>
 
+	<select id="getBackGroundByType" resultType="AfResourceDo">
+		SELECT
+		name,value,value_1,value_3,sort
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND sec_type = '1'
+	</select>
+	
 	<select id="getActivityRule" resultType="String">
 		SELECT value from af_resource where is_delete = 0 and type =#{type}
 	</select>
