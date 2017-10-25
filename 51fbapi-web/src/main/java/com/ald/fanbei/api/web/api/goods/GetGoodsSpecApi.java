@@ -29,6 +29,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfGoodsPriceVo;
 import com.ald.fanbei.api.web.vo.AfPropertyVo;
 import com.ald.fanbei.api.web.vo.AfpropertyValueVo;
+import com.alibaba.fastjson.JSON;
 
 /**
  * 
@@ -82,8 +83,10 @@ public class GetGoodsSpecApi implements ApiHandle {
 		    {
 			//更新商品价格为砍价后价格
 			afGoodsPriceDo.setActualAmount(afGoodsPriceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice()));
+			logger.info("+++++++++1++++++"+afGoodsPriceDo.toString());
 		    }
 		}
+		logger.info("+++++++++2++++++"+JSON.toJSONString(priceDos));
 
 		propertyDo.setGoodsId(goodsId);
 		List<AfGoodsPropertyDo> propertyDos = afGoodsPropertyService.getListByCommonCondition(propertyDo);
@@ -114,6 +117,7 @@ public class GetGoodsSpecApi implements ApiHandle {
 
 		}
 
+		logger.info("+++++++++3++++++"+JSON.toJSONString(priceDos));
 		data.put("propertyData", propertyData);
 		data.put("goodsId", goodsId);
 		data.put("priceData", priceData);
