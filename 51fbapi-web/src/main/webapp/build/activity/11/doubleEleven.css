@@ -40,6 +40,7 @@ body {
   left: 0;
   font-size: 0.2rem;
   padding: 0.2rem 0.56rem;
+  display: none;
 }
 .active01 {
   background-color: white;
