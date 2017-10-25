@@ -85,7 +85,7 @@ public class AppH5CutPriceController extends BaseController {
 	 */
 	@RequestMapping(value = "/share", method = RequestMethod.POST)
 	public String share(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = H5CommonResponse.getNewInstance(false, "分享砍价商品失败").toString();
+		String resultStr = H5CommonResponse.getNewInstance(false, "砍价分享失败").toString();
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, true);
@@ -125,7 +125,7 @@ public class AppH5CutPriceController extends BaseController {
 						}
 					}
 				//as long as the goods is iphoneX no matter the flag the result is true.
-				resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价成功").toString();
+				resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价分享成功").toString();
 				}else{
 					//needs to know if this goods has been shared by this user
 					boolean flag = false;
@@ -144,17 +144,26 @@ public class AppH5CutPriceController extends BaseController {
 							insertDo.setGmtModified(new Date());
 							insertDo.setIsbuy(0);
 							afDeUserGoodsService.saveRecord(insertDo);
-							resultStr = H5CommonResponse.getNewInstance(true, "商品砍价成功").toString();
+							resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
 						}else{
 							resultStr = H5CommonResponse.getNewInstance(false, "只能砍价两件商品，不要太贪心哦！").toString();
 						}
+					}else{// the user doent have shared this goods. 
+						//insert the user goods if this user does'nt have this goods
+						AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+						insertDo.setUserid(userId);
+						insertDo.setGmtCreate(new Date());
+						insertDo.setGmtModified(new Date());
+						insertDo.setIsbuy(0);
+						afDeUserGoodsService.saveRecord(insertDo);
+						resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
 					}
 
 					
 				}
 			}
 		} catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
