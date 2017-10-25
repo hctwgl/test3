@@ -28,6 +28,9 @@
         $('.active').eq(i).siblings().removeClass('active01');
        /*  $('.time').eq(i).find('span').addClass('active02');
         $('.time').eq(i).siblings().find('span').removeClass('active02'); */
+        $('.tangle').eq(i).addClass('tangleOne')//添加三角
+        $('.tangle').eq(i).siblings().removeClass('tangleOne')//移除三角
+        
     }
 
 
@@ -37,11 +40,9 @@ $(function(){
     // 结束时间的时间戳
     let endDate = new Date("oct 29,2017 23:59:59");
     let endStamp = endDate.valueOf();
-    console.log(new Date(endStamp));
     // 获取当前时间的时间戳
     let now = new Date();
     let nowTimeStamp = now.valueOf();
-    console.log(new Date(nowTimeStamp));
     // 相差的时间戳
     let differStamp = endStamp - nowTimeStamp;
     let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
@@ -71,6 +72,14 @@ $(function(){
         $('.blankTwo').html(hour);
         $('.blankThree').html(minute);
         $('.blankFour').html(second);
+        //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
+        if(day==0&&hour==0&&minute==0&&second==0){
+            window.location.href = '/activity/barginIndex';
+            $('.countTwo').html('活动已结束');
+
+        }
+        
+
 
     };
 
@@ -89,11 +98,9 @@ $(function(){
     // 结束时间的时间戳
     let overDate = new Date("oct 28,2017 23:59:59");
     let endOver = overDate.valueOf();
-    console.log(new Date(endOver));
     // 获取当前时间的时间戳
     let nowTime = new Date();
     let nowTimeS = nowTime.valueOf();
-    console.log(new Date(nowTimeS));
     // 相差的时间戳
     let differS = endOver - nowTimeS;
     let diffValue = parseInt(differS/1000);//倒计时总秒数量
@@ -112,7 +119,11 @@ $(function(){
         }
 
         $('.countThree').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//红包雨
-        // $('.countThree').html('who are you');
+        // $('.countThree').html('活动已结束');
+        //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
+        if(day==0&&hour==0&&minute==0&&second==0){
+            window.location.href = '';
+        }
 
     };
 
@@ -132,6 +143,7 @@ $(function(){
 
 var groupId = getUrl("groupId"); //获取活动Id
 var modelId=getUrl("modelId");//获取模板Id
+var imgrooturl = "https://f.51fanbei.com/h5/app/activity/11";
 
 let vm=new Vue({
     el:'#doubleEleven',
@@ -143,8 +155,30 @@ let vm=new Vue({
         tab: 1,
         productList:'',
         productListDetail:'',
-        line:1,
-        allData :['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8','图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16','图片17','图片18'],//返回回来的数据
+        allData :[{'name':'苹果','img': imgrooturl +'/brand-01.png','src':'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=187'},
+                  {'name':'vivo/OPPO','img':imgrooturl +'/brand-02.png','src':'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=186'},
+                  {'name':'华为','img':imgrooturl +'/brand-03.png','src':'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=185'},
+                  {'name':'小米','img':imgrooturl +'/brand-04.png','src':'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=183'},
+                  {'name':'马克华菲','img':imgrooturl +'/brand-05.png','src':''},
+                  {'name':'PLAYBOY','img':imgrooturl +'/brand-06.png','src':''},
+                  {'name':'GUESS','img':imgrooturl +'/brand-07.png','src':''},
+                  {'name':'拉夏贝尔','img':imgrooturl +'/brand-08.png','src':''},
+                  {'name':'韩都衣舍','img':imgrooturl +'/brand-09.png','src':''},
+                  {'name':'小米','img':imgrooturl +'/brand-10.png','src':''},
+                  {'name':'NIKE','img':imgrooturl +'/brand-11.png','src':''},
+                  {'name':'adidas','img':imgrooturl +'/brand-12.png','src':''},
+                  {'name':'newbalance','img':imgrooturl +'/brand-13.png','src':''},
+                  {'name':'鸿星尔克','img':imgrooturl +'/brand-14.png','src':''},
+                  {'name':'宾卡达','img':imgrooturl +'/brand-15.png','src':''},
+                  {'name':'DW','img':imgrooturl +'/brand-16.png','src':''},
+                  {'name':'Dior','img':imgrooturl +'/brand-17.png','src':''},
+                  {'name':'雅诗兰黛','img':imgrooturl +'/brand-18.png','src':''},
+                  {'name':'lilbetter','img':imgrooturl +'/brand-19.png','src':''},
+                  {'name':'速写','img':imgrooturl +'/brand-20.png','src':''},
+                  {'name':'衣香丽影','img':imgrooturl +'/brand-21.png','src':''},
+                  {'name':'妖精的口袋','img':imgrooturl +'/brand-22.png','src':''},
+                  {'name':'后','img':imgrooturl +'/brand-23.png','src':''}
+                ],//返回回来的数据
         htmlStr :'',
         n : 0,
         arr : [],//就是把数据转成二维数组。一维是swiper-slide的个数。二维是每个swiper-slide的img的个数和数据，最后转成arr[['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8'],[,'图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16'],['图片17','图片18']]
@@ -164,17 +198,17 @@ let vm=new Vue({
             console.log( this.arr.length );
     },
     mounted : function(){
-    // var mySwiper = new Swiper('.swiper-container', {
-	// 		            loop: true,
-	// 		            // 如果需要分页器
-	// 		            pagination: '.swiper-pagination',
+    var mySwiper = new Swiper('.swiper-container', {
+			            loop: true,
+			            // 如果需要分页器
+			            //pagination: '.swiper-pagination',
 
-	// 		            // 如果需要前进后退按钮
-	// 		            nextButton: '.swiper-button-next',
-	// 		            prevButton: '.swiper-button-prev',
+			            // 如果需要前进后退按钮
+			            nextButton: '.swiper-button-next',
+			            prevButton: '.swiper-button-prev',
 
-	// 	        });
-    //     mySwiper.update()
+		        });
+        mySwiper.update()
             	
     },    
     methods:{
@@ -199,6 +233,14 @@ let vm=new Vue({
                     requestMsg('哎呀，出错了！')
                 }
             })
+        },
+        //点击商品
+        goodClick(p) {
+            if (p.source == "SELFSUPPORT") {
+                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + p.goodsId + '"}';
+            } else {
+                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"' + p.goodsId + '"}';
+            }
         },
         //优惠券初始化信息
         coupon(){
