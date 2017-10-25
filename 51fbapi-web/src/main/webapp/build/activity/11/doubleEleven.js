@@ -88,17 +88,17 @@ $(function(){
     //红包雨倒计时
     // 结束时间的时间戳
     let overDate = new Date("oct 28,2017 23:59:59");
-    let endStamp = overDate.valueOf();
-    console.log(new Date(endStamp));
+    let endOver = overDate.valueOf();
+    console.log(new Date(endOver));
     // 获取当前时间的时间戳
-    let now = new Date();
-    let nowTimeStamp = now.valueOf();
-    console.log(new Date(nowTimeStamp));
+    let nowTime = new Date();
+    let nowTimeS = nowTime.valueOf();
+    console.log(new Date(nowTimeS));
     // 相差的时间戳
-    let differStamp = endStamp - nowTimeStamp;
-    let diffValue = parseInt(differStamp/1000);//倒计时总秒数量
+    let differS = endOver - nowTimeS;
+    let diffValue = parseInt(differS/1000);//倒计时总秒数量
 
-    function showTimerS( ctime ){
+    function showTime( ctime ){
         var day=0,
         hour=0,
         minute=0,
@@ -111,21 +111,20 @@ $(function(){
         second = Math.floor(ctime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
         }
 
-        // $('.countThree').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//红包雨
-        $('.countThree').html('who are you');
-        console.log(1111111111);
+        $('.countThree').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//红包雨
+        // $('.countThree').html('who are you');
 
     };
 
-    function timer(diffValue){
-        showTimerS(diffValue);
+    function timeS(diffValue){
+        showTime(diffValue);
         diffValue--;
         window.setInterval(function(){
-            showTimerS(diffValue);
+            showTime(diffValue);
             diffValue--;
         }, 1000);
     };
-    timer(diffValue);
+    timeS(diffValue);
 
 });
 
@@ -148,7 +147,7 @@ let vm=new Vue({
         allData :['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8','图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16','图片17','图片18'],//返回回来的数据
         htmlStr :'',
         n : 0,
-                arr : [],//就是把数据转成二维数组。一维是swiper-slide的个数。二维是每个swiper-slide的img的个数和数据，最后转成arr[['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8'],[,'图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16'],['图片17','图片18']]
+        arr : [],//就是把数据转成二维数组。一维是swiper-slide的个数。二维是每个swiper-slide的img的个数和数据，最后转成arr[['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8'],[,'图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16'],['图片17','图片18']]
         mm : [[1,2,3],[2,3,4]]
     },
     created:function(){
@@ -165,17 +164,17 @@ let vm=new Vue({
             console.log( this.arr.length );
     },
     mounted : function(){
-    var mySwiper = new Swiper('.swiper-container', {
-			            loop: true,
-			            // 如果需要分页器
-			            pagination: '.swiper-pagination',
+    // var mySwiper = new Swiper('.swiper-container', {
+	// 		            loop: true,
+	// 		            // 如果需要分页器
+	// 		            pagination: '.swiper-pagination',
 
-			            // 如果需要前进后退按钮
-			            nextButton: '.swiper-button-next',
-			            prevButton: '.swiper-button-prev',
+	// 		            // 如果需要前进后退按钮
+	// 		            nextButton: '.swiper-button-next',
+	// 		            prevButton: '.swiper-button-prev',
 
-		        });
-        mySwiper.update()
+	// 	        });
+    //     mySwiper.update()
             	
     },    
     methods:{
