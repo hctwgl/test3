@@ -497,9 +497,15 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			}
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
-			if(ResourceType.HOME_CAROUSEL_IMAGE.getCode().equals(value3)) {
+			String type1 = ResourceType.HOME_CAROUSEL_IMAGE.getCode();
+			String type2 = ResourceType.HOME_N_CAROUSEL_IMAGE.getCode();
+			if(contextApp.getAppVersion() >= 394){
+				type1 = ResourceType.NEW_HOME_CAROUSEL_IMAGE.getCode();
+				type2 = ResourceType.NEW_HOME_N_CAROUSEL_IMAGE.getCode();
+			}
+			if(type1.equals(value3)) {
 				midBannerList.add(data);
-			} else if (ResourceType.HOME_N_CAROUSEL_IMAGE.getCode().equals(value3)) {
+			} else if (type2.equals(value3)) {
 				manyEntityList.add(data);
 			}
 		}
