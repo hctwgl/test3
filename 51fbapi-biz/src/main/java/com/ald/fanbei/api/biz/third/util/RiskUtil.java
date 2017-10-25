@@ -886,11 +886,11 @@ public class RiskUtil extends AbstractThird {
 			
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
 			//风控异步回调的话，以第一次异步回调成功为准
-			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
+			if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
 				if (StringUtils.equals("10", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
-	      			authDo.setRiskStatus(RiskStatus.YES.getCode());
+					authDo.setRiskStatus(RiskStatus.YES.getCode());
 	      			authDo.setBasicStatus("Y");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
@@ -909,7 +909,9 @@ public class RiskUtil extends AbstractThird {
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
-	      			authDo.setRiskStatus(RiskStatus.NO.getCode());
+					if(!"Y".equals(authDo.getRiskStatus())){
+						authDo.setRiskStatus(RiskStatus.NO.getCode());
+					}
 					authDo.setBasicStatus("N");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
