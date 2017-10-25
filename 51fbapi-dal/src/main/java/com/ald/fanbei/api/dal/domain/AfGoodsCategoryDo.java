@@ -16,7 +16,7 @@ public class AfGoodsCategoryDo extends AbstractSerial{
 
 	private String name;
 
-	private Long isDelete;
+	private String isDelete;
 
 	private Date gmtCreate;
 
@@ -52,11 +52,11 @@ public class AfGoodsCategoryDo extends AbstractSerial{
 		this.name = name;
 	}
 
-	public Long getIsDelete() {
+	public String getIsDelete() {
 		return isDelete;
 	}
 
-	public void setIsDelete(Long isDelete) {
+	public void setIsDelete(String isDelete) {
 		this.isDelete = isDelete;
 	}
 

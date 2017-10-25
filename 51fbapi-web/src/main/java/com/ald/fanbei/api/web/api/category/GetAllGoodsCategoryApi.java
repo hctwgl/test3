@@ -61,7 +61,7 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
                         list = afGoodsCategoryService.selectThirdLevel(secondRid);
                         if(null != list && list.size()>0){
                             thirdLevelList = new ArrayList<Object>();
-                            for(int k=0;k<secondList.size();k++){
+                            for(int k=0;k<list.size();k++){
                                 Map<String,Object> objThird = new HashMap<String,Object>();
                                 String thirdName = list.get(k).getName();
                                 Long thirdRid = list.get(k).getId();
