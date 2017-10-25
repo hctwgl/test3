@@ -428,6 +428,16 @@ public class H5CutPriceController extends H5Controller {
 		return result;
 	}
 
+	/**
+	 * 
+	* @Title: getRandomPrice
+	* @Description: 获得随机数，在特定范围的。
+	* @param low
+	* @param high
+	* @return    
+	* @return BigDecimal   
+	* @throws
+	 */
 	private BigDecimal getRandomPrice(BigDecimal low,BigDecimal high) {  
 		BigDecimal result = BigDecimal.ZERO;
         double max = low.doubleValue();
