@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +25,8 @@ import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -40,6 +45,7 @@ import com.ald.fanbei.api.dal.domain.query.AfDeUserCutInfoQuery;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfDeUserCutInfoVo;
+import com.sun.tools.javac.util.Context.Key;
 
 /**
  * 
@@ -64,10 +70,13 @@ public class H5CutPriceController extends H5Controller {
 	AfDeUserCutInfoService afDeUserCutInfoService;
 	@Resource
 	AfDeUserGoodsService afDeUserGoodsService;
-
+	@Resource
+	TransactionTemplate transactionTemplate;
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
-
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	
 	String opennative = "/fanbei-web/opennative?name=";
 
 	/**
@@ -214,125 +223,144 @@ public class H5CutPriceController extends H5Controller {
 	 * @return String 返回类型
 	 * @throws
 	 */
-	// TODO: add transaction
 	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST)
-	public String cutPrice(HttpServletRequest request, HttpServletResponse response) {
-		String resultStr = H5CommonResponse.getNewInstance(false, "砍价失败").toString();
-		try {
-			String userIdStr = request.getParameter("userId");
-			String goodsPriceIdStr = request.getParameter("goodsPriceId");
-			String openId = request.getParameter("openId");
-			String nickName = request.getParameter("nickName");
-			String headImagUrl = request.getParameter("headImgUrl");
-			if (StringUtil.isAllNotEmpty(userIdStr, openId, nickName, headImagUrl, goodsPriceIdStr)) {
-				Long userId = NumberUtil.objToLong(userIdStr);
-				Long goodsPriceId = NumberUtil.objToLong(goodsPriceIdStr);
-				// to judge if the goods is bought already
-				AfDeUserGoodsDo userGoodsDo = new AfDeUserGoodsDo();
-				userGoodsDo.setUserid(userId);
-				userGoodsDo.setGoodspriceid(goodsPriceId);
-				AfDeUserGoodsDo usergoodsResult = afDeUserGoodsService.getByCommonCondition(userGoodsDo);
-				if (usergoodsResult != null) {
-					Map<String, Object> data = new HashMap<>();
-					// to judge if the goods is bought already
-					if (usergoodsResult.getIsbuy() == 1) {
-						data.put("code", 4);// already been bought
-						resultStr = H5CommonResponse.getNewInstance(false, "已经买了此商品，不能砍价", "", data).toString();
-					} else {
-						// to judge if this wechat user has already helped this
-						// user
-						AfDeUserCutInfoDo userCutInfoDo = new AfDeUserCutInfoDo();
-						userCutInfoDo.setOpenid(openId);
-						userCutInfoDo.setUsergoodsid(usergoodsResult.getRid());
-						AfDeUserCutInfoDo userCutInfoDoResult = afDeUserCutInfoService
-								.getByCommonCondition(userCutInfoDo);
-						if (null == userCutInfoDoResult) {// already helped to
-															// cut
-							data.put("code", 2);// already been bought
-							resultStr = H5CommonResponse.getNewInstance(false, "重复砍价", "", data).toString();
-						} else {// this wechat user could help this user to cut
-								// this goods
-								// to see if this user has already put this
-								// goods to the lowest price.
-							AfGoodsPriceDo goodsPriceResult = afGoodsPriceService.getById(usergoodsResult.getRid());
-							AfDeGoodsDo deGoodsDo = new AfDeGoodsDo();
-							deGoodsDo.setGoodspriceid(goodsPriceId);
-							AfDeGoodsDo deGoodsDoResult = afDeGoodsService.getByCommonCondition(deGoodsDo);
-							if (null != goodsPriceResult && deGoodsDoResult != null) {
-								BigDecimal originalPrice = goodsPriceResult.getActualAmount();
-								BigDecimal cutPrice = usergoodsResult.getCutprice();
-								BigDecimal lowestPrice = deGoodsDoResult.getLowestprice();
-								if (lowestPrice.equals(originalPrice.subtract(cutPrice))) { // already
-																							// the
-																							// lowest
-																							// price
-									// update the cutCount Field and insert one
-									// record for table cutInfo
-									// TODO:add lock :Lock the cutCount Field
-									usergoodsResult.setCutcount(usergoodsResult.getCutcount() + 1);
-									usergoodsResult.setGmtModified(new Date());
-									afDeUserGoodsService.updateById(usergoodsResult);
+	public String cutPrice(final HttpServletRequest request, HttpServletResponse response) {
+		return transactionTemplate.execute(new TransactionCallback<String>() {
 
-									AfDeUserCutInfoDo insertDo = new AfDeUserCutInfoDo();
-									insertDo.setCutprice(BigDecimal.ZERO);
-									insertDo.setGmtCreate(new Date());
-									insertDo.setGmtModified(new Date());
-									insertDo.setHeadimgurl(headImagUrl);
-									insertDo.setNickname(nickName);
-									insertDo.setOpenid(openId);
-									insertDo.setRemainprice(lowestPrice);
-									insertDo.setUsergoodsid(usergoodsResult.getRid());
-									afDeUserCutInfoService.saveRecord(insertDo);
+			@Override
+			public String doInTransaction(TransactionStatus status) {
+				String resultStr = H5CommonResponse.getNewInstance(false, "砍价失败").toString();
+				String userIdStr = request.getParameter("userId");
+				String goodsPriceIdStr = request.getParameter("goodsPriceId");
+				String openId = request.getParameter("openId");
+				String nickName = request.getParameter("nickName");
+				String headImagUrl = request.getParameter("headImgUrl");
+				
+				//try 1000 times to get the lock 
+				String key = Constants.CACHKEY_CUT_PRICE_LOCK + userIdStr;
+				boolean isLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
+				
+				try {
+					if (StringUtil.isAllNotEmpty(userIdStr, openId, nickName, headImagUrl, goodsPriceIdStr) && isLock) {
+						Long userId = NumberUtil.objToLong(userIdStr);
+						
+						Long goodsPriceId = NumberUtil.objToLong(goodsPriceIdStr);
+						// to judge if the goods is bought already
+						AfDeUserGoodsDo userGoodsDo = new AfDeUserGoodsDo();
+						userGoodsDo.setUserid(userId);
+						userGoodsDo.setGoodspriceid(goodsPriceId);
+						AfDeUserGoodsDo usergoodsResult = afDeUserGoodsService.getByCommonCondition(userGoodsDo);
+						if (usergoodsResult != null) {
+							Map<String, Object> data = new HashMap<>();
+							// to judge if the goods is bought already
+							if (usergoodsResult.getIsbuy() == 1) {
+								data.put("code", 4);// already been bought
+								resultStr = H5CommonResponse.getNewInstance(false, "已经买了此商品，不能砍价", "", data).toString();
+							} else {
+								// to judge if this wechat user has already helped this
+								// user
+								AfDeUserCutInfoDo userCutInfoDo = new AfDeUserCutInfoDo();
+								userCutInfoDo.setOpenid(openId);
+								userCutInfoDo.setUsergoodsid(usergoodsResult.getRid());
+								AfDeUserCutInfoDo userCutInfoDoResult = afDeUserCutInfoService
+										.getByCommonCondition(userCutInfoDo);
+								if (null == userCutInfoDoResult) {// already helped to
+																	// cut
+									data.put("code", 2);// already been bought
+									resultStr = H5CommonResponse.getNewInstance(false, "重复砍价", "", data).toString();
+								} else {// this wechat user could help this user to cut
+										// this goods
+										// to see if this user has already put this
+										// goods to the lowest price.
+									AfGoodsPriceDo goodsPriceResult = afGoodsPriceService.getById(usergoodsResult.getRid());
+									AfDeGoodsDo deGoodsDo = new AfDeGoodsDo();
+									deGoodsDo.setGoodspriceid(goodsPriceId);
+									AfDeGoodsDo deGoodsDoResult = afDeGoodsService.getByCommonCondition(deGoodsDo);
+									if (null != goodsPriceResult && deGoodsDoResult != null) {
+										BigDecimal originalPrice = goodsPriceResult.getActualAmount();
+										BigDecimal cutPrice = usergoodsResult.getCutprice();
+										BigDecimal lowestPrice = deGoodsDoResult.getLowestprice();
+										if (lowestPrice.equals(originalPrice.subtract(cutPrice))) { // already
+																									// the
+																									// lowest
+																									// price
+											// update the cutCount Field and insert one
+											// record for table cutInfo
+											// TODO:add lock :Lock the cutCount Field
+											usergoodsResult.setCutcount(usergoodsResult.getCutcount() + 1);
+											usergoodsResult.setGmtModified(new Date());
+											afDeUserGoodsService.updateById(usergoodsResult);
 
-									data.put("code", 3);
-									resultStr = H5CommonResponse.getNewInstance(false, "已砍至最低价，无法完成本次砍价", "", data)
-											.toString();
-								} else {// still could cut price
-									
-										// TODO:add lock
-										// calculate the cutPrice for current
-									int cutCount = usergoodsResult.getCutcount() + 1;
-									BigDecimal cutPricee = cutPrice(goodsPriceId, cutCount);
-									
-									AfDeUserCutInfoDo insertDo = new AfDeUserCutInfoDo();
-									insertDo.setCutprice(BigDecimal.ZERO);
-									insertDo.setGmtCreate(new Date());
-									insertDo.setGmtModified(new Date());
-									insertDo.setHeadimgurl(headImagUrl);
-									insertDo.setNickname(nickName);
-									insertDo.setOpenid(openId);
-									insertDo.setRemainprice(cutPricee);
-									insertDo.setUsergoodsid(usergoodsResult.getRid());
-									afDeUserCutInfoService.saveRecord(insertDo);
-									
-									int cutCountt = usergoodsResult.getCutcount() + 1;
-									usergoodsResult.setCutcount(cutCountt);
-									usergoodsResult.setCutprice(cutPricee);
-									usergoodsResult.setGmtModified(new Date());
-									
-									//if after cutPrice is the lowest price
-									if (lowestPrice.compareTo(originalPrice.subtract(cutPricee)) == 0) {
-										usergoodsResult.setGmtCompletetime(new Date());
-										usergoodsResult.setCompletecount(cutCountt);
+											AfDeUserCutInfoDo insertDo = new AfDeUserCutInfoDo();
+											insertDo.setCutprice(BigDecimal.ZERO);
+											insertDo.setGmtCreate(new Date());
+											insertDo.setGmtModified(new Date());
+											insertDo.setHeadimgurl(headImagUrl);
+											insertDo.setNickname(nickName);
+											insertDo.setOpenid(openId);
+											insertDo.setRemainprice(lowestPrice);
+											insertDo.setUsergoodsid(usergoodsResult.getRid());
+											afDeUserCutInfoService.saveRecord(insertDo);
+
+											data.put("code", 3);
+											resultStr = H5CommonResponse.getNewInstance(false, "已砍至最低价，无法完成本次砍价", "", data)
+													.toString();
+										} else {// still could cut price
+											
+												// TODO:add lock
+												// calculate the cutPrice for current
+											int cutCount = usergoodsResult.getCutcount() + 1;
+											BigDecimal cutPricee = cutPrice(goodsPriceId, cutCount);
+											
+											AfDeUserCutInfoDo insertDo = new AfDeUserCutInfoDo();
+											insertDo.setCutprice(BigDecimal.ZERO);
+											insertDo.setGmtCreate(new Date());
+											insertDo.setGmtModified(new Date());
+											insertDo.setHeadimgurl(headImagUrl);
+											insertDo.setNickname(nickName);
+											insertDo.setOpenid(openId);
+											insertDo.setRemainprice(cutPricee);
+											insertDo.setUsergoodsid(usergoodsResult.getRid());
+											afDeUserCutInfoService.saveRecord(insertDo);
+											
+											int cutCountt = usergoodsResult.getCutcount() + 1;
+											usergoodsResult.setCutcount(cutCountt);
+											usergoodsResult.setCutprice(cutPricee);
+											usergoodsResult.setGmtModified(new Date());
+											
+											//if after cutPrice is the lowest price
+											if (lowestPrice.compareTo(originalPrice.subtract(cutPricee)) == 0) {
+												usergoodsResult.setGmtCompletetime(new Date());
+												usergoodsResult.setCompletecount(cutCountt);
+											}
+											
+											afDeUserGoodsService.updateById(usergoodsResult);
+										}
 									}
-									
-									afDeUserGoodsService.updateById(usergoodsResult);
 								}
 							}
+
 						}
 					}
-
+				} catch (FanbeiException e) {
+					resultStr = H5CommonResponse.getNewInstance(false, "砍价失败").toString();
+					logger.error("/activity/de/share error = {}", e.getStackTrace());
+					status.setRollbackOnly();
+				} catch (Exception e) {
+					logger.error("/activity/de/share error = {}", e.getStackTrace());
+					status.setRollbackOnly();
+				}finally{
+					bizCacheUtil.delCache(key);
 				}
+
+				return resultStr;
 			}
-		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "砍价失败").toString();
-			logger.error("/activity/de/share error = {}", e.getStackTrace());
-
-		} catch (Exception e) {
-			logger.error("/activity/de/share error = {}", e.getStackTrace());
-		}
-
-		return resultStr;
+		});
+		
+		
+		
+		
+		
 	}
 	/**
 	 * 
@@ -400,6 +428,16 @@ public class H5CutPriceController extends H5Controller {
 		return result;
 	}
 
+	/**
+	 * 
+	* @Title: getRandomPrice
+	* @Description: 获得随机数，在特定范围的。
+	* @param low
+	* @param high
+	* @return    
+	* @return BigDecimal   
+	* @throws
+	 */
 	private BigDecimal getRandomPrice(BigDecimal low,BigDecimal high) {  
 		BigDecimal result = BigDecimal.ZERO;
         double max = low.doubleValue();

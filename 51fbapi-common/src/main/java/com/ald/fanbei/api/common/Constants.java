@@ -344,7 +344,8 @@ public class Constants {
 	public static final String DEFAULT_CODE               = "UTF-8";
 	public static final String H5_OPEN_ID_COOKIES_KEY = "openid";
 	
-	
+	//双十一
+	public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 
 	//商圈
 	public static final String DEFAULT_SALT = "51fb";
