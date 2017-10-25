@@ -9,9 +9,14 @@
 	</sql>
 	<sql id="queryManyAllFields">
 
-		r2.id
-		rid,r2.gmt_create,r2.gmt_modified,r2.creator,r2.modifier,r2.data_type,r2.type,r2.type_desc,r2.name,r2.value,r2.description,
-		r2.sec_type,r2.value_1,r2.value_2,r2.value_3,r2.value_4,r2.sort
+		r1.id
+		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r1.type_desc,r1.name,r1.value,r1.description,
+		r1.sec_type,r1.value_1,r1.value_2,r1.value_3,r1.value_4,r1.sort
+	</sql>
+	<sql id="queryManyAllFieldsTwo">
+		r1.id
+		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r1.type_desc,r1.name,r1.value,r1.description,
+		r1.sec_type,r1.value_1,r1.value_2,r1.value_3,r1.value_4,r1.sort
 	</sql>
 	<select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
@@ -174,30 +179,30 @@
 	
 	<select id="getCarouselToManyResourceOrderByType" resultType="AfResourceDo">
 		SELECT
-		<include refid="queryAllFields" />
+		<include refid="queryManyAllFieldsTwo" />
 		FROM
-		af_resource 
-		WHERE
-		type = #{type}
-		AND
-		is_delete = 0
-		AND value_4 = 'O'
+		af_resource r1
+		LEFT JOIN
+		af_resource r2
+		ON r1.value_4=r2.id
+		where
+		r1.type= #{type} and r2.value_4='O' and r2.type is not null and r1.is_delete=0
 		ORDER BY
-		sort ,id
+		r1.sort ,r1.id
 	</select>
 
 	<select id="getManyPricutresResourceDoList" resultType="AfResourceDo">
 		SELECT
-		<include refid="queryAllFields" />
+		<include refid="queryManyAllFieldsTwo" />
 		FROM
-		af_resource
-		WHERE
-		type = #{type}
-		AND
-		is_delete = 0
-		AND value_4 = 'O'
+		af_resource r1
+		LEFT JOIN
+		af_resource r2
+		ON r1.value_4=r2.id
+		where
+		r1.type= #{type} and r2.value_4='O' and r2.type is not null and r1.is_delete=0
 		ORDER BY
-		sort ,id
+		r1.sort ,r1.id
 	</select>
 
 	<select id="getNavigationUpOneResourceDoList" resultType="AfResourceDo">
@@ -209,7 +214,7 @@
 		type = #{type}
 		AND
 		is_delete = 0
-		AND value_4 = 'O'
+		AND value_4 = 'C'
 		ORDER BY
 		sort
 	</select>
