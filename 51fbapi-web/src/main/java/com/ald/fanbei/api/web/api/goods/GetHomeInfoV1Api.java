@@ -203,7 +203,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		
 		// 1大左2小右
-		//如果是394之前的版本用旧的,364以后是新版本
+		//如果是394之前的版本用旧的,394以后是新版本
 		String beforeHomeOneToTwo = AfResourceType.HomeOneToTwo.getCode();
 		if(contextApp.getAppVersion() >= 394){
 			beforeHomeOneToTwo = AfResourceType.NewHomeOneToTwo.getCode();
