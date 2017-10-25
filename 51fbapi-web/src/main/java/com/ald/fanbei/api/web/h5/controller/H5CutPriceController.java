@@ -270,6 +270,7 @@ public class H5CutPriceController extends H5Controller {
 									// record for table cutInfo
 									// TODO:add lock :Lock the cutCount Field
 									usergoodsResult.setCutcount(usergoodsResult.getCutcount() + 1);
+									usergoodsResult.setGmtModified(new Date());
 									afDeUserGoodsService.updateById(usergoodsResult);
 
 									AfDeUserCutInfoDo insertDo = new AfDeUserCutInfoDo();
@@ -287,12 +288,35 @@ public class H5CutPriceController extends H5Controller {
 									resultStr = H5CommonResponse.getNewInstance(false, "已砍至最低价，无法完成本次砍价", "", data)
 											.toString();
 								} else {// still could cut price
+									
 										// TODO:add lock
 										// calculate the cutPrice for current
-										// time
 									int cutCount = usergoodsResult.getCutcount() + 1;
 									BigDecimal cutPricee = cutPrice(goodsPriceId, cutCount);
-
+									
+									AfDeUserCutInfoDo insertDo = new AfDeUserCutInfoDo();
+									insertDo.setCutprice(BigDecimal.ZERO);
+									insertDo.setGmtCreate(new Date());
+									insertDo.setGmtModified(new Date());
+									insertDo.setHeadimgurl(headImagUrl);
+									insertDo.setNickname(nickName);
+									insertDo.setOpenid(openId);
+									insertDo.setRemainprice(cutPricee);
+									insertDo.setUsergoodsid(usergoodsResult.getRid());
+									afDeUserCutInfoService.saveRecord(insertDo);
+									
+									int cutCountt = usergoodsResult.getCutcount() + 1;
+									usergoodsResult.setCutcount(cutCountt);
+									usergoodsResult.setCutprice(cutPricee);
+									usergoodsResult.setGmtModified(new Date());
+									
+									//if after cutPrice is the lowest price
+									if (lowestPrice.compareTo(originalPrice.subtract(cutPricee)) == 0) {
+										usergoodsResult.setGmtCompletetime(new Date());
+										usergoodsResult.setCompletecount(cutCountt);
+									}
+									
+									afDeUserGoodsService.updateById(usergoodsResult);
 								}
 							}
 						}
@@ -356,16 +380,21 @@ public class H5CutPriceController extends H5Controller {
 
 			if (cutCount < 21) {
 				//between stage1 and stage2
-				
+				result = getRandomPrice(stage2, stage1);
 			} else if (cutCount < 41) {
 				//between stage2 and stage3
-				
+				result = getRandomPrice(stage2, stage3);
 			} else if (cutCount < 61) {
 				//between stage3 and 0.1
-				
+				result = getRandomPrice(new BigDecimal(0.1), stage3);
 			} else if (cutCount > 61) {
 				//between 0.1 and 1
-				
+				result = getRandomPrice(new BigDecimal(0.01), new BigDecimal(0.1));
+			}
+			
+			//if the result after cut is lower than the lowest price .then 
+			if (lowestPrice.compareTo(originalPrice.subtract(result)) > 0) {
+				result = originalPrice.subtract(lowestPrice);
 			}
 		}
 		return result;
