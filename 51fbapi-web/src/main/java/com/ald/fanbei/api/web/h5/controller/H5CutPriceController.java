@@ -25,6 +25,8 @@ import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserCutInfoService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -43,6 +45,7 @@ import com.ald.fanbei.api.dal.domain.query.AfDeUserCutInfoQuery;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfDeUserCutInfoVo;
+import com.sun.tools.javac.util.Context.Key;
 
 /**
  * 
@@ -71,7 +74,9 @@ public class H5CutPriceController extends H5Controller {
 	TransactionTemplate transactionTemplate;
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
-
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	
 	String opennative = "/fanbei-web/opennative?name=";
 
 	/**
@@ -225,14 +230,20 @@ public class H5CutPriceController extends H5Controller {
 			@Override
 			public String doInTransaction(TransactionStatus status) {
 				String resultStr = H5CommonResponse.getNewInstance(false, "砍价失败").toString();
+				String userIdStr = request.getParameter("userId");
+				String goodsPriceIdStr = request.getParameter("goodsPriceId");
+				String openId = request.getParameter("openId");
+				String nickName = request.getParameter("nickName");
+				String headImagUrl = request.getParameter("headImgUrl");
+				
+				//try 1000 times to get the lock 
+				String key = Constants.CACHKEY_CUT_PRICE_LOCK + userIdStr;
+				boolean isLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
+				
 				try {
-					String userIdStr = request.getParameter("userId");
-					String goodsPriceIdStr = request.getParameter("goodsPriceId");
-					String openId = request.getParameter("openId");
-					String nickName = request.getParameter("nickName");
-					String headImagUrl = request.getParameter("headImgUrl");
-					if (StringUtil.isAllNotEmpty(userIdStr, openId, nickName, headImagUrl, goodsPriceIdStr)) {
+					if (StringUtil.isAllNotEmpty(userIdStr, openId, nickName, headImagUrl, goodsPriceIdStr) && isLock) {
 						Long userId = NumberUtil.objToLong(userIdStr);
+						
 						Long goodsPriceId = NumberUtil.objToLong(goodsPriceIdStr);
 						// to judge if the goods is bought already
 						AfDeUserGoodsDo userGoodsDo = new AfDeUserGoodsDo();
@@ -338,6 +349,8 @@ public class H5CutPriceController extends H5Controller {
 				} catch (Exception e) {
 					logger.error("/activity/de/share error = {}", e.getStackTrace());
 					status.setRollbackOnly();
+				}finally{
+					bizCacheUtil.delCache(key);
 				}
 
 				return resultStr;
