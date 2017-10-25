@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +51,7 @@ public class GetGoodsListApi implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Map<String, Object> data = new HashMap<String, Object>();
-        String level = ObjectUtils.toString(requestDataVo.getParams().get("level"),"3");
-        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),4l);
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
         Map<String,Object> activityData = new HashMap<String,Object> ();
         AfGoodsCategoryQuery query = getCheckParam(requestDataVo);
         List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);
@@ -60,6 +60,7 @@ public class GetGoodsListApi implements ApiHandle {
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
         JSONArray array = JSON.parseArray(resource.getValue());
         for(AfGoodsCategoryDto goodsDo : list) {
+//            double volume = new Long(goodsDo.getVolume()).intValue();
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
             goodsInfo.put("goodName",goodsDo.getName());
             goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
@@ -70,7 +71,14 @@ public class GetGoodsListApi implements ApiHandle {
             goodsInfo.put("goodsUrl",goodsDo.getGoodsUrl());
             goodsInfo.put("source",goodsDo.getSource());
             goodsInfo.put("numId",goodsDo.getNumId());
-            goodsInfo.put("volume",goodsDo.getVolume());
+//            if(volume>10000){
+//                DecimalFormat df = new DecimalFormat("0.00");
+//                BigDecimal bigDecimal = new BigDecimal(df.format(volume/10000));
+//                bigDecimal.setScale(3,bigDecimal.ROUND_HALF_UP);
+//                goodsInfo.put("volume",bigDecimal.toString()+"万");
+//            }else{
+                goodsInfo.put("volume",goodsDo.getVolume());
+//            }
             goodsInfo.put("saleCount",goodsDo.getSaleCount());
             goodsInfo.put("goodsType", "0");
             // 如果是分期免息商品，则计算分期
@@ -109,7 +117,7 @@ public class GetGoodsListApi implements ApiHandle {
 
     private AfGoodsCategoryQuery getCheckParam(RequestDataVo requestDataVo){
         Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
-        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),4l);
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
         AfGoodsCategoryQuery query = new AfGoodsCategoryQuery();
         query.setPageNo(pageNo);
         query.setId(id);

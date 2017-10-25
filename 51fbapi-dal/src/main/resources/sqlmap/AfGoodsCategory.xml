@@ -88,12 +88,13 @@
 
 	<select id="selectGoodsInformation" parameterType="AfGoodsCategoryQuery" resultType="AfGoodsCategoryDto">
 		SELECT
-			g.source,g.rebate_amount,g.id,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,s.volume,g.sale_count
+			g.source,g.rebate_amount,g.id,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,s.volume,g.sale_count,g.gmt_create
 	    FROM  af_goods g,af_goods_tbk s
 		where s.category_id = #{id}
 		and s.num_id = g.num_id
 		and s.is_delete = 0
 		and g.is_delete = 0
+		order by gmt_create
 	</select>
 
 	

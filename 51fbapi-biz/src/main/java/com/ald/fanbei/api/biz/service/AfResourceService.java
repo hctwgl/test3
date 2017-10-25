@@ -168,6 +168,13 @@ public interface AfResourceService {
 	
 	List<AfResourceDo> getCarouselToManyResourceOrderByType(String code);
 
+	List<AfResourceDo> getManyPricutresResourceDoList(String code);
+
+	List<AfResourceDo> getNavigationUpOneResourceDoList(String code);
+
+	List<AfResourceDo> getNavigationDownTwoResourceDoList(String code);
+
 	AfResourceDo getAfResourceAppVesion();
-	
+
+	List<AfResourceDo> getBackGroundByType(String code);
 }

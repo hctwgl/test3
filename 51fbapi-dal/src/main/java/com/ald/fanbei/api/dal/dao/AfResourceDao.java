@@ -141,6 +141,13 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getCarouselToManyResourceOrderByType(@Param("type")String type);
 
+	List<AfResourceDo> getManyPricutresResourceDoList(@Param("type")String type);
+
+	List<AfResourceDo> getNavigationUpOneResourceDoList(@Param("type")String type);
+
+	List<AfResourceDo> getNavigationDownTwoResourceDoList(@Param("type")String type);
+
+    List<AfResourceDo> getBackGroundByType(String code);
 	/**
 	 * 	查询一个活动规则信息
 	 */

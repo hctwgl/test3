@@ -213,12 +213,32 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		
 		// 1大左2小右
+		//如果是394之前的版本用旧的,394以后是新版本
+		String beforeHomeOneToTwo = AfResourceType.HomeOneToTwo.getCode();
+		if(contextApp.getAppVersion() >= 394){
+			beforeHomeOneToTwo = AfResourceType.NewHomeOneToTwo.getCode();
+		}
 		List<Object> one2TwoInfoList = getOne2TwoObjectWithResourceDolist(
-				afResourceService.getOneToManyResourceOrderByBytype(AfResourceType.HomeOneToTwo.getCode()));
-		
-		// 获取轮播 +N信息
-		Map<String,Object> midBanner2Many = getCarouselToManyWithResourceDoList(
-				afResourceService.getCarouselToManyResourceOrderByType(AfResourceType.HomeCarouseToMany.getCode()));
+				afResourceService.getOneToManyResourceOrderByBytype(beforeHomeOneToTwo));
+
+
+			// 获取轮播 +N信息 旧的394之前版本
+			String beforeImage = AfResourceType.HomeCarouseToMany.getCode();
+			if(contextApp.getAppVersion() >= 394){
+				beforeImage = AfResourceType.NewHomeCarouseToMany.getCode();
+			}
+			Map<String,Object> midBanner2Many = getCarouselToManyWithResourceDoList(
+					afResourceService.getCarouselToManyResourceOrderByType(beforeImage));
+
+		//新增运营位1,快捷导航上方活动专场
+		List<Object> navigationUpOne = getNavigationUpOneResourceDoList(
+				afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOne.getCode()));
+		//新增运营位2,快捷导航下方活动专场
+		List<Object> navigationDownOne = getNavigationDownTwoResourceDoList(
+				afResourceService.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwo.getCode()));
+		//    3/6/9运营位
+		Map<String,Object> manyPricutres = getManyPricutresResourceDoList(
+				afResourceService.getManyPricutresResourceDoList(AfResourceType.ManeyPictrues.getCode()));
 		// 获取首页活动信息
 		//获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -343,19 +363,29 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		}
 		moreGoodsInfo.put("moreGoodsList", moreGoodsList);
 		moreGoodsInfo.put("titleName", "更多商品");
+		//背景图配置
+		List<AfResourceDo> backgroundList = afResourceService.getBackGroundByType(ResourceType.HOMEPAGE_BACKGROUND.getCode());
+
 		// 顶部轮播
 		data.put("topBannerList", topBannerList);
 		// 快速导航
 		data.put("navigationInfo", navigationInfo);
 		// 1大左2小右
 		data.put("one2TwoInfoList", one2TwoInfoList);
+		//新增运营位1,快捷导航上方活动专场
+		data.put("navigationUpOne",navigationUpOne);
+		//新增运营位2,快捷导航下方活动专场
+		data.put("navigationDownOne",navigationDownOne);
 		// 轮播+N
 		data.put("midBanner2Many", midBanner2Many);
+		//  3/6/9运营位
+		data.put("manyPricutres", manyPricutres);
 		// 首页活动商品
 		data.put("activityInfoList", activityInfoList);
 		// 更多商品
 		data.put("moreGoodsInfo", moreGoodsInfo);
-
+		// 首页背景图
+		data.put("backgroundSet", backgroundList);
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -410,8 +440,19 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			backgroundInfo.put("imageUrl", afResourceDo.getValue());
 			backgroundInfo.put("type", AfResourceSecType.NAVIGATION_BACKGROUND.getCode());
 		}
-		
-		for (AfResourceDo afResourceDo : bannerResclist) {
+		int lsize = bannerResclist.size();
+		//for (AfResourceDo afResourceDo : bannerResclist) {
+		for(int i=0;i<lsize;i++){
+			if(lsize>5&&lsize<10){
+				if(i>=5){
+					break;
+				}
+			}else if(lsize>10){
+				if(i>=10){
+					break;
+				}
+			}
+			AfResourceDo afResourceDo = bannerResclist.get(i);
 			String secType = afResourceDo.getSecType();
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
@@ -427,6 +468,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			}
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
+			data.put("color",afResourceDo.getValue3());
 			navigationList.add(data);
 			
 		}
@@ -465,7 +507,31 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		midBanner2Many.put("manyEntityList", manyEntityList);
 		return midBanner2Many;
 	}
-	
+	private Map<String,Object> getManyPricutresResourceDoList(List<AfResourceDo> rescList) {
+		Map<String,Object> manyPricutres = new HashMap<String,Object>();
+		List<Map<String,Object>> manyPricutresList = new ArrayList<Map<String,Object>> ();
+		for(AfResourceDo afResourceDo : rescList) {
+			Map<String, Object> data = new HashMap<String,Object> ();
+			String value3 = afResourceDo.getValue3();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
+				data.put("type", afResourceDo.getSecType());
+				// 对首页充值的版本兼容修改
+				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
+					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
+				}
+			}else{
+				data.put("type", afResourceDo.getValue1());
+			}
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getSort());
+			manyPricutresList.add(data);
+		}
+		manyPricutres.put("manyPricutresList", manyPricutresList);
+		return manyPricutres;
+	}
+
 	 private void removeSecondNper(JSONArray array) {
 	        if (array == null) {
 	            return;
@@ -551,6 +617,54 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		}
 
 		return bannerList;
+	}
+
+	private List<Object> getNavigationUpOneResourceDoList(List<AfResourceDo> navigationUplist){
+		List<Object> navigationUpOne = new ArrayList<Object>();
+
+		for (AfResourceDo afResourceDo: navigationUplist) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
+				data.put("type", afResourceDo.getSecType());
+				// 对首页充值的版本兼容修改
+				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
+					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
+				}
+			}else{
+				data.put("type", afResourceDo.getValue1());
+			}
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getSort());
+
+			navigationUpOne.add(data);
+		}
+		return navigationUpOne;
+	}
+
+	private List<Object> getNavigationDownTwoResourceDoList(List<AfResourceDo> navigationUplist){
+		List<Object> navigationList = new ArrayList<Object>();
+
+		for (AfResourceDo afResourceDo: navigationUplist) {
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("imageUrl", afResourceDo.getValue());
+			data.put("titleName", afResourceDo.getName());
+			if(afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())){
+				data.put("type", afResourceDo.getSecType());
+				// 对首页充值的版本兼容修改
+				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
+					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
+				}
+			}else{
+				data.put("type", afResourceDo.getValue1());
+			}
+			data.put("content", afResourceDo.getValue2());
+			data.put("sort", afResourceDo.getSort());
+
+			navigationList.add(data);
+		}
+		return navigationList;
 	}
 
 }
