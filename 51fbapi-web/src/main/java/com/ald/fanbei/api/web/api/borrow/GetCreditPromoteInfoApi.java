@@ -170,7 +170,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		}
 		
 		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())) {
-			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtBasic()), 10);
+			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(null == authDo.getGmtBasic()?new Date():authDo.getGmtBasic()), 10);
 			long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 			if (between > 0) {
 				data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
