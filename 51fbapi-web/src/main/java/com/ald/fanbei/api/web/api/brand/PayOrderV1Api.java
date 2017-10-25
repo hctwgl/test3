@@ -108,7 +108,7 @@ public class PayOrderV1Api implements ApiHandle {
 		}
 		
 		//双十一砍价添加
-		if (orderInfo.getOrderType() == OrderType.SELFSUPPORT.getCode() && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
 		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
 		    if(afDeUserGoodsDo!= null && afDeUserGoodsDo.getIsbuy()== 1)
 		    {
@@ -219,7 +219,7 @@ public class PayOrderV1Api implements ApiHandle {
 					}
 					
 					//更新砍价商品为已购买(订单为自营且第三方订单号不为空),双十一添加
-                        		if (orderInfo.getOrderType() == OrderType.SELFSUPPORT.getCode() && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+                        		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
                         		    afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                         		}
 				} else {
