@@ -181,6 +181,7 @@
 		type = #{type}
 		AND
 		is_delete = 0
+		AND value_4 = 'O'
 		ORDER BY
 		sort ,id
 	</select>
@@ -194,6 +195,7 @@
 		type = #{type}
 		AND
 		is_delete = 0
+		AND value_4 = 'O'
 		ORDER BY
 		sort ,id
 	</select>
@@ -207,6 +209,7 @@
 		type = #{type}
 		AND
 		is_delete = 0
+		AND value_4 = 'O'
 		ORDER BY
 		sort
 	</select>
@@ -220,6 +223,7 @@
 		type = #{type}
 		AND
 		is_delete = 0
+		AND value_4 = 'O'
 		ORDER BY
 		sort
 	</select>
