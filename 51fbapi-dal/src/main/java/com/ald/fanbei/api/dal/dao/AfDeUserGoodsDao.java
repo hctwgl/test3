@@ -1,8 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
+import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
+import com.ald.fanbei.api.dal.domain.query.AfDeUserGoodsQuery;
 
 /**
  * 双十一砍价Dao
@@ -13,6 +17,9 @@ import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
  */
 public interface AfDeUserGoodsDao extends BaseDao<AfDeUserGoodsDo, Long> {
 
+    AfDeUserGoodsInfoDto getUserGoodsInfo(AfDeUserGoodsDo afDeUserGoodsDo);
+
+    List<AfDeUserGoodsDto> getAfDeUserGoogsList(AfDeUserGoodsQuery queryGoods);
     /**
      * 获取用户可以购买的商品类型的价格
      * 

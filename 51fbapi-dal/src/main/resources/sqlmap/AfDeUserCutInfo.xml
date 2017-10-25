@@ -167,5 +167,14 @@
         FROM af_de_user_cutinfo
         <include refid="commonCondition"/>
     </select>
+     <select id="getAfDeUserCutInfoList" resultType="com.ald.fanbei.api.dal.domain.AfDeUserCutInfoDo" parameterType="com.ald.fanbei.api.dal.domain.query.AfDeUserCutInfoQuery">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_de_user_cutInfo
+        WHERE 
+        userGoodsId = #{usergoodsid}
+        ORDER BY 
+        gmt_create DESC
+    </select>
     
 </mapper>

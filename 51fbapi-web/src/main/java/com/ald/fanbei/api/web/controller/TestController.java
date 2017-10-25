@@ -729,7 +729,7 @@ public class TestController {
 	    JSONObject json = JSONObject.parseObject(body);
 	    String userName = json.getString("userName");
 	    AfUserDo user = afUserService.getUserByUserName(userName);
-	    Long userId = user ==null?-1:user.getRid();
+	    Long userId = user.getRid();
 
 	    List<UserDeGoods> userDeGoodsList = afDeGoodsService.getUserDeGoodsList(userId);
 	    data.put("goodsList", userDeGoodsList);
