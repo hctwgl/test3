@@ -42,8 +42,13 @@
 
 //全民倒计时
 $(function(){
+    //活动开始时间戳
+    let startTime=new Date("oct 25,2017 20:00:00");
+    let startStamp=startTime.valueOf();
+    console.log(startStamp);
     // 结束时间的时间戳
-    let endDate = new Date("oct 29,2017 23:59:59");
+    // let endDate = new Date("oct 29,2017 23:59:59");
+    let endDate = new Date("oct 29,2017 21:58:59");
     let endStamp = endDate.valueOf();
     // 获取当前时间的时间戳
     let now = new Date();
@@ -78,14 +83,17 @@ $(function(){
         $('.blankThree').html(minute);
         $('.blankFour').html(second);
         //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
+        if(nowTimeStamp>=startStamp){
+            $('.bargain').click(function(){
+                window.location.href = 'http://www.baidu.com';
+            })
+        }
         if(day==0&&hour==0&&minute==0&&second==0){
-            window.location.href = '/activity/barginIndex';
-            $('.countTwo').html('活动已结束');
+            $('.countTwo').html('活动已结束'); 
+            $('.bargain').unbind("click");//禁止点击事件
 
         }
         
-
-
     };
 
     function timer(intDiff){
@@ -127,7 +135,7 @@ $(function(){
         // $('.countThree').html('活动已结束');
         //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
         if(day==0&&hour==0&&minute==0&&second==0){
-            window.location.href = '';
+            window.location.href = 'https://www.baidu.com';
             $('.countThree').html('活动已结束');
         }
 
