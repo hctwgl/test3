@@ -42,6 +42,7 @@ $(document).ready(function() {
                         console.log(data);
                         if(data.success){
                             couponArr.push(data.data);
+                            $(self).html('<div style="transform: none;color:white;font-size: .16rem;position: absolute;right:-.1rem;top:0rem;">+1</div>');
                             self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain4.png)';
                             redNum+=1;
                             //中奖弹框显示
@@ -83,6 +84,7 @@ $(document).ready(function() {
             $('.redNum span:nth-child(1)').text(gameNum);
             setTimeout(gameEnd,1000)
         }else{
+            $('.redNum span:nth-child(1)').text(0);
             let str='';
             for(let i=0;i<couponArr.length;i++){
                 str+=`<div class="wardCoupon">
