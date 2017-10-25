@@ -8,20 +8,21 @@
     let fourTime=Date.parse(new Date('2017/11/12 00:00:00'));
     let fiveTime=Date.parse(new Date('2017/11/11 00:00:00'))
     let sixTime=Date.parse(new Date('2017/11/13 00:00:00'))
-    console.log(new Date(currentStarmp))
-    if(currentStarmp<oneTime){
+    let sevenTime=Date.parse(new Date('2017/11/10 00:00:00'))
+    // console.log(new Date(currentStarmp))
+    if(currentStarmp<oneTime){//11.1号之前
         addStyle(0);
     }
-    if (currentStarmp>oneTime && currentStarmp<=threeTime){ //11.1-11.11
+    if (currentStarmp>oneTime && currentStarmp<twoTime){ //11.1-11.8
         addStyle(0);
     }
-    if (currentStarmp >= twoTime && currentStarmp <= threeTime) { //11.9-11.11
+    if (currentStarmp >= twoTime && currentStarmp <=sevenTime){ //11.9-11.10
         addStyle(1);
     }
     if (currentStarmp >= fiveTime && currentStarmp<threeTime) { //11.11
         addStyle(2);
     }
-    if (currentStarmp >= sixTime) { //11.13
+    if (currentStarmp > sixTime) { //11.13
         addStyle(3);
     }
 
@@ -30,118 +31,119 @@
         $('.active').eq(i).siblings().removeClass('active01');
        /*  $('.time').eq(i).find('span').addClass('active02');
         $('.time').eq(i).siblings().find('span').removeClass('active02'); */
-        $('.tangle').eq(i).addClass('tangleOne')//添加三角
-        $('.tangle').eq(i).siblings().removeClass('tangleOne')//移除三角
-        $('.tangle>.tangleTwo').eq(i).hide();//隐藏显示的三角图片
+        $('.active').eq(i).find('.tangle').addClass('tangleOne')//添加三角
+        $('.active').eq(i).find('.tangle').siblings().removeClass('tangleOne')//移除三角
+        $('.active').find('.tangleTwo').eq(i).hide();//隐藏显示的三角图片
+        $('.active').find('.tangleTwo').eq(i).siblings().show();
         
     }
 
 
 
 //全民倒计时
-$(function(){
-    // 结束时间的时间戳
-    let endDate = new Date("oct 29,2017 23:59:59");
-    let endStamp = endDate.valueOf();
-    // 获取当前时间的时间戳
-    let now = new Date();
-    let nowTimeStamp = now.valueOf();
-    // 相差的时间戳
-    let differStamp = endStamp - nowTimeStamp;
-    let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
+// $(function(){
+//     // 结束时间的时间戳
+//     let endDate = new Date("oct 29,2017 23:59:59");
+//     let endStamp = endDate.valueOf();
+//     // 获取当前时间的时间戳
+//     let now = new Date();
+//     let nowTimeStamp = now.valueOf();
+//     // 相差的时间戳
+//     let differStamp = endStamp - nowTimeStamp;
+//     let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
 
-    function showTimerS( diff ){
-        var day=0,
-        hour=0,
-        minute=0,
-        second=0;//时间默认值
+//     function showTimerS( diff ){
+//         var day=0,
+//         hour=0,
+//         minute=0,
+//         second=0;//时间默认值
 
-        if(diff > 0){
-        day = Math.floor(diff / (60 * 60 * 24));
-        hour = Math.floor(diff / (60 * 60)) - (day * 24);
-        minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
-        second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
-        }
-       /*  if (minute <= 9) minute = '0' + minute;
-        if (second <= 9) second = '0' + second;
-        $('#day_show').html(day+"天");
-        $('#hour_show').html('<s id="h"></s>'+hour+'时');
-        $('#minute_show').html('<s></s>'+minute+'分');
-        $('#second_show').html('<s></s>'+second+'秒'); */
+//         if(diff > 0){
+//         day = Math.floor(diff / (60 * 60 * 24));
+//         hour = Math.floor(diff / (60 * 60)) - (day * 24);
+//         minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
+//         second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+//         }
+//        /*  if (minute <= 9) minute = '0' + minute;
+//         if (second <= 9) second = '0' + second;
+//         $('#day_show').html(day+"天");
+//         $('#hour_show').html('<s id="h"></s>'+hour+'时');
+//         $('#minute_show').html('<s></s>'+minute+'分');
+//         $('#second_show').html('<s></s>'+second+'秒'); */
 
-        $('.countTwo').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//全民倒计时
-        //顶部倒计时
-        $('.blankOne').html(day);
-        $('.blankTwo').html(hour);
-        $('.blankThree').html(minute);
-        $('.blankFour').html(second);
-        //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
-        if(day==0&&hour==0&&minute==0&&second==0){
-            window.location.href = '/activity/barginIndex';
-            $('.countTwo').html('活动已结束');
+//         $('.countTwo').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//全民倒计时
+//         //顶部倒计时
+//         $('.blankOne').html(day);
+//         $('.blankTwo').html(hour);
+//         $('.blankThree').html(minute);
+//         $('.blankFour').html(second);
+//         //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
+//         if(day==0&&hour==0&&minute==0&&second==0){
+//             window.location.href = '/activity/barginIndex';
+//             $('.countTwo').html('活动已结束');
 
-        }
+//         }
         
 
 
-    };
+//     };
 
-    function timer(intDiff){
-        showTimerS(intDiff);
-        intDiff--;
-        window.setInterval(function(){
-            showTimerS(intDiff);
-            intDiff--;
-        }, 1000);
-    };
-    timer(intDiff);
+//     function timer(intDiff){
+//         showTimerS(intDiff);
+//         intDiff--;
+//         window.setInterval(function(){
+//             showTimerS(intDiff);
+//             intDiff--;
+//         }, 1000);
+//     };
+//     timer(intDiff);
 
 
-    //红包雨倒计时
-    // 结束时间的时间戳
-    let overDate = new Date("oct 28,2017 23:59:59");
-    let endOver = overDate.valueOf();
-    // 获取当前时间的时间戳
-    let nowTime = new Date();
-    let nowTimeS = nowTime.valueOf();
-    // 相差的时间戳
-    let differS = endOver - nowTimeS;
-    let diffValue = parseInt(differS/1000);//倒计时总秒数量
+//     //红包雨倒计时
+//     // 结束时间的时间戳
+//     let overDate = new Date("oct 28,2017 23:59:59");
+//     let endOver = overDate.valueOf();
+//     // 获取当前时间的时间戳
+//     let nowTime = new Date();
+//     let nowTimeS = nowTime.valueOf();
+//     // 相差的时间戳
+//     let differS = endOver - nowTimeS;
+//     let diffValue = parseInt(differS/1000);//倒计时总秒数量
 
-    function showTime( ctime ){
-        var day=0,
-        hour=0,
-        minute=0,
-        second=0;//时间默认值
+//     function showTime( ctime ){
+//         var day=0,
+//         hour=0,
+//         minute=0,
+//         second=0;//时间默认值
 
-        if(ctime > 0){
-        day = Math.floor(ctime / (60 * 60 * 24));
-        hour = Math.floor(ctime / (60 * 60)) - (day * 24);
-        minute = Math.floor(ctime / 60) - (day * 24 * 60) - (hour * 60);
-        second = Math.floor(ctime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
-        }
+//         if(ctime > 0){
+//         day = Math.floor(ctime / (60 * 60 * 24));
+//         hour = Math.floor(ctime / (60 * 60)) - (day * 24);
+//         minute = Math.floor(ctime / 60) - (day * 24 * 60) - (hour * 60);
+//         second = Math.floor(ctime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+//         }
 
-        $('.countThree').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//红包雨
-        // $('.countThree').html('活动已结束');
-        //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
-        if(day==0&&hour==0&&minute==0&&second==0){
-            window.location.href = '';
-            $('.countThree').html('活动已结束');
-        }
+//         $('.countThree').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//红包雨
+//         // $('.countThree').html('活动已结束');
+//         //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
+//         if(day==0&&hour==0&&minute==0&&second==0){
+//             window.location.href = '';
+//             $('.countThree').html('活动已结束');
+//         }
 
-    };
+//     };
 
-    function timeS(diffValue){
-        showTime(diffValue);
-        diffValue--;
-        window.setInterval(function(){
-            showTime(diffValue);
-            diffValue--;
-        }, 1000);
-    };
-    timeS(diffValue);
+//     function timeS(diffValue){
+//         showTime(diffValue);
+//         diffValue--;
+//         window.setInterval(function(){
+//             showTime(diffValue);
+//             diffValue--;
+//         }, 1000);
+//     };
+//     timeS(diffValue);
 
-});
+// });
 
 
 

@@ -56,7 +56,7 @@
                 <span class="calender-word">活动日历</span>
             </p>
             <div class="processBar">
-                <span class="dateOne active active01">11.1-11.11<span class="tangle tangleOne"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
+                <span class="dateOne active active01">11.1-11.11<span class="tangle"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
                 <span class="dateTwo active">11.9-11.11<span class="tangle"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
                 <span class="dateThree active">11.11狂欢盛<span class="tangle"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
                 <span class="dateFour active">11.13<span class="tangle"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
