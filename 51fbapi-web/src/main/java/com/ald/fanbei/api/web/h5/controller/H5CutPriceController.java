@@ -72,7 +72,6 @@ public class H5CutPriceController extends H5Controller {
 
 	/**
 	 * 
-<<<<<<< HEAD
 	 * @Title: goodsInfo 
 	 * @Description: 获取商品砍价详情
 	 * @param requst 
@@ -188,13 +187,8 @@ public class H5CutPriceController extends H5Controller {
 	 * @Description: 砍价接口 
 	 * @param requst 
 	 * @param response 
-	 * @return
-	 *         String 返回类型
+	 * @return String 返回类型
 	 * @throws
-=======
-	 * @Title: cutPrice @Description: 砍价接口 @param requst @param response @return
-	 * String 返回类型 @throws
->>>>>>> b262aa38d1b59637d7406d06f00bae7c1f0ca348
 	 */
 	// TODO: add transaction
 	@RequestMapping(value = "/cutPrice", method = RequestMethod.POST)
