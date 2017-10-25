@@ -141,6 +141,9 @@
 			<if test="basicStatus != null">
 				,basic_status=#{basicStatus}
 			</if>
+			<if test="gmtBasic != null">
+				,gmt_basic=#{gmtBasic}
+			</if>
 			
 		WHERE user_id = #{userId}
 	</update>
