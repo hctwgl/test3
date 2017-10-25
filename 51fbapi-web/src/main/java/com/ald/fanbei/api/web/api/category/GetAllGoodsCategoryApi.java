@@ -57,6 +57,7 @@ public class GetAllGoodsCategoryApi implements ApiHandle {
                 if(null != secondList && secondList.size()>0){
                     secondLevelList = new ArrayList<Object>();
                     for(int i=0;i<secondList.size();i++){
+                        thirdLevelList = new ArrayList<Object>();
                         Map<String,Object> objSecond = new HashMap<String,Object>();
                         secondRid = secondList.get(i).getId();
                         secondName = secondList.get(i).getName();
