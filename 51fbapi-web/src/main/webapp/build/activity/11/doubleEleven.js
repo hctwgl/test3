@@ -9,7 +9,9 @@
     let fiveTime=Date.parse(new Date('2017/11/11 00:00:00'))
     let sixTime=Date.parse(new Date('2017/11/13 10:00:00'))
     console.log(new Date(currentStarmp))
-
+    if(currentStarmp<oneTime){
+        addStyle(0);
+    }
     if (currentStarmp>oneTime && currentStarmp<=threeTime){ //11.1-11.11
         addStyle(0);
     }
@@ -30,6 +32,7 @@
         $('.time').eq(i).siblings().find('span').removeClass('active02'); */
         $('.tangle').eq(i).addClass('tangleOne')//添加三角
         $('.tangle').eq(i).siblings().removeClass('tangleOne')//移除三角
+        $('.tangle>.tangleTwo').eq(i).hide();//隐藏显示的三角图片
         
     }
 

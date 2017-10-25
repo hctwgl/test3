@@ -20,6 +20,7 @@
     }
     .swiper-slide{
         width: 7.5rem !important;
+        margin-left: 0.02rem;
     }
     .swiper-button-next{
         color:#8e8e8e !important;
@@ -55,10 +56,10 @@
                 <span class="calender-word">活动日历</span>
             </p>
             <div class="processBar">
-                <span class="dateOne active active01">11.1-11.11<span class="tangle tangleOne"></span></span>
-                <span class="dateTwo active">11.9-11.11<span class="tangle"></span></span>
-                <span class="dateThree active">11.11狂欢盛<span class="tangle"></span></span>
-                <span class="dateFour active">11.13<span class="tangle"></span></span>
+                <span class="dateOne active active01">11.1-11.11<span class="tangle tangleOne"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
+                <span class="dateTwo active">11.9-11.11<span class="tangle"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
+                <span class="dateThree active">11.11狂欢盛<span class="tangle"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
+                <span class="dateFour active">11.13<span class="tangle"><img class="tangleTwo" src="$src/tangle.png" alt=""></span></span>
                 <img class="line" src="$src/meeting_14.png" alt="">
                 <span class="wordOne">全民砍价</span>
                 <span class="wordTwo">千万红包雨</span>
