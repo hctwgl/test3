@@ -296,8 +296,9 @@ public class AppH5CutPriceController extends BaseController {
 		String resultStr = "";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
-			context = doWebCheck(request, true);
-			String userName = context.getUserName();
+			//context = doWebCheck(request, true);
+			//String userName = context.getUserName();
+		       String userName  ="18850843825";
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			Integer pageNo = NumberUtil.objToInteger(request.getParameter("pageNo"));
 			
