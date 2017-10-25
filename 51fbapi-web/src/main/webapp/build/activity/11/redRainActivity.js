@@ -26,14 +26,14 @@ $(document).ready(function() {
             "-webkit-transform": "rotate(" + rot + ")",/* Safari 和 Chrome */
             "-o-transform": "rotate(" + rot + ")" /* Opera */
         });
-        $(".li" + num).animate({'top':$(window).height()+20},5000,function(){
+        $(".li" + num).animate({'top':$(window).height()+20},4000,function(){
             //删掉已经显示的红包
             this.remove()
         });
         //点击红包的时候弹出模态层
-        $(".li" + num).one('click',function(){
+        $(".li" + num).one('touchstart',function(){
             let self=this;
-            if(parseInt(Math.random() * 10)>5&&couponArr.length<3){   //概率50%并且总获奖数小于3
+            if(parseInt(Math.random() * 100)>80&&couponArr.length<3){   //概率50%并且总获奖数小于3
                 $.ajax({
                     url:'/fanbei-web/redRain/applyHit',
                     type:'post',
@@ -51,13 +51,16 @@ $(document).ready(function() {
                         }else{
                             self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
                         }
+                    },
+                    error:function () {
+                        self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
                     }
                 });
             }else{
                 self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
             }
         });
-        setTimeout(add,400)
+        setTimeout(add,300)
     };
 
     //倒数计时
@@ -90,11 +93,11 @@ $(document).ready(function() {
         }
     };
 //开始倒计时
-    let numz = 4;
+    let numz = 6;
     let gameNum=21;
     backward();
 //开始掉红包
     let num = 0;
     let redNum=0;
-    setTimeout(add,3000);
+    setTimeout(add,5000);
 });
