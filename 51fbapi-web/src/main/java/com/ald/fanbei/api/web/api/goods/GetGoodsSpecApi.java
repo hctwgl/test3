@@ -122,7 +122,6 @@ public class GetGoodsSpecApi implements ApiHandle {
 		data.put("goodsId", goodsId);
 		data.put("priceData", priceData);
 		resp.setResponseData(data);
-		logger.info("+++++++++4++++++"+JSON.toJSONString(resp));
 		return resp;
 	}
 
