@@ -257,10 +257,17 @@ public class AppH5CutPriceController extends BaseController {
 			afDeUserGoodsDo.setGoodspriceid(goodsPriceId);
 			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getUserGoodsInfo(afDeUserGoodsDo);
 			logger.info("afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
-			//结束时间
+			
 			if(afDeUserGoodsInfoDto != null){
-			    long endTime = afDeGoodsService.getActivityEndTime();
-			    afDeUserGoodsInfoDto.setEndTime(endTime);
+        			 //结束时间
+        			long endTime = afDeGoodsService.getActivityEndTime();
+        			afDeUserGoodsInfoDto.setEndTime(endTime);
+        			//参与人数
+        			long totalCount = afDeGoodsService.getActivityTotalCount();
+        			afDeUserGoodsInfoDto.setTotalCount(totalCount);
+        			logger.info("totalCount = {}",totalCount);
+			}else{
+			    return H5CommonResponse.getNewInstance(false, "未查询到商品信息",null,"").toString();
 			}
 			//转成vo?
 			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();
@@ -296,9 +303,8 @@ public class AppH5CutPriceController extends BaseController {
 		String resultStr = "";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
-			//context = doWebCheck(request, true);
-			//String userName = context.getUserName();
-		       String userName  ="18850843825";
+			context = doWebCheck(request, true);
+			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			Integer pageNo = NumberUtil.objToInteger(request.getParameter("pageNo"));
 			
@@ -382,16 +388,21 @@ public class AppH5CutPriceController extends BaseController {
 			
 			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeGoodsService.getGoodsInfo(afDeGoodsDo);
 			logger.info("afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
-			//结束时间
-			long endTime = afDeGoodsService.getActivityEndTime();
-			//参与人数
-			long totalCount = afDeGoodsService.getActivityTotalCount();
-			logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
+			
 			//转vo
-			vo.setName(afDeUserGoodsInfoDto.getName());
-			vo.setImage(afDeUserGoodsInfoDto.getImage());
-			vo.setEndTime(endTime);
-			vo.setTotalCount(totalCount);
+			if(afDeUserGoodsInfoDto!=null){
+			        //结束时间
+				long endTime = afDeGoodsService.getActivityEndTime();
+				//参与人数
+				long totalCount = afDeGoodsService.getActivityTotalCount();
+				logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
+        			vo.setName(afDeUserGoodsInfoDto.getName());
+        			vo.setImage(afDeUserGoodsInfoDto.getImage());
+        			vo.setEndTime(endTime);
+        			vo.setTotalCount(totalCount);
+			}else{
+			    return H5CommonResponse.getNewInstance(false, "未查询到砍价商品榜单信息",null,"").toString();
+			}
 			resultStr = H5CommonResponse.getNewInstance(true, "获取砍价商品榜单信息成功",null,vo).toString();
 		
 		} catch (Exception e) {
