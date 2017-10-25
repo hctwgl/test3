@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -263,26 +264,26 @@ public class H5CutPriceController extends H5Controller {
 								userCutInfoDo.setUsergoodsid(usergoodsResult.getRid());
 								AfDeUserCutInfoDo userCutInfoDoResult = afDeUserCutInfoService
 										.getByCommonCondition(userCutInfoDo);
-								if (null == userCutInfoDoResult) {// already helped to
+								if (null != userCutInfoDoResult) {// already helped to
 																	// cut
 									data.put("code", 2);// already been bought
 									resultStr = H5CommonResponse.getNewInstance(false, "重复砍价", "", data).toString();
-								} else {// this wechat user could help this user to cut
-										// this goods
-										// to see if this user has already put this
-										// goods to the lowest price.
-									AfGoodsPriceDo goodsPriceResult = afGoodsPriceService.getById(usergoodsResult.getRid());
+								} else {
+									
+										// to see if this user has already put this goods to the lowest price.
+									AfGoodsPriceDo goodsPriceResult = afGoodsPriceService.getById(usergoodsResult.getGoodspriceid());
 									AfDeGoodsDo deGoodsDo = new AfDeGoodsDo();
 									deGoodsDo.setGoodspriceid(goodsPriceId);
 									AfDeGoodsDo deGoodsDoResult = afDeGoodsService.getByCommonCondition(deGoodsDo);
 									if (null != goodsPriceResult && deGoodsDoResult != null) {
 										BigDecimal originalPrice = goodsPriceResult.getActualAmount();
 										BigDecimal cutPrice = usergoodsResult.getCutprice();
+										cutPrice = cutPrice.setScale(2, RoundingMode.HALF_EVEN);
+										
 										BigDecimal lowestPrice = deGoodsDoResult.getLowestprice();
-										if (lowestPrice.equals(originalPrice.subtract(cutPrice))) { // already
-																									// the
-																									// lowest
-																									// price
+										// already the lowest price
+										if (lowestPrice.compareTo(originalPrice.subtract(cutPrice)) >= 0) { 
+																								
 											// update the cutCount Field and insert one
 											// record for table cutInfo
 											// TODO:add lock :Lock the cutCount Field
@@ -310,30 +311,34 @@ public class H5CutPriceController extends H5Controller {
 												// calculate the cutPrice for current
 											int cutCount = usergoodsResult.getCutcount() + 1;
 											BigDecimal cutPricee = cutPrice(goodsPriceId, cutCount);
+											cutPricee = cutPricee.setScale(2, RoundingMode.HALF_EVEN);
 											
 											AfDeUserCutInfoDo insertDo = new AfDeUserCutInfoDo();
-											insertDo.setCutprice(BigDecimal.ZERO);
+											insertDo.setCutprice(cutPricee);
 											insertDo.setGmtCreate(new Date());
 											insertDo.setGmtModified(new Date());
 											insertDo.setHeadimgurl(headImagUrl);
 											insertDo.setNickname(nickName);
 											insertDo.setOpenid(openId);
-											insertDo.setRemainprice(cutPricee);
+											insertDo.setRemainprice(originalPrice.subtract(usergoodsResult.getCutprice()).subtract(cutPricee));
 											insertDo.setUsergoodsid(usergoodsResult.getRid());
-											afDeUserCutInfoService.saveRecord(insertDo);
+											
 											
 											int cutCountt = usergoodsResult.getCutcount() + 1;
 											usergoodsResult.setCutcount(cutCountt);
-											usergoodsResult.setCutprice(cutPricee);
+											usergoodsResult.setCutprice(cutPricee.add(usergoodsResult.getCutprice()));
 											usergoodsResult.setGmtModified(new Date());
 											
 											//if after cutPrice is the lowest price
 											if (lowestPrice.compareTo(originalPrice.subtract(cutPricee)) == 0) {
 												usergoodsResult.setGmtCompletetime(new Date());
 												usergoodsResult.setCompletecount(cutCountt);
+												insertDo.setRemainprice(lowestPrice);
 											}
-											
+											afDeUserCutInfoService.saveRecord(insertDo);
 											afDeUserGoodsService.updateById(usergoodsResult);
+											data.put("cutPrice", cutPricee);
+											resultStr = H5CommonResponse.getNewInstance(true, "砍价成功", "", data).toString();
 										}
 									}
 								}
@@ -441,12 +446,10 @@ public class H5CutPriceController extends H5Controller {
 		BigDecimal result = BigDecimal.ZERO;
         double max = low.doubleValue();
         double min = high.doubleValue();
-        for (int i = 0; i < 10; i++) {  
-            BigDecimal db = new BigDecimal(Math.random() * (max - min) + min);  
-            System.out.println(db.setScale(4, BigDecimal.ROUND_HALF_UP) 
-                    .toString());  
-        }  
-        return result;
+       
+       result = new BigDecimal(Math.random() * (max - min) + min);  
+       result.setScale(2, RoundingMode.HALF_EVEN);
+       return result;
     }  
 
 	@Override
