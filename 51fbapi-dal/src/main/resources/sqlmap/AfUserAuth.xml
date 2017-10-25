@@ -18,7 +18,7 @@
 	
 	<update id="updateUserAuthMobileStatusWait" parameterType="AfUserAuthDo" >
 		UPDATE af_user_auth SET gmt_modified = NOW(),gmt_mobile = NOW()
-    			,mobile_status = #{mobileStatus}
+    			,mobile_status = #{mobileStatus},gmt_basic = NOW()
 		WHERE user_id = #{userId} and (gmt_mobile is null  or  <![CDATA[ gmt_mobile <= #{gmtMobile}  ]]>) 
 	</update>
 	
