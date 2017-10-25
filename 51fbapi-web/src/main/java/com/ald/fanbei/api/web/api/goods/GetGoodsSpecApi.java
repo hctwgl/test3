@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.goods;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,16 +78,15 @@ public class GetGoodsSpecApi implements ApiHandle {
 		priceData = convertListForPrice(priceDos);
 				
 		//双十一砍价活动增加逻辑
-		for (AfGoodsPriceDo afGoodsPriceDo : priceDos) {
-		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(context.getUserId(), afGoodsPriceDo.getRid());
+		for ( AfGoodsPriceVo afGoodsPriceDo : priceData) {
+		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(context.getUserId(), afGoodsPriceDo.getPriceId());
 		    if(afDeUserGoodsDo !=null)
 		    {
 			//更新商品价格为砍价后价格
-			afGoodsPriceDo.setActualAmount(afGoodsPriceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice()));
-			logger.info("+++++++++1++++++"+afGoodsPriceDo.toString());
+			BigDecimal actualAmount = afGoodsPriceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice());
+			afGoodsPriceDo.setActualAmount(actualAmount);
 		    }
 		}
-		logger.info("+++++++++2++++++"+JSON.toJSONString(priceDos));
 
 		propertyDo.setGoodsId(goodsId);
 		List<AfGoodsPropertyDo> propertyDos = afGoodsPropertyService.getListByCommonCondition(propertyDo);
@@ -117,7 +117,6 @@ public class GetGoodsSpecApi implements ApiHandle {
 
 		}
 
-		logger.info("+++++++++3++++++"+JSON.toJSONString(priceDos));
 		data.put("propertyData", propertyData);
 		data.put("goodsId", goodsId);
 		data.put("priceData", priceData);
