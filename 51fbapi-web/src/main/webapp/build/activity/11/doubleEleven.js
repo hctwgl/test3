@@ -7,7 +7,7 @@
     let threeTime = Date.parse(new Date('2017/11/12 00:00:00'));
     let fourTime=Date.parse(new Date('2017/11/12 00:00:00'));
     let fiveTime=Date.parse(new Date('2017/11/11 00:00:00'))
-    let sixTime=Date.parse(new Date('2017/11/13 10:00:00'))
+    let sixTime=Date.parse(new Date('2017/11/13 00:00:00'))
     console.log(new Date(currentStarmp))
     if(currentStarmp<oneTime){
         addStyle(0);
@@ -18,11 +18,11 @@
     if (currentStarmp >= twoTime && currentStarmp <= threeTime) { //11.9-11.11
         addStyle(1);
     }
-    if (currentStarmp == fiveTime) { //11.11
+    if (currentStarmp >= fiveTime && currentStarmp<threeTime) { //11.11
         addStyle(2);
     }
     if (currentStarmp >= sixTime) { //11.13
-        addStyle(2);
+        addStyle(3);
     }
 
     function addStyle(i) {
@@ -126,6 +126,7 @@ $(function(){
         //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
         if(day==0&&hour==0&&minute==0&&second==0){
             window.location.href = '';
+            $('.countThree').html('活动已结束');
         }
 
     };
