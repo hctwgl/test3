@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.biz.service.ParentService;
 import com.ald.fanbei.api.dal.domain.AfDeGoodsDo;
+import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
 import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
 
 /**
@@ -15,4 +16,7 @@ import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
  */
 public interface AfDeGoodsService extends ParentService<AfDeGoodsDo, Long> {
     List<UserDeGoods> getUserDeGoodsList(Long userId);
+    long  getActivityEndTime();
+    long  getActivityTotalCount();
+    AfDeUserGoodsInfoDto getGoodsInfo(AfDeGoodsDo afDeGoodsDo);
 }
