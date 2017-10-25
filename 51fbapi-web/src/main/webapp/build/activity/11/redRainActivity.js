@@ -3,11 +3,11 @@
  */
 let couponArr=[];
 $(document).ready(function() {
-    let win = (parseInt($(".content").css("width"))) - 60;
+    let win = (parseInt($(".content").css("width"))) - 70;
     //增加红包
     let add =()=>{
         let imgName = parseInt(Math.random() * 2 + 1),
-            Wh = parseInt(Math.random() * 70 + 35),
+            Wh = parseInt(Math.random() * 60 + 50),
             Left = parseInt(Math.random() * win),
             rot = (parseInt(Math.random() * 90 - 45)) + "deg";
         num++;
@@ -60,7 +60,9 @@ $(document).ready(function() {
                 self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
             }
         });
-        setTimeout(add,300)
+        if(gameNum>0){
+            setTimeout(add,300)
+        }
     };
 
     //倒数计时
