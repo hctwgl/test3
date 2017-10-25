@@ -12,4 +12,5 @@ import java.math.BigDecimal;
 @AFBRPCService(name = "homeBorrowService")
 public interface HomeBorrowService {
     //String addHomeBorrow(final Long orderId,final int nper, final Long userId,BigDecimal amount);
+    int addHomeBorrow(final Long orderId,final int nper);
 }

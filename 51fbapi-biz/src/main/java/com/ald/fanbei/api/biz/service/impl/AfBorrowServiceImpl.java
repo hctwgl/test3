@@ -1318,4 +1318,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		//return JSON.toJSONString(map);
 		return map;
 	}
+
+	public int addHomeBorrow(final Long orderId,final int nper){
+		return 1;
+	}
 }

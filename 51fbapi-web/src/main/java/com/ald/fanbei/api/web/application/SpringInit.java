@@ -14,9 +14,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        HomeBorrowService homeBorrowService =  (HomeBorrowService)SpringBeanContextUtil.getBean("afBorrowService");
-        FBRPCServer server = new FBRPCServer() ;
-        server.registService(homeBorrowService) ;
-        server.startServer(9303) ;
+//        HomeBorrowService homeBorrowService =  (HomeBorrowService)SpringBeanContextUtil.getBean("afBorrowService");
+//        FBRPCServer server = new FBRPCServer() ;
+//        server.registService(homeBorrowService) ;
+//        server.startServer(9303) ;
     }
 }
