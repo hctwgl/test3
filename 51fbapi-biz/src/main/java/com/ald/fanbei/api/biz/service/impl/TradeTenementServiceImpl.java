@@ -58,9 +58,9 @@ public class TradeTenementServiceImpl implements TradeTenementService {
 	}
 
 	//根据时间查询租客信息
-	public List<AfTradeTenementInfoDo> getTenementInfoDoByTime(String applyTime) {
+	public List<AfTradeTenementInfoDo> getTenementInfoDoByTime(String applyTime,Long businessId) {
 		
-		return tradeTenementDao.getTenementInfoDoByTime(applyTime);
+		return tradeTenementDao.getTenementInfoDoByTime(applyTime,businessId);
 	}
 
 	//根据商户id得到提交时间

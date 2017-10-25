@@ -39,7 +39,7 @@ public class TradeTenementApi implements ApiHandle {
         List<String> timeList = tradeTenementService.getTimeByBusinessId(businessId);
         Map<String,Object> newMap = new HashMap<String,Object>();
         for (String applyTime : timeList) {
-        	List<AfTradeTenementInfoDo> tenementInfo = tradeTenementService.getTenementInfoDoByTime(applyTime);
+        	List<AfTradeTenementInfoDo> tenementInfo = tradeTenementService.getTenementInfoDoByTime(applyTime,businessId);
         	//newMap.put("timeList", timeList);
         	newMap.put(applyTime, tenementInfo);
         	

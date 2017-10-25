@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo;
 
@@ -19,7 +21,7 @@ public interface TradeTenementService {
 	
 	Long getUserIdBymobile(String mobile);
 	
-	List<AfTradeTenementInfoDo> getTenementInfoDoByTime(String applyTime);
+	List<AfTradeTenementInfoDo> getTenementInfoDoByTime( String applyTime,Long businessId);
 	
 	List<String> getTimeByBusinessId(Long businessId);
 }

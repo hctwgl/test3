@@ -140,11 +140,11 @@
 		SELECT id FROM af_user WHERE mobile=#{mobile}
 	</select>
 	
-	<select id="getTenementInfoDoByTime" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo">
-		SELECT * FROM af_trade_tenement_info WHERE apply_time=#{applyTime}
+	<select id="getTenementInfoDoByTime"  resultType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo">
+		SELECT * FROM af_trade_tenement_info WHERE apply_time=#{applyTime} AND business_id=#{businessId}
 	</select>
 	
 	<select id="getTimeByBusinessId" parameterType="java.lang.Long" resultType="String">
-		SELECT apply_time FROM af_trade_tenement_info WHERE business_id=#{businessId} GROUP BY apply_time ORDER BY apply_time
+		SELECT apply_time FROM af_trade_tenement_info WHERE business_id=#{businessId} GROUP BY apply_time 
 	</select>
 </mapper>
