@@ -74,7 +74,7 @@ public class GetGoodsListApi implements ApiHandle {
 //            if(volume>10000){
 //                DecimalFormat df = new DecimalFormat("0.00");
 //                BigDecimal bigDecimal = new BigDecimal(df.format(volume/10000));
-//                bigDecimal.setScale(3,bigDecimal.ROUND_HALF_UP);
+//                bigDecimal.setScale(3,bigDecimal.ROUND_HALF_UP).doubleValue();
 //                goodsInfo.put("volume",bigDecimal.toString()+"万");
 //            }else{
                 goodsInfo.put("volume",goodsDo.getVolume());
