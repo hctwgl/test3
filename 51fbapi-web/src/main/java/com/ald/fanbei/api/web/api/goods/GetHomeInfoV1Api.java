@@ -429,7 +429,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 
 	private Map<String,Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> bannerResclist) {
 		Map<String,Object> navigationInfo = new HashMap<String,Object> ();
-		
+		AfResourceDo afResourceDoNine = new AfResourceDo();
 		List<Object> navigationList = new ArrayList<Object>();
 		
 		Map<String,Object> backgroundInfo = new HashMap<String,Object> ();
@@ -466,9 +466,18 @@ public class GetHomeInfoV1Api implements ApiHandle {
 			}else{
 				data.put("type", afResourceDo.getValue1());
 			}
-			data.put("content", afResourceDo.getValue2());
-			data.put("sort", afResourceDo.getSort());
-			data.put("color",afResourceDo.getValue3());
+			//对首页商品分类的版本兼容修改
+			if(contextApp.getAppVersion() <= 393 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_CATEGORY.getCode())){
+				data.put("type", "NAVIGATION_NINE");
+				afResourceDoNine = afResourceService.getConfigByTypesAndSecType(AfResourceType.HomeNavigation.getCode(),"NAVIGATION_NINE");
+				data.put("content", afResourceDoNine.getValue2());
+				data.put("sort", afResourceDoNine.getSort());
+				data.put("color",afResourceDoNine.getValue3());
+			}else{
+				data.put("content", afResourceDo.getValue2());
+				data.put("sort", afResourceDo.getSort());
+				data.put("color",afResourceDo.getValue3());
+			}
 			navigationList.add(data);
 			
 		}

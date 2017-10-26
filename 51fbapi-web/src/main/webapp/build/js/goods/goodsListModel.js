@@ -253,9 +253,12 @@ $(function(){
     });
 });
 //点击优惠券
-function couponClick(rid,a){
+function couponClick(rid,a,userAlready,limitCount){
     let couponId=rid;
     let index=a.index();
+    let userHas=userAlready;
+    let limitHas=limitCount;
+    alert(limitHas)
     $.ajax({
         url: "/fanbei-web/pickCoupon",
         type: "POST",
@@ -264,24 +267,24 @@ function couponClick(rid,a){
             couponId: couponId
         },
         success: function (returnData) {
+            console.log(returnData)
             if (returnData.success) {
                 requestMsg("优惠劵领取成功");
+                if(userHas == limitHas-1)
                 $('.coupon').eq(index).addClass('couponclose');
-            } else {
-                var status = returnData.data["status"];
-                if (status == "USER_NOT_EXIST") { // 用户不存在
-                    window.location.href = returnData.url;
-                }
-                if (status == "OVER") { // 优惠券个数超过最大领券个数
-                    //requestMsg(returnData.msg);
-                    requestMsg("您已经领取，快去使用吧");
-                }
-                if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                    requestMsg(returnData.msg);
-                }
-                if (status == "MORE_THAN") { // 优惠券已领取完
-                    requestMsg(returnData.msg);
-                }
+            }else if(userHas == limitHas) { // 优惠券个数超过最大领券个数
+                     requestMsg('优惠券个数超过最大领券个数');
+            }else{
+                    var status = returnData.data["status"];
+                    if (status == "USER_NOT_EXIST") { // 用户不存在
+                        window.location.href = returnData.url;
+                    }
+                    if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                        requestMsg(returnData.msg);
+                    }
+                    if (status == "MORE_THAN") { // 优惠券已领取完
+                        requestMsg(returnData.msg);
+                    }
             }
         },
         error: function () {
@@ -289,3 +292,9 @@ function couponClick(rid,a){
         }
     })
 }
+
+//优惠券
+$(function(){
+    $('.couponWrap').width(($('.coupon').width()+$('.kong').width())*($('.coupon').length));
+    $('.kong').eq($('.coupon').length-1).hide();
+})
