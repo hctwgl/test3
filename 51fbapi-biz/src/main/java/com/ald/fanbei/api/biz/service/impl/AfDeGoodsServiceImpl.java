@@ -55,7 +55,7 @@ public class AfDeGoodsServiceImpl extends ParentServiceImpl<AfDeGoodsDo, Long> i
 			  //转时间戳
 		    SimpleDateFormat  sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		    try {
-			endTime = sdf.parse(value).getTime()/1000;
+			endTime = sdf.parse(value).getTime();
 		    } catch (ParseException e) {
 			e.printStackTrace();
 			logger.info( "decutprice endTime:",endTime);

@@ -221,14 +221,14 @@ public class AppH5CutPriceController extends BaseController {
    		        //结束时间
    		        long endTime = afDeGoodsService.getActivityEndTime();
    		        //当前时间
-   		        long currentTime = System.currentTimeMillis()/1000;
+   		        long currentTime = System.currentTimeMillis();
    		        map.put("endTime", endTime);   	
    		        map.put("currentTime", currentTime);   	
-   			resultStr = H5CommonResponse.getNewInstance(true, "获取活动结束时间成功",null,map).toString();
+   			resultStr = H5CommonResponse.getNewInstance(true, "获取活动时间成功",null,map).toString();
  
    		} catch (Exception e) {
    			logger.error("/activity/de/endtime" + "error = {}", e.getStackTrace());
-   			resultStr = H5CommonResponse.getNewInstance(false, "获取活动结束时间失败").toString();
+   			resultStr = H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
    		}
    		return resultStr;
    	}
