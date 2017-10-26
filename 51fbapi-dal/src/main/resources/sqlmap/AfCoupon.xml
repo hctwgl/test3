@@ -132,5 +132,11 @@
 			activity_type = #{activityType}
 		AND
 			type = 'FULLVOUCHER'
+		AND
+			now() >= gmt_start
+		AND
+			gmt_end >= now()
+		AND 
+			status = 'O'
 	</select>
 </mapper>

@@ -1,19 +1,27 @@
 package com.ald.fanbei.web.test.api.user;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.web.test.common.BaseTest;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 public class RedRainTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://192.168.106.162:8180";
-	String userName = "13370127054";
+	String userName = "13656640521";
 	
 	/**
 	 * 自动注入登陆令牌
@@ -23,13 +31,15 @@ public class RedRainTest extends BaseTest{
 		super.init(userName);
 	}
 	
-//	@Test
+	@Test
 	public void  testGetRedRainRoundsApi() {
-		String url = urlBase + "/resource/getRedRainRounds";
-		testApi(url, null, userName, true);
+		String url = urlBase + "/pushClickAmout/clickPushAmountNum";
+		Map<String,String> params = new HashMap<>();
+		params.put("pushId", "82");
+		testApi(url, params, userName);
 	}
 	
-	@Test
+//	@Test
 	public void  testApplyHitH5() {
 		String url = urlBase + "/fanbei-web/redRain/applyHit";
 		Map<String,String> params = new HashMap<>();
@@ -41,6 +51,34 @@ public class RedRainTest extends BaseTest{
 		String url = urlBase + "/fanbei-web/redRain/fetchRounds";
 		Map<String,String> params = new HashMap<>();
  		testH5(url, params, userName);
+	}
+	
+//	@Test
+	public void performanceTest() {
+		ExecutorService executer = Executors.newFixedThreadPool(500);
+		
+		try {
+			String s = FileUtils.readFileToString(new File(this.getClass().getClassLoader().getResource("userNames.json").toURI()));
+			final JSONArray arr = JSON.parseArray(s);
+			int size = arr.size();
+			final String url = urlBase + "/fanbei-web/redRain/applyHit";
+			
+			for(int i = 0; i<size; i++) {
+				final String userName = arr.getJSONObject(i).getString("user_name");
+				init(userName);
+				
+				executer.execute(new Runnable() {
+					public void run() {
+						Map<String,String> params = new HashMap<>();
+				 		testH5(url, params, userName);
+					}
+				});
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

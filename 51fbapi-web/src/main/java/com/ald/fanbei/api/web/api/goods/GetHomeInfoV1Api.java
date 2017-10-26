@@ -429,7 +429,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 
 	private Map<String,Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> bannerResclist) {
 		Map<String,Object> navigationInfo = new HashMap<String,Object> ();
-		
+		AfResourceDo afResourceDoNine = new AfResourceDo();
 		List<Object> navigationList = new ArrayList<Object>();
 		
 		Map<String,Object> backgroundInfo = new HashMap<String,Object> ();
@@ -463,12 +463,25 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
 					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
 				}
+				//对首页商品分类的版本兼容修改
+				if(contextApp.getAppVersion() <= 393 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_CATEGORY.getCode())){
+					data.put("type", "NAVIGATION_NINE");
+					afResourceDoNine = afResourceService.getConfigByTypesAndSecType(AfResourceType.HomeNavigation.getCode(),"NAVIGATION_NINE");
+				}
 			}else{
 				data.put("type", afResourceDo.getValue1());
 			}
-			data.put("content", afResourceDo.getValue2());
-			data.put("sort", afResourceDo.getSort());
-			data.put("color",afResourceDo.getValue3());
+			if(contextApp.getAppVersion() <= 393 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_CATEGORY.getCode())){
+				data.put("type", "NAVIGATION_NINE");
+				afResourceDoNine = afResourceService.getConfigByTypesAndSecType(AfResourceType.HomeNavigation.getCode(),"NAVIGATION_NINE");
+				data.put("content", afResourceDoNine.getValue2());
+				data.put("sort", afResourceDoNine.getSort());
+				data.put("color",afResourceDoNine.getValue3());
+			}else{
+				data.put("content", afResourceDo.getValue2());
+				data.put("sort", afResourceDo.getSort());
+				data.put("color",afResourceDo.getValue3());
+			}
 			navigationList.add(data);
 			
 		}
@@ -516,6 +529,28 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	private Map<String,Object> getManyPricutresResourceDoList(List<AfResourceDo> rescList) {
 		Map<String,Object> manyPricutres = new HashMap<String,Object>();
 		List<Map<String,Object>> manyPricutresList = new ArrayList<Map<String,Object>> ();
+		if(rescList == null){
+			return manyPricutres;
+		}
+		if(rescList.size()<3){
+			return manyPricutres;
+		}
+		if(rescList.size() >= 3 && rescList.size()<6){
+			if(rescList.size()==5){
+				rescList.remove(4);
+			}
+			if(rescList.size()==4){
+				rescList.remove(3);
+			}
+		}
+		if(rescList.size() >= 6 && rescList.size()<9){
+			if(rescList.size()==8){
+				rescList.remove(7);
+			}
+			if(rescList.size()==7){
+				rescList.remove(6);
+			}
+		}
 		for(AfResourceDo afResourceDo : rescList) {
 			Map<String, Object> data = new HashMap<String,Object> ();
 			String value3 = afResourceDo.getValue3();
