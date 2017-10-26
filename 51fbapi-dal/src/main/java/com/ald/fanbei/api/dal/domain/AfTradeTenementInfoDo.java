@@ -25,6 +25,7 @@ public class AfTradeTenementInfoDo {
 	private Integer rentStatus;//租客当前状态【0:正常,1:逾期】
 	private Long businessId;//商户id
 	private Integer isTermination;//租客是否终止
+	private String auditName;//审核人
 	
 	public String getId() {
 		return id;
@@ -141,6 +142,12 @@ public class AfTradeTenementInfoDo {
 	}
 	public void setIsTermination(Integer isTermination) {
 		this.isTermination = isTermination;
+	}
+	public String getAuditName() {
+		return auditName;
+	}
+	public void setAuditName(String auditName) {
+		this.auditName = auditName;
 	}
 	
 	

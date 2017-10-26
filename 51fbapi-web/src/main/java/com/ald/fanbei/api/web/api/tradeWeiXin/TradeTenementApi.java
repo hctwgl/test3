@@ -35,12 +35,11 @@ public class TradeTenementApi implements ApiHandle {
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
         
        
-        //List<AfTradeTenementInfoDo> list = tradeTenementService.getTenementInfoDo(businessId);
+        
         List<String> timeList = tradeTenementService.getTimeByBusinessId(businessId);
         Map<String,Object> newMap = new HashMap<String,Object>();
         for (String applyTime : timeList) {
         	List<AfTradeTenementInfoDo> tenementInfo = tradeTenementService.getTenementInfoDoByTime(applyTime,businessId);
-        	//newMap.put("timeList", timeList);
         	newMap.put(applyTime, tenementInfo);
         	
 		}

@@ -73,7 +73,6 @@ public class TradeAddTenementApi implements ApiHandle {
         afTradeTenementInfoDo.setBusinessId(businessId);
         
         AfTradeTenementInfoDo tenementInfoDo = tradeTenementService.getTenementInfoDoBymobile(mobile);
-        //Integer state = tenementInfoDo.getAuditState();//得到审核状态
         
         if(tenementInfoDo==null){
         	tradeTenementService.addTenementInfoDo(afTradeTenementInfoDo);	
