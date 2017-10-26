@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 
 public interface AfRedPacketPoolService {
@@ -11,12 +11,12 @@ public interface AfRedPacketPoolService {
 	 * 注入红包
 	 * @param 
 	 */
-	public void inject(BlockingQueue<String> packets);
+	public void inject(Collection<String> packets);
 	
 	/**
 	 * 申请一个红包
 	 */
-	public Redpacket apply();
+	public String apply();
 	
 	/**
 	 * 清空红包池

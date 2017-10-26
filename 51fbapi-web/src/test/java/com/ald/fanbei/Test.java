@@ -34,11 +34,13 @@ public class Test {
 		// password);
 		
 //		getUserAccount();
-		try{
-			genFanbeiRedpackage("/Users/suweili/Desktop/90164");
-		}catch(Exception e){
-			System.out.println(e);
-		}
+//		try{
+//			genFanbeiRedpackage("/Users/suweili/Desktop/90164");
+//		}catch(Exception e){
+//			System.out.println(e);
+//		}
+		
+		System.out.println(new Date(1508998500000L));
 		
 	}
 	
