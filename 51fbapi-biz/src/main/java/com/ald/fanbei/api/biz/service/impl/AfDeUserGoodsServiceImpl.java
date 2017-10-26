@@ -60,4 +60,10 @@ public class AfDeUserGoodsServiceImpl extends ParentServiceImpl<AfDeUserGoodsDo,
 
 	return afDeUserGoodsDao.updateIsBuyById(id, isBuy);
     }
+
+    @Override
+    public AfDeUserGoodsInfoDto getUserCutPrice(AfDeUserGoodsDo afDeUserGoodsDo) {
+	// TODO Auto-generated method stub
+	return afDeUserGoodsDao.getUserCutPrice(afDeUserGoodsDo);
+    }
 }

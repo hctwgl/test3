@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -219,7 +220,10 @@ public class AppH5CutPriceController extends BaseController {
    		    	Map<String,Object> map = new  HashMap<String,Object>();
    		        //结束时间
    		        long endTime = afDeGoodsService.getActivityEndTime();
-   		        map.put("endTime", endTime);   		        
+   		        //当前时间
+   		        long currentTime = System.currentTimeMillis()/1000;
+   		        map.put("endTime", endTime);   	
+   		        map.put("currentTime", currentTime);   	
    			resultStr = H5CommonResponse.getNewInstance(true, "获取活动结束时间成功",null,map).toString();
  
    		} catch (Exception e) {
@@ -253,11 +257,21 @@ public class AppH5CutPriceController extends BaseController {
 			Long userId = convertUserNameToUserId(userName);
 			//查用户的商品砍价详情
 			AfDeUserGoodsDo  afDeUserGoodsDo = new AfDeUserGoodsDo();
-			afDeUserGoodsDo.setUserid(userId);
+			//afDeUserGoodsDo.setUserid(userId);
 			afDeUserGoodsDo.setGoodspriceid(goodsPriceId);
 			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getUserGoodsInfo(afDeUserGoodsDo);
 			logger.info("afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
-			
+			 AfDeUserGoodsInfoDto afDeUserCutPrice = new AfDeUserGoodsInfoDto();
+			if(afDeUserGoodsInfoDto != null){
+			    afDeUserGoodsDo.setUserid(userId);
+			    afDeUserCutPrice = afDeUserGoodsService.getUserCutPrice(afDeUserGoodsDo);
+			}
+			if( afDeUserCutPrice ==null){
+			    BigDecimal cutPrice =new BigDecimal(0);
+			    afDeUserGoodsInfoDto.setCutPrice(cutPrice);
+			}else{
+			    afDeUserGoodsInfoDto.setCutPrice(afDeUserCutPrice.getCutPrice());
+			}
 			if(afDeUserGoodsInfoDto != null){
         			 //结束时间
         			long endTime = afDeGoodsService.getActivityEndTime();
@@ -266,8 +280,6 @@ public class AppH5CutPriceController extends BaseController {
         			long totalCount = afDeGoodsService.getActivityTotalCount();
         			afDeUserGoodsInfoDto.setTotalCount(totalCount);
         			logger.info("totalCount = {}",totalCount);
-			}else{
-			    return H5CommonResponse.getNewInstance(false, "未查询到商品信息",null,"").toString();
 			}
 			//转成vo?
 			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();
@@ -395,6 +407,9 @@ public class AppH5CutPriceController extends BaseController {
 				long endTime = afDeGoodsService.getActivityEndTime();
 				//参与人数
 				long totalCount = afDeGoodsService.getActivityTotalCount();
+				int iniNum = 0;
+				iniNum = afDeGoodsService.getIniNum();
+				totalCount  = totalCount+iniNum;
 				logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
         			vo.setName(afDeUserGoodsInfoDto.getName());
         			vo.setImage(afDeUserGoodsInfoDto.getImage());

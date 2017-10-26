@@ -34,4 +34,6 @@ public interface AfDeUserGoodsService extends ParentService<AfDeUserGoodsDo, Lon
     List<AfDeUserGoodsDto> getAfDeUserGoogsList(AfDeUserGoodsQuery queryGoods);
     
     AfDeUserGoodsInfoDto getUserGoodsInfo(AfDeUserGoodsDo afDeUserGoodsDo);
+
+    AfDeUserGoodsInfoDto getUserCutPrice(AfDeUserGoodsDo afDeUserGoodsDo);
 }

@@ -40,4 +40,6 @@ public interface AfDeUserGoodsDao extends BaseDao<AfDeUserGoodsDo, Long> {
      * @return
      */
     int updateIsBuyById(@Param("rid") Long id, @Param("isbuy") Integer isBuy);
+
+    AfDeUserGoodsInfoDto getUserCutPrice(AfDeUserGoodsDo afDeUserGoodsDo);
 }

@@ -19,4 +19,5 @@ public interface AfDeGoodsService extends ParentService<AfDeGoodsDo, Long> {
     long  getActivityEndTime();
     long  getActivityTotalCount();
     AfDeUserGoodsInfoDto getGoodsInfo(AfDeGoodsDo afDeGoodsDo);
+    int getIniNum();
 }

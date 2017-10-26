@@ -176,7 +176,7 @@
     <select id="getUserGoodsInfo" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
  
        SELECT 
-       		 ug.cutPrice,goods.image, goods.originalPrice,goods.goods_detail goodsDetail,goods.name
+       		 goods.image, goods.originalPrice,goods.goods_detail goodsDetail,goods.name
         FROM(
               SELECT
 				  p.id AS goodsPriceId,
@@ -202,13 +202,25 @@
 				LEFT JOIN af_user_coupon uc ON o.id = uc.coupon_id AND uc.user_id = 0 AND uc.is_delete = 0
         ) goods
         
-        RIGHT JOIN af_de_user_goods ug 
+        RIGHT JOIN af_de_goods ug 
         ON goods.goodsPriceId =  ug.goodsPriceId
         where 
-        ug.userId = #{userid}
+        ug.goodsPriceId = #{goodspriceid}
+        LIMIT 0,1
+    </select>
+    
+        <select id="getUserCutPrice" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
+ 
+       SELECT 
+       		ug.cutPrice
+       	from 
+       		af_de_user_goods ug 
+        where 
+        	ug.userId = #{userid}
         AND
         ug.goodsPriceId = #{goodspriceid}
     </select>
+    
       <select id="getAfDeUserGoogsList" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
         SELECT
 		g.cutcount,g.cutprice,u.user_name userName,u.mobile
