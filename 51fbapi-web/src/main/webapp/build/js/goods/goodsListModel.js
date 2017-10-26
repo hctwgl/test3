@@ -258,7 +258,6 @@ function couponClick(rid,a,userAlready,limitCount){
     let index=a.index();
     let userHas=userAlready;
     let limitHas=limitCount;
-    alert(limitHas)
     $.ajax({
         url: "/fanbei-web/pickCoupon",
         type: "POST",
@@ -269,15 +268,17 @@ function couponClick(rid,a,userAlready,limitCount){
         success: function (returnData) {
             console.log(returnData)
             if (returnData.success) {
-                requestMsg("优惠劵领取成功");
-                if(userHas == limitHas-1)
-                $('.coupon').eq(index).addClass('couponclose');
-            }else if(userHas == limitHas) { // 优惠券个数超过最大领券个数
-                     requestMsg('优惠券个数超过最大领券个数');
+                     requestMsg("优惠劵领取成功");
+                     if(userHas == limitHas){
+                         $('.coupon').eq(index).addClass('couponclose');
+                     }
             }else{
                     var status = returnData.data["status"];
                     if (status == "USER_NOT_EXIST") { // 用户不存在
                         window.location.href = returnData.url;
+                    }
+                    if(status == "OVER") { // 优惠券个数超过最大领券个数
+                        requestMsg(returnData.msg);
                     }
                     if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
                         requestMsg(returnData.msg);
