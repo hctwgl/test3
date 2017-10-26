@@ -45,8 +45,8 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private static final int MAX_NUM_HIT_REDPACKET = 9;
-	private static final int INTERVAL_SCAN = 60;	//扫描af_red_rain_round间隔, 300s
-	private static final int INTERVAL_CLEAR_COUNTER = 120;//清空用户红包计数器间隔, 24*60*60
+	private static final int INTERVAL_SCAN = 60;	//扫描af_red_rain_round间隔, 60s
+	private static final int INTERVAL_CLEAR_COUNTER = 24*60*60;//清空用户红包计数器间隔, 24*60*60s
 	private static final int DELAY_OF_ACTIVATE_CLEAR = 300;//激活清空红包池任务的延时, 300s
 	
 	private ScheduledExecutorService scheduler ;
@@ -165,7 +165,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			try {
 				//扫描
 				AfRedRainRoundDo paramRound = new AfRedRainRoundDo();
-				Date gmtStart = DateUtil.addMins(new Date(), 15);//TODO 12 -> 4
+				Date gmtStart = DateUtil.addMins(new Date(), 4);
 				paramRound.setGmtStart(gmtStart);
 				paramRound.setStatus(AfRedRainRoundStatusEnum.PREPARE.name());
 				final AfRedRainRoundDo round = afRedRainRoundDao.fetch(paramRound);

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfRedPacketPoolService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.alibaba.fastjson.JSON;
 
 @Service("redPacketRedisPoolService")
 public class AfRedPacketRedisPoolServiceImpl implements AfRedPacketPoolService {

@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
@@ -21,7 +20,7 @@ public class RedRainTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
+	String urlBase = "http://192.168.106.162:8180";
 	String userName = "13656640521";
 	
 	/**
