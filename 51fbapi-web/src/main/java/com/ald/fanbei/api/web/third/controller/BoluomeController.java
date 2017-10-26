@@ -80,7 +80,7 @@ public class BoluomeController extends AbstractThird {
 	    try {
 		String status = params.get(BoluomeCore.STATUS);
 		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
-		if (orderStatus != OrderStatus.DEALING) {
+		if (orderStatus != null && orderStatus != OrderStatus.DEALING) {
 		    AfOrderDo orderInfo = buildOrderInfo(params);
 		    if (orderInfo != null) {
 			if (orderInfo.getRid() == null) {
