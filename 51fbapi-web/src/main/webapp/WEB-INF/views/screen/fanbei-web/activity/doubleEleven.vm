@@ -42,13 +42,13 @@
                 <span class="vertical-line"></span>
                 <span class="cutdown-word">活动倒计时：</span>
                 <span class="countDown-one">
-                    <span class="black-blank blankOne">02</span>
+                    <span class="black-blank blankOne">00</span>
                     <span>:</span>
-                    <span class="black-blank blankTwo">02</span>
+                    <span class="black-blank blankTwo">00</span>
                     <span>:</span>
-                    <span class="black-blank blankThree">02</span>
+                    <span class="black-blank blankThree">00</span>
                     <span>:</span>
-                    <span class="black-blank blankFour">02</span>
+                    <span class="black-blank blankFour">00</span>
                 </span>
             </div>
             <p class="calender">
@@ -85,13 +85,13 @@
             </div>
             <div class="bargain">
                 <span class="makeDown">全民砍价</span>
-                <span class="leave">距离活动开始还剩</span>
-                <span class="countTwo">05天：06时：00分：00秒</span>
+                <span class="leave">距离活动结束还剩</span>
+                <span class="countTwo">00天：00时：00分：00秒</span>
             </div>
             <div class="redRain">
                 <span class="makeDown">天降红包雨</span>
                 <span class="leave">即将开始</span>
-                <span class="countThree">05天：06时：00分：00秒</span>
+                <span class="countThree">00天：00时：00分：00秒</span>
             </div>
              <!--品牌专题!-->
             <div class="doubleEleven-brand">

@@ -40,14 +40,16 @@
 
 
 
-//全民倒计时
+
 $(function(){
+
+    //全民砍价倒计时
     //活动开始时间戳
-    let startTime=new Date("oct 25,2017 20:00:00");
+    let startTime=new Date("Nov 1,2017 00:00:00");
     let startStamp=startTime.valueOf();
     // 结束时间的时间戳
-    // let endDate = new Date("oct 29,2017 23:59:59");
-    let endDate = new Date("oct 29,2017 23:09:59");
+    let endDate = new Date("Nov 11,2017 00:00:00");
+    // let endDate = new Date("oct 26,2017 00:00:00");
     let endStamp = endDate.valueOf();
     // 获取当前时间的时间戳
     let now = new Date();
@@ -92,14 +94,17 @@ $(function(){
         $('.blankTwo').html(hour);
         $('.blankThree').html(minute);
         $('.blankFour').html(second);
-        //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
+        //活动开始前显示距离活动开始的时间 点击无跳转
+        //活动中跳转红包雨活动主页 
         if(nowTimeStamp>=startStamp){
             $('.bargain').click(function(){
                 //  window.location.href = 'http://www.baidu.com';
                 window.location.href = 'barginIndex?double=barginOne';//跳转砍价连接
             })
         }
+        //活动结束后显示活动已结束  点击无跳转
         if(day==0&&hour==0&&minute==0&&second==0){
+            $('.black-blank').html('00');//顶部定时器活动结束后 显示00:00:00
             $('.countTwo').html('活动已结束'); 
             $('.bargain').unbind("click");//禁止点击事件
             clearInterval(timer12);//清除定时器
@@ -111,15 +116,32 @@ $(function(){
 
 
     //红包雨倒计时
+    //活动开始时间戳
+    let begainTime=new Date("nov 1,2017 00:00:00");
+    let begainS=begainTime.valueOf();
+    console.log(begainS);
     // 结束时间的时间戳
-    let overDate = new Date("oct 28,2017 23:59:59");
+    let overDate = new Date("nov 8,2017 00:00:00");
+    // let overDate = new Date("oct 25,2017 00:00:00");
     let endOver = overDate.valueOf();
+    console.log(endOver)
     // 获取当前时间的时间戳
     let nowTime = new Date();
     let nowTimeS = nowTime.valueOf();
     // 相差的时间戳
     let differS = endOver - nowTimeS;
     let diffValue = parseInt(differS/1000);//倒计时总秒数量
+    let timer13
+
+    function timeS(diffValue){
+        showTime(diffValue);
+        diffValue--;
+        timer13=setInterval(function(){
+            showTime(diffValue);
+            diffValue--;
+        }, 1000);
+    };
+    timeS(diffValue);
 
     function showTime( ctime ){
         var day=0,
@@ -133,27 +155,22 @@ $(function(){
         minute = Math.floor(ctime / 60) - (day * 24 * 60) - (hour * 60);
         second = Math.floor(ctime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
         }
-
         $('.countThree').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//红包雨
-        // $('.countThree').html('活动已结束');
-        //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
+        //判断活动时间 活动开始前显示倒计时时间 
+        //活动中跳转红包雨活动主页
+        if(nowTimeS<=begainS){
+            $('.redRain').click(function(){
+                 window.location.href = 'redrain?double=redOne';//跳转红包雨连接
+            })
+        }
+        // 活动结束后显示活动已结束  点击无跳转
         if(day==0&&hour==0&&minute==0&&second==0){
-            // window.location.href = 'https://www.baidu.com';
-            window.location.href = 'redrain?double=redOne';
-            $('.countThree').html('活动已结束');
+            // $('.countThree').html('活动已结束');
+            $('.redRain').unbind("click");//禁止点击事件
+            clearInterval(timer13);//清除定时器
         }
 
     };
-
-    function timeS(diffValue){
-        showTime(diffValue);
-        diffValue--;
-        window.setInterval(function(){
-            showTime(diffValue);
-            diffValue--;
-        }, 1000);
-    };
-    timeS(diffValue);
 
 });
 
@@ -195,7 +212,8 @@ let vm=new Vue({
                   {'name':'速写','img':imgrooturl +'/brand-20.png','src':''},
                   {'name':'衣香丽影','img':imgrooturl +'/brand-21.png','src':''},
                   {'name':'妖精的口袋','img':imgrooturl +'/brand-22.png','src':''},
-                  {'name':'后','img':imgrooturl +'/brand-23.png','src':''}
+                  {'name':'后','img':imgrooturl +'/brand-23.png','src':''},
+                  {'name':'鸿星尔克','img':imgrooturl +'/brand-14.png','src':''}
                 ],//返回回来的数据
         htmlStr :'',
         n : 0,
