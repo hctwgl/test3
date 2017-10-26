@@ -194,9 +194,11 @@ public class AppH5CutPriceController extends BaseController {
 
 	    List<UserDeGoods> userDeGoodsList = afDeGoodsService.getUserDeGoodsList(userId);
 	    data.put("goodsList", userDeGoodsList);
-
-	    data.put("endTime", System.currentTimeMillis() / 1000 + 10000);
-	    data.put("totalCount", "100");
+	    //结束时间
+	    long endTime = afDeGoodsService.getActivityEndTime();
+	    long totalCount = afDeGoodsService.getActivityTotalCount();
+	    data.put("endTime", endTime);
+	    data.put("totalCount", totalCount);
 
 	    return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
 	} catch (Exception e) {
