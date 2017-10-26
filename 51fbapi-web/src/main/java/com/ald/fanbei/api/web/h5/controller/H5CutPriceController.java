@@ -259,7 +259,7 @@ public class H5CutPriceController extends H5Controller {
 		try {
 		    if (StringUtil.isAllNotEmpty(userIdStr, openId, goodsPriceIdStr)) {
 			// try 1000 times to get the lock
-			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 50);
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 15);
 			if (isNotLock) {
 			    Long userId = NumberUtil.objToLong(userIdStr);
 
