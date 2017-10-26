@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -253,11 +254,21 @@ public class AppH5CutPriceController extends BaseController {
 			Long userId = convertUserNameToUserId(userName);
 			//查用户的商品砍价详情
 			AfDeUserGoodsDo  afDeUserGoodsDo = new AfDeUserGoodsDo();
-			afDeUserGoodsDo.setUserid(userId);
+			//afDeUserGoodsDo.setUserid(userId);
 			afDeUserGoodsDo.setGoodspriceid(goodsPriceId);
 			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getUserGoodsInfo(afDeUserGoodsDo);
 			logger.info("afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
-			
+			 AfDeUserGoodsInfoDto afDeUserCutPrice = new AfDeUserGoodsInfoDto();
+			if(afDeUserGoodsInfoDto != null){
+			    afDeUserGoodsDo.setUserid(userId);
+			    afDeUserCutPrice = afDeUserGoodsService.getUserCutPrice(afDeUserGoodsDo);
+			}
+			if( afDeUserCutPrice ==null){
+			    BigDecimal cutPrice =new BigDecimal(0);
+			    afDeUserGoodsInfoDto.setCutPrice(cutPrice);
+			}else{
+			    afDeUserGoodsInfoDto.setCutPrice(afDeUserCutPrice.getCutPrice());
+			}
 			if(afDeUserGoodsInfoDto != null){
         			 //结束时间
         			long endTime = afDeGoodsService.getActivityEndTime();
@@ -266,8 +277,6 @@ public class AppH5CutPriceController extends BaseController {
         			long totalCount = afDeGoodsService.getActivityTotalCount();
         			afDeUserGoodsInfoDto.setTotalCount(totalCount);
         			logger.info("totalCount = {}",totalCount);
-			}else{
-			    return H5CommonResponse.getNewInstance(false, "未查询到商品信息",null,"").toString();
 			}
 			//转成vo?
 			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();

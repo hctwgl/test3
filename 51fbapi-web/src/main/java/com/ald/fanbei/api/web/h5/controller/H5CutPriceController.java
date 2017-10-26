@@ -103,23 +103,33 @@ public class H5CutPriceController extends H5Controller {
 			Long userId = convertUserNameToUserId(userName);
 			//查用户的商品砍价详情
 			AfDeUserGoodsDo  afDeUserGoodsDo = new AfDeUserGoodsDo();
-			afDeUserGoodsDo.setUserid(userId);
+			//afDeUserGoodsDo.setUserid(userId);
 			afDeUserGoodsDo.setGoodspriceid(goodsPriceId);
 			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getUserGoodsInfo(afDeUserGoodsDo);
-			logger.info("h5 afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
+			logger.info("afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
+			 AfDeUserGoodsInfoDto afDeUserCutPrice = new AfDeUserGoodsInfoDto();
 			if(afDeUserGoodsInfoDto != null){
-   			 //结束时间
-           			long endTime = afDeGoodsService.getActivityEndTime();
-           			afDeUserGoodsInfoDto.setEndTime(endTime);
-           			//参与人数
-           			long totalCount = afDeGoodsService.getActivityTotalCount();
-           			afDeUserGoodsInfoDto.setTotalCount(totalCount);
-           			logger.info("totalCount = {}",totalCount);
+			    afDeUserGoodsDo.setUserid(userId);
+			    afDeUserCutPrice = afDeUserGoodsService.getUserCutPrice(afDeUserGoodsDo);
+			}
+			if( afDeUserCutPrice ==null){
+			    BigDecimal cutPrice =new BigDecimal(0);
+			    afDeUserGoodsInfoDto.setCutPrice(cutPrice);
 			}else{
-			    return H5CommonResponse.getNewInstance(false, "未查询到商品信息",null,"").toString();
+			    afDeUserGoodsInfoDto.setCutPrice(afDeUserCutPrice.getCutPrice());
+			}
+			if(afDeUserGoodsInfoDto != null){
+        			 //结束时间
+        			long endTime = afDeGoodsService.getActivityEndTime();
+        			afDeUserGoodsInfoDto.setEndTime(endTime);
+        			//参与人数
+        			long totalCount = afDeGoodsService.getActivityTotalCount();
+        			afDeUserGoodsInfoDto.setTotalCount(totalCount);
+        			logger.info("totalCount = {}",totalCount);
 			}
 			//转成vo?
 			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();
+
 		} catch (Exception e) {
 			// TODO: handle exception
 		    	logger.error("/activity/de/goodsInfo" + context + "error = {}", e.getStackTrace());
