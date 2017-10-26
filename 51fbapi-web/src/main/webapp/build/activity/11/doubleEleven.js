@@ -45,10 +45,9 @@ $(function(){
     //活动开始时间戳
     let startTime=new Date("oct 25,2017 20:00:00");
     let startStamp=startTime.valueOf();
-    console.log(startStamp);
     // 结束时间的时间戳
     // let endDate = new Date("oct 29,2017 23:59:59");
-    let endDate = new Date("oct 26,2017 10:09:59");
+    let endDate = new Date("oct 29,2017 23:09:59");
     let endStamp = endDate.valueOf();
     // 获取当前时间的时间戳
     let now = new Date();
@@ -86,7 +85,6 @@ $(function(){
         $('#hour_show').html('<s id="h"></s>'+hour+'时');
         $('#minute_show').html('<s></s>'+minute+'分');
         $('#second_show').html('<s></s>'+second+'秒'); */
-        console.log(second);
 
         $('.countTwo').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//全民倒计时
         //顶部倒计时
@@ -97,7 +95,8 @@ $(function(){
         //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
         if(nowTimeStamp>=startStamp){
             $('.bargain').click(function(){
-                window.location.href = 'http://www.baidu.com';
+                //  window.location.href = 'http://www.baidu.com';
+                window.location.href = 'barginIndex?double=barginOne';//跳转砍价连接
             })
         }
         if(day==0&&hour==0&&minute==0&&second==0){
@@ -139,7 +138,8 @@ $(function(){
         // $('.countThree').html('活动已结束');
         //判断活动时间 活动开始前显示倒计时时间 活动中跳转红包雨活动主页 活动结束后显示活动已结束  点击无跳转
         if(day==0&&hour==0&&minute==0&&second==0){
-            window.location.href = 'https://www.baidu.com';
+            // window.location.href = 'https://www.baidu.com';
+            window.location.href = 'redrain?double=redOne';
             $('.countThree').html('活动已结束');
         }
 
@@ -182,7 +182,7 @@ let vm=new Vue({
                   {'name':'GUESS','img':imgrooturl +'/brand-07.png','src':''},
                   {'name':'拉夏贝尔','img':imgrooturl +'/brand-08.png','src':''},
                   {'name':'韩都衣舍','img':imgrooturl +'/brand-09.png','src':''},
-                  {'name':'小米','img':imgrooturl +'/brand-10.png','src':''},
+                  {'name':'乐町','img':imgrooturl +'/brand-10.png','src':''},
                   {'name':'NIKE','img':imgrooturl +'/brand-11.png','src':''},
                   {'name':'adidas','img':imgrooturl +'/brand-12.png','src':''},
                   {'name':'newbalance','img':imgrooturl +'/brand-13.png','src':''},
@@ -205,6 +205,7 @@ let vm=new Vue({
     created:function(){
          this.logData();
          this.coupon();
+         this.countDown();
          var arr = new Array([]);
             	for(var i =0; i<=Math.floor(this.allData.length/8); i++){
 	            	arr[i]=[];
@@ -315,6 +316,21 @@ let vm=new Vue({
                     requestMsg("哎呀，出错了！");
                 }
             })
+        },
+        //倒计时初始化接口
+        countDown(){
+               $.ajax({
+                type:'post',
+                url:"/activity/de/endtime",
+                success:function(data){
+                    console.log(data);
+                    // self.content = eval('(' + data + ')').data;
+                    // self.m=self.content.couponInfoList;
+                    // self.c=JSON.stringify(self.m);
+                    // self.m=JSON.parse(self.c);
+                    
+                }
+            })  
         },
         //点击显示顶部活动日历
         noShow(){
