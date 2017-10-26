@@ -37,10 +37,11 @@
             </ul>
         </div>
 
+      <div id="allCoupons">
         <div class="couponWrap">
             #foreach($item in $!{couponList})
-                #if(${item.userAlready}=='0')
-                    <div class="coupon" onclick="couponClick($!{item.rid},$(this))">
+                #if(${item.userAlready}<${item.limitCount})
+                    <div class="coupon" onclick="couponClick($!{item.rid},$(this),$!{item.userAlready},$!{item.limitCount})">
                         <p><script>document.write(parseInt($!{item.amount}))</script></p>
                         #if($!{item.limitAmount}== 0)
                             <p>无门槛</p>
@@ -48,8 +49,9 @@
                             <p>满<script>document.write(parseInt($!{item.limitAmount}))</script>元减<script>document.write(parseInt($!{item.amount}))</script></p>
                          #end
                     </div>
+                    <p class="kong"></p>
                  #else
-                     <div class="coupon couponclose" onclick="couponClick($!{item.rid},$(this))">
+                     <div class="coupon couponclose" onclick="couponClick($!{item.rid},$(this),$!{item.userAlready},$!{item.limitCount})">
                          <p>$!{item.amount}</p>
                          #if(${item.limitAmount}=='0')
                              <p>无门槛</p>
@@ -57,9 +59,11 @@
                              <p>满$!{item.limitAmount}元减$!{item.amount}</p>
                          #end
                      </div>
+                     <p class="kong"></p>
                 #end
             #end
         </div>
+      </div>
 
         <div class="swiper-container">
             <div class="main_wrap swiper-wrapper">
