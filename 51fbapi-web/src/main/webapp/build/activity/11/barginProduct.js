@@ -1,5 +1,6 @@
 let goodsId = getUrl('goodsId');//获取模板id
 let productType = getUrl('productType');//获取模板id
+let testUser = getUrl('testUser');//获取模板id
 /*
     productType
     iPhone: iPhone商品页
@@ -29,43 +30,11 @@ let vm = new Vue({
         // get 初始化 信息
         logData:function() {
             let self = this;
-
-            let data2 = {
-                pageNo: 1,
-                friendList: [
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: 'laowang',
-                        cutPrice: 256,
-                        remainPrice: 8489
-                    },
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: 'hwehfuwef',
-                        cutPrice: 454,
-                        remainPrice: 8022
-                    },
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: '的覅微风纪委',
-                        cutPrice: 1110,
-                        remainPrice: 7000
-                    },
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: '车位费围观围观',
-                        cutPrice: 66,
-                        remainPrice: 6934
-                    },
-
-                ]
-            }
-            self.friendData = data2
             $.ajax({
                 url: '/activity/de/goodsInfo',
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId, userName: '1233'},
+                data: {goodsPriceId: goodsId, userName: testUser},
                 success: function(data){
                     if (!data.success) {
                         requestMsg("哎呀，出错了！");
@@ -84,11 +53,10 @@ let vm = new Vue({
                 url: '/activity/de/friend',
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId, pageNo: 1, userName: "52133"},
+                data: {goodsPriceId: goodsId, pageNo: 1, userName: testUser},
                 success: function(data){
                     console.log("initData=", data);
                     // goodsList = data.goodsList;
-                    getShareTimes();
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")

@@ -102,9 +102,13 @@ $(function () {
                     
                 },
                 success: function (data) {
-                    // alert(urlName);
+                    console.log(">>>>",data)
+                    alert(urlName);
                     console.log(data)
                     if (data.success) {
+                        window.location.href = "./barginIndex?userName=18850843825";
+                        return false;
+                        // todo: confirm url
                         if (word == "Z") {
                             window.location.href = urlName + "?userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId;
                         } else if (word == "S") {

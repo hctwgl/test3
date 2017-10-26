@@ -41,7 +41,7 @@
                     <!-- 砍价部分 -->
                     <div class="product-price">
                         <img src="$commonUrl/bargin05.png">
-                        <div class="product-txt flex fd-column">
+                        <div class="product-txt flex fd-column ai-c">
                             <div class="product-name">{{goodsData.name}}</div>
                             <div class="has-bargin">已砍{{goodsData.cutPrice}}元</div>
                             <div class="progress-bar" :style="{width: progressWidth + 'rem'}"></div>
