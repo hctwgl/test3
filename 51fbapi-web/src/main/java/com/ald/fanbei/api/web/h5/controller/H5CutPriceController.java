@@ -216,9 +216,12 @@ public class H5CutPriceController extends H5Controller {
    		String resultStr = "";
    		try { 
    		    	Map<String,Object> map = new  HashMap<String,Object>();
-   		        //结束时间
+   		    	//结束时间
    		        long endTime = afDeGoodsService.getActivityEndTime();
-   		        map.put("endTime", endTime);   		        
+   		        //当前时间
+   		        long currentTime = System.currentTimeMillis()/1000;
+   		        map.put("endTime", endTime);   	
+   		        map.put("currentTime", currentTime);   		        
    			resultStr = H5CommonResponse.getNewInstance(true, "获取活动结束时间成功",null,map).toString();
  
    		} catch (Exception e) {
