@@ -73,7 +73,7 @@ let vm = new Vue({
         countDown: function() {
             let self = this;
             let timer = setInterval(function() {
-                let t = self.goodsData.endTime - new Date().getTime()/1000;
+                let t = (self.goodsData.endTime - new Date().getTime())/1000;
                 let d = 0;
                 let h = 0;
                 let m = 0;
