@@ -19,7 +19,7 @@ public class ChangeMobileTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
+	String urlBase = "http://192.168.106.162:8180";
 	String userName = "13656640522";
 	
 	String oldMobile = "13656640522";
@@ -33,7 +33,7 @@ public class ChangeMobileTest extends BaseTest{
 		super.init(userName);
 	}
 	
-//	@Test
+	@Test
 	public void  testChangeMobileIfAbleApi() {
 		String url = urlBase + "/user/changeMobileIfAble";
 		testApi(url, null, userName);

@@ -55,7 +55,6 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String faceType;//YITU：依图 FACE_PLUS:face++
 	private Date gmtFaces;//人脸识别时间
 	private String basicStatus;//基础认证状态
-	private Date gmtBasic;
 
 	public String getBasicStatus() {
 		return basicStatus;
@@ -65,13 +64,7 @@ public class AfUserAuthDo extends AbstractSerial {
 		this.basicStatus = basicStatus;
 	}
 
-	public Date getGmtBasic() {
-		return gmtBasic;
-	}
 
-	public void setGmtBasic(Date gmtBasic) {
-		this.gmtBasic = gmtBasic;
-	}
 
 	public Long getRid() {
 		return rid;

@@ -886,14 +886,13 @@ public class RiskUtil extends AbstractThird {
 			
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
 			//风控异步回调的话，以第一次异步回调成功为准
-			if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
+			if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
 				if (StringUtils.equals("10", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
 					authDo.setRiskStatus(RiskStatus.YES.getCode());
 	      			authDo.setBasicStatus("Y");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-					authDo.setGmtBasic(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
 	      			
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
@@ -914,7 +913,6 @@ public class RiskUtil extends AbstractThird {
 						authDo.setRiskStatus(RiskStatus.NO.getCode());
 					}
 					authDo.setBasicStatus("N");
-					authDo.setGmtBasic(new Date(System.currentTimeMillis()));
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
 	      			

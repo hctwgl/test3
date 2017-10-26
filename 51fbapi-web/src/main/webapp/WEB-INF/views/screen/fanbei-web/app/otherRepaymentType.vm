@@ -26,8 +26,7 @@
 <div class="line">
     <div class="block">
         <p style="margin-top: .3rem"><i class="icon" style="background-image: url('$commonUrl/repay3.png')"></i>温馨提示</p>
-        <p class="rule"><i class="yuan"></i>线下还款每天下午15:00前的当天处理，15:00后的第二天处理。</p>
-        <p class="rule"><i class="yuan"></i>时间紧急建议使用51返呗线上还款，即时到账，方便省心。</p>
+        <p class="rule"><i class="yuan"></i>线下还款会在2-3个工作日处理完成，时间紧迫建议使用51返呗线上还款。</p>
         <p class="rule" style="margin-bottom:.44rem;"><i class="yuan"></i>若有疑问请联系客服电话：400-002-5151</p>
     </div>
 </div>

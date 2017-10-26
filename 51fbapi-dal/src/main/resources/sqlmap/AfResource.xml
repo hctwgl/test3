@@ -11,7 +11,12 @@
 
 		r1.id
 		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r1.type_desc,r1.name,r1.value,r1.description,
-		r1.sec_type,r1.value_1,r1.value_2,r1.value_3,r1.value_4,r1.sort
+		r2.sec_type,r1.value_1,r1.value_2,r1.value_3,r2.value_4,r1.sort
+	</sql>
+	<sql id="queryManyAllFieldsOneTwo">
+		r1.id
+		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r2.type_desc,r1.name,r2.value,r1.description,
+		r2.sec_type,r2.value_1,r2.value_2,r2.value_3,r2.value_4,r1.sort
 	</sql>
 	<sql id="queryManyAllFieldsTwo">
 		r1.id
@@ -145,7 +150,7 @@
 
 	<select id="getOneToManyResourceOrderByBytype" resultType="AfResourceDo">
 		SELECT
-		<include refid="queryManyAllFields" />
+		<include refid="queryManyAllFieldsOneTwo" />
 		FROM
 		af_resource r1 LEFT JOIN af_resource r2
 		ON r1.id = r2.value_4
@@ -214,7 +219,7 @@
 		type = #{type}
 		AND
 		is_delete = 0
-		AND value_4 = 'C'
+		AND value_4 = 'O'
 		ORDER BY
 		sort
 	</select>
@@ -228,7 +233,7 @@
 		type = #{type}
 		AND
 		is_delete = 0
-		AND value_4 = 'O'
+		AND value_4 = 'C'
 		ORDER BY
 		sort
 	</select>

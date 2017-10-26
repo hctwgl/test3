@@ -44,21 +44,18 @@ public class BaseTest {
 	 * 自动生成登陆令牌
 	 * @param userName
 	 */
-	public void init(String userName) {
+	public TokenBo init(String userName) {
 		String token = UserUtil.generateToken(userName);
 		tokenBo = new TokenBo();
 		tokenBo.setLastAccess(System.currentTimeMillis() + "");
 		tokenBo.setToken(token);
 		tokenBo.setUserId(userName);
 		RedisClient.hmset(Constants.CACHEKEY_USER_TOKEN+userName, tokenBo.getTokenMap());
+		return tokenBo;
 	}
 	
     protected void testApi(String urlString, Map<String,String> params, String userName){
     	testApi(urlString, params, userName ,false);
-    }
-    
-    protected void testH5(String urlString, Map<String,String> params, String userName){
-    	testH5(urlString, params, userName ,false);
     }
 	
     /**
@@ -68,7 +65,7 @@ public class BaseTest {
 	 * @param beforeLogin 对应web-main.xml中的定义,true即无需token
      * @throws UnsupportedEncodingException 
 	 */
-    protected void testH5(String urlString, Map<String,String> params, String userName, boolean beforeLogin){
+    protected void testH5(String urlString, Map<String,String> params, String userName, boolean beforeLogin, TokenBo tokenBo){
     	try {
 	    	Map<String,String> header = createBaseHeader();
 	    	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
@@ -91,6 +88,9 @@ public class BaseTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+    }
+    protected void testH5(String urlString, Map<String,String> params, String userName, boolean beforeLogin){
+    	testH5(urlString, params, userName, beforeLogin, this.tokenBo);
     }
     
 	/**
@@ -134,7 +134,7 @@ public class BaseTest {
                 signStrBefore = signStrBefore + "&" + item + "=" + params.get(item);
             }
         }
-        System.out.println(signStrBefore);
+//        System.out.println(signStrBefore);
         return DigestUtil.getDigestStr(signStrBefore);
     }
     
@@ -175,9 +175,9 @@ public class BaseTest {
         
         // do
         HttpResponse response = httpClient.execute(postMethod);
-        System.out.println(response.getStatusLine());
+//        System.out.println(response.getStatusLine());
         String result = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
-        System.out.println(result);
+//        System.out.println(result);
         return result;
     }
     
