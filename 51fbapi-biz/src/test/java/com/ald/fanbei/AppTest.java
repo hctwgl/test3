@@ -34,7 +34,7 @@ public class AppTest extends TestCase {
 		// 登陆 Url  
 	            String loginUrl = "https://yupsadmin.51fanbei.com/system/user/login.htm";  
 	            // 需登陆后访问的 Url  
-	            String dataUrl = "https://yupsadmin.51fanbei.com/modules/manage/tpp/batch/query/trade.htm?dnsUrl=https://yupsadmin.51fanbei.com&orderNos=hq20171002205034152581";  
+	            String dataUrl = "https://yupsadmin.51fanbei.com/modules/manage/tpp/batch/query/trade.htm?dnsUrl=https://yupsadmin.51fanbei.com&orderNos=hq20171002205034152581,hq20171002205034152581";  
 	      
 	            HttpClient httpClient = new HttpClient();	      
 	            // 模拟登陆，按实际服务器端要求选用 Post 或 Get 请求方式  
