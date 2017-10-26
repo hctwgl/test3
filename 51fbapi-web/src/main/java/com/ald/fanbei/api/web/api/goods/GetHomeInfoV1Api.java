@@ -517,9 +517,11 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		Map<String,Object> manyPricutres = new HashMap<String,Object>();
 		List<Map<String,Object>> manyPricutresList = new ArrayList<Map<String,Object>> ();
 		if(rescList == null){
+			manyPricutres.put("manyPricutresList", manyPricutresList);
 			return manyPricutres;
 		}
 		if(rescList.size()<3){
+			manyPricutres.put("manyPricutresList", manyPricutresList);
 			return manyPricutres;
 		}
 		if(rescList.size() >= 3 && rescList.size()<6){
