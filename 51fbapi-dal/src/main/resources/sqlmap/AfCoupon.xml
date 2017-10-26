@@ -133,9 +133,9 @@
 		AND
 			type = 'FULLVOUCHER'
 		AND
-			gmt_start >= now()
+			now() >= gmt_start
 		AND
-			now() >= gmt_end
+			gmt_end >= now()
 		AND 
 			status = 'O'
 	</select>
