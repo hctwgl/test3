@@ -34,10 +34,17 @@ public class PushClickAmountApi implements ApiHandle{
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("pushId"), null);
+		Integer clickType = NumberUtil.objToInteger(requestDataVo.getParams().get("clickType"));
 		if( null != id){
 			AfPushManageDo afPushManageDo = afPushManageService.getPushById(id);
 			if(null != afPushManageDo && StringUtil.isNotBlank(afPushManageDo.getJumpUrl())){
-				afPushManageService.updatePushManage(afPushManageDo);
+				if (null != clickType && 1 == clickType){
+					afPushManageDo.setType("1");
+					afPushManageService.updatePushManage(afPushManageDo);
+				}else if (null != clickType && 2 == clickType){
+					afPushManageDo.setType("2");
+					afPushManageService.updatePushManage(afPushManageDo);
+				}
 			}else{
 				logger.error("首页极光推送跳转失败，pushId："+id);
 			}

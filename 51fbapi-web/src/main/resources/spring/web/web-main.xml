@@ -390,6 +390,8 @@
 				
 				<!-- 统计点击量 -->
 				<entry key="/clickAmount/clickAmountNum" value-ref="clickAmountNumApi" />
+				<entry key="/pushClickAmout/clickPushAmountNum" value-ref="clickPushAmountNumApi" />
+				
 				
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />

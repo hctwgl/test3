@@ -893,6 +893,7 @@ public class RiskUtil extends AbstractThird {
 					authDo.setRiskStatus(RiskStatus.YES.getCode());
 	      			authDo.setBasicStatus("Y");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+					authDo.setGmtBasic(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
 	      			
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
@@ -913,6 +914,7 @@ public class RiskUtil extends AbstractThird {
 						authDo.setRiskStatus(RiskStatus.NO.getCode());
 					}
 					authDo.setBasicStatus("N");
+					authDo.setGmtBasic(new Date(System.currentTimeMillis()));
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
 	      			

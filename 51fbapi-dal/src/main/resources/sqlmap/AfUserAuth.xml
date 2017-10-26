@@ -4,7 +4,7 @@
 	<sql id="queryField">
 		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,gmt_mobile,
 		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status,gmt_risk,
-		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit,alipay_status,gmt_alipay,thresholds,basic_status
+		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit,alipay_status,gmt_alipay,thresholds,basic_status,gmt_basic
 	</sql>
  
 
@@ -18,7 +18,7 @@
 	
 	<update id="updateUserAuthMobileStatusWait" parameterType="AfUserAuthDo" >
 		UPDATE af_user_auth SET gmt_modified = NOW(),gmt_mobile = NOW()
-    			,mobile_status = #{mobileStatus}
+    			,mobile_status = #{mobileStatus},gmt_basic = NOW()
 		WHERE user_id = #{userId} and (gmt_mobile is null  or  <![CDATA[ gmt_mobile <= #{gmtMobile}  ]]>) 
 	</update>
 	
@@ -140,6 +140,9 @@
 			</if>
 			<if test="basicStatus != null">
 				,basic_status=#{basicStatus}
+			</if>
+			<if test="gmtBasic != null">
+				,gmt_basic=#{gmtBasic}
 			</if>
 			
 		WHERE user_id = #{userId}
