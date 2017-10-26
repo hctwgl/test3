@@ -48,7 +48,7 @@ $(function(){
     console.log(startStamp);
     // 结束时间的时间戳
     // let endDate = new Date("oct 29,2017 23:59:59");
-    let endDate = new Date("oct 29,2017 21:58:59");
+    let endDate = new Date("oct 26,2017 10:09:59");
     let endStamp = endDate.valueOf();
     // 获取当前时间的时间戳
     let now = new Date();
@@ -56,6 +56,17 @@ $(function(){
     // 相差的时间戳
     let differStamp = endStamp - nowTimeStamp;
     let intDiff = parseInt(differStamp/1000);//倒计时总秒数量
+    let timer12
+
+    function timer(intDiff){
+        showTimerS(intDiff);
+        intDiff--;
+        timer12 = setInterval(function(){
+            showTimerS(intDiff);
+            intDiff--;
+        }, 1000);
+    };
+    timer(intDiff);
 
     function showTimerS( diff ){
         var day=0,
@@ -75,6 +86,7 @@ $(function(){
         $('#hour_show').html('<s id="h"></s>'+hour+'时');
         $('#minute_show').html('<s></s>'+minute+'分');
         $('#second_show').html('<s></s>'+second+'秒'); */
+        console.log(second);
 
         $('.countTwo').html(day+"天"+" : "+hour+'时'+" : "+minute+'分'+" : "+second+'秒');//全民倒计时
         //顶部倒计时
@@ -91,20 +103,12 @@ $(function(){
         if(day==0&&hour==0&&minute==0&&second==0){
             $('.countTwo').html('活动已结束'); 
             $('.bargain').unbind("click");//禁止点击事件
+            clearInterval(timer12);//清除定时器
 
         }
         
     };
 
-    function timer(intDiff){
-        showTimerS(intDiff);
-        intDiff--;
-        window.setInterval(function(){
-            showTimerS(intDiff);
-            intDiff--;
-        }, 1000);
-    };
-    timer(intDiff);
 
 
     //红包雨倒计时
