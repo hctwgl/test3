@@ -33,9 +33,9 @@ public class TradeTenementServiceImpl implements TradeTenementService {
 
 	//根据租客电话号码查询该租客信息
 	@Override
-	public AfTradeTenementInfoDo getTenementInfoDoBymobile(String mobile) {
+	public AfTradeTenementInfoDo getTenementInfoDoById(Long id) {
 		
-		return tradeTenementDao.getTenementInfoDoBymobile(mobile);
+		return tradeTenementDao.getTenementInfoDoById(id);
 		 
 	}
 

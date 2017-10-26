@@ -32,9 +32,10 @@ public class GetTenementApi implements ApiHandle {
 		String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
-        
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"), 0l);
         String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"), "").toString();
-        AfTradeTenementInfoDo afTradeTenementInfoDo = tradeTenementService.getTenementInfoDoBymobile(mobile);
+        
+        AfTradeTenementInfoDo afTradeTenementInfoDo = tradeTenementService.getTenementInfoDoById(id);
         AfIdNumberDo afIdNumberDo = tradeTenementService.getUserIdentityUrl(mobile);
         String idFrontUrl = afIdNumberDo.getIdFrontUrl();
         String idBehindUrl = afIdNumberDo.getIdBehindUrl();

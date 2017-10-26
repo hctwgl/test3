@@ -13,7 +13,7 @@ public interface TradeTenementDao {
 	
 	List<AfTradeTenementInfoDo> getTenementInfoDo(Long businessId);
 	
-	AfTradeTenementInfoDo getTenementInfoDoBymobile(String mobile);
+	AfTradeTenementInfoDo getTenementInfoDoById(Long id);
 	
 	AfIdNumberDo getUserIdentityUrl(String mobile);
 	

@@ -90,9 +90,11 @@
         FROM af_trade_tenement_info WHERE business_id = #{businessId}
     </select>
     
-    <select id="getTenementInfoDoBymobile" resultType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo" parameterType="java.lang.String">
-    	SELECT * FROM af_trade_tenement_info WHERE mobile=#{mobile}
+    <select id="getTenementInfoDoById" resultType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo" parameterType="java.lang.Long">
+    	SELECT * FROM af_trade_tenement_info WHERE id=#{id}
     </select>
+    
+    
     
     <select id="getUserIdentityUrl" resultType="com.ald.fanbei.api.dal.domain.AfIdNumberDo" parameterType="java.lang.String">
     	SELECT * FROM af_id_number WHERE user_id=(SELECT id FROM af_user WHERE mobile=#{mobile})

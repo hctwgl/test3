@@ -34,7 +34,7 @@ public class TradeAddTenementApi implements ApiHandle {
 		String requestDataVoId = StringUtil.isNotBlank(requestDataVo.getId()) ? requestDataVo.getId() : "trade weixin";
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVoId, FanbeiExceptionCode.SUCCESS);
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
-        
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"), null);
         AfTradeTenementInfoDo afTradeTenementInfoDo = new AfTradeTenementInfoDo();
         
         
@@ -68,7 +68,7 @@ public class TradeAddTenementApi implements ApiHandle {
         afTradeTenementInfoDo.setEndTime(endTimeDate);
         afTradeTenementInfoDo.setBusinessId(businessId);
         
-        AfTradeTenementInfoDo tenementInfoDo = tradeTenementService.getTenementInfoDoBymobile(mobile);
+        AfTradeTenementInfoDo tenementInfoDo = tradeTenementService.getTenementInfoDoById(id);
         
         if(tenementInfoDo==null){
         	tradeTenementService.addTenementInfoDo(afTradeTenementInfoDo);	

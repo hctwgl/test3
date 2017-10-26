@@ -76,7 +76,7 @@ public class FanbeiController extends BaseController {
     }
 
     @RequestMapping(value ={
-    	"/order/confirmReceipt","/order/buySelfGoods","/order/tenementOrder","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo","/order/cancelAfterSaleApply","/order/afterSaleLogisticSupply","/order/getOrderAfterSaleInfo","/order/insufficientBalance"
+    	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo","/order/cancelAfterSaleApply","/order/afterSaleLogisticSupply","/order/getOrderAfterSaleInfo","/order/insufficientBalance"
         ,"/order/tradeOrder","/order/getTradeOrderDetailInfo","/order/combinationPay","/order/getBeforePayType"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
