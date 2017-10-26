@@ -221,7 +221,7 @@ public class CollectionController {
 			}
 			List<AfOverdueOrderDto> orderList = afBorrowBillService.getOverdueDataToRiskByBillIds(billIds);
 			if (orderList == null || orderList.size() < 1) {
-				logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null");
+				logger.error("findBorrowBillByBorrowNo afBorrowCashDo is null billIds = " + billIds);
 				updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
 				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
 				return updteBo;

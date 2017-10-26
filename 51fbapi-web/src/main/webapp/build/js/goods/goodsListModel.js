@@ -255,7 +255,7 @@ $(function(){
 //点击优惠券
 function couponClick(rid,a,userAlready,limitCount){
     let couponId=rid;
-    let index=a.index();
+    let index=a.index()/2;
     let userHas=userAlready;
     let limitHas=limitCount;
     $.ajax({
@@ -269,7 +269,9 @@ function couponClick(rid,a,userAlready,limitCount){
             console.log(returnData)
             if (returnData.success) {
                      requestMsg("优惠劵领取成功");
-                     if(userHas == limitHas){
+                     let typeHas=parseInt($('.coupon').eq(index).attr('typeHas'));
+                     $('.coupon').eq(index).attr('typeHas', ++typeHas);
+                     if(typeHas == limitHas){
                          $('.coupon').eq(index).addClass('couponclose');
                      }
             }else{

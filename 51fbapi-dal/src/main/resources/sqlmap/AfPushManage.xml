@@ -40,13 +40,13 @@
   <update id="updateById" parameterType="AfPushManageDo" >
     update af_push_manage
     <set >
-      <if test="type == 1">
+      <if test="type == '1'">
         message_open_num = message_open_num +1
       </if>
-      <if test="type == 2">
+      <if test="type == '2'">
         notification_open_num = notification_open_num + 1
       </if>
-      <if test="type == 3">
+      <if test="type == '3'">
         message_open_num = message_open_num +1,
         notification_open_num = notification_open_num + 1
       </if>
