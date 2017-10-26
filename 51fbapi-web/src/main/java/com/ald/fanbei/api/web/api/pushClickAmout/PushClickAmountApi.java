@@ -37,7 +37,7 @@ public class PushClickAmountApi implements ApiHandle{
 		Integer clickType = NumberUtil.objToInteger(requestDataVo.getParams().get("clickType"));
 		if( null != id){
 			AfPushManageDo afPushManageDo = afPushManageService.getPushById(id);
-			if(null != afPushManageDo && StringUtil.isNotBlank(afPushManageDo.getJumpUrl())){
+			if(null != afPushManageDo){
 				if (null != clickType && 1 == clickType){
 					afPushManageDo.setType("1");
 					afPushManageService.updatePushManage(afPushManageDo);
