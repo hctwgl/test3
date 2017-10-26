@@ -94,7 +94,8 @@
 		and s.num_id = g.num_id
 		and s.is_delete = 0
 		and g.is_delete = 0
-		order by gmt_create DESC
+		and g.status = 'PUBLISH'
+		order by g.gmt_create DESC
 	</select>
 
 	
