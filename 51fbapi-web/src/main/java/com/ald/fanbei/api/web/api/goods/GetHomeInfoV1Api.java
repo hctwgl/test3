@@ -463,14 +463,10 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				if (contextApp.getAppVersion() <= 365 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_BOLUOME.getCode())){
 					data.put("type", AfResourceSecType.NAVIGATION_MOBILE_CHARGE.getCode());
 				}
-				//对首页商品分类的版本兼容修改
-				if(contextApp.getAppVersion() <= 393 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_CATEGORY.getCode())){
-					data.put("type", "NAVIGATION_NINE");
-					afResourceDoNine = afResourceService.getConfigByTypesAndSecType(AfResourceType.HomeNavigation.getCode(),"NAVIGATION_NINE");
-				}
 			}else{
 				data.put("type", afResourceDo.getValue1());
 			}
+			//对首页商品分类的版本兼容修改
 			if(contextApp.getAppVersion() <= 393 && afResourceDo.getSecType().equals(AfResourceSecType.NAVIGATION_CATEGORY.getCode())){
 				data.put("type", "NAVIGATION_NINE");
 				afResourceDoNine = afResourceService.getConfigByTypesAndSecType(AfResourceType.HomeNavigation.getCode(),"NAVIGATION_NINE");
