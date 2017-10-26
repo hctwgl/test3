@@ -122,7 +122,7 @@
      <select id="getActivityTotalCount" resultType="java.lang.Long">
             SELECT 
           		   cu.cutInfoNum + go.userGoodsNUM  totalCount
-            FROM  (SELECT COUNT(0) cutInfoNum FROM af_de_user_cutInfo)
+            FROM  (SELECT COUNT(0) cutInfoNum FROM af_de_user_cutinfo)
                    AS cu,
                   (SELECT COUNT(DISTINCT userId ) userGoodsNUM FROM af_de_user_goods )
                    AS go

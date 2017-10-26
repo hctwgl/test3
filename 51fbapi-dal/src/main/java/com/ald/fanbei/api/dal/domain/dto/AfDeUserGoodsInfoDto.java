@@ -45,6 +45,8 @@ import java.math.BigDecimal;
      */
     private String name;
     
+    private long totalCount;
+    
     public String getImage() {
         return image;
     }
@@ -81,6 +83,12 @@ import java.math.BigDecimal;
     }
     public void setName(String name) {
         this.name = name;
+    }
+    public long getTotalCount() {
+        return totalCount;
+    }
+    public void setTotalCount(long totalCount) {
+        this.totalCount = totalCount;
     }
   
 }

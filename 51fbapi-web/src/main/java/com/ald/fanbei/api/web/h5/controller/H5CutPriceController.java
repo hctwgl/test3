@@ -107,10 +107,16 @@ public class H5CutPriceController extends H5Controller {
 			afDeUserGoodsDo.setGoodspriceid(goodsPriceId);
 			AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getUserGoodsInfo(afDeUserGoodsDo);
 			logger.info("h5 afDeUserGoodsInfoDto = {}",afDeUserGoodsInfoDto);
-			//结束时间
 			if(afDeUserGoodsInfoDto != null){
-			    long endTime = afDeGoodsService.getActivityEndTime();
-			    afDeUserGoodsInfoDto.setEndTime(endTime);
+   			 //结束时间
+           			long endTime = afDeGoodsService.getActivityEndTime();
+           			afDeUserGoodsInfoDto.setEndTime(endTime);
+           			//参与人数
+           			long totalCount = afDeGoodsService.getActivityTotalCount();
+           			afDeUserGoodsInfoDto.setTotalCount(totalCount);
+           			logger.info("totalCount = {}",totalCount);
+			}else{
+			    return H5CommonResponse.getNewInstance(false, "未查询到商品信息",null,"").toString();
 			}
 			//转成vo?
 			resultStr = H5CommonResponse.getNewInstance(true, "获取商品砍价详情成功",null,afDeUserGoodsInfoDto).toString();
