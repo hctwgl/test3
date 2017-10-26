@@ -53,10 +53,10 @@
                  #else
                      <div class="coupon couponclose" onclick="couponClick($!{item.rid},$(this),$!{item.userAlready},$!{item.limitCount})">
                          <p>$!{item.amount}</p>
-                         #if(${item.limitAmount}=='0')
+                         #if(${item.limitAmount}== 0)
                              <p>无门槛</p>
                          #else
-                             <p>满$!{item.limitAmount}元减$!{item.amount}</p>
+                             <p>满<script>document.write(parseInt($!{item.limitAmount}))</script>元减<script>document.write(parseInt($!{item.amount}))</script></p>
                          #end
                      </div>
                      <p class="kong"></p>
