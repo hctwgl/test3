@@ -213,6 +213,9 @@ public class AppH5FanBeiWebController extends BaseController {
 			AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 			Map<String, Object> returnData = new HashMap<String, Object>();
 
+			if(StringUtils.isEmpty(couponId)) {
+				throw new IllegalArgumentException("couponId can't be null"); 
+			}
 			if (afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
 				returnData.put("status", CouponWebFailStatus.UserNotexist.getCode());
