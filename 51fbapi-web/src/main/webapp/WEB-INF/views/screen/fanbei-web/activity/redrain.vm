@@ -27,6 +27,7 @@
     </div>
     <div class="pre2"></div>
     <div class="pre3">
+        <p class="acTxt">活动暂未开始</p>
       <div class="count">
         <div class="hour">00</div>
         <div class="minute">00</div>
@@ -35,19 +36,19 @@
     </div>
     <div class="pre4">
       <div class="entry">
-        <div class="_entry fir">
+        <div class="_entry fir notyet">
           <div>
             <div>上午10:00</div>
             <div class="status">第一场红包雨</div>
           </div>
         </div>
-        <div class="_entry sec">
+        <div class="_entry sec notyet">
           <div>
             <div>下午14:00</div>
             <div class="status">第二场红包雨</div>
           </div>
         </div>
-        <div class="_entry thi">
+        <div class="_entry thi notyet">
           <div>
             <div>下午20:00</div>
             <div class="status">第三场红包雨</div>

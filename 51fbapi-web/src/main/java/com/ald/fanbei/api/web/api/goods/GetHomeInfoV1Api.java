@@ -473,6 +473,8 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				data.put("content", afResourceDoNine.getValue2());
 				data.put("sort", afResourceDoNine.getSort());
 				data.put("color",afResourceDoNine.getValue3());
+				data.put("imageUrl", afResourceDoNine.getValue());
+				data.put("titleName", afResourceDoNine.getName());
 			}else{
 				data.put("content", afResourceDo.getValue2());
 				data.put("sort", afResourceDo.getSort());
@@ -526,9 +528,11 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		Map<String,Object> manyPricutres = new HashMap<String,Object>();
 		List<Map<String,Object>> manyPricutresList = new ArrayList<Map<String,Object>> ();
 		if(rescList == null){
+			manyPricutres.put("manyPricutresList", manyPricutresList);
 			return manyPricutres;
 		}
 		if(rescList.size()<3){
+			manyPricutres.put("manyPricutresList", manyPricutresList);
 			return manyPricutres;
 		}
 		if(rescList.size() >= 3 && rescList.size()<6){
