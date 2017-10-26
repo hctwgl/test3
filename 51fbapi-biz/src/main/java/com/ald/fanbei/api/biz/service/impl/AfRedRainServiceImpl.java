@@ -2,10 +2,9 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -105,8 +104,10 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			}
 		
 			try {
-				Redpacket rp = this.redPacketRedisPoolService.apply();
-				if(rp != null) {
+				String rpStr = this.redPacketRedisPoolService.apply();
+				if(rpStr != null) {
+					Redpacket rp = JSON.parseObject(rpStr.substring(rpStr.indexOf("{")), Redpacket.class);
+					
 					AfUserDo user = afUserService.getUserByUserName(userName);
 					if("BOLUOMI".equals(rp.getType())) {
 						boluomeUtil.grantCoupon(rp.getCouponId(), new HashMap<String,Object>(), user.getRid());
@@ -117,11 +118,17 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 					return rp;
 				}
 			}catch (Exception e) {
-				logger.error(e.getMessage(), e);
+				e.printStackTrace(); // TODO DELETE
+//				logger.error(e.getMessage(), e);
 			}
 		}
 		
 		return null;
+	}
+	
+	public static void main(String[] args) {
+		String s = "{asdqweqwe:{}}";
+		System.out.println(s.indexOf("{"));
 	}
 
 	@Override
@@ -164,7 +171,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			try {
 				//扫描
 				AfRedRainRoundDo paramRound = new AfRedRainRoundDo();
-				Date gmtStart = DateUtil.addMins(new Date(), 4);
+				Date gmtStart = DateUtil.addMins(new Date(), 12);
 				paramRound.setGmtStart(gmtStart);
 				paramRound.setStatus(AfRedRainRoundStatusEnum.PREPARE.name());
 				final AfRedRainRoundDo round = afRedRainRoundDao.fetch(paramRound);
@@ -174,15 +181,15 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 				if(round == null) return 1;
 				
 				//注入
+				HashSet<String> sink = new HashSet<>(8096);
 				List<AfRedRainPoolDo> pools = afRedRainPoolDao.queryAll();
 				for(AfRedRainPoolDo pool : pools) {
 					int num = pool.getNum();
-					BlockingQueue<String> queue = new ArrayBlockingQueue<>(num);
 					for(int i = 0; i<num; i++) {
-						queue.offer(JSON.toJSONString(new Redpacket(pool.getCouponType(), pool.getCouponName(), pool.getCouponId(), round.getId(), pool.getAmount())));
+						sink.add(System.nanoTime() + JSON.toJSONString(new Redpacket(pool.getCouponType(), pool.getCouponName(), pool.getCouponId(), round.getId(), pool.getAmount())));
 					}
-					redPacketRedisPoolService.inject(queue);
 				}
+				redPacketRedisPoolService.inject(sink);
 				
 				//更新数据库状态
 				round.setStatus(AfRedRainRoundStatusEnum.INJECTED.name());
