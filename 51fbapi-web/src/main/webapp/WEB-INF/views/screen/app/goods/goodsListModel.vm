@@ -41,7 +41,7 @@
         <div class="couponWrap">
             #foreach($item in $!{couponList})
                 #if(${item.userAlready}<${item.limitCount})
-                    <div class="coupon" onclick="couponClick($!{item.rid},$(this),$!{item.userAlready},$!{item.limitCount})">
+                    <div class="coupon" onclick="couponClick($!{item.rid},$(this),$!{item.userAlready},$!{item.limitCount})" typeHas="0">
                         <p><script>document.write(parseInt($!{item.amount}))</script></p>
                         #if($!{item.limitAmount}== 0)
                             <p>无门槛</p>
@@ -51,7 +51,7 @@
                     </div>
                     <p class="kong"></p>
                  #else
-                     <div class="coupon couponclose" onclick="couponClick($!{item.rid},$(this),$!{item.userAlready},$!{item.limitCount})">
+                     <div class="coupon couponclose" onclick="couponClick($!{item.rid},$(this),$!{item.userAlready},$!{item.limitCount})" typeHas="0">
                          <p>$!{item.amount}</p>
                          #if(${item.limitAmount}== 0)
                              <p>无门槛</p>
