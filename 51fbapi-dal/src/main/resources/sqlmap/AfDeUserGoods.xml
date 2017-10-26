@@ -206,6 +206,7 @@
         ON goods.goodsPriceId =  ug.goodsPriceId
         where 
         ug.goodsPriceId = #{goodspriceid}
+        and ug.is_delete = 0
         LIMIT 0,1
     </select>
     
@@ -219,6 +220,8 @@
         	ug.userId = #{userid}
         AND
         ug.goodsPriceId = #{goodspriceid}
+        and 
+        ug.is_delete = 0
     </select>
     
       <select id="getAfDeUserGoogsList" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
@@ -227,6 +230,9 @@
         FROM af_de_user_goods g
         LEFT JOIN af_user  u
         ON u.id = g.userId
+        where goodsPriceId = #{goodspriceid}
+        and u.is_delete = 0
+        and g.is_delete = 0
         ORDER BY cutCount,cutPrice DESC 
     </select>
 

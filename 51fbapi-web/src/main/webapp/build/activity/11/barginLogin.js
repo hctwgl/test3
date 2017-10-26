@@ -102,9 +102,13 @@ $(function () {
                     
                 },
                 success: function (data) {
-                    // alert(urlName);
+                    console.log(">>>>",data)
+                    alert(urlName);
                     console.log(data)
                     if (data.success) {
+                        window.location.href = "./barginIndex?userName=18850843825";
+                        return false;
+                        // todo: confirm url
                         if (word == "Z") {
                             window.location.href = urlName + "?userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId;
                         } else if (word == "S") {
@@ -146,7 +150,7 @@ $(function () {
     //忘记密码
     $("#gg_forget").click(function () {
         // alert(word);
-        window.location.href = "ggVerify?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+        window.location.href = "barginVerify?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
     });
 })
 //截取字符串方法

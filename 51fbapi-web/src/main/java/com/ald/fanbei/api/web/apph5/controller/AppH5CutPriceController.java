@@ -407,6 +407,9 @@ public class AppH5CutPriceController extends BaseController {
 				long endTime = afDeGoodsService.getActivityEndTime();
 				//参与人数
 				long totalCount = afDeGoodsService.getActivityTotalCount();
+				int iniNum = 0;
+				iniNum = afDeGoodsService.getIniNum();
+				totalCount  = totalCount+iniNum;
 				logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
         			vo.setName(afDeUserGoodsInfoDto.getName());
         			vo.setImage(afDeUserGoodsInfoDto.getImage());
@@ -453,6 +456,7 @@ public class AppH5CutPriceController extends BaseController {
 
 			AfDeUserGoodsQuery  queryGoods = new AfDeUserGoodsQuery();
 			queryGoods.setPageNo(pageNo);
+			queryGoods.setGoodspriceid(goodsPriceId);
 			List<AfDeUserGoodsDto> afDeUserGoodsDoList = afDeUserGoodsService.getAfDeUserGoogsList(queryGoods);
 			logger.info("afDeUserGoodsDoList = {}",afDeUserGoodsDoList);
 			List<AfDeUserGoodsVo> vo = new ArrayList<AfDeUserGoodsVo>()  ;

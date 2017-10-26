@@ -170,11 +170,14 @@
      <select id="getAfDeUserCutInfoList" resultType="com.ald.fanbei.api.dal.domain.AfDeUserCutInfoDo" parameterType="com.ald.fanbei.api.dal.domain.query.AfDeUserCutInfoQuery">
         SELECT
         <include refid="queryFields" />
-        FROM af_de_user_cutInfo
+        FROM af_de_user_cutinfo
         WHERE 
         userGoodsId = #{usergoodsid}
+        and is_delete = 0
         ORDER BY 
-        cutIndex DESC
+        gmt_create DESC
+      
+        
     </select>
     
 </mapper>

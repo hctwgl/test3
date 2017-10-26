@@ -1,5 +1,6 @@
-let goodsId = getUrl('goodsId');//获取模板id
+let goodsId = getUrl('goodsId');//获取商品id
 let productType = getUrl('productType');//获取模板id
+let testUser = getUrl('testUser');//获取模板id
 /*
     productType
     iPhone: iPhone商品页
@@ -17,58 +18,41 @@ let vm = new Vue({
         barginFlag: false, //砍价显示flag
         downTime: {d: 0, h: 0, m: 0, s: 0},
         productType: productType,
+        isWX: false,    //是否是微信浏览器
         cutData: '',
         progressWidth: 0,  // 进度条长度
         tipLeft:0, // 砍价进度提示
+        loadFlag: false,
+        listNum: 1
     },
     created: function() {
         this.logData();
+        this.listFn();
         this.countDown();
+        this.judge();
     },
     methods: {
+        judge: function() {
+            let ua = window.navigator.userAgent.toLowerCase(); 
+            // todo: 不完善，没有判断其他浏览器
+            if (ua.match(/MicroMessenger/i) == 'micromessenger') { 
+                this.isWX = true;
+            } else { 
+                this.isWX = false;
+            } 
+        },
         // get 初始化 信息
         logData:function() {
             let self = this;
-
-            let data2 = {
-                pageNo: 1,
-                friendList: [
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: 'laowang',
-                        cutPrice: 256,
-                        remainPrice: 8489
-                    },
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: 'hwehfuwef',
-                        cutPrice: 454,
-                        remainPrice: 8022
-                    },
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: '的覅微风纪委',
-                        cutPrice: 1110,
-                        remainPrice: 7000
-                    },
-                    {
-                        headImgUrl: 'https://f.51fanbei.com/h5/app/activity/11/image/head.png',
-                        nickname: '车位费围观围观',
-                        cutPrice: 66,
-                        remainPrice: 6934
-                    },
-
-                ]
-            }
-            self.friendData = data2
             $.ajax({
                 url: '/activity/de/goodsInfo',
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId, userName: '1233'},
+                data: {goodsPriceId: goodsId, userName: testUser},
                 success: function(data){
                     if (!data.success) {
-                        requestMsg("哎呀，出错了！");
+                        //todo
+                       // location.href = data.data.loginUrl;
                         return false;
                     }
                     console.log("initData=", data);
@@ -80,21 +64,33 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！")
                 }
             });
+        },
+        listFn: function() {
+            let self = this;
+            self.loadFlag = false;
             $.ajax({
                 url: '/activity/de/friend',
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId, pageNo: 1, userName: "52133"},
+                data: {goodsPriceId: goodsId, pageNo: self.listNum, userName: testUser},
                 success: function(data){
+                    if (data.success) {
+                        if (data.data.listPerson.length>0) {
+                            self.friendData = self.friendData.concat(data.data.friendList);
+                            self.listNum++;
+                            self.loadFlag = true;
+                        }
+                    } else {
+                        //todo
+                        // location.href = data.data.loginUrl;
+                    }
                     console.log("initData=", data);
-                    // goodsList = data.goodsList;
-                    getShareTimes();
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
                 }
             });
-
+            
         },
         showRule: function() {
             this.ruleFlag = true;
@@ -128,38 +124,50 @@ let vm = new Vue({
         toList: function () {
             location.href = "./barginList?goodsId=" + goodsId; 
         },
+        toLogin: function() {
+            location.href = "./barginLogin?goodsId=" + goodsId; 
+        },
         cut: function() {
-            // $.ajax({
-            //     url: '/fanbei-web/activityH5/de/cutprice',
-            //     type: 'POST',
-            //     dataType: 'json',
-            //     data: {
-                        // userId: "125465",
-                        // openId: "1254511",
-                        // nickName: "老王",
-                        // headImgUrl: "https://f.51fanbei.com/h5/app/activity/11/image/head.png"
-                //},
-            //     success: function(data){
-            //         console.log("initData=", data);
-            //         // goodsList = data.goodsList;
-            //         getShareTimes();
-            //     }
-            // });
+            // todo: get user information
+            $.ajax({
+                url: '/activityH5/de/cutprice',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    userId: "125465",
+                    goodsPriceId: goodsId,
+                    openId: "1254511",
+                    nickName: "老王",
+                    headImgUrl: "https://f.51fanbei.com/h5/app/activity/11/image/head.png"
+                },
+                success: function(data){
+                    console.log("砍价后Data=", data);
+
+                }
+            });
             let data = {
                 cutPrice: 236,
                 code: 1
             }
             this.barginFlag = true;
             this.cutData = data;   
-            // if (data.code==1) {
-            // } else if (data.code==2) {
-            //     requestMsg("已经砍过价了");
-            // } else {
-            //     requestMsg("已砍至最低价，无法完成本次砍价");
-            // }
+
         },
         closeBargin: function () {
             this.barginFlag = false;
+        },
+        scrollFn: function() {
+            let self = this;
+            $(window).on("scroll", function(e){ 
+                if (self.loadFlag) {
+                    var scrollTop = $(this).scrollTop();    //滚动条距离顶部的高度
+                    var scrollHeight = $(document).height();   //当前页面的总高度
+                    var clientHeight = $(this).height();    //当前可视的页面高度
+                    if (scrollTop + clientHeight >= scrollHeight-20) {
+                        self.listFn();
+                    }
+                }
+            }) 
         }
     }
 })
