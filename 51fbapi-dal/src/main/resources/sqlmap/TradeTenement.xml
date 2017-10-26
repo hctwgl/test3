@@ -4,12 +4,12 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.TradeTenementDao">
 
 
-  <insert id="addTenementInfoDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo" >
+  <insert id="addTenementInfoDo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo" useGeneratedKeys="true" keyProperty="id" >
+  		<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
 		INSERT INTO af_trade_tenement_info
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null and id != ''">
-				id,
-			</if>
 			apply_time,
 			audit_time,
 			<if test="userName != null and userName != ''">
@@ -47,9 +47,6 @@
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null and id != ''">
-				#{id,jdbcType=INTEGER},
-			</if>
 				NOW(),
 				NOW(),
 			<if test="userName != null and userName != ''">

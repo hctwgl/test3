@@ -36,9 +36,8 @@ public class TradeAddTenementApi implements ApiHandle {
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
         
         AfTradeTenementInfoDo afTradeTenementInfoDo = new AfTradeTenementInfoDo();
-        String id = getId();
-        //String applyTime = ObjectUtils.toString(requestDataVo.getParams().get("applyTime"), "").toString();
-        //String auditTime = ObjectUtils.toString(requestDataVo.getParams().get("auditTime"), "").toString();
+        
+        
         String userName = ObjectUtils.toString(requestDataVo.getParams().get("userName"), "").toString();
         String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"), "").toString();
         String idNumber = ObjectUtils.toString(requestDataVo.getParams().get("idNumber"), "").toString();
@@ -53,11 +52,8 @@ public class TradeAddTenementApi implements ApiHandle {
         String auditFaildReason = ObjectUtils.toString(requestDataVo.getParams().get("auditFaildReason"), "").toString();
         Integer rentStatus = NumberUtil.objToIntDefault(requestDataVo.getParams().get("rentStatus"), null);
         
-        afTradeTenementInfoDo.setId(id);
-        //Date applyTimeDate = DateUtil.parseDate(applyTime,"yyyy-MM-dd");
-        //Date auditTimeDate = DateUtil.parseDate(auditTime,"yyyy-MM-dd");
-        //afTradeTenementInfoDo.setApplyTime(applyTimeDate);
-        //afTradeTenementInfoDo.setAuditTime(auditTimeDate);
+        
+       
         afTradeTenementInfoDo.setUserName(userName);
         afTradeTenementInfoDo.setMobile(mobile);
         afTradeTenementInfoDo.setIdNumber(idNumber);
@@ -85,12 +81,4 @@ public class TradeAddTenementApi implements ApiHandle {
 		return resp;
 	}
 
-	
-	public String getId() {
-		String now = DateUtil.now();
-        int i=(int)(Math.random()*900)+100;
-        String random = String.valueOf(i);
-        String id = "51"+now+random;
-        return id;
-	}
 }

@@ -7,7 +7,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 
 public class AfTradeTenementInfoDo {
 
-	private String id;//主键id
+	private Long id;//主键id
 	private Date applyTime;//申请审核时间，第一次为创建时间，后续为重复提交审核的时间
 	private Date auditTime;//最后一次审核时间
 	private String userName;//用户名
@@ -27,13 +27,14 @@ public class AfTradeTenementInfoDo {
 	private Integer isTermination;//租客是否终止
 	private String auditName;//审核人
 	
-	public String getId() {
+	
+	
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
-	
 	@JSONField(format = "yyyy-MM-dd")
 	public Date getApplyTime() {
 		return applyTime;
