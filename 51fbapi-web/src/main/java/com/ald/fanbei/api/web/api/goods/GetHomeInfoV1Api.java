@@ -529,6 +529,28 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	private Map<String,Object> getManyPricutresResourceDoList(List<AfResourceDo> rescList) {
 		Map<String,Object> manyPricutres = new HashMap<String,Object>();
 		List<Map<String,Object>> manyPricutresList = new ArrayList<Map<String,Object>> ();
+		if(rescList == null){
+			return manyPricutres;
+		}
+		if(rescList.size()<3){
+			return manyPricutres;
+		}
+		if(rescList.size() >= 3 && rescList.size()<6){
+			if(rescList.size()==5){
+				rescList.remove(4);
+			}
+			if(rescList.size()==4){
+				rescList.remove(3);
+			}
+		}
+		if(rescList.size() >= 6 && rescList.size()<9){
+			if(rescList.size()==8){
+				rescList.remove(7);
+			}
+			if(rescList.size()==7){
+				rescList.remove(6);
+			}
+		}
 		for(AfResourceDo afResourceDo : rescList) {
 			Map<String, Object> data = new HashMap<String,Object> ();
 			String value3 = afResourceDo.getValue3();
