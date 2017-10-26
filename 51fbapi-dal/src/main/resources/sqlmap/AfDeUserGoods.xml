@@ -180,7 +180,7 @@
         FROM(
               SELECT
 				  p.id AS goodsPriceId,
-				  g.goods_icon AS image,
+				  g.thumbnail_icon AS image,
 				  p.actual_amount AS originalPrice,
 				  d.lowestPrice,
 				  IF(u.cutPrice IS NULL,0,u.cutprice) AS cutprice,
