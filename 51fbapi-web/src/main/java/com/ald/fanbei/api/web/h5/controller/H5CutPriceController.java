@@ -488,9 +488,9 @@ public class H5CutPriceController extends H5Controller {
 
     private AfDeUserCutInfoVo parseDoToVo(AfDeUserCutInfoDo userCutInfo) {
 	AfDeUserCutInfoVo vo = new AfDeUserCutInfoVo();
-	vo.setCutprice(userCutInfo.getCutprice());
+	vo.setCutPrice(userCutInfo.getCutprice());
 	vo.setHeadImgUrl(userCutInfo.getHeadimgurl());
-	vo.setNickname(userCutInfo.getNickname());
+	vo.setNickName(userCutInfo.getNickname());
 	vo.setRemainPrice(userCutInfo.getRemainprice());
 	return vo;
     }

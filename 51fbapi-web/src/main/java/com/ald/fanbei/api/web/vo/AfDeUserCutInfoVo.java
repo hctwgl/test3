@@ -19,12 +19,12 @@ import java.math.BigDecimal;
     /**
      * 本次砍价金额
      */
-    private BigDecimal cutprice;
+    private BigDecimal cutPrice;
 
     /**
      * 
      */
-    private String nickname;
+    private String nickName;
 
     /**
      * 
@@ -36,20 +36,23 @@ import java.math.BigDecimal;
      */
     private BigDecimal remainPrice;
 
-    public BigDecimal getCutprice() {
-        return cutprice;
+   
+    public BigDecimal getCutPrice() {
+        return cutPrice;
     }
 
-    public void setCutprice(BigDecimal cutprice) {
-        this.cutprice = cutprice;
+    public void setCutPrice(BigDecimal cutPrice) {
+        this.cutPrice = cutPrice;
     }
 
-    public String getNickname() {
-        return nickname;
+   
+
+    public String getNickName() {
+        return nickName;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     public String getHeadImgUrl() {
