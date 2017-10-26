@@ -537,18 +537,18 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		}
 		if(rescList.size() >= 3 && rescList.size()<6){
 			if(rescList.size()==5){
-				rescList.remove(4);
+				rescList.remove(1);
 			}
 			if(rescList.size()==4){
-				rescList.remove(3);
+				rescList.remove(0);
 			}
 		}
 		if(rescList.size() >= 6 && rescList.size()<9){
 			if(rescList.size()==8){
-				rescList.remove(7);
+				rescList.remove(1);
 			}
 			if(rescList.size()==7){
-				rescList.remove(6);
+				rescList.remove(0);
 			}
 		}
 		for(AfResourceDo afResourceDo : rescList) {
