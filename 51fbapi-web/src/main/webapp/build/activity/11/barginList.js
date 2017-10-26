@@ -5,10 +5,11 @@ let vm = new Vue({
     el: "#barginList",
     data: { 
         goodsData:{}, //所有商品数据
-        listData: {},
+        listData: [],
         ruleFlag: false, //规则显示flag
         downTime: {d: 0, h: 0, m: 0, s: 0},
-        loadFlag: true
+        loadFlag: false,
+        listNum: 1
     },
     created: function() {
         this.logData();  
@@ -34,15 +35,24 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！");
                 }
             });
+            self.listFn();
+            self.scrollFn();
+        },
+        listFn: function() {
+            let self = this;
+            self.loadFlag = false;
             $.ajax({
                 url: '/activity/de/topList',
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId, pageNo: 1},
+                data: {goodsPriceId: goodsId, pageNo: self.listNum},
                 success: function(data){
-                    console.log("listData=", data);
                     if (data.success) {
-                        self.listData = data.data;
+                        if (data.data.listPerson.length>0) {
+                            self.listData = self.listData.concat(data.data.listPerson);
+                            self.listNum++;
+                            self.loadFlag = true;
+                        }
                     } else {
                         requestMsg("哎呀，出错了！");
                     }
@@ -51,7 +61,7 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！");
                 }
             });
-
+            
         },
         showRule: function() {
             this.ruleFlag = true;
@@ -79,6 +89,20 @@ let vm = new Vue({
                 self.downTime.m = m;
                 self.downTime.s = s;
             }, 1000);      
+        },
+        scrollFn: function() {
+            console.log("start")
+            let self = this;
+            $(window).on("scroll", function(e){ 
+                if (self.loadFlag) {
+                    var scrollTop = $(this).scrollTop();    //滚动条距离顶部的高度
+                    var scrollHeight = $(document).height();   //当前页面的总高度
+                    var clientHeight = $(this).height();    //当前可视的页面高度
+                    if (scrollTop + clientHeight >= scrollHeight-20) {
+                        self.listFn();
+                    }
+                }
+            }) 
         }
     }
 })

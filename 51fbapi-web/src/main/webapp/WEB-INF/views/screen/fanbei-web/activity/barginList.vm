@@ -68,7 +68,7 @@
                                 </div>
                             </div>
                             <ul class="f-ul flex fd-column ai-c">
-                                <li class="r-list flex fd-row ai-c" v-for="list in listData.listPerson">
+                                <li class="r-list flex fd-row ai-c" v-for="list in listData">
                                     <div class="rt1 flex jc-c">
                                         <img src="$commonUrl/barginList01.png" v-if="list.index==1">
                                         <img src="$commonUrl/barginList02.png" v-if="list.index==2">
@@ -76,8 +76,8 @@
                                         <div class="r-num" v-if="list.index!=1 && list.index!=2 &&list.index!=3">{{list.index}}</div>
                                     </div>
                                     <div class="rt2 r-phone">{{list.phone}}</div>
-                                    <div class="rt3 r-time">{{list.cutprice}}次</div>
-                                    <div class="rt4 r-price">-{{list.cutcount}}</div>
+                                    <div class="rt3 r-time">{{list.cutPrice}}次</div>
+                                    <div class="rt4 r-price">-{{list.cutCount}}</div>
                                 </li>
                             </ul>
                         </div>

@@ -150,7 +150,7 @@ $(function () {
     //忘记密码
     $("#gg_forget").click(function () {
         // alert(word);
-        window.location.href = "ggVerify?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+        window.location.href = "barginVerify?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
     });
 })
 //截取字符串方法

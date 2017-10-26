@@ -24,6 +24,7 @@ let vm = new Vue({
     methods: {
         judge: function() {
             let ua = window.navigator.userAgent.toLowerCase(); 
+            // todo: 不完善，没有判断其他浏览器
             if (ua.match(/MicroMessenger/i) == 'micromessenger') { 
                 this.isWX = true;
             } else { 
@@ -101,6 +102,8 @@ let vm = new Vue({
                 }
                 this.sureFlag = true;
                 this.goodsId = id;
+            } else {
+                this.shareSure();
             }
         },
         shareSure: function() {
@@ -109,6 +112,7 @@ let vm = new Vue({
             // 是否登录,APP_SHARE接口会自动判断是否登陆
             if (this.isWX) {
                 //todo: 弹窗提示分享
+                this.toProduct(this.goodsId,"product");
             } else {
                 // todo: userName
                 //window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗邀请有礼，快来参与~","shareAppContent":"我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~","shareAppImage":"https://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+urlHost+'/fanbei-web/activity/barginProduct?goodsId'+this.goodsId+'&productType=product&userName=","isSubmit":"Y","sharePage":"barginIndex"}'; 
