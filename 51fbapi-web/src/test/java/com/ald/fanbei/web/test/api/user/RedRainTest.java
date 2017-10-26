@@ -21,13 +21,13 @@ public class RedRainTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://192.168.106.162:8180";
+	String urlBase = "http://localhost:8080";
 	String userName = "13656640521";
 	
 	/**
 	 * 自动注入登陆令牌
 	 */
-	@Before
+//	@Before
 	public void init(){
 		super.init(userName);
 	}

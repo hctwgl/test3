@@ -118,19 +118,13 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 					return rp;
 				}
 			}catch (Exception e) {
-				e.printStackTrace(); // TODO DELETE
-//				logger.error(e.getMessage(), e);
+				logger.error(e.getMessage(), e);
 			}
 		}
 		
 		return null;
 	}
 	
-	public static void main(String[] args) {
-		String s = "{asdqweqwe:{}}";
-		System.out.println(s.indexOf("{"));
-	}
-
 	@Override
 	public List<AfRedRainRoundDo> fetchTodayRounds() {
 		Map<String, Object> params = new HashMap<>();
@@ -171,7 +165,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			try {
 				//扫描
 				AfRedRainRoundDo paramRound = new AfRedRainRoundDo();
-				Date gmtStart = DateUtil.addMins(new Date(), 12);
+				Date gmtStart = DateUtil.addMins(new Date(), 15);//TODO 12 -> 4
 				paramRound.setGmtStart(gmtStart);
 				paramRound.setStatus(AfRedRainRoundStatusEnum.PREPARE.name());
 				final AfRedRainRoundDo round = afRedRainRoundDao.fetch(paramRound);
