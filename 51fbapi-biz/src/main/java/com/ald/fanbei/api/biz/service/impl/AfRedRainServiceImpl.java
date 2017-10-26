@@ -127,7 +127,6 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	@Override
 	public List<AfRedRainRoundDo> fetchTodayRounds() {
 		Map<String, Object> params = new HashMap<>();
-		params.put("status", AfRedRainRoundStatusEnum.PREPARE.name());
 		Date cur = new Date();
 		params.put("gmtMin", DateUtil.getStartOfDate(cur));
 		params.put("gmtMax", DateUtil.getEndOfDate(cur));
