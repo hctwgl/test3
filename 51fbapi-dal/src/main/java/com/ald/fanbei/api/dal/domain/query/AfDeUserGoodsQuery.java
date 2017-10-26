@@ -14,7 +14,14 @@ import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
  public class AfDeUserGoodsQuery extends Page<AfDeUserGoodsDo> {
 
     private static final long serialVersionUID = 1L;
-
+    private long goodspriceid;
+    public long getGoodspriceid() {
+        return goodspriceid;
+    }
+    public void setGoodspriceid(long goodspriceid) {
+        this.goodspriceid = goodspriceid;
+    }
+    
     
 
 }
