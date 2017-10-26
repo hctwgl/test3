@@ -83,4 +83,23 @@ public class AfDeGoodsServiceImpl extends ParentServiceImpl<AfDeGoodsDo, Long> i
 	// TODO Auto-generated method stub
 	return afDeGoodsDao.getGoodsInfo(afDeGoodsDo);
     }
+
+
+    @Override
+    public int getIniNum() {
+	// TODO Auto-generated method stub
+	//afResourceService
+	int iniNum =  0 ; 
+	  try {
+        	AfResourceDo  afResourceDo =  afResourceService.getConfigByTypesAndSecType("DECUTPRICE", "ININUM");
+        	
+        	 if(afResourceDo != null ){
+        	     iniNum =   Integer.parseInt(afResourceDo.getValue());
+        	 } 
+	       }catch (Exception e) {
+		   e.printStackTrace();
+		   logger.info( "decutprice iniNum:",iniNum);
+	    }
+        	return iniNum;
+	}
 }
