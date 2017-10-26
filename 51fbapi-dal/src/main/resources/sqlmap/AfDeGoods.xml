@@ -178,6 +178,7 @@
         ON goods.goodsPriceId =  ug.goodsPriceId
         where 
         ug.goodsPriceId = #{goodspriceid}
+        AND ug.`is_delete`=0
         LIMIT 0,1
     </select>
     <select id ="getUserDeGoodsList" resultMap="userDeGoods">

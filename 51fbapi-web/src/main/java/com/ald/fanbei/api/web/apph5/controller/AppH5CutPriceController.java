@@ -456,6 +456,7 @@ public class AppH5CutPriceController extends BaseController {
 
 			AfDeUserGoodsQuery  queryGoods = new AfDeUserGoodsQuery();
 			queryGoods.setPageNo(pageNo);
+			queryGoods.setGoodspriceid(goodsPriceId);
 			List<AfDeUserGoodsDto> afDeUserGoodsDoList = afDeUserGoodsService.getAfDeUserGoogsList(queryGoods);
 			logger.info("afDeUserGoodsDoList = {}",afDeUserGoodsDoList);
 			List<AfDeUserGoodsVo> vo = new ArrayList<AfDeUserGoodsVo>()  ;
