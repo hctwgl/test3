@@ -131,6 +131,7 @@
     <resultMap type="com.ald.fanbei.api.dal.domain.dto.UserDeGoods" id="userDeGoods">
     	<id column="goodsPriceId" property="goodsPriceId" />
 		<result column="image" property="image" />
+		<result column="thumbnailIcon" property="thumbnailIcon" />
 		<result column="originalPrice" property="originalPrice" />
 		<result column="lowestPrice" property="lowestPrice" />
 		<result column="cutPrice" property="cutPrice" />
@@ -152,7 +153,7 @@
         FROM(
               SELECT
 				  p.id AS goodsPriceId,
-				  g.thumbnail_icon AS image,
+				  g.goods_icon AS image,
 				  p.actual_amount AS originalPrice,
 				  d.lowestPrice,
 				  IF(u.cutPrice IS NULL,0,u.cutprice) AS cutprice,
@@ -184,7 +185,8 @@
     <select id ="getUserDeGoodsList" resultMap="userDeGoods">
 	    SELECT
 			p.id AS goodsPriceId,
-			g.thumbnail_icon AS image,
+			g.goods_icon AS image,
+			g.thumbnail_icon as thumbnailIcon,
 			g.id as goodsId,
 			p.actual_amount AS originalPrice,
 			d.lowestPrice,
