@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service.wxpay;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.AesUtil;

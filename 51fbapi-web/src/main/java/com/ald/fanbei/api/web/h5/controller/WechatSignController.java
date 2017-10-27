@@ -43,10 +43,6 @@ import io.netty.util.internal.ObjectUtil;
 @RestController
 @RequestMapping(value = "/wechat", produces = "application/json;charset=UTF-8")
 public class WechatSignController extends H5Controller {
-	@Autowired
-	WxUtil wxUtil;
-	@Autowired
-	WxSignBase wxSignBase;
 	@Resource
 	AfResourceService afResourceService;
 
@@ -82,8 +78,8 @@ public class WechatSignController extends H5Controller {
 						.append("&timestamp=").append(timestamp).append("&url=").append(url).toString();
 				logger.info("getSign content is:{}", content);
 				byte[] in = content.getBytes();
-				byte[] out = wxSignBase.SHA1Digest(in);
-				String sign = new String(out);
+				byte[] out = WxSignBase.SHA1Digest(in);
+				String sign = WxSignBase.bytesToHex(out);
 				logger.info("getSign sign is:{}", sign);
 
 				wechatSignatureData.setAppId(appId);

@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
@@ -107,7 +109,7 @@ public class WxSignBase {
 	/**
 	 * 计算字节流 in 的 SHA-1 通常需要用 bytesToHex 转换为可读的字符串
 	 */
-	public byte[] SHA1Digest(byte[] in) {
+	public static byte[] SHA1Digest(byte[] in) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-1");
 
