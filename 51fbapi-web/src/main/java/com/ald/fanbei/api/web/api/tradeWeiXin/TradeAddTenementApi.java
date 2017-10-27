@@ -50,12 +50,12 @@ public class TradeAddTenementApi implements ApiHandle {
         BigDecimal rentSumPrice = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("rentSumPrice"), null);
         String beginTime = ObjectUtils.toString(requestDataVo.getParams().get("beginTime"), "").toString();
         String endTime = ObjectUtils.toString(requestDataVo.getParams().get("endTime"), "").toString();
-<<<<<<< HEAD
+
      
         
         
        
-=======
+
         AfIdNumberDo afIdNumberDo= tradeTenementService.getUserIdentityUrl(mobile);
         if(afIdNumberDo==null){
             resp.addResponseData("message", "对不起，该用户尚未进行注册/身份证认证");
@@ -72,7 +72,7 @@ public class TradeAddTenementApi implements ApiHandle {
             }
         }
 
->>>>>>> b54f292b942e290726a81dab4f5c26497c55eb28
+
         afTradeTenementInfoDo.setUserName(userName);
         afTradeTenementInfoDo.setMobile(mobile);
         afTradeTenementInfoDo.setIdNumber(idNumber);
