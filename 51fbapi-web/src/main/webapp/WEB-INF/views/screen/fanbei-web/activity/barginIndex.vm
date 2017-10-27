@@ -7,15 +7,7 @@
     <meta charset="UTF-8">
     <title>砍价首页</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css?version=$version">
-    <script type="text/javascript">
-        let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct')
-        location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';
 
-
-        
-        // location.href= 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri=http%3A%2F%2Fktestapp.51fanbei.com%2Ffanbei-web%2Factivity%2FbarginProduct&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';
-
-    </script>
 </head>
 
 <body>

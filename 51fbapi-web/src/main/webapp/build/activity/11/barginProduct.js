@@ -1,7 +1,7 @@
 let goodsId = getUrl('goodsId');//获取商品id
 let productType = getUrl('productType');//获取商品类型
 let userName = getUrl('testUser');//获取用户id
-let code = getUrl("code"); // 获取code
+// let code = getUrl("code"); // 获取code
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
