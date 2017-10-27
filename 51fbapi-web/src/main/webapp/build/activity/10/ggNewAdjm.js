@@ -1,4 +1,8 @@
 'use strict';
+//转化代码
+let _taq=[];
+_taq.push({convert_id:"73486724679",  event_type:"form"});
+//转化代码
 var activityId = getUrl("activityId");//获取活动Id
 var userName='';//获取用户名
 //获取页面名称传到登录页
@@ -9,22 +13,16 @@ urlName=urlName.replace(/\?/g,'&');
 var num;//卡片数量
 var typeFrom=getUrl("typeFrom");//渠道类型
 var typeFromNum=getUrl("typeFromNum");//渠道类型数
-let _taq=[];
 $(function(){
-    if(typeFrom=='Jrtt'){
+    if(typeFrom=='Jrtt'||typeFrom=='Jmtt'){
         $('.companyWord02').show();
-        _taq.push({convert_id:"72607366923",  event_type:"form"})
-    }else if(typeFrom=='Jmtt'){
-        $('.companyWord02').show();
-        //转化代码
-        _taq.push({convert_id:"73486724679",  event_type:"form"});
     }else{
         $('.companyWord01').show();
     }
 });
 //获取数据
 let vm = new Vue({
-    el: '#ggNewAd',
+    el: '#ggNewAdjm',
     data: {
         content: {}
     },
