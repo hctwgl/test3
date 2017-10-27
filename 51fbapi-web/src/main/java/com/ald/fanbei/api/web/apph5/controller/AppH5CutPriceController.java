@@ -248,7 +248,7 @@ public class AppH5CutPriceController extends BaseController {
 		String resultStr = "";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
-			context = doWebCheck(request, false);
+			context = doWebCheck(request, true);
 			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			if(goodsPriceId == null){
@@ -316,7 +316,7 @@ public class AppH5CutPriceController extends BaseController {
 	public String friend(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiWebContext context = new FanbeiWebContext();
-		try {	context = doWebCheck(request, false);
+		try {	context = doWebCheck(request, true);
 			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			Integer pageNo = NumberUtil.objToInteger(request.getParameter("pageNo"));
