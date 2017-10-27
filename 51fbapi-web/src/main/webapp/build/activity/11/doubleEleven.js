@@ -175,13 +175,134 @@ let vm = new Vue({
                 'src': ''
             }
         ], //返回回来的数据
-        arr: [], //就是把数据转成二维数组。一维是swiper-slide的个数。二维是每个swiper-slide的img的个数和数据，最后转成arr[['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8'],[,'图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16'],['图片17','图片18']]
+        arr: [
+            [{
+                'name': '苹果',
+                'img': imgrooturl + '/brand-01.png',
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=187'
+            },
+            {
+                'name': 'vivo/OPPO',
+                'img': imgrooturl + '/brand-02.png',
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=186'
+            },
+            {
+                'name': '韩都衣舍',
+                'img': imgrooturl + '/brand-09.png',
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=185'
+            },
+            {
+                'name': 'DW',
+                'img': imgrooturl + '/brand-16.png',
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=183'
+            },
+            {
+                'name': 'nike',
+                'img': imgrooturl + '/brand-11.png',
+                'src': ''
+            },
+            {
+                'name': 'addidas',
+                'img': imgrooturl + '/brand-12.png',
+                'src': ''
+            },
+            {
+                'name': 'gxg',
+                'img': imgrooturl + '/brand-25.png',
+                'src': ''
+            },
+            {
+                'name': '兰蔻',
+                'img': imgrooturl + '/brand-24.png',
+                'src': ''
+            }],
+            [{
+                'name': '华为',
+                'img': imgrooturl + '/brand-03.png',
+                'src': ''
+            },
+            {
+                'name': '小米',
+                'img': imgrooturl + '/brand-04.png',
+                'src': ''
+            },
+            {
+                'name': '天梭',
+                'img': imgrooturl + '/brand-29.png',
+                'src': ''
+            },
+            {
+                'name': 'lilbetter',
+                'img': imgrooturl + '/brand-19.png',
+                'src': ''
+            },
+            {
+                'name': '乐町',
+                'img': imgrooturl + '/brand-10.png',
+                'src': ''
+            },
+            {
+                'name': '欧莱雅',
+                'img': imgrooturl + '/brand-29.png',
+                'src': ''
+            },
+            {
+                'name': '马克华菲',
+                'img': imgrooturl + '/brand-05.png',
+                'src': ''
+            },
+            {
+                'name': '李宁',
+                'img': imgrooturl + '/brand-27.png',
+                'src': ''
+            },
+            ]
+            ,[{
+                'name': 'CK',
+                'img': imgrooturl + '/brand-26.png',
+                'src': ''
+            },{
+                'name': 'newbalance',
+                'img': imgrooturl + '/brand-13.png',
+                'src': ''
+            },
+            {
+                'name': '拉夏贝尔',
+                'img': imgrooturl + '/brand-08.png',
+                'src': ''
+            },
+            {
+                'name': 'Dickies',
+                'img': imgrooturl + '/brand-28.png',
+                'src': ''
+            },
+            {
+                'name': 'Dior',
+                'img': imgrooturl + '/brand-17.png',
+                'src': ''
+            },
+            {
+                'name': '衣香丽影',
+                'img': imgrooturl + '/brand-21.png',
+                'src': ''
+            },
+            {
+                'name': '宾卡达',
+                'img': imgrooturl + '/brand-15.png',
+                'src': ''
+            },
+            {
+                'name': '鸿星尔克',
+                'img': imgrooturl + '/brand-14.png',
+                'src': ''
+            }]
+        ], //就是把数据转成二维数组。一维是swiper-slide的个数。二维是每个swiper-slide的img的个数和数据，最后转成arr[['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8'],[,'图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16'],['图片17','图片18']]
     },
     created: function () {
         this.logData();
         this.coupon();
         this.countDown();
-        var arr = new Array([]);
+        /* var arr = new Array([]);
         for (var i = 0; i <= Math.floor(this.allData.length / 8); i++) {
             arr[i] = [];
 
@@ -189,8 +310,8 @@ let vm = new Vue({
         }
 
         this.arr = arr;
-        // console.log(arr);
-        // console.log( this.arr.length );
+        console.log(arr);
+        console.log( this.arr.length ); */
     },
     mounted: function () {
         var mySwiper = new Swiper('.swiper-container', {
