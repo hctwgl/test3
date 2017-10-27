@@ -2,8 +2,6 @@ let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
 
-location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri=http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct?goodsId=298&productType=iPhone&testUser=undefined&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect"
-
 let vm = new Vue({
     el: "#barginIndex",
     data: { 
