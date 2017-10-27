@@ -73,7 +73,7 @@
                             </ul>
                         </div>
                         <div style="height:1.5rem;">
-                            <div class="progressBox"></div>
+                            <!-- <div class="progressBox"></div> -->
                         </div>
                     </div>
                 </div>
