@@ -615,6 +615,7 @@ let vm = new Vue({
                     if(self.allStartTime>Date.parse("2017/11/12 00:00:00")){
                         $('.countThree').html('活动已结束');
                         $('.redRain').unbind("click");//禁止点击事件
+                         clearInterval(timer); //清除定时器
                     }
 
                 }
