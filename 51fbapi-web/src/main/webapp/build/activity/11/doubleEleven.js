@@ -468,7 +468,8 @@ let vm = new Vue({
                             hour = Math.floor(diff / (60 * 60)) - (day * 24);
                             minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
                             second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
-
+                            
+                            //判断是否小于10  
                             hour = hour < 10 ? '0' + hour : hour
                             minute = minute < 10 ? '0' + minute : minute
                             second = second < 10 ? '0' + second : second
