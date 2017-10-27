@@ -22,8 +22,12 @@
         width: 7.5rem !important;
         margin-left: 0.02rem;
     }
+    .swiper-button-prev{
+        opacity:0.7;
+    }
     .swiper-button-next{
         color:#8e8e8e !important;
+        opacity:0.7;
     }
     .swiper-button-next, .swiper-container-rtl .swiper-button-prev{
         background-image:none !important;

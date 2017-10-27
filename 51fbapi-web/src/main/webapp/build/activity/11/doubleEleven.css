@@ -199,7 +199,7 @@ body {
     border-bottom: 3px solid transparent;
 } */
 .doubleEleven-banner {
-  background: url('http://f.51fanbei.com/h5/app/activity/11/meeting_09.jpg') no-repeat;
+  background: url('http://f.51fanbei.com/h5/app/activity/11/metting_09.jpg') no-repeat;
   background-size: contain;
   width: 7.5rem;
   height: 10.24rem;
@@ -391,7 +391,7 @@ body {
   left: 0.1rem;
   top: 60%;
   transform: translateY(-50%);
-  font-size: 0.95rem;
+  font-size: 0.7rem;
   color: #8e8e8e;
   z-index: 999;
 }
@@ -400,7 +400,7 @@ body {
   right: 0.1rem;
   top: 60%;
   transform: translateY(-50%);
-  font-size: 0.95rem;
+  font-size: 0.7rem;
   color: #8e8e8e;
   z-index: 999;
 }
@@ -485,6 +485,7 @@ ul li {
 }
 .price {
   margin: 0.1rem 0;
+  text-align: center;
 }
 .fan-img {
   width: 0.39rem;
@@ -495,4 +496,5 @@ ul li {
   text-align: center;
   line-height: 0.39rem;
   font-size: 0.26rem;
+  line-height: 0.4rem;
 }
