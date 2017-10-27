@@ -468,6 +468,10 @@ let vm = new Vue({
                             hour = Math.floor(diff / (60 * 60)) - (day * 24);
                             minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
                             second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+
+                            hour = hour < 10 ? '0' + hour : hour
+                            minute = minute < 10 ? '0' + minute : minute
+                            second = second < 10 ? '0' + second : second
                         }
 
                         $('.countTwo').html(day + "天" + " : " + hour + '时' + " : " + minute + '分' + " : " + second + '秒'); //全民倒计时
@@ -538,6 +542,10 @@ let vm = new Vue({
                             hour = Math.floor(ctime / (60 * 60)) - (day * 24);
                             minute = Math.floor(ctime / 60) - (day * 24 * 60) - (hour * 60);
                             second = Math.floor(ctime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+
+                            hour = hour < 10 ? '0' + hour : hour
+                            minute = minute < 10 ? '0' + minute : minute
+                            second = second < 10 ? '0' + second : second
                         }
                         $('.countThree').html(day + "天" + " : " + hour + '时' + " : " + minute + '分' + " : " + second + '秒'); //红包雨
                         //判断活动时间 活动开始前显示倒计时时间 
