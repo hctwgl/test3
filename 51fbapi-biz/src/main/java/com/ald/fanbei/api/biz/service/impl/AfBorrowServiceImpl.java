@@ -1317,12 +1317,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				borrowNper = 12;
 			}
 		}
-
 		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
 		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
 				borrowNper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
 
-
+		borrow.setNper(nper);
 
 		List<AfBorrowBillDo> list = buildBorrowBillForNewInterestForHouse(borrow,PayType.AGENT_PAY.getCode(),now);
 		HashMap<String ,Object> map = new HashMap<String,Object>();
