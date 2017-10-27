@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,16 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.wxpay.WechatSignatureData;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
-import com.ald.fanbei.api.biz.service.wxpay.WxUtil;
-import com.ald.fanbei.api.biz.service.wxpay.WxpayCore;
+import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
-
-import antlr.StringUtils;
-import io.netty.util.internal.ObjectUtil;
 
 /**
  * 
