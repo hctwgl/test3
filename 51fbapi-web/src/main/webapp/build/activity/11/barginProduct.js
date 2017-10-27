@@ -66,9 +66,11 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {goodsPriceId: goodsId, userName: userName},
                 success: function(data){
+                    $(".loadingMask").fadeOut();
                     if (!data.success) {
                         if (self.isWX) {
                            // self.toLogin(); 
+                           requestMsg("哎呀，出错了！")
                         }else {
                             location.href = data.data.loginUrl;
                         }
@@ -77,7 +79,6 @@ let vm = new Vue({
                     self.goodsData = data.data;
                     self.progressWidth = 6.2*self.goodsData.cutPrice/self.goodsData.originalPrice; // 计算滚动条长度
                     self.tipLeft = self.progressWidth - 0.74;
-                    $(".loadingMask").fadeOut();
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
