@@ -145,7 +145,7 @@
                                 <span class="fan-img">返</span>
                                 <span class="fanMoney">￥{{p.rebateAmount}}</span>
                             </p>
-                            <p class="monthPrice" v-if="p.nperMap.isFree==='0'">月供 ￥{{itpem.nperMap.amount}} 起</p>
+                            <p class="monthPrice" v-if="p.nperMap.isFree==='0'">月供 ￥{{p.nperMap.amount}} 起</p>
                             <p class="monthPrice" v-if="p.nperMap.isFree==='1' || p.nperMap.isFree==='2'">月供 ￥{{p.nperMap.freeAmount}} 起</p>
                         </div>
                     </div>   
