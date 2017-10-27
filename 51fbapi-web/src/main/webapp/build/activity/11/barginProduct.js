@@ -1,5 +1,6 @@
 let goodsId = getUrl('goodsId');//获取商品id
 let productType = getUrl('productType');//获取商品类型
+let goodsType  = getUrl('productType');//获取商品类型
 let userName = getUrl('testUser');//获取用户id
 // let code = getUrl("code"); // 获取code
 let protocol = window.location.protocol;
@@ -89,7 +90,9 @@ let vm = new Vue({
                 success: function(data){
                     console.log("用户信息=",data)
                     alert(JSON.stringify(data))
-                    self.userInfo = data.data;
+                    if (data.success) {
+                        self.userInfo = data.data;
+                    }
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
@@ -162,7 +165,11 @@ let vm = new Vue({
         cut: function() {
             let self = this;
             let user = self.userInfo;
-            // todo: get user information
+            if (!user.hasOwnProperty("openid")) {
+                requestMsg("哎呀，出错了！")
+                return false;
+            }
+
             $.ajax({
                 url: '/activityH5/de/cutPrice',
                 type: 'POST',
@@ -175,10 +182,11 @@ let vm = new Vue({
                     "headImgUrl": user.headimgurl
                 },
                 success: function(data){
-
                     self.barginFlag = true;
                     self.cutData = data;   
-
+                },
+                error: function() {
+                    requestMsg("哎呀，出错了！");
                 }
             });
 
