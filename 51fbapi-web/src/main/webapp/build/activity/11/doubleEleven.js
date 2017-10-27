@@ -370,7 +370,7 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
-                    self.m = self.content.couponInfoList;
+                    self.m = self.content.couponInfoList.slice(0,1);
                     self.c = JSON.stringify(self.m);
                     self.m = JSON.parse(self.c);
 
@@ -435,7 +435,7 @@ let vm = new Vue({
                     let startTime = new Date("Nov 1,2017 00:00:00");
                     let startStamp = startTime.valueOf();
                     // 结束时间的时间戳
-                    let endDate = new Date("Nov 11,2017 00:00:00");
+                    let endDate = new Date("Nov 12,2017 00:00:00");
                     // let endDate = new Date("oct 26,2017 00:00:00");
                     let endStamp = endDate.valueOf();
                     // 获取当前时间的时间戳
@@ -468,6 +468,11 @@ let vm = new Vue({
                             hour = Math.floor(diff / (60 * 60)) - (day * 24);
                             minute = Math.floor(diff / 60) - (day * 24 * 60) - (hour * 60);
                             second = Math.floor(diff) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+                            
+                            //判断是否小于10  
+                            hour = hour < 10 ? '0' + hour : hour
+                            minute = minute < 10 ? '0' + minute : minute
+                            second = second < 10 ? '0' + second : second
                         }
 
                         $('.countTwo').html(day + "天" + " : " + hour + '时' + " : " + minute + '分' + " : " + second + '秒'); //全民倒计时
@@ -538,6 +543,10 @@ let vm = new Vue({
                             hour = Math.floor(ctime / (60 * 60)) - (day * 24);
                             minute = Math.floor(ctime / 60) - (day * 24 * 60) - (hour * 60);
                             second = Math.floor(ctime) - (day * 24 * 60 * 60) - (hour * 60 * 60) - (minute * 60);
+
+                            hour = hour < 10 ? '0' + hour : hour
+                            minute = minute < 10 ? '0' + minute : minute
+                            second = second < 10 ? '0' + second : second
                         }
                         $('.countThree').html(day + "天" + " : " + hour + '时' + " : " + minute + '分' + " : " + second + '秒'); //红包雨
                         //判断活动时间 活动开始前显示倒计时时间 
@@ -615,6 +624,7 @@ let vm = new Vue({
                     if(self.allStartTime>Date.parse("2017/11/12 00:00:00")){
                         $('.countThree').html('活动已结束');
                         $('.redRain').unbind("click");//禁止点击事件
+                         clearInterval(timer); //清除定时器
                     }
 
                 }

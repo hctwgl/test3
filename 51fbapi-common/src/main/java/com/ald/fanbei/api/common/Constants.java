@@ -283,6 +283,7 @@ public class Constants {
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
 
 	public static final String CONFKEY_WX_APPID = "fbapi.wx.appid";
+	public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 	public static final String CONFKEY_WX_MCHID = "fbapi.wx.mchid";
 	public static final String CONFKEY_WX_KEY = "fbapi.wx.key";
 	public static final String CONFKEY_WX_CERTPATH = "fbapi.wx.certpath";
@@ -346,6 +347,7 @@ public class Constants {
 	
 	//双十一
 	public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
+	public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 
 	//商圈
 	public static final String DEFAULT_SALT = "51fb";

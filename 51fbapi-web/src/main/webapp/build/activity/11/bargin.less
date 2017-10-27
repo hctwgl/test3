@@ -894,10 +894,23 @@ html,body,.login {
 }
 
 .progressBox {
-    width: 6.19rem;
-    height: .3rem;
+    position: absolute;
+    width: 6rem;
+    height: 14px;
+    border-radius: 10px;
+    background-image: linear-gradient(60deg, transparent 0rem, transparent 25%, #f6ac1c 50%, #f6ac1c 75%, transparent 100%, transparent 2.4rem, #f6ac1c 2.4rem);
     background-color: #f8d855;
-    border-radius: 15px;
-    background-size: 3em 3em;
-    background-image: linear-gradient(-45deg, transparent 0em, transparent 0.8em, #f6ac1c 0.9em, #f6ac1c 2.1em, transparent 2.1em, transparent 2.9em, #f6ac1c 3.1em);
+    background-size: 20px 38px;
+    box-shadow: 1px 1px 5px rgba(195, 129, 29, 0.6);
+}
+.progressBox:after {
+content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    border-radius: 10px;
+    background-image: linear-gradient(to bottom,rgba(195, 129, 29, 0.6), rgba(195, 129, 29, 0.6) 15%, transparent 60%, rgba(195, 129, 29, 0.6));
 }
