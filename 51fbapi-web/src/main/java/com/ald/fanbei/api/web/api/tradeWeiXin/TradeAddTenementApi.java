@@ -48,9 +48,7 @@ public class TradeAddTenementApi implements ApiHandle {
         BigDecimal rentSumPrice = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("rentSumPrice"),null);
         String beginTime = ObjectUtils.toString(requestDataVo.getParams().get("beginTime"), "").toString();
         String endTime = ObjectUtils.toString(requestDataVo.getParams().get("endTime"), "").toString();
-        Integer auditState = NumberUtil.objToIntDefault(requestDataVo.getParams().get("auditState"), null);
-        String auditFaildReason = ObjectUtils.toString(requestDataVo.getParams().get("auditFaildReason"), "").toString();
-        Integer rentStatus = NumberUtil.objToIntDefault(requestDataVo.getParams().get("rentStatus"), null);
+     
         
         
        
