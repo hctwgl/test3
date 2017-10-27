@@ -273,6 +273,6 @@ public interface AfBorrowService {
 
 	List<AfBorrowBillDo> getBorrowBillListY(Long userId,Integer billYear,Integer billMonth);
 
-	HashMap addHomeBorrow(final Long orderId, final int nper, final Long userId);
+	HashMap addHomeBorrow(final Long orderId, final int nper, final Long userId,Date date);
 
 }

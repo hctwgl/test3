@@ -1306,12 +1306,12 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	}
 
 
-	public HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId) {
+	public HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId,Date date) {
 		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
 		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
 				nper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
 
-		Date now = new Date();
+		Date now = date;
 		if(nper == 5 || nper ==11){
 			now = DateUtil.addMonths(now,1);
 		}
@@ -1360,14 +1360,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
 
 
-		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
+//		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
 //		int out_day = 10;
 //		int pay_day = 20;
 //		if(afUserOutDayDo !=null){
 //			out_day = afUserOutDayDo.getOutDay();
 //			pay_day = afUserOutDayDo.getPayDay();
 //		}
-//
+
 //		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
 //				out_day - 1);
 //		if(startDate.before(now)){

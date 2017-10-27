@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.third.controller;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -481,8 +482,9 @@ public class PayRoutController {
 	 */
 	@RequestMapping(value = { "/addHomeBorrow" })
 	@ResponseBody
-	public  HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId) throws Exception {
-		HashMap ret= afBorrowService.addHomeBorrow(orderId,nper,userId);
+	public  HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId,long timer) throws Exception {
+		Date date = new Date(timer);
+		HashMap ret= afBorrowService.addHomeBorrow(orderId,nper,userId,date);
 		return ret;
 	}
 
