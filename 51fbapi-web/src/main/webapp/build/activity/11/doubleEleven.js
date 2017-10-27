@@ -370,7 +370,7 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     self.content = eval('(' + data + ')').data;
-                    self.m = self.content.couponInfoList;
+                    self.m = self.content.couponInfoList.slice(0,1);
                     self.c = JSON.stringify(self.m);
                     self.m = JSON.parse(self.c);
 
