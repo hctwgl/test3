@@ -1307,14 +1307,22 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 
 
 	public HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId,Date date) {
-		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
-		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
-				nper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
-
+		int borrowNper = nper;
 		Date now = date;
 		if(nper == 5 || nper ==11){
 			now = DateUtil.addMonths(now,1);
+			if(nper ==5){
+				borrowNper = 6;
+			}else{
+				borrowNper = 12;
+			}
 		}
+
+		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
+		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
+				borrowNper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
+
+
 
 		List<AfBorrowBillDo> list = buildBorrowBillForNewInterestForHouse(borrow,PayType.AGENT_PAY.getCode(),now);
 		HashMap<String ,Object> map = new HashMap<String,Object>();
