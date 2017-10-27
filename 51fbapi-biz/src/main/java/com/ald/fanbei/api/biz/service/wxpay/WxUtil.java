@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.wxpay;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -64,7 +65,8 @@ public class WxUtil {
 	 */
 	public static String getJsapiTicket(String appId,String secret){
 		BizCacheUtil bizCacheUtil = new BizCacheUtil();
-		String accessToken = bizCacheUtil.getObject(Constants.CACHKEY_WX_TOKEN_LOCK).toString();
+		Object object = bizCacheUtil.getObject(Constants.CACHKEY_WX_TOKEN_LOCK);
+		String accessToken = object == null ? null : object.toString();
 		if (StringUtil.isBlank(accessToken)) {
 			accessToken = getAccessToken(appId,secret);
 		}		
