@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css">
 
 <body>
-    <!-- <div class="loadingMask"><i class="loading"></i></div> -->
+    <div class="loadingMask"><i class="loading"></i></div>
     <div class="por" id="barginProduct">
         <div class="top-bg">
             <div class="top-pic">
@@ -135,6 +135,7 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
 <script type="text/javascript" src="/dist/activity/11/barginProduct.js"></script>
 

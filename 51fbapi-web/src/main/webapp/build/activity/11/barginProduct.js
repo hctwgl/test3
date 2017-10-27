@@ -1,6 +1,7 @@
 let goodsId = getUrl('goodsId');//获取商品id
-let productType = getUrl('productType');//获取模板id
-let userName = getUrl('testUser');//获取模板id
+let productType = getUrl('productType');//获取商品类型
+let userName = getUrl('testUser');//获取用户id
+let code = getUrl("code"); // 获取code
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
@@ -29,7 +30,8 @@ let vm = new Vue({
         loadFlag: false,
         listNum: 1,
         url_1: '/activity/de/goodsInfo',
-        url_2: '/activity/de/friend'
+        url_2: '/activity/de/friend',
+        userInfo: {}  //用户信息
     },
     created: function() {
         this.judge();
@@ -61,7 +63,6 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {goodsPriceId: goodsId, userName: userName},
                 success: function(data){
-                    alert(self.url_1)
                     if (!data.success) {
                         if (isWX) {
                            self.toLogin(); 
@@ -74,11 +75,27 @@ let vm = new Vue({
                     self.progressWidth = 6.2; // 计算滚动条长度
                     // self.progressWidth = 6.2*self.goodsData.cutPrice/self.goodsData.originalPrice; // 计算滚动条长度
                     self.tipLeft = self.progressWidth - 0.74;
+                    $(".loadingMask").fadeOut();
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
                 }
             });
+            $.ajax({
+                url: '/activity/de/wechat/userInfo',
+                type: 'POST',
+                dataType: 'json',
+                data: {code: code},
+                success: function(data){
+                    console.log("用户信息=",data)
+                    alert(JSON.stringify(data))
+                    self.userInfo = data.data;
+                },
+                error: function() {
+                    requestMsg("哎呀，出错了！")
+                }
+            });
+
         },
         listFn: function() {
             let self = this;
@@ -143,29 +160,27 @@ let vm = new Vue({
             location.href = "./barginLogin?goodsId=" + goodsId; 
         },
         cut: function() {
+            let self = this;
+            let user = self.userInfo;
             // todo: get user information
             $.ajax({
                 url: '/activityH5/de/cutPrice',
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    "userId":"980186",
+                    "userId": userName,
                     "goodsPriceId": goodsId,
-                    "openId":"kjlajsdflkjalksjdflajfdljaljfdlajlkfd",
-                    "nickName":"tes",
-                    "headImgUrl":""
+                    "openId": user.openid,
+                    "nickName": user.nickname,
+                    "headImgUrl": user.headimgurl
                 },
                 success: function(data){
-                    console.log("砍价后Data=", data);
+
+                    self.barginFlag = true;
+                    self.cutData = data;   
 
                 }
             });
-            let data = {
-                cutPrice: 236,
-                code: 1
-            }
-            this.barginFlag = true;
-            this.cutData = data;   
 
         },
         closeBargin: function () {

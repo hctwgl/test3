@@ -45,8 +45,6 @@ let vm = new Vue({
                 type: 'POST',
                 dataType: 'json',
                 success: function(data){
-                    console.log("initData=", data.data);
-                    console.log("initData=", data.data.goodsList[0].couponList);
                     if (!data.success) {
                         requestMsg("哎呀，出错了！");
                         return false;

@@ -153,8 +153,10 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
 <script type="text/javascript" src="/dist/activity/11/barginIndex.js"></script>
+<script type="text/javascript" src="/dist/activity/11/wxshare.js"></script>
 
 
 </html>
