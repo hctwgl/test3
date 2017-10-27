@@ -197,7 +197,7 @@
 			o.`name` as couponName,
 			o.id as couponId,
 			c.threshold as threshold,
-			IF(u.cutCount is null,0, IF( u.cutCount > c.threshold and uc.id is NULL, 2, 1)) as state
+			IF ( c.threshold is null or  c.threshold > u.cutCount,  0,IF (uc.id IS NULL,  2,  1)) AS state
 		FROM
 			af_goods g
 		JOIN af_goods_price p ON g.id = p.goods_id and p.is_delete = 0 and g.is_delete = 0

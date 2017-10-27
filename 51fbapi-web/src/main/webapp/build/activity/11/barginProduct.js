@@ -10,7 +10,7 @@ let urlHost = protocol+'//'+host;
     iPhone: iPhone商品页
     product: 普通商品页
     shareiPhone: wx分享iPhone商品页
-    shareProduct: wx分享普通商品页
+    shareproduct: wx分享普通商品页
 */
 
 let vm = new Vue({
@@ -48,6 +48,9 @@ let vm = new Vue({
             } else { 
                 this.isWX = false;
             } 
+            this.isWX = true;
+                this.url_1 = "/activityH5/de/goodsInfo";
+                this.url_2 = "/activityH5/de/friend";
         },
         // get 初始化 信息
         logData:function() {
@@ -58,7 +61,7 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {goodsPriceId: goodsId, userName: userName},
                 success: function(data){
-                    alert(data.data.loginUrl)
+                    alert(self.url_1)
                     if (!data.success) {
                         if (isWX) {
                            self.toLogin(); 
@@ -195,8 +198,6 @@ let vm = new Vue({
                 requestMsg("请点击右上角进行分享")
                 this.toProduct(goodsId,"product");
             } else {
-                // todo: userName
-                // window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params={"shareAppTitle":"51返呗邀请有礼，快来参与~","shareAppContent":"我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~","shareAppImage":"https://f.51fanbei.com/h5/common/icon/midyearCorner.png","shareAppUrl":"'+urlHost+'/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=product&userName=","isSubmit":"Y","sharePage":"barginIndex"}'; 
                 var dat = {
                     shareAppTitle: "51返呗邀请有礼，快来参与~",
                     shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",

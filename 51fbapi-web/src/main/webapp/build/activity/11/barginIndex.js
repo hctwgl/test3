@@ -16,6 +16,7 @@ let vm = new Vue({
         sureFlag: false, // 确认是否砍价,
         goodsId: 0,
         cutData: '',
+        goodsType: ''
 
     },
     created: function() {
@@ -54,6 +55,7 @@ let vm = new Vue({
                     self.getFirstData();
                     self.countDown();
                     self.getShareTimes();
+                    $(".loadingMask").fadeOut();
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");
@@ -92,6 +94,7 @@ let vm = new Vue({
         },
         share: function(id,type) { // 点击发起砍价
             this.goodsId = id;
+            this.goodsType = type;
             if (type=='product') {
                 if (this.shareTime>=2) {
                     requestMsg('只能砍价两件商品，不要太贪心哦');
@@ -113,7 +116,7 @@ let vm = new Vue({
                     shareAppTitle: "51返呗邀请有礼，快来参与~",
                     shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
                     shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+this.goodsId+'&productType=product&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
+                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+this.goodsId+'&productType=share'+ this.goodsType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
                     isSubmit: 'Y',
                     sharePage: 'barginIndex'
                 }
