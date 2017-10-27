@@ -20,6 +20,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
