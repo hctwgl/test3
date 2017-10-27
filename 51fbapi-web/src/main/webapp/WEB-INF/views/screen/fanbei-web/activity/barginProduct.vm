@@ -5,7 +5,7 @@
     #set($version="2017102701")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
-    <title>商品页</title>
+    <title>商品页m</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css?version=$version">
 
 <body>
