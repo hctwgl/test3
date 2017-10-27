@@ -78,7 +78,7 @@ public class WxUtil {
 	 * @return
 	 */
             public static String getJsapiTicket(String appId, String secret) {
-        	// BizCacheUtil bizCacheUtil = new BizCacheUtil();        	
+        	// BizCacheUtil bizCacheUtil = new BizCacheUtil();         	
         	Object object = bizCacheUtil2.getObject(Constants.CACHKEY_WX_TOKEN_LOCK);
         	String accessToken = object == null ? null : object.toString();
         	String ticketKey = "WECHAT_" + appId + "_ticket";
@@ -88,12 +88,10 @@ public class WxUtil {
         	    String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + accessToken + "&type=jsapi";
         	    String reqResult = HttpUtil.doGet(url, timeout);
         	    JSONObject resultObj = JSONObject.parseObject(reqResult);
-        	    bizCacheUtil2.saveObject(ticketKey, resultObj.getString("ticket"));
+        	    bizCacheUtil2.saveObject(ticketKey, resultObj.getString("ticket"), Constants.SECOND_OF_AN_HOUR_INT);
         
-        	    return resultObj.getString("ticket");
-        	} else {
+        	} 
         	    return bizCacheUtil2.getObject(ticketKey).toString();
-        	}
             }
 	
 	/**
