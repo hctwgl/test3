@@ -73,7 +73,7 @@ public class WechatSignController extends H5Controller {
 				String content = new StringBuilder("jsapi_ticket=").append(ticket).append("&noncestr=").append(nonceStr)
 						.append("&timestamp=").append(timestamp).append("&url=").append(url).toString();
 				logger.info("getSign content is:{}", content);
-				byte[] in = content.getBytes();
+				byte[] in = content.getBytes("UTF-8");
 				byte[] out = WxSignBase.SHA1Digest(in);
 				String sign = WxSignBase.bytesToHex(out);
 				logger.info("getSign sign is:{}", sign);
