@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
@@ -117,6 +118,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
 	@Resource
 	AfRepaymentDetalDao afRepaymentDetalDao;
+
+	@Resource
+	AfBorrowBillDao afBorrowBillDao;
 
 	public Map<String,Object> createRepaymentYiBao(final BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
@@ -394,12 +398,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
 
 					account.setUcAmount(cashAmount.multiply(new BigDecimal(-1)));
-					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
+
+					AfBorrowBillDo houseBill = afBorrowBillDao.getBillHouseAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ",") );
+					BigDecimal houseAmount = houseBill == null ? BigDecimal.ZERO : houseBill.getPrincipleAmount();
+					BigDecimal backAmount = billDo.getPrincipleAmount().subtract(houseAmount);
+					account.setUsedAmount(backAmount.multiply(new BigDecimal(-1)));
+//					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
 					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
 					logger.info("account=" + account);
 					afUserAccountDao.updateUserAccount(account);
-					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
-					
+//					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
+					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, backAmount, repayment.getUserId(), repayment.getRid()));
 					dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
 					
 					//还款成功同步逾期订单

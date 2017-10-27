@@ -120,6 +120,8 @@ public interface AfBorrowBillDao {
 	 */
 	public AfBorrowBillDo getBillAmountByIds(@Param("ids") List<String> ids);
 
+	AfBorrowBillDo getBillHouseAmountByIds(@Param("ids") List<String> ids);
+
 	/**
 	 * 变更账单状态
 	 * 

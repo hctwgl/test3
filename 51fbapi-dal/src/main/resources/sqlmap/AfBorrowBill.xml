@@ -120,13 +120,26 @@
 		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,min(type) type,
 		min(borrow_no) borrow_no,min(name) name,count(1) count
 		FROM af_borrow_bill
-		WHERE is_delete=0  AND STATUS IN ('N','D')  AND type !='HOME_CONSUME'
+		WHERE is_delete=0  AND STATUS IN ('N','D')
 		AND id in (
 		<foreach collection="ids" item="item" index="index" separator="," >
 			#{item}
 		</foreach>
 		)
     </select>
+
+	<select id="getBillHouseAmountByIds" resultType="AfBorrowBillDo">
+		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,min(type) type,
+		min(borrow_no) borrow_no,min(name) name,count(1) count
+		FROM af_borrow_bill
+		WHERE is_delete=0  AND STATUS IN ('N','D') and type ='HOME_CONSUME'
+		AND id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</select>
+
     
     <update id="updateBorrowBillStatusByIds">
     	UPDATE 
