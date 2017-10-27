@@ -41,8 +41,8 @@ public class WxUtil {
 	 * 获取access token
 	 * @return
 	 */
-	public static String getAccessToken(){
-		String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + getWxAppId()+"&secret=" + getWxSecret();
+	public static String getAccessToken(String appId,String secret){
+		String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" +appId+"&secret=" +secret;
 		String reqResult = HttpUtil.doGet(url, timeout);
 		JSONObject resultObj = JSONObject.parseObject(reqResult);
 		return resultObj.getString("access_token");
@@ -52,8 +52,8 @@ public class WxUtil {
 	 * 获取jsapi ticket
 	 * @return
 	 */
-	public static String getJsapiTicket(){
-		String accessToken = getAccessToken();
+	public static String getJsapiTicket(String appId,String secret){
+		String accessToken = getAccessToken(appId,secret);
 		String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi";
 		String reqResult = HttpUtil.doGet(url, timeout);
 		JSONObject resultObj = JSONObject.parseObject(reqResult);
@@ -65,6 +65,7 @@ public class WxUtil {
 	 * @param code 菜单页面code
 	 * @return
 	 */
+	@Deprecated
 	public static String getOpenidByCode(String code) {
 		String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + getWxAppId() + "&secret="
 				+ getWxSecret() + "&code=" + code + "&grant_type=authorization_code";
