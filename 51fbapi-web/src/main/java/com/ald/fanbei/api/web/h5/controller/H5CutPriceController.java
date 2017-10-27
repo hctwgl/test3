@@ -91,7 +91,7 @@ public class H5CutPriceController extends H5Controller {
     @RequestMapping(value = "/goodsInfo", method = RequestMethod.POST)
     public String goodsInfo(HttpServletRequest request, HttpServletResponse response) {
 	String resultStr = "";
-	FanbeiH5Context context = new FanbeiH5Context();
+	FanbeiH5Context context = new FanbeiH5Context();     
 	try {
 	    String userName = ObjectUtils.toString(request.getParameter("userName"));
 	    Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
@@ -159,7 +159,7 @@ public class H5CutPriceController extends H5Controller {
 	    Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 	    Integer pageNo = NumberUtil.objToInteger(request.getParameter("pageNo"));
 
-	    if (goodsPriceId == null || pageNo == null) {
+	    if (goodsPriceId == null || pageNo == null || userName == null || userName.isEmpty()) {
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc(), "", null).toString();
 		return resultStr;
 	    }

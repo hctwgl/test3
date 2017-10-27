@@ -510,6 +510,9 @@ public class AppH5CutPriceController extends BaseController {
 	 */
 	@RequestMapping(value = "/wechat/userInfo", method = RequestMethod.POST)
 	public String getUserInfo(HttpServletRequest request, HttpServletResponse response) {
+	   
+	    	doWebCheck(request, false);
+	    	
 		String code = request.getParameter("code");
 		//获取access_token
 		String appid = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue();
