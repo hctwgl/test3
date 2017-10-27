@@ -9,9 +9,15 @@ urlName=urlName.replace(/\?/g,'&');
 var num;//卡片数量
 var typeFrom=getUrl("typeFrom");//渠道类型
 var typeFromNum=getUrl("typeFromNum");//渠道类型数
+let _taq=[];
 $(function(){
-    if(typeFrom=='Jrtt'||typeFrom=='Jmtt'){
+    if(typeFrom=='Jrtt'){
         $('.companyWord02').show();
+        _taq.push({convert_id:"72607366923",  event_type:"form"})
+    }else if(typeFrom=='Jmtt'){
+        $('.companyWord02').show();
+        //转化代码
+        _taq.push({convert_id:"73486724679",  event_type:"form"});
     }else{
         $('.companyWord01').show();
     }
@@ -37,10 +43,8 @@ let vm = new Vue({
                     $('.positionImg').fadeOut(4000);
                     self.content = eval('(' + data + ')').data;
                     console.log(self.content);
-                    //console.log(self.content.superPrizeStatus);
                     self.$nextTick(function () {
                         for(var k=0;k<self.content.boluomeCouponList.length;k++){
-                            //console.log(self.content.boluomeCouponList[k].isHas)
                             if(self.content.boluomeCouponList[k].isHas=='Y'){
                                 $('.coupon').eq(k).addClass('changeGray');
                             }
@@ -70,7 +74,7 @@ let vm = new Vue({
         },
         //点击优惠券
         couponClick:function(index){
-            $('.firstInput').focus();
+            $('#mobile').focus();
             /*userName=getCookie('userName');
             let self = this;
             if(userName){
@@ -103,8 +107,8 @@ let vm = new Vue({
         },
         //点击卡片
         cardClick:function(){
-            $('window').scrollTop(0);
-            $('.firstInput').focus();
+            $(window).scrollTop(0);
+            $('#mobile').focus();
             /*userName=getCookie('userName');
             if(userName=='' || !userName){
                 window.location.href="ggadregister?urlName="+urlName;
@@ -114,8 +118,8 @@ let vm = new Vue({
         },
         //点击获取终极大奖
         finalPrize:function(){
-            $('window').scrollTop(0);
-            $('.firstInput').focus();
+            $(window).scrollTop(0);
+            $('#mobile').focus();
             /*let self = this;
             userName=getCookie('userName');
             if(userName=='' || !userName){
@@ -162,8 +166,8 @@ let vm = new Vue({
             }*/
         },
         presentClick:function(){
-            $('window').scrollTop(0);
-            $('.firstInput').focus();
+            $(window).scrollTop(0);
+            $('#mobile').focus();
             /*userName=getCookie('userName');
             if(userName=='' || !userName){
                 window.location.href="ggadregister?urlName="+urlName;
@@ -172,8 +176,8 @@ let vm = new Vue({
             }*/
         },
         demandClick:function(){
-            $('window').scrollTop(0);
-            $('.firstInput').focus();
+            $(window).scrollTop(0);
+            $('#mobile').focus();
             /*userName=getCookie('userName');
             if(userName=='' || !userName){
                 window.location.href="ggadregister?urlName="+urlName;

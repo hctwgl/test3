@@ -33,8 +33,6 @@ var _fmOpt;
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
     // alert(json.msg);
 })();
-
-
 $(function () {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
@@ -45,32 +43,13 @@ $(function () {
     var timerS = 60;
     var typeFrom=param['typeFrom'];//渠道类型
     var typeFromNum=param['typeFromNum'];//渠道类型数
-
-    $('.yhicon').click(function(){
-        $(".yhinp").val('');
-        $('.yhicon').css("display","none");
-    });
-
-    $(".yhinp").keyup(function(){
-
-        if($(".yhinp").val()==''){
-            $('.yhicon').css("display","none");
-        }else{
-            $('.yhicon').css("display","block");
-        }
-    });
-
-
     // 密碼叉叉點擊清楚所有文字
-
-    $('.big-one').click(function(){
+    $('.clearValOne').click(function(){
         $("#mobile").val('');
     });
-
-    $('.big-two').click(function(){
+    $('.clearValTwo').click(function(){
         $("#password").val('');
     });
-
     function timeFunction() { // 60s倒计时
         timerS--;
         if (timerS <= 0) {
@@ -82,7 +61,6 @@ $(function () {
             $(".checkbtn").text(timerS + " s");
         }
     }
-
 
     // 获取图形验证码
     $(".checkbtn").click(function(){
@@ -212,7 +190,7 @@ $(function () {
                     var a=JSON.parse(returnData);
                     if (a.success) {
                         requestMsg("注册成功");
-                        window.location.href =urlName + "?activityId=" + activityId+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
+                        window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                     }else{
                         requestMsg(a.msg);
                     }
@@ -231,11 +209,6 @@ $(function () {
             }
         }
     });
-
-    //已有账号 立即登录
-    $('.goLogin').click(function(){
-        window.location.href ="ggADLogin?activityId="+activityId+"&urlName="+urlName+"&typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
-    })
 });
 
 //截取字符串方法
