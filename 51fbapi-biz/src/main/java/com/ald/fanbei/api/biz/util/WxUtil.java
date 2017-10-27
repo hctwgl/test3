@@ -1,13 +1,11 @@
 package com.ald.fanbei.api.biz.util;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.common.Constants;
@@ -25,7 +23,16 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Component("wxUtil")
 public class WxUtil {
+	@Resource
+	 BizCacheUtil bizCacheUtil;
 	
+	static BizCacheUtil bizCacheUtil2;
+	
+	@PostConstruct
+	public void init(){
+		bizCacheUtil2 = bizCacheUtil;
+		
+	}
     protected static Logger   logger           = LoggerFactory.getLogger(WxUtil.class);
 
 	private static int timeout = 1000;
@@ -60,9 +67,9 @@ public class WxUtil {
 		String reqResult = HttpUtil.doGet(url, timeout);
 		JSONObject resultObj = JSONObject.parseObject(reqResult);
 		//加缓存，
-		BizCacheUtil bizCacheUtil = new BizCacheUtil();
+		//BizCacheUtil bizCacheUtil = new BizCacheUtil();
 		String result = resultObj.getString("access_token");
-		bizCacheUtil.saveObject(Constants.CACHKEY_WX_TOKEN_LOCK,result,Constants.SECOND_OF_AN_HOUR_INT);
+		bizCacheUtil2.saveObject(Constants.CACHKEY_WX_TOKEN_LOCK,result,Constants.SECOND_OF_AN_HOUR_INT);
 		return result;
 	}
 	
@@ -71,8 +78,8 @@ public class WxUtil {
 	 * @return
 	 */
 	public static String getJsapiTicket(String appId,String secret){
-		BizCacheUtil bizCacheUtil = new BizCacheUtil();
-		Object object = bizCacheUtil.getObject(Constants.CACHKEY_WX_TOKEN_LOCK);
+		//BizCacheUtil bizCacheUtil = new BizCacheUtil();
+		Object object = bizCacheUtil2.getObject(Constants.CACHKEY_WX_TOKEN_LOCK);
 		String accessToken = object == null ? null : object.toString();
 		if (StringUtil.isBlank(accessToken)) {
 			accessToken = getAccessToken(appId,secret);
