@@ -15,13 +15,14 @@ let shareInfo = {
     //      alert("取消分享！");
     //  }
 }
+let turl = encodeURIComponent(window.location.href.split('#')[0]);
 
 $(function(){
     $.ajax({
         url: '/wechat/getSign',
         type: 'POST',
         dataType: 'json',
-        data: {url: shareInfo.link},
+        data: {url: turl},
         success: function (result) {
             // alert("share")
             // alert(JSON.stringify(result))
