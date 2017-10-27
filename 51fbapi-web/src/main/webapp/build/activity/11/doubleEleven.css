@@ -389,7 +389,7 @@ body {
 .arrowLeft {
   position: absolute;
   left: 0.1rem;
-  top: 53%;
+  top: 60%;
   transform: translateY(-50%);
   font-size: 0.95rem;
   color: #8e8e8e;
@@ -398,7 +398,7 @@ body {
 .arrowRight {
   position: absolute;
   right: 0.1rem;
-  top: 53%;
+  top: 60%;
   transform: translateY(-50%);
   font-size: 0.95rem;
   color: #8e8e8e;
