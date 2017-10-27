@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
-    #set($version="20171020")
+    #set($version="2017102701")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
-    <title>商品页</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css">
+    <title>商品页m</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css?version=$version">
 
 <body>
-    <!-- <div class="loadingMask"><i class="loading"></i></div> -->
+    <div class="loadingMask"><i class="loading"></i></div>
     <div class="por" id="barginProduct">
         <div class="top-bg">
             <div class="top-pic">
@@ -73,7 +73,7 @@
                             </ul>
                         </div>
                         <div style="height:1.5rem;">
-                            <div class="progressBox"></div>
+                            <!-- <div class="progressBox"></div> -->
                         </div>
                     </div>
                 </div>
@@ -135,7 +135,8 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
-<script type="text/javascript" src="/dist/activity/11/barginProduct.js"></script>
+<script type="text/javascript" src="/dist/activity/11/barginProduct.js?version=$version"></script>
 
 </html>

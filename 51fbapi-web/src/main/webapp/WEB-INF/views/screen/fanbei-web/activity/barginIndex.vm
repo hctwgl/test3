@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-    #set($version="20171020")
+    #set($version="2017102701")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>砍价首页</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css?version=$version">
 
 </head>
 
@@ -153,8 +153,10 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
-<script type="text/javascript" src="/dist/activity/11/barginIndex.js"></script>
+<script type="text/javascript" src="/dist/activity/11/barginIndex.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/11/wxshare.js?version=$version"></script>
 
 
 </html>
