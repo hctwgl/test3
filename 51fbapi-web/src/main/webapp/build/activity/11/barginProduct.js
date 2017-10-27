@@ -117,7 +117,7 @@ let vm = new Vue({
                             self.loadFlag = true;
                         }
                     } else {
-                        if (isWX) {
+                        if (self.isWX) {
                            // self.toLogin(); 
                         }else {
                             location.href = data.data.loginUrl;
