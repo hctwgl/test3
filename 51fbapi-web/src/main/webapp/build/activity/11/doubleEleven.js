@@ -435,7 +435,7 @@ let vm = new Vue({
                     let startTime = new Date("Nov 1,2017 00:00:00");
                     let startStamp = startTime.valueOf();
                     // 结束时间的时间戳
-                    let endDate = new Date("Nov 11,2017 00:00:00");
+                    let endDate = new Date("Nov 12,2017 00:00:00");
                     // let endDate = new Date("oct 26,2017 00:00:00");
                     let endStamp = endDate.valueOf();
                     // 获取当前时间的时间戳
