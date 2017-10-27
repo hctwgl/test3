@@ -50,8 +50,7 @@ public class WechatSignController extends H5Controller{
 		WechatSignatureData wechatSignatureData = new WechatSignatureData();
 		String url = null;
 		try{
-		//String urlOld = request.getRequestURI();
-		String urlOld = request.getParameter("url");
+		String urlOld = request.getRequestURI();
 		if (StringUtil.isNotBlank(urlOld)) {
 			int index = urlOld.indexOf("#");
 			if (index > 0 ) {
