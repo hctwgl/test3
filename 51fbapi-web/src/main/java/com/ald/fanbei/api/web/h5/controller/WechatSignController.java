@@ -40,7 +40,8 @@ import io.netty.util.internal.ObjectUtil;
  * @date 2017-9-27 15:32:33
  *
  */
-@RestController("/wechat")
+@RestController
+@RequestMapping(value = "/wechat", produces = "application/json;charset=UTF-8")
 public class WechatSignController extends H5Controller {
 	@Autowired
 	WxUtil wxUtil;
@@ -67,16 +68,16 @@ public class WechatSignController extends H5Controller {
 
 			// 获取secret 和appId
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX");
-			//value = appId ; value1= secret
-			
+			// value = appId ; value1= secret
+
 			if (null != afResourceDo) {
 
 				String nonceStr = DigestUtil.MD5(UUID.randomUUID().toString());
 				Long timestamp = System.currentTimeMillis() / 1000;
 				String appId = afResourceDo.getValue();
 				String secret = afResourceDo.getValue1();
-				String ticket = WxUtil.getJsapiTicket(appId,secret);
-				
+				String ticket = WxUtil.getJsapiTicket(appId, secret);
+
 				String content = new StringBuilder("jsapi_ticket=").append(ticket).append("&noncestr=").append(nonceStr)
 						.append("&timestamp=").append(timestamp).append("&url=").append(url).toString();
 				logger.info("getSign content is:{}", content);
@@ -92,10 +93,8 @@ public class WechatSignController extends H5Controller {
 				resultStr = H5CommonResponse.getNewInstance(true, "验签成功", "", wechatSignatureData).toString();
 			}
 		} catch (FanbeiException e) {
-			resultStr = H5CommonResponse.getNewInstance(false, "验签失败", "", e.getErrorCode().getDesc()).toString();
 			logger.error("getSign error", e);
 		} catch (Exception e) {
-
 			logger.error("getSign error", e);
 		}
 
@@ -103,6 +102,7 @@ public class WechatSignController extends H5Controller {
 	}
 
 	@RequestMapping(value = "/getOpenId", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@Deprecated
 	public String getOpenId(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		try {
