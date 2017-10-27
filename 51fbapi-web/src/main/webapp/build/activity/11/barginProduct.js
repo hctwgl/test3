@@ -68,7 +68,7 @@ let vm = new Vue({
                 success: function(data){
                     if (!data.success) {
                         if (self.isWX) {
-                           self.toLogin(); 
+                           // self.toLogin(); 
                         }else {
                             location.href = data.data.loginUrl;
                         }
@@ -99,7 +99,6 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！")
                 }
             });
-
         },
         listFn: function() {
             let self = this;
@@ -118,8 +117,8 @@ let vm = new Vue({
                             self.loadFlag = true;
                         }
                     } else {
-                        if (isWX) {
-                           self.toLogin(); 
+                        if (self.isWX) {
+                           // self.toLogin(); 
                         }else {
                             location.href = data.data.loginUrl;
                         }
