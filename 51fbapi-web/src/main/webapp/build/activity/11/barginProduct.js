@@ -90,8 +90,6 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {code: code},
                 success: function(data){
-                    console.log("用户信息=",data)
-                    alert(JSON.stringify(data))
                     if (data.success) {
                         self.userInfo = data.data;
                     }
