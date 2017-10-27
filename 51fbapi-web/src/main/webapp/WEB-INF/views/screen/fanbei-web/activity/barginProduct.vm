@@ -65,7 +65,7 @@
                                 <li class="f-list flex fd-row ai-c" v-for="friend in friendData">
                                     <div class="flex fd-row ai-c f-head">
                                         <img :src="friend.headImgUrl">
-                                        <span>{{friend.nickname}}</span>
+                                        <span>{{friend.nickName}}</span>
                                     </div>
                                     <div class="f-cut-price">￥{{friend.cutPrice}}</div>
                                     <div class="f-cut-price2">￥{{friend.remainPrice}}</div>
@@ -129,7 +129,7 @@
             <img class="btn-type" src="$commonUrl/bargin19.png" @click="toLogin()">
         </div>
         <!-- 微信分享商品页 -->
-        <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='shareProduct'">
+        <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='shareproduct'">
             <img class="btn-bargin" src="$commonUrl/bargin09.png" @click="cut()">
             <img class="btn-bargin" src="$commonUrl/bargin10.png" @click="toLogin()">
         </div>
