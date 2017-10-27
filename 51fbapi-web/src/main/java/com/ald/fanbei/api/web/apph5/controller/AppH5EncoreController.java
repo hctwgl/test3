@@ -105,6 +105,7 @@ public class AppH5EncoreController extends BaseController {
     	}
     	try{
     		JSONObject jsonObj = new JSONObject();
+    		/*
     		// 根据活动Id和类型查询优惠券信息
         	List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(activityId, ActivityType.ENCORE_TEMPLATE.getCode());
         	FanbeiWebContext webContext = doWebCheck(request, false);
@@ -121,7 +122,7 @@ public class AppH5EncoreController extends BaseController {
     			}
     		}
         	jsonObj.put("couponList", couponList);
-        	
+        	*/
         	
         	String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
     		jsonObj.put("notifyUrl", notifyUrl);
@@ -256,7 +257,7 @@ public class AppH5EncoreController extends BaseController {
          }
          try{
     		JSONObject jsonObj = new JSONObject();
-    		
+    		/*
     		List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(activityId, ActivityType.ENCORE_TEMPLATE.getCode());
         	FanbeiWebContext webContext = doWebCheck(request, false);
     		String userName = webContext.getUserName();
@@ -272,7 +273,7 @@ public class AppH5EncoreController extends BaseController {
     			}
     		}
         	jsonObj.put("couponList", couponList);
-        	
+        	*/
         	
         	String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
     		jsonObj.put("notifyUrl", notifyUrl);
