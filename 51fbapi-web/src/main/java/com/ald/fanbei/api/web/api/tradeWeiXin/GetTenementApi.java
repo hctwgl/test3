@@ -36,13 +36,13 @@ public class GetTenementApi implements ApiHandle {
         String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"), "").toString();
         
         AfTradeTenementInfoDo afTradeTenementInfoDo = tradeTenementService.getTenementInfoDoById(id);
-        AfIdNumberDo afIdNumberDo = tradeTenementService.getUserIdentityUrl(mobile);
-        String idFrontUrl = afIdNumberDo.getIdFrontUrl();
-        String idBehindUrl = afIdNumberDo.getIdBehindUrl();
+//        AfIdNumberDo afIdNumberDo = tradeTenementService.getUserIdentityUrl(mobile);
+//        String idFrontUrl = afIdNumberDo.getIdFrontUrl();
+//        String idBehindUrl = afIdNumberDo.getIdBehindUrl();
         
         resp.addResponseData("afTradeTenementInfoDo", afTradeTenementInfoDo);
-        resp.addResponseData("idFrontUrl", idFrontUrl);
-        resp.addResponseData("idBehindUrl", idBehindUrl);
+//        resp.addResponseData("idFrontUrl", idFrontUrl);
+//        resp.addResponseData("idBehindUrl", idBehindUrl);
 		return resp;
 	}
 

@@ -132,7 +132,10 @@
 		    <if test="businessId != null and businessId != ''" >
 		       ,business_id=#{businessId}
 		    </if>
-		WHERE mobile = #{mobile}
+		<if test="auditState != null and auditState != ''" >
+			,audit_state=#{auditState}
+		</if>
+		WHERE id = #{id}
 	</update>
 	
 	<select id="getUserIdBymobile" parameterType="java.lang.String" resultType="java.lang.Long">
