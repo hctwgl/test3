@@ -89,6 +89,15 @@ $(function () {
         } else{
             requestMsg("请填写正确的手机号");
         }
+        //点击加埋点
+        $.ajax({
+            url:'/fanbei-web/postMaidianInfo',
+            type:'post',
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_img'},
+            success:function (data) {
+                console.log(data)
+            }
+        });
     });
 
     // 刷新重新获取图片验证
@@ -122,7 +131,6 @@ $(function () {
         var mobileNum = $(".mobile").val(); //获取手机号
         var password=$('#password').val();//获取密码
         var verifyImgCode=$("#imgVftCode").val(); // 图形验证码
-
         if (isState == 0 || !isState) {
             var userck=(/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(mobileNum));
             if (userck ) {
@@ -158,6 +166,15 @@ $(function () {
                 requestMsg("请填写正确的手机号");
             }
         }
+        //点击加埋点
+        $.ajax({
+            url:'/fanbei-web/postMaidianInfo',
+            type:'post',
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_sure'},
+            success:function (data) {
+                console.log(data)
+            }
+        });
     });
 
     // 完成注册提交
@@ -208,6 +225,15 @@ $(function () {
                 requestMsg("请填写6-18位的数字、字母、字符组成的密码");
             }
         }
+        //点击加埋点
+        $.ajax({
+            url:'/fanbei-web/postMaidianInfo',
+            type:'post',
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_get'},
+            success:function (data) {
+                console.log(data)
+            }
+        });
     });
 });
 

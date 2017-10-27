@@ -64,7 +64,16 @@ let vm = new Vue({
                         }
                     })
                 }
-            })
+            });
+            //点击加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_ini'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击参与人数进入排行榜
         joinAmountClick:function(){
@@ -73,115 +82,24 @@ let vm = new Vue({
         //点击优惠券
         couponClick:function(index){
             $('#mobile').focus();
-            /*userName=getCookie('userName');
-            let self = this;
-            if(userName){
-                var sceneId=self.content.boluomeCouponList[index].sceneId;
-                $.ajax({
-                    url: "/H5GGShare/pickBoluomeCouponWeb",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {'sceneId':sceneId},
-                    success: function (returnData){
-                        //console.log(returnData)
-                        if(returnData.success){
-                            if(self.content.boluomeCouponList[index].isHas=='N'){
-                                requestMsg(returnData.msg);
-                                $('.coupon').eq(index).addClass('changeGray');
-                            }else{
-                                requestMsg(returnData.msg);
-                            }
-                        }else{
-                            requestMsg(returnData.msg);
-                        }
-                    },
-                    error: function(){
-                        requestMsg("请求失败");
-                    }
-                });
-            }else{
-                window.location.href="ggadregister?urlName="+urlName;
-            }*/
         },
         //点击卡片
         cardClick:function(){
             $(window).scrollTop(0);
             $('#mobile').focus();
-            /*userName=getCookie('userName');
-            if(userName=='' || !userName){
-                window.location.href="ggadregister?urlName="+urlName;
-            }else{
-                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-            }*/
         },
         //点击获取终极大奖
         finalPrize:function(){
             $(window).scrollTop(0);
             $('#mobile').focus();
-            /*let self = this;
-            userName=getCookie('userName');
-            if(userName=='' || !userName){
-                window.location.href="ggadregister?urlName="+urlName;//未登录
-            }else{
-                $.ajax({
-                    type: 'get',
-                    url: '/H5GGShare/pickUpSuperPrize',
-                    data:{'activityId':activityId},
-                    dataType:'JSON',
-                    success: function (returnData) {
-                        console.log(returnData);
-                        if(returnData.success){
-                            //requestMsg(returnData.msg);
-                            $('.mask').css('display','block');
-                            $('.alertFinalPrize').css('display','block');
-                            self.content.superPrizeStatus='YN';
-                            for(var j=0;j<self.content.itemsList.length;j++){
-                                num=self.content.itemsList[j].num;
-                                if(num==0){
-                                    return ""
-                                }else{
-                                    $('.card').eq(j).find('.num').html('x'+(num-1));
-                                    if(num-1==0){
-                                        $('.card').eq(j).find('.gray').css('display','block');
-                                        $('.card').eq(j).find('.num').css('display','none');
-                                    }else if(num-1==1){
-                                        $('.card').eq(j).find('.num').css('display','none')
-                                    }
-                                }
-                            }
-                        }else{
-                            if(self.content.superPrizeStatus=='N'){
-                                requestMsg(returnData.msg);//已登录缺少卡片
-                            }else if(self.content.superPrizeStatus=='YN'){
-                                requestMsg(returnData.msg);//已领取
-                            }
-                        }
-                    },
-                    error: function(){
-                        requestMsg("请求失败");
-                    }
-                })
-            }*/
         },
         presentClick:function(){
             $(window).scrollTop(0);
             $('#mobile').focus();
-            /*userName=getCookie('userName');
-            if(userName=='' || !userName){
-                window.location.href="ggadregister?urlName="+urlName;
-            }else{
-                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-            }*/
         },
         demandClick:function(){
             $(window).scrollTop(0);
             $('#mobile').focus();
-            /*userName=getCookie('userName');
-            if(userName=='' || !userName){
-                window.location.href="ggadregister?urlName="+urlName;
-            }else{
-                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-            }*/
         },
         ruleClick:function(){
             $('.alertRule').css('display','block');
@@ -197,10 +115,6 @@ let vm = new Vue({
         },
         fixImgUrl:function(i){
             return "http://f.51fanbei.com/h5/app/activity/10/ggNewCard0"+i+".png";
-        },
-        //点击马上领取跳转到appStore
-        getNowClick(){
-
         }
     }
 })
