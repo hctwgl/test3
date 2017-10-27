@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <!-- <div class="loadingMask"><i class="loading"></i></div> -->
+    <div class="loadingMask"><i class="loading"></i></div>
     <div class="por" id="barginIndex">
         <div class="top-bg">
             <div class="top-pic">
@@ -46,7 +46,7 @@
                 <div v-for="goods in totalData.goodsList" v-if="goods.type==1">
                     <!-- 商品图片 -->
                     <div class="product-pic" @click="toProduct(goods.goodsPriceId, 'iPhone')">
-                        <img :src="goods.image">
+                        <img :src="goods.thumbnailIcon">
                     </div>
                     <div class="flex jc-c fd-column">
                         <!-- 砍价部分 -->
@@ -83,8 +83,8 @@
                         <div class="progress-box flex fd-column ai-c">
                             <div>
                                 <img src="$commonUrl/barginProgress0.png" v-if="couponNum<1">
-                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum=1">
-                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum>1 && couponNum<=2">
+                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum==1">
+                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum>1 && myCouponNum<=2">
                                 <img src="$commonUrl/barginProgress1.png" v-if="couponNum>2">
                             </div>
                             <div class="progress-txt flex fd-row jc-sa">
@@ -98,7 +98,7 @@
                                 <div class="ranking-top">更多砍价商品</div>
                                 <ul class="more-ul flex fd-column ai-c">
                                     <li class="flex fd-row ai-c" v-for="goods in totalData.goodsList" v-if="goods.type==0">
-                                        <div class="m-product-box"  @click="toProduct(goods.goodsPriceId, 'product')">
+                                        <div class="m-product-box" @click="toProduct(goods.goodsPriceId, 'product')">
                                             <img class="m-product" :src="goods.image">
                                         </div>
                                         <div class="m-right flex fd-column">
@@ -153,7 +153,7 @@
         </div>
     </div>
 </body>
-
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
 <script type="text/javascript" src="/dist/activity/11/barginIndex.js"></script>
 
 

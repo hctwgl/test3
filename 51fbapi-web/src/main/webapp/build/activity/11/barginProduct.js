@@ -1,19 +1,23 @@
 let goodsId = getUrl('goodsId');//获取商品id
 let productType = getUrl('productType');//获取模板id
-let testUser = getUrl('testUser');//获取模板id
+let userName = getUrl('testUser');//获取模板id
+let protocol = window.location.protocol;
+let host = window.location.host;
+let urlHost = protocol+'//'+host;
+
 /*
     productType
     iPhone: iPhone商品页
     product: 普通商品页
-    shareiPhone: 分享iPhone商品页
-    shareProduct: 分享普通商品页
+    shareiPhone: wx分享iPhone商品页
+    shareproduct: wx分享普通商品页
 */
 
 let vm = new Vue({
     el: "#barginProduct",
     data: { 
         goodsData:{}, //所有商品数据
-        friendData: {},
+        friendData: [],
         ruleFlag: false, //规则显示flag
         barginFlag: false, //砍价显示flag
         downTime: {d: 0, h: 0, m: 0, s: 0},
@@ -23,13 +27,15 @@ let vm = new Vue({
         progressWidth: 0,  // 进度条长度
         tipLeft:0, // 砍价进度提示
         loadFlag: false,
-        listNum: 1
+        listNum: 1,
+        url_1: '/activity/de/goodsInfo',
+        url_2: '/activity/de/friend'
     },
     created: function() {
+        this.judge();
         this.logData();
         this.listFn();
         this.countDown();
-        this.judge();
     },
     methods: {
         judge: function() {
@@ -37,28 +43,37 @@ let vm = new Vue({
             // todo: 不完善，没有判断其他浏览器
             if (ua.match(/MicroMessenger/i) == 'micromessenger') { 
                 this.isWX = true;
+                this.url_1 = "/activityH5/de/goodsInfo";
+                this.url_2 = "/activityH5/de/friend";
             } else { 
                 this.isWX = false;
             } 
+            this.isWX = true;
+                this.url_1 = "/activityH5/de/goodsInfo";
+                this.url_2 = "/activityH5/de/friend";
         },
         // get 初始化 信息
         logData:function() {
             let self = this;
             $.ajax({
-                url: '/activity/de/goodsInfo',
+                url: self.url_1,
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId, userName: testUser},
+                data: {goodsPriceId: goodsId, userName: userName},
                 success: function(data){
+                    alert(self.url_1)
                     if (!data.success) {
-                        //todo
-                       // location.href = data.data.loginUrl;
+                        if (isWX) {
+                           self.toLogin(); 
+                        }else {
+                            location.href = data.data.loginUrl;
+                        }
                         return false;
                     }
-                    console.log("initData=", data);
                     self.goodsData = data.data;
-                    this.progressWidth = 6.2*this.goodsData.cutPrice/this.goodsData.originalPrice; // 计算滚动条长度
-                    this.tipLeft = this.progressWidth - 0.74;
+                    self.progressWidth = 6.2; // 计算滚动条长度
+                    // self.progressWidth = 6.2*self.goodsData.cutPrice/self.goodsData.originalPrice; // 计算滚动条长度
+                    self.tipLeft = self.progressWidth - 0.74;
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
@@ -69,32 +84,34 @@ let vm = new Vue({
             let self = this;
             self.loadFlag = false;
             $.ajax({
-                url: '/activity/de/friend',
+                url: self.url_2,
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: goodsId, pageNo: self.listNum, userName: testUser},
+                data: {goodsPriceId: goodsId, pageNo: self.listNum, userName: userName},
                 success: function(data){
-                    if (data.success) {
-                        if (data.data.listPerson.length>0) {
+                    if (data.success){
+                        console.log("frend=",data)
+                        if (data.data.friendList.length>0) {
                             self.friendData = self.friendData.concat(data.data.friendList);
                             self.listNum++;
                             self.loadFlag = true;
                         }
                     } else {
-                        //todo
-                        // location.href = data.data.loginUrl;
+                        if (isWX) {
+                           self.toLogin(); 
+                        }else {
+                            location.href = data.data.loginUrl;
+                        }
                     }
                     console.log("initData=", data);
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
                 }
-            });
-            
+            });   
         },
         showRule: function() {
             this.ruleFlag = true;
-            console.log('click')
         },
         closeRule: function() {
             this.ruleFlag = false;
@@ -102,9 +119,7 @@ let vm = new Vue({
         countDown: function() {
             let self = this;
             let timer = setInterval(function() {
-                let now = new Date();
-                let endTime = new Date(self.goodsData.endTime);
-                let t = (endTime.getTime() - now.getTime())/1000;
+                let t = (self.goodsData.endTime - new Date().getTime())/1000;
                 let d = 0;
                 let h = 0;
                 let m = 0;
@@ -130,15 +145,15 @@ let vm = new Vue({
         cut: function() {
             // todo: get user information
             $.ajax({
-                url: '/activityH5/de/cutprice',
+                url: '/activityH5/de/cutPrice',
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    userId: "125465",
-                    goodsPriceId: goodsId,
-                    openId: "1254511",
-                    nickName: "老王",
-                    headImgUrl: "https://f.51fanbei.com/h5/app/activity/11/image/head.png"
+                    "userId":"980186",
+                    "goodsPriceId": goodsId,
+                    "openId":"kjlajsdflkjalksjdflajfdljaljfdlajlkfd",
+                    "nickName":"tes",
+                    "headImgUrl":""
                 },
                 success: function(data){
                     console.log("砍价后Data=", data);
@@ -168,6 +183,33 @@ let vm = new Vue({
                     }
                 }
             }) 
-        }
+        },
+        buy: function() {
+            if (this.isWX) {
+                location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www';
+            } else {
+                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + goodsId + '"}';
+            }
+        },
+        share: function() { 
+            // 是否登录,APP_SHARE接口会自动判断是否登陆
+            if (this.isWX) {
+                //todo: 弹窗提示分享
+                requestMsg("请点击右上角进行分享")
+                this.toProduct(goodsId,"product");
+            } else {
+                var dat = {
+                    shareAppTitle: "51返呗邀请有礼，快来参与~",
+                    shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
+                    shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
+                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ goodsId+'&productType='+ productType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
+                    isSubmit: 'Y',
+                    sharePage: 'barginIndex'
+                }
+                dat = JSON.stringify(dat)
+                var base64 = BASE64.encoder(dat)
+                window.location.href='/fanbei-web/opennative?name=APP_SHARE&params=' + base64
+            }
+        },
     }
 })

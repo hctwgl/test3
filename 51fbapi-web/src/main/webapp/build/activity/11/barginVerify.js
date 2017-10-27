@@ -205,7 +205,7 @@ $(function () {
                     return false;
                 }
                 localStorage.setItem("mesg", mesg); //将短信验证码存储到本地
-                window.location.href= "ggForgetP?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;;
+                window.location.href= "barginForgetP?urlName="+urlName+"&userName="+userName+"&activityId="+activityId+"&userItemsId="+userItemsId+"&itemsId="+itemsId + "&word=" + word;;
             },
             error: function () {
                 requestMsg("请求失败")

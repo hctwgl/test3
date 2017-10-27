@@ -259,7 +259,7 @@ public class H5CutPriceController extends H5Controller {
 		try {
 		    if (StringUtil.isAllNotEmpty(userIdStr, openId, goodsPriceIdStr)) {
 			// try 1000 times to get the lock
-			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 15);
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
 			if (isNotLock) {
 			    Long userId = NumberUtil.objToLong(userIdStr);
 
@@ -488,9 +488,9 @@ public class H5CutPriceController extends H5Controller {
 
     private AfDeUserCutInfoVo parseDoToVo(AfDeUserCutInfoDo userCutInfo) {
 	AfDeUserCutInfoVo vo = new AfDeUserCutInfoVo();
-	vo.setCutprice(userCutInfo.getCutprice());
+	vo.setCutPrice(userCutInfo.getCutprice());
 	vo.setHeadImgUrl(userCutInfo.getHeadimgurl());
-	vo.setNickname(userCutInfo.getNickname());
+	vo.setNickName(userCutInfo.getNickname());
 	vo.setRemainPrice(userCutInfo.getRemainprice());
 	return vo;
     }

@@ -76,8 +76,8 @@
                                         <div class="r-num" v-if="list.index!=1 && list.index!=2 &&list.index!=3">{{list.index}}</div>
                                     </div>
                                     <div class="rt2 r-phone">{{list.phone}}</div>
-                                    <div class="rt3 r-time">{{list.cutPrice}}次</div>
-                                    <div class="rt4 r-price">-{{list.cutCount}}</div>
+                                    <div class="rt3 r-time">{{list.cutCount}}次</div>
+                                    <div class="rt4 r-price">-{{list.cutPrice}}</div>
                                 </li>
                             </ul>
                         </div>

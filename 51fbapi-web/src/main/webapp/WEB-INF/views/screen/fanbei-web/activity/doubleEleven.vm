@@ -3,7 +3,7 @@
 <head>
     #set($src="https://f.51fanbei.com/h5/app/activity/11")    
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>惊艳双十一一触即发</title>
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
@@ -97,112 +97,9 @@
             <div class="doubleEleven-brand">
                 <div class="brandTitle">各大品牌专题</div>
                 <div class="brandBox">
-                    <!--<ul class="brandDetail clearFix">
-                        <span class="arrowLeft"><</span>
-                        <span class="arrowRight">></span>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="brandProduct">
-                                <img class="brand-img" src="" alt="">
-                                <span class="brandDes">苹果</span>
-                            </div>
-                        </li>
-                    </ul>!-->
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
                             <div class="swiper-slide" v-for="item in arr">
-                                <!--<span  v-for="i in item">
-                                    {{i}}
-                                </span>!-->
                                 <li v-for="i in item">
                                     <a class="brandProduct" :href="i.src">
                                         <img class="brand-img" :src="i.img" alt="">
@@ -214,8 +111,6 @@
                         <!-- 如果需要分页器 -->
                         <!--<div class="swiper-pagination"></div>!-->
                         <!-- 如果需要导航按钮 -->
-                        <!--<div class="swiper-button-prev"></div>
-                        <div class="swiper-button-next"></div>!-->
                         <span class="arrowLeft swiper-button-prev"><</span>
                         <span class="arrowRight swiper-button-next">></span>
                     </div>

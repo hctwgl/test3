@@ -35,7 +35,7 @@
                 </div>
                 <!-- 商品图片 -->
                 <div class="product-pic">
-                    <img src="$commonUrl/bargin04.png">
+                    <img :src="goodsData.image">
                 </div>
                 <div class="flex jc-c fd-column">
                     <!-- 砍价部分 -->
@@ -62,17 +62,19 @@
                                 <div class="ft3">砍后价格</div>
                             </div>
                             <ul class="f-ul flex fd-column ai-c">
-                                <li class="f-list flex fd-row ai-c" v-for="friend in friendData.friendList">
+                                <li class="f-list flex fd-row ai-c" v-for="friend in friendData">
                                     <div class="flex fd-row ai-c f-head">
                                         <img :src="friend.headImgUrl">
-                                        <span>{{friend.nickname}}</span>
+                                        <span>{{friend.nickName}}</span>
                                     </div>
                                     <div class="f-cut-price">￥{{friend.cutPrice}}</div>
                                     <div class="f-cut-price2">￥{{friend.remainPrice}}</div>
                                 </li>
                             </ul>
                         </div>
-                        <div style="height:1.5rem;"></div>
+                        <div style="height:1.5rem;">
+                            <div class="progressBox"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,22 +112,30 @@
                 </div>
             </div>
         </div>
+        <!-- 商品详情页 -->
         <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='iPhone' || productType=='product'">
-            <img class="btn-bargin" src="$commonUrl/bargin15.png" @click="cut()">
+            <!-- 发起砍价 -->
+            <img class="btn-bargin" src="$commonUrl/bargin15.png" @click="share()">
+            <!-- iPhone砍价榜单 -->
             <img class="btn-list" src="$commonUrl/bargin12.png" @click="toList()" v-if="productType=='iPhone'">
-            <img class="btn-list" src="$commonUrl/bargin10.png"  v-if="productType=='product'">
+            <!-- 立即购买（普通商品） -->
+            <img class="btn-list" src="$commonUrl/bargin10.png"  v-if="productType=='product'" @click="buy()">
         </div>
+        <!-- 微信分享iPhone页 -->
         <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='shareiPhone'">
+            <!-- 帮砍一刀 -->
             <img class="btn-type" src="$commonUrl/bargin21.png" @click="cut()">
             <img class="btn-type" src="$commonUrl/bargin20.png" @click="toList()">
-            <img class="btn-type" src="$commonUrl/bargin19.png">
+            <img class="btn-type" src="$commonUrl/bargin19.png" @click="toLogin()">
         </div>
-        <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='shareProduct'">
-            <img class="btn-bargin" src="$commonUrl/bargin09.png">
-            <img class="btn-bargin" src="$commonUrl/bargin10.png">
+        <!-- 微信分享商品页 -->
+        <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='shareproduct'">
+            <img class="btn-bargin" src="$commonUrl/bargin09.png" @click="cut()">
+            <img class="btn-bargin" src="$commonUrl/bargin10.png" @click="toLogin()">
         </div>
     </div>
 </body>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
 <script type="text/javascript" src="/dist/activity/11/barginProduct.js"></script>
 
 </html>

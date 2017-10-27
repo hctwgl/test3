@@ -316,8 +316,7 @@ public class AppH5CutPriceController extends BaseController {
 	public String friend(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = "";
 		FanbeiWebContext context = new FanbeiWebContext();
-		try {
-			context = doWebCheck(request, true);
+		try {	context = doWebCheck(request, true);
 			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			Integer pageNo = NumberUtil.objToInteger(request.getParameter("pageNo"));
@@ -502,9 +501,9 @@ public class AppH5CutPriceController extends BaseController {
 
 	private AfDeUserCutInfoVo parseDoToVo(AfDeUserCutInfoDo userCutInfo) {
 	    	AfDeUserCutInfoVo vo = new AfDeUserCutInfoVo();
-		vo.setCutprice(userCutInfo.getCutprice());
+		vo.setCutPrice(userCutInfo.getCutprice());
 		vo.setHeadImgUrl(userCutInfo.getHeadimgurl());
-		vo.setNickname(userCutInfo.getNickname());
+		vo.setNickName(userCutInfo.getNickname());
 		vo.setRemainPrice(userCutInfo.getRemainprice());
 		return vo;
 	}

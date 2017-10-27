@@ -15,6 +15,7 @@ function formatDateTime() {
     return y +  m +  d +h +minute+second;
 };
 
+
 // 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
