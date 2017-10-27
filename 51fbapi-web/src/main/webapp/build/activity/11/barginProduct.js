@@ -2,7 +2,7 @@ let goodsId = getUrl('goodsId');//获取商品id
 let productType = getUrl('productType');//获取商品类型
 let goodsType  = getUrl('productType');//获取商品类型
 let userName = getUrl('testUser');//获取用户id
-// let code = getUrl("code"); // 获取code
+let code = getUrl("code"); // 获取code
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
@@ -48,12 +48,14 @@ let vm = new Vue({
                 this.isWX = true;
                 this.url_1 = "/activityH5/de/goodsInfo";
                 this.url_2 = "/activityH5/de/friend";
+                let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
+                 
+                if (!code) {
+                    location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
+                }
             } else { 
                 this.isWX = false;
-            } 
-            this.isWX = true;
-                this.url_1 = "/activityH5/de/goodsInfo";
-                this.url_2 = "/activityH5/de/friend";
+            }
         },
         // get 初始化 信息
         logData:function() {
@@ -65,7 +67,7 @@ let vm = new Vue({
                 data: {goodsPriceId: goodsId, userName: userName},
                 success: function(data){
                     if (!data.success) {
-                        if (isWX) {
+                        if (self.isWX) {
                            self.toLogin(); 
                         }else {
                             location.href = data.data.loginUrl;
@@ -73,8 +75,7 @@ let vm = new Vue({
                         return false;
                     }
                     self.goodsData = data.data;
-                    self.progressWidth = 6.2; // 计算滚动条长度
-                    // self.progressWidth = 6.2*self.goodsData.cutPrice/self.goodsData.originalPrice; // 计算滚动条长度
+                    self.progressWidth = 6.2*self.goodsData.cutPrice/self.goodsData.originalPrice; // 计算滚动条长度
                     self.tipLeft = self.progressWidth - 0.74;
                     $(".loadingMask").fadeOut();
                 },
@@ -123,7 +124,6 @@ let vm = new Vue({
                             location.href = data.data.loginUrl;
                         }
                     }
-                    console.log("initData=", data);
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")

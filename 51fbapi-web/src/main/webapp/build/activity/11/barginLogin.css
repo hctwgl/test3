@@ -3,35 +3,31 @@
     margin: 0;
     box-sizing: border-box;
 }
-html,body,.login {
-    height: 100%;
+html,body {
+    height: 13.34rem;
 }
 
-body {
-    background-color: white;
-}
+
 input[placeholder], [placeholder], *[placeholder] {
    color: #d4d4d8 !important;
 }
 .login {
-    position: relative;
-    background: url('https://f.51fanbei.com/h5/app/activity/11/image/barginLogin.png');
     width: 100%;
+    height: 100%;
+    background: url('https://f.51fanbei.com/h5/app/activity/11/image/barginLogin.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    padding-top: 5.2rem;
+    padding-left: 1rem;
 }
 
 
 .phone {
-    position: absolute;
-    left: 1rem;
-    top: 5.2rem;
     width: 5.5rem;
     height: .8rem;
     font-size: .28rem;
     border: none;
     background: transparent;
-    position: relative;  
 }
 
 
@@ -44,25 +40,11 @@ input[placeholder], [placeholder], *[placeholder] {
     font-size: 0.3rem;
     color:#d4d4d8; 
     letter-spacing: -0.54px;
-    text-align: left;
 }
-
-.xxicon {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    /* background:#c0c0c0; */
-    width: 0.24rem;
-    height: 0.25rem;
-    right: 0.17rem;
-    display: none;
-}
-
 
 
 .pcheck {
     margin-top: 0.3rem;
-    padding-right: 2.23rem;
 }
 
 .checkbtn {
@@ -83,10 +65,8 @@ input[placeholder], [placeholder], *[placeholder] {
 }
 
 .loginbtn {
-    position: absolute;
-    left: .72rem;
-    top: 7.92rem;
-    width: 6.05rem;
+    margin-top: .8rem;
+    width: 5.5rem;
     height: .9rem;
     line-height: .9rem;
     font-family: PingFangSC-Regular;
@@ -97,27 +77,15 @@ input[placeholder], [placeholder], *[placeholder] {
 }
 
 .lspdiv {
-    position: absolute;
-    left: .72rem;
-    top: 8.8rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     margin-top: 0.27rem;
-    width: 6.05rem;
+    width: 5.5rem;
 }
 
-.clearFix:after {
-    display: block;
-    clear: both;
-    content: "";
-    visibility: hidden;
-    height: 0
-}
-
-.clearFix {
-    zoom: 1
-}
 
 .spl {
-    float: left;
     font-family: PingFangSC-Regular;
     font-size: 0.28rem;
     color: #f8b725;
@@ -132,7 +100,6 @@ a {
 
 .spr {
     text-decoration:underline;
-    float: right;
     font-family: PingFangSC-Regular;
     font-size: 0.28rem;
     color: #f8b725;
@@ -140,11 +107,3 @@ a {
     text-align: left;
 }
 
-.botimg {
-    width: 100%;
-    margin-top: 41%;
-}
-
-.gray {
-    background-color: gray;
-}
