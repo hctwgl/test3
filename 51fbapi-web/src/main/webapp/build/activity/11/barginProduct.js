@@ -220,7 +220,7 @@ let vm = new Vue({
                 url: self.url_3,
                 type: 'POST',
                 dataType: 'json',
-                data: {goodsPriceId: id},
+                data: {goodsPriceId: goodsId},
                 success: function(data){
                     console.log("share=",data)
                     if (!data.success) {

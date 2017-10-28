@@ -1,9 +1,9 @@
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
-let goodsId = '';
-let goodsType = '';
-let userName = getUrl('userName');//获取用户id
+var goodsId = '';
+var goodsType = '';
+var userName = getUrl('userName');//获取用户id
 
 let vm = new Vue({
     el: "#barginIndex",
