@@ -103,8 +103,6 @@ $(function () {
                     
                 },
                 success: function (data) {
-                    console.log(">>>>",data)
-                    alert(userNamePhone);
                     console.log(data)
                     if (data.success) {
                         window.location.href = "./barginIndex?userName=" + userNamePhone ;
