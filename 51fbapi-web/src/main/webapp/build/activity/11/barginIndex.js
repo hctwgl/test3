@@ -3,6 +3,7 @@ let host = window.location.host;
 let urlHost = protocol+'//'+host;
 let goodsId = '';
 let goodsType = '';
+let userName = getUrl('userName');//获取用户id
 
 let vm = new Vue({
     el: "#barginIndex",
@@ -117,7 +118,7 @@ let vm = new Vue({
                     shareAppTitle: "51返呗邀请有礼，快来参与~",
                     shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
                     shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
+                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ getInfo().userName,
                     isSubmit: 'Y',
                     sharePage: 'barginIndex'
                 }
@@ -131,7 +132,7 @@ let vm = new Vue({
             location.href = "/fanbei-web/activity/barginList?goodsId=" + id;
         },
         toProduct: function(id,type) { // 跳转到商品页
-            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&testUser=" + getInfo().userName + "&userName=" + getInfo().userName;
+            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&userName=" + getInfo().userName;
         },
         countDown: function() { // 倒计时
             let self = this;

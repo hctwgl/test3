@@ -1,7 +1,7 @@
 let goodsId = getUrl('goodsId');//获取商品id
 let productType = getUrl('productType');//获取商品类型
 let goodsType  = getUrl('productType');//获取商品类型
-let userName = getUrl('testUser');//获取用户id
+let userName = getUrl('userName');//获取用户id
 let code = getUrl("code"); // 获取code
 let protocol = window.location.protocol;
 let host = window.location.host;
@@ -223,7 +223,7 @@ let vm = new Vue({
                     shareAppTitle: "51返呗邀请有礼，快来参与~",
                     shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
                     shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ goodsId+'&productType=share'+ productType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
+                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ goodsId+'&productType=share'+ productType +'&userName='+ getInfo().userName,
                     isSubmit: 'Y',
                     sharePage: 'barginIndex'
                 }
