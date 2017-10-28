@@ -22,7 +22,7 @@ let vm = new Vue({
         goodsType: '',
         url_3: '/activity/de/share',
         url_1: '/activity/de/goods',
-        url_2: '/activity/de/pickCoupon',
+        url_2: '/fanbei-web/pickCoupon',
 
     },
     created: function() {    
