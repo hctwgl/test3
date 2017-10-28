@@ -51,11 +51,17 @@ let vm = new Vue({
                 this.url_2 = "/activityH5/de/friend";
                 // let str = encodeURIComponent('http://192.168.96.173:3003/fanbei-web/activity/barginProduct');
                 // let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
+                var obj = {a:1,b:2};
+                obj = JOSN.stringify(obj);
+                obj = encodeURIComponent(obj);
                 let str = encodeURIComponent(window.location.href.split('#')[0]);
-                 
+                let urls = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';
+                
                     // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 if (!code) {
-                    location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
+                    alert(str);
+                    alert(urls)
+                    location.href = urls;    
                 }
             } else { 
                 this.isWX = false;
