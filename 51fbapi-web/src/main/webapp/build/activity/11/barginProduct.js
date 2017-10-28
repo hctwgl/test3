@@ -43,23 +43,16 @@ let vm = new Vue({
     },
     methods: {
         judge: function() {
-            alert(code)
             let ua = window.navigator.userAgent.toLowerCase(); 
             // todo: 不完善，没有判断其他浏览器
             if (ua.match(/MicroMessenger/i) == 'micromessenger') { 
                 this.isWX = true;
                 this.url_1 = "/activityH5/de/goodsInfo";
                 this.url_2 = "/activityH5/de/friend";
-                // let str = encodeURIComponent('http://192.168.96.173:3003/fanbei-web/activity/barginProduct');
-                // let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
-                // var obj = {a:1,b:2};
-                // obj = JOSN.stringify(obj);
-                // obj = encodeURIComponent(obj);
                 let str = encodeURIComponent(window.location.href.split('#')[0]);
                 let urls = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=1&connect_redirect=1#wechat_redirect';
-                
-                alert(urls)
                 alert(str);
+                alert(userName)
                     // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 if (!code) {
                     location.href = urls;    
