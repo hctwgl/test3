@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -16,10 +17,13 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.de.AfDeGoodsCouponService;
@@ -30,6 +34,9 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -37,12 +44,18 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.druid.util.StringUtils;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfDeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfDeUserCutInfoDo;
 import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
 import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
@@ -80,6 +93,13 @@ public class H5CutPriceController extends H5Controller {
     AfGoodsPriceService afGoodsPriceService;
     @Resource
     BizCacheUtil bizCacheUtil;
+    @Resource 
+    AfUserCouponDao afUserCouponDao;
+    @Resource 
+    AfCouponService  afCouponService;
+    @Resource 
+    AfUserDao afUserDao;
+    
 
     String opennative = "/fanbei-web/opennative?name=";
 
@@ -540,6 +560,85 @@ public class H5CutPriceController extends H5Controller {
 
     }
 
+        @ResponseBody
+	@RequestMapping(value = "/pickCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickCoupon(HttpServletRequest request, ModelMap model) throws IOException {
+		
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
+		FanbeiH5Context context = new FanbeiH5Context();
+		try {
+			context = doH5Check(request, false);
+			String couponId = ObjectUtils.toString(request.getParameter("couponId"), "").toString();
+			AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+			Map<String, Object> returnData = new HashMap<String, Object>();
+
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				returnData.put("status", CouponWebFailStatus.UserNotexist.getCode());
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc(), notifyUrl,returnData )
+						.toString();
+			}
+			AfCouponDo couponDo = afCouponService.getCouponById(NumberUtil.objToLongDefault(couponId, 1l));
+			if (couponDo == null) {
+				returnData.put("status", CouponWebFailStatus.CouponNotExist.getCode());
+
+				return H5CommonResponse
+						.getNewInstance(false, FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR.getDesc(), "", returnData)
+						.toString();
+			}
+
+			Integer limitCount = couponDo.getLimitCount();
+			Integer myCount = afUserCouponDao.getUserCouponByUserIdAndCouponId(afUserDo.getRid(),
+					NumberUtil.objToLongDefault(couponId, 1l));
+			if (limitCount <= myCount) {
+				returnData.put("status", CouponWebFailStatus.CouponOver.getCode());
+
+				return H5CommonResponse.getNewInstance(false,
+						FanbeiExceptionCode.USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR.getDesc(), "", returnData).toString();
+			}
+			Long totalCount = couponDo.getQuota();
+			if(totalCount!=-1 && totalCount!=0 &&totalCount<=couponDo.getQuotaAlready()){
+				returnData.put("status", CouponWebFailStatus.MoreThanCoupon.getCode());
+
+				return H5CommonResponse.getNewInstance(false,
+						FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR.getDesc(), "", returnData).toString();
+			}
+
+			AfUserCouponDo userCoupon = new AfUserCouponDo();
+			userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));
+			userCoupon.setGmtStart(new Date());
+			if(StringUtils.equals(couponDo.getExpiryType(), "R")   ){
+				userCoupon.setGmtStart(couponDo.getGmtStart());
+				userCoupon.setGmtEnd(couponDo.getGmtEnd());
+				if(DateUtil.afterDay(new Date(), couponDo.getGmtEnd())){
+					userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
+				}
+			}else{
+				userCoupon.setGmtStart(new Date());
+				if(couponDo.getValidDays()==-1){
+					userCoupon.setGmtEnd(DateUtil.getFinalDate());
+				}else{
+					userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+				}
+			}
+			userCoupon.setSourceType(CouponSenceRuleType.PICK.getCode());
+			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
+			userCoupon.setUserId(afUserDo.getRid());
+			afUserCouponDao.addUserCoupon(userCoupon);
+			AfCouponDo couponDoT = new AfCouponDo();
+			couponDoT.setRid(couponDo.getRid());
+			couponDoT.setQuotaAlready(1);
+			afCouponService.updateCouponquotaAlreadyById(couponDoT);
+			logger.info("pick coupon success",couponDoT);
+			return H5CommonResponse.getNewInstance(true, "领券成功", "", null).toString();
+		} catch (Exception e) {
+			logger.error("pick coupon error",e);
+			return H5CommonResponse.getNewInstance(false, e.getMessage(), "", null).toString();
+		}
+	}
+	
+    
     /**
      * 
      * @Title: convertUserNameToUserId @Description: @param userName @return
