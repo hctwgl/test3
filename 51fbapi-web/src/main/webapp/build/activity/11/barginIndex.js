@@ -21,6 +21,7 @@ let vm = new Vue({
         cutData: '',
         goodsType: '',
         url_3: '/activity/de/share',
+        url_1: '/activity/de/goods',
 
     },
     created: function() {
@@ -39,6 +40,7 @@ let vm = new Vue({
             if (ua.match(/MicroMessenger/i) == 'micromessenger') { 
                 this.isWX = true;
                 this.url_3 = "/activityH5/de/share";
+                this.url_1 = "/activityH5/de/goods";
             } else { 
                 this.isWX = false;
             } 
@@ -46,7 +48,7 @@ let vm = new Vue({
         logData:function() {    // get 初始化 信息
             let self = this;
             $.ajax({
-                url: '/activity/de/goods',
+                url: self.url_1,
                 type: 'POST',
                 dataType: 'json',
                 success: function(data){
