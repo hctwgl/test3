@@ -24,8 +24,7 @@ let vm = new Vue({
         url_1: '/activity/de/goods',
 
     },
-    created: function() {
-        this.logData();
+    created: function() {    
         this.judge();
     },
     computed: {
@@ -44,6 +43,7 @@ let vm = new Vue({
             } else { 
                 this.isWX = false;
             } 
+            this.logData();
         },
         logData:function() {    // get 初始化 信息
             let self = this;
