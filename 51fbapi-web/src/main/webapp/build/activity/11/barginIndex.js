@@ -112,7 +112,9 @@ let vm = new Vue({
                     console.log("share=",data)
                     if (!data.success) {
                         if (!data.hasOwnProperty("data")) {
-                            requestMsg('只能砍价两件商品，不要太贪心哦');
+                            if (type=='product') {
+                                requestMsg('只能砍价两件商品，不要太贪心哦');
+                            }
                         } else {
                             if (self.isWX) {
                                 location.href = "./barginLogin?goodsId=" + goodsId;
