@@ -1,7 +1,6 @@
 var shareInfo = {
     title: "51返呗邀请有礼，快来参与~",
     desc: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
-    // link: urlHost + "/",
     link: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ userName,
     imgUrl: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
     success: function() {
@@ -26,7 +25,7 @@ $(function(){
         success: function (result) {
              // 用户确认分享后执行的回调函数
             let d  = {
-                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                 appId: result.data.appId, // 必填，公众号的唯一标识
                 timestamp: result.data.timestamp, // 必填，生成签名的时间戳
                 nonceStr: result.data.nonceStr, // 必填，生成签名的随机串

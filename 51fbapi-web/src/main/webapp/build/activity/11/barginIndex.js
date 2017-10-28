@@ -160,7 +160,8 @@ let vm = new Vue({
             location.href = "/fanbei-web/activity/barginList?goodsId=" + id;
         },
         toProduct: function(id,type) { // 跳转到商品页
-            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&userName=" + getInfo().userName;
+            var name = userName ? userName : getInfo().userName;
+            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&userName=" + name;
         },
         countDown: function() { // 倒计时
             let self = this;
@@ -184,7 +185,7 @@ let vm = new Vue({
         },
         /*点击优惠券*/
         couponClick:function(item) {
-            //let self = this;
+            let self = this;
             let couponId = item.couponId;
             $.ajax({
                 url: "/fanbei-web/pickCoupon",
@@ -201,7 +202,11 @@ let vm = new Vue({
                     } else {
                         var status = returnData.data["status"];
                         if (status == "USER_NOT_EXIST") { // 用户不存在
-                            window.location.href = returnData.url;
+                            if (self.isWX) {
+                                requestMsg("哎呀，出错了！");
+                            } else {
+                                window.location.href = returnData.url;
+                            }
                         }
                         if (status == "OVER") { // 优惠券个数超过最大领券个数
                             //requestMsg(returnData.msg);
