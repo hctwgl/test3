@@ -7,6 +7,7 @@ let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
 
+
 /*
     productType
     iPhone: iPhone商品页
@@ -48,8 +49,11 @@ let vm = new Vue({
                 this.isWX = true;
                 this.url_1 = "/activityH5/de/goodsInfo";
                 this.url_2 = "/activityH5/de/friend";
-                let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
+                // let str = encodeURIComponent('http://192.168.96.173:3003/fanbei-web/activity/barginProduct');
+                // let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
+                let str = encodeURIComponent(window.location.href.split('#')[0]);
                  
+                    // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 if (!code) {
                     location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 }
