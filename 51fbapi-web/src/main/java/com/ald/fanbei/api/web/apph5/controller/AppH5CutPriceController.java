@@ -123,28 +123,38 @@ public class AppH5CutPriceController extends BaseController {
 			if (iphoneDoo != null) {
 				//to judge if the goods is iphoneX
 				if (goodsPriceId.equals(iphoneDoo.getGoodspriceid())) {
-					boolean flag = false;
-					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
-						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
-							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
-								flag = true;
-								break;
-							}
-						}
-						if (!flag) {
-							//insert the user goods
-							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
-							insertDo.setUserid(userId);
-							insertDo.setGmtCreate(new Date());
-							insertDo.setGoodspriceid(goodsPriceId);
-							insertDo.setGmtModified(new Date());
-							insertDo.setIsbuy(0);
-							afDeUserGoodsService.saveRecord(insertDo);
-						}
-					}
-				//as long as the goods is iphoneX no matter the flag the result is true.
-				resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价分享成功").toString();
-				}else{
+//					boolean flag = false;
+//					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
+//						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
+//							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
+//								flag = true;
+//								break;
+//							}
+//						}
+//						if (!flag) {
+//							//insert the user goods
+//							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+//							insertDo.setUserid(userId);
+//							insertDo.setGmtCreate(new Date());
+//							insertDo.setGoodspriceid(goodsPriceId);
+//							insertDo.setGmtModified(new Date());
+//							insertDo.setIsbuy(0);
+//							afDeUserGoodsService.saveRecord(insertDo);
+//						}
+//					}
+					//insert the user goods
+					AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+					insertDo.setUserid(userId);
+					insertDo.setGmtCreate(new Date());
+					insertDo.setGoodspriceid(goodsPriceId);
+					insertDo.setGmtModified(new Date());
+					insertDo.setIsbuy(1);
+					afDeUserGoodsService.saveRecord(insertDo);
+				
+				      //as long as the goods is iphoneX no matter the flag the result is true.
+				        resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价分享成功").toString();
+				}
+			    }else{
 					//needs to know if this goods has been shared by this user
 					boolean flag = false;
 					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
@@ -180,7 +190,7 @@ public class AppH5CutPriceController extends BaseController {
 					}
 
 					
-				}
+			//	}
 			}
 		} catch (FanbeiException e) {
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
