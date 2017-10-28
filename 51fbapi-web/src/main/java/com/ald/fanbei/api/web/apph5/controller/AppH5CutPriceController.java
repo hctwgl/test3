@@ -213,6 +213,10 @@ public class AppH5CutPriceController extends BaseController {
 	    //结束时间
 	    long endTime = afDeGoodsService.getActivityEndTime();
 	    long totalCount = afDeGoodsService.getActivityTotalCount();
+	    int iniNum = 0;
+	    iniNum = afDeGoodsService.getIniNum();
+	    totalCount  = totalCount+iniNum;
+	    logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
 	    data.put("endTime", endTime);
 	    data.put("totalCount", totalCount);
 
@@ -296,6 +300,11 @@ public class AppH5CutPriceController extends BaseController {
         			afDeUserGoodsInfoDto.setEndTime(endTime);
         			//参与人数
         			long totalCount = afDeGoodsService.getActivityTotalCount();
+        			int iniNum = 0;
+				iniNum = afDeGoodsService.getIniNum();
+				totalCount  = totalCount+iniNum;
+				logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
+        			
         			afDeUserGoodsInfoDto.setTotalCount(totalCount);
         			logger.info("totalCount = {}",totalCount);
 			}
