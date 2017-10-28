@@ -229,7 +229,8 @@ let vm = new Vue({
                 }
             })
         },
-        buy: function() {
+        buy: function(id) {
+            goodsId = id;
             if (this.isWX) {
                 // 跳转应用商城
                 location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www';

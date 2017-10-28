@@ -108,7 +108,7 @@
                                             <div class="mimg1" v-if="goods.share==0" @click="share(goods.goodsPriceId, 'product')"><img src="$commonUrl/bargin16.png"></div>
                                             <div class="mimg2 flex fd-row" v-else>
                                                 <img class="btn-m1" src="$commonUrl/bargin17.png" @click="share(goods.goodsPriceId, 'product')">
-                                                <img src="$commonUrl/bargin18.png" @click="buy()">
+                                                <img src="$commonUrl/bargin18.png" @click="buy(goods.goodsPriceId)">
                                             </div>
                                         </div>
                                     </li>
