@@ -7,6 +7,7 @@ let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
 
+
 /*
     productType
     iPhone: iPhone商品页
@@ -48,8 +49,11 @@ let vm = new Vue({
                 this.isWX = true;
                 this.url_1 = "/activityH5/de/goodsInfo";
                 this.url_2 = "/activityH5/de/friend";
-                let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
+                // let str = encodeURIComponent('http://192.168.96.173:3003/fanbei-web/activity/barginProduct');
+                // let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
+                let str = encodeURIComponent(window.location.href.split('#')[0]);
                  
+                    // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 if (!code) {
                     location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 }
@@ -66,9 +70,11 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {goodsPriceId: goodsId, userName: userName},
                 success: function(data){
+                    $(".loadingMask").fadeOut();
                     if (!data.success) {
                         if (self.isWX) {
                            // self.toLogin(); 
+                           requestMsg("哎呀，出错了！")
                         }else {
                             location.href = data.data.loginUrl;
                         }
@@ -77,7 +83,6 @@ let vm = new Vue({
                     self.goodsData = data.data;
                     self.progressWidth = 6.2*self.goodsData.cutPrice/self.goodsData.originalPrice; // 计算滚动条长度
                     self.tipLeft = self.progressWidth - 0.74;
-                    $(".loadingMask").fadeOut();
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
@@ -89,8 +94,6 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {code: code},
                 success: function(data){
-                    console.log("用户信息=",data)
-                    alert(JSON.stringify(data))
                     if (data.success) {
                         self.userInfo = data.data;
                     }
@@ -224,7 +227,7 @@ let vm = new Vue({
                     shareAppTitle: "51返呗邀请有礼，快来参与~",
                     shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
                     shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ goodsId+'&productType='+ productType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
+                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ goodsId+'&productType=share'+ productType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
                     isSubmit: 'Y',
                     sharePage: 'barginIndex'
                 }

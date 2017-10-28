@@ -48,10 +48,8 @@ public class WechatSignController extends H5Controller {
 	WechatSignatureData wechatSignatureData = new WechatSignatureData();
 	String url = null;
 	try {
-	    String urlOld = request.getRequestURI();
-
-	    logger.info("++++++++++request url:" + urlOld);
-	    // String urlOld = request.getParameter("url");
+	    String urlOld = request.getParameter("url");
+	    logger.info("++++++++++request url 1111:" + urlOld);
 	    if (StringUtil.isNotBlank(urlOld)) {
 		int index = urlOld.indexOf("#");
 		if (index > 0) {
@@ -60,6 +58,7 @@ public class WechatSignController extends H5Controller {
 		    url = urlOld;
 		}
 	    }
+	    logger.info("++++++++++request url 22222:" + urlOld);
 
 	    // 获取secret 和appId
 	    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX");
