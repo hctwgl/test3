@@ -45,6 +45,7 @@ import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto;
+import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
 import com.ald.fanbei.api.dal.domain.query.AfDeUserCutInfoQuery;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -194,6 +195,34 @@ public class H5CutPriceController extends H5Controller {
 	}
 
     
+	 @RequestMapping(value = "/goods", method = RequestMethod.POST)
+	    public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		FanbeiH5Context context = doH5Check(request, false);
+		try {
+		    String userName = context.getUserName();
+		    AfUserDo user = afUserService.getUserByUserName(userName);
+		    Long userId = user == null ? -1 : user.getRid();
+
+		    List<UserDeGoods> userDeGoodsList = afDeGoodsService.getUserDeGoodsList(userId);
+		    data.put("goodsList", userDeGoodsList);
+		    //结束时间
+		    long endTime = afDeGoodsService.getActivityEndTime();
+		    long totalCount = afDeGoodsService.getActivityTotalCount();
+		    int iniNum = 0;
+		    iniNum = afDeGoodsService.getIniNum();
+		    totalCount  = totalCount+iniNum;
+		    logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
+		    data.put("endTime", endTime);
+		    data.put("totalCount", totalCount);
+
+		    return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
+		} catch (Exception e) {
+		    logger.error("/activity/de/goods" + context + "error = {}", e);
+		    return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败");
+		}
+	    }
+	
     /**
      * 
      * @Title: goodsInfo
