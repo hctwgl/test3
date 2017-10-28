@@ -224,10 +224,14 @@ let vm = new Vue({
                 success: function(data){
                     console.log("share=",data)
                     if (!data.success) {
-                        if (self.isWX) {
-                            location.href = "./barginLogin?goodsId=" + goodsId;
-                        }else {
-                            location.href = data.data.loginUrl;           
+                        if (!data.hasOwnProperty("data")) {
+                            requestMsg('只能砍价两件商品，不要太贪心哦');
+                        } else {
+                            if (self.isWX) {
+                                location.href = "./barginLogin?goodsId=" + goodsId;
+                            }else {
+                                location.href = data.data.loginUrl;           
+                            }
                         }
                         return false;
                     }
