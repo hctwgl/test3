@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -49,6 +51,7 @@ public class WechatSignController extends H5Controller {
 	String url = null;
 	try {
 	    String urlOld = request.getParameter("url");
+	    urlOld =URLDecoder.decode(urlOld,"utf-8");
 	    logger.info("++++++++++request url 1111:" + urlOld);
 	    if (StringUtil.isNotBlank(urlOld)) {
 		int index = urlOld.indexOf("#");
