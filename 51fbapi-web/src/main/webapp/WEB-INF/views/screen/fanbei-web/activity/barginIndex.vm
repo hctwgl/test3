@@ -84,8 +84,8 @@
                             <div>
                                 <img src="$commonUrl/barginProgress0.png" v-if="couponNum<1">
                                 <img src="$commonUrl/barginProgress1.png" v-if="couponNum==1">
-                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum>1 && myCouponNum<=2">
-                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum>2">
+                                <img src="$commonUrl/barginProgress2.png" v-if="couponNum>1 && couponNum<=2">
+                                <img src="$commonUrl/barginProgress3.png" v-if="couponNum>2">
                             </div>
                             <div class="progress-txt flex fd-row jc-sa">
                                 <span>3人帮砍</span>

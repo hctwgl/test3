@@ -13,13 +13,14 @@ let vm = new Vue({
         firstGoods: {}, // iPhonex
         ruleFlag: false, //规则显示flag
         downTime: {d: 0, h: 0, m: 0, s: 0}, // 倒计时时间
-        couponNum: 0,
+        // couponNum: 0,
         isWX: false,    //是否是微信浏览器
         pageNo: 1,
         sureFlag: false, // 确认是否砍价,
         goodsId: 0,
         cutData: '',
-        goodsType: ''
+        goodsType: '',
+        url_3: '/activity/de/share',
 
     },
     created: function() {
@@ -28,7 +29,7 @@ let vm = new Vue({
     },
     computed: {
         couponNum(){
-            return this.firstGoods.couponList ? this.firstGoods.couponList.filter((a,b)=>{return a.state === 0}).length : 0
+            return this.firstGoods.couponList ? this.firstGoods.couponList.filter((a,b)=>{return a.state != 0}).length : 0
         }
     },
     methods: {
@@ -37,6 +38,7 @@ let vm = new Vue({
             // todo: 不完善，没有判断其他浏览器
             if (ua.match(/MicroMessenger/i) == 'micromessenger') { 
                 this.isWX = true;
+                this.url_3 = "/activityH5/de/share";
             } else { 
                 this.isWX = false;
             } 
@@ -96,15 +98,37 @@ let vm = new Vue({
         share: function(id,type) { // 点击发起砍价
             goodsId = id;
             goodsType = type;
-            if (type=='product') {
-                if (this.shareTime>=2) {
-                    requestMsg('只能砍价两件商品，不要太贪心哦');
-                    return false;
+            let self = this;
+            $.ajax({
+                url: self.url_3,
+                type: 'POST',
+                dataType: 'json',
+                data: {goodsPriceId: id},
+                success: function(data){
+                    console.log("share=",data)
+                    if (!data.success) {
+                        if (self.isWX) {
+                            location.href = "./barginLogin?goodsId=" + goodsId;
+                        }else {
+                            location.href = data.data.loginUrl;           
+                        }
+                        return false;
+                    }
+                    if (type=='product') {
+                        if (self.shareTime>=2) {
+                            requestMsg('只能砍价两件商品，不要太贪心哦');
+                            return false;
+                        }
+                        self.sureFlag = true;
+                    } else {
+                        self.shareSure();
+                    }
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
                 }
-                this.sureFlag = true;
-            } else {
-                this.shareSure();
-            }
+            });
+
         },
         shareSure: function() {
             this.sureFlag = false;
@@ -167,9 +191,9 @@ let vm = new Vue({
                 },
                 success: function (returnData) {
                     console.log("假装领取了优惠券。couponClickReturn=",returnData);
-                    return false;
                     if (returnData.success) {
                         requestMsg("优惠劵领取成功");
+                        // todo :更改优惠券状态
                     } else {
                         var status = returnData.data["status"];
                         if (status == "USER_NOT_EXIST") { // 用户不存在
