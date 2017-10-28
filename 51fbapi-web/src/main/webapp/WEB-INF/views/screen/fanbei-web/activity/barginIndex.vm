@@ -69,7 +69,7 @@
                         <!-- 优惠券 -->
                         <div class="coupon">
                             <ul class="coupon-ul flex fd-row jc-sb">
-                                <li class="coupon-li" v-for="(clist,index) in firstGoods.couponList" @click="getCoupon(clist)">
+                                <li class="coupon-li" v-for="(clist,index) in firstGoods.couponList" @click="couponClick(clist)">
                                     <img src="$commonUrl/barginCoupon1.png" v-if="index==0">
                                     <img src="$commonUrl/barginCoupon2.png" v-if="index==1">
                                     <img src="$commonUrl/barginCoupon3.png" v-if="index==2">

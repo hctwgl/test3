@@ -22,6 +22,7 @@ let vm = new Vue({
         goodsType: '',
         url_3: '/activity/de/share',
         url_1: '/activity/de/goods',
+        url_2: '/activity/de/pickCoupon',
 
     },
     created: function() {    
@@ -40,6 +41,7 @@ let vm = new Vue({
                 this.isWX = true;
                 this.url_3 = "/activityH5/de/share";
                 this.url_1 = "/activityH5/de/goods";
+                this.url_2 = "/activityH5/de/pickCoupon";
             } else { 
                 this.isWX = false;
             } 
@@ -190,21 +192,25 @@ let vm = new Vue({
             let self = this;
             let couponId = item.couponId;
             $.ajax({
-                url: "/fanbei-web/pickCoupon",
+                url: self.url_2,
                 type: "POST",
                 dataType: "JSON",
                 data: {
                     couponId: couponId
                 },
                 success: function (returnData) {
-                    console.log("假装领取了优惠券。couponClickReturn=",returnData);
+                    console.log("领取了优惠券。couponClickReturn=",returnData);
                     if (returnData.success) {
                         requestMsg("优惠劵领取成功");
                         // todo :更改优惠券状态
                     } else {
                         var status = returnData.data["status"];
                         if (status == "USER_NOT_EXIST") { // 用户不存在
-                            window.location.href = returnData.url;
+                            if (self.isWx) {
+                                location.href = "./barginLogin";
+                            }else {
+                                window.location.href = returnData.url;
+                            }
                         }
                         if (status == "OVER") { // 优惠券个数超过最大领券个数
                             //requestMsg(returnData.msg);
@@ -231,50 +237,6 @@ let vm = new Vue({
                 // 跳转原生app商品购买页
                 window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + goodsId + '"}';
             }
-        },
-        getCoupon: function(item) {
-            if (this.isWX) {
-                this.wxCouponClick(item);
-            }else {
-                this.couponClick(item);
-            }
-        },
-        wxCouponClick: function(item) {
-            let self = this;
-            let couponId = item.couponId;
-            $.ajax({
-                url: "/H5GGShare/pickBoluomeCouponWeb",
-                type: "POST",
-                dataType: "JSON",
-                data: {
-                    sceneId: couponId
-                },
-                success: function (returnData) {
-                    console.log("wx领取了优惠券。couponClickReturn=",returnData);
-                    if (returnData.success) {
-                        requestMsg("优惠劵领取成功");
-                        // todo :更改优惠券状态
-                    } else {
-                        var status = returnData.data["status"];
-                        if (status == "USER_NOT_EXIST") { // 用户不存在
-                            requestMsg("哎呀，出错了！");
-                        }
-                        if (status == "OVER") { // 优惠券个数超过最大领券个数
-                            //requestMsg(returnData.msg);
-                            requestMsg("您已经领取，快去使用吧");
-                        }
-                        if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                            requestMsg(returnData.msg);
-                        }
-                        if (status == "MORE_THAN") { // 优惠券已领取完
-                            requestMsg(returnData.msg);
-                        }
-                    }
-                },
-                error: function () {
-                    requestMsg("哎呀，出错了！");
-                }
-            })
         }
     }
 });
