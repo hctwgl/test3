@@ -131,36 +131,39 @@ public class H5CutPriceController extends H5Controller {
 			if (iphoneDoo != null) {
 				//to judge if the goods is iphoneX
 				if (goodsPriceId.equals(iphoneDoo.getGoodspriceid())) {
-//					boolean flag = false;
-//					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
-//						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
-//							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
-//								flag = true;
-//								break;
-//							}
-//						}
-//						if (!flag) {
-//							//insert the user goods
-//							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
-//							insertDo.setUserid(userId);
-//							insertDo.setGmtCreate(new Date());
-//							insertDo.setGoodspriceid(goodsPriceId);
-//							insertDo.setGmtModified(new Date());
-//							insertDo.setIsbuy(0);
-//							afDeUserGoodsService.saveRecord(insertDo);
-//						}
-//					}
-				        AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+					boolean flag = false;
+					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
+						for(AfDeUserGoodsDo afDeUserGoodsDo:userGoodsDoList){
+							if(afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)){
+								flag = true;
+								break;
+							}
+						}
+						if (!flag) {
+							//insert the user goods
+							AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+							insertDo.setUserid(userId);
+							insertDo.setGmtCreate(new Date());
+							insertDo.setGoodspriceid(goodsPriceId);
+							insertDo.setGmtModified(new Date());
+							insertDo.setIsbuy(0);
+							afDeUserGoodsService.saveRecord(insertDo);
+						}
+					}else{
+					//insert the user goods
+					AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
 					insertDo.setUserid(userId);
 					insertDo.setGmtCreate(new Date());
 					insertDo.setGoodspriceid(goodsPriceId);
 					insertDo.setGmtModified(new Date());
-					insertDo.setIsbuy(1);
+					insertDo.setIsbuy(0);
 					afDeUserGoodsService.saveRecord(insertDo);
-				//as long as the goods is iphoneX no matter the flag the result is true.
+					}
+				
+				      //as long as the goods is iphoneX no matter the flag the result is true.
 				        resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价分享成功").toString();
-				 }
-				}else{
+				}
+			    }else{
 					//needs to know if this goods has been shared by this user
 					boolean flag = false;
 					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
