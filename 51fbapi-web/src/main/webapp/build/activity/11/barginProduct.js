@@ -51,9 +51,7 @@ let vm = new Vue({
                 this.url_2 = "/activityH5/de/friend";
                 let str = encodeURIComponent(window.location.href.split('#')[0]);
                 let urls = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=1&connect_redirect=1#wechat_redirect';
-                alert(str);
-                alert(userName)
-                    // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
+                // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 if (!code) {
                     location.href = urls;    
                 }
@@ -95,7 +93,7 @@ let vm = new Vue({
                 data: {code: code},
                 success: function(data){
                     if (data.success) {
-                        self.userInfo = data.data;
+                        self.userInfo = data;
                     }
                 },
                 error: function() {

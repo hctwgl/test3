@@ -6,7 +6,6 @@ let shareInfo = {
     imgUrl: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
     success: function() {
         alert("分享成功！");
-        alert(userName)
     },
     error: function() {
         alert("分享失败！");
