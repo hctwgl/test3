@@ -107,15 +107,15 @@ $(function () {
                     alert(urlName);
                     console.log(data)
                     if (data.success) {
-                        window.location.href = "./barginIndex?userName=18850843825";
+                        window.location.href = "./barginIndex?userName=" + userName ;
                         return false;
                         // todo: confirm url
                         if (word == "Z") {
-                            window.location.href = urlName + "?userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId;
+                            window.location.href = urlName + "?userName=" + userName ;
                         } else if (word == "S") {
-                            window.location.href = urlName + "?userName=" + userName + "&itemsId=" + itemsId + "&activityId=" + activityId;
+                            window.location.href = urlName + "?userName=" + userName;
                         } else {
-                            window.location.href =urlName + "?activityId=" + activityId + "&userName=" + userName+ "&word=" + loginSource+ "&urlName=" + urlName;
+                            window.location.href =urlName + "?userName=" + userName;
                         }
                     } else if (data.url == "Login") {
                         requestMsg(data.msg);
@@ -124,7 +124,7 @@ $(function () {
                         requestMsg(data.msg);
                         //跳转延迟
                         setTimeout(function () {
-                            window.location.href = "barginRegister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+                            window.location.href = "barginRegister?userName=" + userName;
                         }, 1500);
                     }
                 }
@@ -145,13 +145,13 @@ $(function () {
     //注册
     $("#gg_register").click(function () {
         //  alert(word);
-        window.location.href = "barginRegister?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName+ "&loginSource=" + loginSource;
+        window.location.href = "barginRegister?userName=" + userName ;
     });
 
     //忘记密码
     $("#gg_forget").click(function () {
         // alert(word);
-        window.location.href = "barginVerify?word=" + word + "&userName=" + userName + "&activityId=" + activityId + "&userItemsId=" + userItemsId + "&itemsId=" + itemsId + "&urlName=" + urlName;
+        window.location.href = "barginVerify?userName=" + userName;
     });
 })
 //截取字符串方法

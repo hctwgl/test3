@@ -131,7 +131,7 @@ let vm = new Vue({
             location.href = "/fanbei-web/activity/barginList?goodsId=" + id;
         },
         toProduct: function(id,type) { // 跳转到商品页
-            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&testUser=" + getInfo().userName;
+            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&testUser=" + getInfo().userName + "&userName=" + getInfo().userName;
         },
         countDown: function() { // 倒计时
             let self = this;

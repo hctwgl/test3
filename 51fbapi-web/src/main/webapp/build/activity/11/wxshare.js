@@ -1,7 +1,8 @@
 let shareInfo = {
     title: "51返呗邀请有礼，快来参与~",
     desc: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
-    link: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
+    // link: urlHost + "/",
+    link: urlHost + '/fanbei-web/activity/barginProduct?goodsid='+goodsId+'&producttype=share'+ goodsType +'&testuser='+ getInfo().userName +'&username='+ getInfo().userName,
     imgUrl: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
     success: function() {
         alert("分享成功！");
@@ -14,13 +15,14 @@ let shareInfo = {
     //      alert("取消分享！");
     //  }
 }
+let turl = encodeURIComponent(window.location.href.split('#')[0]);
 
 $(function(){
     $.ajax({
         url: '/wechat/getSign',
         type: 'POST',
         dataType: 'json',
-        data: {url: shareInfo.link},
+        data: {url: turl},
         success: function (result) {
             // alert("share")
             // alert(JSON.stringify(result))
