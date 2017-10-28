@@ -104,10 +104,10 @@ $(function () {
                 },
                 success: function (data) {
                     console.log(">>>>",data)
-                    alert(urlName);
+                    alert(userNamePhone);
                     console.log(data)
                     if (data.success) {
-                        window.location.href = "./barginIndex?userName=" + userName ;
+                        window.location.href = "./barginIndex?userName=" + userNamePhone ;
                         return false;
                         // todo: confirm url
                         if (word == "Z") {

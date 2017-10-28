@@ -92,9 +92,7 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {code: code},
                 success: function(data){
-                    if (data.success) {
-                        self.userInfo = data;
-                    }
+                    self.userInfo = data;
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
