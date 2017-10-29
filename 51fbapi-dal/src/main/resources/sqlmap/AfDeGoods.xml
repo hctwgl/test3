@@ -160,12 +160,12 @@
 				  d.type,
 				  IF(u.userId IS NULL, 0,1) AS `share`,
 				  g.`name`,
-				  g.`goods_detail` AS goods_detail,
-				  o.`name` AS couponName,
-				  o.id AS couponId,
-				  c.threshold AS threshold,
-			 	 IF(u.cutCount IS NULL,0, IF( u.cutCount > c.threshold AND uc.id IS NULL, 2, 1)) AS state
-			FROM
+				  IFNULL( u.cutCount,0) as cutCount,
+				  o.`name` as couponName,
+				  o.id as couponId,
+				  c.threshold as threshold,
+				  IF ( c.threshold is null or  c.threshold > u.cutCount or u.cutCount is null,  0,IF (uc.id IS NULL,  2,  1)) AS state
+				FROM
 			    af_goods g
 				JOIN af_goods_price p ON g.id = p.goods_id AND p.is_delete = 0 AND g.is_delete = 0
 				JOIN af_de_goods d ON p.id = d.goodsPriceId AND d.is_delete = 0
@@ -194,6 +194,7 @@
 			d.type,
 			if(u.userId is null, 0,1) as `share`,
 			g.`name`,
+			IFNULL( u.cutCount,0) as cutCount,
 			o.`name` as couponName,
 			o.id as couponId,
 			c.threshold as threshold,
