@@ -461,6 +461,7 @@ public class H5CutPriceController extends H5Controller {
 									data.put("code", 4);// already been bought
 									resultStr = H5CommonResponse.getNewInstance(false, "已经买了此商品，不能砍价", "", data)
 											.toString();
+									return resultStr;
 								} else {
 									// to judge if this wechat user has already
 									// helped this
@@ -477,6 +478,7 @@ public class H5CutPriceController extends H5Controller {
 										data.put("code", 2);// already been
 										// bought
 										resultStr = H5CommonResponse.getNewInstance(false, "重复砍价", "", data).toString();
+										return resultStr;
 									} else {
 
 										// to see if this user has already put
@@ -520,6 +522,7 @@ public class H5CutPriceController extends H5Controller {
 												data.put("code", 3);
 												resultStr = H5CommonResponse
 														.getNewInstance(false, "已砍至最低价，无法完成本次砍价", "", data).toString();
+												return resultStr;
 											} else {// still could cut price
 
 												// TODO:add lock
@@ -559,12 +562,15 @@ public class H5CutPriceController extends H5Controller {
 												data.put("cutPrice", cutPricee);
 												resultStr = H5CommonResponse.getNewInstance(true, "砍价成功", "", data)
 														.toString();
+												return resultStr;
 											}
 										}
 									}
 								}
 
 							}
+							logger.info("/activityH5/de/cutPrice params: userName = {} goodsPriceId = {} this user has not shared the goods before",userName,goodsPriceIdStr);
+							resultStr = H5CommonResponse.getNewInstance(false, "改商品没有被分享成功，不能砍价！").toString();
 						}
 					}
 				} catch (FanbeiException e) {
