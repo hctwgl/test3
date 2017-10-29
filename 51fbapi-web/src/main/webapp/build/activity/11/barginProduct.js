@@ -184,8 +184,12 @@ let vm = new Vue({
                     "headImgUrl": user.headimgurl
                 },
                 success: function(data) {
-                    self.barginFlag = true;
-                    self.cutData = data;
+                    if (data.success) {
+                        self.barginFlag = true;
+                        self.cutData = data.data;
+                    } else {
+                        requestMsg("砍价失败");
+                    }
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！");
