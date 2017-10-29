@@ -120,7 +120,6 @@ public class H5CutPriceController extends H5Controller {
 			// find all the goods List for this user
 			AfDeUserGoodsDo userGoodsDo = new AfDeUserGoodsDo();
 			userGoodsDo.setUserid(userId);
-			userGoodsDo.setGoodspriceid(goodsPriceId);
 			List<AfDeUserGoodsDo> userGoodsDoList = afDeUserGoodsService.getListByCommonCondition(userGoodsDo);
 
 			// find goodsPriceId for iphonex
