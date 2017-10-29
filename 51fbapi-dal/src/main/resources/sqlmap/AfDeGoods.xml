@@ -127,25 +127,6 @@
                   (SELECT COUNT(DISTINCT userId ) userGoodsNUM FROM af_de_user_goods )
                    AS go
     </select>
-    
-    <resultMap type="com.ald.fanbei.api.dal.domain.dto.UserDeGoods" id="userDeGoods">
-    	<id column="goodsPriceId" property="goodsPriceId" />
-		<result column="image" property="image" />
-		<result column="thumbnailIcon" property="thumbnailIcon" />
-		<result column="originalPrice" property="originalPrice" />
-		<result column="lowestPrice" property="lowestPrice" />
-		<result column="cutPrice" property="cutPrice" />
-		<result column="type" property="type" />
-		<result column="share" property="share" />
-		<result column="name" property="name" />
-		<result column="goodsId" property="goodsId" />
-		<collection property="couponList" ofType="com.ald.fanbei.api.dal.domain.dto.UserDeGoodsCoupon"  column="couponId"  >
-			<id column="couponId" property="couponId" />
-			<result column="couponName" property="couponName" />
-			<result column="threshold" property="threshold" />
-			<result column="state" property="state" /> 
-		</collection>    
-    </resultMap>
      <select id="getGoodsInfo" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeGoodsDo">
        
        SELECT 
@@ -181,7 +162,27 @@
         ug.goodsPriceId = #{goodspriceid}
         AND ug.`is_delete`=0
         LIMIT 0,1
-    </select>
+    </select>    
+    
+    <resultMap type="com.ald.fanbei.api.dal.domain.dto.UserDeGoods" id="userDeGoods">
+    	<id column="goodsPriceId" property="goodsPriceId" />
+		<result column="image" property="image" />
+		<result column="thumbnailIcon" property="thumbnailIcon" />
+		<result column="originalPrice" property="originalPrice" />
+		<result column="lowestPrice" property="lowestPrice" />
+		<result column="cutPrice" property="cutPrice" />
+		<result column="type" property="type" />
+		<result column="share" property="share" />
+		<result column="name" property="name" />
+		<result column="cutCount" property="cutCount" />
+		<result column="goodsId" property="goodsId" />
+		<collection property="couponList" ofType="com.ald.fanbei.api.dal.domain.dto.UserDeGoodsCoupon"  column="couponId"  >
+			<id column="couponId" property="couponId" />
+			<result column="couponName" property="couponName" />
+			<result column="threshold" property="threshold" />
+			<result column="state" property="state" /> 
+		</collection>    
+    </resultMap>
     <select id ="getUserDeGoodsList" resultMap="userDeGoods">
 	    SELECT
 			p.id AS goodsPriceId,
