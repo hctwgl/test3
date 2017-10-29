@@ -128,6 +128,7 @@ public class AppH5CutPriceController extends BaseController {
 						for (AfDeUserGoodsDo afDeUserGoodsDo : userGoodsDoList) {
 							if (afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)) {
 								flag = true;
+								logger.info("activity/de/share userName ={} , goodsPriceId = {} the user has already shared this goods", userName, goodsPriceId);
 								break;
 							}
 						}
@@ -140,6 +141,7 @@ public class AppH5CutPriceController extends BaseController {
 							insertDo.setGmtModified(new Date());
 							insertDo.setIsbuy(0);
 							afDeUserGoodsService.saveRecord(insertDo);
+							logger.info("activity/de/share userName ={} , goodsPriceId = {} save this goods for this user succeed and this user has already another shared goods", userName, goodsPriceId);
 						}
 					} else {
 						// insert the user goods
@@ -150,6 +152,7 @@ public class AppH5CutPriceController extends BaseController {
 						insertDo.setGmtModified(new Date());
 						insertDo.setIsbuy(0);
 						afDeUserGoodsService.saveRecord(insertDo);
+						logger.info("activity/de/share userName ={} , goodsPriceId = {} save this goods for this user succeed and this user donest have any shared goods", userName, goodsPriceId);
 					}
 
 					// as long as the goods is iphoneX no matter the flag the
@@ -159,14 +162,24 @@ public class AppH5CutPriceController extends BaseController {
 					// needs to know if this goods has been shared by this user
 					boolean flag = false;
 					if (userGoodsDoList != null && userGoodsDoList.size() > 0) {
+						List<Long> userGoodsPriceList = new ArrayList<>();
+						
+						for (AfDeUserGoodsDo afDeUserGoodsDo : userGoodsDoList) {
+							if (afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)) {
+								userGoodsPriceList.add(afDeUserGoodsDo.getGoodspriceid());
+							}
+						}
+						
 						//to judge if the user has already bought another two goodses
-						if (userGoodsDoList.size() == 2) {
-							resultStr = H5CommonResponse.getNewInstance(false, "只能砍价两件商品，不要太贪心哦！").toString();
+						if (userGoodsDoList.size() == 3 || (userGoodsDoList.size() == 2 && userGoodsPriceList.contains(iphoneDo.getGoodspriceid()))) {
+							logger.info("activity/de/share userName ={}  has already had {} goodses shared", userName, userGoodsDoList.size());
+							resultStr = H5CommonResponse.getNewInstance(false, "除了iphoneX只能砍价两件商品，不要太贪心哦！").toString();
 						}
 						
 						for (AfDeUserGoodsDo afDeUserGoodsDo : userGoodsDoList) {
 							if (afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)) {
 								flag = true;
+								logger.info("activity/de/share userName ={}  has already shared this goods {}", userName, goodsPriceId);
 								break;
 							}
 						}
@@ -181,14 +194,13 @@ public class AppH5CutPriceController extends BaseController {
 							insertDo.setGoodspriceid(goodsPriceId);
 							insertDo.setIsbuy(0);
 							afDeUserGoodsService.saveRecord(insertDo);
+							logger.info("activity/de/share userName ={}  succeed to share this goods {}", userName, goodsPriceId);
 							resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
 						}
 						resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
 
-					} else {// the user doent have shared this goods.
-							// insert the user goods if this user does'nt have
-							// this
-							// goods
+					} else {
+						logger.info("activity/de/share userName ={}  had no goods shared before and now begin to share this goods {}", userName, goodsPriceId);
 						AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
 						insertDo.setUserid(userId);
 						insertDo.setGmtCreate(new Date());
@@ -196,6 +208,7 @@ public class AppH5CutPriceController extends BaseController {
 						insertDo.setIsbuy(0);
 						insertDo.setGoodspriceid(goodsPriceId);
 						afDeUserGoodsService.saveRecord(insertDo);
+						logger.info("activity/de/share userName ={}  had no goods shared before and now succeed to share this goods {}", userName, goodsPriceId);
 						resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
 					}
 
