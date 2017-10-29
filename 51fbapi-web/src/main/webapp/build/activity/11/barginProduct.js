@@ -216,6 +216,7 @@ let vm = new Vue({
         },
         share: function() { 
             // 是否登录,APP_SHARE接口会自动判断是否登陆
+            let self = this;
             $.ajax({
                 url: self.url_3,
                 type: 'POST',
@@ -235,16 +236,16 @@ let vm = new Vue({
                         }
                         return false;
                     }
-                    if (this.isWX) {
+                    if (self.isWX) {
                         //todo: 弹窗提示分享
                         requestMsg("请点击右上角进行分享")
-                        this.toProduct(goodsId,"product");
+                        // self.toProduct(goodsId,"product");
                     } else {
                         var dat = {
                             shareAppTitle: "51返呗邀请有礼，快来参与~",
                             shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
                             shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                            shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ goodsId+'&productType=share'+ productType +'&userName='+ getInfo().userName,
+                            shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ self.goodsId +'&productType=share'+ productType +'&userName='+ getInfo().userName,
                             isSubmit: 'Y',
                             sharePage: 'barginIndex'
                         }
