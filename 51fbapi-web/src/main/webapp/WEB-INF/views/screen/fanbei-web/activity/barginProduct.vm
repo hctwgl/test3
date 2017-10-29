@@ -2,21 +2,11 @@
 <html lang="en">
 
 <head>
-    #set($version="2017102701")
+    #set($version="2017102801")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
-    <title>商品页m</title>
+    <title>商品页</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css?version=$version">
-    <script type="text/javascript">
-        // let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
-        // let code = getUrl("code"); 
-        // if (!code) {
-        //     location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
-        // }
-      
-        // location.href= 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri=http%3A%2F%2Fktestapp.51fanbei.com%2Ffanbei-web%2Factivity%2FbarginProduct&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';
-
-    </script>
 
 <body>
     <div class="loadingMask"><i class="loading"></i></div>
@@ -117,7 +107,7 @@
                 <p class="tip" v-if="cutData.code==3">已砍至最低价，无法完成本次砍价</p>
                 <img class="tip-icon" src="$commonUrl/bargin02.png">
                 <div class="btn-box2 flex flex-row jc-sb">
-                    <div class="btn-go">立即前往</div>
+                    <div class="btn-go" @click="toLogin()">立即前往</div>
                     <div class="btn-next" @click="closeBargin()">下次再说</div>
                 </div>
             </div>

@@ -141,10 +141,21 @@ public class AppH5CutPriceController extends BaseController {
 							insertDo.setIsbuy(0);
 							afDeUserGoodsService.saveRecord(insertDo);
 						}
+					}else{
+					//insert the user goods
+					AfDeUserGoodsDo insertDo = new AfDeUserGoodsDo();
+					insertDo.setUserid(userId);
+					insertDo.setGmtCreate(new Date());
+					insertDo.setGoodspriceid(goodsPriceId);
+					insertDo.setGmtModified(new Date());
+					insertDo.setIsbuy(0);
+					afDeUserGoodsService.saveRecord(insertDo);
 					}
-				//as long as the goods is iphoneX no matter the flag the result is true.
-				resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价分享成功").toString();
-				}else{
+				
+				      //as long as the goods is iphoneX no matter the flag the result is true.
+				        resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价分享成功").toString();
+				}
+			    }else{
 					//needs to know if this goods has been shared by this user
 					boolean flag = false;
 					if (userGoodsDoList != null && userGoodsDoList.size() > 0 ) {
@@ -180,7 +191,7 @@ public class AppH5CutPriceController extends BaseController {
 					}
 
 					
-				}
+			//	}
 			}
 		} catch (FanbeiException e) {
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
@@ -213,6 +224,10 @@ public class AppH5CutPriceController extends BaseController {
 	    //结束时间
 	    long endTime = afDeGoodsService.getActivityEndTime();
 	    long totalCount = afDeGoodsService.getActivityTotalCount();
+	    int iniNum = 0;
+	    iniNum = afDeGoodsService.getIniNum();
+	    totalCount  = totalCount+iniNum;
+	    logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
 	    data.put("endTime", endTime);
 	    data.put("totalCount", totalCount);
 
@@ -296,6 +311,11 @@ public class AppH5CutPriceController extends BaseController {
         			afDeUserGoodsInfoDto.setEndTime(endTime);
         			//参与人数
         			long totalCount = afDeGoodsService.getActivityTotalCount();
+        			int iniNum = 0;
+				iniNum = afDeGoodsService.getIniNum();
+				totalCount  = totalCount+iniNum;
+				logger.info("endTime = {}, totalCount = {}",endTime,totalCount);
+        			
         			afDeUserGoodsInfoDto.setTotalCount(totalCount);
         			logger.info("totalCount = {}",totalCount);
 			}

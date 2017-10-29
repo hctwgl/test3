@@ -33,7 +33,6 @@
                     success: function(data) {
                         console.log(data)
                         if (data.success) {
-                            alert("url")
                             window.location.href = "barginLogin?userName=" + userName ;
                         } else {
                             requestMsg(data.msg);
