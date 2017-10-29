@@ -213,7 +213,7 @@ let vm = new Vue({
             if (this.isWX) {
                 location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www';
             } else {
-                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + goodsId + '"}';
+                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + self.goodsData.goodsId + '"}';
             }
         },
         share: function() {
@@ -246,7 +246,7 @@ let vm = new Vue({
                             shareAppTitle: "51返呗邀请有礼，快来参与~",
                             shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
                             shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                            shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId=' + self.goodsData.goodsId + '&productType=share' + productType + '&userName=' + getInfo().userName,
+                            shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId=' + goodsId + '&productType=share' + productType + '&userName=' + getInfo().userName,
                             isSubmit: 'Y',
                             sharePage: 'barginIndex'
                         }
