@@ -104,7 +104,7 @@ let vm = new Vue({
         closeShare: function() {
             this.shareFlag = false;
         },
-        share: function(id, type) { // 点击发起砍价
+        share: function(id, type,status) { // 点击发起砍价
             goodsId = id;
             goodsType = type;
             let self = this;
@@ -114,7 +114,7 @@ let vm = new Vue({
                 dataType: 'json',
                 data: { goodsPriceId: id },
                 success: function(data) {
-                    if (!data.success) {
+                    if (!data.success) { // 返回不可砍價
                         if (!data.hasOwnProperty("data")) {
                             if (type == 'product') {
                                 requestMsg('只能砍价两件商品，不要太贪心哦');
@@ -129,7 +129,7 @@ let vm = new Vue({
                         return false;
                     }
                     if (type == 'product') {
-                        if (self.shareTime >= 2) {
+                        if (self.shareTime >= 2 && status == 0) {
                             requestMsg('只能砍价两件商品，不要太贪心哦');
                             return false;
                         }

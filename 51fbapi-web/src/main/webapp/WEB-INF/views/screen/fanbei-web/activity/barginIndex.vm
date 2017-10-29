@@ -59,7 +59,7 @@
                                     <div class="price-txt">被砍价格：<span>￥{{goods.cutPrice}}</span></div>
                                 </div>
                                 <div class="flex fd-row jc-c" style="margin-top: .1rem;width: 100%">
-                                    <div class="person-btns" @click="share(goods.goodsPriceId,'iPhone')"></div>
+                                    <div class="person-btns" @click="share(goods.goodsPriceId,'iPhone',goods.share)"></div>
                                     <div style="width:.5rem"></div>
                                     <div class="person-btns" @click="toList(goods.goodsPriceId)"></div>
                                 </div>
@@ -105,9 +105,9 @@
                                             <div class="mtxt1">{{goods.name}}</div>
                                             <div class="mtxt2">奖品价格：<span>￥{{goods.originalPrice}}</span></div>
                                             <div class="mtxt3">被砍价格：<span>￥{{goods.cutPrice}}</span></div>
-                                            <div class="mimg1" v-if="goods.share==0" @click="share(goods.goodsPriceId, 'product')"><img src="$commonUrl/bargin16.png"></div>
+                                            <div class="mimg1" v-if="goods.share==0" @click="share(goods.goodsPriceId, 'product',goods.share)"><img src="$commonUrl/bargin16.png"></div>
                                             <div class="mimg2 flex fd-row" v-else>
-                                                <img class="btn-m1" src="$commonUrl/bargin17.png" @click="share(goods.goodsPriceId, 'product')">
+                                                <img class="btn-m1" src="$commonUrl/bargin17.png" @click="share(goods.goodsPriceId, 'product',goods.share)">
                                                 <img src="$commonUrl/bargin18.png" @click="buy(goods.goodsId)">
                                             </div>
                                         </div>
