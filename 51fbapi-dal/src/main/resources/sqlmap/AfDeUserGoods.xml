@@ -175,11 +175,12 @@
     </select>
     <select id="getUserGoodsInfo" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsInfoDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
  
-       SELECT 
-       		 goods.image, goods.originalPrice,goods.goods_detail goodsDetail,goods.name
+    SELECT 
+       		 goods.image, goods.originalPrice,goods.goods_detail goodsDetail,goods.name,goods.goodsId
         FROM(
               SELECT
 				  p.id AS goodsPriceId,
+				  g.id goodsId,
 				  g.thumbnail_icon AS image,
 				  p.actual_amount AS originalPrice,
 				  d.lowestPrice,
@@ -200,6 +201,7 @@
 				LEFT JOIN af_de_goods_coupon c ON d.goodsPriceId = c.goodsPriceId AND c.is_delete = 0
 				LEFT JOIN af_coupon o ON c.couponId = o.id AND o.is_delete = 0
 				LEFT JOIN af_user_coupon uc ON o.id = uc.coupon_id AND uc.user_id = 0 AND uc.is_delete = 0
+				
         ) goods
         
         RIGHT JOIN af_de_goods ug 
