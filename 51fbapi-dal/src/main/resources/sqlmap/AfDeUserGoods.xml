@@ -213,6 +213,7 @@
         ug.goodsPriceId = #{goodspriceid}
         and 
         ug.is_delete = 0
+        LIMIT 0,1
     </select>
     
       <select id="getAfDeUserGoogsList" resultType="com.ald.fanbei.api.dal.domain.dto.AfDeUserGoodsDto" parameterType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
