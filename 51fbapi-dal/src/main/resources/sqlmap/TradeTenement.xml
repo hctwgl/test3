@@ -97,7 +97,7 @@
     
     
     <select id="getUserIdentityUrl" resultType="com.ald.fanbei.api.dal.domain.AfIdNumberDo" parameterType="java.lang.String">
-    	SELECT * FROM af_id_number WHERE user_id=(SELECT id FROM af_user WHERE mobile=#{mobile})
+    	SELECT * FROM af_id_number WHERE user_id=(SELECT id FROM af_user WHERE is_delete=0 and user_name=#{mobile} limit 1 )
     </select>
     
     <update id="updateTenementInfo" parameterType="AfTradeTenementInfoDo" >

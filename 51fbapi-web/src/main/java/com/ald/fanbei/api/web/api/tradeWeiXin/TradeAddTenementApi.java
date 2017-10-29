@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import org.apache.commons.lang.ObjectUtils;
@@ -58,8 +59,7 @@ public class TradeAddTenementApi implements ApiHandle {
 
         AfIdNumberDo afIdNumberDo= tradeTenementService.getUserIdentityUrl(mobile);
         if(afIdNumberDo==null){
-            resp.addResponseData("message", "对不起，该用户尚未进行注册/身份证认证");
-            return resp;
+            throw new FanbeiException(FanbeiExceptionCode.TENEMENT_USER_INVALID);
         }
         AfTradeTenementInfoDo afTradeTenementInfoDo = null;
         if (id == 0) {
@@ -67,8 +67,7 @@ public class TradeAddTenementApi implements ApiHandle {
         } else {
             afTradeTenementInfoDo = tradeTenementService.getTenementInfoDoById(id);
             if (afTradeTenementInfoDo.getAuditState() == 1) {
-                resp.addResponseData("message", "对不起，您的审核已将完成，无法更改");
-                return resp;
+                throw new FanbeiException(FanbeiExceptionCode.TENEMENT_ALREADY_AUDIT);
             }
         }
 
