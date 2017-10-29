@@ -43,7 +43,6 @@
         </div>
         <!--注册--end-->
     <!--弹窗-->
-    <div class="registerMask hide"></div>
     <div class="imgVftCodeWrap hide">
         <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
         <div class="imgVftCodeInput clearfix">
@@ -127,7 +126,7 @@
 </div>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
-<script type="text/javascript" src="/dist/activity/10/ggNewAdRegisterjm.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/10/ggNewAdRegisterqt.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/10/ggNewAdqt.js?version=$version"></script>
 <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </body>

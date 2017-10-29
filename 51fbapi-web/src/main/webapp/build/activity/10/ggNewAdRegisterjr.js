@@ -74,11 +74,11 @@ $(function () {
                 success: function (r) {
                     console.log(r);
                     // 显示弹窗
-                    $(".registerMask").removeClass("hide");
+                    $(".mask").show();
                     $(".imgVftCodeWrap").removeClass("hide");
                     $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
                     $("#imgVftCodeClose").click(function(){ // 关闭弹窗
-                        $(".registerMask").addClass("hide");
+                        $(".mask").hide();
                         $(".imgVftCodeWrap").addClass("hide");
                     })
                 },
@@ -111,11 +111,11 @@ $(function () {
             success: function (r) {
                 console.log(r);
                 // 显示弹窗
-                $(".registerMask").removeClass("hide");
+                $(".mask").show();
                 $(".imgVftCodeWrap").removeClass("hide");
                 $("#imgVftCodeWrapImg").attr("src","data:image/png;base64,"+r.data);
                 $("#imgVftCodeClose").click(function(){ // 关闭弹窗
-                    $(".registerMask").addClass("hide");
+                    $(".mask").hide();
                     $(".imgVftCodeWrap").addClass("hide");
                 })
             },
@@ -146,7 +146,7 @@ $(function () {
                     success: function (returnData) {
                         if (returnData.success) {
                             // 关闭弹窗
-                            $(".registerMask").addClass("hide");
+                            $(".mask").hide();
                             $(".imgVftCodeWrap").addClass("hide");
                             // 倒计时
                             $(".checkbtn").attr("isState", 1);
