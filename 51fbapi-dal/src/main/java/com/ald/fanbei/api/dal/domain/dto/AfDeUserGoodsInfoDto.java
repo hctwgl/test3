@@ -41,6 +41,13 @@ import java.math.BigDecimal;
     private long endTime;
     
     /**
+     * 商品id
+     */
+    private long  goodsId;
+    
+    
+    
+    /**
      * 商品名称
      */
     private String name;
@@ -89,6 +96,12 @@ import java.math.BigDecimal;
     }
     public void setTotalCount(long totalCount) {
         this.totalCount = totalCount;
+    }
+    public long getGoodsId() {
+        return goodsId;
+    }
+    public void setGoodsId(long goodsId) {
+        this.goodsId = goodsId;
     }
   
 }
