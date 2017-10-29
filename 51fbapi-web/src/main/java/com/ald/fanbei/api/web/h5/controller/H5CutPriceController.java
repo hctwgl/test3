@@ -560,6 +560,7 @@ public class H5CutPriceController extends H5Controller {
 												afDeUserCutInfoService.saveRecord(insertDo);
 												afDeUserGoodsService.updateById(usergoodsResult);
 												data.put("cutPrice", cutPricee);
+												data.put("code", 1);
 												resultStr = H5CommonResponse.getNewInstance(true, "砍价成功", "", data)
 														.toString();
 												return resultStr;
