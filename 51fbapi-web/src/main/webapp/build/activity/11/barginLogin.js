@@ -1,6 +1,4 @@
-
-
-var token=formatDateTime()+Math.random().toString(36).substr(2);
+var token = formatDateTime() + Math.random().toString(36).substr(2);
 // 防止风控被拒
 function formatDateTime() {
     var date = new Date();
@@ -12,7 +10,7 @@ function formatDateTime() {
     var h = date.getHours();
     var minute = date.getMinutes();
     var second = date.getSeconds();
-    return y +  m +  d +h +minute+second;
+    return y + m + d + h + minute + second;
 };
 
 
@@ -24,19 +22,22 @@ var _fmOpt;
         appName: 'alading_web',
         token: token
     };
-    var cimg = new Image(1,1);
+    var cimg = new Image(1, 1);
     cimg.onload = function() {
         _fmOpt.imgLoaded = true;
     };
-    cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') +"fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
-    var fm = document.createElement('script'); fm.type = 'text/javascript'; fm.async = true;
-    fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime()/3600000).toFixed(0);
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(fm, s);
+    cimg.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + "fp.fraudmetrix.cn/fp/clear.png?partnerCode=alading&appName=alading_web&tokenId=" + _fmOpt.token;
+    var fm = document.createElement('script');
+    fm.type = 'text/javascript';
+    fm.async = true;
+    fm.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.fraudmetrix.cn/fm.js?ver=0.1&t=' + (new Date().getTime() / 3600000).toFixed(0);
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(fm, s);
     // alert(json.msg);
 })();
 
 
-$(function () {
+$(function() {
     //获取页面名称传到登录页
     var currentUrl = window.location.href;
     var param = getUrlParam(currentUrl);
@@ -48,46 +49,43 @@ $(function () {
     var itemsId = param['itemsId'];
     var loginSource = param['loginSource'];
     console.log(param)
-    
+
     //用戶名叉叉點擊清楚所有文字
-    $('.yhicon').click(function () {
+    $('.yhicon').click(function() {
         $("#yhinp").val('');
         $('.yhicon').css("display", "none");
     });
 
-    $("#yhinp").keyup(function () {
-
+    $("#yhinp").keyup(function() {
         if ($("#yhinp").val() == '') {
             $('.yhicon').css("display", "none");
-            } else {
+        } else {
             $('.yhicon').css("display", "block");
         }
     });
 
     // 密碼叉叉點擊清楚所有文字
-    $('.mmicon').click(function () {
-            $(".check").val('');
+    $('.mmicon').click(function() {
+        $(".check").val('');
+        $('.mmicon').css("display", "none");
+    });
+
+
+    $(".check").keyup(function() {
+        if ($(".check").val() == '') {
             $('.mmicon').css("display", "none");
+        } else {
+            $('.mmicon').css("display", "block");
+        }
     });
 
 
-    $(".check").keyup(function () {
-            if ($(".check").val() == '') {
-                $('.mmicon').css("display", "none");
-            } else {
-                $('.mmicon').css("display", "block");
-            }
-    });
-
-
-    $(".loginbtn").click(function () {
+    $(".loginbtn").click(function() {
         var userNamePhone = $("#yhinp").val(); //获取手机号
         var password = $(".check").val(); //获取密码
-
         //var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(userNamePhone));
         var userck = (/^1[3|4|5|7|8][0-9]{9}$/.test(userNamePhone)); //手机号正则验证11位
         if (userck && /^(?![^a-zA-Z]+$)(?!\\D+$).{6,18}$/.test(password)) {
-
             var password_md5 = String(CryptoJS.MD5(password)); //md5加密
             $.ajax({
                 url: "/H5GGShare/boluomeActivityLogin",
@@ -99,30 +97,29 @@ $(function () {
                     activityId: activityId,
                     refUserName: userName,
                     urlName: urlName,
-                    token:token
-                    
+                    token: token
+
                 },
-                success: function (data) {
+                success: function(data) {
                     console.log(data)
                     if (data.success) {
-                        window.location.href = "./barginIndex?userName=" + userNamePhone ;
+                        window.location.href = "./barginIndex?userName=" + userNamePhone;
                         return false;
                         // todo: confirm url
                         if (word == "Z") {
-                            window.location.href = urlName + "?userName=" + userName ;
+                            window.location.href = urlName + "?userName=" + userName;
                         } else if (word == "S") {
                             window.location.href = urlName + "?userName=" + userName;
                         } else {
-                            window.location.href =urlName + "?userName=" + userName;
+                            window.location.href = urlName + "?userName=" + userName;
                         }
                     } else if (data.url == "Login") {
                         requestMsg(data.msg);
-
                     } else if (data.url == "DownLoad") {
                         requestMsg(data.msg);
                         //跳转延迟
-                        setTimeout(function () {
-                            window.location.href = "barginRegister?userName=" + userName;
+                        setTimeout(function() {
+                            window.location.href = "barginRegister?userName=" + userNamePhone;
                         }, 1500);
                     }
                 }
@@ -141,13 +138,13 @@ $(function () {
 
 
     //注册
-    $("#gg_register").click(function () {
+    $("#gg_register").click(function() {
         //  alert(word);
-        window.location.href = "barginRegister?userName=" + userName ;
+        window.location.href = "barginRegister?userName=" + userName;
     });
 
     //忘记密码
-    $("#gg_forget").click(function () {
+    $("#gg_forget").click(function() {
         // alert(word);
         window.location.href = "barginVerify?userName=" + userName;
     });

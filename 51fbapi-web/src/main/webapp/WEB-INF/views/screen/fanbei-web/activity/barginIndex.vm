@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    #set($version="2017102801")
+    #set($version="2017102901")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>砍价首页</title>
@@ -69,7 +69,7 @@
                         <!-- 优惠券 -->
                         <div class="coupon">
                             <ul class="coupon-ul flex fd-row jc-sb">
-                                <li class="coupon-li" v-for="(clist,index) in firstGoods.couponList" @click="couponClick(clist)">
+                                <li class="coupon-li" v-for="(clist,index) in couponData" @click="couponClick(clist,index)">
                                     <img src="$commonUrl/barginCoupon1.png" v-if="index==0">
                                     <img src="$commonUrl/barginCoupon2.png" v-if="index==1">
                                     <img src="$commonUrl/barginCoupon3.png" v-if="index==2">
@@ -82,10 +82,10 @@
                         </div>
                         <div class="progress-box flex fd-column ai-c">
                             <div>
-                                <img src="$commonUrl/barginProgress0.png" v-if="couponNum<1">
-                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum==1">
-                                <img src="$commonUrl/barginProgress2.png" v-if="couponNum>1 && couponNum<=2">
-                                <img src="$commonUrl/barginProgress3.png" v-if="couponNum>2">
+                                <img src="$commonUrl/barginProgress0.png" v-if="firstGoods.cutCount<3">
+                                <img src="$commonUrl/barginProgress1.png" v-if="firstGoods.cutCount>=3 && firstGoods.cutCount<10">
+                                <img src="$commonUrl/barginProgress2.png" v-if="firstGoods.cutCount>=10 && firstGoods.cutCount<30">
+                                <img src="$commonUrl/barginProgress3.png" v-if="firstGoods.cutCount>=30">
                             </div>
                             <div class="progress-txt flex fd-row jc-sa">
                                 <span>3人帮砍</span>
@@ -108,7 +108,7 @@
                                             <div class="mimg1" v-if="goods.share==0" @click="share(goods.goodsPriceId, 'product')"><img src="$commonUrl/bargin16.png"></div>
                                             <div class="mimg2 flex fd-row" v-else>
                                                 <img class="btn-m1" src="$commonUrl/bargin17.png" @click="share(goods.goodsPriceId, 'product')">
-                                                <img src="$commonUrl/bargin18.png" @click="buy(goods.goodsPriceId)">
+                                                <img src="$commonUrl/bargin18.png" @click="buy(goods.goodsId)">
                                             </div>
                                         </div>
                                     </li>
@@ -150,6 +150,11 @@
                 </div>
             </div>
             <div class="btn-close" @click="closeSure()"><img src="$commonUrl/barginClose.png"></div>
+        </div>
+        <div class="shadow flex fd-column ai-c" v-show="shareFlag" class="animated" @click="closeShare()">
+            <div class="sharebox">
+                请点击右上角进行分享
+            </div>
         </div>
     </div>
 </body>

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    #set($version="2017102801")
+    #set($version="2017102901")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>商品页</title>
@@ -112,6 +112,12 @@
                 </div>
             </div>
         </div>
+        <div class="shadow flex fd-column ai-c" v-show="shareFlag" class="animated" @click="closeShare()">
+            <div class="sharebox">
+                请点击右上角进行分享
+            </div>
+        </div>
+
         <!-- 商品详情页 -->
         <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='iPhone' || productType=='product'">
             <!-- 发起砍价 -->
