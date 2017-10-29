@@ -180,6 +180,7 @@ public class H5CutPriceController extends H5Controller {
 						if (userGoodsDoList.size() >= 3 || (userGoodsDoList.size() >= 2 && userGoodsPriceList.contains(iphoneDo.getGoodspriceid()))) {
 							logger.info("activity/de/share userName ={}  has already had {} goodses shared", userName, userGoodsDoList.size());
 							resultStr = H5CommonResponse.getNewInstance(false, "除了iphoneX只能砍价两件商品，不要太贪心哦！").toString();
+							return resultStr;
 						}
 						
 						for (AfDeUserGoodsDo afDeUserGoodsDo : userGoodsDoList) {
