@@ -430,20 +430,24 @@ public class H5CutPriceController extends H5Controller {
 			@Override
 			public String doInTransaction(TransactionStatus status) {
 				String resultStr = H5CommonResponse.getNewInstance(false, "砍价失败").toString();
-				String userIdStr = request.getParameter("userId");
+				String userName = request.getParameter("userId");
 				String goodsPriceIdStr = request.getParameter("goodsPriceId");
 				String openId = request.getParameter("openId");
 				String nickName = request.getParameter("nickName");
 				String headImagUrl = request.getParameter("headImgUrl");
-
-				String key = Constants.CACHKEY_CUT_PRICE_LOCK + ":" + userIdStr + ":" + goodsPriceIdStr;
+				
+				String loggerStr = String.format("/activityH5/de/cutPrice params: userName = {} goodsPriceId = {} openId = {} nickName = {} headImgUrl = {}",userName,goodsPriceIdStr,openId,nickName,headImagUrl);
+				
+				logger.info(loggerStr);
+				
+				Long userId = convertUserNameToUserId(userName);
+				String key = Constants.CACHKEY_CUT_PRICE_LOCK + ":" + userId + ":" + goodsPriceIdStr;
 				try {
-					if (StringUtil.isAllNotEmpty(userIdStr, openId, goodsPriceIdStr)) {
+					if (StringUtil.isAllNotEmpty(userId.toString(), openId, goodsPriceIdStr)) {
 						// try 1000 times to get the lock
 						boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
 						if (isNotLock) {
-							Long userId = NumberUtil.objToLong(userIdStr);
-
+							
 							Long goodsPriceId = NumberUtil.objToLong(goodsPriceIdStr);
 							// to judge if the goods is bought already
 							AfDeUserGoodsDo userGoodsDo = new AfDeUserGoodsDo();
