@@ -1,8 +1,9 @@
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol+'//'+host;
-let goodsId = '';
-let goodsType = '';
+var goodsId = '';
+var goodsType = '';
+var userName = getUrl('userName');//获取用户id
 
 let vm = new Vue({
     el: "#barginIndex",
@@ -12,22 +13,24 @@ let vm = new Vue({
         firstGoods: {}, // iPhonex
         ruleFlag: false, //规则显示flag
         downTime: {d: 0, h: 0, m: 0, s: 0}, // 倒计时时间
-        couponNum: 0,
+        // couponNum: 0,
         isWX: false,    //是否是微信浏览器
         pageNo: 1,
         sureFlag: false, // 确认是否砍价,
         goodsId: 0,
         cutData: '',
-        goodsType: ''
+        goodsType: '',
+        url_3: '/activity/de/share',
+        url_1: '/activity/de/goods',
+        url_2: '/fanbei-web/pickCoupon',
 
     },
-    created: function() {
-        this.logData();
+    created: function() {    
         this.judge();
     },
     computed: {
         couponNum(){
-            return this.firstGoods.couponList ? this.firstGoods.couponList.filter((a,b)=>{return a.state === 0}).length : 0
+            return this.firstGoods.couponList ? this.firstGoods.couponList.filter((a,b)=>{return a.state != 0}).length : 0
         }
     },
     methods: {
@@ -36,14 +39,18 @@ let vm = new Vue({
             // todo: 不完善，没有判断其他浏览器
             if (ua.match(/MicroMessenger/i) == 'micromessenger') { 
                 this.isWX = true;
+                this.url_3 = "/activityH5/de/share";
+                this.url_1 = "/activityH5/de/goods";
+                this.url_2 = "/activityH5/de/pickCoupon";
             } else { 
                 this.isWX = false;
             } 
+            this.logData();
         },
         logData:function() {    // get 初始化 信息
             let self = this;
             $.ajax({
-                url: '/activity/de/goods',
+                url: self.url_1,
                 type: 'POST',
                 dataType: 'json',
                 success: function(data){
@@ -95,15 +102,43 @@ let vm = new Vue({
         share: function(id,type) { // 点击发起砍价
             goodsId = id;
             goodsType = type;
-            if (type=='product') {
-                if (this.shareTime>=2) {
-                    requestMsg('只能砍价两件商品，不要太贪心哦');
-                    return false;
+            let self = this;
+            $.ajax({
+                url: self.url_3,
+                type: 'POST',
+                dataType: 'json',
+                data: {goodsPriceId: id},
+                success: function(data){
+                    console.log("share=",data)
+                    if (!data.success) {
+                        if (!data.hasOwnProperty("data")) {
+                            if (type=='product') {
+                                requestMsg('只能砍价两件商品，不要太贪心哦');
+                            }
+                        } else {
+                            if (self.isWX) {
+                                location.href = "./barginLogin?goodsId=" + goodsId;
+                            }else {
+                                location.href = data.data.loginUrl;           
+                            }
+                        }
+                        return false;
+                    }
+                    if (type=='product') {
+                        if (self.shareTime>=2) {
+                            requestMsg('只能砍价两件商品，不要太贪心哦');
+                            return false;
+                        }
+                        self.sureFlag = true;
+                    } else {
+                        self.shareSure();
+                    }
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
                 }
-                this.sureFlag = true;
-            } else {
-                this.shareSure();
-            }
+            });
+
         },
         shareSure: function() {
             this.sureFlag = false;
@@ -117,7 +152,7 @@ let vm = new Vue({
                     shareAppTitle: "51返呗邀请有礼，快来参与~",
                     shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
                     shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
+                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ getInfo().userName,
                     isSubmit: 'Y',
                     sharePage: 'barginIndex'
                 }
@@ -131,7 +166,8 @@ let vm = new Vue({
             location.href = "/fanbei-web/activity/barginList?goodsId=" + id;
         },
         toProduct: function(id,type) { // 跳转到商品页
-            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&testUser=" + getInfo().userName + "&userName=" + getInfo().userName;
+            var name = userName ? userName : getInfo().userName;
+            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&userName=" + name;
         },
         countDown: function() { // 倒计时
             let self = this;
@@ -155,24 +191,28 @@ let vm = new Vue({
         },
         /*点击优惠券*/
         couponClick:function(item) {
-            //let self = this;
+            let self = this;
             let couponId = item.couponId;
             $.ajax({
-                url: "/fanbei-web/pickCoupon",
+                url: self.url_2,
                 type: "POST",
                 dataType: "JSON",
                 data: {
                     couponId: couponId
                 },
                 success: function (returnData) {
-                    console.log("假装领取了优惠券。couponClickReturn=",returnData);
-                    return false;
+                    console.log("领取了优惠券。couponClickReturn=",returnData);
                     if (returnData.success) {
                         requestMsg("优惠劵领取成功");
+                        // todo :更改优惠券状态
                     } else {
                         var status = returnData.data["status"];
                         if (status == "USER_NOT_EXIST") { // 用户不存在
-                            window.location.href = returnData.url;
+                            if (self.isWx) {
+                                location.href = "./barginLogin";
+                            }else {
+                                window.location.href = returnData.url;
+                            }
                         }
                         if (status == "OVER") { // 优惠券个数超过最大领券个数
                             //requestMsg(returnData.msg);
@@ -191,7 +231,8 @@ let vm = new Vue({
                 }
             })
         },
-        buy: function() {
+        buy: function(id) {
+            goodsId = id;
             if (this.isWX) {
                 // 跳转应用商城
                 location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www';

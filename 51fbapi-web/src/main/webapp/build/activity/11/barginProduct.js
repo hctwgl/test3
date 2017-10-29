@@ -1,7 +1,7 @@
 let goodsId = getUrl('goodsId');//获取商品id
 let productType = getUrl('productType');//获取商品类型
 let goodsType  = getUrl('productType');//获取商品类型
-let userName = getUrl('testUser');//获取用户id
+let userName = getUrl('userName');//获取用户id
 let code = getUrl("code"); // 获取code
 let protocol = window.location.protocol;
 let host = window.location.host;
@@ -33,6 +33,7 @@ let vm = new Vue({
         listNum: 1,
         url_1: '/activity/de/goodsInfo',
         url_2: '/activity/de/friend',
+        url_3: '/activity/de/share',
         userInfo: {}  //用户信息
     },
     created: function() {
@@ -49,13 +50,12 @@ let vm = new Vue({
                 this.isWX = true;
                 this.url_1 = "/activityH5/de/goodsInfo";
                 this.url_2 = "/activityH5/de/friend";
-                // let str = encodeURIComponent('http://192.168.96.173:3003/fanbei-web/activity/barginProduct');
-                // let str = encodeURIComponent('http://ktestapp.51fanbei.com/fanbei-web/activity/barginProduct');
+                this.url_3 = "/activityH5/de/share";
                 let str = encodeURIComponent(window.location.href.split('#')[0]);
-                 
-                    // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
+                let urls = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=1&connect_redirect=1#wechat_redirect';
+                // location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
                 if (!code) {
-                    location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri='+str+'&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect';    
+                    location.href = urls;    
                 }
             } else { 
                 this.isWX = false;
@@ -94,9 +94,7 @@ let vm = new Vue({
                 dataType: 'json',
                 data: {code: code},
                 success: function(data){
-                    if (data.success) {
-                        self.userInfo = data.data;
-                    }
+                    self.userInfo = data;
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
@@ -218,23 +216,49 @@ let vm = new Vue({
         },
         share: function() { 
             // 是否登录,APP_SHARE接口会自动判断是否登陆
-            if (this.isWX) {
-                //todo: 弹窗提示分享
-                requestMsg("请点击右上角进行分享")
-                this.toProduct(goodsId,"product");
-            } else {
-                var dat = {
-                    shareAppTitle: "51返呗邀请有礼，快来参与~",
-                    shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
-                    shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                    shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ goodsId+'&productType=share'+ productType +'&userName='+ getInfo().userName +'&testUser='+ getInfo().userName,
-                    isSubmit: 'Y',
-                    sharePage: 'barginIndex'
+            let self = this;
+            $.ajax({
+                url: self.url_3,
+                type: 'POST',
+                dataType: 'json',
+                data: {goodsPriceId: goodsId},
+                success: function(data){
+                    console.log("share=",data)
+                    if (!data.success) {
+                        if (!data.hasOwnProperty("data")) {
+                            requestMsg('只能砍价两件商品，不要太贪心哦');
+                        } else {
+                            if (self.isWX) {
+                                location.href = "./barginLogin?goodsId=" + goodsId;
+                            }else {
+                                location.href = data.data.loginUrl;           
+                            }
+                        }
+                        return false;
+                    }
+                    if (self.isWX) {
+                        //todo: 弹窗提示分享
+                        requestMsg("请点击右上角进行分享")
+                        // self.toProduct(goodsId,"product");
+                    } else {
+                        var dat = {
+                            shareAppTitle: "51返呗邀请有礼，快来参与~",
+                            shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
+                            shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
+                            shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+ self.goodsId +'&productType=share'+ productType +'&userName='+ getInfo().userName,
+                            isSubmit: 'Y',
+                            sharePage: 'barginIndex'
+                        }
+                        dat = JSON.stringify(dat)
+                        var base64 = BASE64.encoder(dat)
+                        window.location.href='/fanbei-web/opennative?name=APP_SHARE&params=' + base64
+                    }
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
                 }
-                dat = JSON.stringify(dat)
-                var base64 = BASE64.encoder(dat)
-                window.location.href='/fanbei-web/opennative?name=APP_SHARE&params=' + base64
-            }
+            });
+            
         },
     }
 })

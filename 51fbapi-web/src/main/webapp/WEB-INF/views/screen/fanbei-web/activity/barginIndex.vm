@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    #set($version="2017102701")
+    #set($version="2017102801")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>砍价首页</title>
@@ -84,8 +84,8 @@
                             <div>
                                 <img src="$commonUrl/barginProgress0.png" v-if="couponNum<1">
                                 <img src="$commonUrl/barginProgress1.png" v-if="couponNum==1">
-                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum>1 && myCouponNum<=2">
-                                <img src="$commonUrl/barginProgress1.png" v-if="couponNum>2">
+                                <img src="$commonUrl/barginProgress2.png" v-if="couponNum>1 && couponNum<=2">
+                                <img src="$commonUrl/barginProgress3.png" v-if="couponNum>2">
                             </div>
                             <div class="progress-txt flex fd-row jc-sa">
                                 <span>3人帮砍</span>
@@ -108,7 +108,7 @@
                                             <div class="mimg1" v-if="goods.share==0" @click="share(goods.goodsPriceId, 'product')"><img src="$commonUrl/bargin16.png"></div>
                                             <div class="mimg2 flex fd-row" v-else>
                                                 <img class="btn-m1" src="$commonUrl/bargin17.png" @click="share(goods.goodsPriceId, 'product')">
-                                                <img src="$commonUrl/bargin18.png" @click="toProduct(goods.goodsPriceId, 'product')">
+                                                <img src="$commonUrl/bargin18.png" @click="buy(goods.goodsPriceId)">
                                             </div>
                                         </div>
                                     </li>
