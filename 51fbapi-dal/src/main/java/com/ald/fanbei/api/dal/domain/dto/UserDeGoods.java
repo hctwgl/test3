@@ -93,6 +93,14 @@ public class UserDeGoods {
 	this.thumbnailIcon = thumbnailIcon;
     }
 
+    public Integer getCutCount() {
+	return cutCount;
+    }
+
+    public void setCutCount(Integer cutCount) {
+	this.cutCount = cutCount;
+    }
+
     private Long goodsPriceId;
     private String image;
     private String thumbnailIcon;
@@ -103,12 +111,12 @@ public class UserDeGoods {
     private Integer share;
     private String name;
     private String goodsId;
-
+    private Integer cutCount;
     private List<UserDeGoodsCoupon> couponList;
 
     @Override
     public String toString() {
-	return "UserDeGoods [goodsPriceId=" + goodsPriceId + ", image=" + image + ", thumbnailIcon=" + thumbnailIcon + ", originalPrice=" + originalPrice + ", cutPrice=" + cutPrice + ", lowestPrice=" + lowestPrice + ", type=" + type + ", share=" + share + ", name=" + name + ", goodsId=" + goodsId + ", couponList=" + couponList + "]";
+	return "UserDeGoods [goodsPriceId=" + goodsPriceId + ", image=" + image + ", thumbnailIcon=" + thumbnailIcon + ", originalPrice=" + originalPrice + ", cutPrice=" + cutPrice + ", lowestPrice=" + lowestPrice + ", type=" + type + ", share=" + share + ", name=" + name + ", goodsId=" + goodsId + ", cutCount=" + cutCount + ", couponList=" + couponList + "]";
     }
 
 }
