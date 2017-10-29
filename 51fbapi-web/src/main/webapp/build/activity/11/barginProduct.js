@@ -168,7 +168,7 @@ let vm = new Vue({
             let self = this;
             let user = self.userInfo;
             if (!user.hasOwnProperty("openid")) {
-                requestMsg("哎呀，出错了！")
+                requestMsg("获取用户信息失败！");
                 return false;
             }
 
