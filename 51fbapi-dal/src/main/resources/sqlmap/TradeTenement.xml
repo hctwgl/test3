@@ -132,7 +132,7 @@
 		    <if test="businessId != null and businessId != ''" >
 		       ,business_id=#{businessId}
 		    </if>
-		    <if test="auditState != null and auditState != ''" >
+		    <if test="auditState != null" >
 			   ,audit_state=#{auditState}
 		    </if>
 		WHERE id = #{id}
