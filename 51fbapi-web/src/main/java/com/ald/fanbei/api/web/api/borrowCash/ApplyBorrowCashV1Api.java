@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hamcrest.core.IsInstanceOf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -319,8 +320,15 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements ApiHandle
 			} catch (Exception e) {
 				logger.error("apply borrow cash v1 error", e);
 				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 				cashDo.setArrivalAmount(orgArrivalAmount);
+				//如果属于非返呗自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
+				if(e instanceof FanbeiException){
+					cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+				}else{
+					logger.error("apply borrow cash v1 exist unexpected exception,cause:"+e.getCause() );
+					cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
+					cashDo.setReviewDetails("弱风控认证存在捕获外异常");
+				}
 				afBorrowCashService.updateBorrowCash(cashDo);
 
 				if (!StringUtils.isBlank(couponId)) {

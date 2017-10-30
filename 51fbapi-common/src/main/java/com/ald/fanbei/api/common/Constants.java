@@ -131,6 +131,9 @@ public class Constants {
 	public static final String CACHEKEY_PROMOTIONCHANBELPOINT = "promotion_channel_point$";
 	public static final String CACHEKEY_CHANNEL_IMG_CODE_PREFIX = "channel_img_code$";
     public static final String CACHEKEY_CHANGE_MOBILE = "change_mobile";
+    public static final String CACHEKEY_REDRAIN_MISC = "redrain_misc";
+    public static final String CACHEKEY_REDRAIN_COUNTERS = "redrain_counters";
+    public static final String CACHEKEY_REDRAIN_SINK = "redrain_sink";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
@@ -283,7 +286,6 @@ public class Constants {
 	public static final String EMAIL_SEND_PWD = "fbapi.email.pwd";
 
 	public static final String CONFKEY_WX_APPID = "fbapi.wx.appid";
-	public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 	public static final String CONFKEY_WX_MCHID = "fbapi.wx.mchid";
 	public static final String CONFKEY_WX_KEY = "fbapi.wx.key";
 	public static final String CONFKEY_WX_CERTPATH = "fbapi.wx.certpath";
@@ -345,9 +347,7 @@ public class Constants {
 	public static final String DEFAULT_CODE               = "UTF-8";
 	public static final String H5_OPEN_ID_COOKIES_KEY = "openid";
 	
-	//双十一
-	public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
-	public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
+	
 
 	//商圈
 	public static final String DEFAULT_SALT = "51fb";
@@ -387,5 +387,10 @@ public class Constants {
 	public static final String THIRD_GOODS_TYPE = "third_goods";
 
 	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
+	
+	//双十一砍价活动
+	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
+	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
+	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 
 }

@@ -251,6 +251,53 @@ $(function(){
             }
         }
     });
-
 });
+//点击优惠券
+function couponClick(rid,a,userAlready,limitCount){
+    let couponId=rid;
+    let index=a.index()/2;
+    let userHas=userAlready;
+    let limitHas=limitCount;
+    $.ajax({
+        url: "/fanbei-web/pickCoupon",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+            couponId: couponId
+        },
+        success: function (returnData) {
+            console.log(returnData)
+            if (returnData.success) {
+                     requestMsg("优惠劵领取成功");
+                     let typeHas=parseInt($('.coupon').eq(index).attr('typeHas'));
+                     $('.coupon').eq(index).attr('typeHas', ++typeHas);
+                     if(typeHas == limitHas){
+                         $('.coupon').eq(index).addClass('couponclose');
+                     }
+            }else{
+                    var status = returnData.data["status"];
+                    if (status == "USER_NOT_EXIST") { // 用户不存在
+                        window.location.href = returnData.url;
+                    }
+                    if(status == "OVER") { // 优惠券个数超过最大领券个数
+                        requestMsg(returnData.msg);
+                    }
+                    if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                        requestMsg(returnData.msg);
+                    }
+                    if (status == "MORE_THAN") { // 优惠券已领取完
+                        requestMsg(returnData.msg);
+                    }
+            }
+        },
+        error: function () {
+            requestMsg("哎呀，出错了！");
+        }
+    })
+}
 
+//优惠券
+$(function(){
+    $('.couponWrap').width(($('.coupon').width()+$('.kong').width())*($('.coupon').length));
+    $('.kong').eq($('.coupon').length-1).hide();
+})

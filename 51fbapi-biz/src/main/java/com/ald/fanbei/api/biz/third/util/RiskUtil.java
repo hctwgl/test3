@@ -890,7 +890,7 @@ public class RiskUtil extends AbstractThird {
 				if (StringUtils.equals("10", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
-	      			authDo.setRiskStatus(RiskStatus.YES.getCode());
+					authDo.setRiskStatus(RiskStatus.YES.getCode());
 	      			authDo.setBasicStatus("Y");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);
@@ -909,7 +909,9 @@ public class RiskUtil extends AbstractThird {
 				} else if (StringUtils.equals("30", result)) {
 					AfUserAuthDo authDo = new AfUserAuthDo();
 	      			authDo.setUserId(consumerNo);
-	      			authDo.setRiskStatus(RiskStatus.NO.getCode());
+					if(!"Y".equals(authDo.getRiskStatus())){
+						authDo.setRiskStatus(RiskStatus.NO.getCode());
+					}
 					authDo.setBasicStatus("N");
 	      			authDo.setGmtRisk(new Date(System.currentTimeMillis()));
 	      			afUserAuthService.updateUserAuth(authDo);

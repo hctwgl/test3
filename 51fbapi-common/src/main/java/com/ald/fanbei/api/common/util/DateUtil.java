@@ -611,6 +611,15 @@ public class DateUtil {
         
         return new Date(cal.getTime().getTime());
     }
+    /**
+     * 目标日期距当前时间点间隔，单位秒
+     * @param date
+     * @return
+     */
+    public static long getIntervalFromNowInSec(final Date date) {
+    	long interval = (date.getTime() - System.currentTimeMillis())/1000;
+        return interval;
+    }
     
     /**
      * Return the end of the month based on the date passed as input parameter.

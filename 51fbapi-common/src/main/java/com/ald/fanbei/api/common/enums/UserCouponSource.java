@@ -16,7 +16,8 @@ public enum UserCouponSource {
     INVITE("INVITE", "邀请"),
     SIGNIN("SIGNIN", "签到"),
 
-    SPECIAL("SPECIAL", "邀请");
+    SPECIAL("SPECIAL", "邀请"),
+    RED_RAIN("RED_RAIN", "红包雨");
 	
     private String code;
     private String name;

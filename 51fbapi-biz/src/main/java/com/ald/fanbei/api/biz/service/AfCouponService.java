@@ -31,4 +31,6 @@ public interface AfCouponService {
 
 	AfCouponDo getCoupon(Long couponId);
 	List<String> getCouponNames(List<String> ids);
+
+	List<AfCouponDto> getCouponByActivityIdAndType(Long modelId, String code);
 }

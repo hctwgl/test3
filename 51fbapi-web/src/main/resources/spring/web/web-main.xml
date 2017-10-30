@@ -127,6 +127,10 @@
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
+				<value>/category/getGoodsList</value>
+				<value>/category/getAllGoodsCategory</value>
+				
+				<value>/resource/getRedRainRounds</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -146,6 +150,7 @@
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
 				<entry key="/user/getSysMsgList" value-ref="getSysMsgListApi" />
 				<entry key="/user/getMineInfo" value-ref="getMineInfoApi" />
+				<entry key="/user/getMineCouponCount" value-ref="getMineCouponCountApi" />
 				<entry key="/user/getMineCouponList" value-ref="getMineCouponListApi" />
 				<entry key="/user/getCallCenterInfo" value-ref="getCallCenterInfoApi" />
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
@@ -349,6 +354,7 @@
 				<entry key="/agencyBuy/getTradeNperInfo" value-ref="GetTradeNperInfoApi" />
 
 				<entry key="/resource/getResourceConfig" value-ref="getResourceConfigApi" />
+				<entry key="/resource/getRedRainRounds" value-ref="getRedRainRoundsApi" />
 
 				<!--运营接口 -->
 				<entry key="/operateApp/getOrderSyncOrderInfo" value-ref="getOrderSyncOrderInfoApi" />
@@ -381,8 +387,16 @@
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 				<!--分期广告位-->
 				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
+				
 				<!-- 统计点击量 -->
 				<entry key="/clickAmount/clickAmountNum" value-ref="clickAmountNumApi" />
+				<entry key="/pushClickAmout/clickPushAmountNum" value-ref="clickPushAmountNumApi" />
+				
+				
+				<!-- 商品分类 -->
+				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
+				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>
@@ -396,5 +410,4 @@
 			cron="0 1/2 * * * *" />
 	</task:scheduled-tasks>
 
-	<bean class="com.ald.fanbei.api.web.application.SpringInit"/>
 </beans>

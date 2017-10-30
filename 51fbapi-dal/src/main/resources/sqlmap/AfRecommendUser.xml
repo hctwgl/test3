@@ -157,4 +157,9 @@
 		)
 	</insert>
 
+	<insert id="insertShareWithData">
+		INSERT INTO af_recommend_shared(id,gmt_create,user_id,type,recommend_code)
+		VALUES(#{uuid},NOW(),#{userId},#{type},#{invitationCode})
+	</insert>
+
 </mapper>
