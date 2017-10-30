@@ -116,7 +116,7 @@ public class H5CutPriceController extends H5Controller {
 			
 			long endTime = afDeGoodsService.getActivityEndTime();
 			Long now = new Date().getTime();
-			if (now < endTime) {
+			if (now > endTime) {
 				resultStr = H5CommonResponse.getNewInstance(false, "活动已经结束").toString();
 				return resultStr;
 			}
@@ -455,7 +455,7 @@ public class H5CutPriceController extends H5Controller {
 					
 					long endTime = afDeGoodsService.getActivityEndTime();
 					Long now = new Date().getTime();
-					if (now < endTime) {
+					if (now > endTime) {
 						data.put("code", 5);//activity has already finished
 						resultStr = H5CommonResponse.getNewInstance(false, "活动已经结束","",data).toString();
 						return resultStr;

@@ -109,7 +109,7 @@ public class AppH5CutPriceController extends BaseController {
 			
 			long endTime = afDeGoodsService.getActivityEndTime();
 			Long now = new Date().getTime();
-			if (now < endTime) {
+			if (now > endTime) {
 				resultStr = H5CommonResponse.getNewInstance(false, "活动已经结束").toString();
 				return resultStr;
 			}
