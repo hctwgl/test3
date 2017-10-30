@@ -120,9 +120,7 @@ let vm = new Vue({
                     success: function(data) {
                         if (!data.success) { // 返回不可砍價
                             if (!data.hasOwnProperty("data")) {
-                                if (type == 'product') {
-                                    requestMsg('只能砍价两件商品，不要太贪心哦');
-                                }
+                                requestMsg(data.msg);
                             } else {
                                 if (self.isWX) {
                                     location.href = "./barginLogin";
@@ -203,7 +201,7 @@ let vm = new Vue({
         couponClick: function(item,index) {
             let self = this;
             let couponId = item.couponId;
-            if (item.state==2) {
+            if (item.state == 2) {
                 if (self.ajaxFlag) {
                     self.ajaxFlag = false;
                     $.ajax({
@@ -245,6 +243,8 @@ let vm = new Vue({
                         }
                     });   
                 }
+            }else if (item.state == 1) {
+                requestMsg("您已经领取，快去使用吧");
             }
         },
         buy: function(id) {
