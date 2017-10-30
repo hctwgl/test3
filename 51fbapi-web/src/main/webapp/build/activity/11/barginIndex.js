@@ -14,7 +14,7 @@ let vm = new Vue({
         ruleFlag: false, //规则显示flag
         downTime: { d: 0, h: 0, m: 0, s: 0 }, // 倒计时时间
         isWX: false, //是否是微信浏览器
-        pageNo: 1,
+        pageNo: 1, // 加载页数
         sureFlag: false, // 确认是否砍价,
         shareFlag: false,
         goodsId: 0,
@@ -214,7 +214,7 @@ let vm = new Vue({
                         success: function(returnData) {
                             if (returnData.success) {
                                 requestMsg("优惠劵领取成功");
-                                self.couponData[index]['state'] == 1;
+                                self.$set(self.couponData[index],'state',1);
                             } else {
                                 var status = returnData.data["status"];
                                 if (status == "USER_NOT_EXIST") { // 用户不存在

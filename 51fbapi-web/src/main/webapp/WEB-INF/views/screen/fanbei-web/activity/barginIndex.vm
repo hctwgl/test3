@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    #set($version="2017102901")
+    #set($version="2017103001")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>砍价首页</title>
@@ -112,7 +112,6 @@
                                             </div>
                                         </div>
                                     </li>
-
                                 </ul>
                             </div>
                         </div>

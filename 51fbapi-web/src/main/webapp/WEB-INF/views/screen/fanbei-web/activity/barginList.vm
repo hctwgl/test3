@@ -6,7 +6,7 @@
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>砍价榜单</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/bargin.css?version=$version">
 </head>
 
 <body>
@@ -104,6 +104,6 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/dist/activity/11/barginList.js"></script>
+<script type="text/javascript" src="/dist/activity/11/barginList.js?version=$version"></script>
 
 </html>

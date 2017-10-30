@@ -24,6 +24,7 @@ import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -178,7 +179,7 @@ public class AppH5CutPriceController extends BaseController {
 						}
 						
 						//to judge if the user has already bought another two goodses
-						if ((userGoodsDoList.size() >= 3 && !userGoodsPriceList.contains(goodsPriceId)) || (userGoodsDoList.size() >= 2 && !userGoodsPriceList.contains(iphoneDo.getGoodspriceid()))) {
+						if ((userGoodsDoList.size() >= 3 && !userGoodsPriceList.contains(goodsPriceId)) || (userGoodsDoList.size() >= 2 && !userGoodsPriceList.contains(iphoneDoo.getGoodspriceid()))) {
 							logger.info("activity/de/share userName ={}  has already had {} goodses shared", userName, userGoodsDoList.size());
 							resultStr = H5CommonResponse.getNewInstance(false, "除了iphoneX只能砍价两件商品，不要太贪心哦！").toString();
 							return resultStr;
@@ -559,6 +560,12 @@ public class AppH5CutPriceController extends BaseController {
 		doWebCheck(request, false);
 
 		String code = request.getParameter("code");
+		
+		if(StringUtils.isBlank(code))
+		{
+		    throw new FanbeiException("参数格式错误" + "code", FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
+		
 		// 获取access_token
 		String appid = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue();
 		String secret = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue1();
