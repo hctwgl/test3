@@ -120,6 +120,7 @@ public class H5BoluomeActivityController extends BaseController {
 	String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
         String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
         String referer = request.getHeader("referer");  
+        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer);
 	
      try{
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
@@ -225,7 +226,7 @@ public class H5BoluomeActivityController extends BaseController {
      }catch (Exception e){
 		logger.error("boluomeActivityLogin error",e.getMessage());
 	}
-     
+        //兼容菠萝觅活动外的埋点
         doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
 	return H5CommonResponse.getNewInstance(true, "登录成功", "", "").toString();
     }
@@ -624,6 +625,7 @@ public class H5BoluomeActivityController extends BaseController {
 	String rmtIp = CommonUtil.getIpAddr(request);
 	String resultStr = "";
 	String referer = request.getHeader("referer");  
+	doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer);
      
 	try {
 	    String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
@@ -749,7 +751,8 @@ public class H5BoluomeActivityController extends BaseController {
 //	    }
 	    // 注册成功给用户发送注册短信
 	    // smsUtil.sendRegisterSuccessSms(userDo.getUserName());
-	   doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
+	    //兼容菠萝觅活动外的埋点
+	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
  	    return resultStr;
 
 	} catch (FanbeiException e) {
