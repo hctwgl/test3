@@ -33,6 +33,7 @@ let vm = new Vue({
         shareFlag: false,
         userInfoFlag: true,
         ajaxFlag: true,
+        getUserFlag: true,
         listNum: 1,
         url_1: '/activity/de/goodsInfo',
         url_2: '/activity/de/friend',
@@ -66,17 +67,37 @@ let vm = new Vue({
         },
         logData: function() { // get 初始化 信息
             let self = this;
+            if (self.isWX) {
+                self.getUserFlag = false;
+                $.ajax({
+                    url: '/activity/de/wechat/userInfo',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { code: code },
+                    success: function(data) {
+                        self.userInfo = data;
+                    },
+                    error: function() {
+                        requestMsg("哎呀，获取用户信息出错了！")
+                    },
+                    complete: function() {
+                        self.getUserFlag = true;
+                        $(".loadingMask").fadeOut();
+                    }
+                });      
+            }
             $.ajax({
                 url: self.url_1,
                 type: 'POST',
                 dataType: 'json',
                 data: { goodsPriceId: goodsId, userName: userName },
                 success: function(data) {
-                    $(".loadingMask").fadeOut();
+                    if (self.getUserFlag) {
+                        $(".loadingMask").fadeOut();
+                    }
                     if (!data.success) {
                         if (self.isWX) {
                             self.toLogin(); 
-                            // requestMsg("哎呀，出错了！")
                         } else {
                             location.href = data.data.loginUrl;
                         }
@@ -85,18 +106,6 @@ let vm = new Vue({
                     self.goodsData = data.data;
                     self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
                     self.tipLeft = self.progressWidth - 0.74;
-                },
-                error: function() {
-                    requestMsg("哎呀，出错了！")
-                }
-            });
-            $.ajax({
-                url: '/activity/de/wechat/userInfo',
-                type: 'POST',
-                dataType: 'json',
-                data: { code: code },
-                success: function(data) {
-                    self.userInfo = data;
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
