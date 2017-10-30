@@ -24,6 +24,7 @@ import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -559,6 +560,12 @@ public class AppH5CutPriceController extends BaseController {
 		doWebCheck(request, false);
 
 		String code = request.getParameter("code");
+		
+		if(StringUtils.isBlank(code))
+		{
+		    throw new FanbeiException("参数格式错误" + "code", FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
+		
 		// 获取access_token
 		String appid = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue();
 		String secret = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue1();
@@ -566,11 +573,14 @@ public class AppH5CutPriceController extends BaseController {
 				+ code + "&grant_type=authorization_code";
 		JSONObject access_token = httpsRequest(url, "POST", null);
 
+		logger.info(JSON.toJSONString(access_token));
 		// 获取refresh_token
 		String refreshToken = (String) access_token.get("refresh_token");
 		url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + appid
 				+ "&grant_type=refresh_token&refresh_token=" + refreshToken;
 		JSONObject refresh_token = httpsRequest(url, "POST", null);
+		
+		logger.info(JSON.toJSONString(refresh_token));
 
 		// 获取用户信息
 		String openid = (String) refresh_token.get("openid");
@@ -579,6 +589,8 @@ public class AppH5CutPriceController extends BaseController {
 				+ "&lang=zh_CN";
 		JSONObject userInfo = httpsRequest(url, "GET", null);
 
+		logger.info(JSON.toJSONString(userInfo));
+		
 		return userInfo.toJSONString();
 	}
 

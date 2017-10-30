@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    #set($version="2017103001")
     #set($src="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> -->
     <!-- <meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
     <title>登录</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/barginLogin.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/barginLogin.css?version=$version">
 </head>
 <body>
     <div id="login" class="login">     
@@ -30,6 +30,6 @@
 </body>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
-<script type="text/javascript" src="/dist/activity/11/barginLogin.js"></script>
+<script type="text/javascript" src="/dist/activity/11/barginLogin.js?version=$version"></script>
 </body>
 </html>
