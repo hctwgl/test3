@@ -124,7 +124,15 @@ $(function() {
                     }
                 }
             })
-
+            //数据统计
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/barginLogin?type=login&userName='+userNamePhone},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         } else {
             console.log(userck + '000');
             if (!userck) {

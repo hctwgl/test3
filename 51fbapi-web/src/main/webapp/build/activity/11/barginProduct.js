@@ -64,10 +64,11 @@ let vm = new Vue({
             this.logData();
             this.listFn();
             this.countDown();
+
         },
         logData: function() { // get 初始化 信息
             let self = this;
-            if (self.isWX) {
+            if (self.isWX && code != '') {
                 self.getUserFlag = false;
                 $.ajax({
                     url: '/activity/de/wechat/userInfo',
