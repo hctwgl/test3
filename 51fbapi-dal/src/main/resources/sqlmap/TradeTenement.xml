@@ -100,7 +100,7 @@
     	SELECT * FROM af_id_number WHERE user_id=(SELECT id FROM af_user WHERE is_delete=0 and user_name=#{mobile} limit 1 )
     </select>
     
-    <update id="updateTenementInfo" parameterType="AfTradeTenementInfoDo" >
+    <update id="updateTenementInfo" parameterType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo" >
 		UPDATE af_trade_tenement_info SET apply_time = NOW(),audit_time=NOW()
 			<if test="userName != null and userName != ''">
 				,user_name = #{userName}
@@ -132,9 +132,9 @@
 		    <if test="businessId != null and businessId != ''" >
 		       ,business_id=#{businessId}
 		    </if>
-		<if test="auditState != null and auditState != ''" >
-			,audit_state=#{auditState}
-		</if>
+		    <if test="auditState != null and auditState != ''" >
+			   ,audit_state=#{auditState}
+		    </if>
 		WHERE id = #{id}
 	</update>
 	
@@ -143,10 +143,10 @@
 	</select>
 	
 	<select id="getTenementInfoDoByTime"  resultType="com.ald.fanbei.api.dal.domain.AfTradeTenementInfoDo">
-		SELECT * FROM af_trade_tenement_info WHERE apply_time=#{applyTime} AND business_id=#{businessId}
+		SELECT * FROM af_trade_tenement_info WHERE  business_id=#{businessId} AND apply_time LIKE CONCAT(#{applyTime},'%')
 	</select>
 	
 	<select id="getTimeByBusinessId" parameterType="java.lang.Long" resultType="String">
-		SELECT apply_time FROM af_trade_tenement_info WHERE business_id=#{businessId} GROUP BY apply_time 
+		SELECT apply_time FROM `af_trade_tenement_info` WHERE business_id=#{businessId} GROUP BY SUBSTRING(apply_time,1,10);
 	</select>
 </mapper>
