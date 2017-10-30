@@ -244,8 +244,18 @@ public class AppH5CutPriceController extends BaseController {
 	@RequestMapping(value = "/goods", method = RequestMethod.POST)
 	public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		FanbeiWebContext context = doWebCheck(request, false);
+		FanbeiWebContext context = new FanbeiWebContext();
+		
 		try {
+		    
+		    
+        	      try {
+        		        context = doWebCheck(request, false);
+        		    }catch (Exception e) {
+				logger.error("doWebCheck error" + context + "error = {}", e);
+				
+			}
+		        
 			String userName = context.getUserName();
 			AfUserDo user = afUserService.getUserByUserName(userName);
 			Long userId = user == null ? -1 : user.getRid();
