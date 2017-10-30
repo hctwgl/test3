@@ -108,6 +108,9 @@
 			<if test="mobile != null and mobile != ''">
 				,mobile = #{mobile}
 			</if>
+			<if test="idNumber != null and idNumber != ''">
+				,id_number = #{idNumber}
+			</if>
 			<if test="homeAddress != null and homeAddress != ''">
 				,home_address=#{homeAddress}
 			</if>
