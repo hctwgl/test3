@@ -225,7 +225,7 @@
         where goodsPriceId = #{goodspriceid}
         and u.is_delete = 0
         and g.is_delete = 0
-        ORDER BY cutCount,cutPrice DESC 
+        ORDER BY cutPrice DESC ,cutCount DESC
     </select>
 
     <select id="getUserGoodsPrice" resultType="com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo">
