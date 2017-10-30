@@ -113,6 +113,14 @@ public class H5CutPriceController extends H5Controller {
 		FanbeiH5Context context = new FanbeiH5Context();
 		try {
 			context = doH5Check(request, true);
+			
+			long endTime = afDeGoodsService.getActivityEndTime();
+			Long now = new Date().getTime();
+			if (now < endTime) {
+				resultStr = H5CommonResponse.getNewInstance(false, "活动已经结束").toString();
+				return resultStr;
+			}
+			
 			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}", userName, goodsPriceId);
@@ -443,6 +451,16 @@ public class H5CutPriceController extends H5Controller {
 				Long userId = convertUserNameToUserId(userName);
 				String key = Constants.CACHKEY_CUT_PRICE_LOCK + ":" + userId + ":" + goodsPriceIdStr;
 				try {
+					Map<String, Object> data = new HashMap<>();
+					
+					long endTime = afDeGoodsService.getActivityEndTime();
+					Long now = new Date().getTime();
+					if (now < endTime) {
+						data.put("code", 5);//activity has already finished
+						resultStr = H5CommonResponse.getNewInstance(false, "活动已经结束","",data).toString();
+						return resultStr;
+					}
+					
 					if (StringUtil.isAllNotEmpty(userId.toString(), openId, goodsPriceIdStr)) {
 						// try 1000 times to get the lock
 						boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
@@ -455,7 +473,7 @@ public class H5CutPriceController extends H5Controller {
 							userGoodsDo.setGoodspriceid(goodsPriceId);
 							AfDeUserGoodsDo usergoodsResult = afDeUserGoodsService.getByCommonCondition(userGoodsDo);
 							if (usergoodsResult != null) {
-								Map<String, Object> data = new HashMap<>();
+								
 								// to judge if the goods is bought already
 								if (usergoodsResult.getIsbuy() == 1) {
 									data.put("code", 4);// already been bought
