@@ -23,7 +23,8 @@ let vm = new Vue({
         url_3: '/activity/de/share',
         url_1: '/activity/de/goods',
         url_2: '/fanbei-web/pickCoupon',
-        couponData: []
+        couponData: [],
+        ajaxFlag: true
 
     },
     created: function() {
@@ -109,40 +110,47 @@ let vm = new Vue({
             goodsType = type;
             shareInfo.link = urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ userName;
             let self = this;
-            $.ajax({
-                url: self.url_3,
-                type: 'POST',
-                dataType: 'json',
-                data: { goodsPriceId: id },
-                success: function(data) {
-                    if (!data.success) { // 返回不可砍價
-                        if (!data.hasOwnProperty("data")) {
-                            if (type == 'product') {
-                                requestMsg('只能砍价两件商品，不要太贪心哦');
-                            }
-                        } else {
-                            if (self.isWX) {
-                                location.href = "./barginLogin";
+            if (self.ajaxFlag) {
+                self.ajaxFlag = false;
+                $.ajax({
+                    url: self.url_3,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { goodsPriceId: id },
+                    success: function(data) {
+                        if (!data.success) { // 返回不可砍價
+                            if (!data.hasOwnProperty("data")) {
+                                if (type == 'product') {
+                                    requestMsg('只能砍价两件商品，不要太贪心哦');
+                                }
                             } else {
-                                location.href = data.data.loginUrl;
+                                if (self.isWX) {
+                                    location.href = "./barginLogin";
+                                } else {
+                                    location.href = data.data.loginUrl;
+                                }
                             }
-                        }
-                        return false;
-                    }
-                    if (type == 'product') {
-                        if (self.shareTime >= 2 && status == 0) {
-                            requestMsg('只能砍价两件商品，不要太贪心哦');
                             return false;
                         }
-                        self.sureFlag = true;
-                    } else {
-                        self.shareSure();
+                        if (type == 'product') {
+                            if (self.shareTime >= 2 && status == 0) {
+                                requestMsg('只能砍价两件商品，不要太贪心哦');
+                                return false;
+                            }
+                            self.sureFlag = true;
+                        } else {
+                            self.shareSure();
+                        }
+                    },
+                    error: function() {
+                        requestMsg("哎呀，出错了！");
+                    },
+                    complete: function() {
+                        self.ajaxFlag = true;
                     }
-                },
-                error: function() {
-                    requestMsg("哎呀，出错了！");
-                }
-            });
+                });
+                
+            }
         },
         shareSure: function() {
             this.sureFlag = false;
@@ -196,42 +204,47 @@ let vm = new Vue({
             let self = this;
             let couponId = item.couponId;
             if (item.state==2) {
-                $.ajax({
-                    url: self.url_2,
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        couponId: couponId
-                    },
-                    success: function(returnData) {
-                        if (returnData.success) {
-                            requestMsg("优惠劵领取成功");
-                            // todo :更改优惠券状态
-                            self.couponData[index]['state'] == 1;
-                        } else {
-                            var status = returnData.data["status"];
-                            if (status == "USER_NOT_EXIST") { // 用户不存在
-                                if (self.isWx) {
-                                    location.href = "./barginLogin";
-                                } else {
-                                    window.location.href = returnData.url;
+                if (self.ajaxFlag) {
+                    self.ajaxFlag = false;
+                    $.ajax({
+                        url: self.url_2,
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            couponId: couponId
+                        },
+                        success: function(returnData) {
+                            if (returnData.success) {
+                                requestMsg("优惠劵领取成功");
+                                self.couponData[index]['state'] == 1;
+                            } else {
+                                var status = returnData.data["status"];
+                                if (status == "USER_NOT_EXIST") { // 用户不存在
+                                    if (self.isWx) {
+                                        location.href = "./barginLogin";
+                                    } else {
+                                        window.location.href = returnData.url;
+                                    }
+                                }
+                                if (status == "OVER") { // 优惠券个数超过最大领券个数
+                                    requestMsg("您已经领取，快去使用吧");
+                                }
+                                if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                                    requestMsg(returnData.msg);
+                                }
+                                if (status == "MORE_THAN") { // 优惠券已领取完
+                                    requestMsg(returnData.msg);
                                 }
                             }
-                            if (status == "OVER") { // 优惠券个数超过最大领券个数
-                                requestMsg("您已经领取，快去使用吧");
-                            }
-                            if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                                requestMsg(returnData.msg);
-                            }
-                            if (status == "MORE_THAN") { // 优惠券已领取完
-                                requestMsg(returnData.msg);
-                            }
+                        },
+                        error: function() {
+                            requestMsg("哎呀，出错了！");
+                        },
+                        complete: function() {
+                            self.ajaxFlag = true;
                         }
-                    },
-                    error: function() {
-                        requestMsg("哎呀，出错了！");
-                    }
-                });   
+                    });   
+                }
             }
         },
         buy: function(id) {

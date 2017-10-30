@@ -31,6 +31,8 @@ let vm = new Vue({
         tipLeft: 0, // 砍价进度提示
         loadFlag: false,
         shareFlag: false,
+        userInfoFlag: true,
+        ajaxFlag: true
         listNum: 1,
         url_1: '/activity/de/goodsInfo',
         url_2: '/activity/de/friend',
@@ -167,30 +169,34 @@ let vm = new Vue({
         cut: function() {
             let self = this;
             let user = self.userInfo;
-            if (!user.hasOwnProperty("openid")) {
-                requestMsg("获取用户信息失败！");
-                return false;
-            }
-
-            $.ajax({
-                url: '/activityH5/de/cutPrice',
-                type: 'POST',
-                dataType: 'json',
-                data: {
-                    "userId": userName,
-                    "goodsPriceId": goodsId,
-                    "openId": user.openid,
-                    "nickName": user.nickname,
-                    "headImgUrl": user.headimgurl
-                },
-                success: function(data) {
-                    self.cutData = data.data;
-                    self.barginFlag = true;
-                },
-                error: function() {
-                    requestMsg("哎呀，出错了！");
+            if (self.ajaxFlag) {
+                if (!user.hasOwnProperty("openid")) {
+                    requestMsg("获取用户信息失败！");
+                    return false;
                 }
-            });
+                self.ajaxFlag = false;
+                $.ajax({
+                    url: '/activityH5/de/cutPrice',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        "userId": userName,
+                        "goodsPriceId": goodsId,
+                        "openId": user.openid,
+                        "nickName": user.nickname,
+                        "headImgUrl": user.headimgurl
+                    },
+                    success: function(data) {
+                        self.cutData = data.data;
+                        self.barginFlag = true;
+                    },
+                    error: function() {
+                        requestMsg("哎呀，出错了！");
+                    },complete:function() {
+                        self.ajaxFlag = true;
+                    }
+                });
+            }
 
         },
         closeBargin: function() {
@@ -219,47 +225,52 @@ let vm = new Vue({
         share: function() {
             // 是否登录,APP_SHARE接口会自动判断是否登陆
             let self = this;
-            $.ajax({
-                url: self.url_3,
-                type: 'POST',
-                dataType: 'json',
-                data: { goodsPriceId: goodsId },
-                success: function(data) {
-                    console.log("share=", data)
-                    if (!data.success) {
-                        if (!data.hasOwnProperty("data")) {
-                            requestMsg('只能砍价两件商品，不要太贪心哦');
-                        } else {
-                            if (self.isWX) {
-                                location.href = "./barginLogin?goodsId=" + goodsId;
+            if (self.ajaxFlag) {
+                self.ajaxFlag = false;
+                $.ajax({
+                    url: self.url_3,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { goodsPriceId: goodsId },
+                    success: function(data) {
+                        console.log("share=", data)
+                        if (!data.success) {
+                            if (!data.hasOwnProperty("data")) {
+                                requestMsg('只能砍价两件商品，不要太贪心哦');
                             } else {
-                                location.href = data.data.loginUrl;
+                                if (self.isWX) {
+                                    location.href = "./barginLogin?goodsId=" + goodsId;
+                                } else {
+                                    location.href = data.data.loginUrl;
+                                }
                             }
+                            return false;
                         }
-                        return false;
-                    }
-                    if (self.isWX) {
-                        //todo: 弹窗提示分享
-                        self.shareFlag = true;
-                    } else {
-                        var dat = {
-                            shareAppTitle: "51返呗邀请有礼，快来参与~",
-                            shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
-                            shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
-                            shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId=' + goodsId + '&productType=share' + productType + '&userName=' + getInfo().userName,
-                            isSubmit: 'Y',
-                            sharePage: 'barginIndex'
+                        if (self.isWX) {
+                            //todo: 弹窗提示分享
+                            self.shareFlag = true;
+                        } else {
+                            var dat = {
+                                shareAppTitle: "51返呗邀请有礼，快来参与~",
+                                shareAppContent: "我知道一个反利APP，购物不仅返现，邀请好友也赚钱哦~",
+                                shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
+                                shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId=' + goodsId + '&productType=share' + productType + '&userName=' + getInfo().userName,
+                                isSubmit: 'Y',
+                                sharePage: 'barginIndex'
+                            }
+                            dat = JSON.stringify(dat)
+                            var base64 = BASE64.encoder(dat)
+                            window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params=' + base64
                         }
-                        dat = JSON.stringify(dat)
-                        var base64 = BASE64.encoder(dat)
-                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params=' + base64
+                    },
+                    error: function() {
+                        requestMsg("哎呀，出错了！");
+                    },
+                    complete: function() {
+                        self.ajaxFlag = true;
                     }
-                },
-                error: function() {
-                    requestMsg("哎呀，出错了！");
-                }
-            });
-
+                });
+            }
         },
     }
 })
