@@ -83,7 +83,7 @@ let vm = new Vue({
                         return false;
                     }
                     self.goodsData = data.data;
-                    self.progressWidth = 6.2 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
+                    self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
                     self.tipLeft = self.progressWidth - 0.74;
                 },
                 error: function() {
