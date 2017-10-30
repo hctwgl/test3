@@ -439,8 +439,8 @@ let vm = new Vue({
                     // let endDate = new Date("oct 26,2017 00:00:00");
                     let endStamp = endDate.valueOf();
                     // 获取当前时间的时间戳
-                    // let now = new Date();
-                    let now = self.allStartTime;
+                    let now = new Date();
+                    // let now = self.allStartTime;
                     let nowTimeStamp = now.valueOf();
                     // 相差的时间戳
                     let differStamp = endStamp - nowTimeStamp;
@@ -511,8 +511,8 @@ let vm = new Vue({
                     // let overDate = new Date("oct 27,2017 00:00:00");
                     let endOver = overDate.valueOf();
                     // 获取当前时间的时间戳
-                    // let nowTime = new Date();
-                    let nowTime = self.allStartTime;
+                    let nowTime = new Date();
+                    // let nowTime = self.allStartTime;
                     let nowTimeS = nowTime.valueOf();
                     console.log(nowTimeS);
                     // 相差的时间戳
