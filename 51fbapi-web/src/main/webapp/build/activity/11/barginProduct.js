@@ -94,6 +94,9 @@ let vm = new Vue({
                 dataType: 'json',
                 data: { goodsPriceId: goodsId, userName: userName },
                 success: function(data) {
+                    self.goodsData = data.data;
+                    self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
+                    self.tipLeft = 6.3 - self.progressWidth - 0.74;
                     if (self.getUserFlag) {
                         $(".loadingMask").fadeOut();
                     }
@@ -105,9 +108,6 @@ let vm = new Vue({
                         }
                         return false;
                     }
-                    self.goodsData = data.data;
-                    self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
-                    self.tipLeft = 6.3 - self.progressWidth - 0.74;
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
