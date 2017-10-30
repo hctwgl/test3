@@ -32,7 +32,7 @@ let vm = new Vue({
         loadFlag: false,
         shareFlag: false,
         userInfoFlag: true,
-        ajaxFlag: true
+        ajaxFlag: true,
         listNum: 1,
         url_1: '/activity/de/goodsInfo',
         url_2: '/activity/de/friend',

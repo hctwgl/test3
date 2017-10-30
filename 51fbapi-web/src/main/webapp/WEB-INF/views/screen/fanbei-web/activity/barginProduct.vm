@@ -106,7 +106,8 @@
                 <p class="tip" v-if="cutData.code==2">你已经帮助好友砍价,快来自己拿iphoneX</p>
                 <p class="tip" v-if="cutData.code==3">已砍至最低价，无法完成本次砍价</p>
                 <p class="tip" v-if="cutData.code==4">已经买了此商品，不能砍价</p>
-                <img class="tip-icon" src="$commonUrl/bargin02.png">
+                <p class="tip" v-if="cutData.code==5">活动时间已经结束，不能砍价</p>
+                <img class="tip-icon" src="$commonUrl/barginCut.png">
                 <div class="btn-box2 flex flex-row jc-sb">
                     <div class="btn-go" @click="toLogin()">立即前往</div>
                     <div class="btn-next" @click="closeBargin()">下次再说</div>
@@ -115,6 +116,7 @@
         </div>
         <div class="shadow flex fd-column ai-c" v-show="shareFlag" class="animated" @click="closeShare()">
             <div class="sharebox">
+                <img src="3.png">
                 请点击右上角进行分享
             </div>
         </div>
