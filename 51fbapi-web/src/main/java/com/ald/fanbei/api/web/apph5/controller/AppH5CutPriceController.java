@@ -106,6 +106,14 @@ public class AppH5CutPriceController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, true);
+			
+			long endTime = afDeGoodsService.getActivityEndTime();
+			Long now = new Date().getTime();
+			if (now < endTime) {
+				resultStr = H5CommonResponse.getNewInstance(false, "活动已经结束").toString();
+				return resultStr;
+			}
+			
 			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}", userName, goodsPriceId);
