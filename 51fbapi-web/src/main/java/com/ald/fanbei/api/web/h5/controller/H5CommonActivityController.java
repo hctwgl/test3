@@ -181,7 +181,8 @@ public class H5CommonActivityController extends BaseController {
     public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 	
 	String resultStr = "";
-
+	 String referer = request.getHeader("referer"); 
+	 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
 	try {
 	    String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 	    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
@@ -258,7 +259,7 @@ public class H5CommonActivityController extends BaseController {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
-	
+	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
 	    return resultStr;
 
 	} catch (FanbeiException e) {

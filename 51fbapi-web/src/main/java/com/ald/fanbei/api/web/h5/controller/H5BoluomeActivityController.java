@@ -120,7 +120,7 @@ public class H5BoluomeActivityController extends BaseController {
 	String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
         String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
         String referer = request.getHeader("referer");  
-        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer);
+        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
 	
      try{
 	AfUserDo UserDo = afUserService.getUserByUserName(userName);
@@ -185,7 +185,7 @@ public class H5BoluomeActivityController extends BaseController {
 	     //如果该用户在平台没有订单，绑定关系(注册和登录只能绑定一次)去掉？
 	    AfOrderDo queryCount = new AfOrderDo();
 	    queryCount.setUserId(UserDo.getRid());
-	    int orderCount = afOrderService.getOrderCountByStatusAndUserId(queryCount);
+	    String orderCount = String.valueOf(afOrderService.getOrderCountByStatusAndUserId(queryCount));
 	    logger.info("orderCount = {}", orderCount);
 	
 	    if(refUseraName != null && StringUtil.isNotBlank(refUseraName) ){
@@ -625,7 +625,7 @@ public class H5BoluomeActivityController extends BaseController {
 	String rmtIp = CommonUtil.getIpAddr(request);
 	String resultStr = "";
 	String referer = request.getHeader("referer");  
-	doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer);
+	 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
      
 	try {
 	    String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
