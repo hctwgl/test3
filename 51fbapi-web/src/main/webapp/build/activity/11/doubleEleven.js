@@ -439,8 +439,8 @@ let vm = new Vue({
                     // let endDate = new Date("oct 26,2017 00:00:00");
                     let endStamp = endDate.valueOf();
                     // 获取当前时间的时间戳
-                    // let now = new Date();
-                    let now = self.allStartTime;
+                    let now = new Date();
+                    // let now = self.allStartTime;
                     let nowTimeStamp = now.valueOf();
                     // 相差的时间戳
                     let differStamp = endStamp - nowTimeStamp;
@@ -511,8 +511,8 @@ let vm = new Vue({
                     // let overDate = new Date("oct 27,2017 00:00:00");
                     let endOver = overDate.valueOf();
                     // 获取当前时间的时间戳
-                    // let nowTime = new Date();
-                    let nowTime = self.allStartTime;
+                    let nowTime = new Date();
+                    // let nowTime = self.allStartTime;
                     let nowTimeS = nowTime.valueOf();
                     console.log(nowTimeS);
                     // 相差的时间戳
@@ -618,9 +618,13 @@ let vm = new Vue({
                     }
 
             
-                    if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
-                        afterpre(self.allStartTime)
+                    // if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
+                    //     afterpre(self.allStartTime)
+                    // }
+                    if(nowTimeS >= Date.parse("2017/11/09 00:00:00")) {
+                        afterpre(nowTimeS)
                     }
+                    
                     if(self.allStartTime>Date.parse("2017/11/12 00:00:00")){
                         $('.countThree').html('活动已结束');
                         $('.redRain').unbind("click");//禁止点击事件
