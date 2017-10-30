@@ -107,7 +107,7 @@ let vm = new Vue({
                     }
                     self.goodsData = data.data;
                     self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
-                    self.tipLeft = self.progressWidth - 0.74;
+                    self.tipLeft = 6.3 - self.progressWidth - 0.74;
                 },
                 error: function() {
                     requestMsg("哎呀，出错了！")
