@@ -1,7 +1,4 @@
-'use strict';
-//转化代码
-let _taq=[];
-_taq.push({convert_id:"73486724679",  event_type:"form"});
+
 //转化代码
 var activityId = getUrl("activityId");//获取活动Id
 var userName='';//获取用户名
