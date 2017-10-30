@@ -433,7 +433,7 @@ public class H5CutPriceController extends H5Controller {
 				String userName = request.getParameter("userId");
 				String goodsPriceIdStr = request.getParameter("goodsPriceId");
 				String openId = request.getParameter("openId");
-				String nickName = request.getParameter("nickName");
+				String nickName = request.getParameter("nickNaafme");
 				String headImagUrl = request.getParameter("headImgUrl");
 				
 				String loggerStr = String.format("/activityH5/de/cutPrice params: userName = {} goodsPriceId = {} openId = {} nickName = {} headImgUrl = {}",userName,goodsPriceIdStr,openId,nickName,headImagUrl);
@@ -722,7 +722,7 @@ public class H5CutPriceController extends H5Controller {
 			} else if (cutCount < 61) {
 				// between stage3 and 0.1
 				result = getRandomPrice(new BigDecimal(0.1), stage3);
-			} else if (cutCount > 61) {
+			} else if (cutCount > 60) {
 				// between 0.1 and 1
 				result = getRandomPrice(new BigDecimal(0.01), new BigDecimal(0.1));
 			}
