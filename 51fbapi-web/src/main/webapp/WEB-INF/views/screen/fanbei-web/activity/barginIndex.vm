@@ -151,9 +151,9 @@
             </div>
             <div class="btn-close" @click="closeSure()"><img src="$commonUrl/barginClose.png"></div>
         </div>
-        <div class="shadow flex fd-column ai-c" v-show="shareFlag" class="animated" @click="closeShare()">
+        <div class="shadow flex fd-column ai-c shadow2" v-show="shareFlag" class="animated" @click="closeShare()">
             <div class="sharebox">
-                请点击右上角进行分享
+                <img src="$commonUrl/share.png">
             </div>
         </div>
     </div>
