@@ -24,6 +24,7 @@ import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -559,6 +560,12 @@ public class AppH5CutPriceController extends BaseController {
 		doWebCheck(request, false);
 
 		String code = request.getParameter("code");
+		
+		if(StringUtils.isBlank(code))
+		{
+		    throw new FanbeiException("参数格式错误" + "code", FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
+		
 		// 获取access_token
 		String appid = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue();
 		String secret = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue1();
