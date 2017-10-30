@@ -40,10 +40,7 @@ let vm = new Vue({
         userInfo: {} //用户信息
     },
     created: function() {
-        this.judge();
-        this.logData();
-        this.listFn();
-        this.countDown();
+        this.judge();    
     },
     methods: {
         judge: function() {
@@ -63,6 +60,9 @@ let vm = new Vue({
             } else {
                 this.isWX = false;
             }
+            this.logData();
+            this.listFn();
+            this.countDown();
         },
         logData: function() { // get 初始化 信息
             let self = this;
