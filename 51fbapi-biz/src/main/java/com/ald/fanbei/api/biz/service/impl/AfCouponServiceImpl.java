@@ -37,16 +37,7 @@ public class AfCouponServiceImpl implements AfCouponService {
 
 	@Override
 	public AfCouponDo getCouponById(Long couponId) {
-		String key = Constants.CACHEKEY_COUPON_INFO + couponId;
-		AfCouponDo couponDo = (AfCouponDo)bizCacheUtil.getObject(key);
-		if(couponDo != null){
-			return couponDo;
-		}
-		couponDo = afCouponDao.getCouponById(couponId);
-		if(couponDo != null){
-			bizCacheUtil.saveObject(key, couponDo);
-		}
-		return couponDo;
+		return afCouponDao.getCouponById(couponId);
 	}
 
 	
@@ -82,6 +73,11 @@ public class AfCouponServiceImpl implements AfCouponService {
 	@Override
 	public AfCouponDo getCoupon(Long couponId) {
 		return afCouponDao.getCouponById(couponId);
+	}
+
+	@Override
+	public List<AfCouponDto> getCouponByActivityIdAndType(Long activityId, String activityType) {
+		return afCouponDao.getCouponByActivityIdAndType(activityId, activityType);
 	}
 
 }

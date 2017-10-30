@@ -44,11 +44,11 @@ public class FanbeiController extends BaseController {
 	AfResourceService afResourceService;
 
     @RequestMapping(value ={
-    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
-    	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1",
-    	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
+    	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
+	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1",
+	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec",
-            "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
+	"/category/getAllGoodsCategory","/category/getGoodsList", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String goodsRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -91,7 +91,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/system/appUpgrade","/system/commitFeedBack","/system/getSettingInfo","/system/checkVersion","/system/AppLaunchImage","/system/appPopImage",
-    	"/system/getTabbarInfor","/resource/getResourceConfig","/system/maidian","/clickAmount/clickAmountNum"
+    	"/system/getTabbarInfor","/resource/getResourceConfig","/system/maidian","/clickAmount/clickAmountNum","/resource/getRedRainRounds" ,"/pushClickAmout/clickPushAmountNum"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String sysRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -102,7 +102,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value = {
     		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/login","/user/resetPwd","/user/getUserInfo",
-    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponList","/user/getCallCenterInfo",
+    		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponCount","/user/getMineCouponList","/user/getCallCenterInfo",
     		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList",
     		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
     		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",

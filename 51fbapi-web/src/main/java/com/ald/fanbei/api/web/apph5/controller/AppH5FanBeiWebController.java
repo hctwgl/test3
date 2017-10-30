@@ -13,26 +13,31 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
-import com.ald.fanbei.api.biz.service.*;
-
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
+import com.ald.fanbei.api.biz.service.AfOrderLogisticsService;
+import com.ald.fanbei.api.biz.service.AfPopupsService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfBusinessAccessRecordsRefType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -54,6 +59,15 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfBusinessAccessRecordsDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfLoanSupermarketDo;
+import com.ald.fanbei.api.dal.domain.AfPopupsDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -199,6 +213,9 @@ public class AppH5FanBeiWebController extends BaseController {
 			AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 			Map<String, Object> returnData = new HashMap<String, Object>();
 
+			if(StringUtils.isEmpty(couponId)) {
+				throw new IllegalArgumentException("couponId can't be null"); 
+			}
 			if (afUserDo == null) {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
 				returnData.put("status", CouponWebFailStatus.UserNotexist.getCode());
@@ -995,9 +1012,9 @@ public class AppH5FanBeiWebController extends BaseController {
 				String id = request.getParameter("popupsId");
 				AfPopupsDo afPopupsDo = afPopupsService.selectPopups(Long.valueOf(id).longValue());
 				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
-					String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
-					String channel = getChannel(sysModeId);
-					String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
+						String sysModeId = JSON.parseObject(context.getAppInfo()).getString("id");
+						String channel = getChannel(sysModeId);
+						String extraInfo = "sysModeId="+sysModeId+",appVersion="+context.getAppVersion()+",Name="+afPopupsDo.getName()+",accessUrl="+afPopupsDo.getUrl();
 					AfBusinessAccessRecordsDo afBusinessAccessRecordsDo = new AfBusinessAccessRecordsDo();
 					afBusinessAccessRecordsDo.setUserId(afUserDo.getRid());
 					afBusinessAccessRecordsDo.setSourceIp(CommonUtil.getIpAddr(request));

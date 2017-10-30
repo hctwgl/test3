@@ -129,4 +129,9 @@ public interface AfUserCouponService {
 	 * 
 	 * **/
 	List<AfUserCouponDto> getUserCouponListByUserIdAndCouponId(Long userId,Long couponId);
+
+	List<AfUserCouponDto> getActivitySpecialCouponByAmount(Long userId, BigDecimal actualAmount,Long activityId, String activityType);
+
+	void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef);
+
 }

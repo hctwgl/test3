@@ -181,12 +181,27 @@
     background-size: 100% 100%;
 }
 
+.bar-box {
+    position: relative;
+    margin-top: .03rem;
+    
+}
+.bar-hide {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2rem;
+    height: .26rem;
+    background: #b92512;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 .progress-bar {
     margin-right: auto;
-    width: 4.2rem;
+    width: 6.3rem;
     height: .26rem;
-    margin-top: .03rem;
-    background: url('@{barginImage}/bargin07.png');
+    background: url('@{barginImage}/progressBar.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
 }
@@ -660,8 +675,8 @@
 }
 .product-price2 {
     margin-top: .2rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: .7rem;
+    padding-right: .7rem;
     line-height: .4rem;
     width: 100%;
 }
@@ -919,7 +934,11 @@ content: '';
 }
 
 .sharebox {
-    padding-top: 5rem;
+    padding-top: 1rem;
     font-size: .32rem;
     color: #fff;
+}
+
+.shadow2 {
+    background: rgba(0, 0, 0, .8)
 }

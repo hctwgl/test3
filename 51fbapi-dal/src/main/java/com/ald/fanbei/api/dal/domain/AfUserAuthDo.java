@@ -64,6 +64,8 @@ public class AfUserAuthDo extends AbstractSerial {
 		this.basicStatus = basicStatus;
 	}
 
+
+
 	public Long getRid() {
 		return rid;
 	}

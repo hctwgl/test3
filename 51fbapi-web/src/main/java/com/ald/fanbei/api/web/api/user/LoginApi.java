@@ -11,10 +11,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
-
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
+
 import jodd.util.StringUtil;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.security.Credential.MD5;
@@ -29,6 +30,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.UserStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -187,8 +189,20 @@ public class LoginApi implements ApiHandle {
 		//调用风控可信接口
 		if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
 				
-			boolean riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
-					loginType,loginTime,ip,phoneType,networkType,osType);
+			boolean riskSucc = false;
+			try {
+				riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
+						loginType,loginTime,ip,phoneType,networkType,osType);
+			} catch (Exception e) {
+				 if(e instanceof FanbeiException){
+					 logger.error("用户登录调风控可信验证失败",e);
+					 throw e;
+				 }else{
+					 logger.error("用户登录调风控可信验证发生预期外异常userName:"+userName,e);
+					 riskSucc = false;
+				 }
+			}
+			
 			if(!riskSucc){
 				loginDo.setResult("false:需要验证登录短信");
 				afUserLoginLogService.addUserLoginLog(loginDo);

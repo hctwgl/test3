@@ -54,8 +54,8 @@
                             <img src="$commonUrl/bargin13.png">
                             <div class="product-txt2 flex fd-column ai-c">
                                 <div class="product-name2">{{goods.name}}</div>
-                                <div class="product-price2 flex fd-row jc-sb">
-                                    <div class="price-txt">奖品价格：<span>￥{{goods.originalPrice}}</span></div>
+                                <div class="product-price2 flex fd-row jc-c">
+                                    <div class="price-txt" style="margin-right:.2rem;">奖品价格：<span>￥{{goods.originalPrice}}</span></div>
                                     <div class="price-txt">被砍价格：<span>￥{{goods.cutPrice}}</span></div>
                                 </div>
                                 <div class="flex fd-row jc-c" style="margin-top: .1rem;width: 100%">
@@ -151,9 +151,9 @@
             </div>
             <div class="btn-close" @click="closeSure()"><img src="$commonUrl/barginClose.png"></div>
         </div>
-        <div class="shadow flex fd-column ai-c" v-show="shareFlag" class="animated" @click="closeShare()">
+        <div class="shadow flex fd-column ai-c shadow2" v-show="shareFlag" class="animated" @click="closeShare()">
             <div class="sharebox">
-                请点击右上角进行分享
+                <img src="$commonUrl/share.png">
             </div>
         </div>
     </div>

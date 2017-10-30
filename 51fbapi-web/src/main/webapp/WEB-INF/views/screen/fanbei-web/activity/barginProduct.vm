@@ -44,7 +44,10 @@
                         <div class="product-txt flex fd-column ai-c">
                             <div class="product-name">{{goodsData.name}}</div>
                             <div class="has-bargin">已砍{{goodsData.cutPrice}}元</div>
-                            <div class="progress-bar" :style="{width: progressWidth + 'rem'}"></div>
+                            <div class="bar-box">
+                                <div class="progress-bar"></div>
+                                <div class="bar-hide" :style="{width: progressWidth + 'rem'}"></div>
+                            </div>
                             <div class="original-price flex fd-row jc-sb">
                                 <div>0元</div>
                                 <div>{{goodsData.originalPrice}}元</div>
@@ -106,16 +109,17 @@
                 <p class="tip" v-if="cutData.code==2">你已经帮助好友砍价,快来自己拿iphoneX</p>
                 <p class="tip" v-if="cutData.code==3">已砍至最低价，无法完成本次砍价</p>
                 <p class="tip" v-if="cutData.code==4">已经买了此商品，不能砍价</p>
-                <img class="tip-icon" src="$commonUrl/bargin02.png">
+                <p class="tip" v-if="cutData.code==5">活动时间已经结束，不能砍价</p>
+                <img class="tip-icon" src="$commonUrl/barginCut.png">
                 <div class="btn-box2 flex flex-row jc-sb">
                     <div class="btn-go" @click="toLogin()">立即前往</div>
                     <div class="btn-next" @click="closeBargin()">下次再说</div>
                 </div>
             </div>
         </div>
-        <div class="shadow flex fd-column ai-c" v-show="shareFlag" class="animated" @click="closeShare()">
+        <div class="shadow flex fd-column ai-c shadow2" v-show="shareFlag" class="animated" @click="closeShare()">
             <div class="sharebox">
-                请点击右上角进行分享
+                <img src="$commonUrl/share.png">
             </div>
         </div>
 
@@ -138,7 +142,7 @@
         <!-- 微信分享商品页 -->
         <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='shareproduct'">
             <img class="btn-bargin" src="$commonUrl/bargin09.png" @click="cut()">
-            <img class="btn-bargin" src="$commonUrl/bargin10.png" @click="buy()">
+            <img class="btn-bargin" src="$commonUrl/bargin15.png" @click="toLogin()">
         </div>
     </div>
 </body>

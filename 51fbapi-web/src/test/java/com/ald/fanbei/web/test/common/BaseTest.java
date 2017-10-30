@@ -1,6 +1,8 @@
 package com.ald.fanbei.web.test.common;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,7 @@ import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -41,19 +44,55 @@ public class BaseTest {
 	 * 自动生成登陆令牌
 	 * @param userName
 	 */
-	public void init(String userName) {
+	public TokenBo init(String userName) {
 		String token = UserUtil.generateToken(userName);
 		tokenBo = new TokenBo();
 		tokenBo.setLastAccess(System.currentTimeMillis() + "");
 		tokenBo.setToken(token);
 		tokenBo.setUserId(userName);
 		RedisClient.hmset(Constants.CACHEKEY_USER_TOKEN+userName, tokenBo.getTokenMap());
+		return tokenBo;
 	}
 	
     protected void testApi(String urlString, Map<String,String> params, String userName){
     	testApi(urlString, params, userName ,false);
     }
 	
+    /**
+	 * @param urlString
+	 * @param params
+	 * @param userName
+	 * @param beforeLogin 对应web-main.xml中的定义,true即无需token
+     * @throws UnsupportedEncodingException 
+	 */
+    protected void testH5(String urlString, Map<String,String> params, String userName, boolean beforeLogin, TokenBo tokenBo){
+    	try {
+	    	Map<String,String> header = createBaseHeader();
+	    	header.put(Constants.REQ_SYS_NODE_USERNAME, userName);
+	    	
+	    	String signStrPrefix = createSignPrefix(header);
+	    	if(beforeLogin) {
+	    	}else {
+	    		signStrPrefix += tokenBo.getToken();
+	    	}
+	    	String sign = sign(params, signStrPrefix);
+	    	header.put(Constants.REQ_SYS_NODE_SIGN, sign);
+    	
+	    	params.putAll(header);
+	    	
+	    	StringBuilder referer = new StringBuilder();
+			referer.append(urlString).append("?_appInfo").append("=").append(URLEncoder.encode(JSON.toJSONString(params), "UTF-8"));
+	    	header.put("Referer", referer.toString());
+	    	
+			httpPost(urlString, "", header);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+    protected void testH5(String urlString, Map<String,String> params, String userName, boolean beforeLogin){
+    	testH5(urlString, params, userName, beforeLogin, this.tokenBo);
+    }
+    
 	/**
 	 * @param urlString
 	 * @param params
@@ -95,7 +134,7 @@ public class BaseTest {
                 signStrBefore = signStrBefore + "&" + item + "=" + params.get(item);
             }
         }
-        System.out.println(signStrBefore);
+//        System.out.println(signStrBefore);
         return DigestUtil.getDigestStr(signStrBefore);
     }
     
@@ -136,9 +175,9 @@ public class BaseTest {
         
         // do
         HttpResponse response = httpClient.execute(postMethod);
-        System.out.println(response.getStatusLine());
+//        System.out.println(response.getStatusLine());
         String result = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
-        System.out.println(result);
+//        System.out.println(result);
         return result;
     }
     

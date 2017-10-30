@@ -33,4 +33,6 @@ public interface AfCouponDao {
 	 * **/
 	int updateCouponquotaAndCouponquotaAlreadyById(AfCouponDo couponDo);
 
+	List<AfCouponDto> getCouponByActivityIdAndType(@Param("activityId")Long activityId, @Param("activityType")String activityType);
+
 }

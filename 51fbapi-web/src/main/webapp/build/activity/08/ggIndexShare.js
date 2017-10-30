@@ -1,5 +1,6 @@
 'use strict';
 var activityId = getUrl("activityId");//获取活动Id
+var typeFrom=getUrl("typeFrom");
 var userName='';//获取用户名
 //获取页面名称传到登录页
 var currentUrl=window.location.href;
@@ -23,7 +24,7 @@ let vm = new Vue({
             $.ajax({
                 type: 'get',
                 url: "/H5GGShare/initHomePage",
-                data:{activityId:activityId},
+                data:{'activityId':activityId,'typeFrom':typeFrom},
                 success: function (data) {
                     $('.positionImg').fadeOut(4000);
                     self.content = eval('(' + data + ')').data;

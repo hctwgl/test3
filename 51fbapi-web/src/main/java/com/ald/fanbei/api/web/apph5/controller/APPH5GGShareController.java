@@ -247,7 +247,7 @@ public class APPH5GGShareController extends BaseController {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		H5CommonResponse resultStr;
 		FanbeiWebContext context = new FanbeiWebContext();
-
+		String referer = request.getHeader("referer");  
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try {
@@ -508,7 +508,7 @@ public class APPH5GGShareController extends BaseController {
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
 			logger.info("resultStr = {}", resultStr);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
 		} catch (FanbeiException e) {
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
@@ -522,11 +522,11 @@ public class APPH5GGShareController extends BaseController {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc());
 			logger.error("resultStr = {}", resultStr);
 			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", e, resultStr);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),referer);
 		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage());
 			logger.error("活动点亮初始化数据失败  e = {} , resultStr = {}", exception, resultStr);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),referer);
 		}
 		return resultStr.toString();
 	}

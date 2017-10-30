@@ -106,6 +106,14 @@ public class AppH5CutPriceController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, true);
+			
+			long endTime = afDeGoodsService.getActivityEndTime();
+			Long now = new Date().getTime();
+			if (now > endTime) {
+				resultStr = H5CommonResponse.getNewInstance(false, "活动已经结束").toString();
+				return resultStr;
+			}
+			
 			String userName = context.getUserName();
 			Long goodsPriceId = NumberUtil.objToLong(request.getParameter("goodsPriceId"));
 			logger.info("activity/de/share params: userName ={} , goodsPriceId = {}", userName, goodsPriceId);
@@ -164,13 +172,13 @@ public class AppH5CutPriceController extends BaseController {
 						List<Long> userGoodsPriceList = new ArrayList<>();
 						
 						for (AfDeUserGoodsDo afDeUserGoodsDo : userGoodsDoList) {
-							if (afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)) {
+							//if (afDeUserGoodsDo.getGoodspriceid().equals(goodsPriceId)) {
 								userGoodsPriceList.add(afDeUserGoodsDo.getGoodspriceid());
-							}
+							//}
 						}
 						
 						//to judge if the user has already bought another two goodses
-						if (userGoodsDoList.size() >= 3 || (userGoodsDoList.size() >= 2 && userGoodsPriceList.contains(iphoneDo.getGoodspriceid()))) {
+						if ((userGoodsDoList.size() >= 3 && !userGoodsPriceList.contains(goodsPriceId)) || (userGoodsDoList.size() >= 2 && !userGoodsPriceList.contains(iphoneDo.getGoodspriceid()))) {
 							logger.info("activity/de/share userName ={}  has already had {} goodses shared", userName, userGoodsDoList.size());
 							resultStr = H5CommonResponse.getNewInstance(false, "除了iphoneX只能砍价两件商品，不要太贪心哦！").toString();
 							return resultStr;
@@ -558,11 +566,14 @@ public class AppH5CutPriceController extends BaseController {
 				+ code + "&grant_type=authorization_code";
 		JSONObject access_token = httpsRequest(url, "POST", null);
 
+		logger.info(JSON.toJSONString(access_token));
 		// 获取refresh_token
 		String refreshToken = (String) access_token.get("refresh_token");
 		url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + appid
 				+ "&grant_type=refresh_token&refresh_token=" + refreshToken;
 		JSONObject refresh_token = httpsRequest(url, "POST", null);
+		
+		logger.info(JSON.toJSONString(refresh_token));
 
 		// 获取用户信息
 		String openid = (String) refresh_token.get("openid");
@@ -571,6 +582,8 @@ public class AppH5CutPriceController extends BaseController {
 				+ "&lang=zh_CN";
 		JSONObject userInfo = httpsRequest(url, "GET", null);
 
+		logger.info(JSON.toJSONString(userInfo));
+		
 		return userInfo.toJSONString();
 	}
 
