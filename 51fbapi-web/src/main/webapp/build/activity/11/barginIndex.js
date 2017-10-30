@@ -107,6 +107,7 @@ let vm = new Vue({
         share: function(id, type,status) { // 点击发起砍价
             goodsId = id;
             goodsType = type;
+            shareInfo.link = urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ userName;
             let self = this;
             $.ajax({
                 url: self.url_3,
@@ -121,7 +122,7 @@ let vm = new Vue({
                             }
                         } else {
                             if (self.isWX) {
-                                location.href = "./barginLogin?goodsId=" + goodsId;
+                                location.href = "./barginLogin";
                             } else {
                                 location.href = data.data.loginUrl;
                             }
@@ -161,7 +162,6 @@ let vm = new Vue({
                 dat = JSON.stringify(dat)
                 var base64 = BASE64.encoder(dat)
                 window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params=' + base64
-
             }
         },
         toList: function(id) { // 跳转到榜单页

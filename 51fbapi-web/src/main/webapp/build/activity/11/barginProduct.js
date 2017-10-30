@@ -73,8 +73,8 @@ let vm = new Vue({
                     $(".loadingMask").fadeOut();
                     if (!data.success) {
                         if (self.isWX) {
-                            // self.toLogin(); 
-                            requestMsg("哎呀，出错了！")
+                            self.toLogin(); 
+                            // requestMsg("哎呀，出错了！")
                         } else {
                             location.href = data.data.loginUrl;
                         }
@@ -118,7 +118,7 @@ let vm = new Vue({
                         }
                     } else {
                         if (self.isWX) {
-                            // self.toLogin(); 
+                            self.toLogin(); 
                         } else {
                             location.href = data.data.loginUrl;
                         }
@@ -213,7 +213,7 @@ let vm = new Vue({
             if (this.isWX) {
                 location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www';
             } else {
-                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + self.goodsData.goodsId + '"}';
+                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + this.goodsData.goodsId + '"}';
             }
         },
         share: function() {
