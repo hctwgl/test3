@@ -93,7 +93,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_img'},
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_img&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -170,7 +170,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_sure'},
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_sure&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -229,7 +229,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_get'},
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjm?activityId=1&type=new_get&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
