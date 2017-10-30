@@ -54,9 +54,9 @@ let vm = new Vue({
                 this.url_3 = "/activityH5/de/share";
                 let str = encodeURIComponent(window.location.href.split('#')[0]);
                 let urls = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri=' + str + '&response_type=code&scope=snsapi_userinfo&state=1&connect_redirect=1#wechat_redirect';
-                if (!code) {
-                    location.href = urls;
+                if (!code || code == '') {
                     // todo： 测试时先去掉微信授权    
+                    location.href = urls;
                 }
             } else {
                 this.isWX = false;
@@ -86,6 +86,7 @@ let vm = new Vue({
                     }
                 });      
             }
+
             $.ajax({
                 url: self.url_1,
                 type: 'POST',
