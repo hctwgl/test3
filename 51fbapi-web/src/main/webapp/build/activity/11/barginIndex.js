@@ -64,6 +64,14 @@ let vm = new Vue({
                     self.getFirstData();
                     self.countDown();
                     self.getShareTimes();
+                    
+                        // $(".loadingMask").fadeOut();
+                        // $("img .lazy").lazyload({
+                        //     placeholder : "https://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
+                        //     effect : "fadeIn",  // 载入使用的效果
+                        //     threshold: 200 // 提前开始加载
+                        // });
+                    
                     $(".loadingMask").fadeOut();
                 },
                 error: function() {
