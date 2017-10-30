@@ -138,7 +138,7 @@
         <!-- 微信分享商品页 -->
         <div class="btn-fixed flex fd-row ai-c jc-sa" v-if="productType=='shareproduct'">
             <img class="btn-bargin" src="$commonUrl/bargin09.png" @click="cut()">
-            <img class="btn-bargin" src="$commonUrl/bargin10.png" @click="buy()">
+            <img class="btn-bargin" src="$commonUrl/bargin15.png" @click="toLogin()">
         </div>
     </div>
 </body>
