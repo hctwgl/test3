@@ -178,7 +178,7 @@ public class AppH5CutPriceController extends BaseController {
 						}
 						
 						//to judge if the user has already bought another two goodses
-						if (userGoodsDoList.size() >= 3 || (userGoodsDoList.size() >= 2 && userGoodsPriceList.contains(iphoneDo.getGoodspriceid()))) {
+						if (userGoodsDoList.size() >= 3 || (userGoodsDoList.size() >= 2 && userGoodsPriceList.contains(iphoneDo.getGoodspriceid())) || !userGoodsPriceList.contains(goodsPriceId)) {
 							logger.info("activity/de/share userName ={}  has already had {} goodses shared", userName, userGoodsDoList.size());
 							resultStr = H5CommonResponse.getNewInstance(false, "除了iphoneX只能砍价两件商品，不要太贪心哦！").toString();
 							return resultStr;
