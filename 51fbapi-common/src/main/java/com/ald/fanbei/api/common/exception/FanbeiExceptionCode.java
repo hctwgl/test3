@@ -284,7 +284,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
 
 
 
-
+    CUT_PRICE_ISBUY("CUT_PRICE_ISBUY",6003,"cut_price_isbut","砍价商品已购买"),
 
 
     //系统升级该code不能随便修改
