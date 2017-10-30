@@ -57,244 +57,244 @@ let vm = new Vue({
         allData: [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=187'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=146'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=186'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=147'
             },
             {
                 'name': '韩都衣舍',
                 'img': imgrooturl + '/brand-09.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=185'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=124'
             },
             {
                 'name': 'DW',
                 'img': imgrooturl + '/brand-16.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=183'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=160'
             },
             {
                 'name': 'nike',
                 'img': imgrooturl + '/brand-11.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=156'
             },
             {
                 'name': 'addidas',
                 'img': imgrooturl + '/brand-12.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=157'
             },
             {
                 'name': 'gxg',
                 'img': imgrooturl + '/brand-25.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=151'
             },
             {
                 'name': '兰蔻',
                 'img': imgrooturl + '/brand-24.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=164'
             },
             {
                 'name': '华为',
                 'img': imgrooturl + '/brand-03.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=148'
             },
             {
                 'name': '小米',
                 'img': imgrooturl + '/brand-04.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=149'
             },
             {
                 'name': '天梭',
                 'img': imgrooturl + '/brand-29.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=169'
             },
             {
                 'name': 'lilbetter',
                 'img': imgrooturl + '/brand-19.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=152'
             },
             {
                 'name': '乐町',
                 'img': imgrooturl + '/brand-10.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=155'
             },
             {
                 'name': '欧莱雅',
                 'img': imgrooturl + '/brand-29.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=170'
             },
             {
                 'name': '马克华菲',
                 'img': imgrooturl + '/brand-05.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=150'
             },
             {
                 'name': '李宁',
                 'img': imgrooturl + '/brand-27.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=166'
             },
             {
                 'name': 'CK',
                 'img': imgrooturl + '/brand-26.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=168'
             },
             {
                 'name': 'newbalance',
                 'img': imgrooturl + '/brand-13.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=158'
             },
             {
                 'name': '拉夏贝尔',
                 'img': imgrooturl + '/brand-08.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=154'
             },
             {
                 'name': 'Dickies',
                 'img': imgrooturl + '/brand-28.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=167'
             },
             {
                 'name': 'Dior',
                 'img': imgrooturl + '/brand-17.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=161'
             },
             {
                 'name': '衣香丽影',
                 'img': imgrooturl + '/brand-21.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=165'
             },
             {
                 'name': '宾卡达',
                 'img': imgrooturl + '/brand-15.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=163'
             },
             {
                 'name': '鸿星尔克',
                 'img': imgrooturl + '/brand-14.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=159'
             }
         ], //返回回来的数据
         arr: [
             [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=187'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=146'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=186'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=147'
             },
             {
                 'name': '韩都衣舍',
                 'img': imgrooturl + '/brand-09.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=185'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=124'
             },
             {
                 'name': 'DW',
                 'img': imgrooturl + '/brand-16.png',
-                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=183'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=160'
             },
             {
                 'name': 'nike',
                 'img': imgrooturl + '/brand-11.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=156'
             },
             {
                 'name': 'addidas',
                 'img': imgrooturl + '/brand-12.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=157'
             },
             {
                 'name': 'gxg',
                 'img': imgrooturl + '/brand-25.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=151'
             },
             {
                 'name': '兰蔻',
                 'img': imgrooturl + '/brand-24.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=164'
             }],
             [{
                 'name': '华为',
                 'img': imgrooturl + '/brand-03.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=148'
             },
             {
                 'name': '小米',
                 'img': imgrooturl + '/brand-04.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=149'
             },
             {
                 'name': '天梭',
                 'img': imgrooturl + '/brand-29.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=169'
             },
             {
                 'name': 'lilbetter',
                 'img': imgrooturl + '/brand-19.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=152'
             },
             {
                 'name': '乐町',
                 'img': imgrooturl + '/brand-10.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=155'
             },
             {
                 'name': '欧莱雅',
                 'img': imgrooturl + '/brand-29.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=170'
             },
             {
                 'name': '马克华菲',
                 'img': imgrooturl + '/brand-05.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=150'
             },
             {
                 'name': '李宁',
                 'img': imgrooturl + '/brand-27.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=166'
             },
             ]
             ,[{
                 'name': 'CK',
                 'img': imgrooturl + '/brand-26.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=168'
             },{
                 'name': 'newbalance',
                 'img': imgrooturl + '/brand-13.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=158'
             },
             {
                 'name': '拉夏贝尔',
                 'img': imgrooturl + '/brand-08.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=154'
             },
             {
                 'name': 'Dickies',
                 'img': imgrooturl + '/brand-28.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=167'
             },
             {
                 'name': 'Dior',
                 'img': imgrooturl + '/brand-17.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=161'
             },
             {
                 'name': '衣香丽影',
                 'img': imgrooturl + '/brand-21.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=165'
             },
             {
                 'name': '宾卡达',
                 'img': imgrooturl + '/brand-15.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=163'
             },
             {
                 'name': '鸿星尔克',
                 'img': imgrooturl + '/brand-14.png',
-                'src': ''
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=159'
             }]
         ], //就是把数据转成二维数组。一维是swiper-slide的个数。二维是每个swiper-slide的img的个数和数据，最后转成arr[['图片1','图片2','图片3','图片4','图片5','图片6','图片7','图片8'],[,'图片9','图片10','图片11','图片12','图片13','图片14','图片15','图片16'],['图片17','图片18']]
     },
