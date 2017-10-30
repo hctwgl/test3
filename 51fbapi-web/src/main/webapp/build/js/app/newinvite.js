@@ -89,7 +89,7 @@ window.onload = ()=>{
         shareAppTitle: shareinfo.listTitle,
         shareAppContent: shareinfo.listDesc,
         shareAppImage: shareinfo.listPic,
-        shareAppUrl: location.origin + '/fanbei-web/app/inviteregister',
+        shareAppUrl: 'https://app.51fanbei.com/app/user/channelRegister?channelCode=aldcgyq&pointCode=aldcgyq',
         isSubmit: 'Y',
         sharePage: 'inviteShare'
       }
@@ -231,9 +231,9 @@ window.onload = ()=>{
 
 function maidian(scene) {
   $.ajax({
-    url: '/fanbei-web/postMaidianInfo',
+    url: '/fanbei-web/shareActivity',
     data: {
-      'maidianInfo': 'sharewith'+ scene
+      'shareWith': 'sharewith'+ scene
     },
     type: 'POST',
     succuess: (data) => {

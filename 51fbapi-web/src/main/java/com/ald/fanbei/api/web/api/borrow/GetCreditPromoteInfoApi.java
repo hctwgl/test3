@@ -145,7 +145,6 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		} else {
 			data.put("riskStatus", authDo.getRiskStatus());
 		}
-		
 		data.put("faceStatus", authDo.getFacesStatus());
 		data.put("idNumber", Base64.encodeString(userDto.getIdNumber()));
 		data.put("realName", userDto.getRealName());

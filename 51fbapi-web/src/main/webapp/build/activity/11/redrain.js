@@ -1,3 +1,5 @@
+
+
 function yes(el, status, text) {
   el.removeClass('on off notyet')
   el.addClass('off')
@@ -160,7 +162,7 @@ let counttime = (order)=>{
 
 
     setTimeout(()=>{
-      window.localtime = new Date('2017/10/15 03:00:21')
+      window.localtime = new Date()
       
       let lateststatus = adjuststatus(checkorder(order))
       
@@ -169,15 +171,20 @@ let counttime = (order)=>{
       counttime(order)
     },20000)
   }, timestamp)
-}
+};
 
 window.onload = ()=>{
   //将当前时间的时间赋值给window.localtime,之后用后台请求数据替换
-  window.localtime = new Date('2017/10/15 20:24:21')
+    let current=new Date().getTime();
+    if(current>1510156800000){//11.9
+        $('.acTxt').hide();
+        $('.count').show();
+        window.localtime = new Date();
 
-  let lateststatus = adjuststatus(checkorder(order))
+        let lateststatus = adjuststatus(checkorder(order));
 
-  execstatsu(order, lateststatus)
+        execstatsu(order, lateststatus);
 
-  counttime(order)
-}
+        counttime(order)
+    }
+};

@@ -459,6 +459,14 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return list;
 	}
 
+	public List<AfResourceDo> getManyPricutresResourceDoList(String type) {
+		List<AfResourceDo> list;
+
+		list = afResourceDao.getManyPricutresResourceDoList(type);
+
+		return list;
+	}
+
 	@Override
 	public List<AfResourceDo> getConfigsByTypesAndSecType(String type, String secType) {
 		// TODO Auto-generated method stub
@@ -476,5 +484,19 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDo;
 	}
 
-	
+	@Override
+	public List<AfResourceDo> getBackGroundByType(String code) {
+		return afResourceDao.getBackGroundByType(code);
+	}
+
+	@Override
+	public List<AfResourceDo> getNavigationUpOneResourceDoList(String code) {
+		return afResourceDao.getNavigationUpOneResourceDoList(code);
+	}
+
+	@Override
+	public List<AfResourceDo> getNavigationDownTwoResourceDoList(String code) {
+		return afResourceDao.getNavigationUpOneResourceDoList(code);
+	}
+
 }

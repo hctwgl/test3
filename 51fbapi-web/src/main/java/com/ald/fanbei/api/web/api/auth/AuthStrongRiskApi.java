@@ -157,6 +157,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 				authDo.setGmtRisk(new Date());
 				try {
 					authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
+
 					afUserAuthService.updateUserAuth(authDo);
 
 					RiskRespBo riskResp = riskUtil.registerStrongRisk(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,

@@ -324,6 +324,11 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		return i;
 	}
 
+	@Override
+	public int insertShareWithData(String uuid, long userId, Integer type, String invitationCode) {
+		return afRecommendUserDao.insertShareWithData(uuid,userId,type,invitationCode);
+	}
+
 	public HashMap getRecommedData(long userId) {
 		return afRecommendUserDao.getRecommedData(userId);
 	}

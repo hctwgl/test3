@@ -134,6 +134,7 @@ public class H5GGShareController extends H5Controller {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		H5CommonResponse resultStr;
 		FanbeiH5Context context = new FanbeiH5Context();
+		String referer = request.getHeader("referer");  
 		context = doH5Check(request, false);
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
@@ -386,15 +387,15 @@ public class H5GGShareController extends H5Controller {
 			data.put("itemsList", itemsList);
 			data.put("despcription", despcription);
 			resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
 		} catch (FanbeiException e) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc());
 			logger.error("initHomePage", e);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),referer);
 		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage());
 			logger.error("initHomePage", exception);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"));
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),referer);
 		}
 		return resultStr.toString();
 	}

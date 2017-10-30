@@ -35,7 +35,6 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
 
 /**
  * @类描述：更改手机——新手机号入库&同步新手机号和通讯录到风控，原子操作

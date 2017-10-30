@@ -1,4 +1,5 @@
 var activityId=getUrl("activityId");//获取活动Id
+var typeFrom=getUrl("typeFrom");
 var userName = "";//获取用户名
 if(getInfo().userName){
     userName=getInfo().userName;
@@ -23,7 +24,7 @@ let vm = new Vue({
             $.ajax({
                 type: 'get',
                 url: "/H5GG/initHomePage",
-                data:{'activityId':activityId},
+                data:{'activityId':activityId,'typeFrom':typeFrom},
                 success: function (data) {
                     data = eval('(' + data + ')');
                     console.log(data);
@@ -168,7 +169,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/ggIndex?activityId=1&type=card'},
+                data:{maidianInfo:'/fanbei-web/activity/ggIndex?activityId=1&type=card&typeId='+shopId},
                 success:function (data) {
                     console.log(data)
                 }
