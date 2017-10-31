@@ -36,7 +36,7 @@
                 <input type="checkbox" id="checkChoose" checked="checked">
                 <span>阅读并同意注册</span>   
             </label>
-            <a class="myprotocol" href="app/sys/registerProtocol">《51反呗新用户协议》</a>
+            <a class="myprotocol" href="app/sys/registerProtocol">《51返呗新用户协议》</a>
         </div>
         <div class="tolog">
             <a class="tologin" href="./barginLogin">已有账户登录</a>
