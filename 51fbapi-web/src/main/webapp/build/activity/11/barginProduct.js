@@ -41,7 +41,8 @@ let vm = new Vue({
         userInfo: {} //用户信息
     },
     created: function() {
-        this.judge();    
+        this.judge();   
+        this.maidian(); 
     },
     methods: {
         judge: function() {
@@ -61,10 +62,16 @@ let vm = new Vue({
             } else {
                 this.isWX = false;
             }
-            this.getUserInfo();
+            let userData = sessionStorage.getItem("userInfo");
+            if (userData==null) {
+                this.getUserInfo();
+            }else {
+                this.userInfo = JSON.parse(userData);
+            }
             this.logData();
             this.listFn();
             this.countDown();
+            self.scrollFn();
         },
         logData: function() { // get 初始化 信息
             let self = this;
@@ -107,8 +114,9 @@ let vm = new Vue({
                         if (data.success) {
                             self.userInfo = data;   
                             self.userInfo.data = JSON.parse(data.data);
+                            sessionStorage.setItem("userInfo",JSON.stringify(self.userInfo));
                         } else {
-                            requestMsg("获取用户信息出错了！");
+                            requestMsg("获取用户信息失败了！");
                         }
                     },
                     error: function() {
@@ -290,5 +298,16 @@ let vm = new Vue({
                 });
             }
         },
+        maidian(data){
+            //数据统计
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/barginProduct?userName='+userName+'&goodsId='+goodsId+'&type='+productType},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
+        }
     }
 })

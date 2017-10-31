@@ -29,6 +29,7 @@ let vm = new Vue({
     },
     created: function() {
         this.judge();
+        this.maidian();
     },
     computed: {
         couponNum() {
@@ -64,14 +65,6 @@ let vm = new Vue({
                     self.getFirstData();
                     self.countDown();
                     self.getShareTimes();
-                    
-                        // $(".loadingMask").fadeOut();
-                        // $("img .lazy").lazyload({
-                        //     placeholder : "https://f.51fanbei.com/h5/common/images/bitmap1.png",  //用图片提前占位
-                        //     effect : "fadeIn",  // 载入使用的效果
-                        //     threshold: 200 // 提前开始加载
-                        // });
-                    
                     $(".loadingMask").fadeOut();
                 },
                 error: function() {
@@ -89,7 +82,6 @@ let vm = new Vue({
                     break;
                 }
             }
-
         },
         getShareTimes: function() { // 统计分享次数
             let self = this;
@@ -118,13 +110,30 @@ let vm = new Vue({
             goodsType = type;
             shareInfo.link = urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ userName;
             let self = this;
+            if (status==1) {
+                self.shareSure();
+            } else {
+                if (type == 'product') {
+                    if (self.shareTime >= 2) {
+                        requestMsg('只能砍价两件商品，不要太贪心哦');
+                        return false;
+                    }
+                    self.sureFlag = true; 
+                }else {
+                    self.shareFn();
+                }
+            }
+        },
+        shareFn: function(){ // 分享确认
+            let self = this;
+            self.sureFlag = false;
             if (self.ajaxFlag) {
                 self.ajaxFlag = false;
                 $.ajax({
                     url: self.url_3,
                     type: 'POST',
                     dataType: 'json',
-                    data: { goodsPriceId: id },
+                    data: { goodsPriceId: goodsId },
                     success: function(data) {
                         if (!data.success) { // 返回不可砍價
                             if (!data.hasOwnProperty("data")) {
@@ -138,19 +147,7 @@ let vm = new Vue({
                             }
                             return false;
                         }
-                        if (type == 'product') {
-                            if (self.shareTime >= 2 && status == 0) {
-                                requestMsg('只能砍价两件商品，不要太贪心哦');
-                                return false;
-                            }
-                            if (status==1) {
-                                self.shareSure();
-                                return false;
-                            }
-                            self.sureFlag = true;
-                        } else {
-                            self.shareSure();
-                        }
+                        self.shareSure();
                     },
                     error: function() {
                         requestMsg("哎呀，出错了！");
@@ -158,11 +155,10 @@ let vm = new Vue({
                     complete: function() {
                         self.ajaxFlag = true;
                     }
-                });
-                
+                }); 
             }
         },
-        shareSure: function() {
+        shareSure: function() { //发起分享
             this.sureFlag = false;
             // 是否登录,APP_SHARE接口会自动判断是否登陆
             if (this.isWX) {
@@ -267,6 +263,17 @@ let vm = new Vue({
                 // 跳转原生app商品购买页
                 window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + id + '"}';
             }
+        },
+        maidian(data){
+            //数据统计
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/barginIndex?userName='+userName},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         }
     }
 });
