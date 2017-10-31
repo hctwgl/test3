@@ -16,13 +16,13 @@ if (currentStarmp < oneTime) { //11.1号之前
 if (currentStarmp > oneTime && currentStarmp < twoTime) { //11.1-11.8
     addStyle(0);
 }
-if (currentStarmp >= twoTime && currentStarmp <= sevenTime) { //11.9-11.10
+if (currentStarmp >= twoTime && currentStarmp < fiveTime) { //11.9-11.10
     addStyle(1);
 }
 if (currentStarmp >= fiveTime && currentStarmp < sixTime) { //11.11-11.12
     addStyle(2);
 }
-if (currentStarmp > sixTime) { //11.13
+if (currentStarmp > fourTime) { //11.13
     addStyle(3);
 }
 

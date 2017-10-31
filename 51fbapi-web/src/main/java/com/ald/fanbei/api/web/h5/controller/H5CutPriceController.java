@@ -441,7 +441,7 @@ public class H5CutPriceController extends H5Controller {
 				String userName = request.getParameter("userId");
 				String goodsPriceIdStr = request.getParameter("goodsPriceId");
 				String openId = request.getParameter("openId");
-				String nickName = request.getParameter("nickNaafme");
+				String nickName = request.getParameter("nickName");
 				String headImagUrl = request.getParameter("headImgUrl");
 				
 				String loggerStr = String.format("/activityH5/de/cutPrice params: userName = {} goodsPriceId = {} openId = {} nickName = {} headImgUrl = {}",userName,goodsPriceIdStr,openId,nickName,headImagUrl);

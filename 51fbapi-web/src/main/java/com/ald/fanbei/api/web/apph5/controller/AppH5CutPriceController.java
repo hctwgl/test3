@@ -587,7 +587,8 @@ public class AppH5CutPriceController extends BaseController {
 	 */
 	@RequestMapping(value = "/wechat/userInfo", method = RequestMethod.POST)
 	public String getUserInfo(HttpServletRequest request, HttpServletResponse response) {
-
+		String resultStr = "";
+		
 		doWebCheck(request, false);
 
 		String code = request.getParameter("code");
@@ -597,32 +598,39 @@ public class AppH5CutPriceController extends BaseController {
 		    throw new FanbeiException("参数格式错误" + "code", FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 		}
 		
-		// 获取access_token
-		String appid = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue();
-		String secret = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue1();
-		String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appid + "&secret=" + secret + "&code="
-				+ code + "&grant_type=authorization_code";
-		JSONObject access_token = httpsRequest(url, "POST", null);
-
-		logger.info(JSON.toJSONString(access_token));
-		// 获取refresh_token
-		String refreshToken = (String) access_token.get("refresh_token");
-		url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + appid
-				+ "&grant_type=refresh_token&refresh_token=" + refreshToken;
-		JSONObject refresh_token = httpsRequest(url, "POST", null);
+		try {
+			
+			// 获取access_token
+			String appid = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue();
+			String secret = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX").getValue1();
+			String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appid + "&secret=" + secret + "&code="
+					+ code + "&grant_type=authorization_code";
+			JSONObject access_token = httpsRequest(url, "POST", null);
+			
+			logger.info(JSON.toJSONString(access_token));
+			// 获取refresh_token
+			String refreshToken = (String) access_token.get("refresh_token");
+			url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + appid
+					+ "&grant_type=refresh_token&refresh_token=" + refreshToken;
+			JSONObject refresh_token = httpsRequest(url, "POST", null);
+			
+			logger.info(JSON.toJSONString(refresh_token));
+			
+			// 获取用户信息
+			String openid = (String) refresh_token.get("openid");
+			String accessToken = (String) refresh_token.get("access_token");
+			url = "https://api.weixin.qq.com/sns/userinfo?access_token=" + accessToken + "&openid=" + openid
+					+ "&lang=zh_CN";
+			JSONObject userInfo = httpsRequest(url, "GET", null);
+			
+			logger.info(JSON.toJSONString(userInfo));
+			
+			return H5CommonResponse.getNewInstance(true, "获取用户信息成功", null, userInfo.toJSONString()).toString();
+		} catch (Exception e) {
+			logger.error("/activity/de/wechat/userInfo error = {}", e.getStackTrace());
+			return H5CommonResponse.getNewInstance(false, "获取用户信息失败", null, "").toString();
+		}
 		
-		logger.info(JSON.toJSONString(refresh_token));
-
-		// 获取用户信息
-		String openid = (String) refresh_token.get("openid");
-		String accessToken = (String) refresh_token.get("access_token");
-		url = "https://api.weixin.qq.com/sns/userinfo?access_token=" + accessToken + "&openid=" + openid
-				+ "&lang=zh_CN";
-		JSONObject userInfo = httpsRequest(url, "GET", null);
-
-		logger.info(JSON.toJSONString(userInfo));
-		
-		return userInfo.toJSONString();
 	}
 
 	/**

@@ -74,7 +74,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/H5Common")
+@RequestMapping("/h5Common")
 public class H5ActivityCommonController extends BaseController {
 
     @Resource
@@ -95,16 +95,9 @@ public class H5ActivityCommonController extends BaseController {
     AfOrderService afOrderService;
     @Resource
     SmsUtil smsUtil;
-    @Resource
-    AfBoluomeActivityCouponService afBoluomeActivityCouponService;
-    @Resource
-    AfH5BoluomeActivityService afH5BoluomeActivityService;
-    @Resource
-    BoluomeUtil boluomeUtil;
-    private static String couponUrl = null;
 
     // H5活动登录
-    @RequestMapping(value = "/activityLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/userLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String boluomeActivityLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
 
@@ -175,55 +168,54 @@ public class H5ActivityCommonController extends BaseController {
     }
 
    
-    // 提交活动注册
+
+    // 提交活动注册并登陆
     @ResponseBody
-    @RequestMapping(value = "/commitActivityRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
-	
-	String resultStr = "";
+    @RequestMapping(value = "/commitRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String commitActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	 String resultStr = "";
 	 String referer = request.getHeader("referer"); 
 	 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
 	try {
-	    String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
+	    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 	    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-	    
 
-	    AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
+	    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
 	    if (eUserDo != null) {
-		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "Register", null).toString();
+		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", null).toString();
 
 	    }
-	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
+	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
 	    if (smsDo == null) {
 		logger.error("sms record is empty");
-		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "Register", null).toString();
+		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "", null).toString();
 		return resultStr;
 	    }
 
 	    String realCode = smsDo.getVerifyCode();
 	    if (!StringUtils.equals(verifyCode, realCode)) {
 		logger.error("verifyCode is invalid");
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "Register", null).toString();
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "", null).toString();
 		return resultStr;
 	    }
 	    if (smsDo.getIsCheck() == 1) {
 		logger.error("verifyCode is already invalid");
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "Register", null).toString();
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "", null).toString();
 		return resultStr;
 	    }
 	    // 判断验证码是否过期
 	    if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "Register", null).toString();
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "", null).toString();
 		return resultStr;
 
 	    }
 	    try {
-		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), mobile, mobile, "");
+		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
 	    } catch (Exception e) {
-		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
+		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null).toString();
 		return resultStr;
 	    }
 
@@ -235,8 +227,8 @@ public class H5ActivityCommonController extends BaseController {
 
 	    AfUserDo userDo = new AfUserDo();
 	    userDo.setSalt(salt);
-	    userDo.setUserName(mobile);
-	    userDo.setMobile(mobile);
+	    userDo.setUserName(moblie);
+	    userDo.setMobile(moblie);
 	    userDo.setNick("");
 	    userDo.setPassword(password);
 	    userDo.setRecommendId(0l);
@@ -251,24 +243,30 @@ public class H5ActivityCommonController extends BaseController {
 	    String inviteCode = Long.toString(invteLong, 36);
 	    userDo.setRecommendCode(inviteCode);
 	    afUserService.updateUser(userDo);
-
 	    // 获取邀请分享地址
-	   // AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
 	    String appDownLoadUrl = "";
+//	    AfResourceDo resourceCodeDo = afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
 //	    if (resourceCodeDo != null) {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
-	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
+	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
+	    // save token to cache 记住登录状态
+            String  newtoken = UserUtil.generateToken(moblie);
+	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
+	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
+	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
+	    bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
+	    //埋点
 	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
 	    return resultStr;
 
 	} catch (FanbeiException e) {
 	    logger.error("commitRegister fanbei exception" + e.getMessage());
-	    resultStr = H5CommonResponse.getNewInstance(false, "失败", "Register", null).toString();
+	    resultStr = H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 	    return resultStr;
 	} catch (Exception e) {
 	    logger.error("commitRegister exception", e);
-	    resultStr = H5CommonResponse.getNewInstance(false, "失败", "Register", null).toString();
+	    resultStr = H5CommonResponse.getNewInstance(false, "失败", "", null).toString();
 	    return resultStr;
 	} finally {
 
