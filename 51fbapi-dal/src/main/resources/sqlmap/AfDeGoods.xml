@@ -199,7 +199,7 @@
 		LEFT JOIN af_de_goods_coupon c on d.goodsPriceId = c.goodsPriceId and c.is_delete = 0
 		LEFT JOIN af_coupon o on c.couponId = o.id and o.is_delete = 0
 		left join af_user_coupon uc on o.id = uc.coupon_id and uc.user_id = #{userId} and uc.is_delete = 0
-		order by goodsPriceId desc,threshold ASC
+		order by g.num_id ASC,goodsPriceId desc,threshold ASC
     </select>
     
 </mapper>
