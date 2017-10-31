@@ -187,7 +187,7 @@ let vm = new Vue({
             let self = this;
             let user = self.userInfo;
             if (self.ajaxFlag) {
-                if (!suser.succes) {
+                if (!user.success) {
                     requestMsg("获取用户信息失败,无法参与砍价");
                     return false;
                 }
