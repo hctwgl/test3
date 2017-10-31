@@ -387,5 +387,10 @@ public class Constants {
 	public static final String THIRD_GOODS_TYPE = "third_goods";
 
 	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
+	
+	//双十一砍价活动
+	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
+	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
+	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 
 }
