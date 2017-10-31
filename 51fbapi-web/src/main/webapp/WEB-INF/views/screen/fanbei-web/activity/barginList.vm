@@ -2,7 +2,7 @@
 <html lang="en" style="font-size:50px">
 
 <head>
-    #set($version="20171020")
+    #set($version="2017103101")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>砍价榜单</title>
@@ -23,7 +23,7 @@
                     <img class="cd-icon" src="$commonUrl/bargin02.png">
                     <p class="cd-txt">开奖
                         <br>倒计时</p>
-                    <div class="flex fd-row ai-c ml30">
+                    <div class="flex fd-row ai-c ml10">
                         <div class="day flex fd-row ai-c" v-if="downTime.d>=0">
                             <div class="cd-time">{{downTime.d}}</div>
                             <span class="cd-time-txt">天</span>   
