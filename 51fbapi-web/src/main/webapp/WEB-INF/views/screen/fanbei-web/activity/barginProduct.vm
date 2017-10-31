@@ -106,7 +106,7 @@
                     <div>疯狂砍价</div>
                 </div>
                 <p class="tip" v-if="cutData.code==1">成功帮好友砍掉&nbsp;<span>{{cutData.cutPrice}}元</span></p>
-                <p class="tip" v-if="cutData.code==2">你已经帮助好友砍价,快来自己拿iphoneX</p>
+                <p class="tip" v-if="cutData.code==2">你已经帮助好友砍价</p>
                 <p class="tip" v-if="cutData.code==3">已砍至最低价，无法完成本次砍价</p>
                 <p class="tip" v-if="cutData.code==4">已经买了此商品，不能砍价</p>
                 <p class="tip" v-if="cutData.code==5">活动时间已经结束，不能砍价</p>
