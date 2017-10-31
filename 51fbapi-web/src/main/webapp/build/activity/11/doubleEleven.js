@@ -9,7 +9,7 @@ let fiveTime = Date.parse(new Date('2017/11/11 00:00:00'))
 let sixTime = Date.parse(new Date('2017/11/13 00:00:00'))
 let sevenTime = Date.parse(new Date('2017/11/10 00:00:00'));
 var timerBig;
-// console.log(new Date(currentStarmp))
+
 if (currentStarmp < oneTime) { //11.1号之前
     addStyle(0);
 }
@@ -311,7 +311,6 @@ let vm = new Vue({
         }
 
         this.arr = arr;
-        console.log(arr);
         console.log( this.arr.length ); */
     },
     mounted: function () {
@@ -340,11 +339,8 @@ let vm = new Vue({
                     'modelId': modelId
                 },
                 success: function (data) {
-                    //  console.log(JSON.parse(data));
                     var a = eval('(' + data + ')')
-                    //  console.log(a);
                     self.productList = a.data.activityList;
-                    console.log(self.productList, 'self.productList')
 
                 },
                 error: function () {
@@ -375,8 +371,6 @@ let vm = new Vue({
                     self.c = JSON.stringify(self.m);
                     self.m = JSON.parse(self.c);
 
-                    // console.log(self.content);
-                    console.log(self.m, 'self.m');
                 }
             })
         },
@@ -513,7 +507,6 @@ let vm = new Vue({
                     let nowTime = new Date();
                     // let nowTime = self.allStartTime;
                     let nowTimeS = nowTime.valueOf();
-                    console.log(nowTimeS);
                     // 相差的时间戳
                     let differS = endOver - nowTimeS;
                     let diffValue = parseInt(differS / 1000); //倒计时总秒数量
@@ -530,7 +523,6 @@ let vm = new Vue({
                     timeS(diffValue);
 
                     function showTime(ctime) {
-                        // console.log(ctime, 'ctime')s
                         let time = 'time' + ctime
                         var day = 0,
                             hour = 0,
@@ -587,7 +579,6 @@ let vm = new Vue({
 
                         var neededtime
                         for (let i = 0; i < stampArray.length; i++) {
-                            console.log('1')
                             if (stampArray[i] > nowdate) {
                                 neededtime = stampArray[i]
                                 break
@@ -617,25 +608,25 @@ let vm = new Vue({
                     }
 
             
-                    if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
-                        afterpre(self.allStartTime)
-                    }
-                    // if(nowTimeS >= Date.parse("2017/11/09 00:00:00")) {
-                    //     afterpre(nowTimeS)
+                    // if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
+                    //     afterpre(self.allStartTime)
                     // }
+                    if(nowTimeS >= Date.parse("2017/11/09 00:00:00")) {
+                        afterpre(nowTimeS)
+                    }
                     
-                     if(self.allStartTime>=Date.parse("2017/11/12 00:00:00")){
+                     /* if(self.allStartTime>=Date.parse("2017/11/12 00:00:00")){
                         $('.redRain').unbind("click");//禁止点击事件
                          clearInterval(timerBig); //清除定时器
                          $('.countThree').html('活动已结束');
-                    } 
+                    }  */
 
-                     /* if(nowTimeS>=Date.parse("2017/11/12 00:00:00")){
+                      if(nowTimeS>=Date.parse("2017/11/12 00:00:00")){
                         $('.redRain').unbind("click");//禁止点击事件
                          clearInterval(timerBig); //清除定时器
                            $('.countThree').html('活动已结束');
                          
-                    } */
+                    } 
 
                 }
             })
