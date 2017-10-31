@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -171,6 +173,11 @@ public interface AfOrderService {
 	 * @param tradeNo
 	 */
 	int dealBrandOrderSucc(String payOrderNo, String tradeNo, String payType);
+
+
+	AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson, String orderType);
+
+
 	
 	/**
 	 * 处理菠萝觅回调订单 失败

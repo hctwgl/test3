@@ -984,7 +984,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	 * @param interestFreeJson 分期规则
 	 * @return
 	 */
-	private AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson,String orderType) {
+	public AfBorrowDo buildAgentPayBorrow(String name, BorrowType type, Long userId, BigDecimal amount, int nper, String status, Long orderId, String orderNo, String borrowRate, String interestFreeJson,String orderType) {
 
 		Integer freeNper = 0;
 		List<InterestFreeJsonBo> interestFreeList = StringUtils.isEmpty(interestFreeJson) ? null : JSONObject.parseArray(interestFreeJson, InterestFreeJsonBo.class);

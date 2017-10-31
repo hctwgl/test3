@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -62,7 +63,7 @@ import com.taobao.api.domain.XItem;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afBorrowService")
-public class AfBorrowServiceImpl extends BaseService implements AfBorrowService {
+public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,HomeBorrowService {
 
 	@Resource
 	AfBorrowDao afBorrowDao;
@@ -119,6 +120,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 	AfRecommendUserService afRecommendUserService;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
+	@Resource
+	AfOrderDao afOrderDao;
+
 
 	@Override
 	public Date getReyLimitDate(String billType, Date now) {
@@ -1299,5 +1303,126 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService 
 
 	public List<AfBorrowBillDo> getBorrowBillListY( Long userId,  Integer billYear, Integer billMonth){
 		return  afBorrowBillDao.getBorrowBillListY(userId,billYear,billMonth);
+	}
+
+
+	public HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId,Date date) {
+		int borrowNper = nper;
+		Date now = date;
+		if(nper == 5 || nper ==11){
+			now = DateUtil.addMonths(now,1);
+			if(nper ==5){
+				borrowNper = 6;
+			}else{
+				borrowNper = 12;
+			}
+		}
+		AfOrderDo afOrderDo = afOrderDao.getOrderById(orderId);
+		AfBorrowDo borrow = afOrderService.buildAgentPayBorrow(afOrderDo.getGoodsName(), BorrowType.HOME_CONSUME, userId, afOrderDo.getActualAmount(),
+				borrowNper, BorrowStatus.APPLY.getCode(), orderId, afOrderDo.getOrderNo(), afOrderDo.getBorrowRate(), afOrderDo.getInterestFreeJson(),afOrderDo.getOrderType());
+
+		borrow.setNper(nper);
+
+		List<AfBorrowBillDo> list = buildBorrowBillForNewInterestForHouse(borrow,PayType.AGENT_PAY.getCode(),now);
+		HashMap<String ,Object> map = new HashMap<String,Object>();
+		map.put("borrow",borrow);
+		map.put("bill",list);
+		//return JSON.toJSONString(map);
+		return map;
+	}
+
+	public int addHomeBorrow(final Long orderId,final int nper){
+		return 1;
+	}
+
+
+	/**
+	 *
+	 * @param borrow 借款信息
+	 * @return
+	 */
+	public List<AfBorrowBillDo> buildBorrowBillForNewInterestForHouse(AfBorrowDo borrow, String payType,Date now) {
+		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
+		//Date now = new Date();// 当前时间
+		//生成时间
+		logger.info("check now time"+now);
+		Integer nper = borrow.getNper();
+		Integer freeNper = borrow.getFreeNper();
+		String borrowRate = borrow.getBorrowRate();
+		BigDecimal money = borrow.getAmount();// 借款金额
+
+		//拿到日利率快照Bo
+		BorrowRateBo borrowRateBo =  BorrowRateBoUtil.parseToBoFromDataTableStr(borrowRate);
+		BigDecimal mouthRate = borrowRateBo.getRate().divide(new BigDecimal(Constants.MONTH_OF_YEAR), 8,
+				BigDecimal.ROUND_HALF_UP);//月利率
+		//每期本金
+		BigDecimal principleAmount = money.divide(new BigDecimal(borrow.getNper()), 2, RoundingMode.DOWN);
+		//第一期本金
+		BigDecimal firstPrincipleAmount =  getFirstPrincipleAmount(money, principleAmount, nper);
+		//每期利息
+		BigDecimal interestAmount = money.multiply(mouthRate);
+		//每期手续费
+		BigDecimal poundageAmount = BigDecimalUtil.getPerPoundage(money, borrow.getNper(), borrowRateBo.getPoundageRate(), borrowRateBo.getRangeBegin(), borrowRateBo.getRangeEnd(), freeNper);
+
+		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(borrow.getUserId());
+
+
+//		AfBorrowBillDo afBorrowBillLast = afBorrowBillDao.getLastOutBill(borrow.getUserId());
+//		int out_day = 10;
+//		int pay_day = 20;
+//		if(afUserOutDayDo !=null){
+//			out_day = afUserOutDayDo.getOutDay();
+//			pay_day = afUserOutDayDo.getPayDay();
+//		}
+
+//		Date startDate = DateUtil.addDays(DateUtil.getStartOfDate(DateUtil.getFirstOfMonth(now)),
+//				out_day - 1);
+//		if(startDate.before(now)){
+//			now = DateUtil.addMonths(now,1);
+//		}
+
+		Date __now = new Date();
+		for (int i = 1; i <= nper; i++) {
+			AfBorrowBillDo bill = new AfBorrowBillDo();
+			bill.setUserId(borrow.getUserId());
+			bill.setBorrowId(borrow.getRid());
+			bill.setBorrowNo(borrow.getBorrowNo());
+			bill.setName(borrow.getName());
+			bill.setGmtBorrow(borrow.getGmtCreate());
+			Map<String, Object> timeMap = getCurrentYearAndMonth(now,afUserOutDayDo);
+			bill.setBillYear((Integer) timeMap.get(Constants.DEFAULT_YEAR));
+			bill.setBillMonth((Integer) timeMap.get(Constants.DEFAULT_MONTH));
+			bill.setGmtOutDay((Date) timeMap.get(Constants.OUT_DATETIME));
+			bill.setGmtPayTime((Date) timeMap.get(Constants.PAY_DATETIME));
+			bill.setNper(borrow.getNper());
+			bill.setBillNper(i);
+			if (i <= freeNper) {
+				bill.setInterestAmount(BigDecimal.ZERO);
+				bill.setIsFreeInterest(YesNoStatus.YES.getCode());
+				bill.setPoundageAmount(BigDecimal.ZERO);
+			} else {
+				bill.setInterestAmount(interestAmount);
+				bill.setIsFreeInterest(YesNoStatus.NO.getCode());
+				bill.setPoundageAmount(poundageAmount);
+			}
+			if (i == 1) {
+				bill.setPrincipleAmount(firstPrincipleAmount);
+			} else {
+				bill.setPrincipleAmount(principleAmount);
+			}
+			bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(),bill.getPoundageAmount(),bill.getPrincipleAmount()));
+			if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+				bill.setStatus(BorrowBillStatus.FORBIDDEN.getCode());
+			} else {
+				bill.setStatus(BorrowBillStatus.NO.getCode());
+			}
+			bill.setType(BorrowType.HOME_CONSUME.getCode());
+			if(bill.getGmtOutDay().compareTo(__now)<=0){
+				bill.setIsOut(1);
+			}
+			list.add(bill);
+			now = DateUtil.addMonths(now, 1);
+		}
+		return list;
 	}
 }

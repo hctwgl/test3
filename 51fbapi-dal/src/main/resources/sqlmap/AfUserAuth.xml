@@ -142,7 +142,7 @@
 				,basic_status=#{basicStatus}
 			</if>
 
-			
+
 		WHERE user_id = #{userId}
 	</update>
 	

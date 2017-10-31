@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -12,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -89,6 +95,8 @@ public class PayRoutController {
 	private YiBaoUtility yiBaoUtility;
 	@Resource
 	RedisTemplate redisTemplate;
+
+
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -458,6 +466,19 @@ public class PayRoutController {
 			logger.error("yibaoUpdate error",e);
 			return e.toString();
 		}
+	}
+
+
+
+	/**
+	 * 给admin 端调用生成帐单和代款数据。不写入数据库
+	 */
+	@RequestMapping(value = { "/addHomeBorrow" })
+	@ResponseBody
+	public  HashMap addHomeBorrow(final Long orderId,final int nper, final Long userId,long timer) throws Exception {
+		Date date = new Date(timer);
+		HashMap ret= afBorrowService.addHomeBorrow(orderId,nper,userId,date);
+		return ret;
 	}
 
 

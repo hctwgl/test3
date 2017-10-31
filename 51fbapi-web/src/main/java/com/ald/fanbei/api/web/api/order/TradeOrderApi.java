@@ -132,6 +132,9 @@ public class TradeOrderApi implements ApiHandle {
         afTradeOrderDo.setBalanceAmount(actualAmount);
         afTradeOrderService.saveRecord(afTradeOrderDo);
 
+
+
+
         String isEnoughAmount = "Y";
         AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
         BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());

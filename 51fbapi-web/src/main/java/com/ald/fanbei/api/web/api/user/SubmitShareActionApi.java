@@ -55,7 +55,7 @@ public class SubmitShareActionApi implements ApiHandle {
 //		if("ggIndexShare".equals(sharePage)){
 //			maidianLog.info(context.getUserName() + "ggIndexShare");
 //		}
-//		
+//
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
 		String[] strings = sharePage.split("_");
 		if (strings != null && strings.length == 3) {

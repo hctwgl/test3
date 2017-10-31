@@ -185,7 +185,7 @@ public class APPH5GGShareController extends BaseController {
 													// 判断用户是否拥有该优惠券 或者已经被领取完毕
 													boolean flag = false;
 													flag = boluomeUtil.isHasCoupon(resourceId+"", context.getUserName());
-													if (flag) 
+													if (flag)
 													/*if (boluomeUtil.isUserHasCoupon(uri, userId, 1)
 															|| bo.getDistributed() >= bo.getTotal()) */
 													{
@@ -247,7 +247,7 @@ public class APPH5GGShareController extends BaseController {
 	public String initHomepage(HttpServletRequest request, HttpServletResponse response) {
 		H5CommonResponse resultStr;
 		FanbeiWebContext context = new FanbeiWebContext();
-		String referer = request.getHeader("referer");  
+		String referer = request.getHeader("referer");
 		// TODO:获取活动的id
 		Long activityId = NumberUtil.objToLongDefault(request.getParameter("activityId"), 1);
 		try {
@@ -322,7 +322,7 @@ public class APPH5GGShareController extends BaseController {
 													// 判断用户是否拥有该优惠券 或者已经被领取完毕
 													boolean flag = false;
 													flag = boluomeUtil.isHasCoupon(resourceId+"", context.getUserName());
-													if (flag) 
+													if (flag)
 													{
 														BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 													} else {
@@ -388,9 +388,9 @@ public class APPH5GGShareController extends BaseController {
 			// 用户没登陆的时候默认是只灰色状态（已经领取过了）
 			// String userName = request.getParameter("userName");
 			if (!StringUtil.isBlank(userName) ) {
-				
+
 				Long userId = convertUserNameToUserId(userName);
-				
+
 				if (userId != null && userId > 0) {
 					superPrizeStatus = "N";// 若是已经登录了则是初始化为N的状态
 					useritemsDo.setUserId(userId);
@@ -660,7 +660,7 @@ public class APPH5GGShareController extends BaseController {
 		response.setContentType("application/json;charset=utf-8");
 
 		try {
-			
+
 			context = doWebCheck(request, false);
 			String userName = context.getUserName();// request.getParameter("userName");
 			Long userId = convertUserNameToUserId(userName);
@@ -671,22 +671,22 @@ public class APPH5GGShareController extends BaseController {
 				data.put("loginUrl", loginUrl);
 				return H5CommonResponse.getNewInstance(true, "没有登录", "", data).toString();
 			}
-			
+
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			if (userId != null && activityId != null) {
 				// 选出itemsId
-				
+
 				AfBoluomeActivityUserItemsDo condition = new AfBoluomeActivityUserItemsDo();
 				condition.setBoluomeActivityId(activityId);
 				condition.setUserId(userId);
 				condition.setStatus("NORMAL");
 				List<AfBoluomeActivityUserItemsDo> resultList = afBoluomeActivityUserItemsService.getListByCommonCondition(condition);
-				
+
 				List<AfBoluomeActivityItemsDo> itemsList = new ArrayList<>();
 			/*	List<Long> tempItemsList = afBoluomeActivityUserItemsService.getItemsByActivityIdUserId(activityId,
 						userId);// 大于1张卡片的用户记录--》update，改成所有的。
-*/				
-				
+*/
+
 				// 根据是否领取终极大奖不同个逻辑
 				boolean isGetSuperPrize = false;
 				isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId, activityId);
@@ -1103,9 +1103,9 @@ public class APPH5GGShareController extends BaseController {
 					if (userItemsList != null && userItemsList.size()>0) {
 						AfBoluomeActivityUserItemsDo userdoo =  userItemsList.get(0);
 						boolean isGetSuperPrize = afBoluomeActivityResultService.isGetSuperPrize(userId, userdoo.getBoluomeActivityId());
-						
+
 						//若获取了终极大奖，则只有一个都可以赠送，若没有获取终极大奖，则必须是两个
-						
+
 						if (userItemsList == null || (!isGetSuperPrize && userItemsList.size() < 2) || (isGetSuperPrize && userItemsList.size() < 1) ) {
 							return H5CommonResponse.getNewInstance(false, "抱歉，您暂时没有足够此卡片").toString();
 						}
@@ -1132,7 +1132,7 @@ public class APPH5GGShareController extends BaseController {
 						resultStr = H5CommonResponse.getNewInstance(true, "赠送成功");
 						doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
 					}
-				
+
 				}
 			}
 		} catch (FanbeiException e) {

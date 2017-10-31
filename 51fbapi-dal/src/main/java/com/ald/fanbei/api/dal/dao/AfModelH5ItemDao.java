@@ -44,6 +44,6 @@ public interface AfModelH5ItemDao {
 
 	List<AfModelH5ItemDo> getModelH5ItemByGoodsId(@Param("goodsId")Long goodsId);
 
-	
+
 	
 }

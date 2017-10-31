@@ -36,8 +36,8 @@
 				#{goodsType}
 			)
 	</insert>
-	
-	
+
+
 	<select id="getActivityModelByGoodsId" parameterType="java.lang.Long" resultType="AfActivityModelDo">
 		SELECT
 			<include refid="activityModelSqlField"/>
