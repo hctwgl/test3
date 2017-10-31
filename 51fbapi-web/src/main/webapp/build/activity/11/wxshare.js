@@ -2,7 +2,7 @@ var shareInfo = {
     title: "51返呗邀请有礼，快来参与~",
     desc: "我知道一个返利APP，购物不仅返现，邀请好友也赚钱哦~",
     link: urlHost + '/fanbei-web/activity/barginProduct?goodsId='+goodsId+'&productType=share'+ goodsType +'&userName='+ userName,
-    imgUrl: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
+    imgUrl: "http://f.51fanbei.com/online/17f31c95deb17587.png",
     success: function() {
         alert("分享成功！");
     },

@@ -168,7 +168,7 @@ let vm = new Vue({
                 var dat = {
                     shareAppTitle: "51返呗邀请有礼，快来参与~",
                     shareAppContent: "我知道一个返利APP，购物不仅返现，邀请好友也赚钱哦~",
-                    shareAppImage: "https://f.51fanbei.com/h5/common/icon/midyearCorner.png",
+                    shareAppImage: "http://f.51fanbei.com/online/17f31c95deb17587.png",
                     shareAppUrl: urlHost + '/fanbei-web/activity/barginProduct?goodsId=' + goodsId + '&productType=share' + goodsType + '&userName=' + getInfo().userName,
                     isSubmit: 'Y',
                     sharePage: 'barginIndex'

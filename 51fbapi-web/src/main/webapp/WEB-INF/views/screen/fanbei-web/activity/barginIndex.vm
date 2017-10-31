@@ -141,7 +141,7 @@
                     <img src="$commonUrl/bargin08.png">
                     <div>疯狂砍价</div>
                 </div>
-                <p class="tip">亲，您总共能发起<span>2个商品</span>砍价!</p>
+                <p class="tip">亲，您总共能发起<span>2个商品</span>砍价，请慎重选择!</p>
                 <div class="btn-box2 flex flex-row jc-sb">
                     <div class="btn-sure" @click="shareFn()"></div>
                     <div class="btn-cancel" @click="closeSure()"></div>
