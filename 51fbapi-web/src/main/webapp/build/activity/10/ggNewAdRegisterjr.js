@@ -93,7 +93,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_img'},
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_img&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -170,7 +170,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_sure'},
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_sure&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -179,6 +179,8 @@ $(function () {
 
     // 完成注册提交
     $(".loginbtn").click(function () {
+        //转化代码
+        _taq.push({convert_id:"72607366923",  event_type:"form"});
         var smsCode = $(".check").val();//获取短信
         var registerMobile = $(".mobile").val();//获取手机号
         var password=$("#password").val();//获取密码
@@ -229,7 +231,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_get'},
+            data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_get&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
