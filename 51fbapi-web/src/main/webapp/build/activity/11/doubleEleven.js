@@ -58,12 +58,12 @@ let vm = new Vue({
         allData: [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=146'
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=187'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=147'
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=185'
             },
             {
                 'name': '韩都衣舍',
@@ -180,12 +180,12 @@ let vm = new Vue({
             [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=146'
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=187'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=147'
+                'src': 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=185'
             },
             {
                 'name': '韩都衣舍',
