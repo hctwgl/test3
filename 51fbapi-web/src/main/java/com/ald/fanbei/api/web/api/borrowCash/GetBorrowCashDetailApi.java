@@ -82,6 +82,13 @@ public class GetBorrowCashDetailApi extends GetBorrowCashBase implements ApiHand
 
 	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo, Integer appVersion) {
 		Map<String, Object> data = new HashMap<String, Object>();
+		//afBorrowCashDo gmtPlanRepayment  空处理
+		if(afBorrowCashDo.getGmtPlanRepayment() == null){
+			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Date createEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtCreate());
+			Date repaymentDay = DateUtil.addDays(createEnd, day - 1);
+			afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+		}
 		data.put("rid", afBorrowCashDo.getRid());
 		data.put("amount", afBorrowCashDo.getAmount());
 		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
