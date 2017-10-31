@@ -96,7 +96,7 @@ let vm = new Vue({
                 success: function(data) {
                     self.goodsData = data.data;
                     self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
-                    self.tipLeft = 6.3 - self.progressWidth - 0.74;
+                    self.tipLeft = 6.3 - self.progressWidth - 1;
                     if (self.getUserFlag) {
                         $(".loadingMask").fadeOut();
                     }
