@@ -276,6 +276,9 @@ public class StringUtil extends StringUtils {
 			if(originMsg.startsWith("请求第三方失败,")){
 				originMsg = originMsg.replaceFirst("请求第三方失败,", "");
 			}
+			if(originMsg.startsWith("请求第三方失败:")){
+				originMsg = originMsg.replaceFirst("请求第三方失败:", "");
+			}
 			if(originMsg.startsWith("单位返回信息:")){
 				originMsg = originMsg.replaceFirst("单位返回信息:", "");
 			}

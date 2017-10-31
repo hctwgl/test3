@@ -177,7 +177,7 @@
     <select id ="getUserDeGoodsList" resultMap="userDeGoods">
 	    SELECT
 			p.id AS goodsPriceId,
-			g.thumbnail_icon AS image,
+			g.goods_icon AS image,
 			g.thumbnail_icon as thumbnailIcon,
 			g.id as goodsId,
 			p.actual_amount AS originalPrice,

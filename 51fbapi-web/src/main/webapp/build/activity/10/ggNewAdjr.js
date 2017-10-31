@@ -1,8 +1,4 @@
-'use strict';
-//转化代码
-let _taq=[];
-_taq.push({convert_id:"72607366923",  event_type:"form"})
-//转化代码
+
 var activityId = getUrl("activityId");//获取活动Id
 var userName='';//获取用户名
 //获取页面名称传到登录页
@@ -69,7 +65,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_ini'},
+                data:{maidianInfo:'/fanbei-web/activity/ggNewAdjr?activityId=1&type=new_ini&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
                 success:function (data) {
                     console.log(data)
                 }
