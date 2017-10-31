@@ -691,7 +691,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
 						//逛逛点亮活动
-						afBoluomeActivityService.ggLightActivity(afOrder);
+						try{
+						  afBoluomeActivityService.ggLightActivity(afOrder);
+						}catch (Exception e){
+						  logger.info("ggLightActivity error:",e);
+						}
 					
 
 //                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
