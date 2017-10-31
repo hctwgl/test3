@@ -81,12 +81,13 @@ let vm = new Vue({
                         $(".loadingMask").fadeOut();
                     }
                     if (!data.success) {
-                        if (self.isWX) {
-                            self.toLogin(); 
-                        } else {
-                            location.href = data.data.loginUrl;
-                        }
-                        return false;
+                        // debugger;
+                        // if (self.isWX) {
+                        //     self.toLogin(); 
+                        // } else {
+                        //     location.href = data.data.loginUrl;
+                        // }
+                        // return false;
                     }
                 },
                 error: function() {
@@ -106,6 +107,7 @@ let vm = new Vue({
                     success: function(data) {
                         if (data.success) {
                             self.userInfo = data;   
+                            self.userInfo.data = JSON.parse(data.data);
                         } else {
                             requestMsg("获取用户信息出错了！");
                         }
@@ -136,11 +138,12 @@ let vm = new Vue({
                             self.loadFlag = true;
                         }
                     } else {
-                        if (self.isWX) {
-                            self.toLogin(); 
-                        } else {
-                            location.href = data.data.loginUrl;
-                        }
+                        // debugger;
+                        // if (self.isWX) {
+                        //     self.toLogin(); 
+                        // } else {
+                        //     location.href = data.data.loginUrl;
+                        // }
                     }
                 },
                 error: function() {
