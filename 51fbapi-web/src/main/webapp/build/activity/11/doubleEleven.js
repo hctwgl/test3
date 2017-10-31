@@ -58,12 +58,12 @@ let vm = new Vue({
         allData: [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
             },
             {
                 'name': '韩都衣舍',
@@ -180,12 +180,12 @@ let vm = new Vue({
             [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
             },
             {
                 'name': '韩都衣舍',
