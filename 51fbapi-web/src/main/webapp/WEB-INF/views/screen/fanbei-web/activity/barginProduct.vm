@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    #set($version="2017103101")
+    #set($version="2017103102")
     #set($commonUrl="https://f.51fanbei.com/h5/app/activity/11/image")
     <meta charset="UTF-8">
     <title>商品页</title>
