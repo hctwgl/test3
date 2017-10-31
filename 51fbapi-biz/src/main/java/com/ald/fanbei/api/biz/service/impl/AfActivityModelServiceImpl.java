@@ -40,6 +40,6 @@ public class AfActivityModelServiceImpl  implements AfActivityModelService {
 		return afActivityModelDao.getActivityModelByGoodsId(goodsId);
 	}
 
-	
+
 	
 }

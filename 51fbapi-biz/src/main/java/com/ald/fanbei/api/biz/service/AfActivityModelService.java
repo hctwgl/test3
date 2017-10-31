@@ -21,5 +21,5 @@ public interface AfActivityModelService {
 	int addActivityModel(AfActivityModelDo activityModel);
 
 	List<AfActivityModelDo> getActivityModelByGoodsId(Long goodsId);
-	
+
 }

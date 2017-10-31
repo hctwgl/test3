@@ -16,7 +16,8 @@ public enum BorrowType {
 	CONSUME("CONSUME", "消费分期"),
 	CONSUME_TEMP("CONSUME_TEMP", "消费分期待确认"),
 	TOCASH("TOCASH", "消费转换成现金借款"),
-	TOCONSUME("TOCONSUME", "消费待确认转化成消费");
+	TOCONSUME("TOCONSUME", "消费待确认转化成消费"),
+    HOME_CONSUME("HOME_CONSUME", "租房分期");
     
     private String code;
     private String name;

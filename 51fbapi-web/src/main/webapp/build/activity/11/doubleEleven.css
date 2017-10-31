@@ -279,8 +279,8 @@ body {
 }
 .click {
   position: absolute;
-  left: 82%;
-  top: 0.7rem;
+  left: 81%;
+  top: 0.68rem;
   font-size: 0.38rem;
   color: white;
   font-weight: 600;
@@ -423,10 +423,22 @@ ul li {
   color: #f9a37d;
   padding-left: 0.52rem;
   overflow: hidden;
+  position: relative;
+  word-break: keep-all;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.product-nav .slidBox {
+  overflow: scroll;
+}
+.product-nav .slidBox .xiba {
+  width: auto;
 }
 .product-nav span {
   height: 0.52rem;
   margin-right: 0.35rem;
+  width: 1rem;
+  text-align: center;
 }
 .product-nav .caizhuang {
   margin-right: 0.2rem;
@@ -437,6 +449,8 @@ ul li {
   margin-right: 0.2rem;
   position: absolute;
   right: 0;
+  bottom: 50%;
+  display: none;
 }
 .product-nav .bottomLine {
   border-bottom: 1px solid white;

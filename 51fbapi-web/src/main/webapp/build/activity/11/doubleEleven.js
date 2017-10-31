@@ -58,12 +58,12 @@ let vm = new Vue({
         allData: [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
             },
             {
                 'name': '韩都衣舍',
@@ -180,12 +180,12 @@ let vm = new Vue({
             [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4&_appInfo=%7B%22id%22%3A%22a_869158021817735_1502434658798_www%22%2C%22time%22%3A%221502434658798%22%2C%22sign%22%3A%2255736276efe5241e2c06c67e802ece2a8a95e4b86bf36edf840dfb28cc00f309%22%2C%22userName%22%3A%22000000000000000%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22375%22%7D'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
             },
             {
                 'name': '韩都衣舍',
@@ -420,7 +420,9 @@ let vm = new Vue({
                 type: 'post',
                 url: "/activity/de/endtime",
                 success: function (data) {
+                    console.log(data);
                     self.allStartTime = data.data.currentTime;
+                    console.log( self.allStartTime,' self.allStartTime');
 
 
                     //顶部倒计时和第一次全民砍价倒计时
@@ -435,6 +437,7 @@ let vm = new Vue({
                     // let now = new Date();
                     let now = self.allStartTime;
                     let nowTimeStamp = now.valueOf();
+                    console.log(nowTimeStamp,'nowTimeStamp');
                     // 相差的时间戳
                     let differStamp = endStamp - nowTimeStamp;
                     let intDiff = parseInt(differStamp / 1000); //倒计时总秒数量
@@ -520,6 +523,7 @@ let vm = new Vue({
                     // let nowTime = new Date();
                     let nowTime = self.allStartTime;
                     let nowTimeS = nowTime.valueOf();
+                    console.log(nowTimeS,'nowTimeS');
                     // 相差的时间戳
                     let differS = endOver - nowTimeS;
                     let diffValue = parseInt(differS / 1000); //倒计时总秒数量
@@ -671,14 +675,22 @@ let vm = new Vue({
         },
         //点击tab栏箭头
         tabClickTwo() {
-            if (this.tab < this.productList.length) {
-                ++this.tab;
+            let self=this;
+            if (self.tab <= self.productList.length) {
+                ++self.tab;
             }
+            if(self.tab > 5) {
+                $('.xiba').css('transform','translateX(-'+(self.tab-5)*3/2+'rem)')
+            } 
+            if(self.tab > self.productList.length) {
+                $('.xiba').css('transform','translateX('+0+'rem)');
+                self.tab = 1;
+            } 
         },
         //点击回到顶部
         toTop(){
             $(".backTop").click(function() {
-                $("html,body").animate({scrollTop:1500}, 500);
+                $("html,body").animate({scrollTop:0}, 500);
             }); 
         }
     }

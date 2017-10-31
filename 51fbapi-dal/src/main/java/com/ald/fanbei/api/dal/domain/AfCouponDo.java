@@ -258,5 +258,5 @@ public class AfCouponDo extends AbstractSerial {
 	public void setIsGlobal(Integer isGlobal) {
 		this.isGlobal = isGlobal;
 	}
-	
+
 }

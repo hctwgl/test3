@@ -27,7 +27,7 @@ public interface AfSubjectGoodsDao {
 	List<AfGoodsDo> listAllSubjectGoods(AfSubjectGoodsQuery query);
 
 	List<AfGoodsDo> listAllSubjectGoodsV1(String subjectId);
-	
+
 	List<AfGoodsDo> listQualitySubjectGoods();
 
 	List<AfGoodsDo> listQualitySubjectGoodsByParentId(@Param("parentId")Long parentId);

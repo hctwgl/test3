@@ -389,7 +389,7 @@ public class TokenCacheUtil extends AbstractThird{
         	return 0;
         }
 	}
-	
+
 	/**
 	 * 授予访问令牌
 	 * @param userName
@@ -403,5 +403,5 @@ public class TokenCacheUtil extends AbstractThird{
 		saveToken(userName, tokenBo);
 		return tokenBo;
 	}
-    
+
 }
