@@ -127,12 +127,11 @@
         <!--商品详情部分!-->
         <div class="product-detail clearFix">
             <div class="product-nav">
-                <span :class="i+1 ===tab?'bottomLine': ''" v-for="(item,i) in productList" @click="tabClick(i)">{{item.name}}</span>
-                <!--<span>男装</span>
-                <span>女装</span>
-                <span>运动</span>
-                <span>手表</span>
-                <span class="caizhuang">彩妆</span>!-->
+                <div class="slidBox">
+                    <div class="xiba">
+                        <span :class="i+1 ===tab?'bottomLine': ''" v-for="(item,i) in productList" @click="tabClick(i)">{{item.name}}</span>
+                    </div>
+                </div>
                 <i class="arrow-end" @click="tabClickTwo()"><img src="$src/arrow_end.png" alt=""></i>
             </div>
             <div id="content-detail">
