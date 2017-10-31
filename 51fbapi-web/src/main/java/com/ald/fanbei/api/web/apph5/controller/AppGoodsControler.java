@@ -91,26 +91,26 @@ public class AppGoodsControler extends BaseController {
 	public void goodsListModel(HttpServletRequest request, ModelMap model) throws IOException {
 		Long modelId = NumberUtil.objToLongDefault(request.getParameter("modelId"), 1);
 
-		// 根据modelId 取优惠券信息
-		List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(modelId,
-				ActivityType.H5_TEMPLATE.getCode());
-		
-
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = webContext.getUserName();
 		AfUserDo userDo = afUserService.getUserByUserName(userName);
-		
-		for(AfCouponDto couponDto : couponList) {
-			// 判断用户是否领
-			if(userDo == null) {
-				couponDto.setUserAlready(0);
-			} else {
-				int pickCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userDo.getRid(), couponDto.getRid());
-				couponDto.setUserAlready(pickCount);
+		Integer appVersion = webContext.getAppVersion();
+		// 394 版本才显示优惠券信息
+		if(appVersion != null && appVersion >= 394) {
+			// 根据modelId 取优惠券信息
+			List<AfCouponDto> couponList = afCouponService.getCouponByActivityIdAndType(modelId,
+					ActivityType.H5_TEMPLATE.getCode());
+			for(AfCouponDto couponDto : couponList) {
+				// 判断用户是否领
+				if(userDo == null) {
+					couponDto.setUserAlready(0);
+				} else {
+					int pickCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userDo.getRid(), couponDto.getRid());
+					couponDto.setUserAlready(pickCount);
+				}
 			}
+			model.put("couponList", couponList);
 		}
-		model.put("couponList", couponList);
-		
 		List<Object> bannerList = getH5ItemBannerObjectWith(afModelH5ItemService
 				.getModelH5ItemListByModelIdAndModelType(modelId, H5ItemModelType.BANNER.getCode()));
 		List<AfModelH5ItemDo> categoryDbList = afModelH5ItemService
