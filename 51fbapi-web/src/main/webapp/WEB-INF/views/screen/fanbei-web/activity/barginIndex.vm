@@ -24,7 +24,7 @@
                     <img class="cd-icon" src="$commonUrl/bargin02.png">
                     <p class="cd-txt">开奖
                         <br>倒计时</p>
-                    <div class="flex fd-row ai-c ml30">
+                    <div class="flex fd-row ai-c ml10">
                         <div class="day flex fd-row ai-c" v-if="downTime.d>=0">
                             <div class="cd-time">{{downTime.d}}</div>
                             <span class="cd-time-txt">天</span>   
@@ -143,7 +143,7 @@
                 </div>
                 <p class="tip">亲，您总共能发起<span>2个商品</span>砍价!</p>
                 <div class="btn-box2 flex flex-row jc-sb">
-                    <div class="btn-sure" @click="shareSure()"></div>
+                    <div class="btn-sure" @click="shareFn()"></div>
                     <div class="btn-cancel" @click="closeSure()"></div>
                 </div>
             </div>

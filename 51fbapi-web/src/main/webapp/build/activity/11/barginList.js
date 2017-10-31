@@ -13,6 +13,7 @@ let vm = new Vue({
     },
     created: function() {
         this.logData();  
+        this.maidian();
     },
     methods: {
         logData:function() {   // get 初始化 信息
@@ -103,6 +104,17 @@ let vm = new Vue({
                     }
                 }
             }) 
+        },
+        maidian(data){
+            //数据统计
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/barginList?type=list'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         }
     }
 })
