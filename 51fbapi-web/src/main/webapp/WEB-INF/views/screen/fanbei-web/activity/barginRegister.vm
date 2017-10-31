@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="2017103001")
+    #set($version="2017103101")
     #set($src="https://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
