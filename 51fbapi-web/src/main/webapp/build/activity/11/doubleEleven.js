@@ -630,25 +630,25 @@ let vm = new Vue({
                     }
 
             
-                    // if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
-                    //     afterpre(self.allStartTime)
-                    // }
-                    if(nowTimeS >= Date.parse("2017/11/09 00:00:00")) {
-                        afterpre(nowTimeS)
+                    if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
+                        afterpre(self.allStartTime)
                     }
+                    // if(nowTimeS >= Date.parse("2017/11/09 00:00:00")) {
+                    //     afterpre(nowTimeS)
+                    // }
                     
-                     /* if(self.allStartTime>=Date.parse("2017/11/11 20:00:20")){
+                      if(self.allStartTime>=Date.parse("2017/11/11 20:00:20")){
                         $('.redRain').unbind("click");//禁止点击事件
                          clearInterval(timerBig); //清除定时器
                          $('.countThree').html('活动已结束');
-                    }  */
+                    }  
 
-                      if(nowTimeS>Date.parse("2017/11/11 20:00:20")){
+                      /* if(nowTimeS>Date.parse("2017/11/11 20:00:20")){
                         $('.redRain').unbind("click");//禁止点击事件
                          clearInterval(timerBig); //清除定时器
                            $('.countThree').html('活动已结束');
                          
-                    } 
+                    }  */
 
                 }
             })
