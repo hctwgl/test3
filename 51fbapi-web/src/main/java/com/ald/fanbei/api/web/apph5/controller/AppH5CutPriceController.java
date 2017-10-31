@@ -387,6 +387,10 @@ public class AppH5CutPriceController extends BaseController {
 				data.put("originalPrice",0);
 				data.put("image",afDeUserGoodsInfoDto.getImage());
 				data.put("goodsId",afDeUserGoodsInfoDto.getGoodsId());
+				data.put("endTime",endTime);
+				data.put("originalPrice",afDeUserGoodsInfoDto.getOriginalPrice());
+				data.put("cutPrice",afDeUserGoodsInfoDto.getCutPrice());
+				data.put("name",afDeUserGoodsInfoDto.getName());
 				logger.error("/activity/de/goodsInfo" + context + "login error ");
 				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 			}
