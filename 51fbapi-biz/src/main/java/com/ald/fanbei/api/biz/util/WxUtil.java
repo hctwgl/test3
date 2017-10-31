@@ -78,10 +78,7 @@ public class WxUtil {
 	 * @return
 	 */
             public static String getJsapiTicket(String appId, String secret) {
-        	// BizCacheUtil bizCacheUtil = new BizCacheUtil();    
-        	
-        	bizCacheUtil2.delCache(Constants.CACHKEY_WX_TOKEN_LOCK);
-        	bizCacheUtil2.delCache("WECHAT_" + appId + "_ticket");
+        	// BizCacheUtil bizCacheUtil = new BizCacheUtil();
         	
         	Object object = bizCacheUtil2.getObject(Constants.CACHKEY_WX_TOKEN_LOCK);
         	String accessToken = object == null ? null : object.toString();
