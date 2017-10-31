@@ -16,7 +16,7 @@
         <div class="top-bg">
             <div class="top-pic">
                 <img src="$commonUrl/bargin01.png">
-                <div class="showRuleBtn" @click="showRule()"></div>
+                <div class="showRuleBtn" @click="showRule()">活<br>动<br>规<br>则<br>←</div>
             </div>
             <div class="main flex fd-column ai-c">
                 <!-- 开奖倒计时 -->
