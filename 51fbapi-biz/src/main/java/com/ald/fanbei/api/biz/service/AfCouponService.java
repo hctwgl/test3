@@ -22,7 +22,7 @@ public interface AfCouponService {
 	AfCouponDo getCouponInfoById(Long couponId);
 	
 	int updateCouponquotaAlreadyById(AfCouponDo couponDo);
-	
+
 	/**
 	 * 根据优惠券id更新券的数量
 	 * @ param couponDo

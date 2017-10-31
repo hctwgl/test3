@@ -148,5 +148,5 @@
 		AND source = 'SELFBUILD'
 		AND is_grab_success = 0
 		AND num_id = #{numId}
-	</select>	
+	</select>
 </mapper>

@@ -104,7 +104,7 @@ public class AfUserCouponDto extends AfUserCouponDo{
 	public void setShopUrl(String shopUrl) {
 		this.shopUrl = shopUrl;
 	}
-	
-	
-	
+
+
+
 }

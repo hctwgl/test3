@@ -119,7 +119,7 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 			}
 		});
 	}
-	
+
 	@Override
 	public AfFundSideInfoDo getLenderInfoByBorrowCashId(Long borrowId){
 		AfFundSideBorrowCashDo fsCashDo = afFundSideBorrowCashDao.getRecordByBorrowCashId(borrowId);

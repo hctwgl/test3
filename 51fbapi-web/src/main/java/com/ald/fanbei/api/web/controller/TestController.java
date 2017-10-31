@@ -714,13 +714,13 @@ public class TestController {
 		logger.info("boluomeCoupon,end");
 		System.out.println(boluomeUtil.isUserHasCoupon("https://dev-api.otosaas.com/bss/v1/apps/157/campaigns/775/give", 68885L, 1));
 		
-	}	
+	}
 	
     @Resource
     AfDeGoodsService afDeGoodsService;
     @Resource
     AfUserService afUserService;
-    
+
     @RequestMapping(value = "/activity/de/goods/test", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public H5CommonResponse getGoodsList(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) {
@@ -742,8 +742,8 @@ public class TestController {
 	    logger.error("/activity/de/goods error = {}", e);
 	    return H5CommonResponse.getNewInstance(false, "获取砍价商品列表失败");
 	}
-    }	
-	
+    }
+
 	public String getVirtualCode(Map<String, Object> resultMap) {
 		if (resultMap == null) {
 			return null;

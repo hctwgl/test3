@@ -36,7 +36,7 @@ import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 @Service("afUserCouponService")
 public class AfUserCouponServiceImpl implements AfUserCouponService{
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@Resource
 	private AfUserCouponDao afUserCouponDao;
 	@Resource
@@ -97,7 +97,7 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	@Override
 	public void grantCoupon(Long userId, Long couponId, String sourceType, String sourceRef) {
 		logger.info("grantCoupon, userId={}, couponId={}, sourceType={}", userId, couponId, sourceType, sourceRef);
-		
+
 		AfCouponDo couponDo = afCouponService.getCouponById(couponId);
 		if(couponDo == null){
 			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR);
@@ -138,26 +138,26 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 			afUserCouponDao.addUserCoupon(userCoupon);
 		}
 	}
-	
+
 	@Override
 	public void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef) {
 		logger.info("grantCouponForRedRain, userId={}, couponId={}, sourceType={}", userId, couponId, sourceType, sourceRef);
-		
+
 		AfCouponDo couponDo = afCouponService.getCouponById(couponId);
 		if(couponDo == null){
 			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_COUPON_NOT_EXIST_ERROR);
 		}
-		
+
 //		红包雨送卷不必校验配额
 //		if(couponDo.getQuota().intValue() > 0 && couponDo.getQuotaAlready() >= couponDo.getQuota().intValue()){
 //			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
 //		}
-		
+
 //		已经和产品与运营确认，此处不必拦截
 //		if(couponDo.getLimitCount() > 0 && afUserCouponDao.getUserCouponByUserIdAndCouponId(userId, couponId) >= couponDo.getLimitCount()){
 //			throw new FanbeiException("no coupon",FanbeiExceptionCode.USER_GET_COUPON_ERROR);
 //		}
-		
+
 		if(CouponType.CASH.getCode().equals(couponDo.getType())){
 			AfUserAccountDo accountDo = new AfUserAccountDo();
 			accountDo.setUserId(userId);

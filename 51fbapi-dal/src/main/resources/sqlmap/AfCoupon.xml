@@ -120,9 +120,9 @@
     				#{id}
     		</foreach>
 	</select>
-	
+
 	<select id="getCouponByActivityIdAndType" resultType="AfCouponDto">
-		SELECT 
+		SELECT
 		<include refid="queryAllFields"></include>
 		FROM
 			af_coupon
@@ -136,7 +136,7 @@
 			now() >= gmt_start
 		AND
 			gmt_end >= now()
-		AND 
+		AND
 			status = 'O'
 	</select>
 </mapper>

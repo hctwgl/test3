@@ -115,5 +115,5 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	public void setNperMap(Map<String, Object> nperMap) {
 		this.nperMap = nperMap;
 	}
-	
+
 }

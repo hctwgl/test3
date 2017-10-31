@@ -174,8 +174,8 @@
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
-				
-				
+
+
 				<entry key="/user/signin" value-ref="signinApi" />
 
 
@@ -339,7 +339,7 @@
 				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />
 				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
 				<entry key="/auth/updateIdCardForFacePlus" value-ref="updateIdCardForFacePlusApi" />
-				
+
 				<!-- 商圈微信端 -->
 				<entry key="/trade/login" value-ref="tradeLoginApi" />
 				<entry key="/trade/logout" value-ref="tradeLogoutApi" />

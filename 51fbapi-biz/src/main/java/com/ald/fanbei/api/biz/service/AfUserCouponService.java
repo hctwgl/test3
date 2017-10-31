@@ -126,7 +126,7 @@ public interface AfUserCouponService {
 	 * @param userId
 	 * @param couponId
 	 * @return
-	 * 
+	 *
 	 * **/
 	List<AfUserCouponDto> getUserCouponListByUserIdAndCouponId(Long userId,Long couponId);
 

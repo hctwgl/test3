@@ -1,5 +1,8 @@
 package com.ald.fanbei;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -22,9 +25,13 @@ public class AppTest
 
     /**
      * @return the suite of tests being tested
+     * @throws UnsupportedEncodingException 
      */
-    public static Test suite()
+    public static Test suite() throws UnsupportedEncodingException
     {
+	
+	System.out.println(URLDecoder.decode("https%3A%2F%2Fyapp.51fanbei.com%2Ffanbei-web%2Factivity%2FbarginIndex%3FuserName%3D13666745600", "utf-8"));
+	System.out.println(URLDecoder.decode("http%3A%2F%2Fktestapp.51fanbei.com%2Ffanbei-web%2Factivity%2FbarginIndex%3FuserName%3D13666745600", "utf-8"));
         return new TestSuite( AppTest.class );
     }
 
