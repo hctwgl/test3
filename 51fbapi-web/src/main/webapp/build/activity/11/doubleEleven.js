@@ -420,7 +420,9 @@ let vm = new Vue({
                 type: 'post',
                 url: "/activity/de/endtime",
                 success: function (data) {
+                    console.log(data);
                     self.allStartTime = data.data.currentTime;
+                    console.log( self.allStartTime,' self.allStartTime');
 
 
                     //顶部倒计时和第一次全民砍价倒计时
@@ -435,6 +437,7 @@ let vm = new Vue({
                     // let now = new Date();
                     let now = self.allStartTime;
                     let nowTimeStamp = now.valueOf();
+                    console.log(nowTimeStamp,'nowTimeStamp');
                     // 相差的时间戳
                     let differStamp = endStamp - nowTimeStamp;
                     let intDiff = parseInt(differStamp / 1000); //倒计时总秒数量
@@ -520,6 +523,7 @@ let vm = new Vue({
                     // let nowTime = new Date();
                     let nowTime = self.allStartTime;
                     let nowTimeS = nowTime.valueOf();
+                    console.log(nowTimeS,'nowTimeS');
                     // 相差的时间戳
                     let differS = endOver - nowTimeS;
                     let diffValue = parseInt(differS / 1000); //倒计时总秒数量
@@ -686,7 +690,7 @@ let vm = new Vue({
         //点击回到顶部
         toTop(){
             $(".backTop").click(function() {
-                $("html,body").animate({scrollTop:1500}, 500);
+                $("html,body").animate({scrollTop:0}, 500);
             }); 
         }
     }
