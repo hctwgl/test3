@@ -587,7 +587,7 @@ public class AppH5CutPriceController extends BaseController {
 	}
 
 	/**
-	 * 根据授权code 获得用户ID nickname headimgurl
+	 * 根据授权code 获取用户ID nickname headimgurl
 	 */
 	@RequestMapping(value = "/wechat/userInfo", method = RequestMethod.POST)
 	public String getUserInfo(HttpServletRequest request, HttpServletResponse response) {
@@ -614,6 +614,11 @@ public class AppH5CutPriceController extends BaseController {
 			logger.info(JSON.toJSONString(access_token));
 			// 获取refresh_token
 			String refreshToken = (String) access_token.get("refresh_token");
+			
+			if(refreshToken == null) {
+				return H5CommonResponse.getNewInstance(false, "获取用户信息失败", null, access_token).toString();
+			}
+			
 			url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=" + appid
 					+ "&grant_type=refresh_token&refresh_token=" + refreshToken;
 			JSONObject refresh_token = httpsRequest(url, "POST", null);
