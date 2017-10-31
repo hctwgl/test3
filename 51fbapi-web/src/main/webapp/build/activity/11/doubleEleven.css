@@ -450,6 +450,7 @@ ul li {
   position: absolute;
   right: 0;
   bottom: 50%;
+  display: none;
 }
 .product-nav .bottomLine {
   border-bottom: 1px solid white;
