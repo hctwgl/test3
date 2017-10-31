@@ -51,4 +51,9 @@ public class AfSubjectGoodsServiceImpl implements AfSubjectGoodsService{
 		return afSubjectGoodsDao.getSubjectGoodsByGoodsId(goodsId);
 	}
 
+	@Override
+	public List<AfGoodsDo> listAllSubjectGoodsV1(String subjectId) {
+	    return afSubjectGoodsDao.listAllSubjectGoodsV1(subjectId);
+	}
+
 }

@@ -27,4 +27,6 @@ public interface AfSubjectGoodsService {
 	 * @return
 	 */
 	List<AfSubjectGoodsDo> getSubjectGoodsByGoodsId(Long goodsId);
+	
+	List<AfGoodsDo> listAllSubjectGoodsV1(String subjectId);
 }

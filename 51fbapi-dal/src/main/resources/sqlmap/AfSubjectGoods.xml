@@ -50,6 +50,21 @@
 	</select>
 	
 	
+	<select id="listAllSubjectGoodsV1" resultType="AfGoodsDo" >
+		SELECT 
+			g.id rid,g.*
+		FROM 
+			af_subject_goods s
+		INNER JOIN 
+			af_goods g	
+		ON
+			s.goods_id = g.id
+		WHERE
+			s.is_delete=0
+		AND 
+			s.subject_id = #{subjectId}
+	</select>
+	
 	<select id="listQualitySubjectGoods" resultType="AfGoodsDo" >
 		SELECT 
 			g.id rid,g.*
