@@ -58,12 +58,12 @@ let vm = new Vue({
         allData: [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=146'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=147'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
             },
             {
                 'name': '韩都衣舍',
@@ -180,12 +180,12 @@ let vm = new Vue({
             [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=146'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
             },
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=147'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
             },
             {
                 'name': '韩都衣舍',
@@ -334,13 +334,14 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: "/fanbei-web/partActivityInfo",
+                url: "/fanbei-web/partActivityInfoV1",
                 data: {
                     'modelId': modelId
                 },
                 success: function (data) {
                     var a = eval('(' + data + ')')
                     self.productList = a.data.activityList;
+                    console.log(a);
 
                 },
                 error: function () {
@@ -431,8 +432,8 @@ let vm = new Vue({
                     // let endDate = new Date("oct 26,2017 00:00:00");
                     let endStamp = endDate.valueOf();
                     // 获取当前时间的时间戳
-                    let now = new Date();
-                    // let now = self.allStartTime;
+                    // let now = new Date();
+                    let now = self.allStartTime;
                     let nowTimeStamp = now.valueOf();
                     // 相差的时间戳
                     let differStamp = endStamp - nowTimeStamp;
@@ -516,8 +517,8 @@ let vm = new Vue({
                     // let overDate = new Date("oct 27,2017 00:00:00");
                     let endOver = overDate.valueOf();
                     // 获取当前时间的时间戳
-                    let nowTime = new Date();
-                    // let nowTime = self.allStartTime;
+                    // let nowTime = new Date();
+                    let nowTime = self.allStartTime;
                     let nowTimeS = nowTime.valueOf();
                     // 相差的时间戳
                     let differS = endOver - nowTimeS;
@@ -673,6 +674,12 @@ let vm = new Vue({
             if (this.tab < this.productList.length) {
                 ++this.tab;
             }
+        },
+        //点击回到顶部
+        toTop(){
+            $(".backTop").click(function() {
+                $("html,body").animate({scrollTop:1500}, 500);
+            }); 
         }
     }
 })
