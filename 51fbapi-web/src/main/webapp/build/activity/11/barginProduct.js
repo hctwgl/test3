@@ -71,7 +71,7 @@ let vm = new Vue({
             this.logData();
             this.listFn();
             this.countDown();
-            self.scrollFn();
+            this.scrollFn();
         },
         logData: function() { // get 初始化 信息
             let self = this;
