@@ -50,8 +50,6 @@ public class AppH5GeetestController extends BaseController {
 	
 	private static final String IP_ADDRESS = "ip_address";
 	
-	private static final long EXPIRE_TIME =  60l;
-	
 	@Resource
 	BizCacheUtil bizCacheUtil;
 
@@ -69,7 +67,7 @@ public class AppH5GeetestController extends BaseController {
 		param.put(IP_ADDRESS, clientIp);
 		// 进行验证预处理
 		int gtServerStatus = gtSdk.preProcess(param);
-		bizCacheUtil.saveObject(gtSdk.gtServerStatusSessionKey + "_" + userId, gtServerStatus,EXPIRE_TIME);
+		bizCacheUtil.saveObject(gtSdk.gtServerStatusSessionKey + "_" + userId, gtServerStatus);
 		respInfo = gtSdk.getResponseStr();
 		JSONObject jsonObj = JSONObject.parseObject(respInfo);
 		jsonObj.put("userId", userId);
