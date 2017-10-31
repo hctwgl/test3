@@ -202,11 +202,21 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		List<Object> topBannerList = new ArrayList<Object>();
 		//正式环境和预发布环境区分
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+			//新版,旧版,banner图不一样
+			String homeBanner = AfResourceType.HomeBannerNew.getCode();
+			if(contextApp.getAppVersion() >= 394){
+				homeBanner = AfResourceType.HomeBannerNewMost.getCode();
+			}
 			topBannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerNew.getCode()));
+					afResourceService.getResourceHomeListByTypeOrderBy(homeBanner));
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+			//新版,旧版,banner图不一样
+			String homeBanner = AfResourceType.HomeBannerNew.getCode();
+			if(contextApp.getAppVersion() >= 394){
+				homeBanner = AfResourceType.HomeBannerNewMost.getCode();
+			}
 			topBannerList = getObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.HomeBannerNew.getCode()));
+					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(homeBanner));
 		}
 		// 快速导航信息
 		Map<String,Object> navigationInfo = getNavigationInfoWithResourceDolist(
