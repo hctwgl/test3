@@ -121,22 +121,34 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 
 	@Override
 	public int ggLightActivity(AfOrderDo afOrder) {
-		    // TODO Auto-generated method stub
-	    logger.info("ggLightActivity start");
-	//若在菠萝觅活动期间内则返利
-	AfBoluomeActivityDo activityDo = new AfBoluomeActivityDo();
-	activityDo.setStatus("O");
-	AfBoluomeActivityDo afBoluomeActivityDo =  afBoluomeActivityDao.getByCommonCondition(activityDo);
-	   logger.info("afBoluomeActivityDo = ",afBoluomeActivityDo);
-	if(afBoluomeActivityDo !=null){
-        	Date startTime = afBoluomeActivityDo.getGmtStart();
-        	Date endTime = afBoluomeActivityDo.getGmtEnd();
-        	
-	        if(DateUtil.afterDay(endTime,new Date()) && DateUtil.afterDay(new Date(),startTime)){
-	    	   boluomeActivity(afOrder,afBoluomeActivityDo);
-          }
-    }
-	return 0;
+	// TODO Auto-generated method stub
+	logger.info("ggLightActivity start",afOrder);
+	//该订单id 没有该用户活动返利记录。且该订单存在。
+	AfOrderDo oDo =   afOrderService.getOrderInfoById(afOrder.getRid(), afOrder.getUserId());
+	logger.info("getOrderInfoById oDo",oDo);
+	if(oDo != null){
+	       //查询是否有对应的返利记录
+	        AfBoluomeActivityUserRebateDo userRebateQuery = new  AfBoluomeActivityUserRebateDo();
+		userRebateQuery.setUserId(afOrder.getUserId());
+		userRebateQuery.setOrderId(afOrder.getRid());
+		List<AfBoluomeActivityUserRebateDo> rebateQueryResult  = afBoluomeActivityUserRebateDao.getListByCommonCondition(userRebateQuery);
+		logger.info("rebateQueryResult",rebateQueryResult);
+	        if(afOrder.getRid() > 0 && rebateQueryResult.size()<1){
+                	//若在菠萝觅活动期间内则返利
+                	AfBoluomeActivityDo activityDo = new AfBoluomeActivityDo();
+                	activityDo.setStatus("O");
+                	AfBoluomeActivityDo afBoluomeActivityDo =  afBoluomeActivityDao.getByCommonCondition(activityDo);
+                        logger.info("afBoluomeActivityDo = ",afBoluomeActivityDo);
+                	if(afBoluomeActivityDo !=null){
+                        	Date startTime = afBoluomeActivityDo.getGmtStart();
+                        	Date endTime = afBoluomeActivityDo.getGmtEnd();
+                	        if(DateUtil.afterDay(endTime,new Date()) && DateUtil.afterDay(new Date(),startTime)){
+                	    	   boluomeActivity(afOrder,afBoluomeActivityDo);
+                           }
+                        }
+	        }   	
+         }
+	 return 0;
   }
 	/**
 	 * 菠萝觅活动返利

@@ -15,7 +15,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -46,7 +45,6 @@ import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
-import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
@@ -693,7 +691,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
 						//逛逛点亮活动
-						afBoluomeActivityService.ggLightActivity(afOrder);
+						try{
+						  afBoluomeActivityService.ggLightActivity(afOrder);
+						}catch (Exception e){
+						  logger.info("ggLightActivity error:",e);
+						}
 					
 
 //                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
@@ -1348,8 +1350,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		return result;
 	}
 
-	@Autowired
-	AfDeUserGoodsService afDeUserGoodsService;
 	public int dealBrandOrderFail(final String payOrderNo, final String tradeNo, final String payType) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoByPayOrderNo(payOrderNo);
 		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -1376,12 +1376,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
-					
-					//更新砍价商品为未购买(订单为自营且第三方订单号不为空),双十一添加
-                        		if (orderInfo.getOrderType() == OrderType.SELFSUPPORT.getCode() && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-                        		    afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 0);
-                        		}
-					
 					logger.info("dealBrandOrder fail comlete , orderInfo = {} ", orderInfo);
 					return 1;
 				} catch (Exception e) {

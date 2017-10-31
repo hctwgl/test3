@@ -671,9 +671,17 @@ let vm = new Vue({
         },
         //点击tab栏箭头
         tabClickTwo() {
-            if (this.tab < this.productList.length) {
-                ++this.tab;
+            let self=this;
+            if (self.tab <= self.productList.length) {
+                ++self.tab;
             }
+            if(self.tab > 5) {
+                $('.xiba').css('transform','translateX(-'+(self.tab-5)*3/2+'rem)')
+            } 
+            if(self.tab > self.productList.length) {
+                $('.xiba').css('transform','translateX('+0+'rem)');
+                self.tab = 1;
+            } 
         },
         //点击回到顶部
         toTop(){
