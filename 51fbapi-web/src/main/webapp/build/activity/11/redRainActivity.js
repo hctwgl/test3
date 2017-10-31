@@ -2,6 +2,15 @@
  * Created by nizhiwei-labtop on 2017/10/12.
  */
 let couponArr=[];
+//数据统计
+$.ajax({
+    url:'/fanbei-web/postMaidianInfo',
+    type:'post',
+    data:{maidianInfo:'/fanbei-web/activity/redRainActivity?type=pv'},
+    success:function (data) {
+        console.log(data)
+    }
+});
 $(document).ready(function() {
     let win = (parseInt($(".content").css("width"))) - 70;
     //增加红包
