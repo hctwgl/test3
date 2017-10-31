@@ -129,12 +129,12 @@
     </select>
 
 	<select id="getBillHouseAmountByIds" resultType="AfBorrowBillDo">
-		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,min(type) type,
-		min(borrow_no) borrow_no,min(name) name,count(1) count
-		FROM af_borrow_bill
-		WHERE is_delete=0  AND STATUS IN ('N','D') and type ='HOME_CONSUME'
-		AND id in (
-		<foreach collection="ids" item="item" index="index" separator="," >
+
+		SELECT SUM(b.bill_amount) bill_amount,SUM(b.principle_amount) principle_amount
+		FROM af_borrow_bill b
+		WHERE b.is_delete=0 and b.type ='HOME_CONSUME'
+		AND b.id in (
+		<foreach collection="ids" item="item" index="index" separator=",">
 			#{item}
 		</foreach>
 		)
