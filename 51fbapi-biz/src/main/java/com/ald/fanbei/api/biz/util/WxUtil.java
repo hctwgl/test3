@@ -78,7 +78,11 @@ public class WxUtil {
 	 * @return
 	 */
             public static String getJsapiTicket(String appId, String secret) {
-        	// BizCacheUtil bizCacheUtil = new BizCacheUtil();         	
+        	// BizCacheUtil bizCacheUtil = new BizCacheUtil();    
+        	
+        	bizCacheUtil2.delCache(Constants.CACHKEY_WX_TOKEN_LOCK);
+        	bizCacheUtil2.delCache("WECHAT_" + appId + "_ticket");
+        	
         	Object object = bizCacheUtil2.getObject(Constants.CACHKEY_WX_TOKEN_LOCK);
         	String accessToken = object == null ? null : object.toString();
         	String ticketKey = "WECHAT_" + appId + "_ticket";
@@ -93,7 +97,7 @@ public class WxUtil {
         	} 
         	    return bizCacheUtil2.getObject(ticketKey).toString();
             }
-	
+            
 	/**
 	 * 通过code获取openid
 	 * @param code 菜单页面code
