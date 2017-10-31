@@ -22,7 +22,7 @@ if (currentStarmp >= twoTime && currentStarmp < fiveTime) { //11.9-11.10
 if (currentStarmp >= fiveTime && currentStarmp < sixTime) { //11.11-11.12
     addStyle(2);
 }
-if (currentStarmp > fourTime) { //11.13
+if (currentStarmp >= sixTime) { //11.13
     addStyle(3);
 }
 
@@ -479,7 +479,19 @@ let vm = new Vue({
                         if (nowTimeStamp >= startStamp) {
                             $('.bargain').click(function () {
                                 //  window.location.href = 'http://www.baidu.com';
-                                window.location.href = 'barginIndex?double=barginOne'; //跳转砍价连接
+                                window.location.href = 'barginIndex?doubleOne=barginOne'; //跳转砍价连接
+
+                                 //点击加埋点
+                                $.ajax({
+                                    url:'/fanbei-web/postMaidianInfo',
+                                    type:'post',
+                                    data:{maidianInfo:'barginIndex?doubleOne=barginOne'},
+                                    success:function (data) {
+                                        console.log(data)
+                                    }
+                                });
+
+                                
                             })
                         }
                         //活动结束后显示活动已结束  点击无跳转
@@ -542,9 +554,19 @@ let vm = new Vue({
                         $('.countThree').html(day + "天" + " : " + hour + '时' + " : " + minute + '分' + " : " + second + '秒'); //红包雨
                         //判断活动时间 活动开始前显示倒计时时间 
                         //活动中跳转红包雨活动主页
-                        if (nowTimeS >= begainS && nowTimeS <= Date.parse("2017/11/12 00:00:00")) {
+                        if (nowTimeS >= begainS && nowTimeS <= Date.parse("2017/11/11 20:00:20")) {
                             $('.redRain').click(function () {
-                                window.location.href = 'redrain?double=redOne'; //跳转红包雨连接
+                                window.location.href = 'redrain?doubleTwo=redOne'; //跳转红包雨连接
+                                 //点击加埋点
+                                $.ajax({
+                                    url:'/fanbei-web/postMaidianInfo',
+                                    type:'post',
+                                    data:{maidianInfo:'redrain?doubleTwo=barginOne'},
+                                    success:function (data) {
+                                        console.log(data)
+                                    }
+                                });
+
                             })
                         }
                         // 活动结束后显示活动已结束  点击无跳转
@@ -615,7 +637,7 @@ let vm = new Vue({
                         afterpre(nowTimeS)
                     }
                     
-                     /* if(self.allStartTime>=Date.parse("2017/11/12 00:00:00")){
+                     /* if(self.allStartTime>=Date.parse("2017/11/11 20:00:20")){
                         $('.redRain').unbind("click");//禁止点击事件
                          clearInterval(timerBig); //清除定时器
                          $('.countThree').html('活动已结束');
