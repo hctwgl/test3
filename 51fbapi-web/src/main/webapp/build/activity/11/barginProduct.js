@@ -81,13 +81,12 @@ let vm = new Vue({
                         $(".loadingMask").fadeOut();
                     }
                     if (!data.success) {
-                        // debugger;
-                        // if (self.isWX) {
-                        //     self.toLogin(); 
-                        // } else {
-                        //     location.href = data.data.loginUrl;
-                        // }
-                        // return false;
+                        if (self.isWX) {
+                            self.toLogin(); 
+                        } else {
+                            location.href = data.data.loginUrl;
+                        }
+                        return false;
                     }
                 },
                 error: function() {
@@ -138,12 +137,11 @@ let vm = new Vue({
                             self.loadFlag = true;
                         }
                     } else {
-                        // debugger;
-                        // if (self.isWX) {
-                        //     self.toLogin(); 
-                        // } else {
-                        //     location.href = data.data.loginUrl;
-                        // }
+                        if (self.isWX) {
+                            self.toLogin(); 
+                        } else {
+                            location.href = data.data.loginUrl;
+                        }
                     }
                 },
                 error: function() {
