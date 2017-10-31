@@ -74,7 +74,7 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/H5Common")
+@RequestMapping("/h5Common")
 public class H5ActivityCommonController extends BaseController {
 
     @Resource
@@ -97,7 +97,7 @@ public class H5ActivityCommonController extends BaseController {
     SmsUtil smsUtil;
 
     // H5活动登录
-    @RequestMapping(value = "/activityLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/userLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String boluomeActivityLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
 
@@ -171,7 +171,7 @@ public class H5ActivityCommonController extends BaseController {
 
     // 提交活动注册并登陆
     @ResponseBody
-    @RequestMapping(value = "/commitActivityRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/commitRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String commitActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
 	 String resultStr = "";
 	 String referer = request.getHeader("referer"); 
