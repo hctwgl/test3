@@ -191,7 +191,7 @@ public class AppH5UserContorler extends BaseController {
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
             String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
-            String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
+            //String verifyImgCode = ObjectUtils.toString(request.getParameter("verifyImgCode"), "").toString();
 
             AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
 
@@ -200,6 +200,7 @@ public class AppH5UserContorler extends BaseController {
                 return resp.toString();
             }
             // 发送短信前,加入图片验证码验证
+            /*
             String realCode = "";
             Object obj = bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
             if (obj == null) {
@@ -214,6 +215,7 @@ public class AppH5UserContorler extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
+            */
             bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
 
 
