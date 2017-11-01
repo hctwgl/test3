@@ -39,3 +39,4 @@ resources/spring/encrypt-beans.xml
 resources/spring/import-beans.xml
 resources/spring/web/web-main.xml
 resources/staging.public.pem
+.metadata/

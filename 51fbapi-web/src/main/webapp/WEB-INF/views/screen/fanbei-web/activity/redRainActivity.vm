@@ -21,7 +21,7 @@
 
     <div class="gameWard">
         <div class="noWard">
-            <a class="goAct" href="redrain?goBack=false"></a>
+            <a class="goAct" href="doubleEleven?groupId=15&modelId=175&goBack=false"></a>
             <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
         </div>
         <div class="ward">
@@ -32,7 +32,7 @@
                     <span class="wardTxt">获得50元现金红包</span>
                 </div>
             </div>
-            <a class="goAct" href="redrain?goBack=false"></a>
+            <a class="goAct" href="doubleEleven?groupId=15&modelId=175&goBack=false"></a>
             <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
 
         </div>
