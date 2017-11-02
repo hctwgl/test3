@@ -181,16 +181,6 @@
     #elseif( $!{style}==18 )
         <div class="downloadBtn"><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"></a></div>
     #end
-    <div class="imgVftCodeWrap hide">
-        <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
-        <div class="imgVftCodeInput clearfix">
-            <div class="imgVftCodeDiv"><input type="text" class="imgVftCode" id="imgVftCode" maxlength="4"
-                                              placeholder="请输入"></div>
-            <div class="imgVftCodeWrapImgDiv"><img id="imgVftCodeWrapImg" src=""></div>
-            <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
-        </div>
-        <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
-    </div>
     #if( $!{style}==17 )
         <img src="$commonUrl/reg3.jpg">
         <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
@@ -231,6 +221,7 @@
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/core.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/md5.js"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>
 <script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
 <div style="display:none">
     <script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script>
