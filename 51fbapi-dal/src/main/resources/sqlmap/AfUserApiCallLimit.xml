@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserApiCallLimitDao">
+	<sql id="queryFields">
+		id,user_id,call_num,disable_status,type
+	</sql>
+
+	<insert id="addUserApiCallLimit" parameterType="AfUserApiCallLimitDo"
+		useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO
+		af_user_api_call_limit(user_id , call_num , disable_status , type)
+		VALUES (
+		#{userId},
+		#{callNum},
+		#{disableStatus},
+		#{type}
+		)
+	</insert>
+	<update id="updateUserApiCallLimit" parameterType="AfUserApiCallLimitDo">
+		UPDATE af_user_api_call_limit SET id = #{id}
+		<if test="userId != null">
+			,user_id=#{userId}
+		</if>
+		<if test="callNum != null">
+			,call_num=#{callNum}
+		</if>
+		<if test="disableStatus != null">
+			,disable_status=#{disableStatus}
+		</if>
+		<if test="type != null">
+			,type=#{type}
+		</if>
+		WHERE id = #{id}
+	</update>
+
+	<select id="selectByUserIdAndType" resultType="AfUserApiCallLimitDo">
+		select
+		<include refid="queryFields" />
+		from af_user_api_call_limit where user_id = #{userId} and type =
+		#{type} limit 1
+	</select>
+
+	<update id="addVisitNum">
+		update af_user_api_call_limit set call_num =
+		call_num+1 where user_id = #{userId} and type =
+		#{type}
+	</update>
+</mapper>

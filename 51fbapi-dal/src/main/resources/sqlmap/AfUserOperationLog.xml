@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserOperationLogDao">
+	<sql id="queryAllFields">
+		id,gmt_create,user_id,type,ref_type,ref_id
+	</sql>
+	
+	<insert id="addUserOperationLog" parameterType="AfUserOperationLogDo" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO af_user_operation_log(gmt_create , user_id , type , ref_type , ref_id)
+		VALUES (
+    		NOW(),
+    		#{userId},
+    		#{type},
+    		#{refType},
+    		#{refId}
+		)
+	</insert>
+	
+	<select id="getNumsByUserAndType" resultType="java.lang.Integer" parameterType="AfUserOperationLogDo">
+		SELECT 
+		 	 count(*)
+		FROM
+		  af_user_operation_log
+		WHERE 
+			user_id = #{userId}
+		AND 
+		  	is_delete = 0 
+		AND 
+			type=#{type} 
+		AND 
+			ref_type=#{refType} 
+		AND 
+			ref_id=#{refId} 
+	</select>
+</mapper>

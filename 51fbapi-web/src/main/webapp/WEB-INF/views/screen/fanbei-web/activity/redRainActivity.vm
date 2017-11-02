@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="20170919")
+    #set($src="https://f.51fanbei.com/h5/app/activity/11")
+    <meta charset="UTF-8">
+    <title>红包雨</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/redRainActivity.css">
+</head>
+<body>
+<div id="redRain">
+    <ul class="content"></ul>
+    <div class="redNum">
+        <span>20</span>
+        <span>中红包数量：0</span>
+    </div>
+    <div class="backward">
+        <span></span>
+    </div>
+    <a href="/fanbei-web/opennative?name=APP_CLOSE_H5" class="close"></a>
+
+    <div class="gameWard">
+        <div class="noWard">
+            <a class="goAct" href="doubleEleven?groupId=15&modelId=175&goBack=false"></a>
+            <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
+        </div>
+        <div class="ward">
+            <div class="wardHeader"></div>
+            <div class="wardContent">
+                <div class="wardCoupon">
+                    <span class="wardMoney"><span>￥</span>50</span>
+                    <span class="wardTxt">获得50元现金红包</span>
+                </div>
+            </div>
+            <a class="goAct" href="doubleEleven?groupId=15&modelId=175&goBack=false"></a>
+            <a class="goBack" href="/fanbei-web/opennative?name=APP_CLOSE_H5"></a>
+
+        </div>
+    </div>
+</div>
+<script src="/dist/activity/11/redRainActivity.js"></script>
+</body>
+</html>

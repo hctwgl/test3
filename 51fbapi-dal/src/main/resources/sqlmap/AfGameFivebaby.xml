@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGameFivebabyDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,item1_count,item2_count,item3_count,item4_count,item5_count,is_finish,is_award
+	</sql>
+	
+	<insert id="addGameFivebaby" parameterType="AfGameFivebabyDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_game_fivebaby(gmt_create , gmt_modified , user_id , item1_count , item2_count , item3_count , item4_count , item5_count)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{userId},
+    		#{item1Count},
+    		#{item2Count},
+    		#{item3Count},
+    		#{item4Count},
+    		#{item5Count}
+		)
+	</insert>
+	
+	<update id="updateGameFivebaby" parameterType="AfGameFivebabyDo" >
+		UPDATE af_game_fivebaby SET gmt_modified = NOW()
+			<if test="item1Count != null">
+    			,item1_count=item1_count + 1
+			</if>
+			<if test="item2Count != null">
+    			,item2_count=item2_count + 1
+			</if>
+			<if test="item3Count != null">
+    			,item3_count=item3_count + 1
+			</if>
+			<if test="item4Count != null">
+    			,item4_count=item4_count + 1
+			</if>
+			<if test="item5Count != null">
+    			,item5_count=item5_count + 1
+			</if>
+			<if test="isFinish != null">
+    			,is_finish=#{isFinish}
+			</if>
+			<if test="isAward != null">
+    			,is_award=#{isAward}
+			</if>
+		WHERE user_id = #{userId}
+	</update>
+	
+	<select id="getByUserId" resultType="AfGameFivebabyDo">
+		SELECT 
+			<include refid="queryFields"/>
+		FROM af_game_fivebaby WHERE is_delete = 0 AND user_id=#{userId} LIMIT 1;
+	</select>
+	
+</mapper>

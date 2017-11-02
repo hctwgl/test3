@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<title>邀请奖励规则</title>
+	    <style type="text/css">
+	    	.invitationRewardRule{
+                padding: 0.8rem 0.4rem 0.4rem;
+                line-height: 0.48rem;
+	    		text-align: Justify;
+				text-justify: inter-ideograph;
+	    	}
+            .invitationRewardRule span{
+                font-weight: bold;
+            }
+
+            .invitationRewardRule a{
+                margin-left: 0.08rem;
+            }
+            .invitationRewardRule em{
+                border-bottom: 1px solid blue;
+                color: blue;
+            }
+	    </style>
+    </head>
+    <body style="background-color: #fff;">
+    	<div class="invitationRewardRule">
+            <p>
+                1.被邀请人：未注册51返呗的用户。<br>
+                2.邀请人在邀请好友时，好友注册时需要填写邀请人的邀请码，且注册后被邀请人需要完成信用认证，才算完成一个好友邀请；<br>
+                3.5元还款抵用券有效期为60天，自发放开始计算第一天，在用户还款金额大于等于5元时可以使用；<br>
+                4.2元返利金额在被邀请人成功注册并认证后可获得，返利金额大于20元时可以提现自个人绑定的银行或者支付宝账户；<br>
+                5.活动期间禁止任何作弊行为，包括但并不限于通过软件进行批量操作，积分墙发任务，邀请刷单，网赚平台等方式利用本次活动进行牟利，一经发起平台将取消参与价格，并有权追回所发奖励，如涉及犯罪，51返呗将相关人员移送至司法机关处理。<br>
+                6.新邀请奖励规则从2017年3月17日开始实施，如有规则调整平台会做出对应公告；<br>
+                7.在法律范围内51返呗平台拥有最终解释权。<br>
+            </p>
+
+        </div>
+    </body>
+</html>

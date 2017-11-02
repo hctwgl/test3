@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserBankcardDao">
+	<sql id="queryFields">
+		id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status
+	</sql>
+	<sql id="queryBankFields">
+		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.mobile,u.bank_code,u.card_number,u.is_main,b.bank_name,u.status,b.bank_icon,b.is_valid
+	</sql>
+	<sql id="queryWithFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.bank_name,b.status,
+		c.real_name,c.id_number
+	</sql>
+	<sql id="queryWithBankFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.status,
+		c.bank_icon,c.bank_name,c.is_valid
+	</sql>
+	
+	<insert id="addUserBankcard" parameterType="AfUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , status)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{userId},
+    		#{mobile},
+    		#{bankCode},
+    		#{cardNumber},
+    		#{isMain},
+    		#{bankName},
+    		#{status}
+		)
+	</insert>
+	
+	<select id="getUserBankInfo" resultType="AfUserBankDto">
+		SELECT
+			<include refid="queryWithFields"/>
+		FROM
+			af_user_bankcard b
+		LEFT JOIN
+			af_user_account c
+		ON
+			b.is_delete=0 and b.user_id = c.user_id 
+		WHERE
+			b.is_delete=0 
+		AND b.id=#{bankId}
+		AND
+			b.status='B'
+	</select>
+	
+	
+	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
+		SELECT
+			<include refid="queryWithBankFields"/>
+		FROM
+			af_user_bankcard b
+		LEFT JOIN af_bank c
+		ON c.is_delete = 0 and c.bank_code = b.bank_code
+		WHERE
+			b.is_delete=0 AND b.user_id = #{userId} AND b.is_main = 'Y' and b.status='B' limit 1
+	</select>
+	
+	<select id="getUserBankcardByBankId" resultType="AfBankUserBankDto">
+		SELECT
+			<include refid="queryBankFields"/>
+		FROM
+			af_user_bankcard u
+		LEFT JOIN
+			af_bank  b
+		ON
+			u.is_delete=0 and u.bank_code = b.bank_code
+		
+		WHERE
+			
+		    u.status = 'B'
+		AND 
+			u.id=#{bankId}
+	</select>
+	
+	<select id="getUserBankcardByUserId" resultType="AfBankUserBankDto">
+		SELECT
+			<include refid="queryBankFields"/>
+		FROM
+			af_user_bankcard u
+		LEFT JOIN
+			af_bank  b
+		ON
+			u.is_delete=0 and u.bank_code = b.bank_code
+		
+		WHERE
+			
+		    u.status = 'B'
+		AND 
+			u.user_id = #{userId} 
+		ORDER BY
+			u.is_main,b.is_valid
+		DESC
+	</select>
+	
+	<update id="deleteUserBankcardByIdAndUserId">
+		UPDATE 
+			af_user_bankcard 
+		SET 
+			gmt_modified = NOW(),is_delete = 1 
+		WHERE 
+			id=#{rid} 
+		AND 
+			user_id = #{userId} 
+	</update>
+	<update id="updateUserBankcard"  parameterType="AfUserBankcardDo">
+		UPDATE 
+			af_user_bankcard 
+		SET 
+			gmt_modified = NOW()
+		
+		<if test="status != null">
+			,status = #{status}
+		</if>
+		<if test="cardNumber != null">
+			,card_number = #{cardNumber}
+		</if>
+		<if test="isMain != null">
+			,is_main = #{isMain}
+		</if>
+		<if test="bankCode != null">
+			,bank_code = #{bankCode}
+		</if>
+		WHERE 
+			id=#{rid} 
+		AND 
+			user_id = #{userId} 
+		AND 	
+			is_delete = 0 
+	</update>
+	
+	<select id="getUserBankcardById" resultType="AfUserBankcardDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND 
+			id = #{rid}
+	</select>
+	<select id="getUserBankcardCountByUserId" resultType="java.lang.Integer">
+		SELECT
+			count(id)
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND
+			status = 'B'
+		AND 
+			user_id = #{userId} 
+
+	</select>
+	
+	<select id="getUserBankByCardNo" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND 
+			card_number = #{cardNumber} 
+		AND
+			status = 'B'
+	</select>
+	
+	<select id="getUserBankList" resultType="AfUserBankcardDo" parameterType="AfUserBankQuery">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND
+			id 	<![CDATA[>]]> 369053
+	</select>
+	
+</mapper>

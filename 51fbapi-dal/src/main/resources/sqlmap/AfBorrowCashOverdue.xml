@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowCashOverdueDao">
+	<sql id="queryFields">
+
+		id rid,gmt_create,user_id,borrow_cash_id,interest,current_amount
+	</sql>
+
+	<insert id="addBorrowCashOverdue" parameterType="AfBorrowCashOverdueDo"
+		useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO
+		af_borrow_cash_overdue(gmt_create , user_id , borrow_cash_id ,
+		interest,current_amount)
+		VALUES (
+		NOW(),
+		#{userId},
+		#{borrowCashId},
+		#{interest},
+		#{currentAmount}
+		)
+	</insert>
+	<update id="updateBorrowCashOverdue" parameterType="AfBorrowCashOverdueDo">
+		UPDATE af_borrow_cash_overdue SET gmt_modified = NOW()
+		<if test="isDelete != null">
+			,is_delete=#{isDelete}
+		</if>
+		<if test="userId != null">
+			,user_id=#{userId}
+		</if>
+		<if test="borrowCashId != null">
+			,borrow_cash_id=#{borrowCashId}
+		</if>
+		<if test="interest != null">
+			,interest=#{interest}
+		</if>
+		WHERE id = #{rid}
+	</update>
+
+	<update id="deleteBorrowCashOverdue" parameterType="java.lang.Long">
+		UPDATE af_borrow_cash_overdue SET is_delete = 1 WHERE id=#{rid}
+	</update>
+
+	
+
+	<select id="getBorrowCashOverdueByrid" parameterType="java.lang.Long"
+		resultType="AfBorrowCashOverdueDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash_overdue
+		WHERE
+		is_delete = 0
+		AND
+		id = #{rid}
+	</select>
+	<select id="getBorrowCashOverdueListByUserId" resultType="AfBorrowCashOverdueDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash_overdue
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		ORDER BY
+		gmt_create DESC
+		LIMIT
+		#{start},20
+	</select>
+	<select id="getBorrowCashOverdueListByBorrowId" resultType="AfBorrowCashOverdueDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash_overdue
+		WHERE
+		is_delete = 0
+		AND
+		borrow_cash_id = #{borrowId}
+		ORDER BY
+		gmt_create DESC
+		
+	</select>
+
+</mapper>

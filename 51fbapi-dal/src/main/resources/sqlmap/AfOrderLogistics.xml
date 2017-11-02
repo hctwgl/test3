@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_order_logistics表:'第三方-上树请求记录模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfOrderLogisticsDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,order_id,gmt_create,gmt_modified,shipper_code,shipper_name,logistic_code,traces,state 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="shipperCode != null and shipperCode != ''">
+            AND shipper_code = #{shipperCode,jdbcType=VARCHAR}
+        </if>
+        <if test="shipperName != null and shipperName != ''">
+            AND shipper_name = #{shipperName,jdbcType=VARCHAR}
+        </if>
+        <if test="logisticCode != null and logisticCode != ''">
+            AND logistic_code = #{logisticCode,jdbcType=VARCHAR}
+        </if>
+        <if test="traces != null and traces != ''">
+            AND traces = #{traces,jdbcType=VARCHAR}
+        </if>
+        <if test="state != null and state != ''">
+            AND state = #{state,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_order_logistics
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="orderId != null">        
+	            order_id,
+	        </if>
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="shipperCode != null">        
+	            shipper_code,
+	        </if>
+	        <if test="shipperName != null">        
+	            shipper_name,
+	        </if>
+	        <if test="logisticCode != null">        
+	            logistic_code,
+	        </if>
+	        <if test="traces != null">        
+	            traces,
+	        </if>
+	        <if test="state != null">        
+	            state,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="orderId != null" >
+		       #{orderId,jdbcType=INTEGER},
+		    </if>
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="shipperCode != null" >
+		       #{shipperCode,jdbcType=VARCHAR},
+		    </if>
+		    <if test="shipperName != null" >
+		       #{shipperName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="logisticCode != null" >
+		       #{logisticCode,jdbcType=VARCHAR},
+		    </if>
+		    <if test="traces != null" >
+		       #{traces,jdbcType=VARCHAR},
+		    </if>
+		    <if test="state != null" >
+		       #{state,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo">
+        UPDATE af_order_logistics
+          <set>
+            <if test="orderId != null and orderId != '' ">        
+                order_id = #{orderId,jdbcType=INTEGER},                
+            </if>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="shipperCode != null and shipperCode != '' ">        
+                shipper_code = #{shipperCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="shipperName != null and shipperName != '' ">        
+                shipper_name = #{shipperName,jdbcType=VARCHAR},                
+            </if>
+            <if test="logisticCode != null and logisticCode != '' ">        
+                logistic_code = #{logisticCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="traces != null and traces != '' ">        
+                traces = #{traces,jdbcType=VARCHAR},                
+            </if>
+            <if test="state != null and state != '' ">        
+                state = #{state,jdbcType=INTEGER}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_order_logistics
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+    <select id="getByOrderId" resultType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_order_logistics
+        WHERE is_delete = 0 AND order_id=#{id ,jdbcType=BIGINT}
+        LIMIT 1
+    </select>
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo" parameterType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_order_logistics
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo" parameterType="com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_order_logistics
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

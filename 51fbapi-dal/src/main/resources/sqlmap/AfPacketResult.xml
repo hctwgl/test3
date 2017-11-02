@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfPacketResultDao">
+	
+	<sql id="querySqlField">
+		id rid,is_delete,gmt_create,gmt_modified,coupon_id,user_id,prize_date,game_id
+	</sql>
+	
+	<insert id="addPacketResult" parameterType="AfPacketResultDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO
+			af_packet_result
+			(
+				gmt_create,
+				gmt_modified,
+				coupon_id,
+				user_id,
+				prize_date,
+				game_id
+			)
+		VALUES
+		    (
+				NOW(),
+				NOW(),
+				#{couponId},
+				#{userId},
+				#{prizeDate},
+				#{gameId}
+			)
+	</insert>
+	
+	<select id="getPacketResultById" parameterType="java.lang.Long" resultType="AfPacketResultDo">
+		SELECT
+			<include refid="querySqlField"/>
+		FROM
+			af_packet_result 
+		WHERE
+			is_delete=0
+		AND
+			id = #{rid}
+	</select>
+	
+	<select id="listAllPacketResult"  resultType="AfPacketResultDo">
+		SELECT
+			<include refid="querySqlField"/>
+		FROM
+			af_packet_result 
+		WHERE
+			is_delete=0
+	</select>
+
+	<update id="updatePacketResult" parameterType="AfPacketResultDo">
+		UPDATE af_packet_result SET gmt_modified = NOW() 
+			<if test="couponId != null">
+			    ,coupon_id=#{couponId}
+			</if>
+			<if test="userId != null">
+			    ,user_id=#{userId}
+			</if>
+			<if test="prizeDate != null">
+			    ,prize_date=#{prizeDate}
+			</if>
+			<if test="gameId != null">
+			    ,game_id=#{gameId}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	
+	<select id="getGrantCouponCount" parameterType="AfPacketResultDo" resultType="java.lang.Integer">
+		SELECT
+			count(id)
+		FROM
+			af_packet_result
+		WHERE
+			1=1
+		<if test="couponId != null">
+		AND
+		    coupon_id=#{couponId}
+		</if>
+		<if test="prizeDate != null">
+		AND
+		    prize_date=#{prizeDate}
+		</if>
+		<if test="gameId != null">
+		AND
+		    game_id=#{gameId}
+		</if>
+	</select>
+
+	<update id="deletePacketResultById" parameterType="java.lang.Long">
+		UPDATE
+			af_packet_result
+		SET
+			gmt_modified = NOW(),
+			is_delete = 1
+		WHERE
+			id = #{rid}
+	</update>
+	
+	
+</mapper>

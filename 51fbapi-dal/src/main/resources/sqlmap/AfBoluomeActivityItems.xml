@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_boluome_activity_items表:'第三方-上树请求记录模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBoluomeActivityItemsDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sort,rule_json,logo
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="boluomeActivityId != null and boluomeActivityId != ''">
+            AND boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER}
+        </if>
+        <if test="name != null and name != ''">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="iconUrl != null and iconUrl != ''">
+            AND icon_url = #{iconUrl,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
+        <if test="refId != null and refId != ''">
+            AND ref_id = #{refId,jdbcType=INTEGER}
+        </if>
+        <if test="sort != null and sort != ''">
+            AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="ruleJson != null and ruleJson != ''">
+            AND rule_json = #{ruleJson,jdbcType=INTEGER}
+        </if>
+        <if test="logo != null and logo != ''">
+            AND logo = #{logo,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_boluome_activity_items
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="boluomeActivityId != null">        
+	            boluome_activity_id,
+	        </if>
+	        <if test="name != null">        
+	            name,
+	        </if>
+	        <if test="iconUrl != null">        
+	            icon_url,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+	        <if test="refId != null">        
+	            ref_id,
+	        </if>
+	        <if test="sort != null">        
+	            sort,
+	        </if>
+	         <if test="sourceId != null">        
+	            source_id,
+	        </if>
+	        <if test="ruleJson != null">        
+	            rule_json,
+	        </if>
+	        <if test="logo != null">        
+	            logo,
+	        </if>
+	        
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="boluomeActivityId != null" >
+		       #{boluomeActivityId,jdbcType=INTEGER},
+		    </if>
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="iconUrl != null" >
+		       #{iconUrl,jdbcType=VARCHAR},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=VARCHAR},
+		    </if>
+		    <if test="refId != null" >
+		       #{refId,jdbcType=INTEGER},
+		    </if>
+		    <if test="sort != null" >
+		       #{sort,jdbcType=INTEGER},
+		    </if>
+		    <if test="sourceId != null" >
+		       #{sourceId,jdbcType=INTEGER},
+		    </if>
+		    <if test="ruleJson != null" >
+		       #{ruleJson,jdbcType=INTEGER},
+		    </if>
+		    <if test="logo != null" >
+		       #{logo,jdbcType=VARCHAR}
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
+        UPDATE af_boluome_activity_items
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="boluomeActivityId != null and boluomeActivityId != '' ">        
+                boluome_activity_id = #{boluomeActivityId,jdbcType=INTEGER},                
+            </if>
+            <if test="name != null and name != '' ">        
+                name = #{name,jdbcType=VARCHAR},                
+            </if>
+            <if test="iconUrl != null and iconUrl != '' ">        
+                icon_url = #{iconUrl,jdbcType=VARCHAR},                
+            </if>
+            <if test="type != null and type != '' ">        
+                type = #{type,jdbcType=VARCHAR},                
+            </if>
+            <if test="refId != null and refId != '' ">        
+                ref_id = #{refId,jdbcType=INTEGER},                
+            </if>
+            <if test="sort != null and sort != '' ">        
+                sort = #{sort,jdbcType=INTEGER},               
+            </if>
+             <if test="ruleJson != null and ruleJson != '' ">        
+                rule_json = #{ruleJson,jdbcType=INTEGER},                
+            </if>
+             <if test="logo != null and logo != '' ">        
+                logo = #{sort,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}  AND status = 'O'
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_items
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT} AND status = 'O'
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_items
+        <include refid="commonCondition"/> 
+         AND status = 'O'
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_items
+        <include refid="commonCondition"/>
+         AND status = 'O'
+    </select>
+    
+      <select id="getItemsInfo" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_activity_items
+        <include refid="commonCondition"/>
+         AND status = 'O'
+    </select>
+    
+</mapper>

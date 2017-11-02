@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="2017082303")
+    <meta charset="UTF-8">
+    <link rel="stylesheet" id="css" type="text/css" href="/dist/css/app/goodsModel.css?version=$version">
+    <script>
+        var title=decodeURI(getUrl('title'));
+        if(title){
+            document.title=title;
+        }else{
+            document.title='商品列表';
+        }
+    </script>
+</head>
+<body>
+<div id="vueCon">
+    <title></title>
+    <img class="banner lazy" :data-original="content.data.bannerUrl">
+    <div class="recommend">
+        <h2 v-if="content.data.oneLevelGoodsInfo.title && content.data.oneLevelGoodsInfo.title!=''">{{content.data.oneLevelGoodsInfo.title}}</h2>
+        <ul>
+            <li v-for="data in content.data.oneLevelGoodsInfo.goodsList" @click="goGoodsDetail(data)">
+                <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                <img class="lazy" :data-original="data.goodsIcon">
+                <div class="txtContent">
+                    <p>{{txtFix(data.goodName,20)}}</p>
+                    <p class="price">活动价:￥{{data.saleAmount}}</p>
+                    <s>{{priceTxt(data)}}:￥{{data.priceAmount}}</s>
+                    <button class="button">{{buttonTxt(data)}}</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="LevelGoods">
+        <h2 v-if="content.data.twoLevelGoodsInfo.title && content.data.twoLevelGoodsInfo.title!=''">{{content.data.twoLevelGoodsInfo.title}}</h2>
+        <ul class="clearfix">
+            <li v-for="data in content.data.twoLevelGoodsInfo.goodsList" @click="goGoodsDetail(data)">
+                <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                <p class="goodImg"><img class="lazy" :data-original="data.goodsIcon"></p>
+                <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
+                <div class="goodPrice">
+                    <p class="fanPrice">￥{{data.saleAmount}}</p>
+                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                </div>
+                <p class="monthPrice">{{buttonTxt(data)}}</p>
+            </li>
+        </ul>
+    </div>
+    <div class="LevelGoods">
+        <h2 v-if="content.data.threeLevelGoodsInfo.title && content.data.threeLevelGoodsInfo.title!=''">{{content.data.threeLevelGoodsInfo.title}}</h2>
+        <ul class="clearfix">
+            <li v-for="data in content.data.threeLevelGoodsInfo.goodsList" @click="goGoodsDetail(data)">
+                <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                <p class="goodImg"><img class="lazy" :data-original="data.goodsIcon"></p>
+                <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
+                <div class="goodPrice">
+                    <p class="fanPrice">￥{{data.saleAmount}}</p>
+                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                </div>
+                <p class="monthPrice">{{buttonTxt(data)}}</p>
+            </li>
+        </ul>
+    </div>
+    <div class="LevelGoods">
+        <h2 v-if="content.data.fourLevelGoodsInfo.title && content.data.fourLevelGoodsInfo.title!=''">{{content.data.fourLevelGoodsInfo.title}}</h2>
+        <ul class="clearfix">
+            <li v-for="data in content.data.fourLevelGoodsInfo.goodsList" @click="goGoodsDetail(data)">
+                <div class="fanMoney" v-if="data.goodsType==0&&data.doubleRebate=='N'"><p>返利</p><p>￥{{data.rebateAmount}}</p></div>
+                <p class="goodImg"><img class="lazy" :data-original="data.goodsIcon"></p>
+                <p class="goodDes">{{txtFix(data.goodName,16)}}</p>
+                <div class="goodPrice">
+                    <p class="fanPrice">￥{{data.saleAmount}}</p>
+                    <p class="originPrice">￥{{data.priceAmount}}</p>
+                </div>
+                <p class="monthPrice">{{buttonTxt(data)}}</p>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="/dist/js/app/goodsModel.js?version=$version"></script>
+</html>

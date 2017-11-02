@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAuthDao">
+	<sql id="queryField">
+		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,gmt_mobile,
+		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status,gmt_risk,
+		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit,alipay_status,gmt_alipay,thresholds,basic_status
+	</sql>
+ 
+
+	<insert id="addUserAuth" parameterType="AfUserAuthDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_user_auth(gmt_modified , user_id )
+		VALUES (
+    		NOW(),
+    		#{userId}
+		)
+	</insert>
+	
+	<update id="updateUserAuthMobileStatusWait" parameterType="AfUserAuthDo" >
+		UPDATE af_user_auth SET gmt_modified = NOW(),gmt_mobile = NOW()
+    			,mobile_status = #{mobileStatus}
+		WHERE user_id = #{userId} and (gmt_mobile is null  or  <![CDATA[ gmt_mobile <= #{gmtMobile}  ]]>) 
+	</update>
+	
+	<update id="updateUserAuth" parameterType="AfUserAuthDo" >
+		UPDATE af_user_auth SET gmt_modified = NOW()
+			<if test="zmStatus != null">
+    			,zm_status=#{zmStatus}
+			</if>
+			<if test="gmtZm != null">
+    			,gmt_zm=#{gmtZm}
+			</if>
+			<if test="zmScore != null">
+    			,zm_score=#{zmScore}
+			</if>
+			<if test="ivsStatus != null">
+    			,ivs_status=#{ivsStatus}
+			</if>
+			<if test="gmtIvs != null">
+    			,gmt_ivs=#{gmtIvs}
+			</if>
+			<if test="ivsScore != null">
+    			,ivs_score=#{ivsScore}
+			</if>
+			<if test="realnameStatus != null">
+    			,realname_status=#{realnameStatus}
+			</if>
+			<if test="gmtRealname != null">
+    			,gmt_realname=#{gmtRealname}
+			</if>
+			<if test="realnameScore != null">
+    			,realname_score=#{realnameScore}
+			</if>
+			<if test="facesStatus != null">
+    			,faces_status=#{facesStatus}
+			</if>
+			<if test="similarDegree != null">
+    			,similar_degree=#{similarDegree}
+			</if>
+			<if test="thresholds != null">
+    			,thresholds=#{thresholds}
+			</if>
+			<if test="mobileStatus != null">
+    			,mobile_status=#{mobileStatus}
+			</if>
+			<if test="gmtMobile != null">
+    			,gmt_mobile=#{gmtMobile}
+			</if>
+			<if test="bankcardStatus != null">
+    			,bankcard_status=#{bankcardStatus}
+			</if>
+			<if test="teldirStatus != null">
+    			,teldir_status=#{teldirStatus}
+			</if>
+			<if test="ydStatus != null">
+    			,yd_status=#{ydStatus}
+			</if>
+			<if test="watchlistStatus != null">
+    			,watchlist_status=#{watchlistStatus}
+			</if>
+			<if test="gmtWatchlist != null">
+    			,gmt_watchlist=#{gmtWatchlist}
+			</if>
+			<if test="watchlistScore != null">
+    			,watchlist_score=#{watchlistScore}
+			</if>
+			<if test="contactorStatus != null">
+    			,contactor_status=#{contactorStatus}
+			</if>
+			<if test="contactorName != null">
+    			,contactor_name=#{contactorName}
+			</if>
+			<if test="contactorMobile != null">
+    			,contactor_mobile=#{contactorMobile}
+			</if>
+			<if test="contactorType != null">
+    			,contactor_type=#{contactorType}
+			</if>
+			<if test="locationStatus != null">
+    			,location_status=#{locationStatus}
+			</if>
+			<if test="locationAddress != null">
+    			,location_address=#{locationAddress}
+			</if>
+			<if test="riskStatus != null">
+    			,risk_status=#{riskStatus}
+			</if>
+			<if test="gmtRisk != null">
+    			,gmt_risk=#{gmtRisk}
+			</if>
+			<if test="fundStatus != null">
+    			,fund_status=#{fundStatus}
+			</if>
+			<if test="gmtFund != null">
+    			,gmt_fund=#{gmtFund}
+			</if>
+			<if test="jinpoStatus != null">
+    			,jinpo_status=#{jinpoStatus}
+			</if>
+			<if test="gmtJinpo != null">
+    			,gmt_jinpo=#{gmtJinpo}
+			</if>
+			<if test="creditStatus != null">
+    			,credit_status=#{creditStatus}
+			</if>
+			<if test="gmtCredit != null">
+    			,gmt_credit=#{gmtCredit}
+			</if>	
+			<if test="alipayStatus != null">
+    			,alipay_status=#{alipayStatus}
+			</if>
+			<if test="gmtAlipay != null">
+    			,gmt_alipay=#{gmtAlipay} 
+			</if>
+			<if test="faceType != null">
+    			,face_type=#{faceType} 
+			</if>
+			<if test="gmtFaces != null">
+    			,gmt_faces=#{gmtFaces} 
+			</if>
+			<if test="basicStatus != null">
+				,basic_status=#{basicStatus}
+			</if>
+
+
+		WHERE user_id = #{userId}
+	</update>
+	
+	<select id="getUserAuthInfoByUserId" resultType="AfUserAuthDo" >
+		SELECT 
+			<include refid="queryField" />
+		FROM 
+			af_user_auth
+		WHERE
+			is_delete = 0 
+		AND
+			user_id = #{userId}	 limit 1
+	</select>
+	
+	<select id="getUserAuthCountWithIvs_statusIsY" resultType="java.lang.Integer">		
+		SELECT 
+			count(1) 
+		FROM 
+			af_user_auth  
+		where 
+			mobile_status ='Y' and 90000 > user_id ;		
+	</select>
+	
+	<select id="getUserAuthListWithIvs_statusIsY" resultType="AfUserAuthDo">
+		SELECT 
+			<include refid="queryField" />
+		FROM 
+			af_user_auth a
+		WHERE 
+			a.mobile_status = 'Y' and 90000 > a.user_id
+	</select>
+	
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfH5BoluomeActivityDao">
+	
+	<insert id="saveUserLoginInfo" parameterType="AfBoluomeActivityUserLoginDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO af_boluome_activity_user_login
+		(
+		gmt_create,
+		user_id,
+		user_name,
+		ref_user_id,
+		ref_user_name,
+		boluome_activity_id
+		)
+		VALUES
+		(
+		 NOW(),
+		 #{userId},
+		 #{userName},
+		 #{refUserId},
+		 #{refUserName},
+		 #{boluomeActivityId}
+		)
+		
+	</insert>
+</mapper>

@@ -1,0 +1,2 @@
+"use strict";var finished=0,vm=new Vue({el:"#inviteLastWinRank",data:{returnData:[],month:"",total:""},created:function(){this.initial()},methods:{initial:function(){var t=this;$.ajax({url:"/fanbei-web/getPrizeByLastMonth",dataType:"json",type:"post",success:function(a){console.debug(a),t.returnData=a.datalist,t.month=a.month,t.total=a.total},error:function(){requestMsg("请求失败")}})}}});
+//# sourceMappingURL=../../_srcmap/js/app/inviteLastWinRank.js.map

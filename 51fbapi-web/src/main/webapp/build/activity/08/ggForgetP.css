@@ -1,0 +1,38 @@
+
+*{
+    
+    box-sizing:border-box;
+}
+body{
+    padding:0.32rem 0.24rem 0 0.24rem;
+    background-color: white;
+    font-size:0.32rem;
+}
+.blank{
+    position:relative;
+}
+.blank .blank-pic{
+    width:0.5rem;
+    height:0.5rem;
+    position:absolute;
+    top:50%;
+    left:2%;
+    transform:translateY(-50%);
+    
+}
+.blank .blank-in{
+    width:100%;
+    height:1rem;
+    border:1px solid lightgray;
+    padding-left:11%;
+    
+}
+.btn{
+    width:100%;
+    height:0.8rem;
+    background-color: #FF8D2D;
+    margin-top:20%;
+    color:white;
+    border-radius:5px;
+
+}

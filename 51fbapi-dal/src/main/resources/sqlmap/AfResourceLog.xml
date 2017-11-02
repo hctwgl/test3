@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfResourceLogDao">
+<sql id="queryAllFields">
+id rid,gmt_create,gmt_modified,creator,modifier,type,sec_type,old_json,modify_json
+
+</sql>
+<insert id="addResourceLog" parameterType="AfResourceLogDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO af_resource_log(gmt_create , gmt_modified , creator , modifier , type , sec_type , old_json , modify_json)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{creator},
+    		#{modifier},
+    		#{type},
+    		#{secType},
+    		#{oldJson},
+    		#{modifyJson}
+		)
+	</insert>
+	<update id="updateResourceLog" parameterType="AfResourceLogDo" >
+		UPDATE af_resource_log SET gmt_modified = NOW()
+			<if test="isDelete != null">
+    			,is_delete=#{isDelete}
+			</if>
+			<if test="creator != null">
+    			,creator=#{creator}
+			</if>
+			<if test="modifier != null">
+    			,modifier=#{modifier}
+			</if>
+			<if test="type != null">
+    			,type=#{type}
+			</if>
+			<if test="secType != null">
+    			,sec_type=#{secType}
+			</if>
+			<if test="oldJson != null">
+    			,old_json=#{oldJson}
+			</if>
+			<if test="modifyJson != null">
+    			,modify_json=#{modifyJson}
+			</if>
+		WHERE id = #{rid}
+	</update>
+	<update id="deleteResourceLog" parameterType="java.lang.Long" >
+		UPDATE af_resource_log SET is_delete = 1 WHERE id=#{rid}
+	</update>
+	<select id="selectResourceLogTypeAndSecType"  resultType="AfResourceLogDo">
+	 SELECT
+    <include refid="queryAllFields" />
+    FROM
+   		 af_resource_log
+    WHERE
+    	is_delete = 0
+    AND
+    	type = #{type}
+    AND
+    	sec_type = #{secType}
+    AND
+    gmt_create <![CDATA[ > ]]>#{gmtCreate}
+     ORDER BY gmt_create ASC 
+    
+    LIMIT 1
+	</select>
+</mapper>

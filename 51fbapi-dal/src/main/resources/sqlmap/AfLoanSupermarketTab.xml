@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_loan_supermarket_tab表:借款超市标签模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfLoanSupermarketTabDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+id,name,alias,sort,gmt_create,creator,gmt_modified,modifier 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="id !=null">
+            AND id  = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="name != null and name != ''">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="alias != null and alias != ''">
+            AND alias = #{alias,jdbcType=VARCHAR}
+        </if>
+        <if test="sort != null and sort != ''">
+            AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo" keyProperty="id">
+    	<selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+
+        INSERT INTO af_loan_supermarket_tab
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="name != null">
+	            name,
+	        </if>
+	        <if test="alias != null">
+	            alias,
+	        </if>
+	        <if test="sort != null">
+	            sort,
+	        </if>
+	        <if test="gmtCreate != null">
+	            gmt_create,
+	        </if>
+	        <if test="creator != null">
+	            creator,
+	        </if>
+	        <if test="gmtModified != null">
+	            gmt_modified,
+	        </if>
+	        <if test="modifier != null">
+	            modifier,
+	        </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="alias != null" >
+		       #{alias,jdbcType=VARCHAR},
+		    </if>
+		    <if test="sort != null" >
+		       #{sort,jdbcType=INTEGER},
+		    </if>
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="creator != null" >
+		       #{creator,jdbcType=VARCHAR},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo">
+        UPDATE af_loan_supermarket_tab
+          <set>
+            <if test="name != null and name != '' ">        
+                name = #{name,jdbcType=VARCHAR},                
+            </if>
+            <if test="alias != null and alias != '' ">        
+                alias = #{alias,jdbcType=VARCHAR},                
+            </if>
+            <if test="sort != null and sort != '' ">        
+                sort = #{sort,jdbcType=INTEGER},                
+            </if>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="creator != null and creator != '' ">        
+                creator = #{creator,jdbcType=VARCHAR},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan_supermarket_tab
+        WHERE is_delete = 0 AND id=#{id ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo" parameterType="com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan_supermarket_tab
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo" parameterType="com.ald.fanbei.api.dal.domain.AfLoanSupermarketTabDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_loan_supermarket_tab
+        <include refid="commonCondition"/>
+        order by sort asc limit 0,4
+    </select>
+
+</mapper>
