@@ -499,4 +499,15 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getNavigationUpOneResourceDoList(code);
 	}
 
+	@Override
+	public AfResourceDo getLaunchImageInfoByTypeAndVersion(String resourceType, String appVersion) {
+		return afResourceDao.getLaunchImageInfoByTypeAndVersion(resourceType,appVersion);
+	}
+
+	@Override
+	public AfResourceDo getLaunchImageInfoByType(String resourceType) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getLaunchImageInfoByType(resourceType);
+	}
+
 }

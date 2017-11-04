@@ -153,4 +153,8 @@ public interface AfResourceDao {
 	 */
 	List<String> getActivityRule(@Param("type")String type);
 
+	AfResourceDo getLaunchImageInfoByTypeAndVersion(@Param("type")String resourceType, @Param("version")String appVersion);
+
+	AfResourceDo getLaunchImageInfoByType(@Param("type")String resourceType);
+
 }

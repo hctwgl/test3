@@ -177,4 +177,8 @@ public interface AfResourceService {
 	AfResourceDo getAfResourceAppVesion();
 
 	List<AfResourceDo> getBackGroundByType(String code);
+
+	AfResourceDo getLaunchImageInfoByTypeAndVersion(String resourceType, String appVersion);
+
+	AfResourceDo getLaunchImageInfoByType(String resourceType);
 }
