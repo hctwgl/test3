@@ -973,4 +973,16 @@
 		SELECT
 		<include refid="queryFields"/> FROM af_order WHERE is_delete = 0 AND gmt_create &gt;=#{startTime} and gmt_create &lt;=#{endTime}
 	</select>
+	
+	<select id="getOldUserOrderAmount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(0)
+		FROM af_order 
+		WHERE
+			user_id=#{userId}
+		AND 
+			status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING') 
+		AND 
+			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
+	</select>
 </mapper>

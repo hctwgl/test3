@@ -1986,4 +1986,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	    return orderDao.getOrderCountByStatusAndUserId(queryCount);
 	}
 
+	@Override
+	public int getOldUserOrderAmount(long userId) {
+		// TODO Auto-generated method stub
+		return orderDao.getOldUserOrderAmount(userId);
+	}
+
 }
