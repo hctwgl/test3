@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -105,7 +107,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	@Resource
 	RedisTemplate redisTemplate;
 
-
+	@Resource
+	ThirdPayUtility thirdPayUtility;
 	@Override
 	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
 		Date now = new Date();
@@ -117,34 +120,17 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		final AfRenewalDetailDo renewalDetail = buildRenewalDetailDo(afBorrowCashDo, jfbAmount, repaymentAmount, repayNo, actualAmount, rebateAmount, capital, borrow, cardId, payTradeNo, userId, appVersion);
 		Map<String, Object> map = new HashMap<String, Object>();
 		afRenewalDetailDao.addRenewalDetail(renewalDetail);
-
-		if (cardId == -1) {// 微信支付
-			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
+		if(cardId == -1 || cardId ==-3){
+			Map<String, String> map1;
+			if(cardId ==-1) {
+				map1 = thirdPayUtility.createOrder(actualAmount,payTradeNo,userId, ThirdPayTypeEnum.WXPAY,PayOrderSource.RENEWAL_PAY);
+			}
+			else {
+				map1 =thirdPayUtility.createOrder(actualAmount,payTradeNo,userId,ThirdPayTypeEnum.ZFBPAY,PayOrderSource.RENEWAL_PAY);
+			}
 			for (String key : map1.keySet()) {
 				map.put(key,map1.get(key));
 			}
-			AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-			afYibaoOrderDo.setOrderNo(repayNo);
-			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
-			afYibaoOrderDo.setStatus(0);
-			afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
-			afYibaoOrderDo.setUserId(userId);
-			afYibaoOrderDo.setoType(1);
-			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-		}
-		else if(cardId ==-3){
-			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
-			for (String key : map1.keySet()) {
-				map.put(key,map1.get(key));
-			}
-			AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-			afYibaoOrderDo.setOrderNo(repayNo);
-			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
-			afYibaoOrderDo.setStatus(0);
-			afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
-			afYibaoOrderDo.setUserId(userId);
-			afYibaoOrderDo.setoType(1);
-			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
 		}
 		else if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
@@ -198,15 +184,20 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 	long dealChangStatus(String outTradeNo, String tradeNo, String status, Long rid) {
 
-		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
-		if(afYibaoOrderDo !=null){
-			if(afYibaoOrderDo.getStatus().intValue() == 1){
+//		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+//		if(afYibaoOrderDo !=null){
+//			if(afYibaoOrderDo.getStatus().intValue() == 1){
+//				return 1L;
+//			}
+//			else{
+//				if(status.equals("N")) {
+//					afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
+//				}
+//			}
+//		}
+		if(AfBorrowCashRepmentStatus.NO.getCode().equals(status)) {
+			if (thirdPayUtility.checkFail(outTradeNo)) {
 				return 1L;
-			}
-			else{
-				if(status.equals("N")) {
-					afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
-				}
 			}
 		}
 
@@ -255,13 +246,16 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
-					if(afYibaoOrderDo !=null){
-						if(afYibaoOrderDo.getStatus().intValue() == 1){
-							return 0L;
-						}else{
-							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
-						}
+//					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+//					if(afYibaoOrderDo !=null){
+//						if(afYibaoOrderDo.getStatus().intValue() == 1){
+//							return 0L;
+//						}else{
+//							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
+//						}
+//					}
+					if( thirdPayUtility.checkSuccess(outTradeNo)){
+						return 1L;
 					}
 
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(afRenewalDetailDo.getBorrowId());

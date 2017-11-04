@@ -10,6 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayNameEnum;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
@@ -23,13 +28,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfRepaymentService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -120,6 +118,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	AfRepaymentDetalDao afRepaymentDetalDao;
 
 	@Resource
+	ThirdPayUtility thirdPayUtility;
+
+
+	@Resource
 	AfBorrowBillDao afBorrowBillDao;
 
 	public Map<String,Object> createRepaymentYiBao(final BigDecimal jfbAmount,BigDecimal repaymentAmount,
@@ -147,22 +149,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			}
 		});
 		if(cardId==-1 || cardId ==-3){//微信支付 或 支付宝
-			afRepaymentDao.addRepayment(repayment);
-
-
-			//修改账单状态
-			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
+			Map<String, String> map1;
+			if(cardId ==-1) {
+				map1 = thirdPayUtility.createOrder(actualAmount,payTradeNo,userId,ThirdPayTypeEnum.WXPAY,PayOrderSource.REPAYMENT);
+			}
+			else {
+				map1 =thirdPayUtility.createOrder(actualAmount,payTradeNo,userId,ThirdPayTypeEnum.ZFBPAY,PayOrderSource.REPAYMENT);
+			}
 			for (String key : map1.keySet()) {
 				map.put(key,map1.get(key));
 			}
-			AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-			afYibaoOrderDo.setOrderNo(repayNo);
-			afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENT.getCode());
-			afYibaoOrderDo.setStatus(0);
-			afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
-			afYibaoOrderDo.setUserId(userId);
-			afYibaoOrderDo.setoType(2);
-			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
+			afRepaymentDao.addRepayment(repayment);
 		}
 		else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
@@ -352,14 +349,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			public Long doInTransaction(TransactionStatus status) {
 				try {
 
-					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
-					if(afYibaoOrderDo !=null){
-						if(afYibaoOrderDo.getStatus().intValue() == 1){
-							return 1L;
-						}
-						else{
-							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
-						}
+//					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+//					if(afYibaoOrderDo !=null){
+//						if(afYibaoOrderDo.getStatus().intValue() == 1){
+//							return 1L;
+//						}
+//						else{
+//							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
+//						}
+//					}
+					if( thirdPayUtility.checkSuccess(outTradeNo)){
+						return 1L;
 					}
 
 					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
@@ -554,13 +554,16 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 						return 0;
 					}
 
-					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
-					if(afYibaoOrderDo !=null) {
-						if (afYibaoOrderDo.getStatus().intValue() == 1) {
-							return 1;
-						} else {
-							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
-						}
+//					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+//					if(afYibaoOrderDo !=null) {
+//						if (afYibaoOrderDo.getStatus().intValue() == 1) {
+//							return 1;
+//						} else {
+//							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(), 2);
+//						}
+//					}
+					if( thirdPayUtility.checkFail(outTradeNo)){
+						return 1;
 					}
 
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus()) || YesNoStatus.NO.getCode().equals(repayment.getStatus())) {

@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -120,7 +122,10 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 
 	@Resource
 	private RedisTemplate redisTemplate;
-	
+
+	@Resource
+	private ThirdPayUtility thirdPayUtility;
+
 	@Override
 	public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
 		return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -219,9 +224,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 								bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
 						if (!respBo.isSuccess()) {
 							if(StringUtil.isNotBlank(respBo.getRespDesc())){
-								dealRepaymentFail(payTradeNo, "",true,StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));	
+								dealRepaymentFail(payTradeNo, "",true,StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
 							}else{
-								dealRepaymentFail(payTradeNo, "",false,"");	
+								dealRepaymentFail(payTradeNo, "",false,"");
 							}
 							throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
@@ -271,33 +276,20 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			public Map<String, Object> doInTransaction(TransactionStatus status) {
 				try{
 					Map<String, Object> map = new HashMap<String, Object>();
-					if (cardId == -1) {// 微信支付
-						Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
+
+					if(cardId == -1 || cardId ==-3){
+						Map<String, String> map1;
+						if(cardId ==-1) {
+							map1 = thirdPayUtility.createOrder(actualAmount,payTradeNo,userId, ThirdPayTypeEnum.WXPAY,PayOrderSource.REPAYMENTCASH);
+						}
+						else {
+							map1 =thirdPayUtility.createOrder(actualAmount,payTradeNo,userId,ThirdPayTypeEnum.ZFBPAY,PayOrderSource.REPAYMENTCASH);
+						}
 						for (String key : map1.keySet()) {
 							map.put(key,map1.get(key));
 						}
-						AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-						afYibaoOrderDo.setOrderNo(payTradeNo);
-						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
-						afYibaoOrderDo.setStatus(0);
-						afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
-						afYibaoOrderDo.setUserId(userId);
-						afYibaoOrderDo.setoType(0);
-						afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-					}else if (cardId ==-3){
-						Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
-						for (String key : map1.keySet()) {
-							map.put(key,map1.get(key));
-						}
-						AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-						afYibaoOrderDo.setOrderNo(payTradeNo);
-						afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
-						afYibaoOrderDo.setStatus(0);
-						afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
-						afYibaoOrderDo.setUserId(userId);
-						afYibaoOrderDo.setoType(0);
-						afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-					}else if(cardId ==-4){
+					}
+					else if(cardId ==-4){
 
 					}else if (cardId > 0) {// 银行卡支付
 						AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
@@ -366,13 +358,16 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
-					if(afYibaoOrderDo !=null){
-						if(afYibaoOrderDo.getStatus().intValue() == 1){
-							return 0L;
-						}else{
-							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
-						}
+//					AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+//					if(afYibaoOrderDo !=null){
+//						if(afYibaoOrderDo.getStatus().intValue() == 1){
+//							return 0L;
+//						}else{
+//							afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),1);
+//						}
+//					}
+					if( thirdPayUtility.checkSuccess(outTradeNo)){
+						return 1L;
 					}
 					
 					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
@@ -578,7 +573,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			return 0l;
 		}
 		long rowNums = dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repayment.getRid());
-		
+
 		if(isNeedMsgNotice){
 			//用户信息及当日还款失败次数校验
 			int errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimes(repayment.getUserId());
@@ -590,12 +585,17 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	}
 
 	long dealChangStatus(String outTradeNo, String tradeNo, String status, Long rid) {
-		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
-		if(afYibaoOrderDo !=null){
-			if(afYibaoOrderDo.getStatus().intValue() == 1){
-				return 1;
-			}else{
-				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),2);
+//		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
+//		if(afYibaoOrderDo !=null){
+//			if(afYibaoOrderDo.getStatus().intValue() == 1){
+//				return 1;
+//			}else{
+//				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),2);
+//			}
+//		}
+		if(AfBorrowCashRepmentStatus.NO.getCode().equals(status)) {
+			if (thirdPayUtility.checkFail(outTradeNo)) {
+				return 1L;
 			}
 		}
 

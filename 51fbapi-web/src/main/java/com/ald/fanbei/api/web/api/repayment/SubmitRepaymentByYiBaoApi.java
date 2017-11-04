@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.repayment;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -164,11 +166,11 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
         }
 
-        if(cardId.longValue() ==-2 || cardId.longValue() ==-3){
-            if(! yiBaoUtility.checkCanNext(userId,2)){
-                return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
-            }
-        }
+//        if(cardId.longValue() ==-2 || cardId.longValue() ==-3){
+//            if(! yiBaoUtility.checkCanNext(userId,2)){
+//                return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
+//            }
+//        }
 
         Map<String,Object> map;
         if(cardId.longValue()==-2){//余额支付
@@ -182,28 +184,42 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 //			resp.setResponseData(map);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 
-            if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")) {
+            if(context.getAppVersion()<395){
+                throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
+            if(!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.WXPAY)){
+                throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
+
+            //if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")) {
                 map = afRepaymentService.createRepaymentYiBao(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, cardId,userId,billDo,"",afUserAccountDo);
                 map.put("userNo",afUserAccountDo.getUserName());
                 map.put("userType","USER_ID");
                 map.put("directPayType","WX");
                 resp.setResponseData(map);
-            }
-            else {
-                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
-            }
+//            }
+//            else {
+//                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+//            }
         }
         else if(cardId.longValue() ==-3){
-            if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
+            if(context.getAppVersion()<395){
+                throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
+            if(!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.ZFBPAY)){
+                throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
+
+            //if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
                 map = afRepaymentService.createRepaymentYiBao(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, cardId,userId,billDo,"",afUserAccountDo);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
                 map.put("directPayType", "ZFB");
                 resp.setResponseData(map);
-            }
-            else{
-                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
-            }
+//            }
+//            else{
+//                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
+//            }
         }
         else if(cardId.longValue()>0){//银行卡支付
             AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
