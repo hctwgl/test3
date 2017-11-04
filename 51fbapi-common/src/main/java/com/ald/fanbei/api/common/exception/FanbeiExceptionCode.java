@@ -228,6 +228,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     QUERY_OVERDUE_ORDER_ERROR("QUERY_OVERDUE_ORDER_ERROR",1919,"query overdue order error","查询逾期账单失败"),
     RISK_USERLAY_RATE_ERROR("RISK_USERLAY_RATE_ERROR",1920,"risk userlay rate error","获取用户手续费率失败"),
     RISK_SYN_LOGIN_VERIFY_ERROR("RISK_SYN_LOGIN_VERIFY_ERROR",1921,"risk syn login verify error","风控同步登陆失败"),
+    RISK_CREDIT_PAYMENT_ERROR("RISK_CREDIT_PAYMENT_ERROR",1922,"get risk credit payment error","获取信用支付额度失败"),
     RISK_SYNC_CONTACTS_ERROR("RISK_MODIFY_CONTACTS_ERROR", 1922, "risk_modify contacts error", "风控同步通讯录失败"),
 
     //2000-2100
