@@ -8,7 +8,9 @@
 		<!-- config -->
 		<property name="fbapi.check.sign.switch" defaultValue="0" description="检查签名开关，1：打开 （检查签名） 0：关闭（不检查签名）" />
 		<property name="fbapi.inveloment.type" defaultValue="test" description="当前环境" />
-
+		<property name="fbfile.oss.access.key" defaultValue="hwfdVlH1a1bp/Lc9hSUqBtCuhgu0QhqoULwmZ+3gTgE=" description="oss access key" />
+		<property name="fbfile.oss.access.secret" defaultValue="k7QDjE5/1emiZgIjksPg/ULP8DfMCCekqoH9+ZOZGuE=" description="oss access secret" />
+		
 		<!-- redis -->
 		<property name="fbapi.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="redis host" />
 		<property name="fbapi.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
@@ -117,6 +119,14 @@
 		<property name="fbapi.face.plus.face.living.url" defaultValue="https://api.megvii.com/faceid/v2/verify" description="face++活体验证地址"/>
 		<property name="fbapi.face.plus.appkey" defaultValue="FV5T+YXsSPiuLUmM/lIzdePOCaCnnK5GndzBqV1jT37QroYLtEIaqFC8Jmft4E4B" description="face++appKey"/>
 		<property name="fbapi.face.plus.secret" defaultValue="n0mySgkpAdgZStufuC6eLwCZsHQZxD37jOPbXEew3sLQroYLtEIaqFC8Jmft4E4B" description="face++ app_secret"/>
+		<!-- esign -->
+		<property name="fbapi.esign.project.id" defaultValue="1111563517"/>
+		<property name="fbapi.esign.project.secret" defaultValue="95439b0863c241c63a861b87d1e647b7"/>
+		<property name="fbapi.esign.apis.url" defaultValue="http://121.40.164.61:8080/tgmonitor/rest/app!getAPIInfo2"/>
+		<property name="fbapi.esign.http.type" defaultValue="https"/>
+		<property name="fbapi.esign.retry" defaultValue="5"/>
+		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
+
 	</group>
 
 	<script>

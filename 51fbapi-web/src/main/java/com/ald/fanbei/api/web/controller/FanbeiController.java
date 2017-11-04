@@ -109,7 +109,7 @@ public class FanbeiController extends BaseController {
     		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
     		"/user/submitShareAction","/user/checkMobileRegistered","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
-            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts"
+            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -222,10 +222,7 @@ public class FanbeiController extends BaseController {
             RequestDataVo reqVo = new RequestDataVo();
             String method = request.getRequestURI();
             reqVo.setMethod(method);
-            
-            
             reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
-            
             String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
             String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
             String userName = request.getHeader(Constants.REQ_SYS_NODE_USERNAME);
