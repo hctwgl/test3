@@ -1,21 +1,6 @@
 package com.ald.fanbei.api.web.api.borrow;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -36,15 +21,24 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @类描述：
  * 
- * @author suweili 2017年3月30日下午4:02:55
+ * @author chefeipeng 2017年11月1日下午4:02:55
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("getCreditPromoteInfoApi")
-public class GetCreditPromoteInfoApi implements ApiHandle {
+@Component("getCreditPromoteInfoV1Api")
+public class GetCreditPromoteInfoV1Api implements ApiHandle {
 
 	@Resource
 	private AfUserAuthService afUserAuthService;
@@ -81,7 +75,8 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 //		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 		Integer sorce =userDto.getCreditScore();
-		
+		long between =0l;
+		AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
 		if(sorce<min){
 			creditModel.put("creditLevel", "信用较差");
@@ -146,6 +141,11 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		} else {
 			data.put("riskStatus", authDo.getRiskStatus());
 		}
+		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
+			data.put("basicStatus", RiskStatus.A.getCode());
+		} else {
+			data.put("basicStatus", authDo.getRiskStatus());
+		}
 		data.put("faceStatus", authDo.getFacesStatus());
 		data.put("idNumber", Base64.encodeString(userDto.getIdNumber()));
 		data.put("realName", userDto.getRealName());
@@ -164,30 +164,76 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		} else {
 			data.put("isUploadImage", "N");
 		}
+
 		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
-			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtRisk()), 10);
-			long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
+			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtBasic()), 10);
+			between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 			if (between > 0) {
 				data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
 			} else {
 				data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
 			}
 		}
+
+
+		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
+				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())){
+			data.put("title1","你好，"+userDto.getRealName());
+			data.put("title2","完善基本资料即可获取3000-20000额度");
+		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.PROCESS.getCode())
+				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.PROCESS.getCode())){//信用认证页面（认证中状态）
+			data.put("title1","基础信息认证中");
+			data.put("title2","完善补充认证能够增加审核通过率");
+		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())
+				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())){//信用认证页面（失败状态）
+			data.put("title1","暂无信用额度");
+			if (between > 0) {
+				data.put("title2", "请"+between+"天后尝试重新提交，完成补充认证可提高成功率");
+			} else {
+				data.put("title2", "请10天后尝试重新提交，完成补充认证可提高成功率");
+			}
+		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.YES.getCode())
+				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){
+			data.put("highestAmount",userDto.getAuAmount());
+			data.put("currentAmount",afResource.getValue());
+			data.put("title2","每完成一项补充认证都会提高相应额度");
+		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())
+				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){//信用认证页面（基础认证失败状态，补充认证成功状态）
+			data.put("highestAmount",userDto.getAuAmount());
+			data.put("currentAmount",afResource.getValue());
+			if (between > 0) {
+				data.put("title2", "请"+between+"天后尝试重新提交，完成补充认证可提高成功率");
+			} else {
+				data.put("title2", "请10天后尝试重新提交，完成补充认证可提高成功率");
+			}
+		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.SECTOR.getCode())
+				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){
+			data.put("highestAmount",userDto.getAuAmount());
+			data.put("currentAmount",afResource.getValue());
+			data.put("title2","可以尝试重新提交啦，完成基础认证可大幅度提高你的额度");
+		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.PROCESS.getCode())
+				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){
+			data.put("highestAmount",userDto.getAuAmount());
+			data.put("currentAmount",afResource.getValue());
+			data.put("title2","你的基础认证正在审核中，完成基础认证可大幅度提高你的额度");
+		}
+
+
 		//是否跳轉到H5頁面，這個是為後續做擴展用，暫時還沒有跳轉到H5的需求（以免app發版） NO(不跳)，H5(跳转到H5)，SC(跳转到补充认证)
 		String isSkipH5 = "NO";
 		if (StringUtil.equals(isSkipH5, "H5")) {
 			data.put("h5Url", "");
 		}
 		
-		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())) {
-//			data.put("url", "https://f.51fanbei.com/test/af8076f9f38a5315.png?currentTime=" + System.currentTimeMillis());
-		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-			data.put("url", "https://f.51fanbei.com/test/b9435048dd27d50e.png?currentTime=" + System.currentTimeMillis());
-			isSkipH5 = "SC";
-		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())||StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
-			data.put("url", "https://f.51fanbei.com/test/d0f2a8be96752d16.png?currentTime=" + System.currentTimeMillis());
-			isSkipH5 = "SC";
-		}
+//		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())) {
+////			data.put("url", "https://f.51fanbei.com/test/af8076f9f38a5315.png?currentTime=" + System.currentTimeMillis());
+//		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+//			data.put("url", "https://f.51fanbei.com/test/b9435048dd27d50e.png?currentTime=" + System.currentTimeMillis());
+//			isSkipH5 = "SC";
+//		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())||StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
+//			data.put("url", "https://f.51fanbei.com/test/d0f2a8be96752d16.png?currentTime=" + System.currentTimeMillis());
+//			isSkipH5 = "SC";
+//		}
 		
 		data.put("isSkipH5", isSkipH5);
 		

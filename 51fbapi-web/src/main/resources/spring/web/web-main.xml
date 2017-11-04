@@ -297,6 +297,8 @@
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
 				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
+				<entry key="/borrow/getCreditPromoteInfoV1" value-ref="getCreditPromoteInfoV1Api" />
+
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
