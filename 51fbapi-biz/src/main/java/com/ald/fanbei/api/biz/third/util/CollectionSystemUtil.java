@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -95,6 +96,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
+		reqBo.put("channel", "3");//APP还款类型写3 , 线下还款写4
 
 		String json = JsonUtil.toJSONString(reqBo);
 		data.setData(json);// 数据集合

@@ -22,11 +22,11 @@ import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -35,9 +35,10 @@ import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类现描述：和催收平台互调
@@ -61,6 +62,10 @@ public class CollectionController {
 	
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+	
+	@Resource
+	AfIdNumberService idNumberService;
+	
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
 	 * @param request
@@ -77,6 +82,7 @@ public class CollectionController {
 		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data, sign);
 		return notifyRespBo;
 	}
+	
 	/**
 	 * 催收平台获取借款记录信息用于数据同步刷新
 	 * @param request
@@ -104,6 +110,7 @@ public class CollectionController {
 			String sign2=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
 				map.put("consumer_no", afBorrowCashDo.getUserId()+"");
+				map.put("borrow_id",afBorrowCashDo.getRid()+"");
 				map.put("borrow_no",afBorrowCashDo.getBorrowNo());
 				map.put("card_name", afBorrowCashDo.getCardName());
 				map.put("card_number", afBorrowCashDo.getCardNumber());
@@ -119,6 +126,12 @@ public class CollectionController {
 				map.put("repay_amount_sum",afBorrowCashDo.getRepayAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
 				map.put("status",afBorrowCashDo.getStatus());
 				map.put("gmt_plan_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtPlanRepayment()));
+				map.put("majiabao_name", StringUtil.null2Str(afBorrowCashDo.getMajiabaoName()));
+				if (StringUtil.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
+					map.put("gmt_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtModified()) + "");
+				}else{
+					map.put("gmt_repayment", "");
+				}
 				String jsonString = JsonUtil.toJSONString(map);
 				updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
 				updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
@@ -131,6 +144,55 @@ public class CollectionController {
 			}
 		} catch(Exception e){
 			logger.error("error message " + e);
+			updteBo.setCode(FanbeiThirdRespCode.SYSTEM_ERROR.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SYSTEM_ERROR.getMsg());
+			return updteBo;
+		}
+	}
+	/**
+	 * 催收平台获取用户身份证图片和人脸识别信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/findUserInfoByConsumerNo"}, method = RequestMethod.POST)
+	@ResponseBody
+	public CollectionUpdateResqBo findUserInfoByConsumerNo(HttpServletRequest request, HttpServletResponse response){
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		JSONObject obj = JSON.parseObject(data);
+		Long userId = NumberUtil.objToLongDefault(obj.getString("consumerNo"), 0L);
+		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+		String sign1 = ObjectUtils.toString(request.getParameter("sign"));
+		logger.info("findUserInfoByConsumerNo data="+userId+",timestamp="+timestamp+",sign1="+sign1+"");
+		Map<String,String> map=new HashMap<String,String>();
+		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
+		try{
+			String sign2=DigestUtil.MD5(data);
+			if (StringUtil.equals(sign1, sign2)) {// 验签成功
+				AfIdNumberDo afIdNumberDo=	idNumberService.selectUserIdNumberByUserId(userId);
+				if(afIdNumberDo==null) {
+					logger.error("findUserInfoByConsumerNo afIdNumberDo is null,userId:"+userId );
+					map.put("id_front_url", "");
+					map.put("id_behind_url","");
+					map.put("face_url", "");
+				}else{
+					map.put("id_front_url", afIdNumberDo.getIdFrontUrl());
+					map.put("id_behind_url",afIdNumberDo.getIdBehindUrl());
+					map.put("face_url", afIdNumberDo.getFaceUrl());
+				}
+				String jsonString = JsonUtil.toJSONString(map);
+				updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+				updteBo.setData(jsonString);
+				return updteBo;
+			}else{
+				logger.info("request sign fail");
+				updteBo.setCode(FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.REQUEST_INVALID_SIGN_ERROR.getMsg());
+				return updteBo;
+			}
+		} catch(Exception e){
+			logger.error("findUserInfoByConsumerNo error : error message " + e);
 			updteBo.setCode(FanbeiThirdRespCode.SYSTEM_ERROR.getCode());
 			updteBo.setMsg(FanbeiThirdRespCode.SYSTEM_ERROR.getMsg());
 			return updteBo;
@@ -218,8 +280,7 @@ public class CollectionController {
 				logger.info("findBorrowBillByBillNo sign and sign is fail");
 				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
 				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
-				return updteBo;
-			}
+				return updteBo;			}
 			List<AfOverdueOrderDto> orderList = afBorrowBillService.getOverdueDataToRiskByBillIds(billIds);
 			if (orderList == null || orderList.size() < 1) {
 				logger.error("findBorrowBillByBorrowNo afBorrowCashDo is null billIds = " + billIds);
