@@ -15,6 +15,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -68,6 +70,7 @@ public class SmsUtil extends AbstractThird {
     private static String REBATE_COMPLETED = "返利入账通知，%s，您购买商品/服务的返利已入账%s元，可登录51返呗查看详情";
     private static String DEFAULT_PASSWORD = "您已注册成功，默认密码%s，登录即可领取最高20000额度！";
     private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
+    private static String TRADE_HOME_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
     private static String TEST_VERIFY_CODE = "888888";
 
     // public static String sendUserName = "suweili@edspay.com";
@@ -81,7 +84,8 @@ public class SmsUtil extends AbstractThird {
     @Resource
     AfResourceService afResourceService;
 
-
+    @Resource
+    AfUserOutDayDao afUserOutDayDao;
     /**
      * 发送注册短信验证码
      *
@@ -190,6 +194,26 @@ public class SmsUtil extends AbstractThird {
         return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RISK_FAIL.getCode(),true);
     }
 
+    /**
+     * 强风控通过
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendBorrowCashErrorChannel(String mobile) {
+    	try {
+    		if(StringUtil.isNotBlank(mobile) && mobile.length()==11){
+    			 return sendSmsByResource(mobile, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.BORROW_CASH_AMOUNT_CHANNEL_ERROR.getCode(),false);
+    		}else{
+    			logger.error("sendBorrowCashErrorChannel error,mobile is invalid ,mobile="+mobile);
+    			return false;
+    		}
+		} catch (Exception e) {
+			logger.error("sendBorrowCashErrorChannel error,mobile="+mobile,e);
+			return false;
+		}
+    }
+    
     /**
      * 借钱审核通过但是打款失败
      *
@@ -581,12 +605,22 @@ public class SmsUtil extends AbstractThird {
      *
      * @param mobile
      */
-    public void sendTradePaid(String mobile, Date date, BigDecimal amount) {
+    public void sendTradePaid(long userId,String mobile, Date date, BigDecimal amount) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        SimpleDateFormat backDateFormat = new SimpleDateFormat("YYYY-MM-20");
+        int payDay = 20;
+        int outDay = 10;
+        AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+        if(afUserOutDayDo != null){
+            payDay = afUserOutDayDo.getPayDay();
+            outDay = afUserOutDayDo.getOutDay();
+        }
+
+
+        
+        SimpleDateFormat backDateFormat = new SimpleDateFormat("YYYY-MM-"+String.valueOf(payDay));
         String payBackDateFormat = "";
-        if (calendar.get(Calendar.DAY_OF_MONTH) <= 10) {
+        if (calendar.get(Calendar.DAY_OF_MONTH) <= outDay) {
             payBackDateFormat = backDateFormat.format(date);
         } else {
             calendar.add(Calendar.MONTH, 1);

@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -55,6 +56,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	SmsUtil smsUtil;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Resource
@@ -111,6 +114,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 			String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
 			if (StringUtils.equals(amountStr, "") || AfBorrowCashType.findRoleTypeByCode(type) == null) {
+				//推送处理
+				smsUtil.sendBorrowCashErrorChannel(context.getUserName());
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_AMOUNT_ERROR);
 			}
 			// 后台配置的金额限制(用户的借款额度根据可用额度进行限制)

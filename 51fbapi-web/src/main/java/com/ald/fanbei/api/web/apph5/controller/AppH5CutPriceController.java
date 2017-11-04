@@ -105,6 +105,7 @@ public class AppH5CutPriceController extends BaseController {
 	public String share(HttpServletRequest request, HttpServletResponse response) {
 		String resultStr = H5CommonResponse.getNewInstance(false, "砍价分享失败").toString();
 		FanbeiWebContext context = new FanbeiWebContext();
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"),"/activity/de/share",request.getParameter("goodsPriceId"));
 		try {
 			context = doWebCheck(request, true);
 			
@@ -166,6 +167,7 @@ public class AppH5CutPriceController extends BaseController {
 					// as long as the goods is iphoneX no matter the flag the
 					// result is true.
 					resultStr = H5CommonResponse.getNewInstance(true, "ihponex砍价分享成功").toString();
+					doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"),"/activity/de/share",goodsPriceId.toString());
 				} else {
 					// needs to know if this goods has been shared by this user
 					boolean flag = false;
@@ -179,9 +181,9 @@ public class AppH5CutPriceController extends BaseController {
 						}
 						
 						//to judge if the user has already bought another two goodses
-						if ((userGoodsDoList.size() >= 3 && !userGoodsPriceList.contains(goodsPriceId)) || !userGoodsPriceList.contains(goodsPriceId) && (userGoodsDoList.size() >= 2 && !userGoodsPriceList.contains(iphoneDoo.getGoodspriceid()))) {
+						if ((userGoodsDoList.size() >= 6 && !userGoodsPriceList.contains(goodsPriceId)) || !userGoodsPriceList.contains(goodsPriceId) && (userGoodsDoList.size() >= 5 && !userGoodsPriceList.contains(iphoneDoo.getGoodspriceid()))) {
 							logger.info("activity/de/share userName ={}  has already had {} goodses shared", userName, userGoodsDoList.size());
-							resultStr = H5CommonResponse.getNewInstance(false, "除了iphoneX只能砍价两件商品，不要太贪心哦！").toString();
+							resultStr = H5CommonResponse.getNewInstance(false, "除了iphoneX只能砍价五件商品，不要太贪心哦！").toString();
 							return resultStr;
 						}
 						
@@ -205,8 +207,10 @@ public class AppH5CutPriceController extends BaseController {
 							afDeUserGoodsService.saveRecord(insertDo);
 							logger.info("activity/de/share userName ={}  succeed to share this goods {}", userName, goodsPriceId);
 							resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
+							doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"),"/activity/de/share",goodsPriceId.toString());
 						}
 						resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
+						doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"),"/activity/de/share",goodsPriceId.toString());
 
 					} else {
 						logger.info("activity/de/share userName ={}  had no goods shared before and now begin to share this goods {}", userName, goodsPriceId);
@@ -219,6 +223,7 @@ public class AppH5CutPriceController extends BaseController {
 						afDeUserGoodsService.saveRecord(insertDo);
 						logger.info("activity/de/share userName ={}  had no goods shared before and now succeed to share this goods {}", userName, goodsPriceId);
 						resultStr = H5CommonResponse.getNewInstance(true, "商品砍价分享成功").toString();
+						doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"),"/activity/de/share",goodsPriceId.toString());
 					}
 
 					// }

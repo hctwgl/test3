@@ -120,8 +120,8 @@ let vm = new Vue({
                 self.shareSure();
             } else {
                 if (type == 'product') {
-                    if (self.shareTime >= 2) {
-                        requestMsg('只能砍价两件商品，不要太贪心哦');
+                    if (self.shareTime >= 5) {
+                        requestMsg('只能砍价五件商品，不要太贪心哦');
                         return false;
                     }
                     self.sureFlag = true;

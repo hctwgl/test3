@@ -92,7 +92,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
-					logger.info("addUser error:", e);
+					logger.info("addUser error:", e,afUserDo);
 					return 0;
 				}
 			}

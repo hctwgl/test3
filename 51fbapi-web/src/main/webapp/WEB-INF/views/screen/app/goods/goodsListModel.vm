@@ -9,7 +9,6 @@
 <body>
     <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
     <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
-    <input type="hidden" id="goodsList" value='$jsonUtil.toJSONString(${goodsList})'>
     <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
     <input type="hidden" id="couponList" name="couponList" value="$!{couponList}">
 
@@ -84,7 +83,12 @@
             </div>
         </div>
     #end
+    <script>
+        var goodsList = $jsonUtil.toJSONString(${goodsList})
+    </script>
     <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/dist/js/goods/goodsListModel.js?version=$version"></script>
+
+
 </body>
 </html>

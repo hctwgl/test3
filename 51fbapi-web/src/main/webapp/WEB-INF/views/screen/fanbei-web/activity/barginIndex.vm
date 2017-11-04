@@ -127,7 +127,7 @@
                 <ul class="rule">
                     <li>1.活动时间：2017年11月1日——2017年11月11日;</li>
                     <li>2.iPhone X与其他商品的砍价规则不同，具体细看iPhoneX 砍价页面规则;</li>
-                    <li>3.砍价商品数量有限，每人只能发起2个商品砍价;</li>
+                    <li>3.砍价商品数量有限，每人只能发起5个商品砍价;</li>
                     <li>4.点击商品右上方我要砍价即可发起砍价. 发送链接至朋友圈，邀请朋友帮自己砍价;</li>
                     <li>5.单个商品每位好友只能帮你砍1次，参与砍价的活动价格最终根据你砍掉后的金额而定;</li>
                     <li>6.每个普通砍价商品，每人限购一件;</li>
@@ -143,7 +143,7 @@
                     <img src="$commonUrl/bargin08.png">
                     <div>疯狂砍价</div>
                 </div>
-                <p class="tip">亲，您总共能发起<span>2个商品</span>砍价，请慎重选择!</p>
+                <p class="tip">亲，您总共能发起<span>5个商品</span>砍价，请慎重选择!</p>
                 <div class="btn-box2 flex flex-row jc-sb">
                     <div class="btn-sure" @click="shareFn()"></div>
                     <div class="btn-cancel" @click="closeSure()"></div>

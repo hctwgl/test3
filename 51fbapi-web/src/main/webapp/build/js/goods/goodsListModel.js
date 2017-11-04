@@ -5,9 +5,6 @@
 * @Last Modified time: 2017-05-11 14:21:03
 */
 
-let goodsList1 = $('#goodsList').val();
-let goodsList=eval('(' + goodsList1 + ')'); //初始商品数据
-
 let notifyUrl = $("#notifyUrl").val();//商品跳转原生的链接
 
 let finished = 0;//防止多次请求ajax

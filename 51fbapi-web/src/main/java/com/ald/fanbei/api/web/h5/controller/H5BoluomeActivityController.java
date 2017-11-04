@@ -302,7 +302,8 @@ public class H5BoluomeActivityController extends BaseController {
 	// IP
 	String rmtIp = CommonUtil.getIpAddr(request);
 	String resultStr = "";
-
+	String referer = request.getHeader("referer");  
+	doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"calling boluomeActivityRegisterLogin");
 	try {
 	    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 	  //  String refUserName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
@@ -321,30 +322,33 @@ public class H5BoluomeActivityController extends BaseController {
 //	    }
 
 	    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
+	    logger.info("boluomeActivityRegisterLogin eUserDo",eUserDo,moblie); 
 	    if (eUserDo != null) {
+		logger.error("boluomeActivityRegisterLogin user regist account exist",moblie);
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "Register", null).toString();
 
 	    }
 	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
 	    if (smsDo == null) {
-		logger.error("sms record is empty");
+		logger.error("boluomeActivityRegisterLogin sms record is empty",moblie);
 		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "Register", null).toString();
 		return resultStr;
 	    }
 
 	    String realCode = smsDo.getVerifyCode();
 	    if (!StringUtils.equals(verifyCode, realCode)) {
-		logger.error("verifyCode is invalid");
+		logger.error("boluomeActivityRegisterLogin verifyCode is invalid",moblie);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
 	    if (smsDo.getIsCheck() == 1) {
-		logger.error("verifyCode is already invalid");
+		logger.error("boluomeActivityRegisterLogin verifyCode is already invalid",moblie);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
 	    // 判断验证码是否过期
 	    if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+		logger.error("boluomeActivityRegisterLogin user regist sms overdue",moblie);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "Register", null).toString();
 		return resultStr;
 
@@ -352,6 +356,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    try {
 		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
 	    } catch (Exception e) {
+		logger.error("boluomeActivityRegisterLogin tongtun fengkong error",moblie);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
@@ -374,8 +379,9 @@ public class H5BoluomeActivityController extends BaseController {
 		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
-	    afUserService.addUser(userDo);
-
+	    logger.info("boluomeActivityRegisterLogin userDo",userDo,moblie);
+	    int result = afUserService.addUser(userDo);
+	    logger.info("boluomeActivityRegisterLogin result",result,moblie);
 	    Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 	    String inviteCode = Long.toString(invteLong, 36);
 	    userDo.setRecommendCode(inviteCode);
@@ -387,6 +393,7 @@ public class H5BoluomeActivityController extends BaseController {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
+	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),typeFrom,typeFromNum,moblie);
 	    // save token to cache
             String  token1 = UserUtil.generateToken(moblie);
 	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;

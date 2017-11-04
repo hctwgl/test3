@@ -41,7 +41,7 @@
             <p class="limitAmount white" v-if="item.threshold>0">满<span>{{item.threshold}}</span>元可用</p>
             <p class="limitAmount white" v-else>无门槛</p>
             <p class="name" v-for="a in item.channels" v-if="a==='shengxian_yiguo'">易果生鲜</p>
-            <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">饿了么</p>
+            <p class="name" v-for="a in item.channels" v-if="a==='waimai_ele'">外卖</p>
             <p class="name" v-for="a in item.channels" v-if="a==='dianying_kou'">看电影</p>
             <p class="name" v-for="a in item.channels" v-if="a==='huafei_ofpay'">话费充值</p>
             <p class="name" v-for="a in item.channels" v-if="a==='coffee_linqu'">星巴克</p>
@@ -86,8 +86,8 @@
         <p class="inviteNum01" v-if="content.despotCoupon==='Y'" @click="presentClick()">您已成功邀请<span>{{content.alreadyNum}}人</span>，现在去享霸王餐 ></p>
         <p class="inviteNum01" v-if="!(content.despotCoupon)&&(((content.alreadyNum)%(content.supportedNum))!=0)">您已邀请<span>{{content.alreadyNum}}人</span>，再邀请<span>{{(content.supportedNum)-((content.alreadyNum)%(content.supportedNum))}}人</span>即享霸王餐</p>
         <p class="inviteNum03" v-if="!(content.despotCoupon)&&(((content.alreadyNum)%(content.supportedNum))===0)">邀请<span>{{content.supportedNum}}位好友</span>，也可吃霸王餐！</p>
-        <p class="presentCont"><span></span>通过“找人要卡”，每成功邀请{{content.supportedNum}}名好友，在以上6个场景中完成1笔任意金额消费，即可享用1次霸王餐（饿了么外卖，20元红包）。</p>
-        <p class="presentCont"><span></span>被邀请的新用户可享受饿了么外卖首单立减优惠（15元红包）。</p>
+        <p class="presentCont"><span></span>通过“找人要卡”，每成功邀请{{content.supportedNum}}名好友，在以上6个场景中完成1笔任意金额消费，即可享用1次霸王餐（外卖，20元红包）。</p>
+        <p class="presentCont"><span></span>被邀请的新用户可享受外卖首单立减优惠（15元红包）。</p>
         <p class="demandButton" @click="demandClick()"><img src="$src/ggNew10.png"></p>
     </div>
     <p class="ruleInfo" @click="ruleClick()">活动规则详情</p>

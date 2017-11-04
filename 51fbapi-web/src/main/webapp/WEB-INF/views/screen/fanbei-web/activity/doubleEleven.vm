@@ -35,12 +35,15 @@
     }
     .swiper-button-prev, .swiper-container-rtl .swiper-button-next{
         background-image:none !important;
+    } 
+    #content-detail{
+        overflow:initial !important;
     }
     </style>
 </head>
 <body>
     <div id="doubleEleven">
-        <div class="doubleEleven-top">
+        <div class="doubleEleven-top" id="doubleEleven-top">
             <div class="topLeft">
                 <span class="top-word">全民砍价</span>
                 <span class="top-num">11.1-11.11</span>
@@ -73,12 +76,12 @@
             </div>
         </div>
         <!--banner部分!-->
-        <div class="doubleEleven-banner">
+        <div class="doubleEleven-banner" id="doubleEleven-banner">
             <div class="marquee"><img src="$src/meeting_01.png" alt=""></div>
             <div class="marqueeBling"><img src="$src/meeting_05.gif" alt=""></div>
             <div class="fireworks"><img src="$src/meeting_12.gif" alt=""></div>
         </div>
-        <div class="doubleEleven-activity">
+        <div class="doubleEleven-activity" id="doubleEleven-activity">
             <!--优惠券部分!-->         
             <div class="coupon" v-for="item in m"  @click="flag && couponClick(item)">
                 <span class="ten">神劵不是天天有！00:00开抢</span>
@@ -102,7 +105,7 @@
             <div class="doubleEleven-brand">
                 <div class="brandTitle">各大品牌专题</div>
                 <div class="brandBox">
-                    <div class="swiper-container">
+                    <div class="swiper-container" id="swiperBox">
                         <div class="swiper-wrapper">
                             <div class="swiper-slide" v-for="item in arr">
                                 <li v-for="i in item">
@@ -126,7 +129,7 @@
         </div>
         <!--商品详情部分!-->
         <div class="product-detail clearFix">
-            <div class="product-nav" id="navScroll">
+            <div class="product-nav" id="navScroll"><!--tab栏!-->
                 <div class="slidBox">
                     <div class="xiba">
                         <span :class="i+1 ===tab?'bottomLine wordColor': ''" v-for="(item,i) in productList" @click="tabClick(i)">{{item.name}}</span>
@@ -134,21 +137,23 @@
                 </div>
                 <i class="arrow-end" @click="tabClickTwo()"><img src="$src/arrow_end.png" alt=""></i>
             </div>
-            <div id="content-detail">
-                <div class="cont" v-for="(item,i) in productList" :class="i+1 ===tab?'':'hide'">
-                    <div class="contentDetail" v-for="p in item.activityGoodsList" @click="goodClick(p)">
-                        <p class="goodImg"><img class="lazy" :src="p.goodsIcon"></p>
-                        <div class="product-bottom">
-                            <p class="goodName">{{p.goodName}}</p>
-                            <p class="price">
-                                <span class="salePrice">￥{{p.saleAmount}}</span>
-                                <span class="fan-img">返</span>
-                                <span class="fanMoney">￥{{p.rebateAmount}}</span>
-                            </p>
-                            <p class="monthPrice" v-if="p.nperMap.isFree==='0'">月供 ￥{{p.nperMap.amount}} 起</p>
-                            <p class="monthPrice" v-if="p.nperMap.isFree==='1' || p.nperMap.isFree==='2'">月供 ￥{{p.nperMap.freeAmount}} 起</p>
-                        </div>
-                    </div>   
+            <div id="content-detail"><!--商品!-->
+                <div id="detailScroll">
+                    <div class="cont" v-for="(item,i) in productList" :class="i+1 ===tab?'':'hide'">
+                        <div class="contentDetail" v-for="p in item.activityGoodsList" @click="goodClick(p)">
+                            <p class="goodImg"><img class="lazy" :src="p.goodsIcon"></p>
+                            <div class="product-bottom">
+                                <p class="goodName">{{p.goodName}}</p>
+                                <p class="price">
+                                    <span class="salePrice">￥{{p.saleAmount}}</span>
+                                    <span class="fan-img">返</span>
+                                    <span class="fanMoney">￥{{p.rebateAmount}}</span>
+                                </p>
+                                <p class="monthPrice" v-if="p.nperMap.isFree==='0'">月供 ￥{{p.nperMap.amount}} 起</p>
+                                <p class="monthPrice" v-if="p.nperMap.isFree==='1' || p.nperMap.isFree==='2'">月供 ￥{{p.nperMap.freeAmount}} 起</p>
+                            </div>
+                        </div>   
+                    </div>
                 </div>
             </div>    
         </div>
@@ -157,6 +162,5 @@
 </body>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.1.4.min.js"></script>
-<!--<script type="text/javascript" src="/dist/activity/11/vue.js?"></script>!-->
 <script type="text/javascript" src="/dist/activity/11/doubleEleven.js?version=$version"></script>
 </html>

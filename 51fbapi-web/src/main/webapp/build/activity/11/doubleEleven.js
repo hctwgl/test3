@@ -1,19 +1,29 @@
+
+
 //商品导航栏滚动到一定距离固定到顶部
-window.onscroll=function(){
+ window.onscroll=function(){
+                var top1=document.getElementById('doubleEleven-banner');
+                var top2=document.getElementById('doubleEleven-activity');
+                var top3=document.getElementById('doubleEleven-top');
+                var h1=top1.offsetHeight;//高度
+                var h2=top2.offsetHeight;
+                var h3=top3.offsetHeight;
+                var totalHeight=h1+h2+h3;
+
                  var topScroll =document.body.scrollTop;//滚动的距离,距离顶部的距离
                  var bignav  = document.getElementById("navScroll");//获取到导航栏id
-                 if(topScroll > 750){  //当滚动距离大于750px时执行下面的东西
+                 if(topScroll > totalHeight){  //当滚动距离大于总得高度时执行下面的东西
                      bignav.style.position = 'fixed';
                      bignav.style.top = '0';
                      bignav.style.left='0';
                      bignav.style.zIndex = '9999';
                     bignav.style.background='red';
-                 }else{//当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+                 }else{//当滚动距离小于总的高度的时候执行下面的内容，也就是让导航栏恢复原状
                      bignav.style.position = 'static';
                  }
 
 
-}
+} 
 
 //活动日历显示
 /*判断时间list*/ // 根据时间判断导航栏高亮
@@ -76,7 +86,7 @@ let vm = new Vue({
         allData: [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphoneX?modelId=143&addUiName=SHOWSHARE&title=iPhoneX新品预约'
             },
             {
                 'name': 'vivo/OPPO',
@@ -141,7 +151,7 @@ let vm = new Vue({
             {
                 'name': '欧莱雅',
                 'img': imgrooturl + '/paris.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=181'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=170'
             },
             {
                 'name': '马克华菲',
@@ -198,7 +208,7 @@ let vm = new Vue({
             [{
                 'name': '苹果',
                 'img': imgrooturl + '/brand-01.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphone8Second?activityId=39'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/iphoneX?modelId=143&addUiName=SHOWSHARE&title=iPhoneX新品预约'
             },
             {
                 'name': 'vivo/OPPO',
@@ -263,7 +273,7 @@ let vm = new Vue({
             {
                 'name': '欧莱雅',
                 'img': imgrooturl + '/paris.png',
-                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=181'
+                'src': 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=170'
             },
             {
                 'name': '马克华菲',
@@ -347,6 +357,7 @@ let vm = new Vue({
 
             });
             mySwiper.update()
+
         })
 
     },
