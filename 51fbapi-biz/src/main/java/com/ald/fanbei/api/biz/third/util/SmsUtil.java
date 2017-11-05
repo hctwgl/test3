@@ -213,7 +213,7 @@ public class SmsUtil extends AbstractThird {
 			return false;
 		}
     }
-    
+
     /**
      * 借钱审核通过但是打款失败
      *
@@ -502,7 +502,37 @@ public class SmsUtil extends AbstractThird {
         return false;
     }
 
-    
+
+    /**
+	 * 用户续借失败发送短信提醒用户
+	 *
+	 * @param mobile
+	 */
+	public boolean sendRenewalFailWarnMsg(String mobile,String errorMsg,int errorTimes){
+
+	 AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
+	 try {
+	 	//发送短信的大开关
+	     if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+	     	//单日单个用户发送次数限制校验
+	     	int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
+	     	if(maxSendTimes<errorTimes){
+	     		logger.error("sendRenewalFailWarnMsg false,maxSendTimes:"+maxSendTimes+",errorTimes:"+errorTimes+",mobile:"+mobile);
+	     		return false;
+	     	}
+	         String content = StringUtil.null2Str(resourceDo.getValue());
+	         content = content.replace("&errorMsg", errorMsg);
+	         SmsResult smsResult = sendSmsToDhst(mobile, content);
+	         return smsResult.isSucc();
+	     }else{
+	     	logger.error("sendRenewalFailWarnMsg false,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+	     }
+	 } catch (Exception e) {
+			logger.error("sendRenewalFailWarnMsg exception,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+		}
+	 return false;
+	}
+
     /**
      * 对单个手机号发送普通短信
      *
@@ -617,7 +647,7 @@ public class SmsUtil extends AbstractThird {
         }
 
 
-        
+
         SimpleDateFormat backDateFormat = new SimpleDateFormat("YYYY-MM-"+String.valueOf(payDay));
         String payBackDateFormat = "";
         if (calendar.get(Calendar.DAY_OF_MONTH) <= outDay) {

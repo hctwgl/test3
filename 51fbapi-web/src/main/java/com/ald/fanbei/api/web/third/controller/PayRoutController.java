@@ -284,7 +284,7 @@ public class PayRoutController {
                 if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
                     afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId, false, "");
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-                    afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId);
+                    afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId,"");
                 } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                     afOrderService.dealBrandOrderFail(outTradeNo, transactionId, PayType.WECHAT.getCode());
                 }
@@ -300,59 +300,63 @@ public class PayRoutController {
         return "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
     }
 
-    @RequestMapping(value = {"/collect"}, method = RequestMethod.POST)
-    @ResponseBody
-    public String collect(HttpServletRequest request, HttpServletResponse response) {
-        String outTradeNo = request.getParameter("orderNo");
-        String merPriv = request.getParameter("merPriv");
-        String tradeNo = request.getParameter("tradeNo");
-        String tradeState = request.getParameter("tradeState");
-        String respCode = StringUtil.null2Str(request.getParameter("respCode"));
-        String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
-        String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
-        logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc + ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc=" + respDesc);
-        try {
-            if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
-                if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
-                    afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
-                } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
-                    afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
-                } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
-                } else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
-                    afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
-                } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
-                } else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-                    afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
-                } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
-                    afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
-                }
-            } else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
-                if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-                    String errorWarnMsg = "";
-                    if (StringUtil.isNotBlank(respDesc)) {
-                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-                    } else {
-                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-                    }
-                    afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
-                } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
-                    afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
-                } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败	311
-                    afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
-                } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
-                } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv) || OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
-                }
-            }
-            return "SUCCESS";
-        } catch (Exception e) {
-            logger.error("collect", e);
-            return "ERROR";
-        }
-    }
+	@RequestMapping(value = { "/collect" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String collect(HttpServletRequest request, HttpServletResponse response) {
+		String outTradeNo = request.getParameter("orderNo");
+		String merPriv = request.getParameter("merPriv");
+		String tradeNo = request.getParameter("tradeNo");
+		String tradeState = request.getParameter("tradeState");
+		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
+		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
+		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
+		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:"+tradeDesc+",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo+ ",respCode=" + respCode+ ",respDesc=" + respDesc);
+		try {
+			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
+				if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
+					afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
+				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
+					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+				} else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
+				} else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
+					afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+				} else if (OrderType.BOLUOMECP.getCode().equals(merPriv)||OrderType.SELFSUPPORTCP.getCode().equals(merPriv)) {
+					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
+					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
+					afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
+				}
+			} else if(TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
+				String errorWarnMsg = "";if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
+
+					if(StringUtil.isNotBlank(respDesc)){
+						errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+					}else{
+						errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+					}
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
+					if(StringUtil.isNotBlank(respDesc)){
+						errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+					}else{
+						errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+					}afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo,errorWarnMsg);
+				} else if(UserAccountLogType.REPAYMENT.getCode().equals(merPriv)){ // 分期还款失败	311	
+				    afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo); 
+				}else if (OrderType.BOLUOME.getCode().equals(merPriv)||OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
+					afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+				}else if(OrderType.BOLUOMECP.getCode().equals(merPriv)||OrderType.SELFSUPPORTCP.getCode().equals(merPriv)||OrderType.AGENTCPBUY.getCode().equals(merPriv)){ 
+					afOrderService.dealBrandPayCpOrderFail(outTradeNo,tradeNo, PayType.COMBINATION_PAY.getCode());
+				}
+			}
+			return "SUCCESS";
+		} catch (Exception e) {
+			logger.error("collect", e);
+			return "ERROR";
+		}
+	}
 
 
     /**
@@ -398,7 +402,7 @@ public class PayRoutController {
             if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
                 afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo, false, "");
             } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-                afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
+                afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo,"");
             } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                 afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
             } else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
@@ -423,9 +427,9 @@ public class PayRoutController {
         return "SUCCESS";
     }
 
-    private String formatString(String text) {
-        return text == null ? "" : text.trim();
-    }
+	private String formatString(String text){
+		return text==null ? "" : text.trim();
+	}
 
     /**
      * 易宝清算回调
