@@ -217,6 +217,7 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(Long consumerNo);
-	
-	
+
+
+	AfBorrowBillDo getBillAmountByUserId(Long userId);
 }

@@ -307,4 +307,6 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<AfOverdueBillDto> getAfOverdueBillDtoByConsumerNo(@Param("orderId")Long orderId);
+
+	AfBorrowBillDo getBillAmountByUserId(Long userId);
 }

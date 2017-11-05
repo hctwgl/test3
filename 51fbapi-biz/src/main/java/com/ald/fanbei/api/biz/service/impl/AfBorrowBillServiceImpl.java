@@ -243,4 +243,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		}
 		return null;
 	}
+
+	@Override
+	public AfBorrowBillDo getBillAmountByUserId(Long userId) {
+		return  afBorrowBillDao.getBillAmountByUserId(userId);
+	}
 }
