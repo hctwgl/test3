@@ -11,10 +11,10 @@ import java.util.Map;
  */
 public interface AfContractPdfCreateService {
 
-    void protocolInstalment(String userName, Integer nper, BigDecimal amount, BigDecimal poundage , Long borrowId, BigDecimal borrowAmount);
+    void protocolInstalment(long userId, Integer nper, BigDecimal amount , Long borrowId);
 
-    void protocolCashLoan(Long borrowId,BigDecimal borrowAmount,String userName );
+    void protocolCashLoan(Long borrowId,BigDecimal borrowAmount,long userId );
 
-    void protocolRenewal(String userName,Long borrowId,Long renewalId,int renewalDay ,BigDecimal renewalAmount);
+    void protocolRenewal(long userId,Long borrowId,Long renewalId,int renewalDay ,BigDecimal renewalAmount);
 
 }

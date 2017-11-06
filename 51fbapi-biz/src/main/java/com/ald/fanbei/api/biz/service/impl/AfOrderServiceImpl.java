@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,24 +27,6 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.service.AfAgentOrderService;
-import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -220,7 +203,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	AfCouponService afCouponService;
 	@Resource
 	AfUserCouponService afUserCouponService;
-	
+
+	@Resource
+	AfContractPdfCreateService afContractPdfCreateService;
+
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo){
 		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -828,6 +814,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 							//#endregion
 							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
 						}
+
 						//verybo.getResult()=10,则成功，活动返利
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {//组合支付
 						AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);

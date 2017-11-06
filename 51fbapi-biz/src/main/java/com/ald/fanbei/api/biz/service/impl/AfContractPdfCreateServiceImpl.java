@@ -67,16 +67,16 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
 
     private static final String src = "F:/doc/";
     @Override
-    public void protocolInstalment(String userName,Integer nper,BigDecimal amount,BigDecimal poundage ,Long borrowId,BigDecimal borrowAmount) {//分期
+    public void protocolInstalment(long userId,Integer nper,BigDecimal amount ,Long borrowId) {//分期
 
 //        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
 //        Integer nper = NumberUtil.objToIntDefault(content.get("nper"), 0);
 //        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("amount"), new BigDecimal(0));
 //        BigDecimal poundage = NumberUtil.objToBigDecimalDefault(content.get("poundage"), new BigDecimal(0));
 //        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"),0);
-        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        AfUserDo afUserDo = afUserService.getUserById(userId);
         Map map = new HashMap();
-        Long userId = afUserDo.getRid();
+        //Long userId = afUserDo.getRid();
         AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (accountDo == null) {
             logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -115,9 +115,9 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("lateFeeMin", new BigDecimal(amounts[0]));
             map.put("lateFeeMax", new BigDecimal(amounts[1]));
         }
-        map.put("amountCapital", "人民币"+toCapital(borrowAmount.doubleValue()));
-        map.put("amountLower", "￥"+borrowAmount);
-        map.put("poundage", "￥"+poundage);
+        map.put("amountCapital", "人民币"+toCapital(amount.doubleValue()));
+        map.put("amountLower", "￥"+amount);
+        map.put("poundage", "￥"+"dddd");
 
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
@@ -145,18 +145,18 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     }
 
     @Override
-    public void protocolCashLoan(Long borrowId,BigDecimal borrowAmount,String userName ) {//借款
+    public void protocolCashLoan(Long borrowId,BigDecimal borrowAmount,long userId ) {//借款
 //        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"), 0l);
 //        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("borrowAmount"), new BigDecimal(0));
 //        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
-        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        AfUserDo afUserDo = afUserService.getUserById(userId);
         Map map = new HashMap();
         if (afUserDo == null) {
             logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
-        Long userId = afUserDo.getRid();
+        //Long userId = afUserDo.getRid();
         AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (accountDo == null) {
             logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -168,7 +168,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         map.put("idNumber", accountDo.getIdNumber());
         map.put("realName", accountDo.getRealName());
         map.put("email", afUserDo.getEmail());//电子邮箱
-        map.put("phone", userName);//联系方式
+        map.put("phone", afUserDo.getUserName());//联系方式
         List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
         Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
         BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
@@ -311,20 +311,20 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     }
 
     @Override
-    public void protocolRenewal(String userName,Long borrowId,Long renewalId,int renewalDay ,BigDecimal renewalAmount) {//续借
+    public void protocolRenewal(long userId,Long borrowId,Long renewalId,int renewalDay ,BigDecimal renewalAmount) {//续借
 //        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
 //        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"), 0l);
 //        Long renewalId = NumberUtil.objToLongDefault(content.get("renewalId"), 0l);
 //        int renewalDay = NumberUtil.objToIntDefault(content.get("renewalDay"), 0);
 //        BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(content.get("renewalAmount"), BigDecimal.ZERO);
 
-        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        AfUserDo afUserDo = afUserService.getUserById(userId);
         if (afUserDo == null) {
             logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
-        Long userId = afUserDo.getRid();
+        //Long userId = afUserDo.getRid();
         AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (accountDo == null) {
             logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -334,7 +334,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         Map map = new HashMap();
         map.put("realName", accountDo.getRealName());//借款人
         map.put("idNumber", accountDo.getIdNumber());//身份证号
-        map.put("phone", userName);//联系方式
+        map.put("phone", afUserDo.getUserName());//联系方式
         map.put("email", afUserDo.getEmail());//电子邮箱
         AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
         if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()){
