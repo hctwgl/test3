@@ -231,6 +231,7 @@
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/core.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/md5.js"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>
 <script type="text/javascript" src="/dist/js/user/channelRegister.js?version=$version"></script>
 <div style="display:none">
     <script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script>
