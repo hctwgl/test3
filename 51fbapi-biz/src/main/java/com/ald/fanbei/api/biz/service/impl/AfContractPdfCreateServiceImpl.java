@@ -64,6 +64,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     OssFileUploadService ossFileUploadService;
     @Resource
     AfContractPdfDao afContractPdfDao;
+    @Resource
+    AfBorrowBillService afBorrowBillService;
 
     private static final String src = "F:/doc/";
     @Override
@@ -117,8 +119,14 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         }
         map.put("amountCapital", "人民币"+toCapital(amount.doubleValue()));
         map.put("amountLower", "￥"+amount);
-        map.put("poundage", "￥"+"dddd");
-
+        List<AfBorrowBillDo> afBorrowBillDoList = afBorrowBillService.getAllBorrowBillByBorrowId(borrowId);
+        BigDecimal poundageAmount = new BigDecimal(0);
+        for (AfBorrowBillDo afBorrowBillDo : afBorrowBillDoList){
+            if (null != afBorrowBillDo.getPoundageAmount()){
+                poundageAmount.add(afBorrowBillDo.getPoundageAmount());//账单手续费
+            }
+        }
+        map.put("poundage", "￥"+poundageAmount);
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
         map.put("gmtTime", simpleDateFormat.format(date)+"至"+simpleDateFormat.format(DateUtil.addMonths(date, nper)));
@@ -481,7 +489,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         try {
             afESdkService.secondSign(map);
         } catch (Exception e) {
-            logger.error("乙方盖章证书生成失败：", e.getMessage());
+            logger.error("乙方盖章证书生成失败：", e);
             return true;
         }
         try {
