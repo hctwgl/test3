@@ -15,7 +15,7 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: "/activity/freshmanShare/homePage",
+                url: "/activity/freshmanShareH5/homePage",
                 success: function (data) {
                      console.log(data);
                      self.content=eval('('+data.data+')');
