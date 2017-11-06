@@ -5,7 +5,7 @@
 
 		id
 		rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
-		sec_type,value_1,value_2,value_3,value_4,sort
+		sec_type,value_1,value_2,value_3,value_4,sort,pic1,pic2
 	</sql>
 	<sql id="queryManyAllFields">
 
@@ -133,6 +133,36 @@
 		WHERE
 		type = #{type}
 		AND is_delete = 0
+		LIMIT 1
+	</select>
+	
+	<select id="getLaunchImageInfoByTypeAndVersion" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND is_delete = 0
+		AND value = 'PART'
+		AND   #{version} >value_1
+		AND value_2 > #{version}
+		AND value_4 = 'O'
+		order by gmt_create desc
+		LIMIT 1
+	</select>
+	
+	<select id="getLaunchImageInfoByType" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND is_delete = 0
+		AND value = 'ALL'
+		AND value_4 = 'O'
+		order by gmt_create desc
 		LIMIT 1
 	</select>
 
