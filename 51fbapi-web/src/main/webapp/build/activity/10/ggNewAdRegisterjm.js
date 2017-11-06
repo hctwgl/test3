@@ -179,8 +179,6 @@ $(function () {
 
     // 完成注册提交
     $(".loginbtn").click(function () {
-        //转化代码
-        _taq.push({convert_id:"73486724679",  event_type:"form"});
         var smsCode = $(".check").val();//获取短信
         var registerMobile = $(".mobile").val();//获取手机号
         var password=$("#password").val();//获取密码
@@ -209,6 +207,8 @@ $(function () {
                     var a=JSON.parse(returnData);
                     if (a.success) {
                         requestMsg("注册成功");
+                        //转化代码
+                        _taq.push({convert_id:"73486724679",  event_type:"form"});
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                     }else{
                         requestMsg(a.msg);
