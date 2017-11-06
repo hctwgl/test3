@@ -70,7 +70,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     @Resource
     AfFundSideBorrowCashService afFundSideBorrowCashService;
 
-    private static final String src = "F:/doc/";
+    private static final String src = "/usr/doc/";
     @Override
     public void protocolInstalment(long userId,Integer nper,BigDecimal amount ,Long borrowId) {//分期
 
