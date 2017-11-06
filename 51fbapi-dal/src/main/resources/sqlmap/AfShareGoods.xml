@@ -127,7 +127,7 @@
     
     <select id="getShareGoods" resultType="com.ald.fanbei.api.dal.domain.dto.AfShareGoodsDto">
 	    SELECT
-		goods_id rid,decrease_price,price_amount,sale_amount,rebate_amount,name,goods_icon,thumbnail_icon,goods_detail,open_id
+		goods_id rid,decrease_price,price_amount,sale_amount,rebate_amount,name,goods_icon,thumbnail_icon,goods_detail,open_id,source
 		FROM af_share_goods sg
 		LEFT JOIN 
 			af_goods g 
