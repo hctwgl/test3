@@ -605,6 +605,36 @@ public class SmsUtil extends AbstractThird {
      *
      * @param mobile
      */
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int payDay = 20;
+        int outDay = 10;
+        AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+        if(afUserOutDayDo != null){
+            payDay = afUserOutDayDo.getPayDay();
+            outDay = afUserOutDayDo.getOutDay();
+        }
+
+
+        
+        String payBackDateFormat = "";
+            payBackDateFormat = backDateFormat.format(date);
+        } else {
+            calendar.add(Calendar.MONTH, 1);
+            payBackDateFormat = backDateFormat.format(calendar.getTime());
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
+        String content = String.format(TRADE_PAID_SUCCESS, simpleDateFormat.format(new Date()), amount, payBackDateFormat);
+        logger.error("mobile:"+mobile+","+content);
+        logger.info("mobile:"+mobile+","+content);
+        sendSmsToDhst(mobile, content);
+    }
+
+/**
+     * 发送商圈支付成功短信
+     *
+     * @param mobile
+     */
     public void sendTradePaid(long userId,String mobile, Date date, BigDecimal amount) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -632,7 +662,6 @@ public class SmsUtil extends AbstractThird {
         logger.info("mobile:"+mobile+","+content);
         sendSmsToDhst(mobile, content);
     }
-
     /**
      * 对单个手机号发送短消息，这里不验证手机号码有效性
      *
