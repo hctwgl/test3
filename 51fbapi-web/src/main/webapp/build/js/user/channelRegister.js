@@ -275,7 +275,7 @@ $(function(){
                                                 setTimeout(function () {
                                                     window.location.href="https://app.51fanbei.com//unionlogin/welcome?isNew=1";
                                                 },500)
-                                            }else if( os==2 ){
+                                            }else{
                                                 window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                             }
                                         }
