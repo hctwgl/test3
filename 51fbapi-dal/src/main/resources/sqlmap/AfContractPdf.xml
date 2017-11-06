@@ -16,6 +16,13 @@
     from af_contract_pdf
     where id = #{id,jdbcType=BIGINT}
   </select>
+  <select id="selectByTypeId" resultMap="BaseResultMap" parameterType="AfContractPdfDo" >
+    select
+    <include refid="Base_Column_List" />
+    from af_contract_pdf
+    where type_id = #{typeId,jdbcType=BIGINT}
+    AND type = #{type}
+  </select>
   <delete id="deleteById" parameterType="java.lang.Long" >
     delete from af_contract_pdf
     where id = #{id,jdbcType=BIGINT}

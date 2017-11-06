@@ -10,6 +10,8 @@ public interface AfContractPdfDao {
 
     AfContractPdfDo selectById(Long id);
 
+    AfContractPdfDo selectByTypeId(AfContractPdfDo afContractPdfDo);
+
     int updateById(AfContractPdfDo record);
 
 }

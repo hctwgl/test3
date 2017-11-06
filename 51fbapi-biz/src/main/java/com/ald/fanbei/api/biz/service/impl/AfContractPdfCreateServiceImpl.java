@@ -13,6 +13,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -66,6 +67,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     AfContractPdfDao afContractPdfDao;
     @Resource
     AfBorrowBillService afBorrowBillService;
+    @Resource
+    AfFundSideBorrowCashService afFundSideBorrowCashService;
 
     private static final String src = "F:/doc/";
     @Override
@@ -216,11 +219,23 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                         Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
                         Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
                         Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
-                        AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
                         map.put("gmtTime", simpleDateFormat.format(afBorrowCashDo.getGmtArrival())+"至"+simpleDateFormat.format(repaymentDay));
-//                    map.put("repaymentDay", repaymentDay);
-                        map.put("lender", lenderDo.getValue());// 出借人
-                        secondSeal(map, lenderDo,afUserDo, accountDo);
+//                      map.put("repaymentDay", repaymentDay);
+//                      AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+//                      map.put("lender", lenderDo.getValue());// 出借人
+                        //查看有无和资金方关联，有的话，替换里面的借出人信息
+                        AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
+                        if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
+                            map.put("lender", fundSideInfo.getName());// 出借人
+                            AfResourceDo lenderDo = new AfResourceDo();
+                            lenderDo.setValue(fundSideInfo.getName());
+                            secondSeal(map, lenderDo,afUserDo, accountDo);
+                        }else{
+                            AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+                            map.put("lender", lenderDo.getValue());// 出借人
+                            secondSeal(map, lenderDo,afUserDo, accountDo);
+                        }
+
                         if (null == map.get("companySelfSeal") ) {
                             logger.error("公司印章不存在" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
                             throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);

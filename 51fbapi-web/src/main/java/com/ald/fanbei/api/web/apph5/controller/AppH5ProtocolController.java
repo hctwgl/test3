@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -85,7 +86,8 @@ public class AppH5ProtocolController extends BaseController {
     AfFundSideBorrowCashService afFundSideBorrowCashService;
 	@Resource
 	AfESdkService afESdkService;
-
+	@Resource
+	AfContractPdfDao afContractPdfDao;
 
 	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
 	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
@@ -112,7 +114,7 @@ public class AppH5ProtocolController extends BaseController {
 		AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
 		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
 		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
-
+		GetSeal(model, afUserDo, accountDo);
 		model.put("lender", lenderDo.getValue());// 出借人
 		model.put("mobile", afUserDo.getMobile());// 联系电话
 		List<NperDo> list = JSONArray.parseArray(consumeDo.getValue(), NperDo.class);
@@ -122,6 +124,19 @@ public class AppH5ProtocolController extends BaseController {
 			String[] amounts = consumeOverdueDo.getValue2().split(",");
 			model.put("lateFeeMin", new BigDecimal(amounts[0]));
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
+		}
+		if (null != lenderDo.getValue()){
+			if ("浙江名信信息科技有限公司".equals(lenderDo.getValue())){
+				AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
+				if (null != companyUserSealDo.getUserSeal()){
+					model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+				}
+			}else if ("浙江名恒投资管理有限公司".equals(lenderDo.getValue())){
+				AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
+				if (null != companyUserSealDo.getUserSeal()){
+					model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+				}
+			}
 		}
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
@@ -155,7 +170,6 @@ public class AppH5ProtocolController extends BaseController {
 		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
-
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
 			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -197,7 +211,13 @@ public class AppH5ProtocolController extends BaseController {
 		if (borrowId > 0) {
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借人
-
+			AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+			afContractPdfDo.setType((byte)3);
+			afContractPdfDo.setTypeId(borrowId);
+			AfContractPdfDo afContractPdfDo1 = afContractPdfDao.selectByTypeId(afContractPdfDo);
+			if (null != afContractPdfDo1 && null != afContractPdfDo1.getContractPdfUrl()){
+				model.put("pdfUrl",afContractPdfDo1.getContractPdfUrl());
+			}
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
@@ -212,43 +232,47 @@ public class AppH5ProtocolController extends BaseController {
 					
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
-                        if (null != fundSideInfo.getName()){
-                            if ("浙江名信信息科技有限公司".equals(fundSideInfo.getName())){
-                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
-                                if (null != companyUserSealDo.getUserSeal()){
-                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-                                }
-                            }else if ("浙江名恒投资管理有限公司".equals(fundSideInfo.getName())){
-                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
-                                if (null != companyUserSealDo.getUserSeal()){
-                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-                                }
-                            }
-                        }
-					    model.put("lender", fundSideInfo.getName());// 出借人
-					}else{
-						AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-                        if (null != lenderDo.getValue()){
-                            if ("浙江名信信息科技有限公司".equals(lenderDo.getValue())){
-                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
-                                if (null != companyUserSealDo.getUserSeal()){
-                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-                                }
-                            }else if ("浙江名恒投资管理有限公司".equals(lenderDo.getValue())){
-                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
-                                if (null != companyUserSealDo.getUserSeal()){
-                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-                                }
-                            }
-                        }
-						model.put("lender", lenderDo.getValue());// 出借人
-					}
+					lender(model,fundSideInfo);
 				}
 			}
 		}
 		
 		logger.info(JSON.toJSONString(model));
+	}
+
+	private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
+		if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
+			if (null != fundSideInfo.getName()){
+				if ("浙江名信信息科技有限公司".equals(fundSideInfo.getName())){
+					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
+					if (null != companyUserSealDo.getUserSeal()){
+						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+					}
+				}else if ("浙江名恒投资管理有限公司".equals(fundSideInfo.getName())){
+					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
+					if (null != companyUserSealDo.getUserSeal()){
+						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+					}
+				}
+			}
+			model.put("lender", fundSideInfo.getName());// 出借人
+		}else{
+			AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+			if (null != lenderDo.getValue()){
+				if ("浙江名信信息科技有限公司".equals(lenderDo.getValue())){
+					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
+					if (null != companyUserSealDo.getUserSeal()){
+						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+					}
+				}else if ("浙江名恒投资管理有限公司".equals(lenderDo.getValue())){
+					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
+					if (null != companyUserSealDo.getUserSeal()){
+						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+					}
+				}
+			}
+			model.put("lender", lenderDo.getValue());// 出借人
+		}
 	}
 
 	private void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
@@ -296,13 +320,13 @@ public class AppH5ProtocolController extends BaseController {
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		model.put("dayRate", bankService);
-		
+		GetSeal(model,afUserDo, accountDo);
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
 		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
 			poundage = new BigDecimal(poundageRateCash.toString());
 		}
-		
+
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 		model.put("poundageRate", poundage);//手续费率
 		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
@@ -321,12 +345,13 @@ public class AppH5ProtocolController extends BaseController {
 					model.put("amountLower", afBorrowCashDo.getAmount());
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
+					lender(model,fundSideInfo);
+					/*if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
 						model.put("lender", fundSideInfo.getName());// 出借人
 					}else{
 						AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 						model.put("lender", lenderDo.getValue());// 出借人
-					}
+					}*/
 				}
 			}
 			
@@ -335,6 +360,13 @@ public class AppH5ProtocolController extends BaseController {
 				Date gmtCreate = afRenewalDetailDo.getGmtCreate();
 				Date gmtPlanRepayment = afRenewalDetailDo.getGmtPlanRepayment();
 				// 如果预计还款时间在申请日期之后，则在原预计还款时间的基础上加上续期天数，否则在申请日期的基础上加上续期天数，作为新的续期截止时间
+				AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+				afContractPdfDo.setType((byte)3);
+				afContractPdfDo.setTypeId(renewalId);
+				AfContractPdfDo afContractPdfDo1 = afContractPdfDao.selectByTypeId(afContractPdfDo);
+				if (null != afContractPdfDo1 && null != afContractPdfDo1.getContractPdfUrl()){
+					model.put("pdfUrl",afContractPdfDo1.getContractPdfUrl());
+				}
 				if (gmtPlanRepayment.after(gmtCreate)) {
 					Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtPlanRepayment, afRenewalDetailDo.getRenewalDay()));
 					afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
