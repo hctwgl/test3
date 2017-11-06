@@ -46,7 +46,7 @@ public class AuthZhengxinApi implements ApiHandle {
 		
 		String idNumber = afUserAccountDo.getIdNumber();
 		
-		String riskOrderNo = riskUtil.getOrderNo("zhengxin", idNumber.substring(idNumber.length() - 4, idNumber.length()));
+		String riskOrderNo = riskUtil.getOrderNo("zxin", idNumber.substring(idNumber.length() - 4, idNumber.length()));
 		
 		StringBuffer transPara = new StringBuffer();
 		transPara.append(riskOrderNo).append(",").append(userId);
