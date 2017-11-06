@@ -268,16 +268,15 @@ $(function(){
                                             }else if( os==2 ){
                                                 window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%85%8D%E6%81%AF%E5%B0%8F%E9%A2%9D%E5%80%9F%E8%B4%B7%E6%89%8B%E6%9C%BA%E8%BD%AF%E4%BB%B6/id1263792729?mt=8";
                                             }
-                                        } else if( style==22 ){
-                                            if ( os==1 ){
-                                                window.open('http://sftp.51fanbei.com/51fanbei_app.apk');
-                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.ala.borrowMoney";
+                                        } else{
+                                            // js判断微信和QQ
+                                            let ua = navigator.userAgent.toLowerCase();
+                                            if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
+                                                    window.open('http://sftp.51fanbei.com/51fanbei_app.apk');//安卓除了腾讯系，直接下载apk
+                                                    window.location.href="https://app.51fanbei.com//unionlogin/welcome?isNew=1";
                                             }else if( os==2 ){
-                                                window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E9%92%B1%E5%B9%B3%E5%8F%B0-%E5%B0%8F%E9%A2%9D%E6%9E%81%E9%80%9F%E7%8E%B0%E9%87%91%E5%80%9F%E8%B4%B7/id1259127316?mt=8";
+                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.ala.borrowMoney";
                                             }
-                                        } else {
-                                            $("#register_submitBtn").attr("disabled",true);
-                                            window.location.href = returnData.url;
                                         }
                                     } else {
                                         requestMsg(returnData.msg);
