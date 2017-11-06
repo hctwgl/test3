@@ -67,12 +67,13 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
 
     private static final String src = "F:/doc/";
     @Override
-    public void protocolInstalment(Map content) {//分期
-        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
-        Integer nper = NumberUtil.objToIntDefault(content.get("nper"), 0);
-        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("amount"), new BigDecimal(0));
-        BigDecimal poundage = NumberUtil.objToBigDecimalDefault(content.get("poundage"), new BigDecimal(0));
-        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"),0);
+    public void protocolInstalment(String userName,Integer nper,BigDecimal amount,BigDecimal poundage ,Long borrowId,BigDecimal borrowAmount) {//分期
+
+//        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
+//        Integer nper = NumberUtil.objToIntDefault(content.get("nper"), 0);
+//        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("amount"), new BigDecimal(0));
+//        BigDecimal poundage = NumberUtil.objToBigDecimalDefault(content.get("poundage"), new BigDecimal(0));
+//        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"),0);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         Map map = new HashMap();
         Long userId = afUserDo.getRid();
@@ -144,10 +145,10 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     }
 
     @Override
-    public void protocolCashLoan(Map content) {//借款
-        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"), 0l);
-        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("borrowAmount"), new BigDecimal(0));
-        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
+    public void protocolCashLoan(Long borrowId,BigDecimal borrowAmount,String userName ) {//借款
+//        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"), 0l);
+//        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(content.get("borrowAmount"), new BigDecimal(0));
+//        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         Map map = new HashMap();
         if (afUserDo == null) {
@@ -310,12 +311,12 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     }
 
     @Override
-    public void protocolRenewal(Map content) {//续借
-        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
-        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"), 0l);
-        Long renewalId = NumberUtil.objToLongDefault(content.get("renewalId"), 0l);
-        int renewalDay = NumberUtil.objToIntDefault(content.get("renewalDay"), 0);
-        BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(content.get("renewalAmount"), BigDecimal.ZERO);
+    public void protocolRenewal(String userName,Long borrowId,Long renewalId,int renewalDay ,BigDecimal renewalAmount) {//续借
+//        String userName = ObjectUtils.toString(content.get("userName"), "").toString();
+//        Long borrowId = NumberUtil.objToLongDefault(content.get("borrowId"), 0l);
+//        Long renewalId = NumberUtil.objToLongDefault(content.get("renewalId"), 0l);
+//        int renewalDay = NumberUtil.objToIntDefault(content.get("renewalDay"), 0);
+//        BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(content.get("renewalAmount"), BigDecimal.ZERO);
 
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if (afUserDo == null) {

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -10,10 +11,10 @@ import java.util.Map;
  */
 public interface AfContractPdfCreateService {
 
-    void protocolInstalment(Map content);
+    void protocolInstalment(String userName, Integer nper, BigDecimal amount, BigDecimal poundage , Long borrowId, BigDecimal borrowAmount);
 
-    void protocolCashLoan(Map content);
+    void protocolCashLoan(Long borrowId,BigDecimal borrowAmount,String userName );
 
-    void protocolRenewal(Map content);
+    void protocolRenewal(String userName,Long borrowId,Long renewalId,int renewalDay ,BigDecimal renewalAmount);
 
 }
