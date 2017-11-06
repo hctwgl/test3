@@ -600,35 +600,7 @@ public class SmsUtil extends AbstractThird {
         sendSmsToDhst(mobile, String.format(REBATE_COMPLETED, simpleDateFormat.format(new Date()), amount));
     }
 
-    /**
-     * 发送商圈支付成功短信
-     *
-     * @param mobile
-     */
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        int payDay = 20;
-        int outDay = 10;
-        AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
-        if(afUserOutDayDo != null){
-            payDay = afUserOutDayDo.getPayDay();
-            outDay = afUserOutDayDo.getOutDay();
-        }
 
-
-        
-        String payBackDateFormat = "";
-            payBackDateFormat = backDateFormat.format(date);
-        } else {
-            calendar.add(Calendar.MONTH, 1);
-            payBackDateFormat = backDateFormat.format(calendar.getTime());
-        }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
-        String content = String.format(TRADE_PAID_SUCCESS, simpleDateFormat.format(new Date()), amount, payBackDateFormat);
-        logger.error("mobile:"+mobile+","+content);
-        logger.info("mobile:"+mobile+","+content);
-        sendSmsToDhst(mobile, content);
-    }
 
 /**
      * 发送商圈支付成功短信
