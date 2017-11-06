@@ -20,7 +20,8 @@ let vm = new Vue({
                 url: "/activity/freshmanShare/homePage",
                 success: function (data) {
                      console.log(data);
-                     self.content=eval('('+data.data+')');
+                     /*self.content=eval('('+data.data+')');*/
+                    self.content=data.data.goodsList;
                      console.log(self.content)
                      self.$nextTick(function () {
                         /*图片预加载*/
@@ -106,7 +107,11 @@ let vm = new Vue({
                     if(data.msg&&data.msg=='没有登录'){  //是否登录
                         window.location.href=data.data.loginUrl;
                     }else if(data.data.isNew=='Y'){ //新用户到--商品详情页
-                        window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.numId+'"}';
+                        if ( item.source=="SELFSUPPORT" ) {
+                            window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.numId+'"}';
+                        } else {
+                            window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.numId+'"}';
+                        }
                     }else if(data.data.isNew=='N'){
                         requestMsg('您已不是新用户，暂不能购买，可以去邀请朋友购买或参加邀请有礼活动');
                     }

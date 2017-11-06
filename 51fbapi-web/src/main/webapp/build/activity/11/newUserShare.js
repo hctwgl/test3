@@ -18,8 +18,8 @@ let vm = new Vue({
                 url: "/activity/freshmanShareH5/homePage",
                 success: function (data) {
                      console.log(data);
-                     self.content=eval('('+data.data+')');
-                     console.log(self.content)
+                    /*self.content=eval('('+data.data+')');*/
+                    self.content=data.data.goodsList;
                      self.$nextTick(function () {
                         /*图片预加载*/
                         $(".first").each(function() {
