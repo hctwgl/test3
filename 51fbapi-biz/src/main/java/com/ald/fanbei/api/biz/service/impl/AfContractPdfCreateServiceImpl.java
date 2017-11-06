@@ -30,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -145,12 +147,12 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                     map.put("overdueRate", nperDo.getRate() != null?nperDo.getRate():"");
                 }
             }
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long time = new Date().getTime();
             map.put("templatePath",src+"instalment"+".pdf");
-            map.put("PDFPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
-            map.put("userPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
-            map.put("selfPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
-            map.put("secondPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
+            map.put("PDFPath",src+accountDo.getUserName()+"instalment"+time+1+".pdf");
+            map.put("userPath",src+accountDo.getUserName()+"instalment"+time+2+".pdf");
+            map.put("selfPath",src+accountDo.getUserName()+"instalment"+time+3+".pdf");
+            map.put("secondPath",src+accountDo.getUserName()+"instalment"+time+4+".pdf");
             if (pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             logger.info(JSON.toJSONString(map));
@@ -252,12 +254,12 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                     }
                 }
             }
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long time = new Date().getTime();
             map.put("templatePath",src+"cashLoan"+".pdf");
-            map.put("PDFPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
-            map.put("userPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
-            map.put("selfPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
-            map.put("secondPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
+            map.put("PDFPath",src+accountDo.getUserName()+"cashLoan"+time+1+".pdf");
+            map.put("userPath",src+accountDo.getUserName()+"cashLoan"+time+2+".pdf");
+            map.put("selfPath",src+accountDo.getUserName()+"cashLoan"+time+3+".pdf");
+            map.put("secondPath",src+accountDo.getUserName()+"cashLoan"+time+4+".pdf");
             if (pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
@@ -480,11 +482,12 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 }
             }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            long time = new Date().getTime();
             map.put("templatePath",src+"renewal"+".pdf");
-            map.put("PDFPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
-            map.put("userPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
-            map.put("selfPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
-            map.put("secondPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
+            map.put("PDFPath",src+accountDo.getUserName()+"renewal"+time + 1+".pdf");
+            map.put("userPath",src+accountDo.getUserName()+"renewal"+time+2+".pdf");
+            map.put("selfPath",src+accountDo.getUserName()+"renewal"+time+3+".pdf");
+            map.put("secondPath",src+accountDo.getUserName()+"renewal"+time+4+".pdf");
             if (pdfCreate(map))
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
@@ -495,7 +498,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
 
     }
 
-    private boolean pdfCreate(Map map) {
+    private boolean pdfCreate(Map map) throws IOException {
         try {
             PdfCreateUtil.create(map);
         } catch (Exception e) {
@@ -521,11 +524,14 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             logger.error("乙方盖章证书生成失败：", e);
             return true;
         }
+        InputStream input = null;
         try {
             File file = new File(map.get("secondPath").toString());
-            FileInputStream input = new FileInputStream(file);
+            input = new FileInputStream(file);
             MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(input));
             OssUploadResult ossUploadResult =  ossFileUploadService.uploadFileToOss(multipartFile);
+            input.close();
+            logger.info(ossUploadResult.getMsg(),"url:",ossUploadResult.getUrl());
             if (null != ossUploadResult.getUrl()){
                 String protocolCashType = map.get("protocolCashType").toString();
                 AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
@@ -542,9 +548,8 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
                     afContractPdfDo.setTypeId((Long)map.get("renewalId"));
                 }
-                    afContractPdfDao.insert(afContractPdfDo);
+                afContractPdfDao.insert(afContractPdfDo);
             }
-
             if (ossUploadResult.isSuccess()){
                 File file1 = new File(map.get("PDFPath").toString());
                 file1.delete();
@@ -552,12 +557,15 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 file1.delete();
                 file1 = new File(map.get("selfPath").toString());
                 file1.delete();
-                file1 = new File(map.get("secondPath").toString());
-                file1.delete();
+                file.delete();
             }
         }catch (Exception e){
             logger.error("证书上传oss失败：", e.getMessage());
             return true;
+        }finally {
+            if (null != input){
+                input.close();
+            }
         }
         return false;
     }

@@ -14,6 +14,7 @@ import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -32,6 +33,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -69,6 +72,8 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
     AfRenewalDetailDao afRenewalDetailDao;
     @Resource
     OssFileUploadService ossFileUploadService;
+    @Resource
+    AfContractPdfDao afContractPdfDao;
 
     private static final String src = "F:/doc/";
     @Override
@@ -76,18 +81,22 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         String protocolCashType = ObjectUtils.toString(requestDataVo.getParams().get("protocolCashType"), "").toString();
         if (null != protocolCashType && !"".equals(protocolCashType)) {
-            if ("1".equals(protocolCashType)) {//借款协议
-                protocolCashLoan(requestDataVo, resp);
-            }else if ("2".equals(protocolCashType)){//分期服务协议
-                protocolFenqiService(requestDataVo, resp);
-            }else if ("3".equals(protocolCashType)){//续借协议
-                protocolRenewal(requestDataVo, resp);
+            try {
+                if ("1".equals(protocolCashType)) {//借款协议
+                    protocolCashLoan(requestDataVo, resp);
+                }else if ("2".equals(protocolCashType)){//分期服务协议
+                    protocolFenqiService(requestDataVo, resp);
+                }else if ("3".equals(protocolCashType)){//续借协议
+                    protocolRenewal(requestDataVo, resp);
+                }
+            }catch (IOException e){
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             }
         }
         return resp;
     }
 
-    public ApiHandleResponse protocolFenqiService(RequestDataVo requestDataVo,ApiHandleResponse resp) {
+    public ApiHandleResponse protocolFenqiService(RequestDataVo requestDataVo,ApiHandleResponse resp) throws IOException {
         String userName = ObjectUtils.toString(requestDataVo.getParams().get("userName"), "").toString();
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
         BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("amount"), new BigDecimal(0));
@@ -103,6 +112,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         }
         map.put("idNumber", accountDo.getIdNumber());
         map.put("realName", accountDo.getRealName());
+        map.put("protocolCashType", "2");
         AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
         AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
         AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
@@ -154,10 +164,10 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         map.put("templatePath",src+"分期服务协议"+".pdf");
-        map.put("PDFPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
-        map.put("userPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
-        map.put("selfPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
-        map.put("secondPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
+        map.put("PDFPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+1+".pdf");
+        map.put("userPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+2+".pdf");
+        map.put("selfPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+3+".pdf");
+        map.put("secondPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+4+".pdf");
         if (pdfCreate(map))
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
         logger.info(JSON.toJSONString(map));
@@ -191,7 +201,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         }
     }
 
-    public ApiHandleResponse protocolRenewal(RequestDataVo requestDataVo,ApiHandleResponse resp) {
+    public ApiHandleResponse protocolRenewal(RequestDataVo requestDataVo,ApiHandleResponse resp) throws IOException {
         String userName = ObjectUtils.toString(requestDataVo.getParams().get("userName"), "").toString();
         Long borrowId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("borrowId"), 0l);
         Long renewalId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("renewalId"), 0l);
@@ -215,6 +225,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         map.put("realName", accountDo.getRealName());//借款人
         map.put("idNumber", accountDo.getIdNumber());//身份证号
         map.put("phone", userName);//联系方式
+        map.put("protocolCashType", "3");
         map.put("email", afUserDo.getEmail());//电子邮箱
         AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
         if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()){
@@ -324,10 +335,10 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         map.put("templatePath",src+"51返呗续借协议"+".pdf");
-        map.put("PDFPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
-        map.put("userPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
-        map.put("selfPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
-        map.put("secondPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
+        map.put("PDFPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+1+".pdf");
+        map.put("userPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+2+".pdf");
+        map.put("selfPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+3+".pdf");
+        map.put("secondPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+4+".pdf");
         if (pdfCreate(map))
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
         logger.info(JSON.toJSONString(map));
@@ -335,7 +346,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         return resp;
     }
 
-    private ApiHandleResponse protocolCashLoan(RequestDataVo requestDataVo, ApiHandleResponse resp) {
+    private ApiHandleResponse protocolCashLoan(RequestDataVo requestDataVo, ApiHandleResponse resp) throws IOException {
         Long borrowId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("borrowId"), 0l);
         BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("borrowAmount"), new BigDecimal(0));
         String userName = ObjectUtils.toString(requestDataVo.getParams().get("userName"), "").toString();
@@ -355,6 +366,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         }
 
         map.put("idNumber", accountDo.getIdNumber());
+        map.put("protocolCashType", "1");
         map.put("realName", accountDo.getRealName());
         map.put("email", afUserDo.getEmail());//电子邮箱
         map.put("phone", userName);//联系方式
@@ -413,18 +425,19 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             }
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long time = new Date().getTime();
         map.put("templatePath",src+"个人现金服务合同"+".pdf");
-        map.put("PDFPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
-        map.put("userPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
-        map.put("selfPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
-        map.put("secondPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
+        map.put("PDFPath",src+accountDo.getUserName()+"个人现金服务合同"+time+1+".pdf");
+        map.put("userPath",src+accountDo.getUserName()+"个人现金服务合同"+time+2+".pdf");
+        map.put("selfPath",src+accountDo.getUserName()+"个人现金服务合同"+time+3+".pdf");
+        map.put("secondPath",src+accountDo.getUserName()+"个人现金服务合同"+time+4+".pdf");
         if (pdfCreate(map))
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
         logger.info(JSON.toJSONString(map));
         return resp;
     }
 
-    private boolean pdfCreate(Map map) {
+    private boolean pdfCreate(Map map) throws IOException {
         try {
             PdfCreateUtil.create(map);
         } catch (Exception e) {
@@ -450,11 +463,32 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             logger.error("乙方盖章证书生成失败：", e.getMessage());
             return true;
         }
+        InputStream input = null;
         try {
             File file = new File(map.get("secondPath").toString());
-            FileInputStream input = new FileInputStream(file);
+            input = new FileInputStream(file);
             MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(input));
             OssUploadResult ossUploadResult =  ossFileUploadService.uploadFileToOss(multipartFile);
+            input.close();
+            logger.info(ossUploadResult.getMsg(),"url:",ossUploadResult.getUrl());
+            if (null != ossUploadResult.getUrl()){
+                String protocolCashType = map.get("protocolCashType").toString();
+                AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+                if ("1".equals(protocolCashType)) {//借款协议
+                    afContractPdfDo.setType((byte) 1);
+                    afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
+                    afContractPdfDo.setTypeId((Long)map.get("borrowId"));
+                }else if ("2".equals(protocolCashType)){//分期服务协议
+                    afContractPdfDo.setType((byte) 2);
+                    afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
+                    afContractPdfDo.setTypeId((Long)map.get("borrowId"));
+                }else if ("3".equals(protocolCashType)){//续借协议
+                    afContractPdfDo.setType((byte) 3);
+                    afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
+                    afContractPdfDo.setTypeId((Long)map.get("renewalId"));
+                }
+                afContractPdfDao.insert(afContractPdfDo);
+            }
             if (ossUploadResult.isSuccess()){
                 File file1 = new File(map.get("PDFPath").toString());
                 file1.delete();
@@ -462,12 +496,15 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
                 file1.delete();
                 file1 = new File(map.get("selfPath").toString());
                 file1.delete();
-                file1 = new File(map.get("secondPath").toString());
-                file1.delete();
+                file.delete();
             }
         }catch (Exception e){
             logger.error("证书上传oss失败：", e.getMessage());
             return true;
+        }finally {
+            if (null != input){
+                input.close();
+            }
         }
         return false;
     }
