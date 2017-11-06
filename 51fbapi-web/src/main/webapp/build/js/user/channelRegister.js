@@ -1,7 +1,6 @@
 /*
  * @Date:   2017-04-12 10:53:28
  */
-
 var token=formatDateTime()+Math.random().toString(36).substr(2);
 
 var style=$("#style").val();  // 样式
@@ -272,10 +271,12 @@ $(function(){
                                             // js判断微信和QQ
                                             let ua = navigator.userAgent.toLowerCase();
                                             if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
-                                                    window.open('http://sftp.51fanbei.com/51fanbei_app.apk');//安卓除了腾讯系，直接下载apk
+                                                    window.location.href='http://sftp.51fanbei.com/51fanbei_app.apk';//安卓除了腾讯系，直接下载apk
+                                                setTimeout(function () {
                                                     window.location.href="https://app.51fanbei.com//unionlogin/welcome?isNew=1";
+                                                },500)
                                             }else if( os==2 ){
-                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.ala.borrowMoney";
+                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                             }
                                         }
                                     } else {
