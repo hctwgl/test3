@@ -7,19 +7,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfFundSideBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -80,6 +73,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	JpushService jpushService;
 	@Resource
 	AfFundSideBorrowCashService afFundSideBorrowCashService;
+
+	@Resource
+	AfContractPdfCreateService afContractPdfCreateService;
 	
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
@@ -109,6 +105,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
 
 				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
+				afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
 				logger.info("updateRecommendUser=" + rr);
 				logger.info("borrowSuccess--end");
 				// fmf 借钱抽奖活动借款金额加入缓存

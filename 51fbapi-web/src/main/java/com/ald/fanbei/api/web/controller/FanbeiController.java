@@ -48,6 +48,7 @@ public class FanbeiController extends BaseController {
 	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1",
 	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec",
+            "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo","/cashier/start","/cashier/pre" ,"/cashier/getNperList",
 	"/category/getAllGoodsCategory","/category/getGoodsList", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -109,7 +110,7 @@ public class FanbeiController extends BaseController {
     		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
     		"/user/submitShareAction","/user/checkMobileRegistered","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
-            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts"
+            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -222,10 +223,7 @@ public class FanbeiController extends BaseController {
             RequestDataVo reqVo = new RequestDataVo();
             String method = request.getRequestURI();
             reqVo.setMethod(method);
-            
-            
             reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
-            
             String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
             String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
             String userName = request.getHeader(Constants.REQ_SYS_NODE_USERNAME);

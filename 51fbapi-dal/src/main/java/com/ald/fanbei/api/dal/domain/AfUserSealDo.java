@@ -11,6 +11,16 @@ public class AfUserSealDo {
 
     private String userType;//用户类型 1：公司 2：个人
 
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     public String getUserType() {
         return userType;
     }

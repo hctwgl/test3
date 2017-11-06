@@ -123,6 +123,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	@Resource
 	AfOrderDao afOrderDao;
 
+	@Resource
+	AfContractPdfCreateService afContractPdfCreateService;
+
 
 	@Override
 	public Date getReyLimitDate(String billType, Date now) {
@@ -1138,6 +1141,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 						afBorrowDao.addBorrowBill(billList);
 //					}
+
+					afContractPdfCreateService.protocolInstalment(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
 					return borrow.getRid();
 
 				} catch (Exception e) {
