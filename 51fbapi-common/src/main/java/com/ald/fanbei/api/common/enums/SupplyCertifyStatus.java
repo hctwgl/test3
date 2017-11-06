@@ -16,7 +16,8 @@ public enum SupplyCertifyStatus {
 	A("A","未认证"),
 	YES("Y","已认证"),
 	NO("N","认证未通过"),
-	WAIT("W","认证中");
+	WAIT("W","认证中"),
+	WAITQUERY("Q","等待查询");
     
     private String code;
     private String name;
