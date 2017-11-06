@@ -134,6 +134,10 @@ public class Constants {
     public static final String CACHEKEY_REDRAIN_MISC = "redrain_misc";
     public static final String CACHEKEY_REDRAIN_COUNTERS = "redrain_counters";
     public static final String CACHEKEY_REDRAIN_SINK = "redrain_sink";
+    // 实名认证缓存key前缀
+    public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX 		= "real_auth_citizen_card$";
+    public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX 		= "real_auth_real_name$";
+    public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX 				= "real_auth_pass$";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
