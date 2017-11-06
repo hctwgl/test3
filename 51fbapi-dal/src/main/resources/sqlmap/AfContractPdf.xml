@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfContractPdfDao" >
+  <resultMap id="BaseResultMap" type="AfContractPdfDo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="type_id" property="typeId" jdbcType="BIGINT" />
+    <result column="contract_pdf_url" property="contractPdfUrl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, type, type_id, contract_pdf_url
+  </sql>
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from af_contract_pdf
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from af_contract_pdf
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="AfContractPdfDo" >
+    insert into af_contract_pdf (id, type, type_id, 
+      contract_pdf_url)
+    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, #{typeId,jdbcType=BIGINT}, 
+      #{contractPdfUrl,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateById" parameterType="AfContractPdfDo" >
+    update af_contract_pdf
+    set type = #{type,jdbcType=TINYINT},
+      type_id = #{typeId,jdbcType=BIGINT},
+      contract_pdf_url = #{contractPdfUrl,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

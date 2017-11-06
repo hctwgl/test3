@@ -236,8 +236,8 @@
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
 				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
 				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
-				
-				
+
+
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
@@ -397,8 +397,8 @@
 				<!-- 统计点击量 -->
 				<entry key="/clickAmount/clickAmountNum" value-ref="clickAmountNumApi" />
 				<entry key="/pushClickAmout/clickPushAmountNum" value-ref="clickPushAmountNumApi" />
-				
-				
+				<!-- 协议生成 -->
+				<entry key="/user/getBorrowCashProtocol" value-ref="getBorrowCashProtocolApi" />
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />

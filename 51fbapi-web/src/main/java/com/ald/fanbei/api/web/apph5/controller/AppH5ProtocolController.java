@@ -12,6 +12,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -78,8 +81,10 @@ public class AppH5ProtocolController extends BaseController {
 	AfUserAccountService afUserAccountService;	
 	@Resource
 	AfRescourceLogService afRescourceLogService;
+    @Resource
+    AfFundSideBorrowCashService afFundSideBorrowCashService;
 	@Resource
-	AfFundSideBorrowCashService afFundSideBorrowCashService;
+	AfESdkService afESdkService;
 
 
 	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
@@ -186,7 +191,7 @@ public class AppH5ProtocolController extends BaseController {
 		model.put("overdueRate", overdue);//逾期费率（日）
 		model.put("poundageRate", poundage);//手续费率
 		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
-		
+		GetSeal(model, afUserDo, accountDo);
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 		if (borrowId > 0) {
@@ -208,9 +213,35 @@ public class AppH5ProtocolController extends BaseController {
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
 					if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
-						model.put("lender", fundSideInfo.getName());// 出借人
+                        if (null != fundSideInfo.getName()){
+                            if ("浙江名信信息科技有限公司".equals(fundSideInfo.getName())){
+                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
+                                if (null != companyUserSealDo.getUserSeal()){
+                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+                                }
+                            }else if ("浙江名恒投资管理有限公司".equals(fundSideInfo.getName())){
+                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
+                                if (null != companyUserSealDo.getUserSeal()){
+                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+                                }
+                            }
+                        }
+					    model.put("lender", fundSideInfo.getName());// 出借人
 					}else{
 						AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
+                        if (null != lenderDo.getValue()){
+                            if ("浙江名信信息科技有限公司".equals(lenderDo.getValue())){
+                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
+                                if (null != companyUserSealDo.getUserSeal()){
+                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+                                }
+                            }else if ("浙江名恒投资管理有限公司".equals(lenderDo.getValue())){
+                                AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
+                                if (null != companyUserSealDo.getUserSeal()){
+                                    model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+                                }
+                            }
+                        }
 						model.put("lender", lenderDo.getValue());// 出借人
 					}
 				}
@@ -218,6 +249,17 @@ public class AppH5ProtocolController extends BaseController {
 		}
 		
 		logger.info(JSON.toJSONString(model));
+	}
+
+	private void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+		AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
+		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
+			model.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+		}
+		AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
+		if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
+			model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+		}
 	}
 
 	@RequestMapping(value = { "protocolRenewal" }, method = RequestMethod.GET)

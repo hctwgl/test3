@@ -83,7 +83,8 @@ public class Constants {
 
 
 
-
+	public static final String CONF_KEY_INVELOMENT_TYPE = "fbapi.inveloment.type";
+	public static final String FILE_CLOUD_PATH = "http://f.51fanbei.com/";
 	public static final Long INVITE_START_VALUE = 1679625L;
 	public static final String INVELOMENT_TYPE_TEST = "test";
 	public static final String INVELOMENT_TYPE_ONLINE = "online";
@@ -390,10 +391,9 @@ public class Constants {
 	public static final String THIRD_GOODS_TYPE = "third_goods";
 
 	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
-	
-	//双十一砍价活动
-	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
-	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
-	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 
+	//双十一砍价活动
+	public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
+	public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
+	public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 }

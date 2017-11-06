@@ -5,11 +5,12 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="user_seal" property="userSeal" jdbcType="VARCHAR" />
     <result column="user_type" property="userType" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
     <result column="user_account_id" property="userAccountId" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_seal, user_id,user_account_id,user_type
+    id, user_seal, user_id,user_account_id,user_type,user_name
   </sql>
   <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -28,9 +29,9 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="AfUserSealDo" >
-    insert into af_user_seal (user_seal, user_id,user_account_id,user_type
+    insert into af_user_seal (user_seal, user_id,user_account_id,user_type,user_name
       )
-    values (#{userSeal,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},#{userAccountId},#{userType}
+    values (#{userSeal,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},#{userAccountId},#{userType},#{userName}
       )
   </insert>
   <update id="updateByUserId" parameterType="AfUserSealDo" >
@@ -41,6 +42,9 @@
     </if>
     <if test="userType != null ">
       user_type = #{userType}
+    </if>
+    <if test="userName != null ">
+      user_name = #{userName}
     </if>
     where user_id = #{userId,jdbcType=BIGINT}
   </update>
