@@ -33,7 +33,7 @@
             <div class="right clearFix">
                 <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodsName}}</p>
                 <p class="goodDes"><span>减</span>下单立减{{item.decreasePrice}}元，新会员专享</p>
-                <p class="goodPrice">￥<span>{{item.saleAmount}}</span></p>
+                <p class="goodPrice">￥<span>{{item.realAmount}}</span></p>
                 <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供：¥{{item.nperMap.amount}}起</p>
                 <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供：¥{{item.nperMap.freeAmount}}起</p>
                 <p class="buyNow">立即抢购</p>
