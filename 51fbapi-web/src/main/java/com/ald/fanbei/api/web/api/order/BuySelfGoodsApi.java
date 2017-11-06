@@ -64,10 +64,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
-	
+
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -82,7 +82,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
 		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
-		
+		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
@@ -121,8 +121,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 //		afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
 
 		afOrder.setCount(count);
-		afOrder.setNper(nper);
-		afOrder.setPayType(payType);
+		//收银台支持版本控制
+		if (!fromCashier) {
+			afOrder.setNper(nper);
+			afOrder.setPayType(payType);
+		}
 		afOrder.setInvoiceHeader(invoiceHeader);
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
@@ -138,10 +141,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 		}
 
-		if (nper.intValue() > 0) {
-			// 保存手续费信息
-			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
-			afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+		//收银台支持版本控制
+		if (!fromCashier) {
+			if (nper.intValue() > 0) {
+				// 保存手续费信息
+				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
+				afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+			}
 		}
 		if(priceDo != null){
 		    	//+++双十一砍价活动增加逻辑++++
@@ -152,9 +158,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 			    priceDo.setActualAmount(priceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice()));
 			    //使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
 			    afOrder.setThirdOrderNo(afDeUserGoodsDo.getRid().toString());
-			}		    
+			}
 			//-----------------------------
-			
+
 			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
 			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
 			afOrder.setSaleAmount(priceDo.getActualAmount().multiply(new BigDecimal(count)));
@@ -167,13 +173,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 		String isEnoughAmount = "Y";
 		String isNoneQuota = "N";
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-		if (useableAmount.compareTo(actualAmount) < 0) {
-			isEnoughAmount = "N";
-		}
-		if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
-			isNoneQuota = "Y";
+		if (!fromCashier) {
+			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+			BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+			if (useableAmount.compareTo(actualAmount) < 0) {
+				isEnoughAmount = "N";
+			}
+			if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
+				isNoneQuota = "Y";
+			}
 		}
 
 		Map<String, Object> data = new HashMap<String, Object>();
