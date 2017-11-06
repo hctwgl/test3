@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -57,6 +58,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @类描述：
@@ -160,6 +162,43 @@ public class AppH5ProtocolController extends BaseController {
 
 		logger.info(JSON.toJSONString(model));
 	}
+	@RequestMapping("/getBorrowIdByNo")
+	@ResponseBody
+	public String getBorrowIdByNo(String borrowNo){
+		if (null == borrowNo || "".equals(borrowNo)){
+			return H5CommonResponse.getNewInstance(false, "borrowNo is null", "", "").toString();
+		}
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+		Map map = new HashMap();
+		if (null != afBorrowCashDo){
+			map.put("borrowId",afBorrowCashDo.getRid().toString());
+			return H5CommonResponse.getNewInstance(true, "get borrowId success", "", map).toString();
+		}
+		map.put("borrowId","");
+		return H5CommonResponse.getNewInstance(false, "get borrowId fail", "", map).toString();
+	}
+	@RequestMapping(value = { "numProtocol" }, method = RequestMethod.GET)
+	public void numProtocol(HttpServletRequest request, ModelMap model)throws IOException{
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		if(userName == null || !webContext.isLogin() ) {
+			throw new FanbeiException("非法用户");
+		}
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+		if (afUserDo == null) {
+			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		Long userId = afUserDo.getRid();
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		if (accountDo == null) {
+			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		model.put("idNumber", accountDo.getIdNumber());
+		model.put("realName", accountDo.getRealName());
+	}
+
 
 	@RequestMapping(value = { "protocolCashLoan" }, method = RequestMethod.GET)
 	public void protocolCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
@@ -170,6 +209,7 @@ public class AppH5ProtocolController extends BaseController {
 		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
+
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
 			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -236,7 +276,7 @@ public class AppH5ProtocolController extends BaseController {
 				}
 			}
 		}
-		
+
 		logger.info(JSON.toJSONString(model));
 	}
 
