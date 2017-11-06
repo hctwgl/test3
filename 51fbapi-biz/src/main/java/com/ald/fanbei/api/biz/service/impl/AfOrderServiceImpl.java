@@ -213,6 +213,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 	}
 
 	@Override
+	public int getNoFinishOrderCount(Long userId) {
+		return orderDao.getNoFinishOrderCount(userId);
+	}
+
+	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:"+content);
 		return transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -682,7 +687,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 						}catch (Exception e){
 						  logger.info("ggLightActivity error:",e);
 						}
-					
+
 
 //                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
 //						if(afBorrowDo !=null) {
@@ -1278,7 +1283,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 					} catch (Exception e) {
 						logger.error("活动产品预约成功发送优惠券异常userId：" + afUserDo.getRid() + ",", e);
 					}
-					
+
 					// 预约成功，短信通知
 					if (StringUtil.isBlank(sendMsgStatus) || sendMsgStatus.equals(YesNoStatus.YES.getCode())) {
 						try {
@@ -1964,7 +1969,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (existOrderDo == null)
 		    afOrderService.createOrder(orderInfo);
 	    }
-	    
+
 	}
 
 	@Override
