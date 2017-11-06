@@ -77,6 +77,9 @@ public class Constants {
 	/**三方调用 ，例如还款等调用时，事务内出现自定义异常时，向上返回map对应key值**/
 	public static final String THIRD_REQ_EXCEP_KEY = "fanbei_third_reqexp_key";
 
+	//用户未完成订单
+	public  static final  String NO_FINISH_ORDER = "NO_FINISH_ORDER";
+
 
 
 
