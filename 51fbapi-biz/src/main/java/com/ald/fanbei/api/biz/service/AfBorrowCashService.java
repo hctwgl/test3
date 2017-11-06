@@ -179,4 +179,8 @@ public interface AfBorrowCashService {
 	 * @return
 	 * **/
 	int updateAfBorrowCashService(AfBorrowCashDo afBorrowCashDo);
+
+    int updateBorrowCashLock(Long borrowId);
+
+    int updateBorrowCashUnLock(Long borrowId);
 }

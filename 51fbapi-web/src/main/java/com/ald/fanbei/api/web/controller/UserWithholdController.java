@@ -67,13 +67,18 @@ public class UserWithholdController extends BaseController {
     public JSONObject CreatRepaymenCash(HttpServletRequest request, HttpServletResponse response) throws Exception{
 
         Long userId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("userId")),null);
-        BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(
-                ObjectUtils.toString(request.getParameter(
-                        "repaymentAmount")), BigDecimal.ZERO);
+        BigDecimal repaymentAmount = BigDecimal.ZERO;
         Long borrowId = NumberUtil.objToLongDefault(
                         ObjectUtils.toString(request.getParameter(
                                 "borrowId")), 0l);
-
+        //将该笔订单锁住
+        if(afBorrowCashService.updateBorrowCashLock(borrowId)==0){
+            logger.info("withhold for borrowcash fail for lock,userId:"+userId + ",borrowId:"+borrowId);
+            JSONObject returnjson = new JSONObject();
+            returnjson.put("success",false);
+            returnjson.put("msg","订单正在还款中");
+            return returnjson;
+        }
         Long cardId1 = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("cardId1")),0l);
         Long cardId2 = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("cardId2")),0l);
         Long cardId3 = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("cardId3")),0l);
@@ -82,16 +87,20 @@ public class UserWithholdController extends BaseController {
 
         AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService
                 .getLastRepaymentBorrowCashByBorrowId(borrowId);
-        if (borrowId == 0) {
+        if (borrowId == null || borrowId == 0) {
+            logger.info("withhold for borrowcash fail for BORROW_CASH_NOT_EXIST_ERROR,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+            return returnjson;
         }
         if (rbCashDo != null && StringUtils.equals(rbCashDo.getStatus(),
                 AfBorrowCashRepmentStatus.PROCESS.getCode())) {
+            logger.info("withhold for borrowcash fail for BORROW_CASH_REPAY_PROCESS_ERROR,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg",FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
+            return returnjson;
         }
         // 判断是否存在续期处理中的记录,防止续期和还款交叉,导致最后记录更新失败
         AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService
@@ -99,26 +108,22 @@ public class UserWithholdController extends BaseController {
         if (lastAfRenewalDetailDo != null
                 && AfRenewalDetailStatus.PROCESS.getCode().equals(
                 lastAfRenewalDetailDo.getStatus())) {
+            logger.info("withhold for borrowcash fail for HAVE_A_PROCESS_RENEWAL_DETAIL,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg",FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
+            return returnjson;
         }
 
         AfUserAccountDo userDto = afUserAccountService
                 .getUserAccountByUserId(userId);
         if (userDto == null) {
+            logger.info("withhold for borrowcash fail for USER_ACCOUNT_NOT_EXIST_ERROR,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg",FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            return returnjson;
         }
-        /*if (cardId == -2 || cardId > 0) {
-            String inputOldPwd = UserUtil
-                    .getPassword(payPwd, userDto.getSalt());
-            if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
-                return new ApiHandleResponse(requestDataVo.getId(),
-                        FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
-            }
-        }*/
 
         if (!yiBaoUtility.checkCanNext(userId, 0)) {
             JSONObject returnjson = new JSONObject();
@@ -178,13 +183,8 @@ public class UserWithholdController extends BaseController {
 
             }
         }
-
-
-
-
-        // 在返回前进行返呗内部异常捕获校验并向用户反馈
-        //validThirdReqExistFanbeiError(map);
-        // 向客户端反馈结果
+//      //借款账单解锁
+        afBorrowCashService.updateBorrowCashUnLock(borrowId);
         return returnjson;
     }
 
@@ -197,21 +197,39 @@ public class UserWithholdController extends BaseController {
     @RequestMapping(value = "/borrowBill", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject CreatRepaymenBill(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("userId")),null);
 
-        AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByUserId(userId);
-        if(billDo.getCount()==0){
-            logger.info("billDo="+billDo);
+        String billIds1 = afBorrowBillService.getBillIdsByUserId(userId);
+        if(StringUtil.isBlank(billIds1)){
+            logger.info("用户无分期账单，userId="+userId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
             return returnjson;
         }
+        String billIds = "";
+        //遍历账单，加锁
+        String[] billStr = billIds1.split(",");
+        for(int i=0;i<billStr.length;i++){
+            String billId = billStr[i];
+            if(afBorrowBillService.updateBorrowBillLockById(billId)>0){
+                if(billIds.equals("")){
+                    billIds = billId;
+                }else{
+                    billIds = billIds + "," + billId;
+                }
+            }
+        }
+        if(StringUtil.isBlank(billIds)){
+            logger.info("用户无未还分期账单，userId="+userId);
+            JSONObject returnjson = new JSONObject();
+            returnjson.put("success",false);
+            returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
+            return returnjson;
+        }
+        AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
         BigDecimal repaymentAmount = billDo.getBillAmount();
-        //BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);
-        String billIds = billDo.getBillIds();
-        BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("actualAmount")), BigDecimal.ZERO);
+        BigDecimal actualAmount = repaymentAmount;
         Long cardId1 = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("cardId1")),0l);
         Long cardId2 = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("cardId2")),0l);
         Long cardId3 = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("cardId3")),0l);
@@ -273,6 +291,8 @@ public class UserWithholdController extends BaseController {
 
             }
         }
+        //分期账单解锁
+        afBorrowBillService.updateBorrowBillUnLockByIds(billIds);
 
 
         return returnjson;

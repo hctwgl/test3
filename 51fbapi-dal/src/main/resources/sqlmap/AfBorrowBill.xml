@@ -514,11 +514,34 @@
 		abb.bill_month DESC
 	</select>
 
-	<select id="getBillAmountByUserIds" resultType="AfBorrowBillDo">
-		SELECT SUM(bill_amount) bill_amount,SUM(principle_amount) principle_amount,min(bill_year) bill_year,min(bill_month) bill_month,min(type) type,
-		min(borrow_no) borrow_no,min(name) name,count(1) count,GROUP_CONCAT(id) billIds
+	<select id="getBillIdsByUserId" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(id) billIds
 		FROM af_borrow_bill
-		WHERE is_delete=0  AND STATUS IN ('N','D')
+		WHERE is_delete=0  AND STATUS IN ('N')
 		AND user_id = #{userId}
+		AND gmt_pay_time=DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
 	</select>
+
+	<update id="updateBorrowBillLockById" >
+		UPDATE
+		af_borrow_bill
+		SET
+		gmt_modified = NOW(),
+		lock = '1'
+		WHERE
+		is_delete = 0
+		AND id = #{billId}
+		AND lock = '0'
+	</update>
+
+	<update id="updateBorrowBillUnLockByIds" >
+		UPDATE
+		af_borrow_bill
+		SET
+		gmt_modified = NOW(),
+		lock = '0'
+		WHERE
+		is_delete = 0
+		AND id IN (#{billIds})
+	</update>
 </mapper>

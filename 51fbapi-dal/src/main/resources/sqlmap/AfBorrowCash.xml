@@ -415,4 +415,15 @@
 	<select id="getBorrowCash" resultType="AfBorrowCashDo">
 		SELECT <include refid="queryFields" />  FROM  af_borrow_cash where user_id = #{userId}  and status in ('TRANSEDING','TRANSED')
 	</select>
+
+	<update id="updateBorrowCashLock" parameterType="java.lang.Long">
+		UPDATE
+		af_borrow_cash SET gmt_modified = NOW(),lock = '1' WHERE id=#{borrowId} and lock=0
+	</update>
+
+	<update id="updateBorrowCashUnLock" parameterType="java.lang.Long">
+		UPDATE
+		af_borrow_cash SET gmt_modified = NOW(),lock = '0' WHERE id=#{borrowId}
+	</update>
+
 </mapper>

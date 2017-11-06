@@ -245,7 +245,17 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	}
 
 	@Override
-	public AfBorrowBillDo getBillAmountByUserId(Long userId) {
-		return  afBorrowBillDao.getBillAmountByUserId(userId);
+	public String getBillIdsByUserId(Long userId) {
+		return  afBorrowBillDao.getBillIdsByUserId(userId);
+	}
+
+	@Override
+	public int updateBorrowBillLockById(String billId) {
+		return  afBorrowBillDao.updateBorrowBillLockById(billId);
+	}
+
+	@Override
+	public int updateBorrowBillUnLockByIds(String billIds) {
+		return  afBorrowBillDao.updateBorrowBillUnLockByIds(billIds);
 	}
 }

@@ -308,5 +308,9 @@ public interface AfBorrowBillDao {
 	 */
 	List<AfOverdueBillDto> getAfOverdueBillDtoByConsumerNo(@Param("orderId")Long orderId);
 
-	AfBorrowBillDo getBillAmountByUserId(Long userId);
+	String getBillIdsByUserId(@Param("userId")Long userId);
+
+	int updateBorrowBillLockById(@Param("billId")String billId);
+
+	int updateBorrowBillUnLockByIds(@Param("billIds")String billIds);
 }

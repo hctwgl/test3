@@ -219,5 +219,9 @@ public interface AfBorrowBillService {
 	List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(Long consumerNo);
 
 
-	AfBorrowBillDo getBillAmountByUserId(Long userId);
+	String getBillIdsByUserId(Long userId);
+
+	int updateBorrowBillLockById(String billId);
+
+	int updateBorrowBillUnLockByIds(String billIds);
 }
