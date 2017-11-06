@@ -146,11 +146,11 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 }
             }
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            map.put("templatePath",src+"分期服务协议"+".pdf");
-            map.put("PDFPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
-            map.put("userPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
-            map.put("selfPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
-            map.put("secondPath",src+accountDo.getRealName()+"分期服务协议"+new Date().getTime()+".pdf");
+            map.put("templatePath",src+"instalment"+".pdf");
+            map.put("PDFPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
+            map.put("userPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
+            map.put("selfPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
+            map.put("secondPath",src+accountDo.getRealName()+"instalment"+new Date().getTime()+".pdf");
             if (pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             logger.info(JSON.toJSONString(map));
@@ -253,11 +253,11 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 }
             }
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            map.put("templatePath",src+"个人现金服务合同"+".pdf");
-            map.put("PDFPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
-            map.put("userPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
-            map.put("selfPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
-            map.put("secondPath",src+accountDo.getRealName()+"个人现金服务合同"+new Date().getTime()+".pdf");
+            map.put("templatePath",src+"cashLoan"+".pdf");
+            map.put("PDFPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
+            map.put("userPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
+            map.put("selfPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
+            map.put("secondPath",src+accountDo.getRealName()+"cashLoan"+new Date().getTime()+".pdf");
             if (pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
@@ -480,11 +480,11 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 }
             }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            map.put("templatePath",src+"51返呗续借协议"+".pdf");
-            map.put("PDFPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
-            map.put("userPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
-            map.put("selfPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
-            map.put("secondPath",src+accountDo.getRealName()+"51返呗续借协议"+new Date().getTime()+".pdf");
+            map.put("templatePath",src+"renewal"+".pdf");
+            map.put("PDFPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
+            map.put("userPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
+            map.put("selfPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
+            map.put("secondPath",src+accountDo.getRealName()+"renewal"+new Date().getTime()+".pdf");
             if (pdfCreate(map))
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
