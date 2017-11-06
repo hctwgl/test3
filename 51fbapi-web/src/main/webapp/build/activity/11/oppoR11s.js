@@ -9,7 +9,7 @@ new Vue({
     },
     created: function () {
         this.loginData();
-        this.logCoupon();
+        // this.logCoupon();
     },
     methods: {
         loginData() { //页面初始化

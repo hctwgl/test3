@@ -10,15 +10,15 @@
 <body>
 <div id="schoolLife">
     <div class="banner">
-        <img src="https://f.51fanbei.com/h5/app/activity/11/superPhone_banner.png">
-        <div class="bookBtn"></div> 
+        <img src="https://f.51fanbei.com/h5/app/activity/11/oppoR11s_banner.png">
+        <div class="bookBtn" @click="goodClick(content.oneLevelGoodsInfo.goodsList[0])"></div> 
     </div>
 
     <div class="firstCont clearFix">
         <div class="contTitle"></div>
-        <div class="good2 flex fd-row" v-for="item in content.oneLevelGoodsInfo.goodsList" @click="goodClick(item)">
+        <div class="good2 flex fd-row" v-for="item in content.twoLevelGoodsInfo.goodsList" @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
-            <div>
+            <div class="goodRight">
                 <p class="goodDes">{{txtFix(item.goodName,8)}}</p>
                 <p class="goodPrice clearFix"><span class="originPrice">￥{{item.saleAmount}}</span><span class="fan"></span><span class="fanMoney">￥{{item.rebateAmount}}</span></p>
                 <p class="monthPrice2" v-if="item.nperMap.isFree==='1'|| item.nperMap.isFree==='2'">月供￥{{item.nperMap.freeAmount}}起</p>
@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="firstCont secondCont clearFix">
-        <div class="good" v-for="item in content.twoLevelGoodsInfo.goodsList" @click="goodClick(item)">
+        <div class="good" v-for="item in content.threeLevelGoodsInfo.goodsList" @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodDes">{{txtFix(item.goodName,8)}}</p>
             <p class="goodPrice clearFix"><span class="originPrice">￥{{item.saleAmount}}</span><span class="fan"></span><span class="fanMoney">￥{{item.rebateAmount}}</span></p>
@@ -37,6 +37,6 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="/dist/activity/11/superPhone.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/11/oppoR11s.js?version=$version"></script>
 </body>
 </html>
