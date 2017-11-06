@@ -79,6 +79,7 @@ public class Constants {
 
 	//用户未完成订单
 	public  static final  String NO_FINISH_ORDER = "NO_FINISH_ORDER";
+	public  static final  String FIRST_TIME = "FIRST_TIME";
 
 
 

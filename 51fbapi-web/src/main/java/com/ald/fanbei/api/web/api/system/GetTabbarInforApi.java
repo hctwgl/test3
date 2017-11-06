@@ -68,6 +68,11 @@ public class GetTabbarInforApi implements ApiHandle {
 					return resp;
 				}else {
 					tabbarInfor.put("noFinishOrderCount",0);
+					if("Y".equals((String)bizCacheUtil.getObject(Constants.FIRST_TIME + userId))){
+						int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
+						tabbarInfor.put("noFinishOrderCount",noFinishOrderCount);
+					}
+					//bizCacheUtil.saveObject(Constants.NO_FINISH_ORDER+userId,nowLogin,0);
 					resp.setResponseData(tabbarInfor);
 					return resp;
 				}
@@ -77,6 +82,9 @@ public class GetTabbarInforApi implements ApiHandle {
 			bizCacheUtil.saveObject(Constants.NO_FINISH_ORDER+userId,nowLogin,Constants.SECOND_OF_ONE_DAY);
 			//根据用户id查询用户未支付订单数
 			int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
+			if(noFinishOrderCount == 0){
+				bizCacheUtil.saveObject(Constants.FIRST_TIME+userId,"Y",Constants.SECOND_OF_ONE_DAY);
+			}
 			tabbarInfor.put("noFinishOrderCount",noFinishOrderCount);
 			resp.setResponseData(tabbarInfor);
 			return resp;
