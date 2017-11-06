@@ -96,7 +96,7 @@ public class AppH5FreshmanShare extends BaseController{
 					afFreshmanGoodsVo.setGoodsName(afShareGoodsDto.getName());
 					afFreshmanGoodsVo.setGoodsIcon(afShareGoodsDto.getGoodsIcon());
 					afFreshmanGoodsVo.setThumbnailIcon(afShareGoodsDto.getThumbnailIcon());
-					afFreshmanGoodsVo.setGoodsUrl(afShareGoodsDto.getGoodsDetail());
+					afFreshmanGoodsVo.setGoodsUrl(afShareGoodsDto.getGoodsDetail().split(";")[0]);
 					afFreshmanGoodsVo.setOpenId(afShareGoodsDto.getOpenId());
 					resultList.add(afFreshmanGoodsVo);
 				}

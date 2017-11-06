@@ -83,7 +83,7 @@ public class H5FreshmanShareController extends H5Controller{
 					afFreshmanGoodsVo.setGoodsName(afShareGoodsDto.getName());
 					afFreshmanGoodsVo.setGoodsIcon(afShareGoodsDto.getGoodsIcon());
 					afFreshmanGoodsVo.setThumbnailIcon(afShareGoodsDto.getThumbnailIcon());
-					afFreshmanGoodsVo.setGoodsUrl(afShareGoodsDto.getGoodsDetail());
+					afFreshmanGoodsVo.setGoodsUrl(afShareGoodsDto.getGoodsDetail().split(";")[0]);
 					afFreshmanGoodsVo.setOpenId(afShareGoodsDto.getOpenId());
 					resultList.add(afFreshmanGoodsVo);
 				}
