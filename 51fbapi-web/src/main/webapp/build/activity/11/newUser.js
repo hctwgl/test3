@@ -67,7 +67,7 @@ let vm = new Vue({
                     console.log(data);
                     if(data.msg&&data.msg=='没有登录'){  //是否登录
                         window.location.href=data.data.loginUrl;
-                    }else if(data.data.isNew=='Y'){ //新用户调用分享
+                    }else{ //已登录调用分享
                         let dat='{"shareAppTitle":"51返呗新人专享福利，最高立减200","shareAppContent":"新人专享福利，豪礼送不停，快来抢购吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/newUser06.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/newUserShare'+ '","isSubmit":"Y","sharePage":"newUserShare'+'"}';
                         let base64 = BASE64.encoder(dat);
                         window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
@@ -87,7 +87,7 @@ let vm = new Vue({
                     console.log(data);
                     if(data.msg&&data.msg=='没有登录'){  //是否登录
                         window.location.href=data.data.loginUrl;
-                    }else if(data.data.isNew=='N'){ //老用户--到-邀请有礼页面
+                    }else{ //已登录--到-邀请有礼页面
                         window.location.href = 'https://app.51fanbei.com/fanbei-web/app/newinvite';
                     }
                 },
