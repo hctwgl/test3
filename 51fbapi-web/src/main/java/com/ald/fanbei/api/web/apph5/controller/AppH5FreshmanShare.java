@@ -88,7 +88,7 @@ public class AppH5FreshmanShare extends BaseController{
 				
 				for (AfShareGoodsDto afShareGoodsDto : shareGoods) {
 					AfFreshmanGoodsVo afFreshmanGoodsVo = new AfFreshmanGoodsVo();
-					afFreshmanGoodsVo.setNumId(afShareGoodsDto.getNumId());
+					afFreshmanGoodsVo.setNumId(String.valueOf(afShareGoodsDto.getRid()));
 					afFreshmanGoodsVo.setDecreasePrice(afShareGoodsDto.getDecreasePrice());
 					afFreshmanGoodsVo.setSaleAmount(afShareGoodsDto.getPriceAmount().toString());
 					afFreshmanGoodsVo.setRealAmount(afShareGoodsDto.getSaleAmount().toString());
