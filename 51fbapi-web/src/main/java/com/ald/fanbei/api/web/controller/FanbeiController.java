@@ -141,7 +141,7 @@ public class FanbeiController extends BaseController {
      * @throws IOException
      */
 	@RequestMapping(value = { "/auth/authRealname", "/auth/authContacts", "/auth/authCredit", "/auth/authZhima", "/auth/authBankcard", "/auth/checkBankcard", "/auth/getBankList",
-			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
+			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor","/auth/authChsi","/auth/authZhengxin", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
 			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi",
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",

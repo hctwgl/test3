@@ -197,4 +197,83 @@ public class RiskController {
 		}
 	}
 	
+	/**
+	 * 学信网认证异步回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/chsi" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String chsi(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal chsi begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.chsiNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	@RequestMapping(value = { "/zhengxin/applyReport" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String applyReport(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal chsi begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.applyReportNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	@RequestMapping(value = { "/zhengxin/createTask" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String createTask(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal chsi begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.createTaskNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	@RequestMapping(value = { "/zhengxin/taskFinish" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String taskFinish(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal chsi begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.taskFinishNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
 }
