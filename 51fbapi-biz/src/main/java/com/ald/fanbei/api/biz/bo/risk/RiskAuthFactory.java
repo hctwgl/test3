@@ -36,6 +36,24 @@ public class RiskAuthFactory {
 		return null;
 	}
 
+	/**
+	 * 3.9.7认证流程兼容新老版本
+	 * @param consumerNo
+	 * @param event
+	 * @param riskOrderNo
+	 * @param afUserDo
+	 * @param afUserAuthDo
+	 * @param appName
+	 * @param ipAddress
+	 * @param accountDo
+	 * @param blackBox
+	 * @param cardNum
+	 * @param CHANNEL
+	 * @param PRIVATE_KEY
+	 * @param directory
+	 * @param notifyHost
+	 * @return
+	 */
 	public static RiskRegisterStrongReqBo createRiskDoV1(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName,
 													   String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String notifyHost) {
 		if ("ALL".equals(event)) {

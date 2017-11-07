@@ -37,7 +37,7 @@ import java.util.*;
 /**
  * @类描述：提交风控审核
  * 
- * @author fmai 2017年6月6日 10:00
+ * @author chefeipeng 2017年11月6日 10:00
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("authStrongRiskV1Api")

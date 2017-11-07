@@ -984,7 +984,7 @@ public class RiskUtil extends AbstractThird {
 	}
 
 	/**
-	 * @方法描述：实名认证时风控异步审核(新版本3.9.8以上)
+	 * @方法描述：实名认证时风控异步审核(新版本3.9.7以上)
 	 *
 	 * @author chefeipeng 2017年6月7日  14:47:50
 	 *
