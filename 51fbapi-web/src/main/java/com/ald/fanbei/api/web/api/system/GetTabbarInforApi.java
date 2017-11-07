@@ -69,6 +69,7 @@ public class GetTabbarInforApi implements ApiHandle {
 				}else {
 					tabbarInfor.put("noFinishOrderCount",0);
 					if("Y".equals((String)bizCacheUtil.getObject(Constants.FIRST_TIME + userId))){
+						bizCacheUtil.saveObject(Constants.FIRST_TIME+userId,nowLogin,0);
 						int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
 						tabbarInfor.put("noFinishOrderCount",noFinishOrderCount);
 					}
