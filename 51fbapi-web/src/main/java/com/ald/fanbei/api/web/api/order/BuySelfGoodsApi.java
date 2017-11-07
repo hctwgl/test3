@@ -192,7 +192,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 						t.setGmtCreate(new Date());
 						t.setGmtModified(new Date());
 						t.setGoodsPriceId(priceDo.getRid());
-						t.setIsBuy(0);
+						t.setIsBuy(1);
 						t.setUserId(userId);
 						afShareUserGoodsService.saveRecord(t);
 						
