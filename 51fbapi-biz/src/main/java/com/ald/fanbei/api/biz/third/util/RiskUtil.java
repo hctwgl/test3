@@ -1954,7 +1954,7 @@ public class RiskUtil extends AbstractThird {
     public void applyReportNotify(String code, String data, String msg, String signInfo) {
         JSONObject obj = JSON.parseObject(data);
         String consumerNo = obj.getString("consumerNo");
-
+        logger.info("RiskUtil.applyReportNotify consumerNo={}",consumerNo);
         AfUserAuthDo auth = new AfUserAuthDo();
         auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
         auth.setGmtZhengxin(new Date());
@@ -1965,7 +1965,7 @@ public class RiskUtil extends AbstractThird {
     public void createTaskNotify(String code, String data, String msg, String signInfo) {
         JSONObject obj = JSON.parseObject(data);
         String consumerNo = obj.getString("consumerNo");
-
+        logger.info("RiskUtil.createTaskNotify consumerNo={}",consumerNo);
         AfUserAuthDo auth = new AfUserAuthDo();
         auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
         auth.setGmtZhengxin(new Date());

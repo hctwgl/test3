@@ -9,6 +9,16 @@ public class AfContractPdfDo {
 
     private String contractPdfUrl;
 
+    private String evId;
+
+    public String getEvId() {
+        return evId;
+    }
+
+    public void setEvId(String evId) {
+        this.evId = evId;
+    }
+
     public Long getId() {
         return id;
     }

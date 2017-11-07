@@ -3,9 +3,11 @@ package com.ald.fanbei.api.web.api.user;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.EviDoc;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
 import com.ald.fanbei.api.biz.util.PdfCreateUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
@@ -74,6 +76,10 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
     OssFileUploadService ossFileUploadService;
     @Resource
     AfContractPdfDao afContractPdfDao;
+    @Resource
+    EviDoc eviDoc;
+    @Resource
+    private EsignPublicInit esignPublicInit;
 
     private static final String src = "F:/doc/";
     @Override
@@ -463,6 +469,12 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             logger.error("乙方盖章证书生成失败：", e.getMessage());
             return true;
         }
+        String evId = "";
+        try {
+            evId = eviPdf(map);
+        }catch (Exception e){
+            logger.error("e签宝存证生成失败：", e);
+        }
         FileInputStream input = null;
         try {
             File file = new File(map.get("secondPath").toString());
@@ -474,6 +486,9 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             if (null != ossUploadResult.getUrl()){
                 String protocolCashType = map.get("protocolCashType").toString();
                 AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+                if (!"".equals(evId)){
+                    afContractPdfDo.setEvId(evId);
+                }
                 if ("1".equals(protocolCashType)) {//借款协议
                     afContractPdfDo.setType((byte) 1);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
@@ -509,6 +524,22 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         return false;
     }
 
+    private String eviPdf(Map map) {
+        eviDoc.initGlobalParameters(esignPublicInit.getProjectId(),esignPublicInit.getProjectSecret(),esignPublicInit.getEviUrl(),map.get("secondPath").toString());
+        // 用户获取文档保全Url和存证编号
+        Map<String, String> eviMap = eviDoc.getEviUrlAndEvId();
+        String evId = "";
+        // 上传需要保全的文档
+        if ("0".equals(eviMap.get("errCode"))) {
+            String updateUrl = eviMap.get("文档保全上传Url");
+            evId = eviMap.get("存证编号");
+            logger.info("存证编号= " + evId);
+            logger.info("文件上传地址= " + updateUrl);
+            // 文件上传
+            eviDoc.updateFileRequestByPost(updateUrl,map.get("secondPath").toString());
+        }
+        return evId;
+    }
     public Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> list, Long borrowId) {
         Map<String, Object> data = new HashMap<String, Object>();
         AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);

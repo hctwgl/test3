@@ -78,5 +78,6 @@
 		<property name="esignPublicKey" value=""/>
 		<property name="privateKey" value=""/>
 		<property name="algorithm" value="${fbapi.esign.algorithm}"/>
+		<property name="eviUrl" value="${fbapi.esign.eviUrl}"/>
 	</bean>
 </beans>
