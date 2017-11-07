@@ -223,6 +223,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 				userDoForMod.setMobile(newMobile);
 				if(!StringUtils.isBlank(password)) {
 					String salt = UserUtil.getSalt();
+					userDoForMod.setSalt(salt);
 					userDoForMod.setPassword(UserUtil.getPassword(password, salt));
 				}
 				afUserDao.updateUser(userDoForMod);

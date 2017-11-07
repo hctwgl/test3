@@ -6,13 +6,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -28,16 +26,11 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * 账号申诉-申诉并判定是否申诉成功
  * @author zhujiangfeng
  */
+@Component("accountAppealDoApi")
 public class AccountAppealDoApi implements ApiHandle {
 	
 	@Resource
 	BizCacheUtil bizCacheUtil;
-	@Resource
-	RiskUtil riskUtil;
-	@Resource
-	TokenCacheUtil tokenCacheUtil;
-	@Resource
-	TransactionTemplate transactionTemplate;
 	
 	@Resource
 	AfUserAppealLogDao afUserAppealLogDao;
@@ -64,14 +57,16 @@ public class AccountAppealDoApi implements ApiHandle {
 		final String newMobile = appealLog.getNewMobile();
 		String citizen_id = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX + username).toString();
 		String realname = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + username).toString();
-		logger.info("AccountAppealDoApi,userName=" + username + ",newMobile=" + newMobile + ",citizenId=" + citizen_id + ",realName=" + realname);
+		Object facePassFlag = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_PASS_PREFFIX + username);
+		logger.info("AccountAppealDoApi,userName=" + username + ",newMobile=" + newMobile + ",citizenId=" + citizen_id + ",realName=" + realname + ",faccePassFlag" + facePassFlag);
 		appealLog.setRealName(realname);
 		appealLog.setCitizenId(citizen_id);
 		
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
-		if(!realname.equals(userAccount.getRealName()) || !citizen_id.equals(userAccount.getIdNumber())) {
+		if(facePassFlag == null || !realname.equals(userAccount.getRealName()) || !citizen_id.equals(userAccount.getIdNumber())) {
 			appealLog.setStatus(AfUserAppealLogStatusEnum.FAIL.name());
 			appealLog.setMsg(FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR.getErrorMsg());
+			afUserAppealLogDao.update(appealLog);
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR);
 		}
 		
