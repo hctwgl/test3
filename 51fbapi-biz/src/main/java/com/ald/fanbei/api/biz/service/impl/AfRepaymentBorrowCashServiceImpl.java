@@ -734,4 +734,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		});
 	}
 
+	@Override
+	public int updateRepaymentBorrowCashName(Long refId) {
+		return afRepaymentBorrowCashDao.updateRepaymentBorrowCashName(refId);
+	}
+
 }

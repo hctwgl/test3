@@ -527,11 +527,11 @@
 		af_borrow_bill
 		SET
 		gmt_modified = NOW(),
-		lock = '1'
+		is_lock = 'Y'
 		WHERE
 		is_delete = 0
 		AND id = #{billId}
-		AND lock = '0'
+		AND is_lock = 'N'
 	</update>
 
 	<update id="updateBorrowBillUnLockByIds" >
@@ -539,7 +539,7 @@
 		af_borrow_bill
 		SET
 		gmt_modified = NOW(),
-		lock = '0'
+		is_lock = 'N'
 		WHERE
 		is_delete = 0
 		AND id IN (#{billIds})

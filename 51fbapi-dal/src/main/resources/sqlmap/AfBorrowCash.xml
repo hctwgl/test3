@@ -418,12 +418,12 @@
 
 	<update id="updateBorrowCashLock" parameterType="java.lang.Long">
 		UPDATE
-		af_borrow_cash SET gmt_modified = NOW(),lock = '1' WHERE id=#{borrowId} and lock=0
+		af_borrow_cash SET gmt_modified = NOW(),is_lock = 'Y' WHERE id=#{borrowId} and is_lock='N'
 	</update>
 
 	<update id="updateBorrowCashUnLock" parameterType="java.lang.Long">
 		UPDATE
-		af_borrow_cash SET gmt_modified = NOW(),lock = '0' WHERE id=#{borrowId}
+		af_borrow_cash SET gmt_modified = NOW(),is_lock = 'N' WHERE id=#{borrowId}
 	</update>
 
 </mapper>

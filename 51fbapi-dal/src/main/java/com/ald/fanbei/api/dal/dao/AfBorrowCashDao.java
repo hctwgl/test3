@@ -195,5 +195,5 @@ public interface AfBorrowCashDao {
 
     int updateBorrowCashLock(@Param("borrowId") long borrowId);
 
-	int updateBorrowCashUnLock(Long borrowId);
+	int updateBorrowCashUnLock(@Param("borrowId")Long borrowId);
 }

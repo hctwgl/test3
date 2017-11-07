@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_user_withhold表:用户代扣信息模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserWithholdDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,user_name,user_id,card_number1,card_number2,card_number3,card_number4,card_number5,is_withhold,usebalance,lastopen_time 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND user_name = #{userName,jdbcType=VARCHAR}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="cardNumber1 != null and cardNumber1 != ''">
+            AND card_number1 = #{cardNumber1,jdbcType=VARCHAR}
+        </if>
+        <if test="cardNumber2 != null and cardNumber2 != ''">
+            AND card_number2 = #{cardNumber2,jdbcType=VARCHAR}
+        </if>
+        <if test="cardNumber3 != null and cardNumber3 != ''">
+            AND card_number3 = #{cardNumber3,jdbcType=VARCHAR}
+        </if>
+        <if test="cardNumber4 != null and cardNumber4 != ''">
+            AND card_number4 = #{cardNumber4,jdbcType=VARCHAR}
+        </if>
+        <if test="cardNumber5 != null and cardNumber5 != ''">
+            AND card_number5 = #{cardNumber5,jdbcType=VARCHAR}
+        </if>
+        <if test="isWithhold != null and isWithhold != ''">
+            AND is_withhold = #{isWithhold,jdbcType=INTEGER}
+        </if>
+        <if test="usebalance != null and usebalance != ''">
+            AND usebalance = #{usebalance,jdbcType=INTEGER}
+        </if>
+        <if test="lastopenTime !=null">
+            AND lastopen_time = #{lastopenTime,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_user_withhold
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="userName != null">        
+	            user_name,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="cardNumber1 != null">        
+	            card_number1,
+	        </if>
+	        <if test="cardNumber2 != null">        
+	            card_number2,
+	        </if>
+	        <if test="cardNumber3 != null">        
+	            card_number3,
+	        </if>
+	        <if test="cardNumber4 != null">        
+	            card_number4,
+	        </if>
+	        <if test="cardNumber5 != null">        
+	            card_number5,
+	        </if>
+	        <if test="isWithhold != null">        
+	            is_withhold,
+	        </if>
+	        <if test="usebalance != null">        
+	            usebalance,
+	        </if>
+	        <if test="lastopenTime != null">        
+	            lastopen_time,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userName != null" >
+		       #{userName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="cardNumber1 != null" >
+		       #{cardNumber1,jdbcType=VARCHAR},
+		    </if>
+		    <if test="cardNumber2 != null" >
+		       #{cardNumber2,jdbcType=VARCHAR},
+		    </if>
+		    <if test="cardNumber3 != null" >
+		       #{cardNumber3,jdbcType=VARCHAR},
+		    </if>
+		    <if test="cardNumber4 != null" >
+		       #{cardNumber4,jdbcType=VARCHAR},
+		    </if>
+		    <if test="cardNumber5 != null" >
+		       #{cardNumber5,jdbcType=VARCHAR},
+		    </if>
+		    <if test="isWithhold != null" >
+		       #{isWithhold,jdbcType=INTEGER},
+		    </if>
+		    <if test="usebalance != null" >
+		       #{usebalance,jdbcType=INTEGER},
+		    </if>
+		    <if test="lastopenTime != null" >
+		       #{lastopenTime,jdbcType=TIMESTAMP},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
+        UPDATE af_user_withhold
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userName != null and userName != '' ">        
+                user_name = #{userName,jdbcType=VARCHAR},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="cardNumber1 != null and cardNumber1 != '' ">        
+                card_number1 = #{cardNumber1,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber2 != null and cardNumber2 != '' ">        
+                card_number2 = #{cardNumber2,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber3 != null and cardNumber3 != '' ">        
+                card_number3 = #{cardNumber3,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber4 != null and cardNumber4 != '' ">        
+                card_number4 = #{cardNumber4,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber5 != null and cardNumber5 != '' ">        
+                card_number5 = #{cardNumber5,jdbcType=VARCHAR},                
+            </if>
+            <if test="isWithhold != null and isWithhold != '' ">        
+                is_withhold = #{isWithhold,jdbcType=INTEGER},                
+            </if>
+            <if test="usebalance != null and usebalance != '' ">        
+                usebalance = #{usebalance,jdbcType=INTEGER},                
+            </if>
+            <if test="lastopenTime != null and lastopenTime != '' ">        
+                lastopen_time = #{lastopenTime,jdbcType=TIMESTAMP}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_withhold
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_withhold
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_withhold
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="getByUserId" resultType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
+        SELECT
+        id,user_id,card_id1,card_id2,card_id3,card_id4,card_id5,usebalance
+        FROM af_user_withhold
+        WHERE user_id = #{userId}
+        limit 0,1
+    </select>
+    
+</mapper>

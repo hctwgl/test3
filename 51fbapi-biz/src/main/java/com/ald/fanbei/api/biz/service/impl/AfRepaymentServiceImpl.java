@@ -624,5 +624,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			
 		
 	}
-	
+
+	@Override
+	public int updateRepaymentName(Long refId) {
+		return afRepaymentDao.updateRepaymentName(refId);
+	}
+
 }
