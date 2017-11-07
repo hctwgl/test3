@@ -12,6 +12,15 @@ public class EsignPublicInit {
     private String esignPublicKey;
     private String privateKey;
     private String algorithm;
+    private String eviUrl;
+
+    public String getEviUrl() {
+        return eviUrl;
+    }
+
+    public void setEviUrl(String eviUrl) {
+        this.eviUrl = eviUrl;
+    }
 
     public String getProjectId() {
         return projectId;

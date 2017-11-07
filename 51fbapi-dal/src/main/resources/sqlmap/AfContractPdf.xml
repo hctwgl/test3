@@ -5,10 +5,11 @@
     <id column="id" property="id" jdbcType="BIGINT" />
     <result column="type" property="type" jdbcType="TINYINT" />
     <result column="type_id" property="typeId" jdbcType="BIGINT" />
-    <result column="contract_pdf_url" property="contractPdfUrl" jdbcType="VARCHAR" />
+    <result column="contract_pdf_url" property="contractPdfUrl" jdbcType="VARCHAR"/>
+    <result column="ev_id" property="evId" jdbcType="VARCHAR"/>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, type, type_id, contract_pdf_url
+    id, type, type_id, contract_pdf_url,ev_id
   </sql>
   <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -28,10 +29,10 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="AfContractPdfDo" >
-    insert into af_contract_pdf (id, type, type_id, 
-      contract_pdf_url)
-    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, #{typeId,jdbcType=BIGINT}, 
-      #{contractPdfUrl,jdbcType=VARCHAR})
+    insert into af_contract_pdf (id, type, type_id,
+      contract_pdf_url,ev_id)
+    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, #{typeId,jdbcType=BIGINT},
+      #{contractPdfUrl,jdbcType=VARCHAR},#{evId})
   </insert>
   <update id="updateById" parameterType="AfContractPdfDo" >
     update af_contract_pdf
