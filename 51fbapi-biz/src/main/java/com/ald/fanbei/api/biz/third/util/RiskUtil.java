@@ -1932,7 +1932,7 @@ public class RiskUtil extends AbstractThird {
             reqBo.setConsumerNo(userId);
             reqBo.setOrderNo(orderNo);
             reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-            String url = "http://testarc.51fanbei.com/modules/api/risk/creditPayment.htm";
+            String url = getUrl() + "/modules/api/risk/creditPayment.htm";
             String reqResult = HttpUtil.post(url, reqBo);
 
             logThird(reqResult, "creditPayment", reqBo);
