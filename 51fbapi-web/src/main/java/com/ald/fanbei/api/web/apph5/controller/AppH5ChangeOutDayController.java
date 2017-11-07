@@ -132,10 +132,15 @@ public class AppH5ChangeOutDayController extends BaseController{
 		FanbeiWebContext context = new FanbeiWebContext();
     	try{
     		int outDay = NumberUtil.objToIntDefault(request.getParameter("outDay"), -1);
+    		int payDay = NumberUtil.objToIntDefault(request.getParameter("payDay"), -1);
     		if (outDay < 0) {
     			resp = H5CommonResponse.getNewInstance(false, "出账日错误");
 				return resp.toString();
 			}
+    		if (payDay < 0) {
+    			resp = H5CommonResponse.getNewInstance(false, "还款日日错误");
+    			return resp.toString();
+    		}
     		context = doWebCheck(request, true);
     		AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
     		if (afUser != null && afUser.getRid() != null) {
@@ -146,14 +151,14 @@ public class AppH5ChangeOutDayController extends BaseController{
     					return resp.toString();
 					}
     				// 更账单日的方法
-    				// afBorrowBillService.updateBorrowBills
+    				afBorrowBillService.updateBorrowBills(afUser.getRid(),outDay,userOutDay.getOutDay(),payDay);
     			}else {
     				// 更账单日的方法
-    				// afBorrowBillService.updateBorrowBills
-				}
-    		}
-    		resp = H5CommonResponse.getNewInstance(true, "修改成功", "", null);
-    	} catch (Exception e){
+    				afBorrowBillService.updateBorrowBills(afUser.getRid(),outDay,10,payDay);
+    			}
+    			resp = H5CommonResponse.getNewInstance(true, "修改成功", "", null);
+    		} 
+    	}catch (Exception e){
     		logger.error(e.getMessage(), e);
     		resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
     	}
