@@ -51,6 +51,9 @@ public class AuthCreditCardApi implements ApiHandle {
 		Long userId = context.getUserId();
 		
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		if(null == afUserAuthDo || "A".equals(afUserAuthDo.getBasicStatus()) || "N".equals(afUserAuthDo.getBasicStatus())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PLEASE_PASS_THE_BASIC_CERTIFICATION);
+		}
 
 		if (afUserAuthDo != null && afUserAuthDo.getCreditStatus().equals(SupplyCertifyStatus.WAIT.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);

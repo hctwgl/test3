@@ -40,3 +40,4 @@ resources/spring/import-beans.xml
 resources/spring/web/web-main.xml
 resources/staging.public.pem
 .metadata/
+/51fbapi-web/src/main/webapp/.vscode/

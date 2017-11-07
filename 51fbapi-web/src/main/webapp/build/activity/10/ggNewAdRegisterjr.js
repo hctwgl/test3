@@ -209,6 +209,8 @@ $(function () {
                     var a=JSON.parse(returnData);
                     if (a.success) {
                         requestMsg("注册成功");
+                        //转化代码
+                        _taq.push({convert_id:"72607366923",  event_type:"form"});
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                     }else{
                         requestMsg(a.msg);
