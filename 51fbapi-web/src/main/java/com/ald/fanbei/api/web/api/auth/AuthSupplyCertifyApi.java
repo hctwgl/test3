@@ -83,6 +83,18 @@ public class AuthSupplyCertifyApi implements ApiHandle {
 			map.put("gmtAlipayExist", YesNoStatus.NO.getCode());
 		}
 		
+		//添加是否已发起过学信网认证，来区分对应状态是初始化还是之前认证失败
+		if (afUserAuthDo.getGmtChsi() != null) {
+			map.put("gmtChsiExist", YesNoStatus.YES.getCode());
+		} else {
+			map.put("gmtChsiExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过学信网认证，来区分对应状态是初始化还是之前认证失败
+		if (afUserAuthDo.getGmtZhengxin() != null) {
+			map.put("gmtZhengxinExist", YesNoStatus.YES.getCode());
+		} else {
+			map.put("gmtZhengxinExist", YesNoStatus.NO.getCode());
+		}
 		resp.setResponseData(map);
 		
 		return resp;
