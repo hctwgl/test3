@@ -6,16 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>修改账单日</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/changeBillDay.css">
 </head>
 <body>
     <div id="changbillDay">
         <div class="payforInfo">
-            <span><img src="$src/dynamicBill-04.png" alt=""></span>
+            <span class="imgBox"><img src="$src/dynamicBill-04.png" alt=""></span>
             <p>
-                <span>王小二</span>
-                <span>182****6723</span>
+                <span class="infoName">王小二</span><br/>
+                <span class="infoNum">182****6723</span>
             </p>
         </div>
+        <div class="dynamic-center">
+            <span class="dateOne"><i class="monthOne">每月1号</i><br/><i class="count">出账日</i></span>
+            <span class="line"></span>
+            <span class="dateTwo"><i class="monthTwo">每月11号</i><br/><i class="pay">还款日</i></span>
+            <span class="arrow"><img src="$src/dynamicBill-02.png" alt=""></span>
+        </div>
+        <button>提交</button>
     </div>
 </body>
 </html>
