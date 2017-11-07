@@ -438,7 +438,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                         map.put("gmtRenewalBegin", gmtPlanRepayment);
                         map.put("gmtRenewalEnd", repaymentDay);
                         map.put("gmtRenewalTime", format.format(gmtPlanRepayment)+ "至" + format.format(repaymentDay));
-                        map.put("repaymentDay", repaymentDay);
+                        map.put("repaymentDay", format.format(repaymentDay));
                     } else {
                         Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay()));
                         afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
@@ -528,7 +528,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         try {
             File file = new File(map.get("secondPath").toString());
             input = new FileInputStream(file);
-            MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(input));
+            MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
             OssUploadResult ossUploadResult =  ossFileUploadService.uploadFileToOss(multipartFile);
             input.close();
             logger.info(ossUploadResult.getMsg(),"url:",ossUploadResult.getUrl());
@@ -550,15 +550,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 }
                 afContractPdfDao.insert(afContractPdfDo);
             }
-            if (ossUploadResult.isSuccess()){
-                File file1 = new File(map.get("PDFPath").toString());
-                file1.delete();
-                file1 = new File(map.get("userPath").toString());
-                file1.delete();
-                file1 = new File(map.get("selfPath").toString());
-                file1.delete();
-                file.delete();
-            }
         }catch (Exception e){
             logger.error("证书上传oss失败：", e.getMessage());
             return true;
@@ -566,6 +557,14 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             if (null != input){
                 input.close();
             }
+            File file1 = new File(map.get("PDFPath").toString());
+            file1.delete();
+            file1 = new File(map.get("userPath").toString());
+            file1.delete();
+            file1 = new File(map.get("selfPath").toString());
+            file1.delete();
+            file1 = new File(map.get("secondPath").toString());
+            file1.delete();
         }
         return false;
     }

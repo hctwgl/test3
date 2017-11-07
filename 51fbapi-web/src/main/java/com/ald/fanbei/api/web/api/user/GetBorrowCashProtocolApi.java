@@ -463,11 +463,11 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             logger.error("乙方盖章证书生成失败：", e.getMessage());
             return true;
         }
-        InputStream input = null;
+        FileInputStream input = null;
         try {
             File file = new File(map.get("secondPath").toString());
             input = new FileInputStream(file);
-            MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(input));
+            MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "application/pdf", input);
             OssUploadResult ossUploadResult =  ossFileUploadService.uploadFileToOss(multipartFile);
             input.close();
             logger.info(ossUploadResult.getMsg(),"url:",ossUploadResult.getUrl());

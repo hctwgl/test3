@@ -408,6 +408,7 @@
 
 				<!-- 协议生成 -->
 				<entry key="/user/getBorrowCashProtocol" value-ref="getBorrowCashProtocolApi" />
+				<entry key="/user/getContractPdfUrl" value-ref="getContractPdfUrlApi" />
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />

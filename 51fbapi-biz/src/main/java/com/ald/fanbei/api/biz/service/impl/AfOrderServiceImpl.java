@@ -1746,6 +1746,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		if (resultMap.get(Constants.VIRTUAL_CODE) == null) {
 			return false;
 		}
+		if(resultMap.get(Constants.VIRTUAL_AMOUNT)==null){
+			return false;
+		}
 		return true;
 	}
 
