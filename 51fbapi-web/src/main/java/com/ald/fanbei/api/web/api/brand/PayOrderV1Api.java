@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -125,7 +126,7 @@ public class PayOrderV1Api implements ApiHandle {
 		}
 		// ----------------
 
-		// mqp_新人专享活动增加逻辑
+		/*// mqp_新人专享活动增加逻辑
 		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
 				&& StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
 			AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
@@ -137,7 +138,28 @@ public class PayOrderV1Api implements ApiHandle {
 		}
 
 		// ----------------
+*/
+		// ----------------
+		
+		// mqp_新人专享活动增加逻辑
+		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
+				&& StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+			AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
+					.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
+			
+			AfShareUserGoodsDo result = afShareUserGoodsService
+					.getByUserId(shareUserGoodsDo.getUserId());
+			
+			if (result != null && result.getIsBuy() == 1) {
+				logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
+			}
+			
+		}
 
+		// ----------------
+		
+		
 		if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
 		}

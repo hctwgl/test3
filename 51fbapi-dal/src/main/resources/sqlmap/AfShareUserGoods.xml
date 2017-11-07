@@ -137,4 +137,15 @@
 	     WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
     
+    <select id="getByUserId" resultType="com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo" parameterType="java.lang.Long">
+    	SELECT
+        	<include refid="queryFields" />
+        FROM af_share_user_goods
+        WHERE
+        	user_id=#{userId}
+        AND
+        	is_buy=1
+        limit 0,1
+    </select>
+    
 </mapper>

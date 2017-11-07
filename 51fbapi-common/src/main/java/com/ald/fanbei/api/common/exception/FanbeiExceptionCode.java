@@ -288,7 +288,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
 
     CUT_PRICE_ISBUY("CUT_PRICE_ISBUY",6003,"cut_price_isbut","砍价商品已购买"),
     SHARE_PRICE_BOUGHT("SHARE_PRICE_BOUGHT",6004,"shared goods has already been bought","专享商品已购买"),
-    SHARE_PAYTYPE_ERROR("SHARE_PAYTYPE_ERROR",6005,"shared payType is not agent pay","专享商品支付方式不是代付"),
+    SHARE_PAYTYPE_ERROR("SHARE_PAYTYPE_ERROR",6005,"shared payType is not agent pay","专享商品支付方式必须是额度支付"),
 
     //系统升级该code不能随便修改
     SYSTEM_UPDATE("SYSTEM_UPDATE", 8888, "system update", "51返呗新版上线啦！\n您即将前往的下一站是【App Store】更新，如无更新按钮，请稍后重试或卸载后重新安装"),
