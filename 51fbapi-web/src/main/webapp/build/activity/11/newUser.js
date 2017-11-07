@@ -46,6 +46,15 @@ let vm = new Vue({
                     requestMsg('哎呀，出错了！')
                 }
             })
+            //页面初始化加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/newUser?type=newUser_ini'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击活动详情
         activityDetailClick(){
@@ -77,7 +86,16 @@ let vm = new Vue({
                 error:function(){
                     requestMsg('哎呀，出错了！')
                 }
-            })
+            });
+            //立即分享埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/newUser?type=shareNow'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击邀请有礼---老用户
         inviteNowClick(){
@@ -95,7 +113,16 @@ let vm = new Vue({
                 error:function(){
                     requestMsg('哎呀，出错了！')
                 }
-            })
+            });
+            //邀请有礼埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/newUser?type=inviteNow'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击立即抢购
         buyNowClick(item){
@@ -119,7 +146,16 @@ let vm = new Vue({
                 error:function(){
                     requestMsg('哎呀，出错了！')
                 }
-            })
+            });
+            //立即抢购埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/newUser?type=buyNow'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         }
     }
 });

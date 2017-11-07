@@ -43,6 +43,15 @@ let vm = new Vue({
                     requestMsg('哎呀，出错了！')
                 }
             })
+            //页面初始化加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/newUserShare?type=newUserShare_ini'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击活动详情
         activityDetailClick(){
