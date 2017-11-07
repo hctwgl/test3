@@ -5,22 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>动态账单</title>
+    <title>当前账单</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/dynamicBill.css">
 </head>
 <body>
     <div id="dynamicBill">
         <div class="dynamic-top">
-            <div class="fork"></span>
+            <div class="fork"><img src="$src/dynamicBill-01.png" alt=""></span>
             <div class="personIn">
-                <img src="" alt="">
+                <img src="$src/dynamicBill-04.png" alt="">
                 <span class="personName">王小二</span>
                 <span class="personPhone">182****5723</span>
             </div>
         </div>
         <div class="dynamic-center">
-            <span class="dateOne">每月1号<br/>出账日</span>
+            <span class="dateOne"><i class="monthOne">每月1号</i><br/><i class="count">出账日</i></span>
             <span class="line"></span>
-            <span class="dateTwo">每月11号<br/>还款日</span>
+            <span class="dateTwo"><i class="monthTwo">每月11号</i><br/><i class="pay">还款日</i></span>
         </div>
         <div class="dynamic-bottom">
             <div class="oneTime"><span class="point"></span>账单日一年只允许更改一侧，请慎重</div>
@@ -28,4 +29,5 @@
         </div>
     </div>
 </body>
+<script type="text/javascript" src="/dist/activity/11/dynamicBill.js?version=$version"></script>
 </html>

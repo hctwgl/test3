@@ -1,0 +1,116 @@
+@imageurl: "https://f.51fanbei.com/h5/app/activity/11/";
+
+*{
+    box-sizing:border-box;
+}
+body{
+    background-color: white;
+}
+.dynamic-top{
+    height:6.1rem;
+    color:white;
+    padding-left:0.1rem;
+    padding-top:0.3rem;
+    background-image: linear-gradient(222deg, #ffb987, #f8a451 18%, #ff8138 40%, #f7571c);
+    .fork{
+           width: .28rem;
+           height: .28rem;
+        
+    }
+    .personIn{
+        width:7.4rem;
+        position:relative;
+        img{
+            width:1rem;
+            height:1rem;
+            position:absolute;
+            left:50%;
+            top:1rem;
+            transform:translateX(-50%);
+        }
+        .personName{
+            font-size: 0.15rem;
+            position:absolute;
+            left:50%;
+            top:2.2rem;
+            transform:translateX(-50%);
+        }
+        .personPhone{
+            font-size: 0.12rem;
+            position:absolute;
+            left:50%;
+            top:2.6rem;
+            transform:translateX(-50%);
+        }
+    }
+}
+.dynamic-center{
+    width:7.32rem;
+    height:6.68rem;
+    background:url('@{imageurl}dynamicBill-05.png') no-repeat;
+    background-size:contain;
+    margin-top:43%;
+    position:relative;
+    .dateOne{
+        position:absolute;
+        top: 52%;
+        left: 23%;
+        text-align:center;
+        .monthOne{
+            color:#646464;
+            font-size:0.2rem;
+        }
+        .count{
+            font-size:0.14rem;
+            color:#969696;
+        }
+        
+    }
+    .dateTwo{
+        position:absolute;
+        top: 52%;
+        right: 23%;
+        text-align:center;
+        .monthTwo{
+            color:#646464;
+            font-size:0.2rem;
+        }
+        .pay{
+            font-size:0.14rem;
+            color:#969696;
+        }
+    }
+    .line{
+        width:0.02rem;
+        height:0.44rem;
+        border: solid 1px #ededed;
+        position:absolute;
+        top: 56%;
+        right: 50%;
+        transform:translateX(-50%);
+    }
+}
+.dynamic-bottom{
+    .oneTime{
+        color:gray;
+        font-size: 0.15rem;
+        margin-left:30%;
+        margin-bottom:0.3rem;
+        .point{
+            width:0.1rem;
+            height:0.1rem;
+            background-color: gray;
+            border-radius:50%;
+            margin-right:0.2rem;
+        }
+    }
+    .btn{
+            width: 6rem;
+            height: 0.8rem;
+            background-color: #ff6e34;
+            border-radius: 0.5rem;
+            font-size: .16rem;
+            color: #fff;
+            margin-left: 10%;
+    }
+}
