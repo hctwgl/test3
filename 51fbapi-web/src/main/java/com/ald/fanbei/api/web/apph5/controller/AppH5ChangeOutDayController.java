@@ -93,6 +93,9 @@ public class AppH5ChangeOutDayController extends BaseController{
     		AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
     		Map<String, Object> data = new HashMap<String, Object>();
     		if (afUser != null && afUser.getRid() != null) {
+    			data.put("avatar", afUser.getAvatar());
+    			data.put("userName", afUser.getUserName());
+    			data.put("nick", afUser.getNick());
     			AfUserOutDayDo userOutDay = afUserOutDayDao.getUserOutDayByUserId(afUser.getRid());
     			List<Map<String, Integer>> outDayList = new ArrayList<Map<String,Integer>>();
     			if (userOutDay != null && userOutDay.getId() != null) {
@@ -100,22 +103,25 @@ public class AppH5ChangeOutDayController extends BaseController{
         			Calendar outDayCalendar = Calendar.getInstance();
         			outDayCalendar.setTime(userOutDay.getGmtModify());
         			if (calendar.get(Calendar.YEAR) == outDayCalendar.get(Calendar.YEAR)) {
-        				resp = H5CommonResponse.getNewInstance(false, "您今年的修改次数已用完");
+        				data.put("outDay", userOutDay.getOutDay());
+    					data.put("payDay", userOutDay.getPayDay());
+        				resp = H5CommonResponse.getNewInstance(false, "您今年的修改次数已用完","",data);
         				return resp.toString();
 					}
+        			data.put("outDay", userOutDay.getOutDay());
+					data.put("payDay", userOutDay.getPayDay());
         			outDayList = this.getOutDayList(userOutDay.getOutDay());
 				}else {
+					data.put("outDay", 10);
+					data.put("payDay", 20);
 					outDayList = this.getOutDayList(10);
 				}
     			int countNotPayOverdueBill = afBorrowBillService.countNotPayOverdueBill(afUser.getRid());
     			if (countNotPayOverdueBill > 0) {
-    				resp = H5CommonResponse.getNewInstance(false, "您有逾期账单未还清,请还清账单后再来更改吧~");
+    				resp = H5CommonResponse.getNewInstance(false, "您有逾期账单未还清,请还清账单后再来更改吧~","",data);
     				return resp.toString();
     			}
     			data.put("outDayList", outDayList);
-    			data.put("avatar", afUser.getAvatar());
-    			data.put("userName", afUser.getUserName());
-    			data.put("nick", afUser.getNick());
 			}
     		resp = H5CommonResponse.getNewInstance(true, "请求成功", "", data);
     	} catch (Exception e){
