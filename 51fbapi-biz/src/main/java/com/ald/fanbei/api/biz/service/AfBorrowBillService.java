@@ -217,6 +217,24 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(Long consumerNo);
+
+	/**
+	 * 根据用户ID获取未还的逾期数
+	 * @author yuyue
+	 * @Time 2017年11月6日 下午3:34:04
+	 * @param rid
+	 * @return
+	 */
+	int countNotPayOverdueBill(Long userId);
 	
-	
+	/**
+	 * 更改出账日的方法
+	 * @author yuyue
+	 * @Time 2017年11月6日 下午5:55:07
+	 * @param userId
+	 * @param outDay
+	 * @param oldOutDay
+	 * @param payDay
+	 */
+	void updateBorrowBills(long userId,int outDay,int oldOutDay,int payDay);
 }

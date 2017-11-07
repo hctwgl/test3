@@ -243,4 +243,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		}
 		return null;
 	}
+
+	@Override
+	public int countNotPayOverdueBill(Long userId) {
+		return afBorrowBillDao.countNotPayOverdueBill(userId);
+	}
 }

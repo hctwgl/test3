@@ -513,4 +513,8 @@
 		ORDER BY abb.bill_year DESC,
 		abb.bill_month DESC
 	</select>
+	
+	<select id="countNotPayOverdueBill" resultType="java.lang.Integer">
+		SELECT COUNT(1) from af_borrow_bill where is_delete = 0 and `status` = 'N' and overdue_status = 'Y' and user_id = #{userId} 
+	</select>
 </mapper>

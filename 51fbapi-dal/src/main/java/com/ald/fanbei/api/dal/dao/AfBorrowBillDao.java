@@ -307,4 +307,13 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<AfOverdueBillDto> getAfOverdueBillDtoByConsumerNo(@Param("orderId")Long orderId);
+
+	/**
+	 * 根据用户ID查询未还逾期账单总数
+	 * @author yuyue
+	 * @Time 2017年11月6日 下午4:00:16
+	 * @param userId
+	 * @return
+	 */
+	int countNotPayOverdueBill(@Param("userId")Long userId);
 }
