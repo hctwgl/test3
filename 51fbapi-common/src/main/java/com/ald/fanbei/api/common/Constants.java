@@ -85,7 +85,7 @@ public class Constants {
 
 
 	public static final String CONF_KEY_INVELOMENT_TYPE = "fbapi.inveloment.type";
-	public static final String FILE_CLOUD_PATH = "http://f.51fanbei.com/";
+	public static final String FILE_CLOUD_PATH = "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/";
 	public static final Long INVITE_START_VALUE = 1679625L;
 	public static final String INVELOMENT_TYPE_TEST = "test";
 	public static final String INVELOMENT_TYPE_ONLINE = "online";

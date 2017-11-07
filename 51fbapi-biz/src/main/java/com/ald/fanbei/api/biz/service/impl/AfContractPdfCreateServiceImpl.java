@@ -550,15 +550,6 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                 }
                 afContractPdfDao.insert(afContractPdfDo);
             }
-            if (ossUploadResult.isSuccess()){
-                File file1 = new File(map.get("PDFPath").toString());
-                file1.delete();
-                file1 = new File(map.get("userPath").toString());
-                file1.delete();
-                file1 = new File(map.get("selfPath").toString());
-                file1.delete();
-                file.delete();
-            }
         }catch (Exception e){
             logger.error("证书上传oss失败：", e.getMessage());
             return true;
@@ -566,6 +557,14 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             if (null != input){
                 input.close();
             }
+            File file1 = new File(map.get("PDFPath").toString());
+            file1.delete();
+            file1 = new File(map.get("userPath").toString());
+            file1.delete();
+            file1 = new File(map.get("selfPath").toString());
+            file1.delete();
+            file1 = new File(map.get("secondPath").toString());
+            file1.delete();
         }
         return false;
     }
