@@ -438,7 +438,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
                         map.put("gmtRenewalBegin", gmtPlanRepayment);
                         map.put("gmtRenewalEnd", repaymentDay);
                         map.put("gmtRenewalTime", format.format(gmtPlanRepayment)+ "至" + format.format(repaymentDay));
-                        map.put("repaymentDay", repaymentDay);
+                        map.put("repaymentDay", format.format(repaymentDay));
                     } else {
                         Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtCreate, afRenewalDetailDo.getRenewalDay()));
                         afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
