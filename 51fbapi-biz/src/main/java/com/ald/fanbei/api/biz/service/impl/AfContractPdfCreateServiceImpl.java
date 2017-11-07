@@ -528,7 +528,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         try {
             File file = new File(map.get("secondPath").toString());
             input = new FileInputStream(file);
-            MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "text/plain", IOUtils.toByteArray(input));
+            MultipartFile multipartFile =new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
             OssUploadResult ossUploadResult =  ossFileUploadService.uploadFileToOss(multipartFile);
             input.close();
             logger.info(ossUploadResult.getMsg(),"url:",ossUploadResult.getUrl());
