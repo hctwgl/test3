@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($src="https://f.51fanbei.com/h5/app/activity/11") 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>动态账单</title>
+</head>
+<body>
+    <div id="dynamicBill">
+        <div class="dynamic-top">
+            <div class="fork"></span>
+            <div class="personIn">
+                <img src="" alt="">
+                <span class="personName">王小二</span>
+                <span class="personPhone">182****5723</span>
+            </div>
+        </div>
+        <div class="dynamic-center">
+            <span class="dateOne">每月1号<br/>出账日</span>
+            <span class="line"></span>
+            <span class="dateTwo">每月11号<br/>还款日</span>
+        </div>
+        <div class="dynamic-bottom">
+            <div class="oneTime"><span class="point"></span>账单日一年只允许更改一侧，请慎重</div>
+            <button class="btn">修改账单日</button>
+        </div>
+    </div>
+</body>
+</html>
