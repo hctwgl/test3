@@ -17,7 +17,7 @@
     <div class="firstCont clearFix">
         <div class="contTitle"></div>
         <div class="good2 flex fd-row" v-for="item in content.twoLevelGoodsInfo.goodsList" @click="goodClick(item)">
-            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
+            <p class="goodImg flex jc-c ai-c"><img class="lazy" :data-original="item.goodsIcon"></p>
             <div class="goodRight">
                 <p class="goodDes">{{txtFix(item.goodName,8)}}</p>
                 <p class="goodPrice clearFix"><span class="originPrice">￥{{item.saleAmount}}</span><span class="fan"></span><span class="fanMoney">￥{{item.rebateAmount}}</span></p>
