@@ -264,11 +264,11 @@ public class StartCashierApi implements ApiHandle {
             BigDecimal userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
-            if (userabledAmount.compareTo(usabledMinAmount) <= 0) {
+            if (userabledAmount.compareTo(usabledMinAmount) < 0) {
                 return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode());
             }
 
-            if (userabledAmount.compareTo(orderInfo.getActualAmount()) <= 0) {
+            if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 //额度不够
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode());
                 riskProcess(cashierTypeVo, orderInfo, userDto);
@@ -344,7 +344,7 @@ public class StartCashierApi implements ApiHandle {
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
-        String rejectCode = null;//todo 临时调试使用 resp.getRejectCode();
+        String rejectCode =  resp.getRejectCode();
         if (StringUtil.isNotBlank(rejectCode)) {
             RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
             switch (erorrCode) {
@@ -389,7 +389,7 @@ public class StartCashierApi implements ApiHandle {
             // 虚拟剩余额度大于信用可用额度 则为可用额度
             leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
             cashierTypeVo.setVirtualGoodsUsableAmount(leftAmount);
-            if (leftAmount.compareTo(BigDecimal.ZERO) < 0) {
+            if (leftAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 cashierTypeVo.setReasonType(CashierReasonType.VIRTUAL_GOODS_LIMIT.getCode());
             } else {
