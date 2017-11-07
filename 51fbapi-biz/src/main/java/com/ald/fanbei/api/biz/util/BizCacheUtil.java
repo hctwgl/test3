@@ -71,7 +71,7 @@ public class BizCacheUtil extends AbstractThird {
 	 * @param seriObj
 	 *            缓存数据
 	 * @param expire
-	 *            过期时间
+	 *            过期时间 s
 	 */
 	public void saveObject(final String key, final Serializable seriObj, final long expire) {
 		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || seriObj == null) {

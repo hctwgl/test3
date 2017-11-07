@@ -58,4 +58,12 @@ public interface AfUserService {
 	 * @return
 	 * **/
 	List<String> getUserNameByUserId(List<String> users);
+	
+	/**
+	 * 修改用户核心信息-手机号，密码等
+	 * @param userId
+	 * @param newMobile
+	 * @param password
+	 */
+	void updateUserCoreInfo(final Long userId, final String newMobile, final String password);
 }
