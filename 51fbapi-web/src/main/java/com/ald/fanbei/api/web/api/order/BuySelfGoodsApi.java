@@ -184,17 +184,18 @@ public class BuySelfGoodsApi implements ApiHandle {
 						
 						BigDecimal decreasePrice = resultDo.getDecreasePrice();
 						priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
-						// 使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
-						afOrder.setThirdOrderNo(resultDo.getRid().toString());
 						
 						//增加一条记录,用户购买记录
 						AfShareUserGoodsDo t = new AfShareUserGoodsDo();
 						t.setGmtCreate(new Date());
 						t.setGmtModified(new Date());
 						t.setGoodsPriceId(priceDo.getRid());
-						t.setIsBuy(1);
+						t.setIsBuy(0);
 						t.setUserId(userId);
 						afShareUserGoodsService.saveRecord(t);
+
+						// 使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
+						afOrder.setThirdOrderNo(t.getRid().toString());
 						
 					}
 					
