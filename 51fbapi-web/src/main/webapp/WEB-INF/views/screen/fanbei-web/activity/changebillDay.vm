@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($src="https://f.51fanbei.com/h5/app/activity/11") 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改账单日</title>
+</head>
+<body>
+    <div id="changbillDay">
+        <div class="payforInfo">
+            <span><img src="$src/dynamicBill-04.png" alt=""></span>
+            <p>
+                <span>王小二</span>
+                <span>182****6723</span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

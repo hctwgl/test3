@@ -19,6 +19,13 @@ body {
   width: 7.4rem;
   position: relative;
 }
+.dynamic-top .personIn .unpaid {
+  text-align: center;
+  font-size: 0.34rem;
+}
+.dynamic-top .personIn .down {
+  padding-top: 0.2rem;
+}
 .dynamic-top .personIn img {
   width: 1rem;
   height: 1rem;
