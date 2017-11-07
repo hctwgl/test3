@@ -686,7 +686,9 @@ public class RiskUtil extends AbstractThird {
             //增加虚拟商品记录
             afUserVirtualAccountService.saveRecord(virtualAccountInfo);
         }
-
+        if (borrow.getNper() == 1) {
+            borrow.setNperAmount(borrow.getAmount());
+        }
         // 新增借款信息
         afBorrowDao.addBorrow(borrow);
         // 在风控审批通过后额度不变生成账单
@@ -861,7 +863,7 @@ public class RiskUtil extends AbstractThird {
                     afUserAuthService.updateUserAuth(authDo);
 
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
-	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+                                                    如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
                     AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
                     if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
                         AfUserAccountDo accountDo = new AfUserAccountDo();
@@ -1729,185 +1731,191 @@ public class RiskUtil extends AbstractThird {
                 auth.setAlipayStatus(YesNoStatus.YES.getCode());
 				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
 				     如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
-				if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
-					auth.setRiskStatus(RiskStatus.YES.getCode());
-					AfUserAccountDo accountDo = new AfUserAccountDo();
-					accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
-					accountDo.setAuAmount(au_amount);
-					afUserAccountService.updateUserAccount(accountDo);
-				}					
-				jpushService.alipayRiskSuccess(userAccountDo.getUserName());
-			} else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
-				auth.setAlipayStatus(YesNoStatus.NO.getCode());
-				jpushService.alipayRiskFail(userAccountDo.getUserName());
-			} else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
-				auth.setAlipayStatus("A");
-				jpushService.alipayRiskFault(userAccountDo.getUserName());
-			}
-			return afUserAuthService.updateUserAuth(auth);
-		}
-		return 0;
-	}
-	/**
-	 * 获取用户分层利率
-	 * @param consumerNo 用户ID
-	 * @return
-	 */
-	public RiskVerifyRespBo getUserLayRate(String consumerNo) {
-		RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
-		reqBo.setConsumerNo(consumerNo);
-		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+                if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                    auth.setRiskStatus(RiskStatus.YES.getCode());
+                    AfUserAccountDo accountDo = new AfUserAccountDo();
+                    accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+                    accountDo.setAuAmount(au_amount);
+                    afUserAccountService.updateUserAccount(accountDo);
+                }
+                jpushService.alipayRiskSuccess(userAccountDo.getUserName());
+            } else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
+                auth.setAlipayStatus(YesNoStatus.NO.getCode());
+                jpushService.alipayRiskFail(userAccountDo.getUserName());
+            } else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+                auth.setAlipayStatus("A");
+                jpushService.alipayRiskFault(userAccountDo.getUserName());
+            }
+            return afUserAuthService.updateUserAuth(auth);
+        }
+        return 0;
+    }
 
-		String url = getUrl() + "/modules/api/risk/userRate.htm";
+    /**
+     * 获取用户分层利率
+     *
+     * @param consumerNo 用户ID
+     * @return
+     */
+    public RiskVerifyRespBo getUserLayRate(String consumerNo) {
+        RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
+        reqBo.setConsumerNo(consumerNo);
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+        String url = getUrl() + "/modules/api/risk/userRate.htm";
 //		String url = "http://192.168.110.22:80/modules/api/risk/userRate.htm";
-		String reqResult = HttpUtil.post(url, reqBo);
-		logThird(reqResult, "getUserLayRate", reqBo);
-		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
-		}
+        String reqResult = HttpUtil.post(url, reqBo);
+        logThird(reqResult, "getUserLayRate", reqBo);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+        }
 
-		RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
-		riskResp.setOrderNo(reqBo.getOrderNo());
-		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-			JSONObject dataObj = JSON.parseObject(riskResp.getData());
-			String result = dataObj.getString("result");
-			riskResp.setSuccess(true);
-			riskResp.setResult(result);
-			riskResp.setConsumerNo(consumerNo);
-			riskResp.setPoundageRate(dataObj.getString("rate"));
-			return riskResp;
-		} else {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
-		}
-	}
-	/**
-	 * 登录可信验证码
-	 * @param userName
-	 * @param device
-	 * @return
-	 */
-	public boolean verifySynLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
-			String ip,String phoneType,String networkType,String osType){
-		
+        RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+        riskResp.setOrderNo(reqBo.getOrderNo());
+        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+            JSONObject dataObj = JSON.parseObject(riskResp.getData());
+            String result = dataObj.getString("result");
+            riskResp.setSuccess(true);
+            riskResp.setResult(result);
+            riskResp.setConsumerNo(consumerNo);
+            riskResp.setPoundageRate(dataObj.getString("rate"));
+            return riskResp;
+        } else {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
+        }
+    }
+
+    /**
+     * 登录可信验证码
+     *
+     * @param userName
+     * @param device
+     * @return
+     */
+    public boolean verifySynLogin(String consumerNo, String phone, String blackBox, String deviceUuid, String loginType, String loginTime,
+                                  String ip, String phoneType, String networkType, String osType) {
+
 //		RiskTrustReqBo reqBo = new RiskTrustReqBo();
-		Map<String,String> map = new HashMap<String, String>();
-		map.put("consumerNo",consumerNo);
-		map.put("eventType",Constants.EVENT_LOGIN_SYN);
-		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
-		JSONObject obj = new JSONObject();
-		obj.put("phone", phone);
-		obj.put("blackBox", blackBox);
-		obj.put("deviceUuid", deviceUuid);
-		obj.put("loginType", loginType);
-		obj.put("loginTime", loginTime);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("consumerNo", consumerNo);
+        map.put("eventType", Constants.EVENT_LOGIN_SYN);
+        map.put("orderNo", generatorClusterNo.getRiskLoginNo(new Date()));
+        JSONObject obj = new JSONObject();
+        obj.put("phone", phone);
+        obj.put("blackBox", blackBox);
+        obj.put("deviceUuid", deviceUuid);
+        obj.put("loginType", loginType);
+        obj.put("loginTime", loginTime);
 //		obj.put("imei", imei);
-		obj.put("ip", ip);
-		obj.put("phoneType", phoneType);
-		obj.put("networkType", networkType);
-		obj.put("osType", osType);
-		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
-		//Map<String,String> reqBo = new HashMap<String, String>();
-		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
-		String url = getUrl() + "/modules/api/event/syn/login.htm";
-		//String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
-		String reqResult = HttpUtil.post(url, map);
+        obj.put("ip", ip);
+        obj.put("phoneType", phoneType);
+        obj.put("networkType", networkType);
+        obj.put("osType", osType);
+        map.put("details", Base64.encodeString(JSON.toJSONString(obj)));
+        //Map<String,String> reqBo = new HashMap<String, String>();
+        map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+        String url = getUrl() + "/modules/api/event/syn/login.htm";
+        //String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
+        String reqResult = HttpUtil.post(url, map);
 
-		logThird(reqResult, "verifySynLogin", map);
-		if (StringUtil.isBlank(reqResult)) {
-			throw new FanbeiException(FanbeiExceptionCode.RISK_SYN_LOGIN_VERIFY_ERROR);
-		}
+        logThird(reqResult, "verifySynLogin", map);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_SYN_LOGIN_VERIFY_ERROR);
+        }
 
-		RiskLoginRespBo riskResp = JSONObject.parseObject(reqResult, RiskLoginRespBo.class);
-		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-			JSONObject jsonObj = JSON.parseObject(riskResp.getData());
-			if("1".equals(jsonObj.getString("isTrust")))
-			{
-				return true;
-			}else{
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-	
-	/**
-	 * 风控异步登录
-	 * @param consumerNo
-	 * @param phone
-	 * @param blackBox
-	 * @param deviceUuid
-	 * @param loginType
-	 * @param loginTime
-	 * @param ip
-	 * @param phoneType
-	 * @param networkType
-	 * @param osType
-	 * @return
-	 */
-	public void verifyASyLogin(String consumerNo,String phone,String blackBox,String deviceUuid,String loginType,String loginTime,
-			String ip,String phoneType,String networkType,String osType,String result,String event){
-		
-		Map<String,String> map = new HashMap<String, String>();
-		map.put("consumerNo",consumerNo);
-		map.put("eventType",event);
-		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
-		JSONObject obj = new JSONObject();
-		obj.put("phone", phone);
-		obj.put("blackBox", blackBox);
-		obj.put("deviceUuid", deviceUuid);
-		obj.put("loginResult",result);
-		obj.put("loginType", loginType);
-		obj.put("loginTime", loginTime);
+        RiskLoginRespBo riskResp = JSONObject.parseObject(reqResult, RiskLoginRespBo.class);
+        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+            JSONObject jsonObj = JSON.parseObject(riskResp.getData());
+            if ("1".equals(jsonObj.getString("isTrust"))) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 风控异步登录
+     *
+     * @param consumerNo
+     * @param phone
+     * @param blackBox
+     * @param deviceUuid
+     * @param loginType
+     * @param loginTime
+     * @param ip
+     * @param phoneType
+     * @param networkType
+     * @param osType
+     * @return
+     */
+    public void verifyASyLogin(String consumerNo, String phone, String blackBox, String deviceUuid, String loginType, String loginTime,
+                               String ip, String phoneType, String networkType, String osType, String result, String event) {
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("consumerNo", consumerNo);
+        map.put("eventType", event);
+        map.put("orderNo", generatorClusterNo.getRiskLoginNo(new Date()));
+        JSONObject obj = new JSONObject();
+        obj.put("phone", phone);
+        obj.put("blackBox", blackBox);
+        obj.put("deviceUuid", deviceUuid);
+        obj.put("loginResult", result);
+        obj.put("loginType", loginType);
+        obj.put("loginTime", loginTime);
 //		obj.put("imei", imei);
-		obj.put("ip", ip);
-		obj.put("phoneType", phoneType);
-		obj.put("networkType", networkType);
-		obj.put("osType", osType);
-		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
-		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
-		String url = getUrl() + "/modules/api/event/asy/login.htm";
-		asyLoginService.excute(map, url,"asyLoginVerify");
-	}
-	
-	/**
-	 * 风控异步注册通知
-	 * @param consumerNo
-	 * @param phone
-	 * @param blackBox
-	 * @param deviceUuid
-	 * @param loginType
-	 * @param loginTime
-	 * @param ip
-	 * @param phoneType
-	 * @param networkType
-	 * @param osType
-	 * @param result
-	 * @param event
-	 */
-	public void verifyASyRegister(String consumerNo,String phone,String blackBox,String deviceUuid,String registerTime,
-			String ip,String phoneType,String networkType,String osType,String event){
-		
-		Map<String,String> map = new HashMap<String, String>();
-		map.put("consumerNo",consumerNo);
-		map.put("eventType",event);
-		map.put("orderNo",generatorClusterNo.getRiskLoginNo(new Date()));
-		JSONObject obj = new JSONObject();
-		obj.put("phone", phone);
-		obj.put("blackBox", blackBox);
-		obj.put("deviceUuid", deviceUuid);
-		obj.put("registerResult","1");
-		obj.put("registerTime", registerTime);
+        obj.put("ip", ip);
+        obj.put("phoneType", phoneType);
+        obj.put("networkType", networkType);
+        obj.put("osType", osType);
+        map.put("details", Base64.encodeString(JSON.toJSONString(obj)));
+        map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+        String url = getUrl() + "/modules/api/event/asy/login.htm";
+        asyLoginService.excute(map, url, "asyLoginVerify");
+    }
+
+    /**
+     * 风控异步注册通知
+     *
+     * @param consumerNo
+     * @param phone
+     * @param blackBox
+     * @param deviceUuid
+     * @param loginType
+     * @param loginTime
+     * @param ip
+     * @param phoneType
+     * @param networkType
+     * @param osType
+     * @param result
+     * @param event
+     */
+    public void verifyASyRegister(String consumerNo, String phone, String blackBox, String deviceUuid, String registerTime,
+                                  String ip, String phoneType, String networkType, String osType, String event) {
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("consumerNo", consumerNo);
+        map.put("eventType", event);
+        map.put("orderNo", generatorClusterNo.getRiskLoginNo(new Date()));
+        JSONObject obj = new JSONObject();
+        obj.put("phone", phone);
+        obj.put("blackBox", blackBox);
+        obj.put("deviceUuid", deviceUuid);
+        obj.put("registerResult", "1");
+        obj.put("registerTime", registerTime);
 //		obj.put("imei", imei);
-		obj.put("ip", ip);
-		obj.put("phoneType", phoneType);
-		obj.put("networkType", networkType);
-		obj.put("osType", osType);
-		map.put("details",Base64.encodeString(JSON.toJSONString(obj)));
-		map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
-		String url = getUrl() + "/modules/api/event/asy/register.htm";
-		asyLoginService.excute(map, url,"asyRegisterVerify");
-	}
+        obj.put("ip", ip);
+        obj.put("phoneType", phoneType);
+        obj.put("networkType", networkType);
+        obj.put("osType", osType);
+        map.put("details", Base64.encodeString(JSON.toJSONString(obj)));
+        map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+        String url = getUrl() + "/modules/api/event/asy/register.htm";
+        asyLoginService.excute(map, url, "asyRegisterVerify");
+    }
+
     /**
      * 判断用户是否可以使用信用支付
      *
@@ -1937,11 +1945,12 @@ public class RiskUtil extends AbstractThird {
                 return "N";
             }
         } catch (Exception e) {
-            logger.error("creditPayment",e);
+            logger.error("creditPayment", e);
             return "N";
         }
 
     }
+
     public void applyReportNotify(String code, String data, String msg, String signInfo) {
         JSONObject obj = JSON.parseObject(data);
         String consumerNo = obj.getString("consumerNo");
@@ -2013,6 +2022,7 @@ public class RiskUtil extends AbstractThird {
         }
         return 0;
     }
+
     public int chsiNotify(String code, String data, String msg, String signInfo) {
         RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
         reqBo.setCode(code);
