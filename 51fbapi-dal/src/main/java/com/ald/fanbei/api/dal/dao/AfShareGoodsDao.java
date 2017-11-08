@@ -22,6 +22,8 @@ public interface AfShareGoodsDao extends BaseDao<AfShareGoodsDo, Long> {
 
 	List<AfShareGoodsDo> getAllGoodsList();
 
+	Integer getCountByGoodsId(Long goodsId);
+
     
 
 

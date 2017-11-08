@@ -16,8 +16,10 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfActivityModelService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
+import com.ald.fanbei.api.biz.service.AfShareGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
@@ -27,6 +29,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -58,6 +61,10 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	AfActivityModelService afActivityModelService;
 	@Resource
 	AfGoodsService afGoodsService;
+	@Resource
+	AfShareGoodsService afShareGoodsService;
+	@Resource
+	AfGoodsPriceService afGoodsPriceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -100,15 +107,22 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		//——————————————
 		
 		//新人专享添加逻辑
-		AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
-		if(goods.getPriceAmount() != actualAmount){ 
-			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("couponList", null);
-			data.put("pageNo", 1);
-			data.put("totalCount", 0);
-			resp.setResponseData(data);
-			return resp;
+		if(afShareGoodsService.getCountByGoodsId(goodsId)!=0){
+			
+			List<AfGoodsPriceDo> byGoodsId = afGoodsPriceService.getByGoodsId(goodsId);
+			for (AfGoodsPriceDo afGoodsPriceDo : byGoodsId) {
+				
+				if(afGoodsPriceDo.getActualAmount() != actualAmount){ 
+					Map<String, Object> data = new HashMap<String, Object>();
+					data.put("couponList", null);
+					data.put("pageNo", 1);
+					data.put("totalCount", 0);
+					resp.setResponseData(data);
+					return resp;
+				}
+			}
 		}
+		
 		
 		//——————————————
 		

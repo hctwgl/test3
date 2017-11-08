@@ -51,4 +51,11 @@ public class AfShareGoodsServiceImpl extends ParentServiceImpl<AfShareGoodsDo, L
 			return afShareGoodsDao.getShareGoods();
 		}
 
+
+		@Override
+		public Integer getCountByGoodsId(Long goodsId) {
+			// TODO Auto-generated method stub
+			return afShareGoodsDao.getCountByGoodsId(goodsId);
+		}
+
 }

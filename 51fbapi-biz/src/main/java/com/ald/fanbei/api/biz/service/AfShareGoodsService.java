@@ -3,7 +3,9 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 
+
 import javax.annotation.Resource;
+
 
 
 import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
@@ -23,6 +25,8 @@ public interface AfShareGoodsService extends ParentService<AfShareGoodsDo, Long>
 	List<AfShareGoodsDto> getShareGoods();
 
 	List<AfShareGoodsDo> getAllGoodsList();
+
+	Integer getCountByGoodsId(Long goodsId);
 
 
 }
