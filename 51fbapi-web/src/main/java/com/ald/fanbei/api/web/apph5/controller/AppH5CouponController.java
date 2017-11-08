@@ -201,7 +201,6 @@ public class AppH5CouponController extends BaseController {
         					couponInfoMap.put("couponId", couponId);
         					couponInfoMap.put("name", brandActivityCouponResponseBo.getName());
         					//couponInfoMap.put("useRule", brandActivityCouponResponseBo.getUseRule());
-        					couponInfoMap.put("type", brandActivityCouponResponseBo.getType());
         					couponInfoMap.put("amount", brandActivityCouponResponseBo.getValue());
         					//couponInfoMap.put("useRange", brandActivityCouponResponseBo.getUseRange());
         					couponInfoMap.put("limitAmount", brandActivityCouponResponseBo.getThreshold());
