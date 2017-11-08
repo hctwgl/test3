@@ -165,7 +165,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 		afOrder.setAuAmount(userAccountInfo.getAuAmount());
-		afOrder.setUseableAmount(useableAmount);
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		String isEnoughAmount = "Y";

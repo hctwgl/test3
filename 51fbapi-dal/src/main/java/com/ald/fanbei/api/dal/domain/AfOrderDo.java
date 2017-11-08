@@ -77,19 +77,19 @@ public class AfOrderDo extends AbstractSerial{
 	private BigDecimal lng;//支付时经度
 	private String orderStatus;
 	private BigDecimal auAmount;//用户的总授信额度
-	private BigDecimal useableAmount;//可使用额度
+	private BigDecimal usedAmount;//已使用额度
 	
-	public BigDecimal getUseableAmount() {
-		return useableAmount;
-	}
-	public void setUseableAmount(BigDecimal useableAmount) {
-		this.useableAmount = useableAmount;
-	}
 	public String getOrderStatus() {
 	    return orderStatus;
 	}
 	public void setOrderStatus(String orderStatus) {
 	    this.orderStatus = orderStatus;
+	}
+	public BigDecimal getUsedAmount() {
+		return usedAmount;
+	}
+	public void setUsedAmount(BigDecimal usedAmount) {
+		this.usedAmount = usedAmount;
 	}
 	public Long getGoodsPriceId() {
 		return goodsPriceId;

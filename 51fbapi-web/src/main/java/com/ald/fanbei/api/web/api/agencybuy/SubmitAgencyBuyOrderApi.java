@@ -110,7 +110,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 		afOrder.setAuAmount(userAccountInfo.getAuAmount());
-		afOrder.setUseableAmount(useableAmount);
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if (addressDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);

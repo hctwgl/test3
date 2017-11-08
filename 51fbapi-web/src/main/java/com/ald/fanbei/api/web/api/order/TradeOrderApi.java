@@ -13,7 +13,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
@@ -127,7 +126,7 @@ public class TradeOrderApi implements ApiHandle {
         AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
         BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
         afOrder.setAuAmount(userAccountInfo.getAuAmount());
-		afOrder.setUseableAmount(useableAmount);
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
         afOrderService.createOrder(afOrder);
         AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
         afTradeOrderDo.setOrderId(afOrder.getRid());
