@@ -159,6 +159,7 @@ public class AppLaunchImageApi implements ApiHandle{
 		try {
 			String userName = context.getUserName();
 			AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+			logger.error("ChangXiaoAdOpen oldUser" + afUserDo);
 			if(afUserDo != null){//平台老用户，不进行回调
 				return;
 			}
@@ -172,8 +173,8 @@ public class AppLaunchImageApi implements ApiHandle{
 				AfUserChangXiaoDo tdo = afUserChangXiaoService.getUserOpen(userDo);//用户未启动过
 				if(tdo != null){
 					String callbackUrl = tdo.getCallbackUrl();
-					callbackUrl+="?osVersion=" + tdo.getOsVersion() + "&os=" + tdo.getOs() + "&imei=" + tdo.getImei() + "&idfa=" + tdo.getIdfa() + "&mac=" + tdo.getMac();
 					String result= HttpUtil.doGet(callbackUrl,20);
+					logger.debug("ChangXiaoAdOpen callbackUrl=" + callbackUrl + " ,result=" + result);
 					if(result.indexOf("success")>-1){
 						afUserChangXiaoService.updateUserOpen(tdo);
 					}
