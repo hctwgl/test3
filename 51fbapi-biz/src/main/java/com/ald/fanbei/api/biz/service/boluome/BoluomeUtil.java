@@ -179,9 +179,11 @@ public class BoluomeUtil extends AbstractThird{
 			orderInfo.setMobile(StringUtils.EMPTY);
 			orderInfo.setBankId(0l);
 			orderInfo.setServiceProvider(channel);
-			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
-			orderInfo.setAuAmount(userAccountInfo.getAuAmount());
-			orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0L));
+			if(userAccountInfo!=null){
+				orderInfo.setAuAmount(userAccountInfo.getAuAmount());
+				orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+			}
 			if (shopInfo.getInterestFreeId() != 0) {
     			AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
     			orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
