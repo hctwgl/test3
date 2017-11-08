@@ -212,4 +212,56 @@
         limit 0,1
     </select>
     
+      <select id="getAfUserWithholdDtoByUserId" parameterType="java.lang.String" resultType="AfUserWithholdDo">
+    	SELECT
+        	<include refid="queryFields" />
+        FROM af_user_withhold
+        WHERE is_delete = 0
+        AND user_name=#{userName}
+    </select>
+
+    <insert id="insertAfUserWithholdDto" keyProperty="id" useGeneratedKeys="true" parameterType="AfUserWithholdDo">
+    	INSERT INTO `af_user_withhold` (user_name,user_id,is_withhold,usebalance)
+		VALUES(#{userName},#{userId},#{isWithhold},#{usebalance})
+    </insert>
+
+    <update id="updateAfUserWithholdDtoByUserName">
+    	UPDATE `af_user_withhold` SET
+    		is_withhold=#{isWithhold}
+    	WHERE is_delete = 0
+    	AND
+    	user_name=#{userName}
+    </update>
+
+    <update id="updateAfUserWithholdDo"  parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
+        UPDATE af_user_withhold
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="cardNumber1 != null and cardNumber1 != '' ">        
+                card_number1 = #{cardNumber1,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber2 != null and cardNumber2 != '' ">        
+                card_number2 = #{cardNumber2,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber3 != null and cardNumber3 != '' ">        
+                card_number3 = #{cardNumber3,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber4 != null and cardNumber4 != '' ">        
+                card_number4 = #{cardNumber4,jdbcType=VARCHAR},                
+            </if>
+            <if test="cardNumber5 != null and cardNumber5 != '' ">        
+                card_number5 = #{cardNumber5,jdbcType=VARCHAR},                
+            </if>
+            <if test="usebalance != null and usebalance != '' ">        
+                usebalance = #{usebalance,jdbcType=INTEGER},                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND user_id =#{userId}
+    </update>
+    
 </mapper>

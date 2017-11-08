@@ -13,4 +13,33 @@ import com.ald.fanbei.api.dal.domain.AfUserWithholdDo;
 public interface AfUserWithholdService extends ParentService<AfUserWithholdDo, Long>{
 
     AfUserWithholdDo getByUserId(Long userId);
+    
+    /**
+     * 根据userName得到代扣记录
+     * 
+     * @param userName
+     * **/
+    AfUserWithholdDo getAfUserWithholdDtoByUserId(String userName);
+    
+    /**
+     * 插入AfUserWithholdDto 记录
+     * 
+     * **/
+    int insertAfUserWithholdDto(AfUserWithholdDo afUserWithholdDo);
+    
+    /**
+     * 更新代扣开关
+     * @param IsSwitch
+     * @param userName
+     * **/
+    
+    int updateAfUserWithholdDtoByUserName(String userName,Integer IsSwitch);
+    
+    /**
+     * 更新银行卡号
+     * 
+     * **/
+    int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo);
+    
+    
 }
