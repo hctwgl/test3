@@ -129,7 +129,7 @@ public class StartCashierApi implements ApiHandle {
         String isSupplyCertify = "N";
         if (StringUtil.equals(authDo.getFundStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getJinpoStatus(), YesNoStatus.YES.getCode()) &&
                 StringUtil.equals(authDo.getCreditStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getAlipayStatus(), YesNoStatus.YES.getCode())
-                && StringUtil.equals(authDo.getChsiStatus(), YesNoStatus.YES.getCode())&& StringUtil.equals(authDo.getZhengxinStatus(), YesNoStatus.YES.getCode())) {
+                && StringUtil.equals(authDo.getChsiStatus(), YesNoStatus.YES.getCode())) {
             isSupplyCertify = "Y";
         }
 
