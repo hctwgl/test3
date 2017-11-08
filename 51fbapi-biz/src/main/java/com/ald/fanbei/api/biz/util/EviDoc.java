@@ -27,6 +27,10 @@ public class EviDoc {
 	private static String eviUrl = null;
 	// 待保全文档路径
 	private static String filePath = null;
+	private static String eviName = null;
+	private static String esignIdFirst = null;
+	private static String esignIdSecond = null;
+	private static String esignIdThird = null;
 	/*public static void main(String[] args) {
 		
 		// 初始化全部参数
@@ -49,13 +53,17 @@ public class EviDoc {
 	/***
 	 * 初始化全局参数
 	 */
-	public static void initGlobalParameters(String pId, String secret, String eUrl, String path) {
+	public static void initGlobalParameters(String pId, String secret, String eUrl, String path,String name,String esignFirst,String esignSecond,String esignThird) {
 		encoding = "UTF-8";
 		algorithm = "HmacSHA256";
 		projectId = pId;
 		projectSecret = secret;
 		eviUrl = eUrl;
 		filePath = path;
+		eviName = name;
+		esignIdFirst = esignFirst;
+		esignIdSecond = esignSecond;
+		esignIdThird = esignThird;
 		/*projectId = "1111563517";
 		projectSecret = "95439b0863c241c63a861b87d1e647b7";
 		// 文档保全测试环境地址
@@ -224,10 +232,9 @@ public class EviDoc {
 	 */
 	public static String setPostJSONStr() {
 		JSONObject eviObj = new JSONObject();
-		eviObj.put("eviName", "我的保全文件名");
+		eviObj.put("eviName", eviName);
 		eviObj.put("content", setContent(filePath));
 		eviObj.element("eSignIds", setEsignIds());
-		eviObj.element("bizIds", setBizIds());
 		return eviObj.toString();
 	}
 
@@ -266,8 +273,17 @@ public class EviDoc {
 		// 0 代表使用e签宝的电子签名服务
 		eSignIdsBean1.setType("0");
 		// value值就是 e签宝 SDK电子签名后返回的 signServiceId 签署记录id
-		eSignIdsBean1.setValue("862958877468037120");
-
+		eSignIdsBean1.setValue(esignIdFirst);
+		IdsBeanDo eSignIdsBean2 = new IdsBeanDo();
+		// 0 代表使用e签宝的电子签名服务
+		eSignIdsBean2.setType("0");
+		// value值就是 e签宝 SDK电子签名后返回的 signServiceId 签署记录id
+		eSignIdsBean2.setValue(esignIdSecond);
+		IdsBeanDo eSignIdsBean3 = new IdsBeanDo();
+		// 0 代表使用e签宝的电子签名服务
+		eSignIdsBean3.setType("0");
+		// value值就是 e签宝 SDK电子签名后返回的 signServiceId 签署记录id
+		eSignIdsBean3.setValue(esignIdThird);
 //		IdsBean eSignIdsBean2 = new IdsBean();
 //		// 1 代表使用e签宝的时间戳服务
 //		eSignIdsBean2.setType("1");
@@ -277,6 +293,7 @@ public class EviDoc {
 		List<IdsBeanDo> eSignIds = new ArrayList<IdsBeanDo>();
 		eSignIds.add(eSignIdsBean1);
 //		eSignIds.add(eSignIdsBean2);
+//		eSignIds.add(eSignIdsBean3);
 		return setIds(eSignIds);
 	}
 

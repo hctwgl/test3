@@ -21,6 +21,7 @@ import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -159,6 +160,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("userPath",src+accountDo.getUserName()+"instalment"+time+2+".pdf");
             map.put("selfPath",src+accountDo.getUserName()+"instalment"+time+3+".pdf");
             map.put("secondPath",src+accountDo.getUserName()+"instalment"+time+4+".pdf");
+            map.put("fileName",accountDo.getUserName()+"instalment"+time+4);
             if (pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             logger.info(JSON.toJSONString(map));
@@ -266,6 +268,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("userPath",src+accountDo.getUserName()+"cashLoan"+time+2+".pdf");
             map.put("selfPath",src+accountDo.getUserName()+"cashLoan"+time+3+".pdf");
             map.put("secondPath",src+accountDo.getUserName()+"cashLoan"+time+4+".pdf");
+            map.put("fileName",accountDo.getUserName()+"cashLoan"+time+4);
             if (pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
@@ -494,6 +497,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("userPath",src+accountDo.getUserName()+"renewal"+time+2+".pdf");
             map.put("selfPath",src+accountDo.getUserName()+"renewal"+time+3+".pdf");
             map.put("secondPath",src+accountDo.getUserName()+"renewal"+time+4+".pdf");
+            map.put("fileName",accountDo.getUserName()+"renewal"+time+4);
             if (pdfCreate(map))
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
@@ -512,20 +516,23 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             return true;
         }
         try {
-            afESdkService.userSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);
+            map.put("esignIdFirst",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("甲方盖章证书生成失败：", e);
             return true;
         }
 
         try {
-            afESdkService.selfSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.selfSign(map);
+            map.put("esignIdSecond",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("丙方盖章证书生成失败：", e);
             return true;
         }
         try {
-            afESdkService.secondSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);
+            map.put("esignIdThird",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("乙方盖章证书生成失败：", e);
             return true;
@@ -585,7 +592,12 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     }
 
     private String eviPdf(Map map) {
-        eviDoc.initGlobalParameters(esignPublicInit.getProjectId(),esignPublicInit.getProjectSecret(),esignPublicInit.getEviUrl(),map.get("secondPath").toString());
+        String filePath = map.get("secondPath").toString();
+        String fileName = map.get("fileName").toString();
+        String esignIdThird = map.get("esignIdThird").toString();
+        String esignIdSecond = map.get("esignIdSecond").toString();
+        String esignIdFirst = map.get("esignIdFirst").toString();
+        eviDoc.initGlobalParameters(esignPublicInit.getProjectId(),esignPublicInit.getProjectSecret(),esignPublicInit.getEviUrl(),filePath,fileName,esignIdFirst,esignIdSecond,esignIdThird);
         // 用户获取文档保全Url和存证编号
         Map<String, String> eviMap = eviDoc.getEviUrlAndEvId();
         String evId = "";

@@ -24,6 +24,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -174,6 +175,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         map.put("userPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+2+".pdf");
         map.put("selfPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+3+".pdf");
         map.put("secondPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+4+".pdf");
+        map.put("fileName",accountDo.getUserName()+"分期服务协议"+new Date().getTime()+4+4);
         if (pdfCreate(map))
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
         logger.info(JSON.toJSONString(map));
@@ -345,6 +347,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         map.put("userPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+2+".pdf");
         map.put("selfPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+3+".pdf");
         map.put("secondPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+4+".pdf");
+        map.put("fileName",accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+4);
         if (pdfCreate(map))
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
         logger.info(JSON.toJSONString(map));
@@ -437,6 +440,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         map.put("userPath",src+accountDo.getUserName()+"个人现金服务合同"+time+2+".pdf");
         map.put("selfPath",src+accountDo.getUserName()+"个人现金服务合同"+time+3+".pdf");
         map.put("secondPath",src+accountDo.getUserName()+"个人现金服务合同"+time+4+".pdf");
+        map.put("fileName",accountDo.getUserName()+"个人现金服务合同"+time+4);
         if (pdfCreate(map))
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
         logger.info(JSON.toJSONString(map));
@@ -451,20 +455,23 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             return true;
         }
         try {
-            afESdkService.userSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);
+            map.put("esignIdFirst",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("甲方盖章证书生成失败：", e);
             return true;
         }
 
         try {
-            afESdkService.selfSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.selfSign(map);
+            map.put("esignIdSecond",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("丙方盖章证书生成失败：", e);
             return true;
         }
         try {
-            afESdkService.secondSign(map);
+            FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);
+            map.put("esignIdThird",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("乙方盖章证书生成失败：", e.getMessage());
             return true;
@@ -505,13 +512,7 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
                 afContractPdfDao.insert(afContractPdfDo);
             }
             if (ossUploadResult.isSuccess()){
-                File file1 = new File(map.get("PDFPath").toString());
-                file1.delete();
-                file1 = new File(map.get("userPath").toString());
-                file1.delete();
-                file1 = new File(map.get("selfPath").toString());
-                file1.delete();
-                file.delete();
+
             }
         }catch (Exception e){
             logger.error("证书上传oss失败：", e.getMessage());
@@ -520,12 +521,25 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             if (null != input){
                 input.close();
             }
+            File file1 = new File(map.get("PDFPath").toString());
+            file1.delete();
+            file1 = new File(map.get("userPath").toString());
+            file1.delete();
+            file1 = new File(map.get("selfPath").toString());
+            file1.delete();
+            file1 = new File(map.get("secondPath").toString());
+            file1.delete();
         }
         return false;
     }
 
     private String eviPdf(Map map) {
-        eviDoc.initGlobalParameters(esignPublicInit.getProjectId(),esignPublicInit.getProjectSecret(),esignPublicInit.getEviUrl(),map.get("secondPath").toString());
+        String filePath = map.get("secondPath").toString();
+        String fileName = map.get("fileName").toString();
+        String esignIdThird = map.get("esignIdThird").toString();
+        String esignIdSecond = map.get("esignIdSecond").toString();
+        String esignIdFirst = map.get("esignIdFirst").toString();
+        eviDoc.initGlobalParameters(esignPublicInit.getProjectId(),esignPublicInit.getProjectSecret(),esignPublicInit.getEviUrl(),filePath,fileName,esignIdFirst,esignIdSecond,esignIdThird);
         // 用户获取文档保全Url和存证编号
         Map<String, String> eviMap = eviDoc.getEviUrlAndEvId();
         String evId = "";
