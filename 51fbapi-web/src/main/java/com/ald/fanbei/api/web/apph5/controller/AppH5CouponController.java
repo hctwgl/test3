@@ -170,7 +170,7 @@ public class AppH5CouponController extends BaseController {
         		}
     		}
     		
-    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     		for(AfCouponCategoryDo afCouponCategoryDo: afCouponCategoryList) {
     			Map<String,Object> couponCategoryMap = new HashMap<String,Object>();
     			couponCategoryMap.put("name", afCouponCategoryDo.getName());
@@ -206,13 +206,13 @@ public class AppH5CouponController extends BaseController {
         					couponInfoMap.put("limitAmount", brandActivityCouponResponseBo.getThreshold());
         					try{
         					 
-        					Date gmtStart = dateFormat.parse((brandActivityCouponResponseBo.getSts().toString()));
+        					Date gmtStart = dateFormat.parse((afResourceDo.getValue1()));
         					if( gmtStart != null){
         						couponInfoMap.put("gmtStart", gmtStart.getTime());
         					} else {
         						couponInfoMap.put("gmtStart", 0);
         					}
-        					Date gmtEnd = dateFormat.parse((brandActivityCouponResponseBo.getEts().toString()));
+        					Date gmtEnd = dateFormat.parse((afResourceDo.getValue2()));
         					if (gmtEnd != null) {
         						couponInfoMap.put("gmtEnd", gmtEnd.getTime());
         					} else {
