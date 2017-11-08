@@ -1,5 +1,3 @@
-
-
 //商品导航栏滚动到一定距离固定到顶部
  window.onscroll=function(){
                 var top1=document.getElementById('doubleEleven-banner');
@@ -91,7 +89,7 @@ let vm = new Vue({
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11s?activityId=67&groupId=31'
             },
             {
                 'name': '韩都衣舍',
@@ -213,7 +211,7 @@ let vm = new Vue({
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11s?activityId=67&groupId=31'
             },
             {
                 'name': '韩都衣舍',
@@ -381,6 +379,15 @@ let vm = new Vue({
                     requestMsg('哎呀，出错了！')
                 }
             })
+
+               $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:location.pathname+'?type='+pvuv},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击商品
         goodClick(p) {
@@ -526,13 +533,13 @@ let vm = new Vue({
                         if (nowTimeStamp >= startStamp) {
                             $('.bargain').click(function () {
                                 //  window.location.href = 'http://www.baidu.com';
-                                window.location.href = 'barginIndex?doubleOne=barginOne'; //跳转砍价连接
+                                window.location.href = 'barginIndex'; //跳转砍价连接
 
                                  //点击加埋点
                                 $.ajax({
                                     url:'/fanbei-web/postMaidianInfo',
                                     type:'post',
-                                    data:{maidianInfo:'barginIndex?doubleOne=barginOne'},
+                                    data:{maidianInfo:'/fanbei-web/activity/barginIndex?type='+barginOne},
                                     success:function (data) {
                                         console.log(data)
                                     }
@@ -604,12 +611,12 @@ let vm = new Vue({
                         //活动中跳转红包雨活动主页
                         if (nowTimeS >= begainS && nowTimeS <= Date.parse("2017/11/11 20:00:20")) {
                             $('.redRain').click(function () {
-                                window.location.href = 'redrain?doubleTwo=redOne'; //跳转红包雨连接
+                                window.location.href = 'redrain'; //跳转红包雨连接
                                  //点击加埋点
                                 $.ajax({
                                     url:'/fanbei-web/postMaidianInfo',
                                     type:'post',
-                                    data:{maidianInfo:'redrain?doubleTwo=barginOne'},
+                                    data:{maidianInfo:'/fanbei-web/activity/redrain?type='+redOne},
                                     success:function (data) {
                                         console.log(data)
                                     }
