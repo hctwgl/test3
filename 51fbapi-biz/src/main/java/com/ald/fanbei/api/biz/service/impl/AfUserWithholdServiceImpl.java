@@ -3,9 +3,11 @@ package com.ald.fanbei.api.biz.service.impl;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.domain.AfUserWithholdDo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfUserWithholdDao;
 import com.ald.fanbei.api.biz.service.AfUserWithholdService;
@@ -37,5 +39,25 @@ public class AfUserWithholdServiceImpl extends ParentServiceImpl<AfUserWithholdD
 	@Override
 	public AfUserWithholdDo getByUserId(Long userId) {
 		return afUserWithholdDao.getByUserId(userId);
+	}
+	
+	@Override
+	public AfUserWithholdDo getAfUserWithholdDtoByUserId(String userName) {
+		return afUserWithholdDao.getAfUserWithholdDtoByUserId(userName);
+	}
+
+	@Override
+	public int insertAfUserWithholdDto(AfUserWithholdDo afUserWithholdDto) {
+		return afUserWithholdDao.insertAfUserWithholdDto(afUserWithholdDto);
+	}
+
+	@Override
+	public int updateAfUserWithholdDtoByUserName(String userName, Integer IsSwitch) {
+		return afUserWithholdDao.updateAfUserWithholdDtoByUserName(userName, IsSwitch);
+	}
+
+	@Override
+	public int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo) {
+		return afUserWithholdDao.updateAfUserWithholdDo(afUserWithholdDo);
 	}
 }
