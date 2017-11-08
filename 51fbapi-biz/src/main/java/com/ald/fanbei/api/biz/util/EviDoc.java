@@ -292,8 +292,8 @@ public class EviDoc {
 
 		List<IdsBeanDo> eSignIds = new ArrayList<IdsBeanDo>();
 		eSignIds.add(eSignIdsBean1);
-//		eSignIds.add(eSignIdsBean2);
-//		eSignIds.add(eSignIdsBean3);
+		eSignIds.add(eSignIdsBean2);
+		eSignIds.add(eSignIdsBean3);
 		return setIds(eSignIds);
 	}
 
