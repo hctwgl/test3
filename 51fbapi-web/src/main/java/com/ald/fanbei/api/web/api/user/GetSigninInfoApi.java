@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.ald.fanbei.api.web.api.user;
 
@@ -29,71 +29,71 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
- * @类描述：
  * @author suweili 2017年2月7日下午5:16:19
+ * @类描述：
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("getSigninInfoApi")
 public class GetSigninInfoApi implements ApiHandle {
 
-	@Resource
-	AfSigninService  afSigninService;
-	@Resource
-	AfCouponSceneService afCouponSceneService;
+    @Resource
+    AfSigninService afSigninService;
+    @Resource
+    AfCouponSceneService afCouponSceneService;
 
 
-	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+    @Override
+    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
         AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
         AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
-        if(afCouponSceneDo==null){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED); 
+        if (afCouponSceneDo == null) {
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
         }
         Integer seriesTotal = 1;
-        
-        List<CouponSceneRuleBo> ruleBoList=   afCouponSceneService.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
-        
-        if(ruleBoList.size()==0){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED); 
+
+        List<CouponSceneRuleBo> ruleBoList = afCouponSceneService.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
+
+        if (ruleBoList.size() == 0) {
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
         }
 
         CouponSceneRuleBo ruleBo = ruleBoList.get(0);
- 	   seriesTotal= NumberUtil.objToIntDefault(ruleBo.getCondition(), 1) ;
-       Map<String, Object> data = new HashMap<String, Object>();
-		data.put("cycle", seriesTotal);
-    	data.put("ruleSignin",ObjectUtils.toString(afCouponSceneDo.getDescription(), "").toString()  );
+        seriesTotal = NumberUtil.objToIntDefault(ruleBo.getCondition(), 1);
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("cycle", seriesTotal);
+        data.put("ruleSignin", ObjectUtils.toString(afCouponSceneDo.getDescription(), "").toString());
 
-    	int seriesCount =0;
-        
-        if (afSigninDo==null||null==afSigninDo.getGmtSeries()) {
-        	data.put("seriesCount",seriesCount);
-        	data.put("isSignin", "T");
-        	
-		}else{
-			seriesCount = afSigninDo.getSeriesCount();
+        int seriesCount = 0;
 
-			Date seriesTime = afSigninDo.getGmtSeries();
-			if(DateUtil.isSameDay(new Date(), seriesTime)){
-	        	data.put("isSignin", "F");
-	        	
-			}else{
-				if(!DateUtil.isSameDay(DateUtil.getCertainDay(-1),seriesTime)||seriesCount == seriesTotal){
-					seriesCount = 0;
-				}
-	        	data.put("isSignin", "T");
-			}
-			
-        	data.put("seriesCount", seriesCount);
+        if (afSigninDo == null || null == afSigninDo.getGmtSeries()) {
+            data.put("seriesCount", seriesCount);
+            data.put("isSignin", "T");
 
-		}
+        } else {
+            seriesCount = afSigninDo.getSeriesCount();
+
+            Date seriesTime = afSigninDo.getGmtSeries();
+            if (DateUtil.isSameDay(new Date(), seriesTime)) {
+                data.put("isSignin", "F");
+
+            } else {
+                if (!DateUtil.isSameDay(DateUtil.getCertainDay(-1), seriesTime) || seriesCount == seriesTotal) {
+                    seriesCount = 0;
+                }
+                data.put("isSignin", "T");
+            }
+
+            data.put("seriesCount", seriesCount);
+
+        }
 
         resp.setResponseData(data);
 
-		return resp;
-	}
+        return resp;
+    }
 
 }

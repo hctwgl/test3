@@ -3,18 +3,16 @@ package com.ald.fanbei.api.web.api.system;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserToutiaoService;
-import com.ald.fanbei.api.biz.service.AppOpenLogService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
 import com.ald.fanbei.api.dal.domain.AppOpenLogDo;
+import com.ald.fanbei.api.dal.domain.query.AfUserChangXiaoDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -29,6 +27,9 @@ import java.security.MessageDigest;
 import java.util.Date;
 
 
+/**
+ * app
+ */
 @Component("AppLaunchImageApi")
 public class AppLaunchImageApi implements ApiHandle{
 
@@ -44,6 +45,8 @@ public class AppLaunchImageApi implements ApiHandle{
 	AfUserService afUserService;
 	@Resource
 	AppOpenLogService appOpenLogService;
+	@Resource
+	AfUserChangXiaoService afUserChangXiaoService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -72,6 +75,8 @@ public class AppLaunchImageApi implements ApiHandle{
 		}
 		//头条激活处理
 		ToutiaoAdOpen(requestDataVo,context);
+		//畅效广告平台回调处理
+		ChangXiaoAdOpen(requestDataVo,context);
 		
 		return response;
 	}
@@ -98,6 +103,11 @@ public class AppLaunchImageApi implements ApiHandle{
 		}
 	}
 
+	/**
+	 * 头条激活处理
+	 * @param requestDataVo
+	 * @param context
+	 */
 	private void ToutiaoAdOpen(RequestDataVo requestDataVo, FanbeiContext context) {
 		try {
 			String userName = context.getUserName();
@@ -134,6 +144,52 @@ public class AppLaunchImageApi implements ApiHandle{
 			logger.error("toutiaoopen:catch error",e.getMessage());
 		}
 	}
+
+
+	/**
+	 * 畅效广告平台回调激活
+	 * @param requestDataVo
+	 * @param context
+	 */
+	private void ChangXiaoAdOpen(RequestDataVo requestDataVo, FanbeiContext context) {
+		try {
+			String userName = context.getUserName();
+			AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+			if(afUserDo != null){//平台老用户，不进行回调
+				return;
+			}
+			String imei = ObjectUtils.toString(requestDataVo.getParams().get("IMEI"), null);
+			String idfa = ObjectUtils.toString(requestDataVo.getParams().get("IDFA"), null);
+			logger.error("changxiao open para:imei="+imei+","+",idfa="+idfa);
+			AfUserChangXiaoDo userDo =  new AfUserChangXiaoDo();
+			userDo.setImei(imei);
+			userDo.setIdfa(idfa);
+			if(StringUtils.isNotEmpty(idfa)){
+				AfUserChangXiaoDo tdo = afUserChangXiaoService.getUserOpen(userDo);//用户未启动过
+				if(tdo != null){
+					String callbackUrl = tdo.getCallbackUrl();
+					String id = ObjectUtils.toString(requestDataVo.getId(), "");
+					Integer os = null;
+					if(id.startsWith("i")){
+						os = 1;
+					}else if(id.startsWith("a")){
+						os = 2;
+					}
+					callbackUrl+="?osVersion=" + tdo.getOsVersion() + "&os=" + os + "&imei=" + tdo.getImei() + "&idfa=" + tdo.getIdfa() + "&mac=" + tdo.getMac();
+					String result= HttpUtil.doGet(callbackUrl,20);
+					if(result.indexOf("success")>-1){
+						afUserChangXiaoService.updateUserOpen(tdo);
+					}
+					logger.error("changxiao open:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);
+				}
+			}
+		}catch (Exception e){
+			logger.error("changxiao open:catch error",e.getMessage());
+		}
+	}
+
+
+
 
 	/**
 	 * 用于获取一个String的md5值
