@@ -383,7 +383,7 @@ let vm = new Vue({
                $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:location.pathname+'?type='+pvuv},
+                data:{maidianInfo:location.pathname+'?type=pvuv'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -539,7 +539,7 @@ let vm = new Vue({
                                 $.ajax({
                                     url:'/fanbei-web/postMaidianInfo',
                                     type:'post',
-                                    data:{maidianInfo:'/fanbei-web/activity/barginIndex?type='+barginOne},
+                                    data:{maidianInfo:'/fanbei-web/activity/barginIndex?type=barginOne'},
                                     success:function (data) {
                                         console.log(data)
                                     }
@@ -616,7 +616,7 @@ let vm = new Vue({
                                 $.ajax({
                                     url:'/fanbei-web/postMaidianInfo',
                                     type:'post',
-                                    data:{maidianInfo:'/fanbei-web/activity/redrain?type='+redOne},
+                                    data:{maidianInfo:'/fanbei-web/activity/redrain?type=redOne'},
                                     success:function (data) {
                                         console.log(data)
                                     }
