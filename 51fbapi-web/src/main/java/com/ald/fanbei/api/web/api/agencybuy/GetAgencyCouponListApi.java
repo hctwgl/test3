@@ -97,23 +97,23 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		*/	
 		
 		
-		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
-		
 		//——————————————
 		
 		//新人专享添加逻辑
 		AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
 		if(goods.getSaleAmount() != actualAmount){
 			Map<String, Object> data = new HashMap<String, Object>();
-			data.put("couponList", JSON.toJSON(list));
+			data.put("couponList", null);
 			data.put("pageNo", 1);
-			data.put("totalCount", list.size());
+			data.put("totalCount", 0);
 			resp.setResponseData(data);
 			return resp;
 		}
 		
 		//——————————————
 		
+		
+		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
 		
 		// 查询商品是否在H5活动中
 		List<AfModelH5ItemDo> modelH5ItemList = afModelH5ItemService.getModelH5ItemByGoodsId(goodsId);
