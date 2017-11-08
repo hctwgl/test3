@@ -64,12 +64,13 @@ public class ChangXiaoController {
                     afThirdChangXiaoService.updateUser(existDo);
                 }
             } else {
-                returnjson.put("result", 500);
+                returnjson.put("success", false);
                 returnjson.put("msg", "参数错误");
                 logger.debug("/third/changxiao/notice 参数错误" + sb.toString());
                 return returnjson;
             }
-            returnjson.put("result", 200);
+            returnjson.put("success", true);
+            returnjson.put("msg", null);
         } catch (Exception e) {
             logger.debug("/third/changxiao/notice Exception" + e);
         }

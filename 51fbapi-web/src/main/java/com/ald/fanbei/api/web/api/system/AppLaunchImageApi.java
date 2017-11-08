@@ -75,8 +75,12 @@ public class AppLaunchImageApi implements ApiHandle{
 		}
 		//头条激活处理
 		ToutiaoAdOpen(requestDataVo,context);
-		//畅效广告平台回调处理
-		ChangXiaoAdOpen(requestDataVo,context);
+		try {
+			//畅效广告平台回调处理
+			ChangXiaoAdOpen(requestDataVo, context);
+		}catch (Exception e) {
+			logger.error("ChangXiaoAdOpen Operate error",e);
+		}
 		
 		return response;
 	}
@@ -168,14 +172,7 @@ public class AppLaunchImageApi implements ApiHandle{
 				AfUserChangXiaoDo tdo = afUserChangXiaoService.getUserOpen(userDo);//用户未启动过
 				if(tdo != null){
 					String callbackUrl = tdo.getCallbackUrl();
-					String id = ObjectUtils.toString(requestDataVo.getId(), "");
-					Integer os = null;
-					if(id.startsWith("i")){
-						os = 1;
-					}else if(id.startsWith("a")){
-						os = 2;
-					}
-					callbackUrl+="?osVersion=" + tdo.getOsVersion() + "&os=" + os + "&imei=" + tdo.getImei() + "&idfa=" + tdo.getIdfa() + "&mac=" + tdo.getMac();
+					callbackUrl+="?osVersion=" + tdo.getOsVersion() + "&os=" + tdo.getOs() + "&imei=" + tdo.getImei() + "&idfa=" + tdo.getIdfa() + "&mac=" + tdo.getMac();
 					String result= HttpUtil.doGet(callbackUrl,20);
 					if(result.indexOf("success")>-1){
 						afUserChangXiaoService.updateUserOpen(tdo);
