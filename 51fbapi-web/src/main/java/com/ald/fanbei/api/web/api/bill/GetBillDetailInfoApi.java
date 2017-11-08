@@ -87,7 +87,7 @@ public class GetBillDetailInfoApi implements ApiHandle{
 			vo.setInterestDay(0);
 			vo.setOrderId(billDto.getOrderId());
 			vo.setOrderNo(billDto.getOrderNo());
-			if(billDto.getOrderId()>0){
+			if(null != billDto.getOrderId()   && billDto.getOrderId()>0){
 				AfOrderDo order = afOrderService.getOrderInfoByIdWithoutDeleted(billDto.getOrderId(), billDto.getUserId());
 				vo.setGoodsId(order.getGoodsId());
 			}else{
