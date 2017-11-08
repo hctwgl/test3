@@ -192,4 +192,11 @@ public interface AfBorrowCashDao {
 	int updateAfBorrowCashService(AfBorrowCashDo afBorrowCashDo);
 
 	AfBorrowCashDo getBorrowCash(@Param("userId") long userId);
+	
+	/**
+	 * 更新au_amount
+	 *  @param borrowId,auAmount
+	 *  @return
+	 * **/
+	int updateAuAmountByRid(@Param("rid")long rid, @Param("auAmount")BigDecimal auAmount);
 }
