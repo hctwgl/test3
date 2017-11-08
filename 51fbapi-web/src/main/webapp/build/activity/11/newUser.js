@@ -78,7 +78,7 @@ let vm = new Vue({
                     if(data.msg&&data.msg=='没有登录'){  //是否登录
                         window.location.href=data.data.loginUrl;
                     }else{ //已登录调用分享
-                        let dat='{"shareAppTitle":"51返呗新人专享福利，最高立减200","shareAppContent":"新人专享福利，豪礼送不停，快来抢购吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/newUser06.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/newUserShare'+ '","isSubmit":"Y","sharePage":"newUserShare'+'"}';
+                        let dat='{"shareAppTitle":"20元话费、300M流量，3元超值购点击即领","shareAppContent":"51返呗超值新人礼：20元话费3元领，快来抢购吧~","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/newUser06.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/newUserShare'+ '","isSubmit":"Y","sharePage":"newUserShare'+'"}';
                         let base64 = BASE64.encoder(dat);
                         window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
                     }
