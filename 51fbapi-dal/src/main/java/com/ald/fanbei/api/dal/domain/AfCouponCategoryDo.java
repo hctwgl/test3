@@ -23,6 +23,13 @@ public class AfCouponCategoryDo extends AbstractSerial{
 	private String coupons;
 	private String url;
 	private String tag;
+	private String type;
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 	public Long getId() {
 		return id;
 	}
