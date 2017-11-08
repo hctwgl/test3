@@ -98,6 +98,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
+ * 
+ * @类描述：风控审批工具类
  * @author 何鑫 2017年3月22日 11:20:23
  * @类描述：风控审批工具类
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 需加密参数 真实姓名 ， 身份证号， 手机号，邮箱，银行卡号
@@ -1269,26 +1271,26 @@ public class RiskUtil extends AbstractThird {
                         orderInfo.setStatus(OrderStatus.PAID.getCode());
                         // 关闭订单时间和原因的更新
 
-                        logger.info("updateOrder orderInfo = {}", orderInfo);
-                        orderDao.updateOrder(orderInfo);
-                        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-                            logger.error("TRADE Rebate process");
-                            //商圈订单发送，付款成功短信
+						logger.info("updateOrder orderInfo = {}", orderInfo);
+						orderDao.updateOrder(orderInfo);
+						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+							logger.error("TRADE Rebate process");
+							//商圈订单发送，付款成功短信
                             smsUtil.sendTradePaid(userAccountInfo.getUserId(), userAccountInfo.getUserName(), new Date(), orderInfo.getActualAmount());
                             //商圈订单付款后直接进行返利,并且将订单修改集中
-                            rebateContext.rebate(orderInfo);
-                        }
-                        if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
-                        }
-                        // TODO:返回值
-                        return 1L;
-                    }
-                } catch (Exception e) {
-                    logger.info("asyPayOrder error:" + e);
-                    status.setRollbackOnly();
-                    throw e;
-                }
+							rebateContext.rebate(orderInfo);
+						}
+						if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
+							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+						}
+						// TODO:返回值
+						return 1L;
+					}
+				} catch (Exception e) {
+					logger.info("asyPayOrder error:" + e);
+					status.setRollbackOnly();
+					throw e;
+				}
 
                 return 1L;
             }
@@ -1414,14 +1416,14 @@ public class RiskUtil extends AbstractThird {
         String reqResult = HttpUtil.post(getUrl() + "modules/api/risk/verify.htm", params);
         logThird(reqResult, "queryAmount", params);
 
-        if (StringUtil.isBlank(reqResult)) {
-            throw new FanbeiException(FanbeiExceptionCode.QUERY_GRANT_AMOUNT_ERROR);
-        }
-        JSONObject result = JSONObject.parseObject(reqResult);
-        String data = result.getString("data");
-        JSONObject amount = JSONObject.parseObject(data);
-        String grantAmount = amount.getString("amount");
-        bigDecimal.add(new BigDecimal(grantAmount));
+		if (StringUtil.isBlank(reqResult)) {
+			throw new FanbeiException(FanbeiExceptionCode.QUERY_GRANT_AMOUNT_ERROR);
+		}
+		JSONObject result = JSONObject.parseObject(reqResult);
+		String data = result.getString("data");
+		JSONObject amount = JSONObject.parseObject(data);
+		String grantAmount = amount.getString("amount");
+		bigDecimal.add(new BigDecimal(grantAmount));
 
         return bigDecimal;
 
@@ -1930,7 +1932,7 @@ public class RiskUtil extends AbstractThird {
             reqBo.setConsumerNo(userId);
             reqBo.setOrderNo(orderNo);
             reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-            String url = "http://testarc.51fanbei.com/modules/api/risk/creditPayment.htm";
+            String url = getUrl() + "/modules/api/risk/creditPayment.htm";
             String reqResult = HttpUtil.post(url, reqBo);
 
             logThird(reqResult, "creditPayment", reqBo);
