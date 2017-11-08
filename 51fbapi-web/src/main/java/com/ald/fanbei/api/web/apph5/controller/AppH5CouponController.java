@@ -178,13 +178,14 @@ public class AppH5CouponController extends BaseController {
     			
     			String coupons = afCouponCategoryDo.getCoupons();
     			JSONArray array = (JSONArray) JSONArray.parse(coupons);
-    			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
+    			
     			
     			if(afCouponCategoryDo.getType().equals(1)){
     				//菠萝蜜
     			    try{
     		
     				for(int i = 0; i < array.size(); i++){
+    				        HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
     					String couponId = (String)array.getString(i);
     					AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
     					List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
@@ -252,12 +253,14 @@ public class AppH5CouponController extends BaseController {
         					
 						}
     				}
+    				
     			      }catch (Exception e){
     		    		e.printStackTrace();
     		    		logger.info("get boluome coupon error",e);
     		    	    }
     			}else if(afCouponCategoryDo.getType().equals(0)){
     				for(int i = 0; i < array.size(); i++){
+    				       HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
     					String couponId = (String)array.getString(i);
     					AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
     					if(afCouponDo == null) continue;
@@ -313,6 +316,7 @@ public class AppH5CouponController extends BaseController {
     					couponInfoList.add(couponInfoMap);
     					allCouponInfoList.add(new HashMap<String,Object>(couponInfoMap));
     				}
+    				
     			}
     			
         		couponCategoryMap.put("couponInfoList", couponInfoList);
