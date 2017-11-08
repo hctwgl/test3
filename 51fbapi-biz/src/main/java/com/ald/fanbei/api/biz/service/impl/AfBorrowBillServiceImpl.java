@@ -256,6 +256,6 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 	@Override
 	public int updateBorrowBillUnLockByIds(String billIds) {
-		return  afBorrowBillDao.updateBorrowBillUnLockByIds(billIds);
+		return  afBorrowBillDao.updateBorrowBillUnLockByIds(StringUtil.splitToList(billIds, ","));
 	}
 }

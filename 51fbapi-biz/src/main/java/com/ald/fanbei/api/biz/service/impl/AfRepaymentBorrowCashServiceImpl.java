@@ -237,6 +237,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo);
 						Map<String, Object> map = new HashMap<String, Object>();
 						map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
+						map.put("refId", repayment.getRid());
 						return map;
 					}else{
 						logger.error("createRepayment exist error,need rollback,payTradeNo="+payTradeNo, e);

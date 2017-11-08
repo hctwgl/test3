@@ -542,6 +542,10 @@
 		is_lock = 'N'
 		WHERE
 		is_delete = 0
-		AND id IN (#{billIds})
+		AND id IN
+		<foreach collection="billIds" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+
 	</update>
 </mapper>

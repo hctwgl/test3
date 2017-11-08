@@ -312,5 +312,5 @@ public interface AfBorrowBillDao {
 
 	int updateBorrowBillLockById(@Param("billId")String billId);
 
-	int updateBorrowBillUnLockByIds(@Param("billIds")String billIds);
+	int updateBorrowBillUnLockByIds(@Param("billIds") List<String> billIds);
 }
