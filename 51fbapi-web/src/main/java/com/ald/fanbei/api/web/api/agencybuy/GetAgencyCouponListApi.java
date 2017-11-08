@@ -101,7 +101,7 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		//新人专享添加逻辑
 		AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
-		if(goods.getSaleAmount() != actualAmount){
+		if(goods.getPriceAmount() != actualAmount){ 
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("couponList", null);
 			data.put("pageNo", 1);
