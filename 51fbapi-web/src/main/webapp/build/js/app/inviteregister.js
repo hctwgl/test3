@@ -66,6 +66,8 @@ function formatDateTime() {
   var second = date.getSeconds();
   return y + m + d + h + minute + second;
 };
+var token = formatDateTime() + Math.random().toString(36).substr(2);
+
 // 同盾校验编号的sessionId
 var _fmOpt;
 (function() {
@@ -85,10 +87,6 @@ var _fmOpt;
   // alert(json.msg);
 })();
 
-var token = formatDateTime() + Math
-  .random()
-  .toString(36)
-  .substr(2);
 
 /**
  * 表单验证
