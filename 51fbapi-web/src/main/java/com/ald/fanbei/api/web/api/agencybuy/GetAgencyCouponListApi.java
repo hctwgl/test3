@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfActivityModelService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
 import com.ald.fanbei.api.biz.service.AfSubjectGoodsService;
 import com.ald.fanbei.api.biz.service.AfSubjectService;
@@ -25,6 +26,7 @@ import com.ald.fanbei.api.common.enums.ActivityType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfSubjectGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -54,6 +56,8 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	AfModelH5ItemService afModelH5ItemService;
 	@Resource
 	AfActivityModelService afActivityModelService;
+	@Resource
+	AfGoodsService afGoodsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -91,6 +95,18 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		list.addAll(subjectUserCouponList);
 		*/	
+		
+		
+		//——————————————
+		
+		//新人专享添加逻辑
+		AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
+		if(goods.getSaleAmount() != actualAmount){
+			return null;
+		}
+		
+		//——————————————
+		
 		
 		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
 		
