@@ -139,6 +139,7 @@ public class AppH5ChangeOutDayController extends BaseController{
     	try{
     		int outDay = NumberUtil.objToIntDefault(request.getParameter("outDay"), -1);
     		int payDay = NumberUtil.objToIntDefault(request.getParameter("payDay"), -1);
+    		Map<String, Object> data = new HashMap<String, Object>();
     		if (outDay < 0) {
     			resp = H5CommonResponse.getNewInstance(false, "出账日错误");
 				return resp.toString();
@@ -150,6 +151,11 @@ public class AppH5ChangeOutDayController extends BaseController{
     		context = doWebCheck(request, true);
     		AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
     		if (afUser != null && afUser.getRid() != null) {
+    			data.put("avatar", afUser.getAvatar());
+    			data.put("userName", afUser.getUserName());
+    			data.put("nick", afUser.getNick());
+    			data.put("outDay", outDay);
+    			data.put("payDay", payDay);
     			AfUserOutDayDo userOutDay = afUserOutDayDao.getUserOutDayByUserId(afUser.getRid());
     			if(userOutDay != null && userOutDay.getId() != null) {
     				if (outDay == userOutDay.getOutDay()) {
@@ -162,7 +168,8 @@ public class AppH5ChangeOutDayController extends BaseController{
     				// 更账单日的方法
     				afBorrowBillService.updateBorrowBills(afUser.getRid(),outDay,10,payDay);
     			}
-    			resp = H5CommonResponse.getNewInstance(true, "修改成功", "", null);
+    			
+    			resp = H5CommonResponse.getNewInstance(true, "修改成功", "", data);
     		} 
     	}catch (Exception e){
     		logger.error(e.getMessage(), e);
