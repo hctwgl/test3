@@ -40,7 +40,7 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 			if (isSold) {// 出售
 				priceDo.setStock(priceDo.getStock() - 1);
 				priceDo.setSaleCount(priceDo.getSaleCount() + 1);
-			} else if (isSold) {
+			}else{
 				priceDo.setStock(priceDo.getStock() + 1);
 				priceDo.setSaleCount(priceDo.getSaleCount() - 1);
 			}
