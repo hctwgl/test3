@@ -89,7 +89,7 @@ let vm = new Vue({
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11s?activityId=67&groupId=31'
             },
             {
                 'name': '韩都衣舍',
@@ -211,7 +211,7 @@ let vm = new Vue({
             {
                 'name': 'vivo/OPPO',
                 'img': imgrooturl + '/brand-02.png',
-                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoPic?activityId=4'
+                'src': 'https://app.51fanbei.com/fanbei-web/activity/oppoR11s?activityId=67&groupId=31'
             },
             {
                 'name': '韩都衣舍',
