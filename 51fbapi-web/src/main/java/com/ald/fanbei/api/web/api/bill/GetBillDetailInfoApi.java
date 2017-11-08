@@ -74,6 +74,7 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		AfBillDetailInfoVo vo = new AfBillDetailInfoVo();
 		vo.setBillAmount(billDto.getBillAmount());
 		vo.setBillId(billDto.getRid());
+		vo.setBorrowId(billDto.getBorrowId());
 		vo.setBillNper(billDto.getBillNper());
 		vo.setBorrowAmount(billDto.getPrincipleAmount());
 		vo.setBorrowNo(billDto.getBorrowNo());
