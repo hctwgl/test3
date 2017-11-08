@@ -554,6 +554,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setRebateAmount(rebateAmount);
 		orderDo.setMobile(mobile);
 		orderDo.setBankId(bankId);
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		orderDo.setAuAmount(userAccountInfo.getAuAmount());
+		orderDo.setUsedAmount(userAccountInfo.getUsedAmount());
 		return orderDo;
 	}
 
