@@ -268,7 +268,7 @@
 	
 	<select id="getAuAmountByUserId" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
 			SELECT
-		<include refid="queryAllFields" />
+		au_amount
 		FROM
 		af_user_account
 		WHERE
