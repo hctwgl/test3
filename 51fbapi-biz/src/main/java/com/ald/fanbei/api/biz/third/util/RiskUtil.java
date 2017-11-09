@@ -2047,7 +2047,7 @@ public class RiskUtil extends AbstractThird {
 
             AfUserAuthDo auth = new AfUserAuthDo();
             auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
-            auth.setGmtAlipay(new Date(System.currentTimeMillis()));
+            auth.setGmtChsi(new Date(System.currentTimeMillis()));
             AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
 
             if (StringUtil.equals("10", result)) {
