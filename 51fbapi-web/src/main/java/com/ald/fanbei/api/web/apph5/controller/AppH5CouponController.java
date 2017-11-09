@@ -188,6 +188,7 @@ public class AppH5CouponController extends BaseController {
     				        HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
     					String couponId = (String)array.getString(i);
     					AfResourceDo afResourceDo = afResourceService.getOpenBoluomeCouponById(Long.parseLong(couponId));
+    					if(afResourceDo != null){
     					List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
     					
     					for (BrandActivityCouponResponseBo brandActivityCouponResponseBo : activityCouponList) {
@@ -251,6 +252,7 @@ public class AppH5CouponController extends BaseController {
 	    					allCouponInfoList.add(new HashMap<String,Object>(couponInfoMap));
         					
 						}
+    					}
     				}
     				
     			      }catch (Exception e){
@@ -482,7 +484,8 @@ public class AppH5CouponController extends BaseController {
 			String couponId = (String)couponsArray.getString(i);
 			
 			AfResourceDo afResourceDo = afResourceService.getOpenBoluomeCouponById(Long.parseLong(couponId));
-				List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
+			if(afResourceDo!=null){
+			  List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
 				
 				for (BrandActivityCouponResponseBo brandActivityCouponResponseBo : activityCouponList) {
 					if(brandActivityCouponResponseBo.getType().equals(1)){
@@ -505,27 +508,28 @@ public class AppH5CouponController extends BaseController {
                 					couponInfoMap.put("drawStatus", "Y");
                 				}
                 			}
-			try{
-				 
-				Date gmtStart = dateFormat.parse((afResourceDo.getValue1()));
-				if( gmtStart != null){
-					couponInfoMap.put("gmtStart", gmtStart.getTime());
-				} else {
-					couponInfoMap.put("gmtStart", 0);
-				}
-				Date gmtEnd = dateFormat.parse((afResourceDo.getValue2()));
-				if (gmtEnd != null) {
-					couponInfoMap.put("gmtEnd", gmtEnd.getTime());
-				} else {
-					couponInfoMap.put("gmtEnd", 0);
-				}
-			}catch (Exception e){
-	    		    		e.printStackTrace();
-	    		    		logger.info("get boluome time error",e);
-		   }
-		}
-			couponList.add(couponInfoMap);
-    	      }
+        			try{
+        				 
+        				Date gmtStart = dateFormat.parse((afResourceDo.getValue1()));
+        				if( gmtStart != null){
+        					couponInfoMap.put("gmtStart", gmtStart.getTime());
+        				} else {
+        					couponInfoMap.put("gmtStart", 0);
+        				}
+        				Date gmtEnd = dateFormat.parse((afResourceDo.getValue2()));
+        				if (gmtEnd != null) {
+        					couponInfoMap.put("gmtEnd", gmtEnd.getTime());
+        				} else {
+        					couponInfoMap.put("gmtEnd", 0);
+        				}
+        			    }catch (Exception e){
+        	    		    		e.printStackTrace();
+        	    		    		logger.info("get boluome time error",e);
+        		            }
+			   }
+				couponList.add(couponInfoMap);
+			}
+    	       }
       	}
      		jsonObj.put("couponInfoList",couponList);
     		resp = H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj);
