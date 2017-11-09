@@ -1,14 +1,19 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.bo.AfTradeRebateModelBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
+import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +40,6 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -74,8 +76,12 @@ public class PayOrderV1Api implements ApiHandle {
     IPTransferUtil iPTransferUtil;
     @Resource
     UpsUtil upsUtil;
+    @Resource
+    AfTradeBusinessInfoService afTradeBusinessInfoService;
     @Autowired
     AfDeUserGoodsService afDeUserGoodsService;
+    @Autowired
+    AfTradeOrderService afTradeOrderService;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -143,12 +149,50 @@ public class PayOrderV1Api implements ApiHandle {
                 //分期支付
                 BorrowRateBo borrowRate = null;
                 if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+                    AfTradeOrderDo tradeOrderDo= afTradeOrderService.getById(orderInfo.getRid());
+                    AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(tradeOrderDo.getBusinessId());
+                    String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
                     borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
+                    //region 没有配置就采用默认值
+                    AfTradeRebateModelBo rebateModel = null;
+
+                    //#endregion
+                    if (StringUtils.isNotBlank(configRebateModel)) {
+                        List<AfTradeRebateModelBo> rebateModels = JSON.parseArray(configRebateModel, AfTradeRebateModelBo.class);
+                        for (AfTradeRebateModelBo item : rebateModels) {
+                            if (item.getNper() == nper) {
+                                rebateModel = item;
+                            }
+                        }
+                    }
+                    if (rebateModel == null) {
+                        rebateModel = new AfTradeRebateModelBo();
+                        rebateModel.setFreeNper(0);
+                        rebateModel.setNper(nper);
+                        rebateModel.setRebatePercent(BigDecimal.ZERO);
+                    }
+                    //region 没有配置就采用默认值
+                    JSONArray rebateModels = new JSONArray();
+                    //#endregion
+                    if (StringUtils.isNotBlank(configRebateModel)) {
+                        try {
+                            rebateModels = JSON.parseArray(configRebateModel);
+                        } catch (Exception e) {
+                            logger.info("GetTradeNperInfoApi process error", e.getCause());
+                        }
+
+                    }
+                    if (rebateModel.getRebatePercent() != null && rebateModel.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
+                        BigDecimal rebateAmount = orderInfo.getActualAmount().multiply(rebateModel.getRebatePercent()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+                        rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
+                        orderInfo.setRebateAmount(rebateAmount);
+                    }
                 } else {
                     borrowRate = afResourceService.borrowRateWithResource(nper);
                 }
                 orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
             }
+
         }
 
         //endregion
