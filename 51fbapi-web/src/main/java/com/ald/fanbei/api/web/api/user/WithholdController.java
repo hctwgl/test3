@@ -5,7 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserWithholdService;
@@ -34,10 +36,10 @@ public class WithholdController extends BaseController{
 	AfUserService afUserService;
 	
 	@RequestMapping("/updateWithholdSwitch")
-	public void updateWithholdSwitch(HttpServletRequest request){
+	@ResponseBody
+	public String updateWithholdSwitch(HttpServletRequest request){
 		String userName = ObjectUtils.toString(request.getParameter("userName"));
 		Integer IsSwitch =Integer.parseInt((request.getParameter("IsSwitch")).toString());
-		
 		
 		AfUserWithholdDo afUserWithholdDo = afUserWithholdService.getAfUserWithholdDtoByUserId(userName);
 		if(afUserWithholdDo == null) {
@@ -55,10 +57,12 @@ public class WithholdController extends BaseController{
 		}else {
 			afUserWithholdService.updateAfUserWithholdDtoByUserName(userName, IsSwitch);
 		}
+		return null;
 	}
 	
 	@RequestMapping("/updateWithholdCard")
-	public void updateWithholdCard(HttpServletRequest request){
+	@ResponseBody
+	public String updateWithholdCard(HttpServletRequest request){
 		
 		String userName = ObjectUtils.toString(request.getParameter("userName"));
 		String card1 = ObjectUtils.toString(request.getParameter("card1"));
@@ -79,6 +83,7 @@ public class WithholdController extends BaseController{
 		afUserWithholdDo2.setUsebalance(usebalance);
 		
 		afUserWithholdService.updateAfUserWithholdDo(afUserWithholdDo2);
+		return null;
 		
 	}
 

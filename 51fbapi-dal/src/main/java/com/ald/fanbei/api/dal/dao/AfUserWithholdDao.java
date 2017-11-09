@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfUserWithholdDo;
 
 /**
@@ -34,7 +36,7 @@ public interface AfUserWithholdDao extends BaseDao<AfUserWithholdDo, Long> {
      * @param userName
      * **/
 
-    int updateAfUserWithholdDtoByUserName(String userName,Integer isSwInteger);
+    int updateAfUserWithholdDtoByUserName(@Param("userName") String userName, @Param("isSwInteger") Integer isSwInteger);
     
     /**
      * 更新银行卡号
