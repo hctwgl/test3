@@ -17,9 +17,6 @@ public enum CashierReasonType {
 
     private String code;
     private String name;
-
-    private static Map<String, BorrowType> codeRoleTypeMap = null;
-
     CashierReasonType(String code, String name) {
         this.code = code;
         this.name = name;
