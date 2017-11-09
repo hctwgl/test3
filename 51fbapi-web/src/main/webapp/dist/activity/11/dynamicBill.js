@@ -1,2 +1,2 @@
-"use strict";var vm=new Vue({el:"#dynamicBill",data:{},created:function(){this.logData()},methods:{logData:function(){$.ajax({type:"post",url:"/fanbei-web/changeOutDay/getUserOutDay",success:function(e){console.log(e),window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN"}})}}});
+"use strict";var vm=new Vue({el:"#dynamicBill",data:{content:""},created:function(){this.logData()},methods:{logData:function logData(){var self=this;$.ajax({type:"post",url:"/fanbei-web/changeOutDay/getUserOutDay",success:function success(data){self.content=eval("("+data+")"),console.log(self.content),self.content.success}})}}});
 //# sourceMappingURL=../../_srcmap/activity/11/dynamicBill.js.map
