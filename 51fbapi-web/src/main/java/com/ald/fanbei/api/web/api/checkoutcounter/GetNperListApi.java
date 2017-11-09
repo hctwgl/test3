@@ -90,15 +90,19 @@ public class GetNperListApi implements ApiHandle {
             return resp;
         } else {
             JSONArray interestFreeArray = null;
-
-            if (orderInfo.getGoodsId()!=0&&orderInfo.getGoodsId() != null&&!orderInfo.getGoodsId().equals("")) {
+            if(orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())){
                 String numId = orderInfo.getGoodsId() + "";
                 interestFreeArray = getInterestFreeArray(numId, orderType);
+            }else{
+                if (orderInfo.getGoodsId()!=0&&orderInfo.getGoodsId() != null&&!orderInfo.getGoodsId().equals("")) {
+                    String numId = orderInfo.getGoodsId() + "";
+                    interestFreeArray = getInterestFreeArray(numId, orderType);
+                }else if (!StringUtil.isEmpty(orderInfo.getNumId()) ) {
+                    String numId = orderInfo.getNumId() + "";
+                    interestFreeArray = getInterestFreeArray(numId, orderType);
+                }
             }
-            if (!StringUtil.isEmpty(orderInfo.getNumId()) ) {
-                String numId = orderInfo.getNumId() + "";
-                interestFreeArray = getInterestFreeArray(numId, orderType);
-            }
+
             //获取借款分期配置信息
             AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
             JSONArray array = JSON.parseArray(resource.getValue());
