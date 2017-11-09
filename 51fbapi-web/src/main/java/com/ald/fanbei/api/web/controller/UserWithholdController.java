@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
@@ -178,122 +179,113 @@ public class UserWithholdController extends BaseController {
         Map<String, Object> map = null;
         Map<Object, Long> cardMap = new HashMap<>();
         JSONObject returnjson = new JSONObject();
-        //判断是否需要银行卡还款
-        if(useBalance==1&&actualAmount.compareTo(BigDecimal.ZERO)==0){
-            Long cardId = -2l;
-            AfWithholdLogDo afWithholdLogDo = new AfWithholdLogDo();
-            afWithholdLogDo.setAmount(repaymentAmount);
-            afWithholdLogDo.setBorrowcashId(borrowId);
-            afWithholdLogDo.setBorrowType(1);
-            afWithholdLogDo.setGmtCreate(new Date());
-            afWithholdLogDo.setUserId(userId);
-            try{
-                map = afRepaymentBorrowCashService.createRepayment(BigDecimal.ZERO,
-                        repaymentAmount, actualAmount, null, userAmount,
-                        borrowId, cardId, userId, request.getRemoteAddr(), userDto);
-            }catch (Exception e) {
-                logger.info("withholdCashJob error", e);
-            }
-            Long refId = 0l;
-            if(map!=null){
-                returnjson.put("refId", map.get("refId"));
-                returnjson.put("success",true);
-                //returnjson.put("type", map.get("type"));
-                refId = NumberUtil.objToLongDefault(ObjectUtils.toString(map.get("refId")),0l);
-                afWithholdLogDo.setStatus(1);
-            }else{
-                returnjson.put("success",false);
-                afWithholdLogDo.setStatus(0);
-            }
-            afWithholdLogDo.setRefId(refId);
-            afWithholdLogDo.setRemark(map==null?"":map.toString());
-            //更新还款表的还款方式
-            afRepaymentBorrowCashService.updateRepaymentBorrowCashName(refId);
-            //插入代扣日志
-            afWithholdLogService.saveRecord(afWithholdLogDo);
-            //借款账单解锁
-            afBorrowCashService.updateBorrowCashUnLock(borrowId);
-            return returnjson;
-        }else if(actualAmount.compareTo(lowCashPrice)<0){
-            logger.info("withhold for borrowcash fail for actualAmount less than lowCashPrice,userId:"+userId + ",borrowId:"+borrowId);
-            returnjson.put("success",false);
-            returnjson.put("msg","发起扣款金额小于门槛金额");
-            //借款账单解锁
-            afBorrowCashService.updateBorrowCashUnLock(borrowId);
-            return returnjson;
-        }else if(actualAmount.compareTo(lowCashPrice)>=0){
-            Long cardId1 = afUserWithholdDo.getCardId1();
-            Long cardId2 = afUserWithholdDo.getCardId2();
-            Long cardId3 = afUserWithholdDo.getCardId3();
-            Long cardId4 = afUserWithholdDo.getCardId4();
-            Long cardId5 = afUserWithholdDo.getCardId5();
-            cardMap.put(1,cardId1);
-            cardMap.put(2,cardId2);
-            cardMap.put(3,cardId3);
-            cardMap.put(4,cardId4);
-            cardMap.put(5,cardId5);
-        }
-        UpsCollectRespBo upsResult = null;
-        for(int j=1;j<=cardMap.size();j++){
-            Long cardId = cardMap.get(j);
-            if(cardId!=null&&cardId!=0l){
-                AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
-                if (null == card) {
-                    continue;
-                }
+        //返回的还款id
+        Long refId = 0l;
+        AfWithholdLogDo afWithholdLogDo = new AfWithholdLogDo();
+        afWithholdLogDo.setAmount(repaymentAmount);
+        afWithholdLogDo.setBorrowcashId(borrowId);
+        afWithholdLogDo.setBorrowType(1);
+        afWithholdLogDo.setGmtCreate(new Date());
+        afWithholdLogDo.setUserId(userId);
+        try{
+            //判断是否需要银行卡还款,如果不需要，直接使用余额还款
+            if(useBalance==1&&actualAmount.compareTo(BigDecimal.ZERO)==0){
+                Long cardId = -2l;
                 try{
                     map = afRepaymentBorrowCashService.createRepayment(BigDecimal.ZERO,
                             repaymentAmount, actualAmount, null, userAmount,
                             borrowId, cardId, userId, request.getRemoteAddr(), userDto);
-
                 }catch (Exception e) {
                     logger.info("withholdCashJob error", e);
                 }
-                Long refId = 0l;
+
                 if(map!=null){
-                    // 代收
-                    if (map.get("resp") != null
-                            && map.get("resp") instanceof UpsCollectRespBo) {
-                        upsResult = (UpsCollectRespBo) map.get("resp");
-                    }
                     returnjson.put("refId", map.get("refId"));
-                    refId = NumberUtil.objToLongDefault(ObjectUtils.toString(map.get("refId")),0l);
-                }
-
-                AfWithholdLogDo afWithholdLogDo = new AfWithholdLogDo();
-                afWithholdLogDo.setAmount(repaymentAmount);
-                afWithholdLogDo.setBorrowcashId(borrowId);
-                afWithholdLogDo.setBorrowType(1);
-                afWithholdLogDo.setCardNumber(card.getCardNumber());
-                afWithholdLogDo.setCardId(cardId);
-                afWithholdLogDo.setGmtCreate(new Date());
-                afWithholdLogDo.setUserId(userId);
-                afWithholdLogDo.setRefId(refId);
-                if (upsResult != null && upsResult.isSuccess()) {
                     returnjson.put("success",true);
-                    returnjson.put("outTradeNo", upsResult.getOrderNo());
-                    returnjson.put("tradeNo", upsResult.getTradeNo());
-                    returnjson.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
+                    //returnjson.put("type", map.get("type"));
+                    refId = NumberUtil.objToLongDefault(ObjectUtils.toString(map.get("refId")),0l);
                     afWithholdLogDo.setStatus(1);
-                    afWithholdLogDo.setRemark(map.toString());
-                    //更新还款表的款款方式
-                    afRepaymentBorrowCashService.updateRepaymentBorrowCashName(refId);
-                    //插入代扣日志
-                    afWithholdLogService.saveRecord(afWithholdLogDo);
-                    break;
                 }else{
+                    returnjson.put("success",false);
                     afWithholdLogDo.setStatus(0);
-                    afWithholdLogDo.setRemark(map==null?"":map.toString());
-                    //更新还款表的款款方式
-                    afRepaymentBorrowCashService.updateRepaymentBorrowCashName(refId);
-                    //插入代扣日志
-                    afWithholdLogService.saveRecord(afWithholdLogDo);
                 }
-
+                afWithholdLogDo.setRefId(refId);
+                afWithholdLogDo.setRemark(map==null?"":map.toString());
+                //插入代扣日志
+                afWithholdLogService.saveRecord(afWithholdLogDo);
+                return returnjson;
+            }else if(actualAmount.compareTo(lowCashPrice)<0){
+                logger.info("withhold for borrowcash fail for actualAmount less than lowCashPrice,userId:"+userId + ",borrowId:"+borrowId);
+                returnjson.put("success",false);
+                returnjson.put("msg","发起扣款金额小于门槛金额");
+                return returnjson;
+            }else if(actualAmount.compareTo(lowCashPrice)>=0){
+                Long cardId1 = afUserWithholdDo.getCardId1();
+                Long cardId2 = afUserWithholdDo.getCardId2();
+                Long cardId3 = afUserWithholdDo.getCardId3();
+                Long cardId4 = afUserWithholdDo.getCardId4();
+                Long cardId5 = afUserWithholdDo.getCardId5();
+                cardMap.put(1,cardId1);
+                cardMap.put(2,cardId2);
+                cardMap.put(3,cardId3);
+                cardMap.put(4,cardId4);
+                cardMap.put(5,cardId5);
             }
+            UpsCollectRespBo upsResult = null;
+            for(int j=1;j<=cardMap.size();j++){
+                Long cardId = cardMap.get(j);
+                if(cardId!=null&&cardId!=0l){
+                    AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+                    if (null == card) {
+                        continue;
+                    }
+                    try{
+                        map = afRepaymentBorrowCashService.createRepayment(BigDecimal.ZERO,
+                                repaymentAmount, actualAmount, null, userAmount,
+                                borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+
+                    }catch (Exception e) {
+                        logger.info("withholdCashJob error", e);
+                    }
+                    if(map!=null){
+                        // 代收
+                        if (map.get("resp") != null
+                                && map.get("resp") instanceof UpsCollectRespBo) {
+                            upsResult = (UpsCollectRespBo) map.get("resp");
+                        }
+                        returnjson.put("refId", map.get("refId"));
+                        refId = NumberUtil.objToLongDefault(ObjectUtils.toString(map.get("refId")),0l);
+                    }
+                    afWithholdLogDo.setCardNumber(card.getCardNumber());
+                    afWithholdLogDo.setCardId(cardId);
+                    afWithholdLogDo.setRefId(refId);
+                    if (upsResult != null && upsResult.isSuccess()) {
+                        returnjson.put("success",true);
+                        returnjson.put("outTradeNo", upsResult.getOrderNo());
+                        returnjson.put("tradeNo", upsResult.getTradeNo());
+                        returnjson.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
+                        afWithholdLogDo.setStatus(1);
+                        afWithholdLogDo.setRemark(map.toString());
+                        //插入代扣日志
+                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                        break;
+                    }else{
+                        afWithholdLogDo.setStatus(0);
+                        afWithholdLogDo.setRemark(map==null?"":map.toString());
+                        //插入代扣日志
+                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                    }
+
+                }
+            }
+        }catch(Exception e){
+            logger.info("withholdCashJob error", e);
+        }finally {
+            //更新还款表的款款方式
+            //afRepaymentBorrowCashService.updateRepaymentBorrowCashName(refId);
+            //借款账单解锁
+            afBorrowCashService.updateBorrowCashUnLock(borrowId);
         }
-        //借款账单解锁
-        afBorrowCashService.updateBorrowCashUnLock(borrowId);
         return returnjson;
     }
 
@@ -345,165 +337,161 @@ public class UserWithholdController extends BaseController {
             returnjson.put("success",false);
             returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
         }
-        //遍历账单，加锁
-        String[] billStr = billIds.split(",");
-        billIds = "";
-        for(int i=0;i<billStr.length;i++){
-            String billId = billStr[i];
-            if(afBorrowBillService.updateBorrowBillLockById(billId)>0){
-                if(billIds.equals("")){
-                    billIds = billId;
-                }else{
-                    billIds = billIds + "," + billId;
+        JSONObject returnjson = new JSONObject();
+        Long refId = 0l;
+        try{
+            //遍历账单，加锁
+            String[] billStr = billIds.split(",");
+            billIds = "";
+            for(int i=0;i<billStr.length;i++){
+                String billId = billStr[i];
+                if(afBorrowBillService.updateBorrowBillLockById(billId)>0){
+                    if(billIds.equals("")){
+                        billIds = billId;
+                    }else{
+                        billIds = billIds + "," + billId;
+                    }
                 }
             }
-        }
-        if(StringUtil.isBlank(billIds)){
-            logger.info("withhold for borrowbill fail for billIds is null,userId:"+userId+"billIds:"+billIds);
-            JSONObject returnjson = new JSONObject();
-            returnjson.put("success",false);
-            returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
-            return returnjson;
-        }
-        AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
-        BigDecimal repaymentAmount = billDo.getBillAmount();
-        BigDecimal actualAmount = repaymentAmount;
-        BigDecimal userAmount = BigDecimal.ZERO;
-        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
-        //是否开启余额支付
-        int useBalance = afUserWithholdDo.getUsebalance();
-        if(useBalance==1){
-            //账户余额
-            BigDecimal userAccount = afUserAccountDo.getRebateAmount();
-            // 余额处理
-            if (userAccount.compareTo(BigDecimal.ZERO) > 0
-                    && repaymentAmount.compareTo(userAccount) > 0) {
-                actualAmount = BigDecimalUtil.subtract(repaymentAmount,
-                        afUserAccountDo.getRebateAmount());
-                userAmount = afUserAccountDo.getRebateAmount();
-            } else if (userAccount.compareTo(BigDecimal.ZERO) > 0
-                    && repaymentAmount.compareTo(userAccount) <= 0) {
-                userAmount = repaymentAmount;
-                actualAmount = BigDecimal.ZERO;
+            if(StringUtil.isBlank(billIds)){
+                logger.info("withhold for borrowbill fail for billIds is null,userId:"+userId+"billIds:"+billIds);
+                returnjson.put("success",false);
+                returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
+                return returnjson;
             }
-        }
 
-        Map<String, Object> map = null;
-        Map<Object, Long> cardMap = new HashMap<>();
-        JSONObject returnjson = new JSONObject();
-        //判断是否需要银行卡还款
-        if(useBalance==1&&actualAmount.compareTo(BigDecimal.ZERO)==0){
-            Long cardId = -2l;
+            AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
+            BigDecimal repaymentAmount = billDo.getBillAmount();
+            BigDecimal actualAmount = repaymentAmount;
+            BigDecimal userAmount = BigDecimal.ZERO;
+            AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
+            //是否开启余额支付
+            int useBalance = afUserWithholdDo.getUsebalance();
+            if(useBalance==1){
+                //账户余额
+                BigDecimal userAccount = afUserAccountDo.getRebateAmount();
+                // 余额处理
+                if (userAccount.compareTo(BigDecimal.ZERO) > 0
+                        && repaymentAmount.compareTo(userAccount) > 0) {
+                    actualAmount = BigDecimalUtil.subtract(repaymentAmount,
+                            afUserAccountDo.getRebateAmount());
+                    userAmount = afUserAccountDo.getRebateAmount();
+                } else if (userAccount.compareTo(BigDecimal.ZERO) > 0
+                        && repaymentAmount.compareTo(userAccount) <= 0) {
+                    userAmount = repaymentAmount;
+                    actualAmount = BigDecimal.ZERO;
+                }
+            }
+
+            Map<String, Object> map = null;
+            Map<Object, Long> cardMap = new HashMap<>();
+
+            //插入代扣日志表
             AfWithholdLogDo afWithholdLogDo = new AfWithholdLogDo();
             afWithholdLogDo.setAmount(repaymentAmount);
             afWithholdLogDo.setBorrowbillId(billIds);
             afWithholdLogDo.setBorrowType(2);
             afWithholdLogDo.setGmtCreate(new Date());
             afWithholdLogDo.setUserId(userId);
-            try{
-                map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
-                        cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
-            }catch (Exception e) {
-                logger.info("withholdCashJob error", e);
-            }
-            Long refId = 0l;
-            if(map!=null){
-                returnjson.put("refId", map.get("refId"));
-                returnjson.put("success",true);
-                //returnjson.put("type", map.get("type"));
-                refId = NumberUtil.objToLongDefault(ObjectUtils.toString(map.get("refId")),0l);
-                afWithholdLogDo.setStatus(1);
-            }else{
-                returnjson.put("success",false);
-                afWithholdLogDo.setStatus(0);
-            }
-            afWithholdLogDo.setRefId(refId);
-            afWithholdLogDo.setRemark(map==null?"":map.toString());
-            //更新还款表的款款方式
-            afRepaymentService.updateRepaymentName(refId);
-            //插入代扣日志
-            afWithholdLogService.saveRecord(afWithholdLogDo);
-            //分期账单解锁
-            afBorrowBillService.updateBorrowBillUnLockByIds(billIds);
-            return returnjson;
-        }else if(actualAmount.compareTo(lowBillPrice)<0){
-            logger.info("withhold for borrowbill fail for actualAmount less than lowBillPrice,userId:"+userId + ",billIds:"+billIds);
-            returnjson.put("success",false);
-            returnjson.put("msg","发起扣款金额小于门槛金额");
-            //分期账单解锁
-            afBorrowBillService.updateBorrowBillUnLockByIds(billIds);
-            return returnjson;
-        }else if(actualAmount.compareTo(lowBillPrice)>=0){
-            Long cardId1 = afUserWithholdDo.getCardId1();
-            Long cardId2 = afUserWithholdDo.getCardId2();
-            Long cardId3 = afUserWithholdDo.getCardId3();
-            Long cardId4 = afUserWithholdDo.getCardId4();
-            Long cardId5 = afUserWithholdDo.getCardId5();
-            cardMap.put(1,cardId1);
-            cardMap.put(2,cardId2);
-            cardMap.put(3,cardId3);
-            cardMap.put(4,cardId4);
-            cardMap.put(5,cardId5);
-        }
-        UpsCollectRespBo upsResult = null;
-        for(int j=1;j<=cardMap.size();j++) {
-            Long cardId = cardMap.get(j);
-            if(cardId!=null&&cardId!=0){//银行卡支付
-                AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
-                if(null == card){
-                    continue;
-                }
+            //判断是否需要银行卡还款
+            if(useBalance==1&&actualAmount.compareTo(BigDecimal.ZERO)==0){
+                Long cardId = -2l;
                 try{
                     map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
-                            cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
+                            cardId,userId,billDo,"sysJob",afUserAccountDo);
                 }catch (Exception e) {
                     logger.info("withholdCashJob error", e);
                 }
-                Long refId = 0l;
                 if(map!=null){
-                    // 代收
-                    if (map.get("resp") != null
-                            && map.get("resp") instanceof UpsCollectRespBo) {
-                        upsResult = (UpsCollectRespBo) map.get("resp");
-                    }
                     returnjson.put("refId", map.get("refId"));
+                    returnjson.put("success",true);
+                    //returnjson.put("type", map.get("type"));
                     refId = NumberUtil.objToLongDefault(ObjectUtils.toString(map.get("refId")),0l);
-                }
-                AfWithholdLogDo afWithholdLogDo = new AfWithholdLogDo();
-                afWithholdLogDo.setAmount(repaymentAmount);
-                afWithholdLogDo.setBorrowbillId(billIds);
-                afWithholdLogDo.setBorrowType(2);
-                afWithholdLogDo.setCardId(cardId);
-                afWithholdLogDo.setCardNumber(card.getCardNumber());
-                afWithholdLogDo.setGmtCreate(new Date());
-                afWithholdLogDo.setUserId(userId);
-                returnjson.put("refId", map.get("refId"));
-                //returnjson.put("type", map.get("type"));
-                afWithholdLogDo.setRefId(refId);
-                if (upsResult != null && upsResult.isSuccess()) {
-                    returnjson.put("outTradeNo", upsResult.getOrderNo());
-                    returnjson.put("tradeNo", upsResult.getTradeNo());
-                    returnjson.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
                     afWithholdLogDo.setStatus(1);
-                    afWithholdLogDo.setRemark(map.toString());
-                    //更新还款表的款款方式
-                    afRepaymentService.updateRepaymentName(refId);
-                    //插入代扣日志
-                    afWithholdLogService.saveRecord(afWithholdLogDo);
-                    break;
                 }else{
+                    returnjson.put("success",false);
                     afWithholdLogDo.setStatus(0);
-                    afWithholdLogDo.setRemark(map==null?"":map.toString());
-                    //更新还款表的款款方式
-                    afRepaymentService.updateRepaymentName(refId);
-                    //插入代扣日志
-                    afWithholdLogService.saveRecord(afWithholdLogDo);
                 }
+                afWithholdLogDo.setRefId(refId);
+                afWithholdLogDo.setRemark(map==null?"":map.toString());
+                //插入代扣日志
+                afWithholdLogService.saveRecord(afWithholdLogDo);
+                return returnjson;
+            }else if(actualAmount.compareTo(lowBillPrice)<0){
+                logger.info("withhold for borrowbill fail for actualAmount less than lowBillPrice,userId:"+userId + ",billIds:"+billIds);
+                returnjson.put("success",false);
+                returnjson.put("msg","发起扣款金额小于门槛金额");
+                return returnjson;
+            }else if(actualAmount.compareTo(lowBillPrice)>=0){
+                Long cardId1 = afUserWithholdDo.getCardId1();
+                Long cardId2 = afUserWithholdDo.getCardId2();
+                Long cardId3 = afUserWithholdDo.getCardId3();
+                Long cardId4 = afUserWithholdDo.getCardId4();
+                Long cardId5 = afUserWithholdDo.getCardId5();
+                cardMap.put(1,cardId1);
+                cardMap.put(2,cardId2);
+                cardMap.put(3,cardId3);
+                cardMap.put(4,cardId4);
+                cardMap.put(5,cardId5);
+            }
+            UpsCollectRespBo upsResult = null;
+            for(int j=1;j<=cardMap.size();j++) {
+                Long cardId = cardMap.get(j);
+                if(cardId!=null&&cardId!=0){//银行卡支付
+                    AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+                    if(null == card){
+                        continue;
+                    }
+                    try{
+                        map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
+                                cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
+                    }catch (Exception e) {
+                        logger.info("withholdCashJob error", e);
+                    }
+                    if(map!=null){
+                        // 代收
+                        if (map.get("resp") != null
+                                && map.get("resp") instanceof UpsCollectRespBo) {
+                            upsResult = (UpsCollectRespBo) map.get("resp");
+                        }
+                        returnjson.put("refId", map.get("refId"));
+                        refId = NumberUtil.objToLongDefault(ObjectUtils.toString(map.get("refId")),0l);
+                    }
+                    afWithholdLogDo.setCardId(cardId);
+                    afWithholdLogDo.setCardNumber(card.getCardNumber());
+                    //returnjson.put("type", map.get("type"));
+                    afWithholdLogDo.setRefId(refId);
+                    if (upsResult != null && upsResult.isSuccess()) {
+                        returnjson.put("outTradeNo", upsResult.getOrderNo());
+                        returnjson.put("tradeNo", upsResult.getTradeNo());
+                        returnjson.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
+                        afWithholdLogDo.setStatus(1);
+                        afWithholdLogDo.setRemark(map.toString());
+                        //插入代扣日志
+                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                        break;
+                    }else{
+                        afWithholdLogDo.setStatus(0);
+                        afWithholdLogDo.setRemark(map==null?"":map.toString());
+                        //插入代扣日志
+                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                    }
 
+                }
+            }
+        }catch (Exception e) {
+            logger.error("borrowbill repayment fail" + e);
+            //throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
+        }
+        finally {
+            //如果有其中一笔账单解锁
+            if(StringUtil.isNotEmpty(billIds)){
+                //更新还款表的款款方式
+                //afRepaymentService.updateRepaymentName(refId);
+                //分期账单解锁
+                afBorrowBillService.updateBorrowBillUnLockByIds(billIds);
             }
         }
-        //分期账单解锁
-        afBorrowBillService.updateBorrowBillUnLockByIds(billIds);
         return returnjson;
     }
 
