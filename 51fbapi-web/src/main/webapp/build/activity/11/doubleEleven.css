@@ -417,7 +417,8 @@ ul li {
   margin-right: 0.05rem;
 }
 .product-nav {
-  height: 0.55rem;
+  height: 0.8rem;
+  line-height: 0.8rem;
   width: 7.5rem;
   font-size: 0.274rem;
   color: #f9a37d;

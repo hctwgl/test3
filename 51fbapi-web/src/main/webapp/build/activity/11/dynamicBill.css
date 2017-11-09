@@ -1,0 +1,118 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  background-color: white;
+}
+.dynamic-top {
+  height: 6.1rem;
+  color: white;
+  padding-left: 0.1rem;
+  padding-top: 0.3rem;
+  background-image: linear-gradient(222deg, #ffb987, #f8a451 18%, #ff8138 40%, #f7571c);
+}
+.dynamic-top .fork {
+  width: .28rem;
+  height: .28rem;
+}
+.dynamic-top .personIn {
+  width: 7.4rem;
+  position: relative;
+}
+.dynamic-top .personIn .unpaid {
+  text-align: center;
+  font-size: 0.34rem;
+}
+.dynamic-top .personIn .down {
+  padding-top: 0.2rem;
+}
+.dynamic-top .personIn img {
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  left: 50%;
+  top: 1rem;
+  transform: translateX(-50%);
+}
+.dynamic-top .personIn .personName {
+  font-size: 0.3rem;
+  position: absolute;
+  left: 50%;
+  top: 2.2rem;
+  transform: translateX(-50%);
+}
+.dynamic-top .personIn .personPhone {
+  font-size: 0.24rem;
+  position: absolute;
+  left: 50%;
+  top: 2.65rem;
+  transform: translateX(-50%);
+}
+.dynamic-center {
+  width: 7.32rem;
+  height: 6.68rem;
+  background: url('https://f.51fanbei.com/h5/app/activity/11/dynamicBill-05.png') no-repeat;
+  background-size: contain;
+  margin-top: 43%;
+  position: relative;
+}
+.dynamic-center .dateOne {
+  position: absolute;
+  top: 55%;
+  left: 18%;
+  text-align: center;
+}
+.dynamic-center .dateOne .monthOne {
+  color: #646464;
+  font-size: 0.4rem;
+}
+.dynamic-center .dateOne .count {
+  font-size: 0.28rem;
+  color: #969696;
+}
+.dynamic-center .dateTwo {
+  position: absolute;
+  top: 55%;
+  right: 18%;
+  text-align: center;
+}
+.dynamic-center .dateTwo .monthTwo {
+  color: #646464;
+  font-size: 0.4rem;
+}
+.dynamic-center .dateTwo .pay {
+  font-size: 0.28rem;
+  color: #969696;
+}
+.dynamic-center .line {
+  width: 0.06rem;
+  height: 0.9rem;
+  border: solid 1px #ededed;
+  position: absolute;
+  top: 56%;
+  right: 50%;
+  transform: translateX(-50%);
+}
+.dynamic-bottom .oneTime {
+  color: #999;
+  font-size: 0.2rem;
+  margin-left: 30%;
+  margin-bottom: 0.3rem;
+}
+.dynamic-bottom .oneTime .point {
+  width: .08rem;
+  height: .08rem;
+  background-color: gray;
+  border-radius: 50%;
+  margin-right: .1rem;
+  vertical-align: middle;
+}
+.dynamic-bottom .btn {
+  width: 6.26rem;
+  height: 1.02rem;
+  background-color: #ff6e34;
+  border-radius: 0.5rem;
+  font-size: .32rem;
+  color: #fff;
+  margin-left: 8%;
+}
