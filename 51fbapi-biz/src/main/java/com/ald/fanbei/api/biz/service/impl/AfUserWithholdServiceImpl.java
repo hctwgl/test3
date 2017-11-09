@@ -42,8 +42,8 @@ public class AfUserWithholdServiceImpl extends ParentServiceImpl<AfUserWithholdD
 	}
 	
 	@Override
-	public AfUserWithholdDo getAfUserWithholdDtoByUserId(String userName) {
-		return afUserWithholdDao.getAfUserWithholdDtoByUserId(userName);
+	public AfUserWithholdDo getAfUserWithholdDtoByUserId(long userId) {
+		return afUserWithholdDao.getAfUserWithholdDtoByUserId(userId);
 	}
 
 	@Override
@@ -59,5 +59,10 @@ public class AfUserWithholdServiceImpl extends ParentServiceImpl<AfUserWithholdD
 	@Override
 	public int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo) {
 		return afUserWithholdDao.updateAfUserWithholdDo(afUserWithholdDo);
+	}
+
+	@Override
+	public AfUserWithholdDo getWithholdInfo(long userId) {
+		return afUserWithholdDao.getWithholdInfo(userId);
 	}
 }

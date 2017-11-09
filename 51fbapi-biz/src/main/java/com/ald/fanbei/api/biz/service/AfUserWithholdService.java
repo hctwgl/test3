@@ -19,7 +19,7 @@ public interface AfUserWithholdService extends ParentService<AfUserWithholdDo, L
      * 
      * @param userName
      * **/
-    AfUserWithholdDo getAfUserWithholdDtoByUserId(String userName);
+	AfUserWithholdDo getAfUserWithholdDtoByUserId(long userId);
     
     /**
      * 插入AfUserWithholdDto 记录
@@ -41,5 +41,9 @@ public interface AfUserWithholdService extends ParentService<AfUserWithholdDo, L
      * **/
     int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo);
     
+    /**
+     * 得到代扣初始化信息
+     * **/
     
+    AfUserWithholdDo getWithholdInfo(long userId);
 }

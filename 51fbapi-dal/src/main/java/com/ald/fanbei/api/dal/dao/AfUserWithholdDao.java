@@ -22,7 +22,7 @@ public interface AfUserWithholdDao extends BaseDao<AfUserWithholdDo, Long> {
      *
      * @param userName
      * **/
-    AfUserWithholdDo getAfUserWithholdDtoByUserId(String userName);
+    AfUserWithholdDo getAfUserWithholdDtoByUserId(long userId);
 
     /**
      * 插入AfUserWithholdDto 记录
@@ -43,4 +43,10 @@ public interface AfUserWithholdDao extends BaseDao<AfUserWithholdDo, Long> {
      * 
      * **/
     int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo);
+    
+    /**
+     * 得到代扣初始化信息
+     * **/
+    
+    AfUserWithholdDo getWithholdInfo(long userId);
 }
