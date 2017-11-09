@@ -127,7 +127,7 @@
     
     <select id="getShareGoods" resultType="com.ald.fanbei.api.dal.domain.dto.AfShareGoodsDto">
 	    SELECT
-		*
+		goods_id rid,decrease_price,price_amount,sale_amount,rebate_amount,name,goods_icon,thumbnail_icon,goods_detail,open_id,source
 		FROM af_share_goods sg
 		LEFT JOIN 
 			af_goods g 
@@ -141,6 +141,15 @@
 			g.source = 'SELFSUPPORT'
 		AND 
 			g.STATUS = 'PUBLISH'
+    </select>
+    
+    <select id="getCountByGoodsId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+    	SELECT
+		count(0)
+		FROM
+		af_share_goods
+		WHERE
+		goods_id=#{goodsId}
     </select>
     
 </mapper>

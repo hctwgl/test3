@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
@@ -15,5 +17,7 @@ import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
 public interface AfShareUserGoodsDao extends BaseDao<AfShareUserGoodsDo, Long> {
 
 	void updateIsBuyById(@Param("rid") Long id, @Param("isBuy") Integer isBuy);
+
+	AfShareUserGoodsDo getByUserId(Long userId);
 
 }

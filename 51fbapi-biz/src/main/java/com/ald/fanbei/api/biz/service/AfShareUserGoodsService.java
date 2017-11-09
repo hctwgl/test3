@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
 
 /**
@@ -13,5 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
 public interface AfShareUserGoodsService extends ParentService<AfShareUserGoodsDo, Long>{
 
 	void updateIsBuyById(long parseLong, int i);
+
+	AfShareUserGoodsDo getByUserId(Long userId);
 
 }

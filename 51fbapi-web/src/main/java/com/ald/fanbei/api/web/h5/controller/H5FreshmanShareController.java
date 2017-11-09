@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ public class H5FreshmanShareController extends H5Controller{
 	 */
 	@RequestMapping(value = "/homePage", method = RequestMethod.POST)
 	public String homePage(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> data = new HashMap<String, Object>();
 		String result = "";
 		try {
 			doWebCheck(request, false);
@@ -75,7 +77,7 @@ public class H5FreshmanShareController extends H5Controller{
 				
 				for (AfShareGoodsDto afShareGoodsDto : shareGoods) {
 					AfFreshmanGoodsVo afFreshmanGoodsVo = new AfFreshmanGoodsVo();
-					afFreshmanGoodsVo.setNumId(afShareGoodsDto.getNumId());
+					afFreshmanGoodsVo.setNumId(String.valueOf(afShareGoodsDto.getRid()));
 					afFreshmanGoodsVo.setDecreasePrice(afShareGoodsDto.getDecreasePrice());
 					afFreshmanGoodsVo.setSaleAmount(afShareGoodsDto.getPriceAmount().toString());
 					afFreshmanGoodsVo.setRealAmount(afShareGoodsDto.getSaleAmount().toString());
@@ -83,8 +85,9 @@ public class H5FreshmanShareController extends H5Controller{
 					afFreshmanGoodsVo.setGoodsName(afShareGoodsDto.getName());
 					afFreshmanGoodsVo.setGoodsIcon(afShareGoodsDto.getGoodsIcon());
 					afFreshmanGoodsVo.setThumbnailIcon(afShareGoodsDto.getThumbnailIcon());
-					afFreshmanGoodsVo.setGoodsUrl(afShareGoodsDto.getGoodsUrl());
+					afFreshmanGoodsVo.setGoodsUrl(afShareGoodsDto.getGoodsDetail().split(";")[0]);
 					afFreshmanGoodsVo.setOpenId(afShareGoodsDto.getOpenId());
+					afFreshmanGoodsVo.setSource(afShareGoodsDto.getSource());
 					resultList.add(afFreshmanGoodsVo);
 				}
 			}
@@ -109,7 +112,8 @@ public class H5FreshmanShareController extends H5Controller{
 			
 			
 			logger.info(JSON.toJSONString(resultList));
-			result = H5CommonResponse.getNewInstance(true, "获取商品列表成功", null, JSON.toJSONString(resultList)).toString();
+			data.put("goodsList", resultList);
+			result = H5CommonResponse.getNewInstance(true, "获取商品列表成功", null, data).toString();
 			
 		} catch (Exception e) {
 //			e.printStackTrace();

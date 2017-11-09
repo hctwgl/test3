@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfShareUserGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfShareUserGoodsDo;
@@ -38,5 +41,11 @@ public class AfShareUserGoodsServiceImpl extends ParentServiceImpl<AfShareUserGo
 		public void updateIsBuyById(long parseLong, int i) {
 			afShareUserGoodsDao.updateIsBuyById(parseLong,i);
 			
+		}
+
+		@Override
+		public AfShareUserGoodsDo getByUserId(Long userId) {
+			// TODO Auto-generated method stub
+			return afShareUserGoodsDao.getByUserId(userId);
 		}
 }
