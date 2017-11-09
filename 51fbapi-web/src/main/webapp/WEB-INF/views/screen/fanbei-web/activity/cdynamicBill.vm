@@ -25,7 +25,7 @@
         </div>
         <div class="dynamic-bottom">
             <div class="oneTime"><span class="point"></span>账单日一年只允许更改一侧，请慎重</div>
-            <button class="btn">修改账单日</button>
+            <button class="btn" @click="changeBillDay()">修改账单日</button>
         </div>
     </div>
 </body>
