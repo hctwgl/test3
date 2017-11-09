@@ -44,3 +44,4 @@ resources/staging.public.pem
 /51fbapi-common/target/*
 /51fbapi-dal/target/*
 /51fbapi-web/target/*
+/51fbapi-web/src/main/webapp/.vscode/
