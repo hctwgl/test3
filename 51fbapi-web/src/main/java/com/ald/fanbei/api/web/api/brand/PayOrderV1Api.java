@@ -82,6 +82,7 @@ public class PayOrderV1Api implements ApiHandle {
     AfDeUserGoodsService afDeUserGoodsService;
     @Autowired
     AfTradeOrderService afTradeOrderService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -111,25 +112,24 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
-		if (orderInfo == null) {
-			logger.error("orderId is invalid");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
+        if (orderInfo == null) {
+            logger.error("orderId is invalid");
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        }
 
-		//双十一砍价添加
-		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
-		    if(afDeUserGoodsDo!= null && afDeUserGoodsDo.getIsbuy()== 1)
-		    {
-			logger.error(orderInfo.getThirdOrderNo() +":afDeUserGoodsService the goods is buy.");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CUT_PRICE_ISBUY);
-		    }
-		}
-		//----------------
+        //双十一砍价添加
+        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+            AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
+            if (afDeUserGoodsDo != null && afDeUserGoodsDo.getIsbuy() == 1) {
+                logger.error(orderInfo.getThirdOrderNo() + ":afDeUserGoodsService the goods is buy.");
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CUT_PRICE_ISBUY);
+            }
+        }
+        //----------------
 
-		if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
-		}
+        if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+        }
 
         if (orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_PAID);
@@ -149,10 +149,9 @@ public class PayOrderV1Api implements ApiHandle {
                 //分期支付
                 BorrowRateBo borrowRate = null;
                 if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-                    AfTradeOrderDo tradeOrderDo= afTradeOrderService.getById(orderInfo.getRid());
+                    AfTradeOrderDo tradeOrderDo = afTradeOrderService.getById(orderInfo.getRid());
                     AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(tradeOrderDo.getBusinessId());
                     String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
-                    borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
                     //region 没有配置就采用默认值
                     AfTradeRebateModelBo rebateModel = null;
 
@@ -182,6 +181,9 @@ public class PayOrderV1Api implements ApiHandle {
                         }
 
                     }
+                    borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
+                    orderInfo.setInterestFreeJson(JSON.toJSONString(rebateModels));
+                    orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                     if (rebateModel.getRebatePercent() != null && rebateModel.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
                         BigDecimal rebateAmount = orderInfo.getActualAmount().multiply(rebateModel.getRebatePercent()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
                         rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
@@ -189,8 +191,9 @@ public class PayOrderV1Api implements ApiHandle {
                     }
                 } else {
                     borrowRate = afResourceService.borrowRateWithResource(nper);
+                    orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                 }
-                orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+
             }
 
         }
@@ -260,50 +263,50 @@ public class PayOrderV1Api implements ApiHandle {
 
 
             } else if (payId > 0) {
-				payType = PayType.BANK.getCode();
-				//银行卡
-			}
+                payType = PayType.BANK.getCode();
+                //银行卡
+            }
 
-			if (StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
-				payType = PayType.COMBINATION_PAY.getCode();
-				//组合
-			}
+            if (StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
+                payType = PayType.COMBINATION_PAY.getCode();
+                //组合
+            }
 
-			Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
+            Map<String, Object> result = afOrderService.payBrandOrder(payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress);
 
-			Object success = result.get("success");
-			Object payStatus = result.get("status");
-			if (success != null) {
-				if (Boolean.parseBoolean(success.toString())) {
-					//判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
-					if (StringUtils.equals(type, OrderType.BOLUOME.getCode()) ) {
-						if (payId.intValue() == 0) {
-							riskUtil.payOrderChangeAmount(orderInfo.getRid());
-						} else if (payId > 0 &&  PayStatus.DEALING.getCode().equals(payStatus.toString())) {
-							boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
-						}
-					}
+            Object success = result.get("success");
+            Object payStatus = result.get("status");
+            if (success != null) {
+                if (Boolean.parseBoolean(success.toString())) {
+                    //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
+                    if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
+                        if (payId.intValue() == 0) {
+                            riskUtil.payOrderChangeAmount(orderInfo.getRid());
+                        } else if (payId > 0 && PayStatus.DEALING.getCode().equals(payStatus.toString())) {
+                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
+                        }
+                    }
 
-					//更新砍价商品为已购买(订单为自营且第三方订单号不为空),双十一添加
-                        		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-                        		    afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
-                        		}
-				} else {
-					FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
-					ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
-					response.setResponseData(result);
-					return response;
-				}
-			}
-			resp.setResponseData(result);
+                    //更新砍价商品为已购买(订单为自营且第三方订单号不为空),双十一添加
+                    if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+                        afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
+                    }
+                } else {
+                    FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
+                    ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
+                    response.setResponseData(result);
+                    return response;
+                }
+            }
+            resp.setResponseData(result);
 
-		} catch (FanbeiException exception) {
-			return new ApiHandleResponse(requestDataVo.getId(), exception.getErrorCode());
-		} catch (Exception e) {
-			logger.error("pay order failed e = {}", e);
-			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
-		}
-		return resp;
-	}
+        } catch (FanbeiException exception) {
+            return new ApiHandleResponse(requestDataVo.getId(), exception.getErrorCode());
+        } catch (Exception e) {
+            logger.error("pay order failed e = {}", e);
+            resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+        }
+        return resp;
+    }
 
 }
