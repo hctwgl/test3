@@ -400,8 +400,16 @@ public class StartCashierApi implements ApiHandle {
                 cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 cashierTypeVo.setReasonType(CashierReasonType.VIRTUAL_GOODS_LIMIT.getCode());
             } else {
-                cashierTypeVo.setUseableAmount(leftAmount);
-                cashierTypeVo.setPayAmount(useableAmount.compareTo(orderInfo.getActualAmount()) > 0 ? orderInfo.getActualAmount() : useableAmount);
+                if(leftAmount.compareTo(orderInfo.getActualAmount()) > 0){
+                    cashierTypeVo.setUseableAmount(leftAmount);
+                    cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
+                    cashierTypeVo.setStatus(YesNoStatus.YES.getCode());
+                }else{
+                    cashierTypeVo.setUseableAmount(leftAmount);
+                    cashierTypeVo.setPayAmount(leftAmount);
+                    cashierTypeVo.setReasonType(CashierReasonType.USE_ABLED_LESS.getCode());
+                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+                }
             }
         } else {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
