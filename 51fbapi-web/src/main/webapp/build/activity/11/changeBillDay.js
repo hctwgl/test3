@@ -16,11 +16,26 @@ function addStartDate(){
 }
 
 //增加结束日期
-function addEndDate(){
+/* function addEndDate(){
     // dtpicker组件适用于弹出日期选择器
     var dtpicker = new mui.DtPicker({
         type: "date", //设置日历初始视图模式
         labels: ['年', '月', '日'] //设置默认标签区域提示语
+    });
+
+    dtpicker.show(function(items) {
+        endTime = items.y.value + "-" + items.m.value + "-" + items.d.value;
+        var dateStr = items.y.value + "-" + items.m.value + "-" + items.d.value + " ";
+        $('.endTime').text(dateStr);
+        dtpicker.dispose();
+    })
+} */
+
+function addEndDate(){
+    // dtpicker组件适用于弹出日期选择器
+    var dtpicker = new mui.DtPicker({
+        type: "Int", //设置日历初始视图模式
+        picker:2
     });
 
     dtpicker.show(function(items) {
