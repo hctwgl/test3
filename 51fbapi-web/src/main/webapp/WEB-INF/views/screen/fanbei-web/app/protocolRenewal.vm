@@ -129,8 +129,8 @@
     <br>
     <br>
     <span style="margin: 0 1rem">甲方：      <img style="width: 1.5rem" src="$!{personUserSeal}"></span>
-    <span>乙方：      <img style="width: 2.5rem" src="$!{secondSeal}"></span>
-    <p style="margin: 0 1rem">丙方：      <img style="width: 2.5rem" src="$!{CompanyUserSeal}"></p>
+    <span>乙方：      <img style="width: 2.5rem" src="$!{CompanyUserSeal}"></span>
+    <p style="margin: 0 1rem">丙方：      <img style="width: 2.5rem" src="$!{secondSeal}"></p>
 
     </p>
 </div>
