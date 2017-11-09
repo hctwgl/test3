@@ -105,7 +105,7 @@ public class AppH5ChangeOutDayController extends BaseController{
         			if (calendar.get(Calendar.YEAR) == outDayCalendar.get(Calendar.YEAR)) {
         				data.put("outDay", userOutDay.getOutDay());
     					data.put("payDay", userOutDay.getPayDay());
-        				resp = H5CommonResponse.getNewInstance(false, "您今年的修改次数已用完","",data);
+        				resp = H5CommonResponse.getNewInstance(false, "2","",data);
         				return resp.toString();
 					}
         			data.put("outDay", userOutDay.getOutDay());
@@ -118,7 +118,7 @@ public class AppH5ChangeOutDayController extends BaseController{
 				}
     			int countNotPayOverdueBill = afBorrowBillService.countNotPayOverdueBill(afUser.getRid());
     			if (countNotPayOverdueBill > 0) {
-    				resp = H5CommonResponse.getNewInstance(false, "您有逾期账单未还清,请还清账单后再来更改吧~","",data);
+    				resp = H5CommonResponse.getNewInstance(false, "1","",data);
     				return resp.toString();
     			}
     			data.put("outDayList", outDayList);
