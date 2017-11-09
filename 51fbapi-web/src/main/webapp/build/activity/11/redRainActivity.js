@@ -43,10 +43,11 @@ $(document).ready(function() {
         //点击红包的时候弹出模态层
         $(".li" + num).one('touchstart',function(){
             let self=this;
-            if(parseInt(Math.random() * 100)>90&&couponArr.length<3&&sendAjax){   //概率10%并且总获奖数小于3并且没有并发ajax请求
+            if(parseInt(Math.random() * 100)>50&&couponArr.length<3&&sendAjax){   //概率10%并且总获奖数小于3并且没有并发ajax请求
                     sendAjax=false;
+                    let time=new Date().getTime();
                     $.ajax({
-                        url:'/fanbei-web/redRain/applyHit',
+                        url:'/fanbei-web/redRain/applyHit?time='+time,
                         type:'post',
                         success:function (data) {
                             sendAjax=true;
