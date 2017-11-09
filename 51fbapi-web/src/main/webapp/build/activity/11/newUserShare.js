@@ -7,14 +7,14 @@ var shareInfo = {
     link: domainName+'/fanbei-web/activity/newUserShare',
     imgUrl: "https://f.51fanbei.com/h5/app/activity/11/newUser06.jpg",
     success: function() {
-        alert("分享成功！");
+        requestMsg("分享成功！");
     },
     error: function() {
-        alert("分享失败！");
+        requestMsg("分享失败！");
     },
     cancel: function (res) {
         // 用户取消分享后执行的回调函数
-        alert("取消分享！");
+        requestMsg("取消分享！");
     }
 };
 $(function(){
