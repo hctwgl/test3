@@ -392,5 +392,10 @@ public class Constants {
 	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
+	  
+	//借钱费率配置相关
+	 public static final String BORROW_RATE="BORROW_RATE";
+	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
+	 public static final String BORROW_CASH_OVERDUE_POUNDAGE="BORROW_CASH_OVERDUE_POUNDAGE";
 
 }

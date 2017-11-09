@@ -271,4 +271,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public int updateAfBorrowCashService(AfBorrowCashDo afBorrowCashDo) {
 		return afBorrowCashDao.updateAfBorrowCashService(afBorrowCashDo);
 	}
+
+	@Override
+	public int updateAuAmountByRid(long rid,BigDecimal auAmount) {
+		return afBorrowCashDao.updateAuAmountByRid(rid,auAmount);
+	}
 }

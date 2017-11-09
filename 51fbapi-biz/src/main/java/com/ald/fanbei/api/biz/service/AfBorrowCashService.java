@@ -179,4 +179,11 @@ public interface AfBorrowCashService {
 	 * @return
 	 * **/
 	int updateAfBorrowCashService(AfBorrowCashDo afBorrowCashDo);
+	
+	/**
+	 * 更新au_amount
+	 *  @param borrowId,auAmount
+	 *  @return
+	 * **/
+	int updateAuAmountByRid(long rid,BigDecimal auAmount);
 }

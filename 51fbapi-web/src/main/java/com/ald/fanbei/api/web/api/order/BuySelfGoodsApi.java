@@ -210,14 +210,14 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 		}
 		afOrder.setUserCouponId(couponId);
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+		afOrder.setAuAmount(userAccountInfo.getAuAmount());
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
-
 		String isEnoughAmount = "Y";
 		String isNoneQuota = "N";
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount())
-				.subtract(userAccountInfo.getFreezeAmount());
 		if (useableAmount.compareTo(actualAmount) < 0) {
 			isEnoughAmount = "N";
 		}
