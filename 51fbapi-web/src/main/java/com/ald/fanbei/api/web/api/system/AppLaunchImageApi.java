@@ -175,7 +175,7 @@ public class AppLaunchImageApi implements ApiHandle{
 					String callbackUrl = tdo.getCallbackUrl();
 					String result= HttpUtil.doGet(callbackUrl,20);
 					logger.debug("ChangXiaoAdOpen callbackUrl=" + callbackUrl + " ,result=" + result);
-					if(result.indexOf("success")>-1){
+					if(result.equals("OK")){
 						afUserChangXiaoService.updateUserOpen(tdo);
 					}
 					logger.error("changxiao open:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);
