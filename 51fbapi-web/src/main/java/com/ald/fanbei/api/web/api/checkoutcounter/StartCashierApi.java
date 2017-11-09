@@ -350,6 +350,12 @@ public class StartCashierApi implements ApiHandle {
         String rejectCode =  resp.getRejectCode();
         if (StringUtil.isNotBlank(rejectCode)) {
             RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
+            if(userDto.getUserName()=="13460011555"){
+                erorrCode=RiskErrorCode.OVERDUE_BORROW;
+            }
+            if(userDto.getUserName()=="17710378476"){
+                erorrCode=RiskErrorCode.OVERDUE_BORROW_CASH;
+            }
             switch (erorrCode) {
                 case OVERDUE_BORROW:
                     String borrowNo = resp.getBorrowNo();
