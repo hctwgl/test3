@@ -213,7 +213,10 @@
                 borrow_total_amount = borrow_total_amount + #{borrowTotalAmount,jdbcType=DECIMAL}                
             </if>
         </set>    
-        WHERE  id = #{rid ,jdbcType=BIGINT}  and <![CDATA[  usable_amount + #{usableAmount,jdbcType=DECIMAL} >=0 ]]>
+        WHERE  id = #{rid ,jdbcType=BIGINT}  
+         <if test="usableAmount != null and usableAmount != '' ">        
+                and <![CDATA[  usable_amount + #{usableAmount,jdbcType=DECIMAL} >=0 ]]>         
+         </if>
          <if test="gmtModified != null ">        
                 and gmt_modified <![CDATA[   <=  ]]> #{gmtModified}            
          </if>
