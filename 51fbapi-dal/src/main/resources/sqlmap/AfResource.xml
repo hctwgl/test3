@@ -145,8 +145,8 @@
 		type = #{type}
 		AND is_delete = 0
 		AND value = 'PART'
-		AND   #{version} >value_1
-		AND value_2 > #{version}
+		AND   #{version} >= value_1
+		AND value_2 >= #{version}
 		AND value_4 = 'O'
 		order by gmt_create desc
 		LIMIT 1
