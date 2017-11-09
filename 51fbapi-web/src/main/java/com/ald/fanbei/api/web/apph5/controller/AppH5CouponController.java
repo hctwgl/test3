@@ -440,6 +440,7 @@ public class AppH5CouponController extends BaseController {
     		String coupons = couponCategory.getCoupons();
     		List<Map<String,Object>> couponList = new ArrayList<Map<String,Object>>();
     		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+    		if(couponCategory.getType().equals(0)){
     		for(int i = 0; i < couponsArray.size(); i++){
     			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
     			String couponId = (String)couponsArray.getString(i);
@@ -472,6 +473,59 @@ public class AppH5CouponController extends BaseController {
     				couponInfoMap.put("gmtEnd", 0);
     			}
     			couponList.add(couponInfoMap);
+    		}
+    		}else if(couponCategory.getType().equals(1)){
+    		    //菠萝蜜
+    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    		for(int i = 0; i < couponsArray.size(); i++){
+			HashMap<String, Object> couponInfoMap = new HashMap<String, Object>();
+			String couponId = (String)couponsArray.getString(i);
+			
+			AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(Long.parseLong(couponId));
+				List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
+				
+				for (BrandActivityCouponResponseBo brandActivityCouponResponseBo : activityCouponList) {
+					if(brandActivityCouponResponseBo.getType().equals(1)){
+						couponInfoMap.put("type","FULLVOUCHER");
+					}else if(brandActivityCouponResponseBo.getType().equals(2)){
+						couponInfoMap.put("type","DISCOUNT");
+					}
+					couponInfoMap.put("couponType", 1);
+					couponInfoMap.put("shopUrl", couponCategory.getUrl());
+				couponInfoMap.put("couponId", couponId);
+				couponInfoMap.put("name", brandActivityCouponResponseBo.getName());
+				//couponInfoMap.put("useRule", brandActivityCouponResponseBo.getUseRule());
+				couponInfoMap.put("amount", brandActivityCouponResponseBo.getValue());
+				//couponInfoMap.put("useRange", brandActivityCouponResponseBo.getUseRange());
+				couponInfoMap.put("limitAmount", brandActivityCouponResponseBo.getThreshold());
+			         couponInfoMap.put("drawStatus", "N");
+			if(isLogin) {
+			boolean    flag = boluomeUtil.isHasCoupon(couponId+"", context.getUserName());
+				if(flag) {
+					couponInfoMap.put("drawStatus", "Y");
+				}
+			}
+			try{
+				 
+				Date gmtStart = dateFormat.parse((afResourceDo.getValue1()));
+				if( gmtStart != null){
+					couponInfoMap.put("gmtStart", gmtStart.getTime());
+				} else {
+					couponInfoMap.put("gmtStart", 0);
+				}
+				Date gmtEnd = dateFormat.parse((afResourceDo.getValue2()));
+				if (gmtEnd != null) {
+					couponInfoMap.put("gmtEnd", gmtEnd.getTime());
+				} else {
+					couponInfoMap.put("gmtEnd", 0);
+				}
+				}catch (Exception e){
+	    		    		e.printStackTrace();
+	    		    		logger.info("get boluome time error",e);
+			   }
+			}
+			couponList.add(couponInfoMap);
+    		  }
     		}
     		jsonObj.put("couponInfoList",couponList);
     		resp = H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",jsonObj);
