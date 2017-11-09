@@ -344,7 +344,6 @@ public class StartCashierApi implements ApiHandle {
      * @param userDto       用户账户信息
      */
     private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto) {
-        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode =  resp.getRejectCode();
@@ -382,6 +381,7 @@ public class StartCashierApi implements ApiHandle {
                     return;
             }
         }
+        Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         BigDecimal useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
         if (afOrderService.isVirtualGoods(virtualMap)) {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
