@@ -13,7 +13,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
@@ -124,20 +123,17 @@ public class TradeOrderApi implements ApiHandle {
             rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
             afOrder.setRebateAmount(rebateAmount);
         }
+        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+        afOrder.setAuAmount(userAccountInfo.getAuAmount());
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
         afOrderService.createOrder(afOrder);
-
         AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
         afTradeOrderDo.setOrderId(afOrder.getRid());
         afTradeOrderDo.setBusinessId(businessId);
         afTradeOrderDo.setBalanceAmount(actualAmount);
         afTradeOrderService.saveRecord(afTradeOrderDo);
-
-
-
-
         String isEnoughAmount = "Y";
-        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
         if (useableAmount.compareTo(actualAmount) < 0) {
             isEnoughAmount = "N";
         }
