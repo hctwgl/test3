@@ -11,7 +11,7 @@
 		</layout>
 	</appender>
 
-	<!-- [应用Appender] 收到app客户端的请求，非app接口入口日志请勿放这里 -->
+	<!-- [应用Appender] 收到app客户端的请求，非app接口入口日志请勿放这里  -->
 	<appender name="FANBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/bi/app-bi.log" />
 		<param name="append" value="true" />
