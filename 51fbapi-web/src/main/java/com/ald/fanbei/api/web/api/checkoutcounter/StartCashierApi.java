@@ -274,11 +274,11 @@ public class StartCashierApi implements ApiHandle {
             if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 //额度不够
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode());
-                riskProcess(cashierTypeVo, orderInfo, userDto);
+                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount);
                 return cashierTypeVo;
             } else {
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
-                riskProcess(cashierTypeVo, orderInfo, userDto);
+                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount);
                 return cashierTypeVo;
             }
         } else {
@@ -343,7 +343,7 @@ public class StartCashierApi implements ApiHandle {
      * @param orderInfo     订单信息
      * @param userDto       用户账户信息
      */
-    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto) {
+    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto,BigDecimal usabledMinAmount) {
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode =  resp.getRejectCode();
@@ -410,6 +410,10 @@ public class StartCashierApi implements ApiHandle {
                     cashierTypeVo.setReasonType(CashierReasonType.USE_ABLED_LESS.getCode());
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 }
+//                if(leftAmount.compareTo(usabledMinAmount)<=0 ){
+//                    cashierTypeVo.setReasonType(CashierReasonType.NEEDUP.getCode());
+//                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+//                }
             }
         } else {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());
