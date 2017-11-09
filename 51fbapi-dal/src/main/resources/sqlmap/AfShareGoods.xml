@@ -141,6 +141,7 @@
 			g.source = 'SELFSUPPORT'
 		AND 
 			g.STATUS = 'PUBLISH'
+		ORDER BY sort
     </select>
     
     <select id="getCountByGoodsId" resultType="java.lang.Integer" parameterType="java.lang.Long">
