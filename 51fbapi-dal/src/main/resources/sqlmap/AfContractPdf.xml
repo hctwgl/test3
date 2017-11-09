@@ -7,9 +7,10 @@
     <result column="type_id" property="typeId" jdbcType="BIGINT" />
     <result column="contract_pdf_url" property="contractPdfUrl" jdbcType="VARCHAR"/>
     <result column="ev_id" property="evId" jdbcType="VARCHAR"/>
+    <result column="gmt_create" property="gmtCreate" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, type, type_id, contract_pdf_url,ev_id
+    id, type, type_id, contract_pdf_url,ev_id,gmt_create,is_delete
   </sql>
   <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -30,9 +31,9 @@
   </delete>
   <insert id="insert" parameterType="AfContractPdfDo" >
     insert into af_contract_pdf (id, type, type_id,
-      contract_pdf_url,ev_id)
+      contract_pdf_url,ev_id,gmt_create,is_delete)
     values (#{id,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, #{typeId,jdbcType=BIGINT},
-      #{contractPdfUrl,jdbcType=VARCHAR},#{evId})
+      #{contractPdfUrl,jdbcType=VARCHAR},#{evId},now(),0)
   </insert>
   <update id="updateById" parameterType="AfContractPdfDo" >
     update af_contract_pdf

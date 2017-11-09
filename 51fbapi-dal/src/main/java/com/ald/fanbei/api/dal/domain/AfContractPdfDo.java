@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.domain;
 
+import java.util.Date;
+
 public class AfContractPdfDo {
     private Long id;
 
@@ -10,6 +12,16 @@ public class AfContractPdfDo {
     private String contractPdfUrl;
 
     private String evId;
+
+    private Date gmtCreate;
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
 
     public String getEvId() {
         return evId;
