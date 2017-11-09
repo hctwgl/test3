@@ -155,6 +155,10 @@ public class SubmitRepaymentApi implements ApiHandle{
 		
 		Map<String,Object> map;
 		if(cardId==-2){//余额支付
+			 //用户账户余额校验添加
+            if(afUserAccountDo.getRebateAmount().compareTo(actualAmount)<0){
+                return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
+            }
 			map = afRepaymentService.createRepayment( jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds,
 					cardId,userId,billDo,"",afUserAccountDo);
 			resp.addResponseData("refId", map.get("refId"));
