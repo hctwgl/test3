@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.domain;
 
+import java.util.Date;
+
 public class AfUserSealDo {
     private Long id;
 
@@ -12,6 +14,26 @@ public class AfUserSealDo {
     private String userType;//用户类型 1：公司 2：个人
 
     private String userName;
+
+    private Date gmtCreate;
+
+    private Byte isDelete;
+
+    public Date getGmtCreate() {
+        return gmtCreate;
+    }
+
+    public void setGmtCreate(Date gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public Byte getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Byte isDelete) {
+        this.isDelete = isDelete;
+    }
 
     public String getUserName() {
         return userName;
