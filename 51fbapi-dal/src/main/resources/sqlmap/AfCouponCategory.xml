@@ -75,6 +75,7 @@
 		AND
 			coupons LIKE '%${couponId}%'
 		AND tag != 'ALL'
+		AND type = 0
 	</select>
 	
 	<select id="getCouponCategoryAll"  resultType="AfCouponCategoryDo">
