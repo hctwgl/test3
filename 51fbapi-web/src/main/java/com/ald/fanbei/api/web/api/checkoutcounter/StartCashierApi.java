@@ -349,9 +349,6 @@ public class StartCashierApi implements ApiHandle {
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode =  resp.getRejectCode();
         if(userDto.getUserName().equals("13460011555")){
-            rejectCode=RiskErrorCode.OVERDUE_BORROW.getCode();
-        }
-        if(userDto.getUserName().equals("17710378476")){
             rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
         }
         if (StringUtil.isNotBlank(rejectCode)) {
@@ -360,9 +357,6 @@ public class StartCashierApi implements ApiHandle {
             switch (erorrCode) {
                 case OVERDUE_BORROW:
                     String borrowNo = resp.getBorrowNo();
-                    if(userDto.getUserName().equals("13460011555")){
-                        borrowNo="jk2017101518502700303";
-                    }
                     AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
                     Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
                     cashierTypeVo.setBillId(billId);
