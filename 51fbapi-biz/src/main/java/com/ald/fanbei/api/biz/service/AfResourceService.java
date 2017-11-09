@@ -177,4 +177,6 @@ public interface AfResourceService {
 	AfResourceDo getAfResourceAppVesion();
 
 	List<AfResourceDo> getBackGroundByType(String code);
+
+	AfResourceDo getOpenBoluomeCouponById(long rid);
 }

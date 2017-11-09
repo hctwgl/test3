@@ -499,4 +499,13 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getNavigationUpOneResourceDoList(code);
 	}
 
+	@Override
+	public AfResourceDo getOpenBoluomeCouponById(long rid) {
+	    // TODO Auto-generated method stub
+	    AfResourceDo afResourceDo;
+			afResourceDo = afResourceDao.getOpenBoluomeCouponById(rid);
+
+		return afResourceDo;
+	}
+
 }
