@@ -107,13 +107,12 @@
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
                     self.otherDate=self.contentOne.data.outDayList[0];
-                    console.log(self.otherDate,'self.otherDate');
-                    console.log(self.contentOne);
                     if(self.contentOne.success==false){
+                        alert(2222)
                         window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        
                     }
-                     
-                    
+                        
                 }
                     
                 
