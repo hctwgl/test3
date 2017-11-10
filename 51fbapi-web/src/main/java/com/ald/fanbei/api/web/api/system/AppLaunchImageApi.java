@@ -151,15 +151,15 @@ public class AppLaunchImageApi implements ApiHandle{
 
 
 	/**
-	 * 畅效广告平台回调激活
+	 * 畅效广告平台回调处理，如果当前用户是平台的老用户则不回调，否则告知畅效广告平台当前用户为其导流用户
 	 * @param requestDataVo
 	 * @param context
 	 */
 	private void ChangXiaoAdOpen(RequestDataVo requestDataVo, FanbeiContext context) {
 		try {
-			String userName = context.getUserName();
+			String userName = context.getUserName();//用户名不能为空
 			AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-			logger.error("ChangXiaoAdOpen oldUser" + afUserDo);
+			logger.error("ChangXiaoAddOpen userName=" + userName);
 			if(afUserDo != null){//平台老用户，不进行回调
 				return;
 			}
