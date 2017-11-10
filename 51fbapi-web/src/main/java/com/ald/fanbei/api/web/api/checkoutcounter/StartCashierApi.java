@@ -410,10 +410,10 @@ public class StartCashierApi implements ApiHandle {
                     cashierTypeVo.setReasonType(CashierReasonType.USE_ABLED_LESS.getCode());
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 }
-//                if(leftAmount.compareTo(usabledMinAmount)<=0 ){
-//                    cashierTypeVo.setReasonType(CashierReasonType.NEEDUP.getCode());
-//                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-//                }
+                if(leftAmount.compareTo(usabledMinAmount)<=0 ){
+                    cashierTypeVo.setReasonType(CashierReasonType.NEEDUP_VIRTUAL.getCode());
+                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+                }
             }
         } else {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.NO.getCode());

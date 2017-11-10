@@ -8,6 +8,7 @@ public enum CashierReasonType {
     USE_ABLED_LESS("USE_ABLED_LESS", "可用额度小于分期额度"),//可以使用组合
     NOT_NEED("NOT_NEED", "不需要组合支付"),
     NEEDUP("NEEDUP", "可用额度小于资源配置限制金额 比如额度只有1块钱，那么不能走分期"),
+    NEEDUP_VIRTUAL("NEEDUP_VIRTUAL", "虚拟可用额度小于资源配置限制金额 比如虚拟可用额度只有1块钱，那么不能走分期"),
     CONSUME_MIN_AMOUNT("CONSUME_MIN_AMOUNT", "订单金额小于分期/组合支付最小额度限制"),
     VIRTUAL_GOODS_LIMIT("VIRTUAL_GOODS_LIMIT", "虚拟商品限额"),
     CASHIER("CASHIER", "收银台限制"),
