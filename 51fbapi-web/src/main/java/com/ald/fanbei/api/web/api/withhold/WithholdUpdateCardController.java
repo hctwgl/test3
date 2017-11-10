@@ -110,10 +110,12 @@ public class WithholdUpdateCardController  implements ApiHandle {
 			afUserWithholdDo.setUsebalance(Integer.parseInt(usebalance));
 		}
 
-		afUserWithholdService.updateAfUserWithholdDo(afUserWithholdDo);
-		return null;
-		//resp.setResponseData(info);
-	//	return resp;
+		if(!(afUserWithholdService.updateAfUserWithholdDo(afUserWithholdDo)<1)){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+		}
+		AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
+		resp.setResponseData(withholdInfo.getUsebalance());
+		return resp;
 	}
 	
 	

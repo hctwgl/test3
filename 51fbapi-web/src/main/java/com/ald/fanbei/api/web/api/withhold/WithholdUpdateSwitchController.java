@@ -72,17 +72,14 @@ public class WithholdUpdateSwitchController  implements ApiHandle {
 					userWithholdDo.setIsWithhold(Integer.parseInt(IsSwitch));
 					afUserWithholdService.insertAfUserWithholdDto(userWithholdDo);
 				} catch (Exception e){
-					logger.info("insertAfUserWithholdDto is fail Exception is :"+e);
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 				}
 		} else {
 			afUserWithholdService.updateAfUserWithholdDtoByUserId(userDo.getRid(), Integer.parseInt(IsSwitch));
 		}
-		return null;
-		//resp.setResponseData(info);
-	//	return resp;
+		AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
+		resp.setResponseData(withholdInfo.getIsWithhold());
+		return resp;
 	}
 	
-	
-	
-
 }

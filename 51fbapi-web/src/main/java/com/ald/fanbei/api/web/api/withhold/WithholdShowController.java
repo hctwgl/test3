@@ -56,30 +56,64 @@ public class WithholdShowController  implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		String userName = context.getUserName();
-		String IsSwitch = ObjectUtils.toString(requestDataVo.getParams().get("isSwitch"));
-		
-		AfUserDo userDo = afUserService.getUserByUserName(userName);
-		AfUserWithholdDo afUserWithholdDo = afUserWithholdService.getAfUserWithholdDtoByUserId(userDo.getRid());
-		if (afUserWithholdDo == null) {
-				AfUserBankcardDo mainBankcard = afUserBankCardService.getUserMainBankcardByUserId(userDo.getRid());
-				
-				AfUserWithholdDo userWithholdDo = new AfUserWithholdDo();
-				try {
-					userWithholdDo.setUserName(userDo.getUserName());
-					userWithholdDo.setUserId(userDo.getRid());
-					userWithholdDo.setCardNumber1(mainBankcard.getCardNumber());
-					userWithholdDo.setCardId1(mainBankcard.getRid());
-					userWithholdDo.setIsWithhold(Integer.parseInt(IsSwitch));
-					afUserWithholdService.insertAfUserWithholdDto(userWithholdDo);
-				} catch (Exception e){
-					logger.info("insertAfUserWithholdDto is fail Exception is :"+e);
+	
+			AfUserDo userDo = afUserService.getUserByUserName(userName);
+			Map<String, String> bankInfo1 = new HashMap<String, String>();
+			Map<String, String> bankInfo2 = new HashMap<String, String>();
+			Map<String, String> bankInfo3 = new HashMap<String, String>();
+			Map<String, String> bankInfo4 = new HashMap<String, String>();
+			Map<String, String> bankInfo5 = new HashMap<String, String>();
+			
+			//Map<String, Object> card = new HashMap<String, Object>();
+			List<String>  bankInfos = new ArrayList<String>();
+			List<Object> list = new ArrayList<Object>();
+			List<Object> card = new ArrayList<Object>();
+			if (userDo != null) {
+				AfUserWithholdDo withhold = afUserWithholdService.getWithholdInfo(userDo.getRid());
+
+				List<AfUserBankcardDo> afUserBankcardDoList = afUserBankCardService.getAfUserBankcardDoList(userDo.getRid());//得到所有的银行卡
+				if (afUserBankcardDoList != null && afUserBankcardDoList.size() > 0) {
+					for (AfUserBankcardDo afUserBankcardDo : afUserBankcardDoList) {
+						if (withhold.getCardNumber1() != null && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber1())) {
+							String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
+							bankInfo1.put("card", bank);
+							bankInfo1.put("sort", "1");
+							list.add(bankInfo1);
+						} else if (withhold.getCardNumber2() != null && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber2())) {
+							String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
+							bankInfo2.put("card", bank);
+							bankInfo2.put("sort", "2");
+							list.add(bankInfo2);
+						} else if (withhold.getCardNumber3() != null && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber3())) {
+							String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
+							bankInfo3.put("card", bank);
+							bankInfo3.put("sort", "3");
+							list.add(bankInfo3);
+						} else if (withhold.getCardNumber4() != null && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber4())) {
+							String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
+							bankInfo4.put("card", bank);
+							bankInfo4.put("sort", "4");
+							list.add(bankInfo4);
+						} else if (withhold.getCardNumber5() != null && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber5())) {
+							String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
+							bankInfo5.put("card", bank);
+							bankInfo5.put("sort", "5");
+							list.add(bankInfo5);
+						} else {
+							bankInfos.add(afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")");
+						}
+					}
+				} else {
+					resp.setResponseData("N");
+					logger.info("This is not bankCard userId=:"+userDo.getRid());
 				}
-		} else {
-			afUserWithholdService.updateAfUserWithholdDtoByUserId(userDo.getRid(), Integer.parseInt(IsSwitch));
-		}
-		return null;
-		//resp.setResponseData(info);
-	//	return resp;
+			}
+		
+			
+			card.add(list);
+			card.add(bankInfos);
+			resp.setResponseData(card);
+			return resp;
 	}
 	
 	
