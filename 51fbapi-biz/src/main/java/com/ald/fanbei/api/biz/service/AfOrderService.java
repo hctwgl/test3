@@ -302,5 +302,12 @@ public interface AfOrderService {
 	 */
     void syncOrderInfo(String orderId, String plantform, AfOrderDo orderInfo);
     int getOrderCountByStatusAndUserId(AfOrderDo queryCount);
+    
+    /**
+     * 获取老用户订单数
+     * @param userId
+     * @return
+     */
+    int getOldUserOrderAmount(long userId);
 	
 }

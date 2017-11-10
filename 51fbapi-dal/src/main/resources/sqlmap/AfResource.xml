@@ -79,6 +79,16 @@
 		LIMIT 1
 
 	</select>
+ <select id="getOpenBoluomeCouponById"  resultType="AfResourceDo">
+		SELECT
+			<include refid="queryAllFields" />
+			FROM af_resource 
+			WHERE is_delete = 0
+			AND  value_4 = 'O'
+			AND value_2 > NOW() 
+			AND id = #{rid}
+			LIMIT 1
+	</select>
 
 
 	<select id="getResourceListByType" resultType="AfResourceDo">

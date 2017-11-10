@@ -153,4 +153,6 @@ public interface AfResourceDao {
 	 */
 	List<String> getActivityRule(@Param("type")String type);
 
+	AfResourceDo getOpenBoluomeCouponById(@Param("rid") Long rid);
+
 }

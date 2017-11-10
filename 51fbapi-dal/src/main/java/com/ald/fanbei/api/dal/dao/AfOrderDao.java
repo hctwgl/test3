@@ -162,4 +162,10 @@ public interface AfOrderDao {
 	int getOrderCountByStatusAndUserId(AfOrderDo queryCount);
 
 	List<AfOrderDo> getOrderByTimeAndType(@Param("startTime")Date startTime,@Param("endTime")Date endTime);
+	
+	/**
+	 * 根据userId查询老用户订单数
+	 * @return
+	 */
+	Integer getOldUserOrderAmount(@Param("userId") long userId);
 }
