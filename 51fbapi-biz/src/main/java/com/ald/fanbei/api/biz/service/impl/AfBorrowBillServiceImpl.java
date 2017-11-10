@@ -11,6 +11,9 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.common.Constants;
@@ -20,9 +23,11 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
@@ -41,7 +46,13 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	private AfBorrowBillDao afBorrowBillDao;
 	
 	@Resource
+	private AfUserOutDayDao afUserOutDayDao;
+	
+	@Resource
 	private AfUserBankcardDao bankcardDao;
+	
+	@Resource
+    TransactionTemplate transactionTemplate;
 
 	@Override
 	public List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query) {
@@ -255,8 +266,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		return afBorrowBillDao.countNotPayOverdueBill(userId);
 	}
 
-	@Override
-	public void updateBorrowBills(long userId, int outDay, int oldOutDay,int payDay) {
+	private void updateBorrowBills(long userId, int outDay, int oldOutDay,int payDay) {
 
 		List<AfBorrowBillDo> list =  afBorrowBillDao.getNoPayBillByUserId(userId,new Date());
 		if(list ==null || list.size() ==0)return;
@@ -368,4 +378,36 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		String[] billDay1 = DateUtil.formatDate(date, DateUtil.MONTH_PATTERN).split("-");
 		return Integer.parseInt(billDay1[0]+billDay1[1]);
 	}
+
+	@Override
+	public int addUserOutDay(final long userId, final int outDay, final int payDay) {
+        final int[] returnValue={0};
+        transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                if(afUserOutDayDao.insertUserOutDay(userId,outDay,payDay)>0){
+                    returnValue[0] =afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
+                    updateBorrowBills(userId,outDay,10,outDay);
+                }
+                return null;
+            }
+        });
+        return returnValue[0];
+    }
+
+	@Override
+	public int updateUserOutDay(final long userId, final int outDay, final int payDay) {
+        final int[] returnValue = {0};
+        transactionTemplate.execute(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus transactionStatus) {
+                if(afUserOutDayDao.updateUserOutDay(userId,outDay,payDay)>0){
+                    returnValue[0]  = afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
+                    updateBorrowBills(userId,outDay,10,payDay);
+                }
+                return null;
+            }
+        });
+        return returnValue[0];
+    }
 }
