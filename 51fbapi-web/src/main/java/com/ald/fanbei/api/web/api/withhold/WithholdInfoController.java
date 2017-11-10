@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.api.user;
+package com.ald.fanbei.api.web.api.withhold;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -21,11 +21,17 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserWithholdService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserWithholdDo;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -36,9 +42,8 @@ import com.alibaba.fastjson.JSON;
  * @author fanmanfu 创建时间：2017年11月6日 下午1:20:42
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Controller
-@RequestMapping("/Withhold")
-public class WithholdController extends BaseController {
+@Controller("getWithholdInfoApi")
+public class WithholdInfoController  implements ApiHandle {
 
 	@Resource
 	AfUserWithholdService afUserWithholdService;
@@ -47,6 +52,34 @@ public class WithholdController extends BaseController {
 	@Resource
 	AfUserBankcardService afUserBankCardService;
 
+	@Override
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		String userName = context.getUserName();
+		if(userName == null || userName == "") {
+			logger.info("userName is null");
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+		}
+		
+		AfUserDo userDo = afUserService.getUserByUserName(userName);
+		Map<String,Object> info = new HashMap<String,Object>();
+		if (userDo != null) {
+			AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
+			if(withholdInfo != null) {
+				if (withholdInfo.getIsWithhold().equals("0")){
+					info.put("IsWithhold", "0");
+				} else {
+					info.put("IsWithhold", "1");
+					info.put("usebalance", withholdInfo.getUsebalance());
+				}
+			} else {
+				info.put("IsWithhold", "0");
+			}
+		}
+		resp.setResponseData(info);
+		return resp;
+	}
+	/*
 	@RequestMapping(value = "/updateWithholdSwitch", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String updateWithholdSwitch(HttpServletRequest request) { // 代扣开关
@@ -138,12 +171,13 @@ public class WithholdController extends BaseController {
 
 	}
 
-	@RequestMapping(value = "/getWithholdInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8" )
+	@RequestMapping(value = "/getWithholdInfoApi", method = RequestMethod.POST, produces = "text/html;charset=UTF-8" )
 	@ResponseBody
-	public String getWithholdInfo(HttpServletRequest request, Model model) {                  // 得到代扣初始信息
-		String appInfo = getAppInfo(request.getHeader("Referer"));
-		String userName = StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
+	public String getWithholdInfo(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request, Model model) {                  // 得到代扣初始信息
+		//String appInfo = getAppInfo(request.getHeader("Referer"));
+		//String userName = StringUtil.null2Str(JSON.parseObject(appInfo).get("userName"));
 		
+		String userName = context.getUserName();
 		if(userName == null || userName == "") {
 			logger.info("userName is null");
 			return "userName is null";
@@ -212,59 +246,8 @@ public class WithholdController extends BaseController {
 		String jsonString2 = JsonUtil.toJSONString(bankInfos);
 		return jsonString1+jsonString2;
 	}
-
+*/
 	
-	private static String getAppInfo(String url) {
-		if (StringUtil.isBlank(url)) {
-			return null;
-		}
-		String result = "";
-		try {
-			Map<String, List<String>> params = new HashMap<String, List<String>>();
-			String[] urlParts = url.split("\\?");
-			if (urlParts.length > 1) {
-				String query = urlParts[1];
-				for (String param : query.split("&")) {
-					String[] pair = param.split("=");
-					String key = URLDecoder.decode(pair[0], "UTF-8");
-					String value = "";
-					if (pair.length > 1) {
-						value = URLDecoder.decode(pair[1], "UTF-8");
-					}
+	
 
-					List<String> values = params.get(key);
-					if (values == null) {
-						values = new ArrayList<String>();
-						params.put(key, values);
-					}
-					values.add(value);
-				}
-			}
-			List<String> _appInfo = params.get("_appInfo");
-			if (_appInfo != null && _appInfo.size() > 0) {
-				result = _appInfo.get(0);
-			}
-			return result;
-		} catch (UnsupportedEncodingException ex) {
-			throw new AssertionError(ex);
-		}
-	}
-
-	@Override
-	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
