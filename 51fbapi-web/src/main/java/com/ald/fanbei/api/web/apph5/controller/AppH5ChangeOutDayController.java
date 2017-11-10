@@ -108,7 +108,7 @@ public class AppH5ChangeOutDayController extends BaseController{
         				if (logCount > 0) {
         					data.put("outDay", userOutDay.getOutDay());
         					data.put("payDay", userOutDay.getPayDay());
-        					resp = H5CommonResponse.getNewInstance(false, "2","",data);
+        					resp = H5CommonResponse.getNewInstance(true, "2","",data);
         					return resp.toString();
 						}
 					}
@@ -122,7 +122,7 @@ public class AppH5ChangeOutDayController extends BaseController{
 				}
     			int countNotPayOverdueBill = afBorrowBillService.countNotPayOverdueBill(afUser.getRid());
     			if (countNotPayOverdueBill > 0) {
-    				resp = H5CommonResponse.getNewInstance(false, "1","",data);
+    				resp = H5CommonResponse.getNewInstance(true, "1","",data);
     				return resp.toString();
     			}
     			data.put("outDayList", outDayList);
