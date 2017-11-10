@@ -243,4 +243,19 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		}
 		return null;
 	}
+
+	@Override
+	public int getOverduedMonthByUserId(Long userId) {
+		return afBorrowBillDao.getOverduedMonthByUserId(userId);
+	}
+
+	@Override
+	public BigDecimal getUserOutMoney(Long userId) {
+		return afBorrowBillDao.getUserOutMoney(userId);
+	}
+
+	@Override
+	public BigDecimal getUserNotOutMoney(Long userId) {
+		return afBorrowBillDao.getUserNotOutMoney(userId);
+	}
 }

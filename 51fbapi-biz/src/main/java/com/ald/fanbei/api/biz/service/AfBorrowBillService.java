@@ -217,6 +217,33 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(Long consumerNo);
+
+	/**
+	 * 获取用户未付款的逾期账单月数
+	 * @author yuyue
+	 * @Time 2017年11月10日 下午1:21:21
+	 * @param userId
+	 * @return
+	 */
+	int getOverduedMonthByUserId(Long userId);
+
+	/**
+	 * 获取用户未付款的已出账单金额
+	 * @author yuyue
+	 * @Time 2017年11月10日 下午2:29:00
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserOutMoney(Long userId);
+
+	/**
+	 * 获取用户未出账单金额
+	 * @author yuyue
+	 * @Time 2017年11月10日 下午3:12:49
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserNotOutMoney(Long userId);
 	
 	
 }

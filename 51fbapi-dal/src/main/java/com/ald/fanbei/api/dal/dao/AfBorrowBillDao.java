@@ -307,4 +307,31 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<AfOverdueBillDto> getAfOverdueBillDtoByConsumerNo(@Param("orderId")Long orderId);
+
+	/**
+	 * 获取用户未付款的逾期账单月数
+	 * @author yuyue
+	 * @Time 2017年11月10日 下午1:23:26
+	 * @param userId
+	 * @return
+	 */
+	int getOverduedMonthByUserId(@Param("userId")Long userId);
+
+	/**
+	 * 获取用户未付款的已出账单金额
+	 * @author yuyue
+	 * @Time 2017年11月10日 下午2:31:29
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserOutMoney(@Param("userId")Long userId);
+
+	/**
+	 * 获取用户未出账单金额
+	 * @author yuyue
+	 * @Time 2017年11月10日 下午3:17:38
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserNotOutMoney(Long userId);
 }

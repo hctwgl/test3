@@ -515,4 +515,21 @@
 		ORDER BY abb.bill_year DESC,
 		abb.bill_month DESC
 	</select>
+	
+	<select id="getOverduedMonthByUserId" resultType="java.lang.Integer">
+		SELECT COUNT(1) from (
+			SELECT * from af_borrow_bill 
+			where is_delete = 0 
+			and overdue_status = 'Y' 
+			and status = 'N'
+			and user_id = #{userId} GROUP BY bill_month,bill_year)a
+    </select>
+    
+    <select id="getUserOutMoney" resultType="java.math.BigDecimal">
+		SELECT COALESCE(sum(bill_amount),0) from af_borrow_bill where is_delete = 0 and is_out = 1 and user_id = #{userId}
+    </select>
+    
+    <select id="getUserNotOutMoney" resultType="java.math.BigDecimal">
+		SELECT COALESCE(sum(bill_amount),0) from af_borrow_bill where is_delete = 0 and is_out = 0 and user_id = #{userId}
+    </select>
 </mapper>
