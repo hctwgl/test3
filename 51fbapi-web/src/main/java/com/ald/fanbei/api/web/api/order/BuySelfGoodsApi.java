@@ -23,6 +23,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfGoodsPriceVo;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -64,9 +65,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
-	
+
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
+
+	@Resource
+	AfShareGoodsService afShareGoodsService;
+	
+	@Resource
+	AfShareUserGoodsService afShareUserGoodsService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -74,36 +81,36 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Long userId = context.getUserId();
 		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""),
 				0l);
-		Long goodsPriceId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsPriceId"), ""),
-				0l);
+		Long goodsPriceId = NumberUtil
+				.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsPriceId"), ""), 0l);
 		Long addressId = NumberUtil
 				.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
 		String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
-		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
-		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
-		
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),
+				BigDecimal.ZERO);
+		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);// 用户的优惠券id(af_user_coupon的主键)
+
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
-		if(actualAmount.compareTo(BigDecimal.ZERO)==0){
+		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
 		AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
-		if(appversion >= 371){
-			if ( goodsDo == null || priceDo == null) {
+		if (appversion >= 371) {
+			if (goodsDo == null || priceDo == null) {
 				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
 			}
-		}else
-		{
-			if ( goodsDo == null ) {
+		} else {
+			if (goodsDo == null) {
 				throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
 			}
 		}
-		if(!AfGoodsStatus.PUBLISH.getCode().equals(goodsDo.getStatus())){
+		if (!AfGoodsStatus.PUBLISH.getCode().equals(goodsDo.getStatus())) {
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_CANCEL);
 		}
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
@@ -111,14 +118,15 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (addressDo == null) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ADDRESS_NOT_EXIST);
 		}
-		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo,count);
+		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo, count);
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
 
 		afOrder.setActualAmount(actualAmount);
-		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));//TODO:售价取规格的。
+		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
 
-//		afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));
+		// afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new
+		// BigDecimal(count)));
 
 		afOrder.setCount(count);
 		afOrder.setNper(nper);
@@ -127,10 +135,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
 
-
-		//通过商品查询免息规则配置
+		// 通过商品查询免息规则配置
 		AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-		if(null != afSchemeGoodsDo){
+		if (null != afSchemeGoodsDo) {
 			Long interestFreeId = afSchemeGoodsDo.getInterestFreeId();
 			AfInterestFreeRulesDo afInterestFreeRulesDo = afInterestFreeRulesService.getById(interestFreeId);
 			if (afInterestFreeRulesDo != null) {
@@ -143,17 +150,58 @@ public class BuySelfGoodsApi implements ApiHandle {
 			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
 			afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		}
-		if(priceDo != null){
-		    	//+++双十一砍价活动增加逻辑++++
-		    	AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(userId, goodsPriceId);
-			if(afDeUserGoodsDo !=null)
-			{
-			    //更新商品价格为砍价后价格
-			    priceDo.setActualAmount(priceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice()));
-			    //使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
-			    afOrder.setThirdOrderNo(afDeUserGoodsDo.getRid().toString());
-			}		    
-			//-----------------------------
+		if (priceDo != null) {
+			// +++双十一砍价活动增加逻辑++++
+			AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(userId, goodsPriceId);
+			if (afDeUserGoodsDo != null) {
+				// 更新商品价格为砍价后价格
+				priceDo.setActualAmount(priceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice()));
+				// 使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
+				afOrder.setThirdOrderNo(afDeUserGoodsDo.getRid().toString());
+			}
+			// -----------------------------
+			
+			//mqp_新人专享活动增加逻辑
+			if (userId != null) {
+			
+				//查询用户订单数
+				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
+				if(oldUserOrderAmount==0){
+					//是新用户
+					AfShareGoodsDo condition = new AfShareGoodsDo();
+					condition.setGoodsId(goodsId);
+					AfShareGoodsDo resultDo = afShareGoodsService.getByCommonCondition(condition);
+					if (null != resultDo) {
+						//这个商品是砍价商品
+						//判断数量是否是一个
+						if (count != 1) {
+							//报错提示只能买一件商品
+							FanbeiExceptionCode code = FanbeiExceptionCode.ONLY_ONE_GOODS_ACCEPTED;
+							ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), code);
+							return resp1;
+							
+						}
+						
+						BigDecimal decreasePrice = resultDo.getDecreasePrice();
+						priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
+						
+						//增加一条记录,用户购买记录
+						AfShareUserGoodsDo t = new AfShareUserGoodsDo();
+						t.setGmtCreate(new Date());
+						t.setGmtModified(new Date());
+						t.setGoodsPriceId(priceDo.getRid());
+						t.setIsBuy(0);
+						t.setUserId(userId);
+						afShareUserGoodsService.saveRecord(t);
+
+						// 使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
+						afOrder.setThirdOrderNo(t.getRid().toString());
+						
+					}
+					
+				}
+			}
+			//-------------------------------
 			
 			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
 			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
@@ -182,48 +230,49 @@ public class BuySelfGoodsApi implements ApiHandle {
 		data.put("isEnoughAmount", isEnoughAmount);
 		data.put("isNoneQuota", isNoneQuota);
 
-		//爬取商品开关
-		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
-		if(null != isWorm){
-			data.put("isWorm",isWorm.getValue());
-		}else{
-			data.put("isWorm",0);
+		// 爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,
+				Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if (null != isWorm) {
+			data.put("isWorm", isWorm.getValue());
+		} else {
+			data.put("isWorm", 0);
 		}
 
 		if (couponId > 0) {
 			AfUserCouponDto couponDo = afUserCouponService.getUserCouponById(couponId);
-			if (couponDo.getGmtEnd().before(new Date()) || StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode())) {
+			if (couponDo.getGmtEnd().before(new Date())
+					|| StringUtils.equals(couponDo.getStatus(), CouponStatus.EXPIRE.getCode())) {
 				logger.error("coupon end less now");
 				throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(couponId);
 		}
 
-		
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo,int count) {
+	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo, int count) {
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setConsignee(addressDo.getConsignee());
 		afOrder.setConsigneeMobile(addressDo.getMobile());
-		afOrder.setSaleAmount(goodsDo.getSaleAmount());//TODO:售价改成从规格中取得。
+		afOrder.setSaleAmount(goodsDo.getSaleAmount());// TODO:售价改成从规格中取得。
 
 		afOrder.setPriceAmount(goodsDo.getPriceAmount());
 		afOrder.setGoodsIcon(goodsDo.getGoodsIcon());
 		afOrder.setGoodsName(goodsDo.getName());
-		String address = addressDo.getProvince() !=null?addressDo.getProvince():"";
-		if(addressDo.getCity()!=null){
-			address=address.concat(addressDo.getCity());
+		String address = addressDo.getProvince() != null ? addressDo.getProvince() : "";
+		if (addressDo.getCity() != null) {
+			address = address.concat(addressDo.getCity());
 
 		}
-		if(addressDo.getCounty()!=null){
-			address=address.concat(addressDo.getCounty());
+		if (addressDo.getCounty() != null) {
+			address = address.concat(addressDo.getCounty());
 
 		}
-		if(addressDo.getAddress()!=null){
-			address=address.concat(addressDo.getAddress());
+		if (addressDo.getAddress() != null) {
+			address = address.concat(addressDo.getAddress());
 		}
 		afOrder.setAddress(address);
 		afOrder.setGoodsId(goodsDo.getRid());
@@ -237,7 +286,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		String source = afOrder.getSource();
 		if (StringUtil.equals(source, "SELFBUILD")) {
 			afOrder.setOrderType("SELFBUILD");
-		}else {
+		} else {
 			afOrder.setOrderType(OrderType.SELFSUPPORT.getCode());
 		}
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT);
