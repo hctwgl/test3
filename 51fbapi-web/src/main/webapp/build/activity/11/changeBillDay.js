@@ -79,6 +79,7 @@
         contentTwo:'',
         calendar:'',
         ruleShow: '',
+        otherDate:''
     },
     created:function(){
         this.logData();
@@ -105,9 +106,11 @@
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                    console.log(self.contentOne,'self.contentOne');
+                    self.otherDate=self.contentOne.data.outDayList[0];
+                    console.log(self.otherDate,'self.otherDate');
+                    console.log(self.contentOne);
                     if(self.contentOne.success==false){
-                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     }
                      
                     
@@ -140,7 +143,7 @@
                     console.log(self.contentTwo,'self.contentTwo');
                     window.location.href='changeSuccess?testUser=17839218825';//点击提交跳转修改成功页面
                      if(self.contentTwo.success==false){
-                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     } 
                      
                     
