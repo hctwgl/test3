@@ -1467,7 +1467,8 @@ public class RiskUtil extends AbstractThird {
             String data = riskResp.getData();
             if (StringUtils.isNotBlank(data)) {
                 JSONObject json = JSONObject.parseObject(data);
-                riskResp.setAmount(json.getBigDecimal("amount")==null? new BigDecimal(100):json.getBigDecimal("amount"));
+                //如果有code,没有amount 那么默认100
+                riskResp.setAmount(json.getBigDecimal("amount"));
                 riskResp.setVirtualCode(json.getString("virtualCode"));
             }
             return riskResp;
