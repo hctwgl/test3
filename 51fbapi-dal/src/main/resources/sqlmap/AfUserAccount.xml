@@ -93,7 +93,7 @@
 		<if test="openId != null">
 			,open_id=#{openId}
 		</if>
-		WHERE user_id = #{userId}
+		WHERE user_id = #{userId} and au_amount>= used_amount + #{usedAmount};
 	</update>
 
 	<update id="updateOriginalUserAccount" parameterType="AfUserAccountDo">

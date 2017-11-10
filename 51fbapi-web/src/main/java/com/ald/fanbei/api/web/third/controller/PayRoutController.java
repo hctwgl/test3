@@ -15,13 +15,28 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,16 +47,6 @@ import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.WxTradeState;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
@@ -57,10 +62,13 @@ import com.alibaba.fastjson.JSON;
 @RequestMapping("/third/ups")
 public class PayRoutController {
     protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
+    public static final String TRADE_PREFIX = "pay_trade_lock";
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Resource
     BoluomeUtil boluomeUtil;
+    @Resource
+    BizCacheUtil bizCacheUtil;
     @Resource
     AfUpsLogDao afUpsLogDao;
     @Resource
@@ -322,7 +330,20 @@ public class PayRoutController {
                 } else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
                     afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
                 } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    String lockKey = TRADE_PREFIX + tradeNo;
+                    boolean isGetLock = bizCacheUtil.getLockTryTimes(lockKey, "1",
+                            Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5000")));
+                    try {
+                        if (isGetLock) {
+                            afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                        } else {
+                            logger.info("无法获取同步锁,当前订单号:" + outTradeNo);
+                        }
+                    } catch (Exception e) {
+                        throw e;
+                    } finally {
+                        bizCacheUtil.delCache(lockKey);
+                    }
                 } else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
                     afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
