@@ -159,8 +159,9 @@ public class AppLaunchImageApi implements ApiHandle{
 		try {
 			String userName = context.getUserName();//用户名不能为空
 			AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-			logger.error("ChangXiaoAddOpen userName=" + userName);
+			logger.error("ChangXiaoAddOpen userName=" + userName + " ,afUserDo=" + afUserDo);
 			if(afUserDo != null){//平台老用户，不进行回调
+				logger.error("ChangXiaoAddOpen userName=" + userName + "afUserDo != null");
 				return;
 			}
 			String imei = ObjectUtils.toString(requestDataVo.getParams().get("IMEI"), null);
@@ -177,8 +178,10 @@ public class AppLaunchImageApi implements ApiHandle{
 					logger.debug("ChangXiaoAdOpen callbackUrl=" + callbackUrl + " ,result=" + result);
 					if(result.equals("OK")){
 						afUserChangXiaoService.updateUserOpen(tdo);
+						logger.error("changxiao open:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);
 					}
-					logger.error("changxiao open:update success,isopen=1,callbacr_url="+callbackUrl+",result="+result);
+				}else{
+					logger.error("changxiao open:userName has open");
 				}
 			}
 		}catch (Exception e){
@@ -191,7 +194,7 @@ public class AppLaunchImageApi implements ApiHandle{
 
 	/**
 	 * 用于获取一个String的md5值
-	 * @param string
+	 * @param str
 	 * @return
 	 */
 	public static String getMd5(String str) throws Exception {
