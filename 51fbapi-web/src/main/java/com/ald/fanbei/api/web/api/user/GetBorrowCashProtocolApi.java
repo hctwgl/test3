@@ -170,7 +170,8 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             }
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        map.put("templatePath",src+"分期服务协议"+".pdf");
+//        map.put("templatePath",src+"分期服务协议"+".pdf");
+        map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/dbc284bc91877554.pdf");
         map.put("PDFPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+1+".pdf");
         map.put("userPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+2+".pdf");
         map.put("selfPath",src+accountDo.getUserName()+"分期服务协议"+new Date().getTime()+3+".pdf");
@@ -342,7 +343,8 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
             }
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        map.put("templatePath",src+"51返呗续借协议"+".pdf");
+//        map.put("templatePath",src+"51返呗续借协议"+".pdf");
+        map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/6cabe0372cfb91c4.pdf");
         map.put("PDFPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+1+".pdf");
         map.put("userPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+2+".pdf");
         map.put("selfPath",src+accountDo.getUserName()+"51返呗续借协议"+new Date().getTime()+3+".pdf");
@@ -435,7 +437,8 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long time = new Date().getTime();
-        map.put("templatePath",src+"个人现金服务合同"+".pdf");
+//        map.put("templatePath",src+"个人现金服务合同"+".pdf");
+        map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/b046c6f5026b7371.pdf");
         map.put("PDFPath",src+accountDo.getUserName()+"个人现金服务合同"+time+1+".pdf");
         map.put("userPath",src+accountDo.getUserName()+"个人现金服务合同"+time+2+".pdf");
         map.put("selfPath",src+accountDo.getUserName()+"个人现金服务合同"+time+3+".pdf");
