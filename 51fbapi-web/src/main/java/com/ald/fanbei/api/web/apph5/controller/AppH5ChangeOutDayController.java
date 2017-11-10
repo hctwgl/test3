@@ -103,10 +103,14 @@ public class AppH5ChangeOutDayController extends BaseController{
         			Calendar outDayCalendar = Calendar.getInstance();
         			outDayCalendar.setTime(userOutDay.getGmtModify());
         			if (calendar.get(Calendar.YEAR) == outDayCalendar.get(Calendar.YEAR)) {
-        				data.put("outDay", userOutDay.getOutDay());
-    					data.put("payDay", userOutDay.getPayDay());
-        				resp = H5CommonResponse.getNewInstance(false, "2","",data);
-        				return resp.toString();
+        				// 判断是否是新用户，新用户logCount = 0
+        				int logCount = afUserOutDayDao.countUserOutDayLogByUserId(afUser.getRid());
+        				if (logCount > 0) {
+        					data.put("outDay", userOutDay.getOutDay());
+        					data.put("payDay", userOutDay.getPayDay());
+        					resp = H5CommonResponse.getNewInstance(false, "2","",data);
+        					return resp.toString();
+						}
 					}
         			data.put("outDay", userOutDay.getOutDay());
 					data.put("payDay", userOutDay.getPayDay());
