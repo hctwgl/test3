@@ -55,6 +55,10 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String faceType;//YITU：依图 FACE_PLUS:face++
 	private Date gmtFaces;//人脸识别时间
 	private String basicStatus;//基础认证状态
+	private Date gmtChsi;
+	private String chsiStatus; //学信网认证
+	private Date gmtZhengxin;
+	private String zhengxinStatus;
 
 	public String getBasicStatus() {
 		return basicStatus;
@@ -330,6 +334,38 @@ public class AfUserAuthDo extends AbstractSerial {
 	 */
 	public void setGmtFaces(Date gmtFaces) {
 		this.gmtFaces = gmtFaces;
+	}
+
+	public Date getGmtChsi() {
+		return gmtChsi;
+	}
+
+	public void setGmtChsi(Date gmtChsi) {
+		this.gmtChsi = gmtChsi;
+	}
+
+	public String getChsiStatus() {
+		return chsiStatus;
+	}
+
+	public void setChsiStatus(String chsiStatus) {
+		this.chsiStatus = chsiStatus;
+	}
+
+	public Date getGmtZhengxin() {
+		return gmtZhengxin;
+	}
+
+	public void setGmtZhengxin(Date gmtZhengxin) {
+		this.gmtZhengxin = gmtZhengxin;
+	}
+
+	public String getZhengxinStatus() {
+		return zhengxinStatus;
+	}
+
+	public void setZhengxinStatus(String zhengxinStatus) {
+		this.zhengxinStatus = zhengxinStatus;
 	}
 	
 }

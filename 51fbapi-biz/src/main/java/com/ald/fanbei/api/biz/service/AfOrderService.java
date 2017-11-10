@@ -22,6 +22,11 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 public interface AfOrderService {
 
 	/**
+	 * 查询用户未完成订单数
+	 */
+	int getNoFinishOrderCount(Long userId);
+
+	/**
 	 * 创建订单消息(下单未付款)
 	 */
 	int createOrderTrade(String content);

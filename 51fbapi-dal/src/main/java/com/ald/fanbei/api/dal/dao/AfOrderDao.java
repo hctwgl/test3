@@ -16,6 +16,11 @@ import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 public interface AfOrderDao {
 
 	/**
+	 * 获取用户未支付订单数
+	 */
+	int getNoFinishOrderCount(Long userId);
+
+	/**
 	 * 新增订单
 	 * @param afOrder
 	 * @return
