@@ -107,7 +107,7 @@
                     self.contentOne = eval('(' + data + ')');
                     console.log(self.contentOne,'self.contentOne');
                     if(self.contentOne.success==false){
-                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     }
                      
                     
