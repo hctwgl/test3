@@ -277,7 +277,13 @@
 			gmt_finished , 
 			rebate_amount , 
 			commission_amount ,
-			bank_id , 
+			bank_id,
+			<if test="auAmount != null">
+	            au_amount,
+	        </if>
+	        <if test="usedAmount != null">
+	            used_amount,
+	        </if>
 			gmt_pay_end
 			)
 		VALUES
@@ -316,6 +322,12 @@
     		#{item.rebateAmount},
     		#{item.commissionAmount},
     		#{item.bankId},
+    		<if test="auAmount != null">
+	            #{auAmount},
+		     </if>
+			<if test="usedAmount != null">
+	            #{usedAmount},
+	        </if>
     		#{item.gmtPayEnd}
 		)
 		</foreach>
