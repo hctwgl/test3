@@ -306,6 +306,51 @@ button {
 .mui-poppicker {
   background-color: white;
 }
+.mui-poppicker.mui-active .mui-poppicker-header::before {
+  position: absolute;
+  content: '选择账单日';
+  display: block;
+  width: 200px;
+  height: 24px;
+  line-height: 24px;
+  top: 6px;
+  z-index: 99;
+  left: 50%;
+  margin-left: -100px;
+  text-align: center;
+  font-size: 0.36rem;
+  color: black;
+}
+.mui-poppicker.mui-active::before {
+  position: absolute;
+  content: '出账日';
+  display: block;
+  width: 200px;
+  height: 24px;
+  top: 50%;
+  margin-top: 8px;
+  z-index: 99;
+  left: 8px;
+  font-size: 0.24rem;
+  color: #969696;
+}
+.mui-poppicker.mui-active::after {
+  position: absolute;
+  content: '还款日';
+  display: block;
+  width: 38px;
+  height: 24px;
+  top: 50%;
+  margin-top: 8px;
+  z-index: 99;
+  right: 8px;
+  font-size: 0.24rem;
+  color: #969696;
+  text-align: right;
+}
 .mui-picker {
   background-color: white;
+}
+.mui-pciker-list li {
+  font-size: 0.28rem;
 }
