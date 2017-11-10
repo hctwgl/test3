@@ -46,7 +46,7 @@
                 <div v-for="goods in totalData.goodsList" v-if="goods.type==1">
                     <!-- 商品图片 -->
                     <div class="product-pic" @click="toProduct(goods.goodsPriceId, 'iPhone')">
-                        <img :src="goods.thumbnailIcon">
+                        <img class="lazy" :src="goods.thumbnailIcon">
                     </div>
                     <div class="flex jc-c fd-column">
                         <!-- 砍价部分 -->
@@ -99,7 +99,7 @@
                                 <ul class="more-ul flex fd-column ai-c">
                                     <li class="flex fd-row ai-c" v-for="goods in totalData.goodsList" v-if="goods.type==0">
                                         <div class="m-product-box" @click="toProduct(goods.goodsPriceId, 'product')">
-                                            <img class="m-product" :src="goods.image">
+                                            <img class="m-product lazy" :src="goods.image">
                                         </div>
                                         <div class="m-right flex fd-column">
                                             <div class="mtxt1">{{goods.name}}</div>

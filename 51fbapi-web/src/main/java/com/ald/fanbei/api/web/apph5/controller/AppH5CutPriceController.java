@@ -244,8 +244,18 @@ public class AppH5CutPriceController extends BaseController {
 	@RequestMapping(value = "/goods", method = RequestMethod.POST)
 	public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		FanbeiWebContext context = doWebCheck(request, false);
+		FanbeiWebContext context = new FanbeiWebContext();
+		
 		try {
+		    
+		    
+        	      try {
+        		        context = doWebCheck(request, false);
+        		    }catch (Exception e) {
+				logger.error("doWebCheck error" + context + "error = {}", e);
+				
+			}
+		        
 			String userName = context.getUserName();
 			AfUserDo user = afUserService.getUserByUserName(userName);
 			Long userId = user == null ? -1 : user.getRid();
@@ -355,7 +365,28 @@ public class AppH5CutPriceController extends BaseController {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
+				
+				
+				AfDeUserGoodsDo afDeUserGoodsDo = new AfDeUserGoodsDo();
+				// afDeUserGoodsDo.setUserid(userId);
+				afDeUserGoodsDo.setGoodspriceid(NumberUtil.objToLong(request.getParameter("goodsPriceId")));
+				AfDeUserGoodsInfoDto afDeUserGoodsInfoDto = afDeUserGoodsService.getUserGoodsInfo(afDeUserGoodsDo);
+				
+				// 结束时间
+				long endTime = afDeGoodsService.getActivityEndTime();
+				
+				// 参与人数
+				long totalCount = afDeGoodsService.getActivityTotalCount();
+				int iniNum = 0;
+				iniNum = afDeGoodsService.getIniNum();
+				totalCount = totalCount + iniNum;
 				data.put("loginUrl", loginUrl);
+				data.put("goodsPriceId",request.getParameter("goodsPriceId"));
+				data.put("totalCount",totalCount);
+				data.put("goodsDetail",endTime);
+				data.put("originalPrice",afDeUserGoodsInfoDto.getOriginalPrice());
+				data.put("originalPrice",afDeUserGoodsInfoDto.getImage());
+				data.put("goodsId",afDeUserGoodsInfoDto.getGoodsId());
 				logger.error("/activity/de/goodsInfo" + context + "login error ");
 				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 			}

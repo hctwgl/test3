@@ -75,7 +75,7 @@ import com.alibaba.fastjson.JSONObject;
  */
 @Controller
 @RequestMapping("/H5Common")
-public class H5CommonActivityController extends BaseController {
+public class H5ActivityCommonController extends BaseController {
 
     @Resource
     AfUserService afUserService;
@@ -177,7 +177,7 @@ public class H5CommonActivityController extends BaseController {
    
     // 提交活动注册
     @ResponseBody
-    @RequestMapping(value = "/commitCommonActivityRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/commitActivityRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
 	
 	String resultStr = "";
