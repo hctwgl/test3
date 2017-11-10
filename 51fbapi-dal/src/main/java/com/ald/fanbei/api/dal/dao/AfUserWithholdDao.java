@@ -36,7 +36,7 @@ public interface AfUserWithholdDao extends BaseDao<AfUserWithholdDo, Long> {
      * @param userName
      * **/
 
-    int updateAfUserWithholdDtoByUserName(@Param("userName") String userName, @Param("isSwInteger") Integer isSwInteger);
+    int updateAfUserWithholdDtoByUserId(@Param("userId") long userId, @Param("isSwInteger") Integer isSwInteger);
     
     /**
      * 更新银行卡号

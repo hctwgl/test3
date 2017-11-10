@@ -196,7 +196,7 @@
 	
 	<select id="getUserBankcardIdByCardNumber" parameterType="java.lang.String" resultType="AfUserBankcardDo">
 		SELECT
-			<include refid="queryWithFields"/>
+			<include refid="queryFields"/>
 		FROM
 			af_user_bankcard
 		WHERE

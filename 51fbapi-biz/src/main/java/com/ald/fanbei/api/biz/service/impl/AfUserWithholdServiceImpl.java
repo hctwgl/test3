@@ -52,8 +52,8 @@ public class AfUserWithholdServiceImpl extends ParentServiceImpl<AfUserWithholdD
 	}
 
 	@Override
-	public int updateAfUserWithholdDtoByUserName(String userName, Integer IsSwitch) {
-		return afUserWithholdDao.updateAfUserWithholdDtoByUserName(userName, IsSwitch);
+	public int updateAfUserWithholdDtoByUserId(long userId, Integer IsSwitch) {
+		return afUserWithholdDao.updateAfUserWithholdDtoByUserId(userId, IsSwitch);
 	}
 
 	@Override

@@ -30,10 +30,10 @@ public interface AfUserWithholdService extends ParentService<AfUserWithholdDo, L
     /**
      * 更新代扣开关
      * @param IsSwitch
-     * @param userName
+     * @param userId
      * **/
     
-    int updateAfUserWithholdDtoByUserName(String userName,Integer IsSwitch);
+    int updateAfUserWithholdDtoByUserId(long userId,Integer IsSwitch);
     
     /**
      * 更新银行卡号

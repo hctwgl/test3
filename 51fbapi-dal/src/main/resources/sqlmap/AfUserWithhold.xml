@@ -27,21 +27,23 @@
 	    </select>
 
     <insert id="insertAfUserWithholdDto" keyProperty="id" useGeneratedKeys="true" parameterType="AfUserWithholdDo">
-    	INSERT INTO `af_user_withhold` (user_name,user_id,is_withhold)
-		VALUES(#{userName},#{userId},#{isWithhold})
+    	INSERT INTO `af_user_withhold` (user_name,user_id,is_withhold,card_number1,card_id1)
+		VALUES(#{userName},#{userId},#{isWithhold},#{cardNumber1},#{cardId1})
     </insert>
 
-    <update id="updateAfUserWithholdDtoByUserName">
+    <update id="updateAfUserWithholdDtoByUserId">
     	UPDATE `af_user_withhold` SET
-    		is_withhold=#{isSwInteger}
+    		is_withhold=#{isSwInteger},
+    		lastopen_time=now()
     	WHERE is_delete = 0
     	AND
-    	user_name=#{userName}
+    	user_id=#{userId}
     </update>
 
     <update id="updateAfUserWithholdDo"  parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
         UPDATE af_user_withhold
           <set>
+          	gmt_modified=now(),
             <if test="cardNumber1 != null ">        
                 card_number1 = #{cardNumber1,jdbcType=VARCHAR},    
             </if>
