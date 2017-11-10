@@ -347,9 +347,24 @@ public class StartCashierApi implements ApiHandle {
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode =  resp.getRejectCode();
-        if(userDto.getUserName().equals("13460011555")){
-            rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
+        //region 测试借钱逾期白名单
+        List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("overduecash_test_user");
+        if (afResourceList.size() > 0) {
+            if (afResourceList.get(0).getValue()!=null&&afResourceList.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+                rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
+            }
         }
+        //endregion
+
+        //region 测试分期逾期白名单
+        List<AfResourceDo> afResourceList1 = afResourceService.getConfigByTypes("overdue_test_user");
+        if (afResourceList1.size() > 0) {
+            if (afResourceList1.get(0).getValue()!=null&&afResourceList1.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+                rejectCode=RiskErrorCode.OVERDUE_BORROW.getCode();
+            }
+        }
+        //endregion
+
         if (StringUtil.isNotBlank(rejectCode)) {
             RiskErrorCode erorrCode = RiskErrorCode.findRoleTypeByCode(rejectCode);
 
