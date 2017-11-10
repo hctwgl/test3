@@ -106,8 +106,11 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setNumId(numId);
 		afOrder.setOpenId(openId);
 		afOrder.setUserCouponId(couponId);
-		
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+		afOrder.setAuAmount(userAccountInfo.getAuAmount());
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if (addressDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -149,8 +152,6 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		String isEnoughAmount = "Y";
 		BigDecimal leftAmount = BigDecimal.ZERO;
 		
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
 		leftAmount = useableAmount;
 		if (useableAmount.compareTo(actualAmount) < 0) {
 			isEnoughAmount = "N";

@@ -137,7 +137,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SMS_MOBILE_BIND_EXCEED_TIME("SMS_MOBILE_BIND_EXCEED_TIME",1143,"user bind mobile exceed time","发送绑定手机号短信超过每日限制次数"),
     SMS_SET_PAY_PASSWORD_EXCEED_TIME("SMS_SET_PAY_PASSWORD_EXCEED_TIME",1144,"user set pay password exceed time","发送设置支付密码短信超过每日限制次数"),
     SMS_LOGIN_EXCEED_TIME("SMS_LOGIN_EXCEED_TIME",1145,"user login sms exceed time","发送登录验证码超过每日限制次数"),
-
+    USER_ACCOUNT_MONEY_LESS("USER_ACCOUNT_MONEY_LESS", 1146, "user account money less error", "账户余额不足,请用其它支付方式"),
+    
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),
     AUTH_CARD_ERROR("AUTH_CARD_ERROR",1541,"auth card error","银行卡认证失败"),
     AUTH_BINDCARD_ERROR("AUTH_BINDCARD_ERROR",1542,"bind card error","绑定银行卡失败"),

@@ -182,10 +182,20 @@ public class AppH5ProtocolController extends BaseController {
 			poundage = new BigDecimal(poundageRateCash.toString());
 		}
 		
+		//fmf_得到逾期费率
+		AfResourceDo afResourceDo1 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_POUNDAGE);
+		AfResourceDo afResourceDo2 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_OVERDUE_POUNDAGE);
+		double borrowCashPoundage = Double.parseDouble(afResourceDo1.getValue().toString());
+		double borrowCashOvreduePoundage = Double.parseDouble(afResourceDo2.getValue().toString());
+		double sumOverdue=borrowCashPoundage+borrowCashOvreduePoundage;
+		model.put("overduePoundageRate", sumOverdue);//逾期手续费率
+		
+		
+		
 		model.put("dayRate", bankService);//日利率
 		model.put("overdueRate", overdue);//逾期费率（日）
 		model.put("poundageRate", poundage);//手续费率
-		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
+		//model.put("overduePoundageRate", overduePoundage);//逾期手续费率
 		
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
@@ -219,7 +229,7 @@ public class AppH5ProtocolController extends BaseController {
 		
 		logger.info(JSON.toJSONString(model));
 	}
-
+	
 	@RequestMapping(value = { "protocolRenewal" }, method = RequestMethod.GET)
 	public void protocolRenewal(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
@@ -261,9 +271,17 @@ public class AppH5ProtocolController extends BaseController {
 			poundage = new BigDecimal(poundageRateCash.toString());
 		}
 		
+		//fmf_得到逾期费率
+		AfResourceDo afResourceDo1 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_POUNDAGE);
+		AfResourceDo afResourceDo2 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_OVERDUE_POUNDAGE);
+		double borrowCashPoundage = Double.parseDouble(afResourceDo1.getValue().toString());
+		double borrowCashOvreduePoundage = Double.parseDouble(afResourceDo2.getValue().toString());
+		double sumOverdue=borrowCashPoundage+borrowCashOvreduePoundage;
+		model.put("overduePoundageRate", sumOverdue);//逾期手续费率
+		
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 		model.put("poundageRate", poundage);//手续费率
-		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
+		//model.put("overduePoundageRate", overduePoundage);//逾期手续费率
 		
 		if (borrowId > 0) {
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);

@@ -265,4 +265,15 @@
         #{item}  
    		</foreach>  
 	</update>
+	
+	<select id="getAuAmountByUserId" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+			SELECT
+		au_amount
+		FROM
+		af_user_account
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+	</select>
 </mapper>
