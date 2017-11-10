@@ -40,7 +40,9 @@ public class AuthAlipayApi implements ApiHandle {
 //		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
 		
 		Long userId = context.getUserId();
-		
+		if(true){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
+		}
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if (afUserAuthDo != null && afUserAuthDo.getAlipayStatus().equals(SupplyCertifyStatus.WAIT.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
