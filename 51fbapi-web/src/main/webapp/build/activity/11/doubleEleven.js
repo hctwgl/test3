@@ -7,7 +7,8 @@ let threeTime = Date.parse(new Date('2017/11/12 00:00:00'));
 let fourTime = Date.parse(new Date('2017/11/12 00:00:00'));
 let fiveTime = Date.parse(new Date('2017/11/11 00:00:00'))
 let sixTime = Date.parse(new Date('2017/11/13 00:00:00'))
-let sevenTime = Date.parse(new Date('2017/11/10 00:00:00'))
+let sevenTime = Date.parse(new Date('2017/11/10 00:00:00'));
+var timerBig;
 // console.log(new Date(currentStarmp))
 if (currentStarmp < oneTime) { //11.1号之前
     addStyle(0);
@@ -424,10 +425,7 @@ let vm = new Vue({
                 type: 'post',
                 url: "/activity/de/endtime",
                 success: function (data) {
-                    console.log(data);
                     self.allStartTime = data.data.currentTime;
-                    console.log(self.allStartTime, 'self.allStartTime');
-
 
 
                     //顶部倒计时和第一次全民砍价倒计时
@@ -451,6 +449,7 @@ let vm = new Vue({
                         showTimerS(intDiff);
                         intDiff--;
                         timer12 = setInterval(function () {
+                            console.log(333)
                             showTimerS(intDiff);
                             intDiff--;
                         }, 1000);
@@ -492,9 +491,9 @@ let vm = new Vue({
                         //活动结束后显示活动已结束  点击无跳转
                         if (day == 0 && hour == 0 && minute == 0 && second == 0) {
                             $('.black-blank').html('00'); //顶部定时器活动结束后 显示00:00:00
-                            $('.countTwo').html('活动已结束');
                             $('.bargain').unbind("click"); //禁止点击事件
                             clearInterval(timer12); //清除定时器
+                            $('.countTwo').html('活动已结束');
 
                         }
 
@@ -551,16 +550,16 @@ let vm = new Vue({
                         $('.countThree').html(day + "天" + " : " + hour + '时' + " : " + minute + '分' + " : " + second + '秒'); //红包雨
                         //判断活动时间 活动开始前显示倒计时时间 
                         //活动中跳转红包雨活动主页
-                        if (nowTimeS >= begainS) {
+                        if (nowTimeS >= begainS && nowTimeS <= Date.parse("2017/11/12 00:00:00")) {
                             $('.redRain').click(function () {
                                 window.location.href = 'redrain?double=redOne'; //跳转红包雨连接
                             })
                         }
                         // 活动结束后显示活动已结束  点击无跳转
                         if (day == 0 && hour == 0 && minute == 0 && second == 0) {
-                            // $('.countThree').html('活动已结束');
                             // $('.redRain').unbind("click");//禁止点击事件
                             clearInterval(timer13); //清除定时器
+                            $('.countThree').html('活动已结束');
                         }
 
                     };
@@ -596,7 +595,7 @@ let vm = new Vue({
                         }
                         var esctime = neededtime - nowdate;//时间戳差
 
-                        var timer = setInterval(() => {
+                        timerBig = setInterval(() => {
                             esctime -= 1000
                             let getDate = new Date(esctime)
                             let hour = getDate.getHours()
@@ -618,18 +617,25 @@ let vm = new Vue({
                     }
 
             
-                    // if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
-                    //     afterpre(self.allStartTime)
+                    if(self.allStartTime >= Date.parse("2017/11/09 00:00:00")) {
+                        afterpre(self.allStartTime)
+                    }
+                    // if(nowTimeS >= Date.parse("2017/11/09 00:00:00")) {
+                    //     afterpre(nowTimeS)
                     // }
-                    if(nowTimeS >= Date.parse("2017/11/09 00:00:00")) {
-                        afterpre(nowTimeS)
-                    }
                     
-                    if(self.allStartTime>Date.parse("2017/11/12 00:00:00")){
-                        $('.countThree').html('活动已结束');
+                     if(self.allStartTime>=Date.parse("2017/11/12 00:00:00")){
                         $('.redRain').unbind("click");//禁止点击事件
-                         clearInterval(timer); //清除定时器
-                    }
+                         clearInterval(timerBig); //清除定时器
+                         $('.countThree').html('活动已结束');
+                    } 
+
+                     /* if(nowTimeS>=Date.parse("2017/11/12 00:00:00")){
+                        $('.redRain').unbind("click");//禁止点击事件
+                         clearInterval(timerBig); //清除定时器
+                           $('.countThree').html('活动已结束');
+                         
+                    } */
 
                 }
             })
