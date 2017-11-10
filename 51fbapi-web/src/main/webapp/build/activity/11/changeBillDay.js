@@ -1,3 +1,5 @@
+
+
 // let startTime='',endTime='';
 // //增加开始日期
 // function addStartDate(){
@@ -16,7 +18,7 @@
 // }
 
 // //增加结束日期
-// /* function addEndDate(){
+//  function addEndDate(){
 //     // dtpicker组件适用于弹出日期选择器
 //     var dtpicker = new mui.DtPicker({
 //         type: "date", //设置日历初始视图模式
@@ -29,9 +31,9 @@
 //         $('.endTime').text(dateStr);
 //         dtpicker.dispose();
 //     })
-// } */
+// } 
 
-// function addEndDate(){
+// /* function addEndDate(){
 //     // dtpicker组件适用于弹出日期选择器
 //     var dtpicker = new mui.DtPicker({
 //         type: "Int", //设置日历初始视图模式
@@ -44,7 +46,7 @@
 //         $('.endTime').text(dateStr);
 //         dtpicker.dispose();
 //     })
-// }
+// } */
 
 
 // //选择开始结束时间 
@@ -73,23 +75,39 @@
  let vm = new Vue({
     el:'#changbillDay',
     data:{
-        content:''
+        contentOne:'',
+        contentTwo:'',
+        calendar:'',
+        ruleShow: '',
     },
     created:function(){
         this.logData();
+    },
+    mounted: function () {
+        /* this.$nextTick(()=>{
+            var mySwiper = new Swiper('.swiper-container', {
+                direction: 'vertical',
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+
+            });
+
+        }) */
+
     },
     methods:{
         logData(){
             let self=this;
             $.ajax({
                 type:'post',
-                url:'/fanbei-web/changeOutDay/updateOutDay',
+                url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
-                    self.content = eval('(' + data + ')');
-                    console.log(self.content);
-
-                    if(self.content.success==false){
-                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                    self.contentOne = eval('(' + data + ')');
+                    console.log(self.contentOne,'self.contentOne');
+                    if(self.contentOne.success==false){
+                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     }
                      
                     
@@ -97,7 +115,68 @@
                     
                 
             })
+
+
             
         },
+        //点击提交按钮
+        commit(){
+            let self=this;
+            let outDay=document.getElementById("outDay").innerHTML;//获取出账日
+            let payDay=document.getElementById("payDay").innerHTML;//获取还款日
+            // console.log(outDay,'outDay')
+            localStorage.setItem("outDay",outDay);//将手机号存储到本地
+            localStorage.setItem("payDay",payDay);//将短信验证码存储到本地
+            console.log(outDay,'peng2222');
+            $.ajax({
+                type:'post',
+                url:'/fanbei-web/changeOutDay/updateOutDay',
+                data:{
+                    'outDay':outDay,
+                    'payDay':payDay,
+                },
+                success:function(data){
+                    self.contentTwo = eval('(' + data + ')');
+                    console.log(self.contentTwo,'self.contentTwo');
+                    //window.location.href='changeSuccess?testUser=17839218825';//点击提交跳转修改成功页面
+                   /*  if(self.contentOne.success==false){
+                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                    } */
+                     
+                    
+                }
+                    
+                
+            }) 
+        },
+        //点击修改次数用完页面的返回首页按钮跳转到首页
+        firstWeb(){
+            window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_HOME";//跳转app到首页
+        },
+        toPay(){
+            window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_TOPAY";//跳转app还款页
+        },
+        toMove(){
+            window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_MOVE";//跳转app分期首页
+        },
+        //点击隐藏mask
+        maskHide(){
+            $('.mask').hide();
+        },
+        //点击显示mask
+        maskShow(){
+             $('.dynamic-center').show();
+        },
+        // 点击活动规则
+        ruleClick() {
+            let self = this;
+            self.ruleShow = 'Y';
+        },
+        //点击蒙版
+        maskClick() {
+            let self = this;
+            self.ruleShow = '';
+        }
+       
     }
 }) 

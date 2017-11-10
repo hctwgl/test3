@@ -2,13 +2,16 @@ let vm = new Vue({
     el:'#dynamicBill',
     data:{
         content:'',
-        contentOne:''
+        contentOne:'',
+        contentThree:'',
+        ruleShow: '',
     },
     created:function(){
         this.logData();
     },
     methods:{
         logData(){
+            //当前账单初始化信息
             let self=this;
             $.ajax({
                 type:'post',
@@ -26,22 +29,38 @@ let vm = new Vue({
                     
                 
             })
+
         },
+        //点击修改账单日
         changeBillDay(){
             $.ajax({
                 type:'post',
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                    console.log(self.contentOne);
-                     //window.location.href='changebillDay';//没有逾期账单跳修改账单日
-                   /* if(self.contentOne.success==false){
-                       window.location.href='cunpaidBill';//有逾期账单跳账单未还清
-                   } */
+                     window.location.href='changebillDay';//没有逾期账单跳修改账单日页面
+                     if(self.contentOne.success==false){
+                        if(self.contentOne.msg==1){
+                            window.location.href='cunpaidBill';//有逾期账单返回1跳修账单为还清页面
+                            }else if(self.contentOne.msg==2){
+                            window.location.href='changetimeOver';//有逾期账单返回2跳账修改次数用完页面
+                        } 
+                     }
+                    
                 }
                     
                 
             })
+        },
+        // 点击活动规则
+        ruleClick() {
+            let self = this;
+            self.ruleShow = 'Y';
+        },
+        //点击蒙版
+        maskClick() {
+            let self = this;
+            self.ruleShow = '';
         }
     }
 })

@@ -6,48 +6,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>修改账单日</title>
+    <!--<link rel="stylesheet" type="text/css"  href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">!-->
     <link rel="stylesheet" type="text/css" href="/common/mui.min.css">
     <link rel="stylesheet" type="text/css" href="/common/mui.picker.min.css" />
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/changeBillDay.css">
-    <!--<style>
-       .mui-btn, button{
-            font-size: 14px !important;
-            padding: 6px 12px !important;
-            -webkit-transition: all !important;
-            -webkit-transition-timing-function: linear !important;
-            -webkit-transition-duration: .2s !important;
-
-        }
-        button{
-            background-color: #ff6e34 !important;
-            border-radius: .5rem !important;
-            font-size: .32rem !important;
-            color: #fff !important;
-            cursor: pointer !important;
-            color: inherit !important;
-
-        }
-    </style>!-->
 </head>
 <body>
     <div id="changbillDay">
         <div class="payforInfo">
-            <span class="imgBox"><img src="$src/dynamicBill-04.png" alt=""></span>
+            <span class="imgBox"><img :src="contentOne.data.avatar" alt=""></span>
             <p>
-                <span class="infoName">王小二</span><br/>
-                <span class="infoNum">182****6723</span>
+                <span class="infoName">{{contentOne.data.nick}}</span><br/>
+                <span class="infoNum">{{contentOne.data.userName}}</span>
             </p>
         </div>
-        <div class="dynamic-center">
-            <span class="dateOne"><i class="monthOne startTime">每月1号</i><br/><i class="count">出账日</i></span>
+        <div class="dynamic-center" @click="maskShow()">
+            <span class="dateOne"><i class="monthOne startTime">每月<i id="outDay">{{contentOne.data.outDay}}</i>号</i><br/><i class="count">出账日</i></span>
             <span class="line"></span>
-            <span class="dateTwo"><i class="monthTwo endTime">每月11号</i><br/><i class="pay">还款日</i></span>
+            <span class="dateTwo"><i class="monthTwo endTime">每月<i id="payDay">{{contentOne.data.payDay}}</i>号</i><br/><i class="pay">还款日</i></span>
             <span class="arrow"><img src="$src/dynamicBill-02.png" alt=""></span>
         </div>
-        <button class="commit">提交</button>
+        <button class="commit" @click="commit()">提交</button>
+        <div class="mask" @click="maskHide()"></div>
+        <div class="choseDate">
+            <div class="choseOne">
+                <span class="cansole">取消</span>
+                <span class="billDay">选择账单日</span>
+                <span class="done">完成</span>
+            </div>
+            <div class="allDate ">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <div class="dateP swiper-slide" v-for="item in contentOne.data.outDayList">
+                            <span class="dateL">每月{{item.outDay}}号</span>
+                            <span class="dateR">每月{{item.payDay}}号</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="other">
+                    <span class="leftOne">出账日</span>
+                    <div class="rightOne">还款日</div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
+<!--<script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
+<script type="text/javascript" src="/common/jquery-2.1.4.min.js"></script>!-->
 <script type="text/javascript" src="/common/mui.min.js"></script>
+<script src="js/LCalendar.js" type="/dist/activity/11//javascript"></script>
 <script type="text/javascript" src="/common/mui.picker.min.js"></script>
 <script type="text/javascript" src="/dist/activity/11/changeBillDay.js?version=$version"></script>
+<!--<script type="text/javascript" src="/dist/activity/11/dynamicBill.js"></script>!-->
 </html>
