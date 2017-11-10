@@ -199,19 +199,16 @@ function refundState(data){
     picker.pickers[0].setSelectedIndex(0, 2000);
     picker.show(function(SelectedItem) {
         let stateStatus=SelectedItem[0];
-/*         let theFirst=stateStatus.slice(2,3);
-        let theSecond=stateStatus.slice(10,12); */
-        let theFirst=stateStatus.slice(2,4);
-        let theSecond=stateStatus.slice(66,-1);
-        console.log(theFirst,'theFirst')
-        console.log(theSecond,'theSecond')
+        let bb=stateStatus.split("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        let theFirst=bb[0].slice(2,-1);
+        let theSecond=bb[1].slice(2,-1);
+        console.log(theFirst,theSecond)
          var monthOne="";//出账日
          var monthTwo="";//还款日
-         monthOne+="<i class='monthOne startTime'>"+'每月'+"<i id='outDay'>"+theFirst+"</i>";//字符串拼接到显示的出账日里面
+         monthOne+="<i class='monthOne startTime'>"+'每月'+"<i id='outDay'>"+theFirst+"</i>"+"</i>"+'号'+"</i>";//字符串拼接到显示的出账日里面
         $('.monthOne').html(monthOne);
-        monthTwo+="<i class='monthTwo startTime'>"+'每月'+"<i id='payDay'>"+theSecond+"</i>";//字符串拼接到显示的还款日里面
+        monthTwo+="<i class='monthTwo startTime'>"+'每月'+"<i id='payDay'>"+theSecond+"</i>"+"</i>"+'号'+"</i>";//字符串拼接到显示的还款日里面
         $('.monthTwo').html(monthTwo);
-        console.log(stateStatus)
         //$('.stateStatus').text(SelectedItem[0].text);
         picker.dispose(); 
     })
