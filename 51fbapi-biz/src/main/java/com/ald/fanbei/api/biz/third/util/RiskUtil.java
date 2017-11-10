@@ -168,8 +168,6 @@ public class RiskUtil extends AbstractThird {
     AfUserVirtualAccountService afUserVirtualAccountService;
     @Resource
     AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-    @Resource
-    AfResourceService afResourceService;
 
     @Resource
     AfRecommendUserService afRecommendUserService;
