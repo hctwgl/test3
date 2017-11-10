@@ -18,4 +18,10 @@ public interface AfUserOutDayDao {
     AfUserOutDayDo getUserOutDayByUserId(@Param("userId") long userId);
     
     int countUserOutDayLogByUserId(@Param("userId") long userId);
+
+	int insertUserOutDay(@Param("userId")long userId, @Param("outDay")int outDay, @Param("payDay")int payDay);
+
+	int insertUserOutDayLog(@Param("userId")long userId, @Param("outDay")int outDay);
+
+	int updateUserOutDay(@Param("userId")long userId, @Param("outDay")int outDay, @Param("payDay")int payDay);
 }
