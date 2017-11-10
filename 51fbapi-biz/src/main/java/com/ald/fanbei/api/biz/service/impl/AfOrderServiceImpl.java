@@ -598,7 +598,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 		orderDo.setBankId(bankId);
 		orderDo.setGmtPayEnd(gmtPayEnd);
 		orderDo.setGoodsPriceId(goodsPriceId);
-		orderDo.setGoodsPriceName(goodsPriceName);;
+		orderDo.setGoodsPriceName(goodsPriceName);
+		
+		AfUserAccountDo accountDo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+		if(accountDo != null){
+			orderDo.setAuAmount(accountDo.getAuAmount());
+			orderDo.setUsedAmount(accountDo.getUsedAmount());
+		}
 		return orderDo;
 	}
 

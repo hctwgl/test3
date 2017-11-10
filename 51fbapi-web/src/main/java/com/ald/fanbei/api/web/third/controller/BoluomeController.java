@@ -219,12 +219,12 @@ public class BoluomeController extends AbstractThird {
 	    if (shopInfo.getInterestFreeId() != 0) {
 			AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
 			orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
-			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
-			if(userAccountInfo!=null){
-				orderInfo.setAuAmount(userAccountInfo.getAuAmount());
-				orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
-			}
 	    }
+	    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
+		if(userAccountInfo!=null){
+			orderInfo.setAuAmount(userAccountInfo.getAuAmount());
+			orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+		}
 	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	} else {
 
