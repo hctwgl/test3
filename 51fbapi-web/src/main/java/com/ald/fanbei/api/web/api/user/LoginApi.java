@@ -45,131 +45,134 @@ import com.ald.fanbei.api.web.vo.AfUserVo;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * @author Xiaotianjian 2017年1月19日下午1:48:59
+ *
  * @类描述：
+ *
+ * @author Xiaotianjian 2017年1月19日下午1:48:59
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("loginApi")
 public class LoginApi implements ApiHandle {
 
-    @Resource
-    AfUserService afUserService;
-    @Resource
-    AfUserLoginLogService afUserLoginLogService;
-    @Resource
-    TokenCacheUtil tokenCacheUtil;
-    @Resource
-    AfResourceService afResourceService;
-    @Resource
-    AfUserAccountService afUserAccountService;
-    @Resource
-    AfUserAuthService afUserAuthService;
-    //	@Resource
+	@Resource
+	AfUserService afUserService;
+	@Resource
+	AfUserLoginLogService afUserLoginLogService;
+	@Resource
+	TokenCacheUtil tokenCacheUtil;
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfUserAccountService afUserAccountService;
+	@Resource
+	AfUserAuthService afUserAuthService;
+//	@Resource
 //	AfGameChanceService afGameChanceService;
-    @Resource
-    TongdunUtil tongdunUtil;
-    //	@Resource
+	@Resource
+	TongdunUtil tongdunUtil;
+//	@Resource
 //	JpushService jpushService;
-    @Resource
-    BizCacheUtil bizCacheUtil;
-    @Resource
-    JpushService jpushService;
-    @Resource
-    RiskUtil riskUtil;
-    @Resource
-    AfUserToutiaoService afUserToutiaoService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	@Resource
+	JpushService jpushService;
+	@Resource
+	RiskUtil riskUtil;
+	@Resource
+	AfUserToutiaoService afUserToutiaoService;
 
 
-    @Override
-    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        String SUCC = "1";
-        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        final String userName = context.getUserName();
-        String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
-        String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
-        String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
-        //滴滴风控相关信息
-        String wifiMac = ObjectUtils.toString(requestDataVo.getParams().get("wifi_mac"));
-        String ip = CommonUtil.getIpAddr(request);
+	@Override
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		String SUCC = "1";
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		final String userName = context.getUserName();
+		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
+		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
+		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
+		//滴滴风控相关信息
+		String wifiMac = ObjectUtils.toString(requestDataVo.getParams().get("wifi_mac"));
+		String ip = CommonUtil.getIpAddr(request);
 
-        String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
-        String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
-        String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
-        String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
+		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
+		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
+		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
 
-        if (StringUtils.isBlank(inputPassSrc)) {
-            logger.error("inputPassSrc can't be empty");
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-        }
-        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+		if (StringUtils.isBlank(inputPassSrc)) {
+			logger.error("inputPassSrc can't be empty");
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+		}
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
 
-        if (afUserDo == null) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
-        }
-        if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
-        }
-        Integer failCount = afUserDo.getFailCount();
-        // add user login record
-        AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
-        loginDo.setAppVersion(Integer.parseInt(ObjectUtils.toString(requestDataVo.getSystem().get("appVersion"))));
-        loginDo.setLoginIp(ip);
-        loginDo.setOsType(osType);
-        loginDo.setPhoneType(phoneType);
-        loginDo.setUserName(userName);
-        loginDo.setUuid(uuid);
-        ToutiaoAdActive(requestDataVo, context, afUserDo);
-        // check login failed count,if count greater than 5,lock specify hours
-        AfResourceDo lockHourResource = afResourceService
-                .getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
-        if (DateUtil.afterDay(DateUtil.addHoures(afUserDo.getGmtModified(),
-                lockHourResource == null ? 2 : Integer.parseInt(lockHourResource.getValue())), new Date())) {
-            if (afUserDo.getFailCount() > 5) {
-                loginDo.setResult("false:err count too max" + afUserDo.getFailCount());
-                afUserLoginLogService.addUserLoginLog(loginDo);
-                return new ApiHandleResponse(requestDataVo.getId(),
-                        FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5);
-            }
-        } else {
-            // current time is over the expired time, then clear the login error
-            // count
-            AfUserDo temp = new AfUserDo();
-            temp.setRid(afUserDo.getRid());
-            temp.setFailCount(0);
-            temp.setUserName(userName);
-            afUserDo.setFailCount(0);
-            afUserService.updateUser(temp);
-        }
 
-        // check password
-        String inputPassword = UserUtil.getPassword(inputPassSrc, afUserDo.getSalt());
-        if (!StringUtils.equals(inputPassword, afUserDo.getPassword())) {
-            // fail count add 1
-            AfUserDo temp = new AfUserDo();
-            Integer errorCount = afUserDo.getFailCount();
-            temp.setRid(afUserDo.getRid());
-            temp.setFailCount(errorCount + 1);
-            temp.setUserName(userName);
-            afUserService.updateUser(temp);
-            loginDo.setResult("false:password error");
-            afUserLoginLogService.addUserLoginLog(loginDo);
-            FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
-            return new ApiHandleResponse(requestDataVo.getId(), errorCode);
-        }
+		if (afUserDo == null) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+		}
+		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
+		}
+		Integer failCount = afUserDo.getFailCount();
+		// add user login record
+		AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
+		loginDo.setAppVersion(Integer.parseInt(ObjectUtils.toString(requestDataVo.getSystem().get("appVersion"))));
+		loginDo.setLoginIp(ip);
+		loginDo.setOsType(osType);
+		loginDo.setPhoneType(phoneType);
+		loginDo.setUserName(userName);
+		loginDo.setUuid(uuid);
+		ToutiaoAdActive(requestDataVo,context,afUserDo);
+		// check login failed count,if count greater than 5,lock specify hours
+		AfResourceDo lockHourResource = afResourceService
+				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
+		if (DateUtil.afterDay(DateUtil.addHoures(afUserDo.getGmtModified(),
+				lockHourResource == null ? 2 : Integer.parseInt(lockHourResource.getValue())), new Date())) {
+			if (afUserDo.getFailCount() > 5) {
+				loginDo.setResult("false:err count too max" + afUserDo.getFailCount());
+				afUserLoginLogService.addUserLoginLog(loginDo);
+				return new ApiHandleResponse(requestDataVo.getId(),
+						FanbeiExceptionCode.USER_PASSWORD_ERROR_GREATER_THAN5);
+			}
+		} else {
+			// current time is over the expired time, then clear the login error
+			// count
+			AfUserDo temp = new AfUserDo();
+			temp.setRid(afUserDo.getRid());
+			temp.setFailCount(0);
+			temp.setUserName(userName);
+			afUserDo.setFailCount(0);
+			afUserService.updateUser(temp);
+		}
+
+		// check password
+		String inputPassword = UserUtil.getPassword(inputPassSrc, afUserDo.getSalt());
+		if (!StringUtils.equals(inputPassword, afUserDo.getPassword())) {
+			// fail count add 1
+			AfUserDo temp = new AfUserDo();
+			Integer errorCount = afUserDo.getFailCount();
+			temp.setRid(afUserDo.getRid());
+			temp.setFailCount(errorCount + 1);
+			temp.setUserName(userName);
+			afUserService.updateUser(temp);
+			loginDo.setResult("false:password error");
+			afUserLoginLogService.addUserLoginLog(loginDo);
+			FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
+			return new ApiHandleResponse(requestDataVo.getId(), errorCode);
+		}
 //		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
 //			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
 //			//向推荐人推送消息
 //			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
-        // reset fail count to 0 and record login ip phone msg
+		// reset fail count to 0 and record login ip phone msg
 
-        AfUserDo temp = new AfUserDo();
-        temp.setFailCount(0);
-        temp.setRid(afUserDo.getRid());
-        temp.setUserName(userName);
-        afUserService.updateUser(temp);
+		AfUserDo temp = new AfUserDo();
+		temp.setFailCount(0);
+		temp.setRid(afUserDo.getRid());
+		temp.setUserName(userName);
+		afUserService.updateUser(temp);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String loginTime = sdf.format(new Date(System.currentTimeMillis()));
