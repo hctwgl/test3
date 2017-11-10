@@ -57,7 +57,7 @@ public class AuthBankcardApi implements ApiHandle {
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 		String bankCode = ObjectUtils.toString(requestDataVo.getParams().get("bankCode"));
 		String bankName = ObjectUtils.toString(requestDataVo.getParams().get("bankName"));
-		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"));
+		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
 		
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if(null ==auth||YesNoStatus.NO.getCode().equals(auth.getFacesStatus())){
@@ -86,14 +86,16 @@ public class AuthBankcardApi implements ApiHandle {
 		afUserBankcardDao.addUserBankcard(bankDo);
 		//新版本绑定银行卡是可以设置支付密码
 		if(context.getAppVersion()>397){
-			AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-			String password = Base64.decodeToString(oldPassword);
-			String salt = UserUtil.getSalt();
-			String newPwd = UserUtil.getPassword(password, salt);
-			afUserAccountDo.setUserId(context.getUserId());
-			afUserAccountDo.setSalt(salt);
-			afUserAccountDo.setPassword(newPwd);
-			afUserAccountService.updateUserAccount(afUserAccountDo);
+			if(null != oldPassword){
+				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				String password = Base64.decodeToString(oldPassword);
+				String salt = UserUtil.getSalt();
+				String newPwd = UserUtil.getPassword(password, salt);
+				afUserAccountDo.setUserId(context.getUserId());
+				afUserAccountDo.setSalt(salt);
+				afUserAccountDo.setPassword(newPwd);
+				afUserAccountService.updateUserAccount(afUserAccountDo);
+			}
 		}
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("bankId", bankDo.getRid());
