@@ -166,13 +166,13 @@ public class AppH5ChangeOutDayController extends BaseController{
     					resp = H5CommonResponse.getNewInstance(false, "出账日重复");
     					return resp.toString();
 					}
-    				if (afBorrowBillService.addUserOutDay(afUser.getRid(),outDay,payDay) < 1) {
+    				if (afBorrowBillService.updateUserOutDay(afUser.getRid(),outDay,payDay) < 1) {
     					logger.error("addUserOutDay false , userId = " + afUser.getRid() + " ,outDay =" + outDay + " ,payDay =" + payDay);
     					resp = H5CommonResponse.getNewInstance(false, "修改失败");
 					}
     				
     			}else {
-    				if (afBorrowBillService.updateUserOutDay(afUser.getRid(),outDay,payDay) < 1) {
+    				if (afBorrowBillService.addUserOutDay(afUser.getRid(),outDay,payDay) < 1) {
     					logger.error("updateUserOutDay false , userId = " + afUser.getRid() + " ,outDay =" + outDay + " ,payDay =" + payDay);
     					resp = H5CommonResponse.getNewInstance(false, "修改失败");
 					}
