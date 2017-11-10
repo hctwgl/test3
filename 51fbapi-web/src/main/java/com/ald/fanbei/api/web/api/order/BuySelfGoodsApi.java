@@ -29,6 +29,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -74,11 +77,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 	
 	@Resource
 	AfShareUserGoodsService afShareUserGoodsService;
+	@Resource
+	TransactionTemplate transactionTemplate;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
+		final Long userId = context.getUserId();
 		Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId"), ""),
 				0l);
 		Long goodsPriceId = NumberUtil
@@ -99,7 +104,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
-		AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
+		final AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
 		if (appversion >= 371) {
 			if (goodsDo == null || priceDo == null) {
@@ -118,7 +123,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (addressDo == null) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ADDRESS_NOT_EXIST);
 		}
-		AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo, count);
+		final AfOrderDo afOrder = orderDoWithGoodsAndAddressDo(addressDo, goodsDo, count);
 		afOrder.setUserId(userId);
 		afOrder.setGoodsPriceId(goodsPriceId);
 
@@ -184,19 +189,37 @@ public class BuySelfGoodsApi implements ApiHandle {
 						
 						BigDecimal decreasePrice = resultDo.getDecreasePrice();
 						priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
-						
-						//增加一条记录,用户购买记录
-						AfShareUserGoodsDo t = new AfShareUserGoodsDo();
-						t.setGmtCreate(new Date());
-						t.setGmtModified(new Date());
-						t.setGoodsPriceId(priceDo.getRid());
-						t.setIsBuy(0);
-						t.setUserId(userId);
-						afShareUserGoodsService.saveRecord(t);
+						transactionTemplate
+								.execute(new TransactionCallback<Long>() {
 
-						// 使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
-						afOrder.setThirdOrderNo(t.getRid().toString());
-						
+									@Override
+									public Long doInTransaction(
+											TransactionStatus status) {
+
+										try {
+											// 增加一条记录,用户购买记录
+											AfShareUserGoodsDo t = new AfShareUserGoodsDo();
+											t.setGmtCreate(new Date());
+											t.setGmtModified(new Date());
+											t.setGoodsPriceId(priceDo.getRid());
+											t.setIsBuy(0);
+											t.setUserId(userId);
+											afShareUserGoodsService
+													.saveRecord(t);
+
+											// 使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
+											afOrder.setThirdOrderNo(t.getRid()
+													.toString());
+											
+											return t.getRid();
+										} catch (Exception e) {
+											logger.info("AfShareUserGoodsDo error:" + e);
+											status.setRollbackOnly();
+											return 0L;
+										}
+
+									}
+								});
 					}
 					
 				}
