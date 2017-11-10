@@ -10,6 +10,7 @@
 </head>
 <body>
     <div id="dynamicBill">
+        <!--弹框!-->
         <div class="mask" v-show="ruleShow==='Y'" @click="maskClick()"></div>
         <div class="alertRule" v-show="ruleShow==='Y'">
             <!--<p class="ruleTitle">规则</p>!-->

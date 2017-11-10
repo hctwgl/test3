@@ -33,12 +33,12 @@ let vm = new Vue({
         },
         //点击修改账单日
         changeBillDay(){
-            $.ajax({
+             $.ajax({
                 type:'post',
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                     window.location.href='changebillDay';//没有逾期账单跳修改账单日页面
+                     window.location.href='changebillDay?testUser=17839218825';//没有逾期账单跳修改账单日页面
                      if(self.contentOne.success==false){
                         if(self.contentOne.msg==1){
                             window.location.href='cunpaidBill';//有逾期账单返回1跳修账单为还清页面
@@ -50,7 +50,8 @@ let vm = new Vue({
                 }
                     
                 
-            })
+            }) 
+            refundState()
         },
         // 点击活动规则
         ruleClick() {
@@ -64,3 +65,23 @@ let vm = new Vue({
         }
     }
 })
+/* function refundState(){
+    var picker = new mui.PopPicker();
+    picker.setData([{
+        value: "REFUNDING",
+        text: "退款中",
+    }, {
+        value: "REFUND",
+        text: "已退款"
+    }, {
+        value: "REFUNDFAIL",
+        text: "退款失败"
+    }
+    ])
+    picker.pickers[0].setSelectedIndex(0, 2000);
+    picker.show(function(SelectedItem) {
+        stateStatus=SelectedItem[0].value;
+        $('.startTime').text(SelectedItem[0].text);
+        picker.dispose(); 
+    })
+} */

@@ -171,6 +171,8 @@ body {
   margin: 0 auto;
   text-align: justify;
   padding-bottom: .7rem;
+  font-size: 0.3rem;
+  color: #838383;
 }
 .close {
   width: .5rem;

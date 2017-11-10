@@ -10,6 +10,16 @@
 </head>
 <body>
     <div id="dynamicBill">
+        <!--弹框!-->
+        <div class="mask" v-show="ruleShow==='Y'" @click="maskClick()"></div>
+        <div class="alertRule" v-show="ruleShow==='Y'">
+            <!--<p class="ruleTitle">规则</p>!-->
+            <p class="ruleCont">1.有逾期账单者，不支持修改账单日<br/>
+            2.账单日一年只允许更改一次<br/>
+            3.修改账单，修改成功后账单日将在2个月之内生效<br/>
+             4.此次活动最终解释权归51返呗所有<br/></p>
+            <div class="close" v-show="ruleShow==='Y'" @click="maskClick()">X</div>
+        </div>
         <div class="dynamic-top">
             <div class="fork"><img src="$src/dynamicBill-01.png" alt=""></span>
             <div class="personIn">
@@ -18,6 +28,7 @@
                 <span class="personName">{{contentThree.data.nick}}</span>
                 <span class="personPhone">{{contentThree.data.userName}}</span>
             </div>
+            <div class="rule" @click="ruleClick()">规则</div>
         </div>
         <div class="dynamic-center">
             <span class="dateOne"><i class="monthOne">每月{{contentThree.data.outDay}}号</i><br/><i class="count">出账日</i></span>

@@ -138,10 +138,10 @@
                 success:function(data){
                     self.contentTwo = eval('(' + data + ')');
                     console.log(self.contentTwo,'self.contentTwo');
-                    //window.location.href='changeSuccess?testUser=17839218825';//点击提交跳转修改成功页面
-                   /*  if(self.contentOne.success==false){
+                    window.location.href='changeSuccess?testUser=17839218825';//点击提交跳转修改成功页面
+                     if(self.contentOne.success==false){
                         window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
-                    } */
+                    } 
                      
                     
                 }
@@ -165,7 +165,16 @@
         },
         //点击显示mask
         maskShow(){
+            let self=this;
              $('.dynamic-center').show();
+             let dateList=self.contentOne.data.outDayList;
+             let list=[];
+             let a='';
+             for(let i=0;i<dateList.length;i++){
+                 a='每月'+dateList[i].outDay+'日'+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'每月'+dateList[i].payDay+'日';
+                list.push(a);
+             }
+              refundState(list)
         },
         // 点击活动规则
         ruleClick() {
@@ -180,3 +189,27 @@
        
     }
 }) 
+
+function refundState(data){
+    var picker = new mui.PopPicker();
+    picker.setData(data)
+    picker.pickers[0].setSelectedIndex(0, 2000);
+    picker.show(function(SelectedItem) {
+        let stateStatus=SelectedItem[0];
+/*         let theFirst=stateStatus.slice(2,3);
+        let theSecond=stateStatus.slice(10,12); */
+        let theFirst=stateStatus.slice(2,4);
+        let theSecond=stateStatus.slice(66,-1);
+        console.log(theFirst,'theFirst')
+        console.log(theSecond,'theSecond')
+         var monthOne="";//出账日
+         var monthTwo="";//还款日
+         monthOne+="<i class='monthOne startTime'>"+'每月'+"<i id='outDay'>"+theFirst+"</i>";//字符串拼接到显示的出账日里面
+        $('.monthOne').html(monthOne);
+        monthTwo+="<i class='monthTwo startTime'>"+'每月'+"<i id='payDay'>"+theSecond+"</i>";//字符串拼接到显示的还款日里面
+        $('.monthTwo').html(monthTwo);
+        console.log(stateStatus)
+        //$('.stateStatus').text(SelectedItem[0].text);
+        picker.dispose(); 
+    })
+}

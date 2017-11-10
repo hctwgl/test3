@@ -1,7 +1,8 @@
 let vm = new Vue({
     el:'#dynamicBill',
     data:{
-        contentThree:''
+        contentThree:'',
+        ruleShow: ''
     },
     created:function(){
         this.logData();
@@ -29,7 +30,7 @@ let vm = new Vue({
                     console.log(self.contentThree,'self.contentThree');
                     
                     if(self.contentThree.success==false){
-                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
+                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
                     }
                      
                     
@@ -37,6 +38,16 @@ let vm = new Vue({
                     
                 
             })
+        },
+         // 点击活动规则
+        ruleClick() {
+            let self = this;
+            self.ruleShow = 'Y';
+        },
+        //点击蒙版
+        maskClick() {
+            let self = this;
+            self.ruleShow = '';
         },
         //点击修改成功页面的返回首页按钮跳转到首页
         firstWeb(){

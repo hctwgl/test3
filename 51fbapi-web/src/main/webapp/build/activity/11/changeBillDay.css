@@ -108,6 +108,7 @@ body {
   top: 112%;
   left: 0;
   z-index: 9999;
+  display: none;
 }
 .choseDate .choseOne {
   border-bottom: 1px solid #ededed;
@@ -184,7 +185,6 @@ body {
   height: 1.33rem;
   text-align: center;
   border-radius: .04rem;
-  background-image: linear-gradient(to top, #7330e8, #7330e8);
   font-size: .26rem;
   letter-spacing: .02rem;
   color: #fff;
@@ -201,7 +201,7 @@ body {
   height: 100%;
   background: black;
   opacity: .6;
-  display: block;
+  display: none;
   z-index: 10;
 }
 .alertRule {
@@ -226,6 +226,58 @@ body {
   text-align: justify;
   padding-bottom: .7rem;
 }
+.rule {
+  width: 1.51rem;
+  height: 1.33rem;
+  text-align: center;
+  border-radius: .04rem;
+  font-size: .26rem;
+  letter-spacing: .02rem;
+  color: #fff;
+  line-height: .33rem;
+  position: absolute;
+  top: 2%;
+  left: 83%;
+}
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: .6;
+  display: block;
+  z-index: 10;
+}
+.alertRule {
+  width: 5.4rem;
+  height: 6.6rem;
+  border-radius: .1rem;
+  background: #fff;
+  position: absolute;
+  top: 3.3rem;
+  left: 60%;
+  display: block;
+  transform: translateX(-3.3rem);
+  z-index: 20;
+  background: url('https://f.51fanbei.com/h5/app/activity/11/ruleBill.png') no-repeat;
+  background-size: contain;
+  padding: 2rem 0.3rem;
+}
+.ruleTitle {
+  font-size: .32rem;
+  text-align: center;
+  padding: .4rem 0 .3rem 0;
+}
+.ruleCont {
+  width: 90%;
+  margin: 0 auto;
+  text-align: justify;
+  padding-bottom: .7rem;
+  font-size: 0.3rem;
+  color: #838383;
+}
 .close {
   width: .5rem;
   height: .5rem;
@@ -234,11 +286,26 @@ body {
   line-height: .5rem;
   border-radius: 50%;
   position: absolute;
-  top: 105%;
+  top: 85%;
   left: 50%;
   transform: translateX(-0.25rem);
   z-index: 20;
   color: #a9a4a4;
   font-size: .3rem;
   font-weight: bold;
+}
+.mui-btn-blue {
+  border: 0px solid #007aff;
+  background-color: white;
+  color: #007aff;
+}
+.mui-btn,
+button {
+  border: 0px solid #ccc;
+}
+.mui-poppicker {
+  background-color: white;
+}
+.mui-picker {
+  background-color: white;
 }
