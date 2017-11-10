@@ -79,7 +79,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     @Resource
     private EsignPublicInit esignPublicInit;
 
-    private static final String src = "/usr/doc/";
+    private static final String src = "/home/aladin/project/app_contract";
     @Override
     public void protocolInstalment(long userId,Integer nper,BigDecimal amount ,Long borrowId) {//分期
 
