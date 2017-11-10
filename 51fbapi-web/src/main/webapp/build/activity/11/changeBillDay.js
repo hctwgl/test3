@@ -79,7 +79,9 @@
         contentTwo:'',
         calendar:'',
         ruleShow: '',
-        otherDate:''
+        otherDate:'',
+        over: false,
+        msg: ''
     },
     created:function(){
         this.logData();
@@ -106,9 +108,11 @@
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                    self.otherDate=self.contentOne.data.outDayList[0];
-                    if(self.contentOne.success==false){
-                        alert(2222)
+                    self.otherDate= self.contentOne.data.outDayList ? self.contentOne.data.outDayList[0] : [] 
+                    console.log(self.contentOne.success)
+                    if(self.contentOne.success==false) {
+                        self.over = true
+                        self.msg = self.contentOne.msg
                         window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                         
                     }
@@ -142,7 +146,7 @@
                     console.log(self.contentTwo,'self.contentTwo');
                     window.location.href='changeSuccess?testUser=17839218825';//点击提交跳转修改成功页面
                      if(self.contentTwo.success==false){
-                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     } 
                      
                     
@@ -168,15 +172,19 @@
         //点击显示mask
         maskShow(){
             let self=this;
-             $('.dynamic-center').show();
-             let dateList=self.contentOne.data.outDayList;
-             let list=[];
-             let a='';
-             for(let i=0;i<dateList.length;i++){
-                 a='每月'+dateList[i].outDay+'日'+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'每月'+dateList[i].payDay+'日';
-                list.push(a);
-             }
-              refundState(list)
+            if(self.over) {
+                requestMsg(self.msg)
+                return
+            }
+            $('.dynamic-center').show();
+            let dateList=self.contentOne.data.outDayList;
+            let list=[];
+            let a='';
+            for(let i=0;i<dateList.length;i++){
+                a='每月'+dateList[i].outDay+'日'+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'每月'+dateList[i].payDay+'日';
+            list.push(a);
+            }
+            refundState(list)
         },
         // 点击活动规则
         ruleClick() {
