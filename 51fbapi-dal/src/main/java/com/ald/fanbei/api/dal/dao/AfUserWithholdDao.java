@@ -43,4 +43,6 @@ public interface AfUserWithholdDao extends BaseDao<AfUserWithholdDo, Long> {
      * 
      * **/
     int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo);
+
+    int getCountByUserId(@Param("userId")Long userId);
 }

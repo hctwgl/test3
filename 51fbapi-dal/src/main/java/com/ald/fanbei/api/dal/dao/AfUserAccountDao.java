@@ -99,6 +99,7 @@ public interface AfUserAccountDao {
 	 * **/
 	
 	int updateBorrowCashActivity(@Param("money") int money,@Param("userId") List<String> userId);
-	
-	
+
+
+    int updateUserAccountByUserId(@Param("userId")Long userId,@Param("money")int money);
 }

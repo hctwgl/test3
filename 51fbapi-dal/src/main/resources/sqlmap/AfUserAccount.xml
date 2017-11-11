@@ -265,4 +265,13 @@
         #{item}  
    		</foreach>  
 	</update>
+
+	<update id="updateUserAccountByUserId" >
+		UPDATE
+		`af_user_account`
+		SET
+		`gmt_modified` =now(),`used_amount` =`used_amount` +#{money}
+		WHERE
+		`user_id`=#{userId}
+	</update>
 </mapper>

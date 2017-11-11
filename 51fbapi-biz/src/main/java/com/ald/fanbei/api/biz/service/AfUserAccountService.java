@@ -128,5 +128,6 @@ public interface AfUserAccountService {
 	 * **/
 	
 	int updateBorrowCashActivity(@Param("money") int money,@Param("userId") List<String> userId);
-	
+
+    int updateUserAccountByUserId(Long userId,int money);
 }

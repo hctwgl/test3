@@ -418,12 +418,18 @@
 
 	<update id="updateBorrowCashLock" parameterType="java.lang.Long">
 		UPDATE
-		af_borrow_cash SET gmt_modified = NOW(),is_lock = 'Y' WHERE id=#{borrowId} and is_lock='N'
+		af_borrow_cash SET gmt_modified = NOW(), lockdate = NOW(), is_lock = 'Y' WHERE id=#{borrowId} and is_lock='N'
 	</update>
 
 	<update id="updateBorrowCashUnLock" parameterType="java.lang.Long">
 		UPDATE
-		af_borrow_cash SET gmt_modified = NOW(),is_lock = 'N' WHERE id=#{borrowId}
+		af_borrow_cash SET gmt_modified = NOW(), lockdate = NOW(), is_lock = 'N' WHERE id=#{borrowId}
 	</update>
-
+	<select id="getBorrowCashByStatus" resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		`af_borrow_cash`
+		WHERE `is_delete` =0 AND `status` IN ("FINSH","TRANSED","TRANSEDING","WAITTRANSED")
+	</select>
 </mapper>

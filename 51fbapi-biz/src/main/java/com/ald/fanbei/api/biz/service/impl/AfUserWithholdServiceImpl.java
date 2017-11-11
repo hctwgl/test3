@@ -60,4 +60,9 @@ public class AfUserWithholdServiceImpl extends ParentServiceImpl<AfUserWithholdD
 	public int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo) {
 		return afUserWithholdDao.updateAfUserWithholdDo(afUserWithholdDo);
 	}
+
+	@Override
+	public int getCountByUserId(Long userId) {
+		return afUserWithholdDao.getCountByUserId(userId);
+	}
 }

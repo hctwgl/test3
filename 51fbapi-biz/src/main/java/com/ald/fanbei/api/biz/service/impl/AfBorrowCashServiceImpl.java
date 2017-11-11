@@ -281,4 +281,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public int updateBorrowCashUnLock(Long borrowId) {
 		return afBorrowCashDao.updateBorrowCashUnLock(borrowId);
 	}
+
+	@Override
+	public AfBorrowCashDo getBorrowCashByStatus() {
+		return afBorrowCashDao.getBorrowCashByStatus();
+	}
 }

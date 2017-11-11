@@ -64,7 +64,8 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
-
+	@Resource
+	AfUserWithholdService afUserWithholdService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -225,11 +226,14 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 			throw new FanbeiException(
 					FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 		}
-		//将该笔订单加锁，防止同时还款
-		if(afBorrowCashService.updateBorrowCashLock(borrowId)==0){
-			logger.info("borrowcash repayment fail for lock,userId:"+userId + ",borrowId:"+borrowId);
-			throw new FanbeiException(
-					FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
+		//用户是否发起代扣
+		if(afUserWithholdService.getCountByUserId(userId)>0){
+			//将该笔订单加锁，防止同时还款
+			if(afBorrowCashService.updateBorrowCashLock(borrowId)==0){
+				logger.info("borrowcash repayment fail for lock,userId:"+userId + ",borrowId:"+borrowId);
+				throw new FanbeiException(
+						FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
+			}
 		}
 		Map<String, Object> map = null;
 		try{

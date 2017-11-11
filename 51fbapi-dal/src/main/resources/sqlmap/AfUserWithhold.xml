@@ -22,7 +22,7 @@
 	        SELECT
 	        id,user_id,card_id1,card_id2,card_id3,card_id4,card_id5,usebalance
 	        FROM af_user_withhold
-	        WHERE user_id = #{userId}
+	        WHERE user_id = #{userId} and is_delete=0
 	        limit 0,1
 	    </select>
 
@@ -69,5 +69,12 @@
         </set>    
         WHERE is_delete = 0 AND user_id =#{userId}
     </update>
+
+    <select id="getCountByUserId" resultType="java.lang.Integer" parameterType="com.ald.fanbei.api.dal.domain.AfUserWithholdDo">
+        SELECT
+        count(1)
+        FROM af_user_withhold
+        WHERE user_id = #{userId} and is_delete=0
+    </select>
     
 </mapper>

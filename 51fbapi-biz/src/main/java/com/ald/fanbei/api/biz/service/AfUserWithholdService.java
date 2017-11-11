@@ -40,6 +40,7 @@ public interface AfUserWithholdService extends ParentService<AfUserWithholdDo, L
      * 
      * **/
     int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo);
-    
-    
+
+
+    int getCountByUserId(Long userId);
 }
