@@ -248,6 +248,27 @@ public class StringUtil extends StringUtils {
 	}
 
 	/**
+	 * 判断客户端类型
+	 * @param flagStr
+	 * @return
+	 */
+	public static String judgeClientDeviceFlag(String sourceStr){
+		String flagStr = "";
+		if(isEmpty(sourceStr)){
+			return flagStr;
+		}
+		try {
+			String[] sourceArray = sourceStr.split("_");
+			if(sourceArray!=null && sourceArray.length>2 && isNotBlank(sourceArray[1])){
+				flagStr = sourceArray[1];
+			}
+			return flagStr;
+		} catch (Exception e) {
+			return flagStr;
+		}
+	}
+	
+	/**
 	 * 获取指定字符串最后指定长度信息
 	 * @param cardNumber
 	 * @param lastLength
@@ -299,5 +320,7 @@ public class StringUtil extends StringUtils {
 		}
 	}
 	
-	
+	public static void main(String[] args) {
+		System.out.println(judgeClientDeviceFlag("i_EF97D566-0A4A-4492-9AEB-38C3A44AD40B_1510372484991_www"));
+	}
 }

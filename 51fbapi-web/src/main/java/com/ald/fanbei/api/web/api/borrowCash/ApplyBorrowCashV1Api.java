@@ -669,8 +669,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 			String ext4 = context.getAppVersion() + "";
 			maidianLog.info(com.ald.fanbei.api.common.util.StringUtil
 					.appendStrs("	", DateUtil.formatDate(new Date(),
-							DateUtil.DATE_TIME_SHORT), "	", requestDataVo
-							.getId(), "	rmtIP=", CommonUtil.getIpAddr(request),
+							DateUtil.DATE_TIME_SHORT), "	", com.ald.fanbei.api.common.util.StringUtil.judgeClientDeviceFlag(requestDataVo.getId()), "	rmtIP=", CommonUtil.getIpAddr(request),
 							"	userName=", context.getUserName(), "	", 0, "	",
 							request.getRequestURI(), "	", cashDo.getRid() + "",
 							"	", DateUtil.formatDate(new Date(),
