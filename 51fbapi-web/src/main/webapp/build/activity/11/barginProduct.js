@@ -52,21 +52,50 @@ let vm = new Vue({
                 this.url_1 = "/activityH5/de/goodsInfo";
                 this.url_2 = "/activityH5/de/friend";
                 this.url_3 = "/activityH5/de/share";
-                let str = encodeURIComponent(window.location.href.split('#')[0]);
-                let urls = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri=' + str + '&response_type=code&scope=snsapi_userinfo&state=1&connect_redirect=1#wechat_redirect';
                 if (!code || code == '') {
+                    let str = encodeURIComponent(window.location.href.split('#')[0]);
+                    let urls = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx583e90560d329683&redirect_uri=' + str + '&response_type=code&scope=snsapi_userinfo&state=1&connect_redirect=1#wechat_redirect';
                     // todo： 测试时先去掉微信授权    
                     location.href = urls;
                 }
             } else {
                 this.isWX = false;
             }
+            this.getUserInfo();
             this.logData();
             this.listFn();
             this.countDown();
-
         },
         logData: function() { // get 初始化 信息
+            let self = this;
+            $.ajax({
+                url: self.url_1,
+                type: 'POST',
+                dataType: 'json',
+                data: { goodsPriceId: goodsId, userName: userName },
+                success: function(data) {
+                    self.goodsData = data.data;
+                    self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
+                    self.tipLeft = 6.3 - self.progressWidth - 1;
+                    if (self.getUserFlag) {
+                        $(".loadingMask").fadeOut();
+                    }
+                    if (!data.success) {
+                        // debugger;
+                        // if (self.isWX) {
+                        //     self.toLogin(); 
+                        // } else {
+                        //     location.href = data.data.loginUrl;
+                        // }
+                        // return false;
+                    }
+                },
+                error: function() {
+                    requestMsg("哎呀，出错了！")
+                }
+            });
+        },
+        getUserInfo: function() {
             let self = this;
             if (self.isWX && code != '') {
                 self.getUserFlag = false;
@@ -76,7 +105,12 @@ let vm = new Vue({
                     dataType: 'json',
                     data: { code: code },
                     success: function(data) {
-                        self.userInfo = data;
+                        if (data.success) {
+                            self.userInfo = data;   
+                            self.userInfo.data = JSON.parse(data.data);
+                        } else {
+                            requestMsg("获取用户信息出错了！");
+                        }
                     },
                     error: function() {
                         requestMsg("哎呀，获取用户信息出错了！")
@@ -86,33 +120,7 @@ let vm = new Vue({
                         $(".loadingMask").fadeOut();
                     }
                 });      
-            }
-
-            $.ajax({
-                url: self.url_1,
-                type: 'POST',
-                dataType: 'json',
-                data: { goodsPriceId: goodsId, userName: userName },
-                success: function(data) {
-                    self.goodsData = data.data;
-                    self.progressWidth = 6.3 * self.goodsData.cutPrice / self.goodsData.originalPrice; // 计算滚动条长度
-                    self.tipLeft = 6.3 - self.progressWidth - 0.74;
-                    if (self.getUserFlag) {
-                        $(".loadingMask").fadeOut();
-                    }
-                    if (!data.success) {
-                        if (self.isWX) {
-                            self.toLogin(); 
-                        } else {
-                            location.href = data.data.loginUrl;
-                        }
-                        return false;
-                    }
-                },
-                error: function() {
-                    requestMsg("哎呀，出错了！")
-                }
-            });
+            }    
         },
         listFn: function() {   // 获取亲友团数据
             let self = this;
@@ -130,11 +138,12 @@ let vm = new Vue({
                             self.loadFlag = true;
                         }
                     } else {
-                        if (self.isWX) {
-                            self.toLogin(); 
-                        } else {
-                            location.href = data.data.loginUrl;
-                        }
+                        // debugger;
+                        // if (self.isWX) {
+                        //     self.toLogin(); 
+                        // } else {
+                        //     location.href = data.data.loginUrl;
+                        // }
                     }
                 },
                 error: function() {
@@ -181,8 +190,8 @@ let vm = new Vue({
             let self = this;
             let user = self.userInfo;
             if (self.ajaxFlag) {
-                if (!user.hasOwnProperty("openid")) {
-                    requestMsg("获取用户信息失败！");
+                if (!user.success) {
+                    requestMsg("获取用户信息失败,无法参与砍价");
                     return false;
                 }
                 self.ajaxFlag = false;
@@ -193,9 +202,9 @@ let vm = new Vue({
                     data: {
                         "userId": userName,
                         "goodsPriceId": goodsId,
-                        "openId": user.openid,
-                        "nickName": user.nickname,
-                        "headImgUrl": user.headimgurl
+                        "openId": user.data.openid,
+                        "nickName": user.data.nickname,
+                        "headImgUrl": user.data.headimgurl
                     },
                     success: function(data) {
                         self.cutData = data.data;

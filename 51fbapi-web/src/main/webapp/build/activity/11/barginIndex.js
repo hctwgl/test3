@@ -143,6 +143,10 @@ let vm = new Vue({
                                 requestMsg('只能砍价两件商品，不要太贪心哦');
                                 return false;
                             }
+                            if (status==1) {
+                                self.shareSure();
+                                return false;
+                            }
                             self.sureFlag = true;
                         } else {
                             self.shareSure();

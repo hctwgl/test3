@@ -73,7 +73,6 @@
                                     <img src="$commonUrl/barginCoupon1.png" v-if="index==0">
                                     <img src="$commonUrl/barginCoupon2.png" v-if="index==1">
                                     <img src="$commonUrl/barginCoupon3.png" v-if="index==2">
-                                    <span>全场通用</span>
                                     <div class="btn-get1" v-if="clist.state==2">点击领取</div>
                                     <div class="btn-get1" v-if="clist.state==1">已领取</div>
                                     <div class="btn-get2" v-if="clist.state==0">不可领取</div>

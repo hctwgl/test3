@@ -43,7 +43,7 @@
                         <img src="$commonUrl/bargin05.png">
                         <div class="product-txt flex fd-column ai-c">
                             <div class="product-name">{{goodsData.name}}</div>
-                            <div class="has-bargin" :style="{'margin-left':tipLeft+'rem'}">已砍{{goodsData.cutPrice}}元</div>
+                            <div class="has-bargin" :style="{'margin-left':tipLeft+'rem'}">已砍￥{{goodsData.cutPrice}}</div>
                             <div class="bar-box">
                                 <div class="progress-bar"></div>
                                 <div class="bar-hide" :style="{width: progressWidth + 'rem'}"></div>
