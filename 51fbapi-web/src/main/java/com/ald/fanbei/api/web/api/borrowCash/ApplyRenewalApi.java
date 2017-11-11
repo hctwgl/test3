@@ -110,6 +110,11 @@ public class ApplyRenewalApi implements ApiHandle {
 		//BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
 		//BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
 		BigDecimal capital = BigDecimalUtil.subtract(afBorrowCashDo.getAmount(),renewAmount);
+		
+		if (capital.compareTo(afBorrowCashDo.getAmount()) < 0) {   //判断续借金额是否大于借款金额
+			throw new FanbeiException(
+					FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+		}
 		// 续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
