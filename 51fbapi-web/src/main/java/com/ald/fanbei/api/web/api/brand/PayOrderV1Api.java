@@ -146,15 +146,16 @@ public class PayOrderV1Api implements ApiHandle {
 				&& StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
 			AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
 					.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
-			
-			AfShareUserGoodsDo result = afShareUserGoodsService
-					.getByUserId(shareUserGoodsDo.getUserId());
-			
-			if (result != null && result.getIsBuy() == 1) {
-				logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
+			if(shareUserGoodsDo != null)
+			{
+        			AfShareUserGoodsDo result = afShareUserGoodsService
+        					.getByUserId(shareUserGoodsDo.getUserId());
+        			
+        			if (result != null && result.getIsBuy() == 1) {
+        				logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
+        				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
+        			}
 			}
-			
 		}
 
 		// ----------------
