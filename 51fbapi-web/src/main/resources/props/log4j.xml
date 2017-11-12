@@ -22,6 +22,17 @@
 				value="%d; %m%n" />
 		</layout>
 	</appender>
+	<!-- [应用Appender] 风控请求日志  -->
+	<appender name="FBRISK_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/app-risk.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
 
 	<!-- [应用Appender] 收到h5的请求入口日志,非h5接口日志请勿放这里 -->
 	<appender name="FANBWEBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
@@ -107,13 +118,18 @@
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
 
+
 	<!-- [应用Logger] BI日志 -->
 	<logger name="FANBEI_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEI_BI_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
-	
+	<logger name="FBRISK_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FBRISK_BI_APPENDER" />
+		<appender-ref ref="STDOUT_APPENDER" />
+	</logger>
 	<!-- [应用Logger] BI日志 -->
 	<logger name="FBWEB_BI" additivity="true">
 		<level value="${fbapi.log.level}" />

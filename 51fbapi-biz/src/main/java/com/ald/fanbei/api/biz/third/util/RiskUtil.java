@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -70,7 +71,6 @@ import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RSAUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -119,8 +119,6 @@ public class RiskUtil extends AbstractThird {
     @Resource
     RiskUtil riskUtil;
     @Resource
-    RebateContext rebateContext;
-    @Resource
     TongdunUtil tongdunUtil;
     @Resource
     JpushService jpushService;
@@ -128,6 +126,10 @@ public class RiskUtil extends AbstractThird {
     BizCacheUtil bizCacheUtil;
     @Resource
     AfUserService afUserService;
+    @Autowired
+    RiskRequestProxy requestProxy;
+    @Autowired
+    RebateContext rebateContext;
     @Resource
     CommitRecordUtil commitRecordUtil;
     @Resource
@@ -222,7 +224,7 @@ public class RiskUtil extends AbstractThird {
         reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, phone));
         reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, idNo));
         reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, email));
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/register.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/register.htm", reqBo);
         logThird(reqResult, "register", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR);
@@ -268,7 +270,7 @@ public class RiskUtil extends AbstractThird {
                 reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getMobile()));
                 reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getIdNumber()));
                 reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, accountDto.getEmail()));
-                String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/register.htm", reqBo);
+                String reqResult = requestProxy.post(getUrl() + "/modules/api/user/register.htm", reqBo);
                 logThird(reqResult, "register", reqBo);
             }
         }
@@ -305,7 +307,7 @@ public class RiskUtil extends AbstractThird {
         reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, phone));
         reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, idNo));
         reqBo.setEmail(RSAUtil.encrypt(PRIVATE_KEY, email));
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/modify.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/modify.htm", reqBo);
         logThird(reqResult, "modify", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
@@ -340,7 +342,7 @@ public class RiskUtil extends AbstractThird {
         reqBo.setReqExt("");
         reqBo.setNotifyUrl(getNotifyHost() + "/third/risk/verify");
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/verify.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/verify.htm", reqBo);
         logThird(reqResult, "verify", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
@@ -385,7 +387,7 @@ public class RiskUtil extends AbstractThird {
 //			logger.error("field too long，registerStrongRisk insert commitRecord fail,consumerNo="+consumerNo);
 //		}
 
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 
         logThird(reqResult, "registerAndRisk", reqBo);
         if (StringUtil.isBlank(reqResult)) {
@@ -473,7 +475,7 @@ public class RiskUtil extends AbstractThird {
 
         String url = getUrl() + "/modules/api/risk/weakRiskVerify.htm";
         //String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
-        String reqResult = HttpUtil.post(url, reqBo);
+        String reqResult = requestProxy.post(url, reqBo);
 
         logThird(reqResult, "weakRiskVerify", reqBo);
         if (StringUtil.isBlank(reqResult)) {
@@ -544,7 +546,7 @@ public class RiskUtil extends AbstractThird {
 
         String url = getUrl() + "/modules/api/user/action/raiseQuota.htm";
 
-        String reqResult = HttpUtil.post(url, reqBo);
+        String reqResult = requestProxy.post(url, reqBo);
 
 //		String content = JSONObject.toJSONString(reqBo);
 //		try {
@@ -587,7 +589,7 @@ public class RiskUtil extends AbstractThird {
 
         String url = getUrl() + "/modules/api/risk/repayment.htm";
 
-        String reqResult = HttpUtil.post(url, reqBo);
+        String reqResult = requestProxy.post(url, reqBo);
 
 //		String content = JSONObject.toJSONString(reqBo);
 //		try {
@@ -959,7 +961,7 @@ public class RiskUtil extends AbstractThird {
         reqBo.setOrderNo(getOrderNo("oper", userName.substring(userName.length() - 4, userName.length())));
         reqBo.setConsumerNo(consumerNo);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/operator.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/operator.htm", reqBo);
         logThird(reqResult, "operator", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_OPERATOR_ERROR);
@@ -1043,9 +1045,9 @@ public class RiskUtil extends AbstractThird {
         reqBo.setCount(detailBos.size() + "");
         reqBo.setDetails(JSON.toJSONString(detailBos));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/linkman/remove.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/action/linkman/remove.htm", reqBo);
         // 测试
-        // String reqResult = HttpUtil.post("http://60.190.230.35:52637" +
+        // String reqResult = requestProxy.post("http://60.190.230.35:52637" +
         // "/modules/api/user/action/linkman/remove.htm", reqBo);
 
         logThird(reqResult, "addressContactsPrimaries", reqBo);
@@ -1080,7 +1082,7 @@ public class RiskUtil extends AbstractThird {
         reqBo.setData(StringUtil.filterEmoji(data));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
         // http://arc.edushi.erongyun.net "http://60.190.230.35:52637"
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/action/directory/remove.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/action/directory/remove.htm", reqBo);
         logThird(reqResult, "addressListPrimaries", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_ADDRESSLIST_PRIMARIES_ERROR);
@@ -1115,9 +1117,9 @@ public class RiskUtil extends AbstractThird {
         reqBo.setPhone(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getMobile()));
         reqBo.setIdNo(RSAUtil.encrypt(PRIVATE_KEY, afUserAccountDto.getIdNumber()));
         // String reqResult =
-        // HttpUtil.post("http://192.168.96.139:80/modules/api/user/whiteuser.htm",
+        // requestProxy.post("http://192.168.96.139:80/modules/api/user/whiteuser.htm",
         // reqBo);
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/user/whiteuser.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/user/whiteuser.htm", reqBo);
         logThird(reqResult, "addwhiteUser", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.ADD_WHITE_USER_PRIMARIES_ERROR);
@@ -1169,7 +1171,7 @@ public class RiskUtil extends AbstractThird {
 //		} catch (Exception e) {
 //			logger.error("field too long，verify insert commitRecord fail,consumerNo="+consumerNo);
 //		}
-        String reqResult = HttpUtil.post(url, reqBo);
+        String reqResult = requestProxy.post(url, reqBo);
 
         logThird(reqResult, "verify", reqBo);
         if (StringUtil.isBlank(reqResult)) {
@@ -1412,7 +1414,7 @@ public class RiskUtil extends AbstractThird {
         String signInfo = SignUtil.sign(createLinkString(params), PRIVATE_KEY);
         params.put("signInfo", signInfo);
 
-        String reqResult = HttpUtil.post(getUrl() + "modules/api/risk/verify.htm", params);
+        String reqResult = requestProxy.post(getUrl() + "modules/api/risk/verify.htm", params);
         logThird(reqResult, "queryAmount", params);
 
         if (StringUtil.isBlank(reqResult)) {
@@ -1454,7 +1456,7 @@ public class RiskUtil extends AbstractThird {
 
         reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/virtualProductQuota.htm", reqBo);
 
         logThird(reqResult, "virtualProductQuota", reqBo);
         if (StringUtil.isBlank(reqResult)) {
@@ -1486,8 +1488,8 @@ public class RiskUtil extends AbstractThird {
         RiskQueryOverdueOrderReqBo reqBo = new RiskQueryOverdueOrderReqBo();
         reqBo.setConsumerNo(consumerNo);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        String reqResult = HttpUtil.post(getUrl() + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
-//		String reqResult = HttpUtil.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/queryOverdueOrder1.htm", reqBo);
+//		String reqResult = requestProxy.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
 
         logThird(reqResult, "queryOverdueOrder", reqBo);
         if (StringUtil.isBlank(reqResult)) {
@@ -1524,7 +1526,7 @@ public class RiskUtil extends AbstractThird {
         String url = getUrl() + "/modules/api/risk/overdueOrder.htm";
         //石桂红本地
 //		String url = "http://192.168.110.22:80" + "/modules/api/risk/overdueOrder.htm";  
-        String reqResult = HttpUtil.post(url, reqBo);
+        String reqResult = requestProxy.post(url, reqBo);
 
         logThird(reqResult, "overDued", reqBo);
         RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
@@ -1766,7 +1768,7 @@ public class RiskUtil extends AbstractThird {
 
         String url = getUrl() + "/modules/api/risk/userRate.htm";
 //		String url = "http://192.168.110.22:80/modules/api/risk/userRate.htm";
-        String reqResult = HttpUtil.post(url, reqBo);
+        String reqResult = requestProxy.post(url, reqBo);
         logThird(reqResult, "getUserLayRate", reqBo);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_USERLAY_RATE_ERROR);
@@ -1818,7 +1820,7 @@ public class RiskUtil extends AbstractThird {
         map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
         String url = getUrl() + "/modules/api/event/syn/login.htm";
         //String url = "http://192.168.110.16:8080" + "/modules/api/risk/weakRiskVerify.htm";
-        String reqResult = HttpUtil.post(url, map);
+        String reqResult = requestProxy.post(url, map);
 
         logThird(reqResult, "verifySynLogin", map);
         if (StringUtil.isBlank(reqResult)) {
@@ -1941,7 +1943,7 @@ public class RiskUtil extends AbstractThird {
             reqBo.setOrderNo(orderNo);
             reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
             String url = getUrl() + "/modules/api/risk/creditPayment.htm";
-            String reqResult = HttpUtil.post(url, reqBo);
+            String reqResult = requestProxy.post(url, reqBo);
 
             logThird(reqResult, "creditPayment", reqBo);
             if (StringUtil.isBlank(reqResult)) {
