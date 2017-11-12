@@ -22,7 +22,7 @@ if (currentStarmp >= twoTime && currentStarmp < fiveTime) { //11.9-11.10
 if (currentStarmp >= fiveTime && currentStarmp < sixTime) { //11.11-11.12
     addStyle(2);
 }
-if (currentStarmp > fourTime) { //11.13
+if (currentStarmp >= sixTime) { //11.13
     addStyle(3);
 }
 
