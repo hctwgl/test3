@@ -39,7 +39,8 @@ public class RiskRequestProxy {
         logger.info(String.format(TRACK_BEGIN_FORMAT, trackId,url, JSON.toJSONString(params)));
         try {
             riskTrackerDo.setGmtCreate(new Date());
-            riskTrackerDo.setParams(JSON.toJSONString(params));
+            String paramsStr=JSON.toJSONString(params);
+            riskTrackerDo.setParams(paramsStr.length()>2048?paramsStr.substring(0,2000)+"|参数过长，无法处理":paramsStr);
             riskTrackerDo.setTrackId(trackId);
             riskTrackerDo.setUrl(url);
             result = HttpUtil.post(url, params);
