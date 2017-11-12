@@ -1488,7 +1488,7 @@ public class RiskUtil extends AbstractThird {
         RiskQueryOverdueOrderReqBo reqBo = new RiskQueryOverdueOrderReqBo();
         reqBo.setConsumerNo(consumerNo);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/queryOverdueOrder1.htm", reqBo);
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
 //		String reqResult = requestProxy.post("http://192.168.110.22:80" + "/modules/api/risk/queryOverdueOrder.htm", reqBo);
 
         logThird(reqResult, "queryOverdueOrder", reqBo);

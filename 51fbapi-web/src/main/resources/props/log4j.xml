@@ -125,6 +125,7 @@
 		<appender-ref ref="FANBEI_BI_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
+	<!-- [应用Logger] 风控监控log日志 -->
 	<logger name="FBRISK_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FBRISK_BI_APPENDER" />
