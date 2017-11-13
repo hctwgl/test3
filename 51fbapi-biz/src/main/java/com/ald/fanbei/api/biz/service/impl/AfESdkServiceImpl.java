@@ -84,7 +84,9 @@ public class AfESdkServiceImpl implements AfESdkService {
                 break;
             }
         }
-        return SEAL.addTemplateSeal(accountId, template, sColor);
+        AddSealResult r = SEAL.addTemplateSeal(accountId, template, sColor);
+        logger.info("esdk createSealPersonal:",r);
+        return r;
 
     }
 
@@ -270,6 +272,7 @@ public class AfESdkServiceImpl implements AfESdkService {
         psn.setMobile(mobile).setEmail(email).setName(name).setIdNo(idno)
                 .setPersonArea(area);
         AddAccountResult r = SERVICE.addAccount(psn);
+        logger.info("esdk addPerson:",r);
         return r;
     }
 
@@ -277,6 +280,7 @@ public class AfESdkServiceImpl implements AfESdkService {
     public GetAccountProfileResult getPerson(Map<String, String> map) {
         String idno = map.get("idno");
         GetAccountProfileResult r = SERVICE.getAccountInfoByIdNo(idno,11);
+        logger.info("esdk getPerson:",r);
         return r;
     }
 
