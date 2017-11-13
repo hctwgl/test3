@@ -194,7 +194,7 @@ public class UserWithholdController extends BaseController {
                 try{
                     map = afRepaymentBorrowCashService.createRepayment(BigDecimal.ZERO,
                             repaymentAmount, actualAmount, null, userAmount,
-                            borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+                            borrowId, cardId, userId, "sysJob", userDto);
                 }catch (Exception e) {
                     logger.info("withholdCashJob error", e);
                 }
