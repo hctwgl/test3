@@ -56,29 +56,26 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 	
 	@Override
 	public int addCashRecord(final AfCashRecordDo afCashRecordDo,final AfUserBankcardDo card) {
-
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
-
+		final AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afCashRecordDo.getUserId());
+		final BigDecimal amount =afCashRecordDo.getAmount();
+		
+		int result =  transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
-				
 				try {
-					AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(afCashRecordDo.getUserId());
-
 					AfUserAccountDo updateAccountDo = new AfUserAccountDo();
 					updateAccountDo.setRid(afUserAccountDo.getRid());
 					updateAccountDo.setUserId(afCashRecordDo.getUserId());
-					BigDecimal amount =afCashRecordDo.getAmount();
 
 					if(StringUtils.equals(afCashRecordDo.getType(), UserAccountLogType.JIFENBAO.getCode())){
 						updateAccountDo.setJfbAmount(amount.multiply(new BigDecimal(-1)));
-
 					}else{
 						updateAccountDo.setRebateAmount(amount.multiply(new BigDecimal(-1)));
 					}
 					if(afUserAccountService.updateUserAccount(updateAccountDo)==0){
 						return 0;
 					}
+					
 					afCashRecordDao.addCashRecord(afCashRecordDo);
 					AfUserAccountLogDo afUserAccountLogDo = new AfUserAccountLogDo();
 					afUserAccountLogDo.setRefId( afCashRecordDo.getRid()+"");
@@ -92,27 +89,29 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 						cashLog.setStatus(BorrowStatus.APPLY.getCode());
 						cashLog.setUserId(afCashRecordDo.getUserId());
 						afCashLogDao.addCashLog(cashLog);
-
-						
-					}else{//银行卡提现
-						UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
-								card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_CASH_PURPOSE, "02",UserAccountLogType.REBATE_CASH.getCode(),afCashRecordDo.getRid()+"");
-						if(!upsResult.isSuccess()){
-							//代付失败处理
-							afUserAccountService.dealUserDelegatePayError(UserAccountLogType.REBATE_CASH.getCode(), afCashRecordDo.getRid());
-							throw new FanbeiException("bank card pay error",FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-						}
 					}
 					return 1;
 				} catch (Exception e) {
 					logger.info("dealWithTransferSuccess error:"+e);
-					
-					
 					status.setRollbackOnly();
 					return 0;
 				}
 			}
 		});
+		
+		if(result==1){
+			//基础处理成功，待调用 三方进行打款操作
+			if(null != card){//银行卡提现
+				UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(amount, afUserAccountDo.getRealName(), card.getCardNumber(), afUserAccountDo.getUserId()+"",
+						card.getMobile(), card.getBankName(), card.getBankCode(),Constants.DEFAULT_CASH_PURPOSE, "02",UserAccountLogType.REBATE_CASH.getCode(),afCashRecordDo.getRid()+"");
+				if(!upsResult.isSuccess()){
+					//代付失败处理
+					afUserAccountService.dealUserDelegatePayError(UserAccountLogType.REBATE_CASH.getCode(), afCashRecordDo.getRid());
+					throw new FanbeiException("bank card pay error",FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+				}
+			}
+		}
+		return result;
 	}
 
 }
