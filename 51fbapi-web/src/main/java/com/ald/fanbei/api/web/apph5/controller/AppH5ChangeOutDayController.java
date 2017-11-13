@@ -189,7 +189,7 @@ public class AppH5ChangeOutDayController extends BaseController{
     private List<Map<String, Integer>> getOutDayList(Integer outDay) {
     	List<Map<String, Integer>> outDayList = new ArrayList<Map<String,Integer>>();
     	for (int i = 1; i < 29; i++) {
-			if (outDay == i || outDay == 19 || outDay == 20) {
+			if (outDay == i || i == 19 || i == 20) {
 				continue;
 			}
 			Map<String, Integer> map = new HashMap<String, Integer>();
