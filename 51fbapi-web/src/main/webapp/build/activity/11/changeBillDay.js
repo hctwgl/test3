@@ -162,9 +162,9 @@
         toPay(){
             window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_TOPAY";//跳转app还款页
         },
-        toMove(){
+       /*  toMove(){
             window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_MOVE";//跳转app分期首页
-        },
+        }, */
         //点击隐藏mask
         maskHide(){
             $('.mask').hide();

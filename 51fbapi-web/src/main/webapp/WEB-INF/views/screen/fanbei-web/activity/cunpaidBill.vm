@@ -23,7 +23,7 @@
         <div class="dynamic-top">
             <div class="fork"><!--<img src="$src/dynamicBill-01.png" alt="">!--></span>
             <div class="personIn">
-                <div class="unpaid">您有逾期账单未还清<br/>请还清账单后后再来更改吧！</div>
+                <div class="unpaid">您有逾期账单未还清<br/>请还清账单后再来更改吧！</div>
                 <img :src="contentOne.data.avatar" alt="">
                 <span class="personName">{{contentOne.data.nick}}</span>
                 <span class="personPhone">{{contentOne.data.userName}}</span>
@@ -37,7 +37,7 @@
         </div>
         <div class="dynamic-bottom">
             <!--<div class="oneTime"><span class="point"></span>账单日一年只允许更改一侧，请慎重</div>!-->
-            <button class="btn" @click="toPay()"  @click="toMove()">去还款</button>
+            <!--<button class="btn" @click="toPay()"  @click="toMove()">去还款</button>!-->
         </div>
     </div>
 </body>
