@@ -190,7 +190,7 @@
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
 				<entry key="/user/accountAppealCheckSms" value-ref="accountAppealCheckSmsApi"/>
 				<entry key="/user/accountAppealDo" value-ref="accountAppealDoApi"/>
-				
+				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
 
 
@@ -271,6 +271,7 @@
 				<entry key="/auth/getYiTuInfo" value-ref="getYiTuInfoApi" />
 				<entry key="/auth/submitIdNumberInfo" value-ref="submitIdNumberInfoApi" />
 				<entry key="/auth/authStrongRisk" value-ref="authStrongRiskApi" />
+				<entry key="/auth/authStrongRiskV1" value-ref="authStrongRiskV1Api" />
 				<entry key="/auth/authContactorV1" value-ref="authContactorV1Api" />
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
