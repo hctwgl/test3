@@ -22,6 +22,14 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 
+/**
+ * 
+* @ClassName: GetMyBorrowV1Api 
+* @Description: 用户获取账单主页面的api——账单二期
+* @author yuyue
+* @date 2017年11月13日 上午10:51:12 
+*
+ */
 @Component("getMyBorrowV1Api")
 public class GetMyBorrowV1Api implements ApiHandle{
 
