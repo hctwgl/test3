@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.api.system;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,6 +8,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -30,6 +34,11 @@ public class GetTabbarInforApi implements ApiHandle {
 
 	@Resource
 	AfResourceService afResourceService;
+
+	@Resource
+	AfOrderService afOrderService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	
 	@Override
@@ -38,6 +47,50 @@ public class GetTabbarInforApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		List<AfResourceDo> resourceList = afResourceService.getResourceListByTypeOrderBy(AfResourceType.HomeTabbar.getCode());
 		Map<String, Object> tabbarInfor= getObjectWithResourceDolist(context,resourceList,requestDataVo);
+		//resp.setResponseData(tabbarInfor);
+
+		//查询用户登录后未支付订单数
+		Long userId = context.getUserId();
+		if(userId != null){
+			//查看redis中是否有登录时间,有说明不是第一次登录,判断与上次登录时间是否是同一天
+			String getTime = (String)bizCacheUtil.getObject(Constants.NO_FINISH_ORDER + userId);
+			//记录用户当前登录时间
+			String nowLogin = DateUtil.getShortNow(new Date());
+			//不是第一次登录
+			if(getTime != null){
+				//当前登录时间和redis中存储的时间是否是同一天
+				if(!nowLogin.equals(getTime)){
+					//根据用户id查询用户未支付订单数
+					int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
+					bizCacheUtil.saveObject(Constants.NO_FINISH_ORDER+userId,nowLogin,Constants.SECOND_OF_ONE_DAY);
+					tabbarInfor.put("noFinishOrderCount",noFinishOrderCount);
+					resp.setResponseData(tabbarInfor);
+					return resp;
+				}else {
+					tabbarInfor.put("noFinishOrderCount",0);
+					if("Y".equals((String)bizCacheUtil.getObject(Constants.FIRST_TIME + userId))){
+						bizCacheUtil.saveObject(Constants.FIRST_TIME+userId,nowLogin,0);
+						int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
+						tabbarInfor.put("noFinishOrderCount",noFinishOrderCount);
+					}
+					//bizCacheUtil.saveObject(Constants.NO_FINISH_ORDER+userId,nowLogin,0);
+					resp.setResponseData(tabbarInfor);
+					return resp;
+				}
+			}
+			//第一次登录
+			//记录用户当前登录时间,存到redis中
+			bizCacheUtil.saveObject(Constants.NO_FINISH_ORDER+userId,nowLogin,Constants.SECOND_OF_ONE_DAY);
+			//根据用户id查询用户未支付订单数
+			int noFinishOrderCount = afOrderService.getNoFinishOrderCount(userId);
+			if(noFinishOrderCount == 0){
+				bizCacheUtil.saveObject(Constants.FIRST_TIME+userId,"Y",Constants.SECOND_OF_ONE_DAY);
+			}
+			tabbarInfor.put("noFinishOrderCount",noFinishOrderCount);
+			resp.setResponseData(tabbarInfor);
+			return resp;
+		}
+		tabbarInfor.put("noFinishOrderCount",0);
 		resp.setResponseData(tabbarInfor);
 		return resp;
 	}
