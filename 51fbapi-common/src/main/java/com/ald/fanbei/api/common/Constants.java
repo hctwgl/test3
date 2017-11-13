@@ -24,7 +24,7 @@ public class Constants {
 
 	public static final int MINITS_OF_2HOURS = 120;
 	public static final int MINITS_OF_HALF_HOUR = 30;
-
+	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
 	//商品详情图片信息包含数据总计部分
 	public static final int GOODSDETAIL_PIC_PARTS = 3;

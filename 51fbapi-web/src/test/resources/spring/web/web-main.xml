@@ -92,8 +92,10 @@
 		<constructor-arg>
 			<list>
 				<value>/user/login</value>
+				<value>/user/quickLogin</value>
 				<value>/user/getVerifyCode</value>
 				<value>/user/setRegisterPwd</value>
+				<value>/user/quickRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
 				<value>/user/checkLoginVerifyCode</value>
@@ -132,10 +134,13 @@
 
 				<!-- user -->
 				<entry key="/user/login" value-ref="loginApi" />
+				<entry key="/user/quickLogin" value-ref="quickLoginApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
 				<entry key="/user/setRegisterPwd" value-ref="setRegisterPwdApi" />
+				<entry key="/user/quickRegisterPwd" value-ref="quickRegisterPwdApi" />
 				<entry key="/user/resetPwd" value-ref="resetPwdApi" />
+				<entry key="/user/setQuickFirstPwd" value-ref="setQuickFirstPwdApi" />
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
@@ -146,6 +151,7 @@
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
+				<entry key="/user/setQuickLoginPwd" value-ref="setQuickLoginPwdApi" />
 				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
 				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
 				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />

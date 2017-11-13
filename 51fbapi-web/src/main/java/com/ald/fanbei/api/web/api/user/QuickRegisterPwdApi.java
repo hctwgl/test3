@@ -1,15 +1,5 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -31,6 +21,14 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 
@@ -39,8 +37,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * @author Xiaotianjian 2017年1月19日下午1:48:50
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("setRegisterPwdApi")
-public class SetRegisterPwdApi implements ApiHandle {
+@Component("quickRegisterPwdApi")
+public class QuickRegisterPwdApi implements ApiHandle {
 
 	@Resource
 	AfUserService afUserService;
@@ -61,7 +59,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 		String requestId = requestDataVo.getId();
 		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
 		String userName = context.getUserName();
-		String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
+//		String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
 		String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);//邀请码
@@ -80,9 +78,9 @@ public class SetRegisterPwdApi implements ApiHandle {
 		if (afUserDo != null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_HAS_REGIST_ERROR);
 		}
-		if (StringUtil.isBlank(passwordSrc)) {
+		/*if (StringUtil.isBlank(passwordSrc)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
+		}*/
 		AfUserDo userDo = new AfUserDo();
 		// 判断邀请码是否为空
 		if (StringUtil.isNotEmpty(recommendCode)) {
@@ -95,30 +93,14 @@ public class SetRegisterPwdApi implements ApiHandle {
 			}
 
 		}
-		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.REGIST.getCode());
-		if (smsDo == null) {
-			logger.error("sms record is empty");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
-		// 判断验证码是否一致并且验证码是否已经做过验证
-		String realCode = smsDo.getVerifyCode();
-		if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 0) {
-			logger.error("verifyCode is invalid");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
-		// 判断验证码是否过期
-		if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
-		}
-
 		String salt = UserUtil.getSalt();
-		String password = UserUtil.getPassword(passwordSrc, salt);
+//		String password = UserUtil.getPassword(passwordSrc, salt);
 		userDo.setSalt(salt);
 		userDo.setUserName(userName);
 		userDo.setMobile(userName);
 		userDo.setNick(nick);
-		userDo.setPassword(password);
-		// userDo.setRegisterChannelId(registerChannelId);
+//		userDo.setPassword(password);
+//		 userDo.setRegisterChannelId(registerChannelId);
 		if (registerChannelPointId != null) {
 			AfPromotionChannelPointDo channelPointDo = afPromotionChannelPointService.getPoint("Andriod", registerChannelPointId);
 			AfPromotionChannelPointDo channelPointDoIOS = afPromotionChannelPointService.getPoint("IOS", registerChannelPointId);
@@ -155,6 +137,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 				logger.warn("setRegisterPwdApi setRegisterChannelId source is not found,set into default.registerChannelPointId="+registerChannelPointId);
 			}
 		}
+		smsUtil.checkSmsByMobileAndType(context.getUserName(),verifyCode, SmsType.QUICK_LOGIN);//短信验证码判断
 		userDo.setRecommendId(0l);
 		if (!StringUtils.isBlank(recommendCode)) {
 			AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
