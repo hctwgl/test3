@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_boluome_rebate表:点亮活动新版模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfBoluomeRebateDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,user_id,first_order,order_id,rebate_amount 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="firstOrder != null and firstOrder != ''">
+            AND first_order = #{firstOrder,jdbcType=INTEGER}
+        </if>
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId,jdbcType=INTEGER}
+        </if>
+        <if test="rebateAmount != null and rebateAmount != ''">
+            AND rebate_amount = #{rebateAmount,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_boluome_rebate
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="firstOrder != null">        
+	            first_order,
+	        </if>
+	        <if test="orderId != null">        
+	            order_id,
+	        </if>
+	        <if test="rebateAmount != null">        
+	            rebate_amount,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="firstOrder != null" >
+		       #{firstOrder,jdbcType=INTEGER},
+		    </if>
+		    <if test="orderId != null" >
+		       #{orderId,jdbcType=INTEGER},
+		    </if>
+		    <if test="rebateAmount != null" >
+		       #{rebateAmount,jdbcType=DECIMAL},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
+        UPDATE af_boluome_rebate
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="firstOrder != null and firstOrder != '' ">        
+                first_order = #{firstOrder,jdbcType=INTEGER},                
+            </if>
+            <if test="orderId != null and orderId != '' ">        
+                order_id = #{orderId,jdbcType=INTEGER},                
+            </if>
+            <if test="rebateAmount != null and rebateAmount != '' ">        
+                rebate_amount = #{rebateAmount,jdbcType=DECIMAL}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_rebate
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_rebate
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_rebate
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

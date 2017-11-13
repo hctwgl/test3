@@ -1,6 +1,10 @@
 @url: "http://f.51fanbei.com/h5/app/activity/11";
 .clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
 .clearFix{zoom:1}
+.overFlowClick{
+  overflow: hidden;
+  height:100%;
+}
 body{
   background:#fdedcb;
   position:relative;
@@ -124,13 +128,14 @@ body{
 }
 .alertRule{
   width: 4.07rem;
-  height:6.4rem;
+  height:6.8rem;
   padding:0 .55rem;
   background:#feedc7;
   position:fixed;
   top:18%;
   left:140%;
   z-index: 5;
+  border-radius: .08rem;
 }
 .ruleTitle{
   width:4.07rem;
@@ -138,7 +143,7 @@ body{
   margin: -.5rem auto 0;
 }
 .ruleCont{
-  height: 6rem;
+  height: 6.2rem;
   overflow: auto;
 }
 .ruleCont span{

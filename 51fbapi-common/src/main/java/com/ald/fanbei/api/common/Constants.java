@@ -77,10 +77,15 @@ public class Constants {
 	/**三方调用 ，例如还款等调用时，事务内出现自定义异常时，向上返回map对应key值**/
 	public static final String THIRD_REQ_EXCEP_KEY = "fanbei_third_reqexp_key";
 
+	//用户未完成订单
+	public  static final  String NO_FINISH_ORDER = "NO_FINISH_ORDER";
+	public  static final  String FIRST_TIME = "FIRST_TIME";
 
 
 
 
+	public static final String CONF_KEY_INVELOMENT_TYPE = "fbapi.inveloment.type";
+	public static final String FILE_CLOUD_PATH = "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/";
 	public static final Long INVITE_START_VALUE = 1679625L;
 	public static final String INVELOMENT_TYPE_TEST = "test";
 	public static final String INVELOMENT_TYPE_ONLINE = "online";
@@ -387,15 +392,13 @@ public class Constants {
 	public static final String THIRD_GOODS_TYPE = "third_goods";
 
 	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
-	
+
 	//双十一砍价活动
 	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
-	  
-	//借钱费率配置相关
+//借钱费率配置相关
 	 public static final String BORROW_RATE="BORROW_RATE";
 	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
 	 public static final String BORROW_CASH_OVERDUE_POUNDAGE="BORROW_CASH_OVERDUE_POUNDAGE";
-
 }

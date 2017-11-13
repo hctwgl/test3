@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -242,7 +243,7 @@ public class AppBorrowCashToDrawController extends BaseController {
 		logger.info("delCache is SUCCESS,endDate = " + new Date());
 		return null;
 	}
-	
+
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub

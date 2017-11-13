@@ -320,9 +320,15 @@ public class PayRoutController {
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
                     afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
                 } else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
-                    afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    int result=afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    if(result<=0){
+                        return "ERROR";
+                    }
                 } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                   int result= afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 } else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
                     afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
@@ -342,9 +348,15 @@ public class PayRoutController {
                 } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败	311
                     afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+                    int result= afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv) || OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    int result= afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 }
             }
             return "SUCCESS";

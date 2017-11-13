@@ -114,12 +114,16 @@ let vm = new Vue({
         activityDetailClick(){
             let self=this;
             self.ruleShow=true;
+            $('body').addClass('overFlowClick');
+            $('html').addClass('overFlowClick');
             $('.alertRule').animate({'left':'15.4%'},600);
         },
         //点击closeRule关闭mask和规则
         closeClick(){
             let self=this;
             self.ruleShow=false;
+            $('body').removeClass('overFlowClick');
+            $('html').removeClass('overFlowClick');
             $('.alertRule').animate({'left':'140%'},600);
         },
         //点击立即抢购

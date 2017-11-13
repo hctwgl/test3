@@ -74,12 +74,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 	@Resource
 	AfShareGoodsService afShareGoodsService;
-	
+
 	@Resource
 	AfShareUserGoodsService afShareUserGoodsService;
 	@Resource
 	TransactionTemplate transactionTemplate;
-	
+
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -92,10 +93,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 				.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("addressId"), ""), 0l);
 		String invoiceHeader = ObjectUtils.toString(requestDataVo.getParams().get("invoiceHeader"));
 		String payType = ObjectUtils.toString(requestDataVo.getParams().get("payType"));
-		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),
-				BigDecimal.ZERO);
-		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);// 用户的优惠券id(af_user_coupon的主键)
-
+		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"),BigDecimal.ZERO);
+		Long couponId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("couponId"), 0);//用户的优惠券id(af_user_coupon的主键)
+		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
@@ -134,8 +134,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 		// BigDecimal(count)));
 
 		afOrder.setCount(count);
-		afOrder.setNper(nper);
-		afOrder.setPayType(payType);
+		//收银台支持版本控制
+		if (!fromCashier) {
+			afOrder.setNper(nper);
+			afOrder.setPayType(payType);
+		}
 		afOrder.setInvoiceHeader(invoiceHeader);
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
@@ -150,10 +153,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 		}
 
-		if (nper.intValue() > 0) {
-			// 保存手续费信息
-			BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
-			afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+		//收银台支持版本控制
+		if (!fromCashier) {
+			if (nper.intValue() > 0) {
+				// 保存手续费信息
+				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
+				afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+			}
 		}
 		if (priceDo != null) {
 			// +++双十一砍价活动增加逻辑++++
@@ -165,10 +171,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 				afOrder.setThirdOrderNo(afDeUserGoodsDo.getRid().toString());
 			}
 			// -----------------------------
-			
+
 			//mqp_新人专享活动增加逻辑
 			if (userId != null) {
-			
+
 				//查询用户订单数
 				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
 				if(oldUserOrderAmount==0){
@@ -184,9 +190,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 							FanbeiExceptionCode code = FanbeiExceptionCode.ONLY_ONE_GOODS_ACCEPTED;
 							ApiHandleResponse resp1 = new ApiHandleResponse(requestDataVo.getId(), code);
 							return resp1;
-							
+
 						}
-						
+
 						BigDecimal decreasePrice = resultDo.getDecreasePrice();
 						priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
 						transactionTemplate
@@ -210,7 +216,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 											// 使用ThirdOrderNo记录砍价商品价格信息的id（为了避免扩展order表），自营商品ThirdOrderNo均为'',所以选择该字段扩展。
 											afOrder.setThirdOrderNo(t.getRid()
 													.toString());
-											
+
 											return t.getRid();
 										} catch (Exception e) {
 											logger.info("AfShareUserGoodsDo error:" + e);
@@ -221,7 +227,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 									}
 								});
 					}
-					
+
 				}
 			}
 			//-------------------------------
@@ -241,11 +247,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		String isEnoughAmount = "Y";
 		String isNoneQuota = "N";
-		if (useableAmount.compareTo(actualAmount) < 0) {
-			isEnoughAmount = "N";
-		}
-		if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
-			isNoneQuota = "Y";
+		if (!fromCashier) {
+			if (useableAmount.compareTo(actualAmount) < 0) {
+				isEnoughAmount = "N";
+			}
+			if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
+				isNoneQuota = "Y";
+			}
 		}
 
 		Map<String, Object> data = new HashMap<String, Object>();
