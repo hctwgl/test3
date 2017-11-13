@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="201711131519")
+    #set($src="http://f.51fanbei.com/h5/app/activity/11")
+    <meta charset="UTF-8">
+    <title>“吃玩住行”就来这</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/ggFix.css?version=$version">
+</head>
+<body>
+<div id="ggFix" class="ggFix">
+    <div class="banner"><img src="$src/ggFix01.jpg"></div>
+    <div class="firstCont">
+        <p class="firstTitle"><img src="$src/ggFix08.png">我想吃霸王餐</p>
+        <div class="cont">
+            <p class="contTop"><span>15</span></p>
+            <p class="contNewUser">新用户去吃霸王餐>>><br/><span>15元外卖券已发放至账户</span></p>
+            <p class="contOldUser">老用户同享霸王餐>>></p>
+        </div>
+    </div>
+    <div class="secondCont">
+        <p class="secondTitle"><img src="$src/ggFix10.png">我想要20元惊喜返利金</p>
+        <div class="cont">
+            <p class="contTop"><span>15</span></p>
+            <p class="contRule">活动规则：<br/>每个场景的首次消费均有惊喜返利金，其中第一次消费即返20元，之后惊喜不断，最高可达51元。每笔消费均有1%~10%的高额返利。<br/>（返利金会以余额的形式发放到您的账户，提现秒到账）</p>
+        </div>
+    </div>
+    <div class="thirdCont">
+        <div class="myPrize">
+            <p class="prizeTop">我的奖励</p>
+            <p class="prizeBot">合计<span><i>1</i><i>2</i><i>1</i><i>1</i></span>元返利金</p>
+        </div>
+        <p class="toCash">去账户提现>>></p>
+        <div class="rebateList">
+            <p class="rebateTitle"><span>消费场景</span><span>消费时间</span><span>返利(元)</span><span>惊喜返利金(元)</span></p>
+            <ul class="rebateCont">
+                <li><span>饿了么</span><span>2017.11.5 12:00</span><span>0.63</span><span>0.56</span></li>
+                <li><span>饿了么</span><span>2017.11.5 12:00</span><span>0.63</span><span>0.56</span></li>
+                <li><span>饿了么</span><span>2017.11.5 12:00</span><span>0.63</span><span>0.56</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="fourthCont">
+        <p class="fourthTitle"><img src="$src/ggFix13.png">我的场景</p>
+        <p class="toRebateMoney">去“吃玩住行”领返利金>>></p>
+        <div class="couponList clearFix">
+            <div class="coupon"></div><div class="coupon"></div>
+        </div>
+        <div class="cardList clearFix">
+            <div class="card"></div><div class="card"></div><div class="card"></div>
+            <div class="card"></div><div class="card"></div><div class="card"></div><div class="card"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/dist/activity/11/ggFix.js?version=$version"></script>
+</body>
+</html>
