@@ -15,7 +15,7 @@
 <body>
     <div id="changbillDay">
         <div class="payforInfo">
-            <span class="imgBox"><img :src="contentOne.data.avatar" alt=""></span>
+            <span class="imgBox"><img :src="contentOne.data.avatar || 'https://f.51fanbei.com/h5/app/activity/11/dynamicBill-04.png'" alt=""></span>
             <p>
                 <span class="infoName">{{contentOne.data.nick}}</span><br/>
                 <span class="infoNum">{{contentOne.data.userName}}</span>
