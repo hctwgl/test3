@@ -38,7 +38,7 @@ let vm = new Vue({
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                     window.location.href='changebillDay?testUser=17839218825';//没有逾期账单跳修改账单日页面
+                     window.location.href='changebillDay';//没有逾期账单跳修改账单日页面
                         if(self.contentOne.msg==1){
                             window.location.href='cunpaidBill';//有逾期账单返回1跳修账单为还清页面
                             }else if(self.contentOne.msg==2){
