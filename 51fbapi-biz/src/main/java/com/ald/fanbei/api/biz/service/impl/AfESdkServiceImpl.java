@@ -1,6 +1,16 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
+
 import com.ald.fanbei.api.biz.service.AfESdkService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfUserSealDao;
@@ -26,19 +36,15 @@ import com.timevale.esign.sdk.tech.service.factory.AccountServiceFactory;
 import com.timevale.esign.sdk.tech.service.factory.SealServiceFactory;
 import com.timevale.esign.sdk.tech.service.factory.SelfSignServiceFactory;
 import com.timevale.esign.sdk.tech.service.factory.UserSignServiceFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service("afESdkService")
 public class AfESdkServiceImpl implements AfESdkService {
 
     @Resource
     AfUserSealDao afUserSealDao;
+    
+    @Resource
+    BizCacheUtil bizCacheUtil;
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AfESdkServiceImpl.class);
 
@@ -293,7 +299,19 @@ public class AfESdkServiceImpl implements AfESdkService {
 
     @Override
     public int insertUserSeal(AfUserSealDo record) {
-        return afUserSealDao.insert(record);
+    	boolean isNotLock = bizCacheUtil.getLockTryTimes("insertUserSeal_lock", "1", 1000);
+    	int num = 0;
+		if (isNotLock) {
+			try {
+				num =  afUserSealDao.insert(record);
+			} catch (Exception e) {
+				logger.error("insertUserSeal error => {}",e.getMessage()) ;
+			} finally {
+				bizCacheUtil.delCache("insertUserSeal_lock");
+			}
+		}
+		return num;
+		
     }
 
     @Override
@@ -303,7 +321,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 
     @Override
     public AfUserSealDo getSealPersonal(AfUserDo afUserDo, AfUserAccountDo accountDo) {
-        String userSeal = new String();
+        
         AfUserSealDo afUserSealDo = selectUserSealByUserId(afUserDo.getRid());
         AfUserSealDo afUserSealDo1 = new AfUserSealDo();
         if (null == afUserSealDo){//第一次创建个人印章
