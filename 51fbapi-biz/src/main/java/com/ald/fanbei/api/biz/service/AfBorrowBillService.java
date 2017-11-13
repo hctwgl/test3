@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -244,6 +245,15 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	BigDecimal getUserNotOutMoney(Long userId);
+
+	/**
+	 * 获取未逾期用户最后还款日
+	 * @author yuyue
+	 * @Time 2017年11月13日 下午3:42:33
+	 * @param userId
+	 * @return
+	 */
+	Date getLastPayDayByUserId(Long userId);
 	
 	
 }

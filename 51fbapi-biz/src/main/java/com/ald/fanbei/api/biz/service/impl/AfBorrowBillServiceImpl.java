@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -257,5 +258,10 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public BigDecimal getUserNotOutMoney(Long userId) {
 		return afBorrowBillDao.getUserNotOutMoney(userId);
+	}
+
+	@Override
+	public Date getLastPayDayByUserId(Long userId) {
+		return afBorrowBillDao.getLastPayDayByUserId(userId);
 	}
 }
