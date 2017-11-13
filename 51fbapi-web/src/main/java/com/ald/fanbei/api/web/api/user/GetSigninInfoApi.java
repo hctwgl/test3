@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.ald.fanbei.api.web.api.user;
 
@@ -49,15 +49,15 @@ public class GetSigninInfoApi implements ApiHandle {
         AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
         AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
         if(afCouponSceneDo==null){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED); 
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
         }
         Integer seriesTotal = 1;
-        
+
         List<CouponSceneRuleBo> ruleBoList=   afCouponSceneService.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
-        
+
         if(ruleBoList.size()==0){
-        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED); 
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 
         }
 
@@ -68,25 +68,25 @@ public class GetSigninInfoApi implements ApiHandle {
     	data.put("ruleSignin",ObjectUtils.toString(afCouponSceneDo.getDescription(), "").toString()  );
 
     	int seriesCount =0;
-        
+
         if (afSigninDo==null||null==afSigninDo.getGmtSeries()) {
         	data.put("seriesCount",seriesCount);
         	data.put("isSignin", "T");
-        	
+
 		}else{
 			seriesCount = afSigninDo.getSeriesCount();
 
 			Date seriesTime = afSigninDo.getGmtSeries();
 			if(DateUtil.isSameDay(new Date(), seriesTime)){
 	        	data.put("isSignin", "F");
-	        	
+
 			}else{
 				if(!DateUtil.isSameDay(DateUtil.getCertainDay(-1),seriesTime)||seriesCount == seriesTotal){
 					seriesCount = 0;
 				}
 	        	data.put("isSignin", "T");
 			}
-			
+
         	data.put("seriesCount", seriesCount);
 
 		}

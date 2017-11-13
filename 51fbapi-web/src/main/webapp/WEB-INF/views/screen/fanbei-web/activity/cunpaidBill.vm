@@ -21,25 +21,16 @@
             <div class="close" v-show="ruleShow==='Y'" @click="maskClick()">X</div>
         </div>
         <div class="dynamic-top">
-            <div class="fork"><!--<img src="$src/dynamicBill-01.png" alt="">!--></span>
             <div class="personIn">
-                <div class="unpaid">您有逾期账单未还清<br/>请还清账单后再来更改吧！</div>
-                <img :src="contentOne.data.avatar" alt="">
-                <span class="personName">{{contentOne.data.nick}}</span>
-                <span class="personPhone">{{contentOne.data.userName}}</span>
             </div>
             <div class="rule" @click="ruleClick()">规则</div>
         </div>
         <div class="dynamic-center">
-            <span class="dateOne"><i class="monthOne">每月{{contentOne.data.outDay}}号</i><br/><i class="count">出账日</i></span>
             <span class="line"></span>
-            <span class="dateTwo"><i class="monthTwo">每月{{contentOne.data.payDay}}号</i><br/><i class="pay">还款日</i></span>
         </div>
         <div class="dynamic-bottom">
             <!--<div class="oneTime"><span class="point"></span>账单日一年只允许更改一侧，请慎重</div>!-->
-            <!--<button class="btn" @click="toPay()"  @click="toMove()">去还款</button>!-->
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/dist/activity/11/changeBillDay.js?version=$version"></script>
 </html>

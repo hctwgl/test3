@@ -16,6 +16,7 @@ public class AfBillDetailInfoVo extends AbstractSerial{
 	private static final long serialVersionUID = 8537808527358013071L;
 
 	private Long billId;//账单id
+	private Long borrowId;//账单id
 	private BigDecimal billAmount;//还款金额
 	private String billStatus;//还款状态 Y:已还款 ，N:未还款，F:冻结
 	private String borrowType;//借款类型：【CASH:现金 ,CONSUME:消费分期,CONSUME_TEMP:消费分期待确认,TOCASH:消费转换成现金借款,TOCONSUME:消费待确认转化成消费】
@@ -42,6 +43,15 @@ public class AfBillDetailInfoVo extends AbstractSerial{
 	public void setBillId(Long billId) {
 		this.billId = billId;
 	}
+
+	public Long getBorrowId() {
+		return borrowId;
+	}
+
+	public void setBorrowId(Long borrowId) {
+		this.borrowId = borrowId;
+	}
+
 	public BigDecimal getBillAmount() {
 		return billAmount;
 	}

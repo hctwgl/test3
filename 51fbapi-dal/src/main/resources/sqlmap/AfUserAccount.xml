@@ -94,6 +94,12 @@
 			,open_id=#{openId}
 		</if>
 		WHERE user_id = #{userId}
+		<if test="rebateAmount != null">
+			 and <![CDATA[  rebate_amount + #{rebateAmount} >=0 ]]>      
+		</if>
+        <if test="jfbAmount != null">
+			and <![CDATA[  jfb_amount + #{jfbAmount} >=0 ]]>      
+		</if>
 	</update>
 
 	<update id="updateOriginalUserAccount" parameterType="AfUserAccountDo">
@@ -265,4 +271,15 @@
         #{item}  
    		</foreach>  
 	</update>
+	
+	<select id="getAuAmountByUserId" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+			SELECT
+		au_amount
+		FROM
+		af_user_account
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+	</select>
 </mapper>

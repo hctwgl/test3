@@ -13,7 +13,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
 import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
@@ -60,7 +59,10 @@ public class TradeOrderApi implements ApiHandle {
         Long businessId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("businessId"), 0l);
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
         BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"), BigDecimal.ZERO);
-
+        boolean fromCashier = NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
+        if (fromCashier) {
+            nper = 0;
+        }
         Date currTime = new Date();
         Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 
@@ -86,7 +88,7 @@ public class TradeOrderApi implements ApiHandle {
 
         //#endregion
         if (StringUtils.isNotBlank(configRebateModel)) {
-            List<AfTradeRebateModelBo> rebateModels = JSON.parseArray(configRebateModel,AfTradeRebateModelBo.class);
+            List<AfTradeRebateModelBo> rebateModels = JSON.parseArray(configRebateModel, AfTradeRebateModelBo.class);
             for (AfTradeRebateModelBo item : rebateModels) {
                 if (item.getNper() == nper) {
                     rebateModel = item;
@@ -100,17 +102,17 @@ public class TradeOrderApi implements ApiHandle {
             rebateModel.setRebatePercent(BigDecimal.ZERO);
         }
         //region 没有配置就采用默认值
-        JSONArray rebateModels =new JSONArray();
+        JSONArray rebateModels = new JSONArray();
         //#endregion
         if (StringUtils.isNotBlank(configRebateModel)) {
-            try{
-                rebateModels=JSON.parseArray(configRebateModel);
-            }catch (Exception e){
-                logger.info( "GetTradeNperInfoApi process error",e.getCause());
+            try {
+                rebateModels = JSON.parseArray(configRebateModel);
+            } catch (Exception e) {
+                logger.info("GetTradeNperInfoApi process error", e.getCause());
             }
 
         }
-        if (nper.intValue() > 0) {
+        if (!fromCashier && nper.intValue() > 0) {
             // 保存手续费信息
             BorrowRateBo borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
             afOrder.setInterestFreeJson(JSON.toJSONString(rebateModels));
@@ -119,31 +121,30 @@ public class TradeOrderApi implements ApiHandle {
 
         //计算返利信息
 
-        if (rebateModel.getRebatePercent()!=null&& rebateModel.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
+        if (rebateModel.getRebatePercent() != null && rebateModel.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal rebateAmount = afOrder.getActualAmount().multiply(rebateModel.getRebatePercent()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
             rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
             afOrder.setRebateAmount(rebateAmount);
         }
+        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+        afOrder.setAuAmount(userAccountInfo.getAuAmount());
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
         afOrderService.createOrder(afOrder);
-
         AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
         afTradeOrderDo.setOrderId(afOrder.getRid());
         afTradeOrderDo.setBusinessId(businessId);
         afTradeOrderDo.setBalanceAmount(actualAmount);
         afTradeOrderService.saveRecord(afTradeOrderDo);
-
-
-
-
         String isEnoughAmount = "Y";
-        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-        if (useableAmount.compareTo(actualAmount) < 0) {
-            isEnoughAmount = "N";
-        }
-
         Map<String, Object> data = new HashMap<>();
         data.put("orderId", String.valueOf(afOrder.getRid()));
+        if (!fromCashier) {
+             if (useableAmount.compareTo(actualAmount) < 0) {
+                isEnoughAmount = "N";
+            }
+
+        }
         data.put("isEnoughAmount", isEnoughAmount);
         resp.setResponseData(data);
         return resp;

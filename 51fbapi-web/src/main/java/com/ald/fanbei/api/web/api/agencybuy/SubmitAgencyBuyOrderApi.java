@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.checkoutcounter.CocConstants;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -82,6 +83,14 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("saleAmount"), BigDecimal.ZERO);
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("actualAmount"), BigDecimal.ZERO);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
+		Integer appversion = context.getAppVersion();
+		boolean fromCashier = NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
+
+		//收银台功能之后，此处不进行分期处理
+		if (fromCashier) {
+			nper=0;
+		}
+
 		Long addressId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("addressId"), 0);
 		String capture = ObjectUtils.toString(requestDataVo.getParams().get("capture"));
 		String remark = ObjectUtils.toString(requestDataVo.getParams().get("remark"));
@@ -108,6 +117,10 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 		afOrder.setUserCouponId(couponId);
 		
 		afOrder.setInterestFreeJson(getInterestFreeRule(numId));
+		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+		afOrder.setAuAmount(userAccountInfo.getAuAmount());
+		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
 		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressByrid(addressId);
 		if (addressDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -145,34 +158,34 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(afAgentOrderDo.getCouponId());
 		}
-
 		String isEnoughAmount = "Y";
+		String isNoneQuota = "N";
 		BigDecimal leftAmount = BigDecimal.ZERO;
-		
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-		leftAmount = useableAmount;
-		if (useableAmount.compareTo(actualAmount) < 0) {
-			isEnoughAmount = "N";
-		}
-
-		RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
-		String quotaData = quotaBo.getData();
-		if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
-			JSONObject json = JSONObject.parseObject(quotaData);
-			String virtualCode = json.getString("virtualCode");
-			BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
-			if (goodsUseableAmount.compareTo(actualAmount) < 0) {
+		if (!fromCashier) {
+			leftAmount = useableAmount;
+			if (useableAmount.compareTo(actualAmount) < 0) {
 				isEnoughAmount = "N";
 			}
-			if (goodsUseableAmount.compareTo(leftAmount) < 0)
-				leftAmount = goodsUseableAmount;
+			RiskVirtualProductQuotaRespBo quotaBo = riskUtil.virtualProductQuota(userId.toString(), "", goodsName);
+			String quotaData = quotaBo.getData();
+			if (StringUtils.isNotBlank(quotaData) && !StringUtil.equals(quotaData, "{}")) {
+				JSONObject json = JSONObject.parseObject(quotaData);
+				String virtualCode = json.getString("virtualCode");
+				BigDecimal goodsUseableAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(userId, virtualCode, json.getBigDecimal("amount"));
+				if (goodsUseableAmount.compareTo(actualAmount) < 0) {
+					isEnoughAmount = "N";
+				}
+				if (goodsUseableAmount.compareTo(leftAmount) < 0)
+					leftAmount = goodsUseableAmount;
+			}
+			if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
+				isNoneQuota = "Y";
+			}
+
 		}
 
-		String isNoneQuota = "N";
-		if (leftAmount.compareTo(BigDecimal.ZERO) == 0) {
-			isNoneQuota = "Y";
-		}
+
+
 
 		if (afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper) > 0) {
 			Map<String, Object> data = new HashMap<String, Object>();
