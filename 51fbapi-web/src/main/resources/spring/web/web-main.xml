@@ -400,7 +400,12 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
-
+				
+				<!-- 代扣开关 -->
+				<entry key="/Withhold/getWithholdInfo" value-ref="getWithholdInfoApi" />
+				<entry key="/Withhold/updateWithholdSwitch" value-ref="updateWithholdSwitchApi" />
+				<entry key="/Withhold/updateWithholdCard" value-ref="updateWithholdCardApi" />
+				<entry key="/Withhold/showUserBankCard" value-ref="showUserBankCardApi" />
 			</map>
 		</constructor-arg>
 	</bean>

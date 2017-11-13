@@ -22,7 +22,7 @@ public interface AfUserWithholdDao extends BaseDao<AfUserWithholdDo, Long> {
      *
      * @param userName
      * **/
-    AfUserWithholdDo getAfUserWithholdDtoByUserId(String userName);
+    AfUserWithholdDo getAfUserWithholdDtoByUserId(long userId);
 
     /**
      * 插入AfUserWithholdDto 记录
@@ -36,13 +36,19 @@ public interface AfUserWithholdDao extends BaseDao<AfUserWithholdDo, Long> {
      * @param userName
      * **/
 
-    int updateAfUserWithholdDtoByUserName(@Param("userName") String userName, @Param("isSwInteger") Integer isSwInteger);
+    int updateAfUserWithholdDtoByUserId(@Param("userId") long userId, @Param("isSwInteger") Integer isSwInteger);
     
     /**
      * 更新银行卡号
      * 
      * **/
     int updateAfUserWithholdDo(AfUserWithholdDo afUserWithholdDo);
+
+    /**
+     * 得到代扣初始化信息
+     * **/
+
+    AfUserWithholdDo getWithholdInfo(long userId);
 
     int getCountByUserId(@Param("userId")Long userId);
 }
