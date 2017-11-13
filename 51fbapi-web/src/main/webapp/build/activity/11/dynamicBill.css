@@ -15,6 +15,10 @@ body {
   width: .28rem;
   height: .28rem;
 }
+.dynamic-top .fork img {
+  background: url('https://f.51fanbei.com/h5/app/activity/11/dynamicBill-04.png') no-repeat;
+  background-size: contain;
+}
 .dynamic-top .personIn {
   width: 7.4rem;
   position: relative;
