@@ -6,7 +6,9 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.UserUtil;
 import org.apache.commons.lang.ObjectUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -128,7 +130,20 @@ public class CheckBankcardApi implements ApiHandle {
 		}
 		AfUserBankDidiRiskDo didiInfo = BuildInfoUtil.buildUserBankDidiRiskInfo(ipAddress, lat, lng, context.getUserId(), bankId, uuid, wifiMac);
 		afUserBankDidiRiskService.saveRecord(didiInfo);
-		
+		//新版本绑定银行卡是可以设置支付密码
+		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
+		if(context.getAppVersion()>397){
+			if(null != oldPassword){
+				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				String password = Base64.decodeToString(oldPassword);
+				String salt = UserUtil.getSalt();
+				String newPwd = UserUtil.getPassword(password, salt);
+				afUserAccountDo.setUserId(context.getUserId());
+				afUserAccountDo.setSalt(salt);
+				afUserAccountDo.setPassword(newPwd);
+				afUserAccountService.updateUserAccount(afUserAccountDo);
+			}
+		}
 		//判断是否需要设置支付密码
 		String allowPayPwd = YesNoStatus.YES.getCode();
 		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){
