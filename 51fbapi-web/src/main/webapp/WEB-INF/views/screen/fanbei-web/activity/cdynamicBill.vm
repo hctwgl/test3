@@ -23,7 +23,7 @@
         <div class="dynamic-top">
             <div class="fork"><img src="$src/dynamicBill-01.png" alt=""></span>
             <div class="personIn">
-                <img :src="content.data.avatar" alt="">
+                <img class="moren" :src="content.data.avatar" alt="">
                 <span class="personName">{{content.data.nick}}</span>
                 <span class="personPhone">{{content.data.userName}}</span>
             </div>
