@@ -519,7 +519,7 @@
 		FROM af_borrow_bill
 		WHERE is_delete=0  AND STATUS IN ('N')
 		AND user_id = #{userId}
-		AND gmt_pay_time=DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+		AND gmt_pay_time<![CDATA[<=]]>DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
 	</select>
 
 	<update id="updateBorrowBillLockById" >
