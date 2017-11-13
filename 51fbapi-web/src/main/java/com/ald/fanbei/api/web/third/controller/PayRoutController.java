@@ -348,9 +348,15 @@ public class PayRoutController {
                 } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败	311
                     afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+                    int result= afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv) || OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    int result= afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 }
             }
             return "SUCCESS";
