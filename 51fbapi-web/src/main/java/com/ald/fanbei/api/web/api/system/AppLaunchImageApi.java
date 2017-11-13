@@ -55,13 +55,20 @@ public class AppLaunchImageApi implements ApiHandle{
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String appVersion = context.getAppVersion()!=null?context.getAppVersion()+"":"";
 		
-		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(RESOURCE_TYPE);
+		AfResourceDo resourceDo = afResourceService.getLaunchImageInfoByTypeAndVersion(RESOURCE_TYPE,appVersion);
+		// 如果未配置部分版本
+		if(resourceDo == null) {
+			resourceDo = afResourceService.getLaunchImageInfoByType(RESOURCE_TYPE);
+		}
 		if(resourceDo == null){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 		}
 		JSONObject data = new JSONObject();
-		data.put("imageUrl", resourceDo.getValue());
-		data.put("advertiseUrl", resourceDo.getValue1());	
+		String imageUrl = resourceDo.getPic1();
+		String iPhoneXImageUrl = resourceDo.getPic2();
+		data.put("imageUrl", imageUrl);
+		data.put("iPhoneXImageUrl", iPhoneXImageUrl);
+		data.put("advertiseUrl", resourceDo.getValue3());	
 
 		response.setResponseData(data);
 		
