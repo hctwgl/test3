@@ -242,7 +242,7 @@ public class UserWithholdController extends BaseController {
                     try{
                         map = afRepaymentBorrowCashService.createRepayment(BigDecimal.ZERO,
                                 repaymentAmount, actualAmount, null, userAmount,
-                                borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+                                borrowId, cardId, userId, "sysJob", userDto);
 
                     }catch (Exception e) {
                         logger.info("withholdCashJob error", e);
@@ -444,7 +444,7 @@ public class UserWithholdController extends BaseController {
                     }
                     try{
                         map = afRepaymentService.createRepayment(BigDecimal.ZERO,repaymentAmount, actualAmount,null, userAmount, billIds,
-                                cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
+                                cardId,userId,billDo,"sysJob",afUserAccountDo);
                     }catch (Exception e) {
                         logger.info("withholdCashJob error", e);
                     }

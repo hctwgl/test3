@@ -197,8 +197,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
 		final String payTradeNo = repayNo;
+		String typeName = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;;
+		if(StringUtil.equals("sysJob",clientIp)){
+			typeName = "代扣付款";
+		}
 		// 新增还款记录,移至事务外，保证回调先回用户这笔还款发起有记录产生
-		final String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+		final String name = typeName;
+
 		final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
 				userId);
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
