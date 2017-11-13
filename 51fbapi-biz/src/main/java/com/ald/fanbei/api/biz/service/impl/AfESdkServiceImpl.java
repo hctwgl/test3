@@ -347,13 +347,18 @@ public class AfESdkServiceImpl implements AfESdkService {
 
     @Override
     public void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
-        AfUserSealDo companyUserSealDo = selectUserSealByUserId(-1l);
-        if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
-            model.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+        try {
+            AfUserSealDo companyUserSealDo = selectUserSealByUserId(-1l);
+            if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
+                model.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+            }
+            AfUserSealDo afUserSealDo = getSealPersonal(afUserDo, accountDo);
+            if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
+                model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+            }
+        }catch (Exception e){
+            logger.error("UserSeal create error",e);
         }
-        AfUserSealDo afUserSealDo = getSealPersonal(afUserDo, accountDo);
-        if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
-            model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
-        }
+
     }
 }
