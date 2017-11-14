@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -34,11 +35,16 @@ public class GetFaceTypeApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.FACE_TYPE);
+		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String type = YITU;
+
 		if (resourceInfo != null) {
 			if (YesNoStatus.NO.getCode().equals(resourceInfo.getValue())) {
 				type = FACE_PLUS;
 			}
+		}
+		if(context.getAppVersion()==392&&osType.indexOf("ios")!=-1){
+			type=YITU;
 		}
 		resp.addResponseData("type", type);
 		return resp;
