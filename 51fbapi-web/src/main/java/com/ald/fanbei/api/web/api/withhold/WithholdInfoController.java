@@ -59,17 +59,26 @@ public class WithholdInfoController  implements ApiHandle {
 		if(userName == null || userName == "") {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		
 		AfUserDo userDo = afUserService.getUserByUserName(userName);
 		Map<String,Object> info = new HashMap<String,Object>();
+		
+		AfUserBankcardDo mainBankcard = afUserBankCardService.getUserMainBankcardByUserId(userDo.getRid());
+		if(mainBankcard == null) {
+			info.put("isMain", "N");
+			logger.info("This is not bankCard userId=:"+userDo.getRid());  //没有主卡
+			return resp;
+		}
+		
 		if (userDo != null) {
 			AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
 			if(withholdInfo != null) {
 					info.put("IsWithhold", withholdInfo.getIsWithhold());
 					info.put("usebalance", withholdInfo.getUsebalance());
+					info.put("isMain", "Y");
 			} else {
 				info.put("IsWithhold", "0");
 				info.put("usebalance", "0");
+				info.put("isMain", "Y");
 			}
 		}
 		resp.setResponseData(info);

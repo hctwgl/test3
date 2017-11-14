@@ -72,13 +72,6 @@ public class WithholdShowController  implements ApiHandle {
 			//List<Object> card = new ArrayList<Object>();
 			if (userDo != null) {
 				AfUserWithholdDo withhold = afUserWithholdService.getWithholdInfo(userDo.getRid());
-
-				AfUserBankcardDo mainBankcard = afUserBankCardService.getUserMainBankcardByUserId(userDo.getRid());
-				if(mainBankcard == null) {
-					resp.setResponseData("N");
-					logger.info("This is not bankCard userId=:"+userDo.getRid());  //没有主卡
-					return resp;
-				}
 				
 				List<AfUserBankcardDo> afUserBankcardDoList = afUserBankCardService.getAfUserBankcardDoList(userDo.getRid());//得到所有的银行卡
 				if (afUserBankcardDoList != null && afUserBankcardDoList.size() > 0) {
