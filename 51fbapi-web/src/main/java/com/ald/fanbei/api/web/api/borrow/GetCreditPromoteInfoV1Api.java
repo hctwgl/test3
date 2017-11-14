@@ -1,6 +1,21 @@
 package com.ald.fanbei.api.web.api.borrow;
 
-import com.ald.fanbei.api.biz.service.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.third.util.ZhimaUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -21,20 +36,11 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @类描述：
- * 
- * @author chefeipeng 2017年11月1日下午4:02:55
+ *
+ * @author suweili 2017年3月30日下午4:02:55
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("getCreditPromoteInfoV1Api")
@@ -43,14 +49,14 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 	@Resource
 	private AfUserAuthService afUserAuthService;
 	@Resource
-	private AfUserBankcardService afUserBankcardService; 
+	private AfUserBankcardService afUserBankcardService;
 	@Resource
 	private AfUserAccountService afUserAccountService;
 	@Resource
 	private AfResourceService afResourceService;
 	@Resource
 	private AfIdNumberService afIdNumberService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -61,7 +67,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		Map<String, Object> data = getCreditPromoteInfo(userId, now, userDto, authDo,context.getAppVersion());
 		resp.setResponseData(data);
-		
+
 		return resp;
 	}
 
@@ -71,11 +77,11 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		Map<String, Object> zmModel = new HashMap<String, Object>();
 		Map<String, Object> locationModel = new HashMap<String, Object>();
 		Map<String, Object> contactorModel = new HashMap<String, Object>();
+		long between =0l;
 		AfResourceDo afResourceDo =afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.creditScoreAmount.getCode());
 //		JSONObject json = JSONObject.parseObject(afResourceDo.getValue());
 		JSONArray arry = JSON.parseArray(afResourceDo.getValue());
 		Integer sorce =userDto.getCreditScore();
-		long between =0l;
 		AfResourceDo afResource = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowRiskMostAmount.getCode());
 		int min = Integer.parseInt(afResourceDo.getValue1());//最小分数
 		if(sorce<min){
@@ -91,7 +97,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 				}
 			}
 		}
-		
+
 		creditModel.put("creditAssessTime", authDo.getGmtModified());
 		creditModel.put("allowConsume", afUserAuthService.getConsumeStatus(authDo.getUserId(),appVersion));
 		zmModel.put("zmStatus", authDo.getZmStatus());
@@ -119,7 +125,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		}else{
 			data.put("gmtMobileExist", YesNoStatus.NO.getCode());
 		}
-		
+
 		data.put("teldirStatus", authDo.getTeldirStatus());
 		data.put("zmModel", zmModel);
 		data.put("locationModel", locationModel);
@@ -135,27 +141,22 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 //		3.6.9不在显示图片
 		data.put("isShowImage", "N");
 
-		
+
 		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {
 			data.put("riskStatus", RiskStatus.A.getCode());
 		} else {
 			data.put("riskStatus", authDo.getRiskStatus());
 		}
-		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
-			data.put("basicStatus", RiskStatus.A.getCode());
-		} else {
-			data.put("basicStatus", authDo.getRiskStatus());
-		}
 		data.put("faceStatus", authDo.getFacesStatus());
 		data.put("idNumber", Base64.encodeString(userDto.getIdNumber()));
 		data.put("realName", userDto.getRealName());
-		
+
 		if (StringUtil.equals(authDo.getBankcardStatus(), YesNoStatus.YES.getCode())) {
 			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 			data.put("bankCard", afUserBankcardDo.getCardNumber());
 			data.put("phoneNum", afUserBankcardDo.getMobile());
 		}
-		
+
 		AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 		if(idNumberDo == null){
 			data.put("isUploadImage", "N");
@@ -164,9 +165,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		} else {
 			data.put("isUploadImage", "N");
 		}
-
 		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
-			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtBasic()), 10);
+			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtRisk()), 10);
 			between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 			if (between > 0) {
 				data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
@@ -174,7 +174,6 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 				data.put("riskRetrialRemind", "审核不通过，明天可以重新提交审核");
 			}
 		}
-
 
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
 				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())){
@@ -218,25 +217,70 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 			data.put("title2","你的基础认证正在审核中，完成基础认证可大幅度提高你的额度");
 		}
 
-
 		//是否跳轉到H5頁面，這個是為後續做擴展用，暫時還沒有跳轉到H5的需求（以免app發版） NO(不跳)，H5(跳转到H5)，SC(跳转到补充认证)
 		String isSkipH5 = "NO";
 		if (StringUtil.equals(isSkipH5, "H5")) {
 			data.put("h5Url", "");
 		}
-		
-//		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())) {
-////			data.put("url", "https://f.51fanbei.com/test/af8076f9f38a5315.png?currentTime=" + System.currentTimeMillis());
-//		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
-//			data.put("url", "https://f.51fanbei.com/test/b9435048dd27d50e.png?currentTime=" + System.currentTimeMillis());
-//			isSkipH5 = "SC";
-//		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())||StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
-//			data.put("url", "https://f.51fanbei.com/test/d0f2a8be96752d16.png?currentTime=" + System.currentTimeMillis());
-//			isSkipH5 = "SC";
-//		}
-		
+
+		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())) {
+//			data.put("url", "https://f.51fanbei.com/test/af8076f9f38a5315.png?currentTime=" + System.currentTimeMillis());
+		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
+			data.put("url", "https://f.51fanbei.com/test/b9435048dd27d50e.png?currentTime=" + System.currentTimeMillis());
+			isSkipH5 = "SC";
+		} else if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.SECTOR.getCode())||StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
+			data.put("url", "https://f.51fanbei.com/test/d0f2a8be96752d16.png?currentTime=" + System.currentTimeMillis());
+			isSkipH5 = "SC";
+		}
+
+		data.put("fundStatus", authDo.getFundStatus());
+		data.put("socialSecurityStatus", authDo.getJinpoStatus());
+		data.put("creditStatus", authDo.getCreditStatus());
+		data.put("alipayStatus", authDo.getAlipayStatus());
+		data.put("chsiStatus", authDo.getChsiStatus());
+		data.put("zhengxinStatus", authDo.getZhengxinStatus());
+
+
+		//添加是否已发起过公积金认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtFund() != null) {
+			data.put("gmtFundExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtFundExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过社保认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtJinpo() != null) {
+			data.put("gmtSocialSecurityExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtSocialSecurityExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过信用卡认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtCredit() != null) {
+			data.put("gmtCreditExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtCreditExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过支付宝认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtAlipay() != null) {
+			data.put("gmtAlipayExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtAlipayExist", YesNoStatus.NO.getCode());
+		}
+
+		//添加是否已发起过学信网认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtChsi() != null) {
+			data.put("gmtChsiExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtChsiExist", YesNoStatus.NO.getCode());
+		}
+		//添加是否已发起过学信网认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtZhengxin() != null) {
+			data.put("gmtZhengxinExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtZhengxinExist", YesNoStatus.NO.getCode());
+		}
+
 		data.put("isSkipH5", isSkipH5);
-		
+
 		return data;
 	}
 
