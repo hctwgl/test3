@@ -27,6 +27,7 @@
     <include refid="Base_Column_List" />
     from af_user_seal
     where user_type = #{userType}
+    and is_delete = 0
   </select>
   <delete id="deleteById" parameterType="java.lang.Long" >
     delete from af_user_seal
