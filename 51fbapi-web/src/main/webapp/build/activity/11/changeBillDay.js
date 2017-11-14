@@ -108,11 +108,9 @@
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                    self.otherDate= self.contentOne.data.outDayList ? self.contentOne.data.outDayList[0] : [] 
-                    console.log(self.contentOne.success)
+                    self.otherDate= self.contentOne.data.outDayList.slice(0,1)[0];
+                    console.log( self.otherDate,' self.otherDate')
                     if(self.contentOne.success==false) {
-                        self.over = true
-                        self.msg = self.contentOne.msg
                         window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                         
                     }
