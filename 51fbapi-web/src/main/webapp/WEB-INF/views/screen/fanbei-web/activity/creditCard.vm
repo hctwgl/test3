@@ -13,23 +13,23 @@
         <div class="credit-one">
             <img class="first-one" src="$src/credit-03.png" alt="">
         </div>
-        <div class="credit-two">
+        <div class="credit-two" @click="clickOne()">
             <img class="credit-img" src="$src/credit-01.png" alt="">
             <span class="zheshang">浙商银行</span>
             <span class="zheshang-word">信用卡</span>
             <span class="zheshang-des">最长免息56天，5元看大片，5折享美食</span>
         </div>
-        #*<div class="credit-three">
-            <img class="nonghang-img" src="$src/credit-02.png" alt="">
-            <span class="nonghang">中国民生银行</span>
-            <span class="nonghang-word">信用卡</span>
-            <span class="nonghang-des">外币交易、提现0手续费，多重优惠</span>
-        </div>*#
-        <div class="credit-five">
+        <div class="credit-five" @click="clickThree()">
             <img class="zhaoshang-img" src="$src/credit-10.png" alt="">
             <span class="zhaoshang">招商银行</span>
             <span class="zhaoshang-word">信用卡</span>
             <span class="zhaoshang-des">高额度，免年费，极速发卡</span>
+        </div>
+        <div class="credit-three" @click="clickTwo()">
+            <img class="nonghang-img" src="$src/credit-02.png" alt="">
+            <span class="nonghang">浦发银行</span>
+            <span class="nonghang-word">信用卡</span>
+            <span class="nonghang-des">享1-5折随机食惠，新户刷卡送刷卡金</span>
         </div>
         <div class="credit-four">
             <img class="last-img" src="$src/credit-07.png" alt="">
