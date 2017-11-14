@@ -87,7 +87,7 @@ public class CheckBankcardApi implements ApiHandle {
 		}
 		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
 		UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"",bank.getCardNumber(), verifyCode, "02");
-		
+
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}
