@@ -65,13 +65,8 @@ public class WithholdInfoController  implements ApiHandle {
 		if (userDo != null) {
 			AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
 			if(withholdInfo != null) {
-				if (withholdInfo.getIsWithhold().equals("0")){
-					info.put("IsWithhold", "0");
+					info.put("IsWithhold", withholdInfo.getIsWithhold());
 					info.put("usebalance", withholdInfo.getUsebalance());
-				} else {
-					info.put("IsWithhold", "1");
-					info.put("usebalance", withholdInfo.getUsebalance());
-				}
 			} else {
 				info.put("IsWithhold", "0");
 				info.put("usebalance", "0");
