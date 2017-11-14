@@ -116,10 +116,10 @@ public class ApplyRenewalApi implements ApiHandle {
 			throw new FanbeiException(
 					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 		}
-		BigDecimal waitPaidAmount = renewAmount;
 		
 		// 续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
+		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(renewAmount);;
 		BigDecimal allRenewalAmount= BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
 		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
