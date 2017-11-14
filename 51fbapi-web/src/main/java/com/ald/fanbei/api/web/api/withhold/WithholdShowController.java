@@ -58,15 +58,15 @@ public class WithholdShowController  implements ApiHandle {
 		String userName = context.getUserName();
 	
 			AfUserDo userDo = afUserService.getUserByUserName(userName);
-			Map<String, String> bankInfo1 = new HashMap<String, String>();
-			Map<String, String> bankInfo2 = new HashMap<String, String>();
+			
+		/*	Map<String, String> bankInfo2 = new HashMap<String, String>();
 			Map<String, String> bankInfo3 = new HashMap<String, String>();
 			Map<String, String> bankInfo4 = new HashMap<String, String>();
-			Map<String, String> bankInfo5 = new HashMap<String, String>();
+			Map<String, String> bankInfo5 = new HashMap<String, String>();*/
 			
 			
 			List<Object> list1 = new ArrayList<Object>();
-			List<Object> list2 = new ArrayList<Object>();
+			//List<Object> list2 = new ArrayList<Object>();
 			Map<String, Object> cards = new HashMap<String, Object>();
 			
 			if (userDo != null) {
@@ -76,7 +76,21 @@ public class WithholdShowController  implements ApiHandle {
 				if (afUserBankcardDoList != null && afUserBankcardDoList.size() > 0) {
 					
 					for (AfUserBankcardDo afUserBankcardDo : afUserBankcardDoList) {
-						if (withhold.getCardNumber1() != null && withhold.getCardNumber1() != "" && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber1())) {
+						
+						Map<String, String> bankInfo = new HashMap<String, String>();
+						int i=1;
+						if (afUserBankcardDo.getIsMain().equals("Y")) {
+							bankInfo.put("isMain", "Y");
+						} else {
+							bankInfo.put("isMain", "N");
+						}
+						System.out.println(afUserBankcardDo.getCardNumber().length());
+						String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
+						bankInfo.put("card", bank);
+						bankInfo.put("sort", i+"");
+						bankInfo.put("cardId",afUserBankcardDo.getCardNumber()+"");
+						list1.add(bankInfo);
+						/*if (withhold.getCardNumber1() != null && withhold.getCardNumber1() != "" && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber1())) {
 							if (afUserBankcardDo.getIsMain().equals("Y")) {
 								bankInfo1.put("isMain", "Y");
 							} else {
@@ -139,13 +153,13 @@ public class WithholdShowController  implements ApiHandle {
 							bankInfos.put("cardId",afUserBankcardDo.getCardNumber()+"");
 							bankInfos.put("isMain", "N");
 							list2.add(bankInfos);
-						}
+						}*/
 					}
 				} 
 			}
 		
 			cards.put("card1", list1);
-			cards.put("card2", list2);
+			//cards.put("card2", list2);
 			resp.setResponseData(cards);
 			return resp;
 	}

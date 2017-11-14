@@ -63,7 +63,10 @@ public class WithholdUpdateSwitchController  implements ApiHandle {
 		AfUserWithholdDo afUserWithholdDo = afUserWithholdService.getAfUserWithholdDtoByUserId(userDo.getRid());
 		if (afUserWithholdDo == null) {
 				AfUserBankcardDo mainBankcard = afUserBankCardService.getUserMainBankcardByUserId(userDo.getRid());
-				
+			/*	List<AfUserBankcardDo> afUserBankcardDoList = afUserBankCardService.getAfUserBankcardDoList(userDo.getRid());//得到所有的银行卡
+				if (afUserBankcardDoList != null && afUserBankcardDoList.size() > 0) {
+					
+				}*/
 				AfUserWithholdDo userWithholdDo = new AfUserWithholdDo();
 				try {
 					userWithholdDo.setUserName(userDo.getUserName());

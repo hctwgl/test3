@@ -192,6 +192,7 @@
 			user_id=#{userId}
 		AND
 			status="B"
+		ORDER BY gmt_create asc LIMIT 5
 	</select>
 	
 	<select id="getUserBankcardIdByCardNumber" parameterType="java.lang.String" resultType="AfUserBankcardDo">
