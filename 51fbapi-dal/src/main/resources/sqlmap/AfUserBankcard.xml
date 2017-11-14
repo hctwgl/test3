@@ -203,5 +203,8 @@
 			is_delete=0 
 		AND
 			card_number=#{cardNumber}
+		AND
+			status="B"
+		LIMIT 1
 	</select>
 </mapper>

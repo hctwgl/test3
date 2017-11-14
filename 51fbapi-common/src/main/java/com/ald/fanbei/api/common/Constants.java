@@ -392,5 +392,8 @@ public class Constants {
 	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
+	
+	//首页滚动条
+	  public static final String HOMEPAGE_TOP_SCROLLBAR="HOMEPAGE_TOP_SCROLLBAR";
 
 }
