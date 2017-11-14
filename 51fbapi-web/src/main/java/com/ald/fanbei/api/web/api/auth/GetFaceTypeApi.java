@@ -43,7 +43,7 @@ public class GetFaceTypeApi implements ApiHandle {
 				type = FACE_PLUS;
 			}
 		}
-		if(context.getAppVersion()==392&&osType.indexOf("ios")!=-1){
+		if(context.getAppVersion()==392&&requestDataVo.getId().startsWith("i")){
 			type=YITU;
 		}
 		resp.addResponseData("type", type);
