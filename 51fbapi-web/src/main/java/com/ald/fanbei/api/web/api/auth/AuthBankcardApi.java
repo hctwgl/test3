@@ -93,11 +93,11 @@ public class AuthBankcardApi implements ApiHandle {
 
 		Map<String,Object> map = new HashMap<String,Object>();
 		if(null != afUserAccountDo){
-			map.put("setPwd","N");
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 		}else if(StringUtil.isEmpty(afUserAccountDo.getPassword())){
-			map.put("setPwd","N");
-		}else{
 			map.put("setPwd","Y");
+		}else{
+			map.put("setPwd","N");
 		}
 		map.put("bankId", bankDo.getRid());
 		resp.setResponseData(map);
