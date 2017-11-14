@@ -19,6 +19,8 @@
     <include refid="Base_Column_List" />
     from af_user_seal
     where user_id = #{userId,jdbcType=BIGINT}
+    and is_delete = 0
+    limit 1
   </select>
   <select id="selectByUserType" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
