@@ -43,7 +43,7 @@ import com.alibaba.fastjson.JSON;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller("updateWithholdCardApi")
-public class WithholdUpdateCardController  implements ApiHandle {
+public class WithholdUpdateCardController implements ApiHandle {
 
 	@Resource
 	AfUserWithholdService afUserWithholdService;
@@ -57,18 +57,18 @@ public class WithholdUpdateCardController  implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		String userName = context.getUserName();
 		String usebalance = ObjectUtils.toString(requestDataVo.getParams().get("usebalance"));
-		
-		String card1 =  ObjectUtils.toString(requestDataVo.getParams().get("card1"));
-		String card2 =  ObjectUtils.toString(requestDataVo.getParams().get("card2"));
-		String card3 =  ObjectUtils.toString(requestDataVo.getParams().get("card3"));
-		String card4 =  ObjectUtils.toString(requestDataVo.getParams().get("card4"));
-		String card5 =  ObjectUtils.toString(requestDataVo.getParams().get("card5"));
-		
-		logger.info("userName="+userName+"; card1="+card1+"; card2="+card2+"; card3="+card3+"; card4="+card4+"; card5="+card5+"; usebalance="+usebalance); 
-		
+
+		String card1 = ObjectUtils.toString(requestDataVo.getParams().get("card1"));
+		String card2 = ObjectUtils.toString(requestDataVo.getParams().get("card2"));
+		String card3 = ObjectUtils.toString(requestDataVo.getParams().get("card3"));
+		String card4 = ObjectUtils.toString(requestDataVo.getParams().get("card4"));
+		String card5 = ObjectUtils.toString(requestDataVo.getParams().get("card5"));
+
+		logger.info("userName=" + userName + "; card1=" + card1 + "; card2=" + card2 + "; card3=" + card3 + "; card4=" + card4 + "; card5=" + card5 + "; usebalance=" + usebalance);
+
 		AfUserDo userDo = afUserService.getUserByUserName(userName);
-		if(userDo == null){
-			logger.info("userDo is not exist ,userName=:"+userName);
+		if (userDo == null) {
+			logger.info("userDo is not exist ,userName=:" + userName);
 		}
 		AfUserWithholdDo afUserWithholdDo = new AfUserWithholdDo();
 
@@ -78,47 +78,61 @@ public class WithholdUpdateCardController  implements ApiHandle {
 		AfUserBankcardDo cardId3 = null;
 		AfUserBankcardDo cardId4 = null;
 		AfUserBankcardDo cardId5 = null;
-		if (StringUtil.isNotBlank(card1)) {
-			cardId1 = afUserBankCardService.getUserBankcardIdByCardNumber(card1);
-			afUserWithholdDo.setCardNumber1(card1);
-			afUserWithholdDo.setCardId1(cardId1.getRid());
-		}
-		if (StringUtil.isNotBlank(card2)) {
-			cardId2 = afUserBankCardService.getUserBankcardIdByCardNumber(card2);
-			afUserWithholdDo.setCardNumber2(card2);
-			afUserWithholdDo.setCardId2(cardId2.getRid());
-		}
-		if (StringUtil.isNotBlank(card3)) {
-			cardId3 = afUserBankCardService.getUserBankcardIdByCardNumber(card3);
-			afUserWithholdDo.setCardNumber3(card3);
-			afUserWithholdDo.setCardId3(cardId3.getRid());
-		}
-		if (StringUtil.isNotBlank(card4)) {
-			cardId4 = afUserBankCardService.getUserBankcardIdByCardNumber(card4);
-			afUserWithholdDo.setCardNumber4(card4);
-			afUserWithholdDo.setCardId4(cardId4.getRid());
-		}
-		if (StringUtil.isNotBlank(card5)) {
-			cardId5 = afUserBankCardService.getUserBankcardIdByCardNumber(card5);
-			afUserWithholdDo.setCardNumber5(card5);
-			afUserWithholdDo.setCardId5(cardId5.getRid());
-		}
-
-		//AfUserWithholdDo afUserWithholdDo1 = afUserWithholdService.getAfUserWithholdDtoByUserId(userDo.getRid());
-		afUserWithholdDo.setUserId(userDo.getRid());
-		if(usebalance != null && usebalance != "") {
+		if (usebalance != null && usebalance != "") {
 			afUserWithholdDo.setUsebalance(Integer.parseInt(usebalance));
+		} else {
+			if (card1 != null && card1 != "") {
+				cardId1 = afUserBankCardService.getUserBankcardIdByCardNumber(card1);
+				afUserWithholdDo.setCardNumber1(card1);
+				afUserWithholdDo.setCardId1(cardId1.getRid());
+			} else {
+				afUserWithholdDo.setCardNumber1("");
+				afUserWithholdDo.setCardId1(0l);
+			}
+			if (card2 != null && card2 != "") {
+				cardId2 = afUserBankCardService.getUserBankcardIdByCardNumber(card2);
+				afUserWithholdDo.setCardNumber2(card2);
+				afUserWithholdDo.setCardId2(cardId2.getRid());
+			} else {
+				afUserWithholdDo.setCardNumber2("");
+				afUserWithholdDo.setCardId2(0l);
+			}
+			if (card3 != null && card3 != "") {
+				cardId3 = afUserBankCardService.getUserBankcardIdByCardNumber(card3);
+				afUserWithholdDo.setCardNumber3(card3);
+				afUserWithholdDo.setCardId3(cardId3.getRid());
+			} else {
+				afUserWithholdDo.setCardNumber3("");
+				afUserWithholdDo.setCardId3(0l);
+			}
+			if (StringUtil.isNotBlank(card4)) {
+				cardId4 = afUserBankCardService.getUserBankcardIdByCardNumber(card4);
+				afUserWithholdDo.setCardNumber4(card4);
+				afUserWithholdDo.setCardId4(cardId4.getRid());
+			} else {
+				afUserWithholdDo.setCardNumber4("");
+				afUserWithholdDo.setCardId4(0l);
+			}
+			if (StringUtil.isNotBlank(card5)) {
+				cardId5 = afUserBankCardService.getUserBankcardIdByCardNumber(card5);
+				afUserWithholdDo.setCardNumber5(card5);
+				afUserWithholdDo.setCardId5(cardId5.getRid());
+			} else {
+				afUserWithholdDo.setCardNumber5("");
+				afUserWithholdDo.setCardId5(0l);
+			}
 		}
+		// AfUserWithholdDo afUserWithholdDo1 = afUserWithholdService.getAfUserWithholdDtoByUserId(userDo.getRid());
+		afUserWithholdDo.setUserId(userDo.getRid());
 
-		if(!(afUserWithholdService.updateAfUserWithholdDo(afUserWithholdDo)<1)){
+		if (!(afUserWithholdService.updateAfUserWithholdDo(afUserWithholdDo) > 0)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
+		Map<String, Integer> map = new HashMap<String, Integer>();
 		AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
-		resp.setResponseData(withholdInfo.getUsebalance());
+		map.put("usebalance", withholdInfo.getUsebalance());
+		resp.setResponseData(map);
 		return resp;
 	}
-	
-	
-	
 
 }

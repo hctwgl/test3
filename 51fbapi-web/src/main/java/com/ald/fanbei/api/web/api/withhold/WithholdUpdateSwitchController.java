@@ -59,6 +59,7 @@ public class WithholdUpdateSwitchController  implements ApiHandle {
 		String IsSwitch = ObjectUtils.toString(requestDataVo.getParams().get("isSwitch"));
 		
 		AfUserDo userDo = afUserService.getUserByUserName(userName);
+		Map<String,Integer> map = new HashMap<String,Integer>();
 		AfUserWithholdDo afUserWithholdDo = afUserWithholdService.getAfUserWithholdDtoByUserId(userDo.getRid());
 		if (afUserWithholdDo == null) {
 				AfUserBankcardDo mainBankcard = afUserBankCardService.getUserMainBankcardByUserId(userDo.getRid());
@@ -78,7 +79,8 @@ public class WithholdUpdateSwitchController  implements ApiHandle {
 			afUserWithholdService.updateAfUserWithholdDtoByUserId(userDo.getRid(), Integer.parseInt(IsSwitch));
 		}
 		AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
-		resp.setResponseData(withholdInfo.getIsWithhold());
+		map.put("isWithhold", withholdInfo.getIsWithhold());
+		resp.setResponseData(map);
 		return resp;
 	}
 	
