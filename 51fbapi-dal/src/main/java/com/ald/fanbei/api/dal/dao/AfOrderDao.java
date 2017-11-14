@@ -173,4 +173,10 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	Integer getOldUserOrderAmount(@Param("userId") long userId);
+	
+	/**
+	 * 根据goodsId,userId查询已完成订单——新人专享
+	 * @return
+	 */
+	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
 }
