@@ -92,7 +92,7 @@
 		<constructor-arg>
 			<list>
 				<value>/user/login</value>
-				<value>/user/quickLogin</value>
+				<value>/user/quickLoginOrRegister</value>
 				<value>/user/getVerifyCode</value>
 				<value>/user/setRegisterPwd</value>
 				<value>/user/quickRegisterPwd</value>
@@ -143,7 +143,7 @@
 
 				<!-- user -->
 				<entry key="/user/login" value-ref="loginApi" />
-				<entry key="/user/quickLogin" value-ref="quickLoginApi" />
+				<entry key="/user/quickLoginOrRegister" value-ref="quickLoginOrRegisterApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
 				<entry key="/user/setRegisterPwd" value-ref="setRegisterPwdApi" />

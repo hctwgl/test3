@@ -109,11 +109,12 @@ public class GetVerifyCodeApi implements ApiHandle {
 			break;
 		case QUICK_LOGIN:
 			afUserDo = afUserService.getUserByUserName(mobile);
-			resp.addResponseData("code",1000);
-			resultSms = smsUtil.sendQuickLoginVerifyCode(mobile,afUserDo.getRid());
-			break;
-		case QUICK_REGIST:
-			if (context.getAppVersion() >= 340) {
+			if (null != afUserDo){//快速登录
+				resp.addResponseData("code",1000);
+				resultSms = smsUtil.sendQuickLoginVerifyCode(mobile,afUserDo.getRid());
+				break;
+			}
+			if (context.getAppVersion() >= 340) {//快速注册
 				if (StringUtils.isBlank(blackBox)) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 
@@ -121,11 +122,6 @@ public class GetVerifyCodeApi implements ApiHandle {
 				// todo 这里面放同盾代码,下面是示例
 				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
 						mobile, "", "", "");
-			}
-
-			afUserDo = afUserService.getUserByUserName(mobile);
-			if (afUserDo != null) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_HAS_REGIST_ERROR);
 			}
 			resultSms = smsUtil.sendRegistVerifyCode(mobile);
 			resp.addResponseData("code",1146);
