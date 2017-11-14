@@ -180,7 +180,7 @@
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
-
+				<entry key="/user/checkQuickRegisteredPwd" value-ref="checkQuickRegisteredPwdApi"/>
 
 				<entry key="/user/signin" value-ref="signinApi" />
 

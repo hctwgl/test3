@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -38,7 +39,9 @@ public interface AfUserService {
 	 *@return
 	 */
 	AfUserDo getUserByUserName(String userName);
-	
+
+	AfUserDo getUserByMobile(String mobile);
+
 	
 	/**
 	 * 更新用户消息
@@ -58,4 +61,6 @@ public interface AfUserService {
 	 * @return
 	 * **/
 	List<String> getUserNameByUserId(List<String> users);
+
+	AfUserRegisterTypeDo isQuickRegisterUser(Long id);
 }

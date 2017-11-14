@@ -69,7 +69,19 @@
 			mobile = #{mobile}
 		LIMIT 1
 	</select>
-	
+
+	<select id="getUserByMobile" resultType="AfUserDo">
+		SELECT
+		id
+		FROM
+		af_user
+		WHERE
+		is_delete = 0
+		AND
+		mobile = #{mobile}
+		LIMIT 1
+	</select>
+
 	<select id="getUserByRecommendCode" resultType="AfUserDo">
 		SELECT
 			<include refid="queryAllFields" />

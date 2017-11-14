@@ -48,7 +48,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	AfRecommendUserDao afRecommendUserDao;
 	@Resource
 	JpushService jpushService;
-
+	@Resource
+	AfUserRegisterTypeDao afUserRegisterTypeDao;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -172,6 +173,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	}
 
 	@Override
+	public AfUserDo getUserByMobile(String mobile) {
+		return afUserDao.getUserByMobile(mobile);
+	}
+
+	@Override
 	public AfUserDo getUserByRecommendCode(String recommendCode) {
 		return afUserDao.getUserByRecommendCode(recommendCode);
 	}
@@ -189,6 +195,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Override
 	public List<String> getUserNameByUserId(List<String> users) {
 		return afUserDao.getUserNameByUserId(users);
+	}
+
+	@Override
+	public AfUserRegisterTypeDo isQuickRegisterUser(Long id) {
+		return afUserRegisterTypeDao.selectByUserId(id);
 	}
 
 

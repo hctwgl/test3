@@ -103,8 +103,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 
 		if (afUserDo == null) {
-			quickRegister(requestDataVo,context,request);
-			return resp;
+			afUserDo = quickRegister(requestDataVo,context,request);
+//			return resp;
 //			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
@@ -281,7 +281,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		return resp;
 	}
 
-	private void quickRegister(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request){
+	private AfUserDo quickRegister(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request){
 		String requestId = requestDataVo.getId();
 		String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
 		ClientTypeEnum clientType = StringUtil.judgeClientType(requestDataVo.getId());
@@ -362,6 +362,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
 		}
+		return userDo;
 	}
 
 	private void ToutiaoAdActive(RequestDataVo requestDataVo, FanbeiContext context, AfUserDo afUserDo) {
