@@ -23,6 +23,7 @@ body {
 .dynamic-top .personIn .unpaid {
   text-align: center;
   font-size: 0.34rem;
+  padding-top: 0.4rem;
 }
 .dynamic-top .personIn img {
   width: 1rem;
@@ -134,7 +135,7 @@ body {
   left: 83%;
 }
 .mask {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -166,7 +167,7 @@ body {
 }
 .ruleCont {
   width: 90%;
-  margin: 0 auto;
+  margin: -0.2rem auto;
   text-align: justify;
   padding-bottom: .7rem;
   font-size: 0.3rem;
