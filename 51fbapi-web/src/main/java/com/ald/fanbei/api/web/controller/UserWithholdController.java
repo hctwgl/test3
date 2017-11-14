@@ -100,14 +100,14 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg",FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
             return returnjson;
         }
-
-        if (!yiBaoUtility.checkCanNext(userId, 0)) {
+        //等待第三方调试
+        /*if (!yiBaoUtility.checkCanNext(userId, 0)) {
             logger.info("withhold for borrowcash fail for HAVE_A_REPAYMENT_PROCESSING_ERROR,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);
             returnjson.put("msg",FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
             return returnjson;
-        }
+        }*/
         AfUserAccountDo userDto = afUserAccountService
                 .getUserAccountByUserId(userId);
         if (userDto == null) {
@@ -146,6 +146,15 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg",FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
             return returnjson;
         }
+        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
+        if(afUserWithholdDo==null){
+            //用户又关闭了代扣，但是目前逻辑是在代扣时间段内用户不能操作代扣相关功能
+            logger.info("withhold for borrowcash fail for afUserWithholdDo is null,userId:"+userId + ",borrowId:"+borrowId);
+            JSONObject returnjson = new JSONObject();
+            returnjson.put("success",false);
+            returnjson.put("msg","afUserWithholdDo is null");
+            return returnjson;
+        }
         //将该笔订单锁住(除此之外还需要将原先用户还款的数据锁住)
         if(afBorrowCashService.updateBorrowCashLock(borrowId)==0){
             logger.info("withhold for borrowcash fail for lock,userId:"+userId + ",borrowId:"+borrowId);
@@ -157,7 +166,6 @@ public class UserWithholdController extends BaseController {
 
         BigDecimal actualAmount = repaymentAmount;
         BigDecimal userAmount = BigDecimal.ZERO;
-        AfUserWithholdDo afUserWithholdDo= afUserWithholdService.getByUserId(userId);
         //是否开启余额支付
         int useBalance = afUserWithholdDo.getUsebalance();
         if(useBalance==1){
