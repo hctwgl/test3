@@ -49,13 +49,13 @@ public class CheckQuickRegisteredPwdApi implements ApiHandle {
 			throw new FanbeiException("mobile not allowed",FanbeiExceptionCode.REQUEST_PARAM_ILLEGAL);
 		}
 		data.put("isQuick", "N"); //
-		data.put("pwd", "N"); //
+		data.put("password", "N"); //
 		// 查询手机号是否已注册
 //		Long userId = afUserService.getUserIdByMobile(mobile);
 		AfUserDo afUserDo = afUserService.getUserByMobile(mobile);
 		if(null != afUserDo && afUserDo.getRid()!=  null) {
 			if (null != afUserDo.getPassword()){
-				data.put("pwd","Y");
+				data.put("password","Y");
 			}
 			AfUserRegisterTypeDo afUserRegisterTypeDo = afUserService.isQuickRegisterUser(afUserDo.getRid());
 			if (null == afUserRegisterTypeDo && 1 == afUserRegisterTypeDo.getType()){
