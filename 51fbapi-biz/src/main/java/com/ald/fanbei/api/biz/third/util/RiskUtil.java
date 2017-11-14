@@ -91,9 +91,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 
- * @类描述：风控审批工具类
  * @author 何鑫 2017年3月22日 11:20:23
+ * @类描述：风控审批工具类
  * @类描述：风控审批工具类
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 需加密参数 真实姓名 ， 身份证号， 手机号，邮箱，银行卡号
  */
@@ -396,6 +395,7 @@ public class RiskUtil extends AbstractThird {
             return riskResp;
         }
     }
+
     /**
      * 用户认证时调用强风控接口，进行信息同步(新版本)
      *
@@ -439,6 +439,7 @@ public class RiskUtil extends AbstractThird {
             return riskResp;
         }
     }
+
     /**
      * 弱风控审批
      *
@@ -670,8 +671,8 @@ public class RiskUtil extends AbstractThird {
 
             //如果不是因为逾期还款给拒绝的，直接关闭订单
 //			String rejectCode = verifybo.getRejectCode();
-//			if (StringUtils.isNotBlank(rejectCode) 
-//					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode()) 
+//			if (StringUtils.isNotBlank(rejectCode)
+//					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW.getCode())
 //					&& !rejectCode.equals(RiskErrorCode.OVERDUE_BORROW_CASH.getCode())) {
             orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
             orderInfo.setStatus(OrderStatus.CLOSED.getCode());
@@ -868,9 +869,11 @@ public class RiskUtil extends AbstractThird {
     }
 
     /**
-     * @return
      * @方法描述：实名认证时风控异步审核
+     *
      * @author fumeiai 2017年6月7日  14:47:50
+     *
+     * @return
      */
     public int asyRegisterStrongRisk(String code, String data, String msg, String signInfo) {
         RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
@@ -892,86 +895,7 @@ public class RiskUtil extends AbstractThird {
 
             AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
             //风控异步回调的话，以第一次异步回调成功为准
-            if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode()) && !StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
-                if (StringUtils.equals("10", result)) {
-                    AfUserAuthDo authDo = new AfUserAuthDo();
-                    authDo.setUserId(consumerNo);
-                    authDo.setRiskStatus(RiskStatus.YES.getCode());
-                    authDo.setBasicStatus("Y");
-                    authDo.setGmtBasic(new Date(System.currentTimeMillis()));
-                    authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-                    afUserAuthService.updateUserAuth(authDo);
-
-	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
-	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
-					AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-					if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
-						AfUserAccountDo accountDo = new AfUserAccountDo();
-						accountDo.setUserId(consumerNo);
-						accountDo.setAuAmount(au_amount);
-						afUserAccountService.updateUserAccount(accountDo);
-					}
-	      			jpushService.strongRiskSuccess(userAccountDo.getUserName());
-	      			smsUtil.sendRiskSuccess(userAccountDo.getUserName());
-				} else if (StringUtils.equals("30", result)) {
-					AfUserAuthDo authDo = new AfUserAuthDo();
-	      			authDo.setUserId(consumerNo);
-					if(!"Y".equals(authDo.getRiskStatus())){
-						authDo.setRiskStatus(RiskStatus.NO.getCode());
-					}
-					authDo.setBasicStatus("N");
-                    authDo.setGmtBasic(new Date(System.currentTimeMillis()));
-                    authDo.setGmtRisk(new Date(System.currentTimeMillis()));
-	      			afUserAuthService.updateUserAuth(authDo);
-	      			
-	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
-	                                                否则把用户的额度设置成分控返回的额度*/
-	      			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-	      			if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
-	      				AfUserAccountDo accountDo = new AfUserAccountDo();
-	      				accountDo.setUserId(consumerNo);
-	      				accountDo.setAuAmount(BigDecimal.ZERO);
-	      				afUserAccountService.updateUserAccount(accountDo);
-	      			} else {
-	      				AfUserAccountDo accountDo = new AfUserAccountDo();
-						accountDo.setUserId(consumerNo);
-						accountDo.setAuAmount(userAccountDo.getUsedAmount());
-						afUserAccountService.updateUserAccount(accountDo);
-	      			}
-	      			jpushService.strongRiskFail(userAccountDo.getUserName());
-	      			smsUtil.sendRiskFail(userAccountDo.getUserName());
-				}
-			}
-		}
-		return 0;
-	}
-
-    /**
-     * @return
-     * @方法描述：实名认证时风控异步审核
-     * @author fumeiai 2017年6月7日  14:47:50
-     */
-    public int asyRegisterStrongRiskV1(String code, String data, String msg, String signInfo) {
-        RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
-        reqBo.setCode(code);
-        reqBo.setData(data);
-        reqBo.setMsg(msg);
-        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        logThird(signInfo, "asyRegisterStrongRisk", reqBo);
-        if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
-            logger.info("asyRegisterStrongRisk reqBo.getSignInfo()" + reqBo.getSignInfo());
-            JSONObject obj = JSON.parseObject(data);
-            String limitAmount = obj.getString("amount");
-            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
-                limitAmount = "0";
-            BigDecimal au_amount = new BigDecimal(limitAmount);
-            Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
-            String result = obj.getString("result");
-            String orderNo = obj.getString("orderNo");
-
-            AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
-            //风控异步回调的话，以第一次异步回调成功为准
-            if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode()) && !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
+            if(!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")){
                 if (StringUtils.equals("10", result)) {
                     AfUserAuthDo authDo = new AfUserAuthDo();
                     authDo.setUserId(consumerNo);
@@ -995,7 +919,87 @@ public class RiskUtil extends AbstractThird {
                 } else if (StringUtils.equals("30", result)) {
                     AfUserAuthDo authDo = new AfUserAuthDo();
                     authDo.setUserId(consumerNo);
-                    if(!"Y".equals(authDo.getRiskStatus())){
+                    authDo.setRiskStatus(RiskStatus.NO.getCode());
+                    authDo.setBasicStatus("N");
+                    authDo.setGmtBasic(new Date(System.currentTimeMillis()));
+                    authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+                    afUserAuthService.updateUserAuth(authDo);
+
+	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
+	                                                否则把用户的额度设置成分控返回的额度*/
+                    AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+                    if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
+                        AfUserAccountDo accountDo = new AfUserAccountDo();
+                        accountDo.setUserId(consumerNo);
+                        accountDo.setAuAmount(BigDecimal.ZERO);
+                        afUserAccountService.updateUserAccount(accountDo);
+                    } else {
+                        AfUserAccountDo accountDo = new AfUserAccountDo();
+                        accountDo.setUserId(consumerNo);
+                        accountDo.setAuAmount(userAccountDo.getUsedAmount());
+                        afUserAccountService.updateUserAccount(accountDo);
+                    }
+                    jpushService.strongRiskFail(userAccountDo.getUserName());
+                    smsUtil.sendRiskFail(userAccountDo.getUserName());
+                }
+            }
+
+        }
+        return 0;
+    }
+
+    /**
+     * @方法描述：实名认证时风控异步审核(新版本3.9.7以上)
+     *
+     * @author chefeipeng 2017年6月7日  14:47:50
+     *
+     * @return
+     */
+    public int asyRegisterStrongRiskV1(String code, String data, String msg, String signInfo) {
+        RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+        reqBo.setCode(code);
+        reqBo.setData(data);
+        reqBo.setMsg(msg);
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        logThird(signInfo, "asyRegisterStrongRiskV1", reqBo);
+        if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+            logger.info("asyRegisterStrongRiskV1 reqBo.getSignInfo()" + reqBo.getSignInfo());
+            JSONObject obj = JSON.parseObject(data);
+            String limitAmount = obj.getString("amount");
+            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+                limitAmount = "0";
+            BigDecimal au_amount = new BigDecimal(limitAmount);
+            Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
+            String result = obj.getString("result");
+            String orderNo = obj.getString("orderNo");
+
+            AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
+            //风控异步回调的话，以第一次异步回调成功为准
+            if(!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")){
+                if (StringUtils.equals("10", result)) {
+                    AfUserAuthDo authDo = new AfUserAuthDo();
+                    authDo.setUserId(consumerNo);
+                    authDo.setRiskStatus(RiskStatus.YES.getCode());
+                    authDo.setBasicStatus(RiskStatus.YES.getCode());
+                    authDo.setGmtBasic(new Date(System.currentTimeMillis()));
+                    authDo.setGmtRisk(new Date(System.currentTimeMillis()));
+                    afUserAuthService.updateUserAuth(authDo);
+
+	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+                    AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+                    if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                        AfUserAccountDo accountDo = new AfUserAccountDo();
+                        accountDo.setUserId(consumerNo);
+                        accountDo.setAuAmount(au_amount);
+                        afUserAccountService.updateUserAccount(accountDo);
+                    }
+                    jpushService.strongRiskSuccess(userAccountDo.getUserName());
+                    smsUtil.sendRiskSuccess(userAccountDo.getUserName());
+                } else if (StringUtils.equals("30", result)) {
+                    AfUserAuthDo authDo = new AfUserAuthDo();
+                    authDo.setUserId(consumerNo);
+                    if(!StringUtil.equals(authDo.getRiskStatus(),RiskStatus.YES.getCode())){
                         authDo.setRiskStatus(RiskStatus.NO.getCode());
                     }
                     authDo.setBasicStatus("N");
@@ -1021,6 +1025,7 @@ public class RiskUtil extends AbstractThird {
                     smsUtil.sendRiskFail(userAccountDo.getUserName());
                 }
             }
+
         }
         return 0;
     }
