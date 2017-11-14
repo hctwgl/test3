@@ -152,7 +152,7 @@ public class PayOrderV1Api implements ApiHandle {
         if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) 
         		&& afShareGoodsService.getCountByGoodsId(orderInfo.getGoodsId())!=0){
         	
-    		if(afOrderService.getOverOrderByGoodsIdAndUserId(orderInfo.getGoodsId(),userId)!=null){
+    		if(afOrderService.getOverOrderByGoodsIdAndUserId(orderInfo.getGoodsId(),userId).size() >0){
 
         		logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);

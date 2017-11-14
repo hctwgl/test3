@@ -178,5 +178,5 @@ public interface AfOrderDao {
 	 * 根据goodsId,userId查询已完成订单——新人专享
 	 * @return
 	 */
-	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
+	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 }
