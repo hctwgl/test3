@@ -136,7 +136,19 @@ $(function(){
                     if (!(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
                         requestMsg('请输入手机号')
                     }else{
-                        captchaObj.verify();
+                        $.ajax({
+                            url:'/app/user/checkMobileRegistered',
+                            type:'post',
+                            data:{mobile:mobileNum},
+                            success:function (data) {
+                                data=JSON.parse(data);
+                                if(data.data=='N'){
+                                    captchaObj.verify();//调起图片验证
+                                }else{
+                                    requestMsg(data.msg)
+                                }
+                            }
+                        })
                     }
                 });
                 captchaObj.onSuccess(function () {
