@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.*;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -392,7 +395,39 @@ public class AppH5UserContorler extends BaseController {
         }
 
     }
-
+    
+    @RequestMapping(value = "/checkMobileRegistered", method = RequestMethod.POST)
+    @ResponseBody
+    public String checkMobileRegistered(HttpServletRequest request, ModelMap model) throws IOException {
+    	Calendar calStart = Calendar.getInstance();
+    	H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try {
+        	String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+        	if(StringUtils.isEmpty(mobile)){
+        		throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+        	}
+            Pattern numPattern = Pattern.compile("^1[3|4|5|7|8][0-9]{9}$");
+            Matcher matcher = numPattern.matcher(mobile);
+     		if(!matcher.matches()) {
+     			throw new FanbeiException("mobile not allowed",FanbeiExceptionCode.REQUEST_PARAM_ILLEGAL);
+     		}
+     		String isRegistered="N";
+            AfUserDo UserDo = afUserService.getUserByUserName(mobile);
+            if (UserDo != null) {
+            	isRegistered="Y";
+            	resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", isRegistered);
+            }
+            resp = H5CommonResponse.getNewInstance(true, "成功", "", isRegistered);
+            return resp.toString();
+        } catch (Exception e) {
+            logger.error("checkMobileRegistered exception" + e.getMessage());
+            resp = H5CommonResponse.getNewInstance(false, "失败", "", null);
+            return resp.toString();
+        }  finally {
+            doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("mobile"));
+        }
+    }
+    
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
         return null;
