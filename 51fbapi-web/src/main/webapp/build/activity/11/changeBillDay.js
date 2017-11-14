@@ -142,9 +142,9 @@
                 success:function(data){
                     self.contentTwo = eval('(' + data + ')');
                     console.log(self.contentTwo,'self.contentTwo');
-                    //window.location.href='changeSuccess';//点击提交跳转修改成功页面
+                    window.location.href='changeSuccess';//点击提交跳转修改成功页面
                      if(self.contentTwo.success==false){
-                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     } 
                      
                     

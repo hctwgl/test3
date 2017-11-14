@@ -21,18 +21,10 @@ let vm = new Vue({
             $.ajax({
                 type:'post',
                 url:'/fanbei-web/changeOutDay/getUserOutDay',
-                data:{
-                    'outDay':outDay,
-                    'payDay':payDay,
-                },
                 success:function(data){
                     self.contentThree = eval('(' + data + ')');
-                    console.log(self.contentThree,'self.contentThree');
+                    console.log(self.contentThree,'1111');
                     
-                    if(self.contentThree.success==false){
-                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
-                    }
-                     
                     
                 }
                     
