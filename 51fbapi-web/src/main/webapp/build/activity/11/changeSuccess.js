@@ -20,7 +20,7 @@ let vm = new Vue({
             console.log(payDay,'payDay')
             $.ajax({
                 type:'post',
-                url:'/fanbei-web/changeOutDay/updateOutDay',
+                url:'/fanbei-web/changeOutDay/getUserOutDay',
                 data:{
                     'outDay':outDay,
                     'payDay':payDay,
