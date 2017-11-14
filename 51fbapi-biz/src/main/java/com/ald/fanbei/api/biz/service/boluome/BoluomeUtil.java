@@ -31,6 +31,7 @@ import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderPushLogService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -48,12 +49,14 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderPushLogDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -82,6 +85,8 @@ public class BoluomeUtil extends AbstractThird{
 	
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+    AfUserAccountService afUserAccountService;
 	
 	private static String pushPayUrl = null;
 	private static String pushRefundUrl = null;
@@ -174,6 +179,11 @@ public class BoluomeUtil extends AbstractThird{
 			orderInfo.setMobile(StringUtils.EMPTY);
 			orderInfo.setBankId(0l);
 			orderInfo.setServiceProvider(channel);
+			AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0L));
+			if(userAccountInfo!=null){
+				orderInfo.setAuAmount(userAccountInfo.getAuAmount());
+				orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+			}
 			if (shopInfo.getInterestFreeId() != 0) {
     			AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
     			orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());

@@ -1,3 +1,4 @@
+@url:'https://f.51fanbei.com/h5/app/images/user/invite';
 html, body {
   width: 100%;
   height: 100%;
@@ -12,6 +13,10 @@ body {
   bottom: 0;
   background: #fff;
   overflow: hidden;
+  img{
+    width: 100%;
+    height:auto;
+  }
 }
 #register {
   background: #fff;
@@ -22,62 +27,38 @@ body {
   bottom: 0;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
-  .banner {
-    width: 7.50rem;
-    height: 6.10rem;
-    background: url('http://f.51fanbei.com/h5/app/images/user/invite/register.png') 0 0 no-repeat;
-    background-size: 100% 100%;
-  }
-  .roll {
-    height: 20px;
-    overflow: hidden;
-    position: relative;
-    ul {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      width: 100%;
-      li {
-        height: 20px;
-        line-height: 20px;
-        color: #f15d32;
-        font-size: 14px;
-        text-align: center;
-      }
-    }
+  .mar17{
+    position: absolute;top:6rem;width:5.5rem;left:1.4rem;
+    color:#424141;font-size: .28rem;
+    height: .26rem;
   }
   .inter {
-    width: 6.80rem;
+    width: 6.8rem;
     height: 6.45rem;
-    background: url('http://f.51fanbei.com/h5/app/images/user/invite/bgradius.png') 0 0 no-repeat;
-    background-size: 100% 100%;
-    margin: 0 auto;
-    margin-top: 0.18rem;
+    position:absolute;
+    left:.34rem;
+    top:7.48rem;
     box-sizing: border-box;
     padding: 0 0.72rem;
     #user, #pwd {
       width: 5.34rem;
-      height: 0.72rem;
-      background: #fff;
-      border-radius: 4px;
+      height: 0.68rem;
       box-sizing: border-box;
       padding: 0.22rem;
       font-size: 0.28rem;
-    }
-    #user {
-      margin-top: 0.54rem;
+      background: transparent;
     }
     #pwd {
-      margin-top: 0.35rem;
+      margin-top: 0.4rem;
     }
     .verify {
-      margin-top: 0.35rem;
+      margin-top: 0.39rem;
       overflow: hidden;
       #verify {
         width: 3.36rem;
-        height: 0.72rem;
+        height: 0.68rem;
         box-sizing: border-box;
-        border-radius: 4px;
+        background: transparent;
         font-size: 0.28rem;
         float: left;
         padding: 0.22rem;
@@ -88,28 +69,23 @@ body {
         height: 0.72rem;
         border-radius: 4px;
         font-size: 0.26rem;
-        color: #3f3f3f;
+        color: white;
         line-height: 0.72rem;
         text-align: center;
-        background: linear-gradient(357deg, #fab915, #f6e139);
-        &.disabled {
-          background: #dfdfdf;
-        }
       }
     }
     .reg {
       width: 5.34rem;
       height: 0.70rem;
-      margin-top: 0.45rem;
+      margin-top: 0.55rem;
       border-radius: 4px;
-      background-image: linear-gradient(357deg, #fab915, #f6e139);
-      color: #000;
+      color: white;
       font-size: 0.32rem;
       line-height: 0.70rem;
       text-align: center;
     }
     .agree {
-      color: #fff;
+      color: #949494;
       font-size: 0.24rem;
       margin-top: 0.3rem;
       .checkbox {
@@ -118,25 +94,25 @@ body {
         border-radius: 3px;
         background-color: #fff;
         display: inline-block;
+        border: 1px solid;
         &.checked {
-          background-image: url('http://f.51fanbei.com/h5/app/images/user/invite/right.png');          
+          background-image: url('@{url}/right.png');
           background-position: 0 0;
           background-repeat: no-repeat;
           background-size: 100% 100%;
         }
       }
       a {
-        color: #fff;
+        color: #949494;
         display: inline-block;
       }
     }
     .registered {
-      margin-top: 0.40rem;
       text-align: center;
       font-size: 0.28rem;
       text-decoration: underline;
       a {
-        color: #fff;
+        color: #949494;
       }
     }
   }

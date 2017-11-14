@@ -4,17 +4,16 @@
     #set($version="20170904")
     #set($src="https://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
-    <title>校园生活</title>
+    <title>大牌潮机</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/superPhone.css">
 </head>
 <body>
 <div id="schoolLife">
     <div class="banner"><img src="https://f.51fanbei.com/h5/app/activity/11/superPhone_banner.png"></div>
     <div class="couponList flex fd-row">
-        <div class="coupon" v-for="(item,index) in couponCont.couponInfoList" @click="couponClick(item)" :class="'coupon'+index">
-      <!--       <p class="buyNow" v-if="item.drawStatus==='N'">立即领取</p>
-            <p class="buyNow" v-if="item.drawStatus==='Y'">已领取</p> -->
-        </div>
+
+        <div class="coupon" v-for="(item,index) in couponCont.couponInfoList" @click="couponClick(item)" :class="'coupon'+index"></div>
+
     </div>
     <div class="firstCont clearFix">
         <div class="contTitle">
@@ -48,7 +47,7 @@
         </div>
     </div>
     <div class="firstCont fourthCont clearFix">
-        <div class="contTitle"></div>
+        <div class="contTitle4"></div>
         <div class="good" v-for="item in content.fourLevelGoodsInfo.goodsList" @click="goodClick(item)">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
             <p class="goodDes">{{txtFix(item.goodName,8)}}</p>

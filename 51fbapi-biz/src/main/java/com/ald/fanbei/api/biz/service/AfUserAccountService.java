@@ -7,6 +7,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfLimitDetailQuery;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -129,4 +130,12 @@ public interface AfUserAccountService {
 	
 	int updateBorrowCashActivity(@Param("money") int money,@Param("userId") List<String> userId);
 	
+	
+	/**
+	 * 根据用户ID查询授信金额
+	 * @param userId
+	 * 
+	 * **/
+	
+	BigDecimal getAuAmountByUserId(long userId);
 }
