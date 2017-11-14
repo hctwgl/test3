@@ -362,6 +362,10 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
 		}
+		AfUserRegisterTypeDo afUserRegisterTypeDo = new AfUserRegisterTypeDo();
+		afUserRegisterTypeDo.setUserId(afUserDo.getRid());
+		afUserRegisterTypeDo.setType(1);
+		afUserService.addQuickRegisterUser(afUserRegisterTypeDo);
 		return userDo;
 	}
 

@@ -202,5 +202,10 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserRegisterTypeDao.selectByUserId(id);
 	}
 
+	@Override
+	public int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo) {
+		return afUserRegisterTypeDao.insert(afUserRegisterTypeDo);
+	}
+
 
 }

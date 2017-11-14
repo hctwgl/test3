@@ -28,7 +28,7 @@
     insert into af_user_register_type (id, is_delete, gmt_modified, 
       gmt_create, user_id, type
       )
-    values (#{id,jdbcType=BIGINT}, #{isDelete,jdbcType=TINYINT}, now(),
+    values (#{id,jdbcType=BIGINT}, 0, now(),
       now(), #{userId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}
       )
   </insert>

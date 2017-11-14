@@ -63,4 +63,6 @@ public interface AfUserService {
 	List<String> getUserNameByUserId(List<String> users);
 
 	AfUserRegisterTypeDo isQuickRegisterUser(Long id);
+
+	int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo);
 }
