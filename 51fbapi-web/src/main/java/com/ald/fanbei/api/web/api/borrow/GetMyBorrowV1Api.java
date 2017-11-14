@@ -77,11 +77,15 @@ public class GetMyBorrowV1Api implements ApiHandle{
 					resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 					return resp;
 				}
+				// 信用额度
 				BigDecimal auAmount = userAccount.getAuAmount();
+				// 可用额度
 				BigDecimal amount = BigDecimalUtil.subtract(auAmount, userAccount.getUsedAmount());
 				// 获取逾期账单月数量
 				int overduedMonth = afBorrowBillService.getOverduedMonthByUserId(userId);
+				// 已出账单
 				BigDecimal outMoney = afBorrowBillService.getUserOutMoney(userId);
+				// 未出账单
 				BigDecimal notOutMoeny = afBorrowBillService.getUserNotOutMoney(userId);
 				Date lastPayDay = null;
 				if (overduedMonth < 1) {
@@ -94,13 +98,13 @@ public class GetMyBorrowV1Api implements ApiHandle{
 				map.put("outMoney", outMoney);
 				map.put("notOutMoeny", notOutMoeny);
 				map.put("lastPayDay", DateUtil.formatMonthAndDay(lastPayDay));
+				resp.setResponseData(map);
 			}
 		} catch (Exception e) {
 			logger.error("getMyBorrowV1Api error :" , e);
 			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.CALCULATE_SHA_256_ERROR);
 			return resp;
 		}
-		
 		return resp;
 	}
 
