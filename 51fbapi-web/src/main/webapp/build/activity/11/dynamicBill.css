@@ -3,7 +3,6 @@
 }
 body {
   background-color: white;
-  overflow-x: hidden;
 }
 .dynamic-top {
   height: 6.1rem;
@@ -121,7 +120,6 @@ body {
   margin-bottom: 2rem;
 }
 .rule {
-  width: 1.51rem;
   height: 1.33rem;
   text-align: center;
   border-radius: .04rem;
@@ -131,7 +129,7 @@ body {
   line-height: .33rem;
   position: absolute;
   top: 2%;
-  left: 83%;
+  left: 88%;
 }
 .mask {
   position: fixed;
