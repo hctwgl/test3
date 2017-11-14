@@ -292,7 +292,7 @@ public class FanbeiController extends BaseController {
      * @return
      * @throws IOException
      */
-    @RequestMapping(value = {"/Withhold/updateWithholdSwitch","/Withhold/getWithholdInfo","/Withhold/updateWithholdCard","/Withhold/showUserBankCard"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @RequestMapping(value = {"/Withhold/updateWithholdSwitch","/Withhold/getWithholdInfo","/Withhold/updateWithholdCard","/Withhold/showUserBankCard","/homePage/homeScrollBar"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String withHoldRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

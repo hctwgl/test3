@@ -406,6 +406,10 @@
 				<entry key="/Withhold/updateWithholdSwitch" value-ref="updateWithholdSwitchApi" />
 				<entry key="/Withhold/updateWithholdCard" value-ref="updateWithholdCardApi" />
 				<entry key="/Withhold/showUserBankCard" value-ref="showUserBankCardApi" />
+				
+				<!-- 首页滚动条 -->
+				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
+				
 			</map>
 		</constructor-arg>
 	</bean>
