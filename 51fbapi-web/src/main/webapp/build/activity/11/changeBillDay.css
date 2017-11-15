@@ -3,6 +3,7 @@
 }
 body {
   position: relative;
+  overflow-x: hidden;
 }
 .payforInfo {
   height: 1.68rem;
