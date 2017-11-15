@@ -46,8 +46,10 @@ let vm = new Vue({
                     requestMsg('哎呀，出错了！')
                 }
             });
+        },
+        //日期格式转换
+        fixDate(date){
+            return date.replace(/-/g,'.');
         }
     }
 });
-
-

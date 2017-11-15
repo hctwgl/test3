@@ -22,7 +22,7 @@
         <div class="rule">活动规则</div>
     </div>
     <div class="rightown"></div>
-    <div class="copycode">点击复制邀请码：123456<span class="invitecode" data-clipboard-text="0"></span></div>
+    <div class="copycode">点击复制邀请码：<span class="invitecode" data-clipboard-text="0"></span></div>
     <div class="level level1">
         <div class="box"></div>
     </div>
@@ -39,8 +39,8 @@
     <div class="myplease">
         <div class="myreward">我的奖励  <span>0.00</span>元</div>
         <div class="buttons">
-            <div class="active levelone">一级邀请奖励</div>
-            <div class="leveltwo">二级邀请奖励</div>
+            <div class="active levelone sameLevel">一级邀请奖励</div>
+            <div class="leveltwo sameLevel">二级邀请奖励</div>
             <div class="levelthree">外卖券奖励</div>
         </div>
         <div class="content">
@@ -54,7 +54,7 @@
                 <div class="loadall" style="display:none">最后一条数据了哦~</div>
                 <div class="loading" style="display:none"></div>
                 <div class="list">
-                    <div class="nodata">您暂无邀请！</div>
+                   #* <div class="nodata">您暂无邀请！</div>*#
                 </div>
             </div>
         </div>

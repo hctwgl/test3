@@ -200,7 +200,7 @@ window.onload = ()=>{
 
     getlist(1, 1, replacehtml)
 
-    $('.buttons div').on('click', (e)=>{
+    $('.buttons .sameLevel').on('click', (e)=>{
         $('.loading').show()
         var nodecl = e.target.className
         if(nodecl.indexOf('levelone') > -1) {
@@ -251,3 +251,40 @@ window.postshareex = (incase)=>{
 window.postshareaf = (incase)=>{
     // maidian(incase)
 }
+$(function(){
+  $('.levelthree').click(function(){
+      $('.loading').show();
+      $('.list').empty();
+      $.ajax({
+          type: 'post',
+          url: "/h5GgActivity/returnCoupon",
+          success: function (data) {
+              $('.loading').hide();
+              console.log(data);
+              let takeOutMoney=data.data.returnCouponList;
+              let str='';
+              if(takeOutMoney && takeOutMoney.length>0){
+                  for(let i=0;i<takeOutMoney.length;i++){
+                      if(takeOutMoney[i].status=='已完成'){
+                          str+=`<div class="takeOutMoney"><span>${takeOutMoney[i].inviteeMobile}</span>
+                    <span>${takeOutMoney[i].registerTime}</span>
+                    <span style="color:#f0110e">${takeOutMoney[i].status}</span>
+                    <span>${takeOutMoney[i].reward}</span></div>`;
+                      }else{
+                          str+=`<div class="takeOutMoney"><span>${takeOutMoney[i].inviteeMobile}</span>
+                    <span>${takeOutMoney[i].registerTime}</span>
+                    <span>${takeOutMoney[i].status}</span>
+                    <span>${takeOutMoney[i].reward}</span></div>`;
+                      }
+                  }
+                  $('.list').append(str);
+              }else{
+                  $('.list').append('<div class="nodata">您暂无邀请！</div>');
+              }
+          },
+          error:function(){
+              requestMsg('哎呀，出错了！')
+          }
+      });
+  })
+});

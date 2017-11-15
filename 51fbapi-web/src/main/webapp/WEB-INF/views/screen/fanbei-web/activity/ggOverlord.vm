@@ -22,16 +22,19 @@
             <p class="prizeTop">我的奖励</p>
             <p class="prizeBot">合计<span><i v-for="item in inviteSumMoney">{{item}}</i></span>元外卖券</p>
         </div>
-        <p class="toCash">去账户提现>>></p>
+        <p class="toCash">去账户提现 ></p>
         <div class="rebateList">
             <p class="rebateTitle"><span>被邀请人</span><span>注册时间</span><span>状态</span><span>奖励</span></p>
             <ul class="rebateCont" v-if="content.returnCouponList && couponLength>0">
-                <li>
-                    <span>186****5604</span><span>2017.11.5</span><span>未完成</span><span>15元外卖券</span>
+                <li v-for="item in content.returnCouponList" class="clearFix">
+                    <span>{{item.inviteeMobile}}</span>
+                    <span>{{fixDate(item.registerTime)}}</span>
+                    <span v-if="item.status==='已完成'" style="color:#f0110e">{{item.status}}</span>
+                    <span v-else>{{item.status}}</span>
+                    <span>{{item.reward}}</span>
                 </li>
-                <li><span>186****5604</span><span>2017.11.5</span><span style="color:#f0110e">已完成</span><span>15元外卖券</span></li>
-                <li><span>186****5604</span><span>2017.11.5</span><span>未消费</span><span>15元外卖券</span></li>
             </ul>
+            <p class="noteDes">注：状态“未完成”表示用户已消费但订单状态未确认完成；</p>
             <p class="noPrize" v-else>您暂无奖励</p>
         </div>
     </div>
