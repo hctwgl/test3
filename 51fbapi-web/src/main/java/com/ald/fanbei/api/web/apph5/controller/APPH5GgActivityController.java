@@ -108,7 +108,7 @@ public class APPH5GgActivityController extends BaseController {
     public String bouomeActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
    	String resultStr = "";
    	String referer = request.getHeader("referer");  
-   	doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"calling h5GgActivity commitRegisterLogin");
+   	doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"calling h5GgActivity commitRegisterLogin",request.getParameter("registerMobile"));
    	try {
    	    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
    	    String inviteer = ObjectUtils.toString(request.getParameter("inviteer"), "").toString();
@@ -196,13 +196,13 @@ public class APPH5GgActivityController extends BaseController {
    	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
    	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
    	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
-   	 
+   	 try{
    	    if(StringUtils.isNotEmpty(inviteer)){
    		AfBoluomeUserCouponDo  afBoluomeUserCouponDo = new AfBoluomeUserCouponDo();
    		afBoluomeUserCouponDo.setUserId(NumberUtil.objToLong(inviteer));
    		afBoluomeUserCouponDo.setRefId(NumberUtil.objToLong(moblie));
-   		afBoluomeUserCouponDo.setGmtCreate(new Date());
    		afBoluomeUserCouponDo.setChannel(H5GgActivity.REGISTER.getCode());
+   		afBoluomeUserCouponDo.setStatus(2);
    		int saveResult = afBoluomeUserCouponService.saveRecord(afBoluomeUserCouponDo);
    		if(saveResult == 1){
    		 logger.info("h5GgActivity commitRegisterLogin saveResult success",afBoluomeUserCouponDo);  
@@ -210,7 +210,9 @@ public class APPH5GgActivityController extends BaseController {
    		 logger.info("h5GgActivity commitRegisterLogin saveResult fial",afBoluomeUserCouponDo);  
    		}
    	    }
-   	    
+   	 }catch(Exception e){
+   	    logger.error("h5GgActivity save boluomeUserCoupon record error" + e.getMessage());
+   	 }
    	    return resultStr;
 
    	} catch (FanbeiException e) {
