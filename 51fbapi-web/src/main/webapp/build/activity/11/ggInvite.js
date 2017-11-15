@@ -57,7 +57,7 @@ function _init() {
 
 window.onload = ()=>{
     _init()
-    let clipboard = new Clipboard('.invitecode')
+    let clipboard = new Clipboard('.invitecode');
 
     clipboard.on('success', function(e) {
         console.log(e)
@@ -252,6 +252,17 @@ window.postshareaf = (incase)=>{
     // maidian(incase)
 }
 $(function(){
+    //初始化数据
+    $.ajax({
+        type: 'post',
+        url: "/h5GgActivity/inviteCeremony",
+        success: function (data) {
+            console.log(data);
+        },
+        error:function(){
+            requestMsg('哎呀，出错了！')
+        }
+    });
   $('.levelthree').click(function(){
       $('.loading').show();
       $('.list').empty();
@@ -260,7 +271,7 @@ $(function(){
           url: "/h5GgActivity/returnCoupon",
           success: function (data) {
               $('.loading').hide();
-              console.log(data);
+              //console.log(data);
               let takeOutMoney=data.data.returnCouponList;
               let str='';
               if(takeOutMoney && takeOutMoney.length>0){
@@ -286,5 +297,5 @@ $(function(){
               requestMsg('哎呀，出错了！')
           }
       });
-  })
+  });
 });
