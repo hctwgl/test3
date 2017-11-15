@@ -109,7 +109,7 @@ public class ApplyRenewalApi implements ApiHandle {
 		//AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 		//BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
 		//BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-		BigDecimal capital = BigDecimalUtil.subtract(afBorrowCashDo.getAmount(),renewAmount).subtract(afBorrowCashDo.getRepayAmount());
+		BigDecimal capital = BigDecimalUtil.subtract(afBorrowCashDo.getAmount(),renewAmount).subtract((afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getSumOverdue()).subtract(afBorrowCashDo.getSumRate())));
 		
 		
 		if (capital.compareTo(afBorrowCashDo.getAmount()) == 1) {   //判断续借金额是否大于借款金额
@@ -119,7 +119,7 @@ public class ApplyRenewalApi implements ApiHandle {
 		
 		// 续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(renewAmount);;
+		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(renewAmount);
 		BigDecimal allRenewalAmount= BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
 		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
