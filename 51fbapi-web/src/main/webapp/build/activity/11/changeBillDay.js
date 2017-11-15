@@ -1,77 +1,4 @@
 
-
-// let startTime='',endTime='';
-// //增加开始日期
-// function addStartDate(){
-//     // dtpicker组件适用于弹出日期选择器
-//     var dtpicker = new mui.DtPicker({
-//         type: "date", //设置日历初始视图模式
-//         labels: ['年', '月', '日'] //设置默认标签区域提示语
-//     });
-
-//     dtpicker.show(function(items) {
-//         startTime=items.y.value + "-"+ items.m.value + "-"+ items.d.value;
-//         var dateStr = items.y.value + "-" + items.m.value + "-" + items.d.value + " ";
-//         $('.startTime').text(dateStr);
-//         dtpicker.dispose();
-//     })
-// }
-
-// //增加结束日期
-//  function addEndDate(){
-//     // dtpicker组件适用于弹出日期选择器
-//     var dtpicker = new mui.DtPicker({
-//         type: "date", //设置日历初始视图模式
-//         labels: ['年', '月', '日'] //设置默认标签区域提示语
-//     });
-
-//     dtpicker.show(function(items) {
-//         endTime = items.y.value + "-" + items.m.value + "-" + items.d.value;
-//         var dateStr = items.y.value + "-" + items.m.value + "-" + items.d.value + " ";
-//         $('.endTime').text(dateStr);
-//         dtpicker.dispose();
-//     })
-// } 
-
-// /* function addEndDate(){
-//     // dtpicker组件适用于弹出日期选择器
-//     var dtpicker = new mui.DtPicker({
-//         type: "Int", //设置日历初始视图模式
-//         picker:2
-//     });
-
-//     dtpicker.show(function(items) {
-//         endTime = items.y.value + "-" + items.m.value + "-" + items.d.value;
-//         var dateStr = items.y.value + "-" + items.m.value + "-" + items.d.value + " ";
-//         $('.endTime').text(dateStr);
-//         dtpicker.dispose();
-//     })
-// } */
-
-
-// //选择开始结束时间 
-// $(".dateOne").click(function(){
-//      addStartDate(); 
-// });
-
-//  $(".dateTwo").click(function(){
-//     addEndDate();
-// }); 
-
-// //返回
-// $('.return').click(function(){
-//     window.location.href=paraArr+".html";
-// });
-// //完成
-// $('.finish').click(function(){
-//     if(Number(endTime)>0&&Number(endTime)<Number(startTime)){
-//         requestMsg('结束时间不能小于开始时间')
-//     }else{
-//         window.location.href=paraArr+".html?startTime="+startTime+'&endTime='+endTime+'&stateStatus='+stateStatus;
-//     }
-// });
-
-
  let vm = new Vue({
     el:'#changbillDay',
     data:{
@@ -81,7 +8,9 @@
         ruleShow: '',
         otherDate:'',
         over: false,
-        msg: ''
+        msg: '',
+        flag:true,
+        isA:false
     },
     created:function(){
         this.logData();
@@ -119,12 +48,18 @@
                     
                 
             })
-
+            //禁止提交按钮的点击
+            self.flag=false;
 
             
         },
         //点击提交按钮
         commit(){
+            // return false;
+            // 判断提交按钮是否能点击
+            if(!this.flag){
+                return false;
+            }
             let self=this;
             let outDay=document.getElementById("outDay").innerHTML;//获取出账日
             let payDay=document.getElementById("payDay").innerHTML;//获取还款日
@@ -142,9 +77,9 @@
                 success:function(data){
                     self.contentTwo = eval('(' + data + ')');
                     console.log(self.contentTwo,'self.contentTwo');
-                    window.location.href='changeSuccess';//点击提交跳转修改成功页面
+                    //window.location.href='changeSuccess';//点击提交跳转修改成功页面
                      if(self.contentTwo.success==false){
-                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        //window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     } 
                      
                     
@@ -182,6 +117,8 @@
         },
         //点击显示mask
         maskShow(){
+            // this.isA=true;//点击选择年月日的时候提交按钮变亮
+            // this.flag=true;//点击选择年月日的时候点击提交可跳转
             let self=this;
             if(self.over) {
                 requestMsg(self.msg)
@@ -195,6 +132,7 @@
                 a='每月'+dateList[i].outDay+'日'+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+'每月'+dateList[i].payDay+'日';
             list.push(a);
             }
+
             refundState(list)
         },
         // 点击活动规则
@@ -223,11 +161,16 @@ function refundState(data){
         console.log(theFirst,theSecond)
          var monthOne="";//出账日
          var monthTwo="";//还款日
-         monthOne+="<i class='monthOne startTime'>"+'每月'+"<i id='outDay'>"+theFirst+"</i>"+"</i>"+'号'+"</i>";//字符串拼接到显示的出账日里面
+        monthOne+="<i class='monthOne startTime'>"+'每月'+"<i id='outDay'>"+theFirst+"</i>"+"</i>"+'号'+"</i>";//字符串拼接到显示的出账日里面
         $('.monthOne').html(monthOne);
         monthTwo+="<i class='monthTwo startTime'>"+'每月'+"<i id='payDay'>"+theSecond+"</i>"+"</i>"+'号'+"</i>";//字符串拼接到显示的还款日里面
         $('.monthTwo').html(monthTwo);
         //$('.stateStatus').text(SelectedItem[0].text);
+        vm.isA=true;//点击选择年月日的时候提交按钮变亮
+        vm.flag=true;//点击选择年月日的时候点击提交可跳转
         picker.dispose(); 
     })
+
 }
+
+

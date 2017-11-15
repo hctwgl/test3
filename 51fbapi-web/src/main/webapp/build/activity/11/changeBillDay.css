@@ -42,7 +42,7 @@ body {
 .dynamic-center .dateOne {
   position: absolute;
   top: 30%;
-  left: 23%;
+  left: 14%;
   text-align: center;
 }
 .dynamic-center .dateOne .monthOne {
@@ -56,7 +56,7 @@ body {
 .dynamic-center .dateTwo {
   position: absolute;
   top: 30%;
-  right: 23%;
+  right: 14%;
   text-align: center;
 }
 .dynamic-center .dateTwo .monthTwo {
@@ -86,12 +86,12 @@ body {
 .commit {
   width: 6.36rem;
   height: 1rem;
-  background-color: #ff6e34;
   border-radius: .5rem;
   font-size: .32rem;
   color: #fff;
   margin-left: 8%;
   margin-top: .36rem;
+  background: #a9a9a9;
 }
 .mask {
   width: 100%;
@@ -182,6 +182,9 @@ body {
   float: right;
   margin-top: 0.3rem;
   margin-right: 0.3rem;
+}
+.active {
+  background-color: #ff6e34;
 }
 .rule {
   width: .51rem;
