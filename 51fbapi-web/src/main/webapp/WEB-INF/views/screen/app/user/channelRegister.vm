@@ -50,8 +50,8 @@
             </div>
             <div class="progress_btn" id="progress_btn"></div>
             <div class="moneyFlag">
-                <span class="lf" id="leftMoney">￥0</span>
-                <span class="fr" id="rightMoney">￥200</span>
+                <span class="lf" id="leftMoney">￥500</span>
+                <span class="fr" id="rightMoney">￥0.5</span>
             </div>
         </div>
     #end

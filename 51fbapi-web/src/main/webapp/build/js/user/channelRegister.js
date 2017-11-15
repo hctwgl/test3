@@ -236,12 +236,13 @@ $(function(){
 
 
 // 拖动进度条相关代码
-$(function () {
+// $(function () {
     var tag = false, ox = 0, left = 0, bgleft = 0; 
     // 移动端对应down,move,up事件分别是touchstart,touchmove,touchend
     var startEvent = 'touchstart';
     var moveEvent = 'touchmove';
     var upEvent ='touchend';
+    var totalLength = 300 * document.documentElement.clientWidth /375;
     $('.progress_btn').on(startEvent, function (e) {
         var originalEvent = e.originalEvent;
         var touches = originalEvent.touches;
@@ -271,14 +272,14 @@ $(function () {
             left = touch.pageX - ox;
             if (left <= 0) {
                 left = 0;
-            } else if (left > 300) {
-                left = 300;
+            } else if (left > totalLength) {
+                left = totalLength;
             }
             $('.progress_btn').css('left', left);
-            $('.progress_bar').width(left/50+"rem");
-            $('.text').html("￥"+parseInt(left / 300*19500+500));
-            $("#leftMoney").html("￥" + parseInt(left / 300 * 19500 + 500));
-            $("#rightMoney").html("￥" + (parseInt((left / 300 * 19500 + 500)) * 0.001).toFixed(2));
+            $('.progress_bar').width(left / (100 * (document.documentElement.clientWidth / 750))+"rem");
+            $('.text').html("￥" + parseInt(left / totalLength*19500+500));
+            $("#leftMoney").html("￥" + parseInt(left / totalLength * 19500 + 500));
+            $("#rightMoney").html("￥" + (parseInt((left / totalLength * 19500 + 500)) * 0.001).toFixed(2));
         }
     });
-})
+// })
