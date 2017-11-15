@@ -311,8 +311,6 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					afUserAccountDao.updateUserAccount(account);
 
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
-					//生成续期凭据
-					afContractPdfCreateService.protocolRenewal(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -340,6 +338,13 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			//当续期成功时,同步逾期天数为0
 			dealWithSynchronizeOverduedOrder(currAfBorrowCashDo);
 
+			try {
+				//生成续期凭据
+				afContractPdfCreateService.protocolRenewal(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
+				logger.error("生成续期凭据成功，renewId="+afRenewalDetailDo.getUserId());
+			} catch (Exception e) {
+				logger.error("生成续期凭据异常，renewId="+afRenewalDetailDo.getUserId(),e);
+			}
 			//返呗续期通知接口，向催收平台同步续期信息
 			try {
 				CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");

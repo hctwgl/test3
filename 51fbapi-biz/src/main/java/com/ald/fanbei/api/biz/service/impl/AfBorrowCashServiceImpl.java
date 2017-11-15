@@ -104,9 +104,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
 
-				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
-				afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
-				logger.info("updateRecommendUser=" + rr);
+				
 				logger.info("borrowSuccess--end");
 				// fmf 借钱抽奖活动借款金额加入缓存
 				BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
@@ -145,6 +143,16 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				//资金方开关关闭，跳过关联
 				logger.info("borrowSuccess ,rela fund site info is off,and jump it ,borrowCashId:"+afBorrowCashDo.getRid());
 			}
+			
+			int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
+			logger.info("updateRecommendUser=" + rr+"");
+			try {
+				afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
+				logger.info("protocolCashLoan finish，borrowCashId=" + afBorrowCashDo.getRid());
+			} catch (Exception e) {
+				logger.info("protocolCashLoan error，borrowCashId=" + afBorrowCashDo.getRid(),e);
+			}
+			
 		}
 		return resultValue;
 	}
