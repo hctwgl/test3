@@ -9,7 +9,15 @@
 </head>
 <body>
 <div id="ggFix" class="ggFix">
-    <div class="banner"><img src="$src/ggFix01.jpg"></div>
+    <div class="loadingMask"><i class="loading"></i></div>
+    <div class="banner first"><img src="$src/ggFix01.jpg"></div>
+    <p class="clickRule" @click="ruleClick()"><span>活动规则</span></p>
+    <div class="alertRule" v-show="ruleShow">
+        <p class="alertRuleTitle">活动规则</p>
+        <p class="alertRuleCont">您邀请的好友点外卖立享15元无门槛优惠，完成消费后，您即可获得1张“15元无门槛外卖券”，多邀多得，不设上限。</p>
+        <p class="closeRule" @click="closeClick()">X</p>
+    </div>
+    <div class="mask" v-show="ruleShow"  @click="closeClick()"></div>
     <div class="firstCont">
         <p class="firstTitle"><img src="$src/ggFix08.png">我想吃霸王餐</p>
         <div class="cont">
