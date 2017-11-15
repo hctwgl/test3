@@ -90,20 +90,26 @@ public class WithholdInfoController implements ApiHandle {
 			String endTime2 = StringUtil.null2Str(json.get("endTime2"));
 
 			Date date = new Date();// 当前时间
+			//DateFormat dfs = new SimpleDateFormat(DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
 			DateFormat df = new SimpleDateFormat("HH:mm:ss");// 创建日期转换对象HH:mm:ss为时分秒
+			String format = df.format(date);
 			Date sdt1 = null;
 			Date sdt2 = null;
 			Date edt1 = null;
 			Date edt2 = null;
 			Date currTime = null;
+			//String s=format+startTime1;
 			try {
+				//System.out.println(s);
 				sdt1 = df.parse(startTime1); // 将字符串转换为date类型
-				sdt2 = df.parse(startTime2);
-				edt1 = df.parse(endTime1);
-				edt2 = df.parse(endTime2);
-				currTime = df.parse(date.toString());
+				sdt2 = df.parse(startTime1);
+				edt1 = df.parse(startTime1);
+				edt2 = df.parse(startTime1);
+				currTime = df.parse(format);
 			} catch (ParseException e) {
+				
 				logger.error("DateTime is Exception: Exception= " + e);
+				e.getMessage();
 			}
 			if (currTime.getTime() > sdt1.getTime() && currTime.getTime() < edt1.getTime()) {
 				info.put("isDeal", "Y");
