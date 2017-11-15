@@ -82,14 +82,16 @@ window.onload = ()=>{
     $('.invitecode')[0].dataset.clipboardText = invitationCode
     $('.myreward span').text(sum)
 
-    
+      let protocol = window.location.protocol;
+      let host = window.location.host;
+      let domainName = protocol+'//'+host;
 
     $('.rightown').on('click', ()=>{
       var dat = {
         shareAppTitle: shareinfo.listTitle,
         shareAppContent: shareinfo.listDesc,
         shareAppImage: shareinfo.listPic,
-        shareAppUrl: 'https://app.51fanbei.com/app/user/channelRegister?channelCode=aldcgyq&pointCode=aldcgyq',
+        shareAppUrl: domainName+'/fanbei-web/app/inviteregister?recommendCode='+invitationCode,
         isSubmit: 'Y',
         sharePage: 'inviteShare'
       }

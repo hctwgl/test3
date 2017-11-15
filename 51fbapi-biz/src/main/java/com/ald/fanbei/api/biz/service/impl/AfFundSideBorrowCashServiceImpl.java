@@ -97,9 +97,6 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 				//af_fund_side_borrow_cash关联记录插入
 				Integer borrowDays = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(borrowCashDo.getType()).getCode(), 0);
 				BigDecimal planCollectInterest = NumberUtil.getSumInterestsByAmountAndRate(borrowCashDo.getArrivalAmount(), fundSideInfoDo.getAnnualRate(), borrowDays);
-				AfFundSideBorrowCashDo fundSideBorrowCashDo = new AfFundSideBorrowCashDo(borrowCashId, borrowCashDo.getBorrowNo(), planCollectInterest, accounts.getFundSideInfoId(), borrowCashDo.getGmtPlanRepayment(), 
-						borrowCashDo.getArrivalAmount().add(planCollectInterest), null, YesNoStatus.NO.getCode(), currDay, currDay, fundSideInfoDo.getAnnualRate());
-				afFundSideBorrowCashDao.saveRecord(fundSideBorrowCashDo);
 				
 				//af_fund_side_account资金更新
 				AfFundSideAccountDo afFundSideAccountDo = new AfFundSideAccountDo();
@@ -109,8 +106,16 @@ public class AfFundSideBorrowCashServiceImpl extends ParentServiceImpl<AfFundSid
 				afFundSideAccountDo.setCollectInterest(planCollectInterest);
 				afFundSideAccountDo.setBorrowTotalAmount(borrowCashDo.getArrivalAmount());
 				afFundSideAccountDo.setGmtModified(accounts.getGmtModified());
-				afFundSideAccountDao.updateRecordInfo(afFundSideAccountDo);
-				
+				int affectRows = afFundSideAccountDao.updateRecordInfo(afFundSideAccountDo);
+				if(affectRows != 1){
+					//影响行数不等于1,关联失败并返回
+					logger.error("matchFundAndBorrowCash return false, updateAfFundSideAccount fail,borrowCashId:"+borrowCashId+",accountsId:"+accounts.getRid()+",fundSideInfoId"+accounts.getFundSideInfoId());
+					return false;
+				}
+				//关联更新成功,插入关联记录
+				AfFundSideBorrowCashDo fundSideBorrowCashDo = new AfFundSideBorrowCashDo(borrowCashId, borrowCashDo.getBorrowNo(), planCollectInterest, accounts.getFundSideInfoId(), borrowCashDo.getGmtPlanRepayment(), 
+						borrowCashDo.getArrivalAmount().add(planCollectInterest), null, YesNoStatus.NO.getCode(), currDay, currDay, fundSideInfoDo.getAnnualRate());
+				afFundSideBorrowCashDao.saveRecord(fundSideBorrowCashDo);
 				//af_fund_side_account_log资金记录插入
 				AfFundSideAccountLogDo afFundSideAccountLogDo = new AfFundSideAccountLogDo(accounts.getFundSideInfoId(), usableMoney, borrowCashDo.getArrivalAmount().negate(), AfFundSideAccountLogType.LOAN.getCode(), fundSideBorrowCashDo.getRid(), currDay,borrowCashDo.getBorrowNo(), "放款成功");
 				afFundSideAccountLogDao.saveRecord(afFundSideAccountLogDo);

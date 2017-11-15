@@ -459,10 +459,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		String tranOrderNo = riskUtil.getOrderNo("tran", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 		
 		String[] billIdArray = billIds.split(",");
+		List<Long> borrowIds=new ArrayList<>();
 		for (String billId : billIdArray) {
 			AfBorrowBillDo billDo = afBorrowBillService.getBorrowBillById(Long.parseLong(billId));
 			AfBorrowDo afBorrow = afBorrowService.getBorrowById(billDo.getBorrowId());
-			
+
 			JSONObject obj = new JSONObject();
 			obj.put("borrowNo", afBorrow.getBorrowNo());
 			obj.put("amount", afBorrow.getAmount());
@@ -475,18 +476,26 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			
 			//还完该借款的所有期数
 			if (afBorrow.getNper().equals(afBorrow.getNperRepayment())) {
+
 				BigDecimal income = afBorrowBillService.getSumIncomeByBorrowId(billDo.getBorrowId());
 				Long sumOverdueDay = afBorrowBillService.getSumOverdueDayByBorrowId(billDo.getBorrowId());
 				int overdueCount = afBorrowBillService.getSumOverdueCountByBorrowId(billDo.getBorrowId());
 //				int borrowCount = afBorrowService.getBorrowNumByUserId(billDo.getUserId());
-
-				String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-				try {
-					riskUtil.raiseQuota(afBorrow.getUserId().toString(), afBorrow.getBorrowNo(), "40", riskOrderNo, afBorrow.getAmount(), income, sumOverdueDay, overdueCount);
-				} catch (Exception e) {
-					logger.error("风控提额失败", e);
+				if(!borrowIds.contains(afBorrow.getRid())){
+					logger.info("call raiseQuota first："+afBorrow.getRid());
+					borrowIds.add(afBorrow.getRid());
+					String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+					try {
+						riskUtil.raiseQuota(afBorrow.getUserId().toString(), afBorrow.getBorrowNo(), "40", riskOrderNo, afBorrow.getAmount(), income, sumOverdueDay, overdueCount);
+					} catch (Exception e) {
+						logger.error("风控提额失败", e);
+					}
+				}else{
+					logger.info("call raiseQuota more then once："+afBorrow.getRid());
 				}
+
 				afBorrowService.updateBorrowStatus(afBorrow.getRid(), BorrowStatus.FINISH.getCode());
+
 			}
 		}
 		

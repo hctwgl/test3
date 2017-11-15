@@ -1,0 +1,89 @@
+* {
+  box-sizing: border-box;
+}
+.payforInfo {
+  height: 1.68rem;
+  background-color: white;
+  margin-top: 0.12rem;
+  padding-top: 0.3rem;
+  padding-left: 0.28rem;
+}
+.payforInfo .imgBox {
+  width: 1rem;
+  height: 1rem;
+}
+.payforInfo p {
+  margin-left: 0.22rem;
+  display: inline-block;
+  height: 1rem;
+  vertical-align: bottom;
+  padding-top: 0.1rem;
+}
+.payforInfo p .infoName {
+  font-size: 0.3rem;
+}
+.payforInfo p .infoNum {
+  font-size: 0.24rem;
+  color: #646464;
+}
+.dynamic-center {
+  height: 1.64rem;
+  background-size: contain;
+  background-color: #fff;
+  margin-top: 0.1rem;
+  position: relative;
+}
+.dynamic-center .dateOne {
+  position: absolute;
+  top: 30%;
+  left: 23%;
+  text-align: center;
+}
+.dynamic-center .dateOne .monthOne {
+  color: #646464;
+  font-size: 0.32rem;
+}
+.dynamic-center .dateOne .count {
+  font-size: 0.24rem;
+  color: #969696;
+}
+.dynamic-center .dateTwo {
+  position: absolute;
+  top: 30%;
+  right: 23%;
+  text-align: center;
+}
+.dynamic-center .dateTwo .monthTwo {
+  color: #646464;
+  font-size: 0.32rem;
+}
+.dynamic-center .dateTwo .pay {
+  font-size: 0.24rem;
+  color: #969696;
+}
+.dynamic-center .line {
+  width: 0.02rem;
+  height: 0.78rem;
+  border: solid 1px #ededed;
+  position: absolute;
+  top: 30%;
+  right: 50%;
+  transform: translateX(-50%);
+}
+.dynamic-center .arrow {
+  width: 0.16rem;
+  height: 0.28rem;
+  position: absolute;
+  top: 48%;
+  right: 3%;
+}
+button {
+  width: 6.36rem;
+  height: 1rem;
+  background-color: #ff6e34;
+  border-radius: .5rem;
+  font-size: .32rem;
+  color: #fff;
+  margin-left: 8%;
+  margin-top: .36rem;
+}

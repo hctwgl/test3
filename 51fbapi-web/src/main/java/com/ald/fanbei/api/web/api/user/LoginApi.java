@@ -45,9 +45,9 @@ import com.ald.fanbei.api.web.vo.AfUserVo;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 
+ *
  * @类描述：
- * 
+ *
  * @author Xiaotianjian 2017年1月19日下午1:48:59
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -105,7 +105,7 @@ public class LoginApi implements ApiHandle {
 		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
-		
+
 
 		if (afUserDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
@@ -167,7 +167,7 @@ public class LoginApi implements ApiHandle {
 //			jpushService.gameShareSuccess(user.getUserName());
 //		}
 		// reset fail count to 0 and record login ip phone msg
-		
+
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
 		temp.setRid(afUserDo.getRid());
@@ -176,7 +176,7 @@ public class LoginApi implements ApiHandle {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
-		
+
 		boolean isNeedRisk = true;
 		if("1".equals(loginType)){
 			Date gmtCreateDate = afUserDo.getGmtCreate();
@@ -188,7 +188,7 @@ public class LoginApi implements ApiHandle {
 		}
 		//调用风控可信接口
 		if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
-				
+
 			boolean riskSucc = false;
 			try {
 				riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
@@ -202,7 +202,7 @@ public class LoginApi implements ApiHandle {
 					 riskSucc = false;
 				 }
 			}
-			
+
 			if(!riskSucc){
 				loginDo.setResult("false:需要验证登录短信");
 				afUserLoginLogService.addUserLoginLog(loginDo);
@@ -214,7 +214,7 @@ public class LoginApi implements ApiHandle {
 			}
 			loginType = "2"; //可信登录验证通过，变可信
 		}
-		
+
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
@@ -230,10 +230,10 @@ public class LoginApi implements ApiHandle {
 		jo.put("user", userVo);
 		jo.put("token", token);
 		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(),context.getAppVersion()));
-		
+
 		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+afUserDo.getRid();
 		bizCacheUtil.saveObject(loginWifiMacKey, wifiMac);
-		
+
 		//3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
 		Boolean isBorrowed =  bizCacheUtil.isRedisSetValue(Constants.HAVE_BORROWED, String.valueOf(afUserDo.getRid()));
 		if(Boolean.TRUE.equals(isBorrowed)){
@@ -241,7 +241,7 @@ public class LoginApi implements ApiHandle {
 		}else{
 			jo.put("borrowed", "N");
 		}
-		
+
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {
 			if (StringUtils.isBlank(blackBox)) {
@@ -256,7 +256,7 @@ public class LoginApi implements ApiHandle {
 		}
 
 		resp.setResponseData(jo);
-		
+
 		if(failCount == -1){
 			new	Timer().schedule(new TimerTask(){
 				public void run(){
@@ -375,7 +375,7 @@ public class LoginApi implements ApiHandle {
 		}
 	}
 
-	public static void main(String[] args) {
-		System.out.println(UserUtil.getPassword(MD5.digest("123456"), "d229b3462c0b8a94"));
-	}
+    public static void main(String[] args) {
+        System.out.println(UserUtil.getPassword(MD5.digest("123456"), "d229b3462c0b8a94"));
+    }
 }

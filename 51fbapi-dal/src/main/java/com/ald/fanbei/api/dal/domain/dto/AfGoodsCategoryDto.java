@@ -38,6 +38,16 @@ public class AfGoodsCategoryDto   {
 
 	private Long volume;
 
+	private String goodsPic1;
+
+	public String getGoodsPic1() {
+		return goodsPic1;
+	}
+
+	public void setGoodsPic1(String goodsPic1) {
+		this.goodsPic1 = goodsPic1;
+	}
+
 	public Long getId() {
 		return id;
 	}

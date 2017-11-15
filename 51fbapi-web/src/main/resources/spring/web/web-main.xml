@@ -129,6 +129,7 @@
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
 				<value>/category/getAllGoodsCategory</value>
+
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
 			</list>
@@ -156,6 +157,7 @@
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
+				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
 				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
 				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />
 				<entry key="/user/getPayPwdVerifyCode" value-ref="getPayPwdVerifyCodeApi" />
@@ -188,7 +190,7 @@
 				<entry key="/user/changeMobileCheckVerifyCode" value-ref="changeMobileCheckVerifyCodeApi"/>
 				<entry key="/user/changeMobileVerify" value-ref="changeMobileVerifyApi"/>
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
-				
+
 				
 				<entry key="/user/signin" value-ref="signinApi" />
 
@@ -236,8 +238,8 @@
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
 				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
 				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
-				
-				
+
+
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
 				<entry key="/system/getSettingInfo" value-ref="getSettingInfoApi" />
@@ -260,6 +262,8 @@
 				<entry key="/auth/authYdInfo" value-ref="authYdInfoApi" />
 				<entry key="/auth/authMobile" value-ref="authMobileApi" />
 				<entry key="/auth/authContactor" value-ref="authContactorApi" />
+				<entry key="/auth/authChsi" value-ref="authChsiApi" />
+				<entry key="/auth/authZhengxin" value-ref="authZhengxinApi" />
 				<entry key="/auth/authLocation" value-ref="authLocationApi" />
 				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />
 				<entry key="/auth/getAllowConsume" value-ref="getAllowConsumeApi" />
@@ -391,25 +395,34 @@
 				<entry key="/order/getOrderLogistics" value-ref="getOrderLogisticsApi" />
 				<!--分期广告位-->
 				<entry key="/instalments/getInstalmentsAd" value-ref="getInstalmentsAdApi" />
-				
+
 				<!-- 统计点击量 -->
 				<entry key="/clickAmount/clickAmountNum" value-ref="clickAmountNumApi" />
+
+
+				<!-- 收银台相关 -->
+				<entry key="/cashier/start" value-ref="startCashierApi" />
+				<entry key="/cashier/pre" value-ref="preCashierApi" />
+				<entry key="/cashier/getNperList" value-ref="getNperListApi" />
 				<entry key="/pushClickAmout/clickPushAmountNum" value-ref="clickPushAmountNumApi" />
-				
-				
+
+
+				<!-- 协议生成 -->
+				<entry key="/user/getBorrowCashProtocol" value-ref="getBorrowCashProtocolApi" />
+				<entry key="/user/getContractPdfUrl" value-ref="getContractPdfUrlApi" />
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
-				
+
 				<!-- 代扣开关 -->
 				<entry key="/Withhold/getWithholdInfo" value-ref="getWithholdInfoApi" />
 				<entry key="/Withhold/updateWithholdSwitch" value-ref="updateWithholdSwitchApi" />
 				<entry key="/Withhold/updateWithholdCard" value-ref="updateWithholdCardApi" />
 				<entry key="/Withhold/showUserBankCard" value-ref="showUserBankCardApi" />
-				
+
 				<!-- 首页滚动条 -->
 				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
-				
+
 			</map>
 		</constructor-arg>
 	</bean>

@@ -630,7 +630,9 @@ public class SmsUtil extends AbstractThird {
         sendSmsToDhst(mobile, String.format(REBATE_COMPLETED, simpleDateFormat.format(new Date()), amount));
     }
 
-    /**
+
+
+/**
      * 发送商圈支付成功短信
      *
      * @param mobile
@@ -662,7 +664,6 @@ public class SmsUtil extends AbstractThird {
         logger.info("mobile:"+mobile+","+content);
         sendSmsToDhst(mobile, content);
     }
-
     /**
      * 对单个手机号发送短消息，这里不验证手机号码有效性
      *
