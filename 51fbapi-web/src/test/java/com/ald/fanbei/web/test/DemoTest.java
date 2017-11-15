@@ -37,8 +37,7 @@ public class DemoTest extends BaseTest{
 	public void  demoApi() {
 		String url = urlBase + "/pushClickAmout/clickPushAmountNum";
 		Map<String,String> params = new HashMap<>();
-		params.put("verifyCode", "888888");
-		params.put("verifyCode", "888888");
+		params.put("demoParams", "2");
 		testApi(url, params, userName ,true);
 	}
 	

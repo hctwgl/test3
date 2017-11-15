@@ -227,6 +227,10 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 
 		Map<String, Object> map = null;
 		if (cardId == -2) {// 余额支付
+			//用户账户余额校验添加
+            if(userDto.getRebateAmount().compareTo(actualAmount)<0){
+                return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
+            }
 			map = afRepaymentBorrowCashService.createRepayment(jfbAmount,
 					repaymentAmount, actualAmount, coupon, userAmount,
 					borrowId, cardId, userId, "", userDto);

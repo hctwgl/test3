@@ -16,6 +16,11 @@ import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 public interface AfOrderDao {
 
 	/**
+	 * 获取用户未支付订单数
+	 */
+	int getNoFinishOrderCount(Long userId);
+
+	/**
 	 * 新增订单
 	 * @param afOrder
 	 * @return
@@ -162,4 +167,16 @@ public interface AfOrderDao {
 	int getOrderCountByStatusAndUserId(AfOrderDo queryCount);
 
 	List<AfOrderDo> getOrderByTimeAndType(@Param("startTime")Date startTime,@Param("endTime")Date endTime);
+	
+	/**
+	 * 根据userId查询老用户订单数
+	 * @return
+	 */
+	Integer getOldUserOrderAmount(@Param("userId") long userId);
+	
+	/**
+	 * 根据goodsId,userId查询已完成订单——新人专享
+	 * @return
+	 */
+	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 }

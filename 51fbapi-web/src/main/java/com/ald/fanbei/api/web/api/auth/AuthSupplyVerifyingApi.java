@@ -61,7 +61,18 @@ public class AuthSupplyVerifyingApi implements ApiHandle {
 				authDo.setGmtAlipay(new Date(System.currentTimeMillis()));
 				authDo.setAlipayStatus(SupplyCertifyStatus.WAIT.getCode());
 			}
+		} else if (StringUtil.equals("CHSI", authType)) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getChsiStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getChsiStatus())) {
+				authDo.setGmtChsi(new Date(System.currentTimeMillis()));
+				authDo.setChsiStatus(SupplyCertifyStatus.WAIT.getCode());
+			}
+		} else if (StringUtil.equals("ZHENGXIN", authType)) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getChsiStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getChsiStatus())) {
+				authDo.setGmtZhengxin(new Date());
+			}
 		}
+		
+		
 
 		if (afUserAuthService.updateUserAuth(authDo) > 0) {
 			return resp;

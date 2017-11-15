@@ -494,6 +494,15 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 						+ FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
 			} else {
+				//fmf_add 在borrow_cash中增加 au_amount start
+				try{
+					BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(userId);
+					int update = afBorrowCashService.updateAuAmountByRid(cashDo.getRid(), auAmount);
+				} catch (Exception e) {
+					logger.error("updateAuAmountByRid is fail;msg="+ e);
+				} 
+				//fmf_add 在borrow_cash中增加 au_amount  end
+				
 				// 减少额度
 				accountInfo
 						.setUsedAmount(BigDecimalUtil.add(
@@ -507,6 +516,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 								afBorrowCashDo.getRid());
 				afUserAccountLogDao.addUserAccountLog(accountLog);
 			}
+			
 			afBorrowCashService.updateBorrowCash(cashDo);
 			addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());
 		} else/* if (StringUtils.equals("30", result)) */{
@@ -519,6 +529,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 		 * else { cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.
 		 * getCode()); }
 		 */
+		
 		afBorrowCashService.updateBorrowCash(cashDo);
 	}
 
@@ -658,8 +669,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 			String ext4 = context.getAppVersion() + "";
 			maidianLog.info(com.ald.fanbei.api.common.util.StringUtil
 					.appendStrs("	", DateUtil.formatDate(new Date(),
-							DateUtil.DATE_TIME_SHORT), "	", requestDataVo
-							.getId(), "	rmtIP=", CommonUtil.getIpAddr(request),
+							DateUtil.DATE_TIME_SHORT), "	", com.ald.fanbei.api.common.util.StringUtil.judgeClientDeviceFlag(requestDataVo.getId()), "	rmtIP=", CommonUtil.getIpAddr(request),
 							"	userName=", context.getUserName(), "	", 0, "	",
 							request.getRequestURI(), "	", cashDo.getRid() + "",
 							"	", DateUtil.formatDate(new Date(),

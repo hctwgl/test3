@@ -217,4 +217,11 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="java.lang.Long">
+    	SELECT 
+		<include refid="queryFields" />
+		from af_goods_price 
+		WHERE goods_id=#{goodsId}
+    </select>
+    
 </mapper>

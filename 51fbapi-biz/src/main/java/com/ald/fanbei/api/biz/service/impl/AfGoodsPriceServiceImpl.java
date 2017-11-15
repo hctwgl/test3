@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsPriceDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
@@ -40,12 +43,18 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 			if (isSold) {// 出售
 				priceDo.setStock(priceDo.getStock() - 1);
 				priceDo.setSaleCount(priceDo.getSaleCount() + 1);
-			} else if (isSold) {
+			}else{
 				priceDo.setStock(priceDo.getStock() + 1);
 				priceDo.setSaleCount(priceDo.getSaleCount() - 1);
 			}
 			result += afGoodsPriceDao.updateById(priceDo);
 		}
 		return result;
+	}
+
+	@Override
+	public List<AfGoodsPriceDo> getByGoodsId(Long goodsId) {
+		// TODO Auto-generated method stub
+		return afGoodsPriceDao.getByGoodsId(goodsId);
 	}
 }

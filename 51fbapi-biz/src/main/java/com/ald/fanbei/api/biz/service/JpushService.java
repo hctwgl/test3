@@ -218,6 +218,20 @@ public interface JpushService {
 	 *  支付宝认证失败推送
 	 */
 	public void alipayRiskFault(String userName);
+	
+	/**
+	 *  支付宝认证成功推送  
+	 */
+	public void chsiRiskSuccess(String userName);
+	
+	/**
+	 *  学信网认证未通过推送
+	 */
+	public void chsiRiskFail(String userName);	
+	/**
+	 *  学信网认证失败推送
+	 */
+	public void chsiRiskFault(String userName);
 
 	void jPushByType(int jumpType, String type,String userName);
 	//注册新用户弹窗
@@ -225,4 +239,10 @@ public interface JpushService {
 
 	void pushBorrowCashActivitys(String userName,String money,String type);
 	void jPushPopupWnd(String type,String userName);
+
+	public void zhengxinRiskSuccess(String userName);
+
+	public void zhengxinRiskFail(String userName);
+
+	public void zhengxinRiskFault(String userName);
 }
