@@ -32,6 +32,7 @@
     <div class="specialPrize">
         <p class="specialPrizeTitle">特惠奖励 每成功邀请1人得<span>15元外卖券</span></p>
         <p class="specialCoupon"><span>15</span></p>
+        <p class="goFixPage">去活动现场看看></p>
         <p class="limitRule">您邀请的好友点外卖立享15元无门槛优惠，完成消费后，您即可获得1张“15元无门槛外卖券”，多邀多得，不设上限。</p>
         <p class="exampleRule">例如：您的好友点外卖总价16元，立减15元后，只需支付1元，您即可获得“15元无门槛外卖券"。</p>
     </div>
