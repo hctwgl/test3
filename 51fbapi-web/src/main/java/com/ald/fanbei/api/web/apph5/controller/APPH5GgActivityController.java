@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
@@ -54,6 +53,8 @@ import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBoluomeUserCouponVo;
+import com.ald.fanbei.api.web.vo.BoluomeActivityInviteCeremonyVo;
+import com.ald.fanbei.api.web.vo.BoluomeActivityInviteFriendVo;
 import com.ald.fanbei.api.web.vo.userReturnBoluomeCouponVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -223,7 +224,7 @@ public class APPH5GgActivityController extends BaseController {
 	String resultStr = "";
 	try{
 	    	 context = doWebCheck(request, false);
-	    	 Long userId = convertUserNameToUserId(context.getUserName());
+	         Long userId = convertUserNameToUserId(context.getUserName());
 	 	 List<userReturnBoluomeCouponVo> returnCouponList = new ArrayList<userReturnBoluomeCouponVo>();
 		 AfBoluomeUserCouponVo vo = new AfBoluomeUserCouponVo(); 
 	        //未登录时初始化一些数据
@@ -287,9 +288,9 @@ public class APPH5GgActivityController extends BaseController {
       	    	     	   try{
       	    	     	       	AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
   				if(afResourceDo != null){
-  				List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
-  				BrandActivityCouponResponseBo bo = activityCouponList.get(0);
-          			BigDecimal money = new BigDecimal(String.valueOf(bo.getValue()));
+//  				List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
+//  				BrandActivityCouponResponseBo bo = activityCouponList.get(0);
+          			BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
           			couponAmount = couponAmount.add(money);
   				}
       	    	     	   }catch(Exception e){
@@ -312,6 +313,91 @@ public class APPH5GgActivityController extends BaseController {
 	return resultStr;
 	
     }
+    
+    @RequestMapping(value = "/inviteFriend", method = RequestMethod.POST)
+    public String inviteFriend(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+	FanbeiWebContext context = new FanbeiWebContext();
+	String resultStr = "";
+	try{
+	    	 context = doWebCheck(request, false);
+	         Long userId = convertUserNameToUserId(context.getUserName());
+	         BoluomeActivityInviteFriendVo inviteFriendVo  = new BoluomeActivityInviteFriendVo();
+	         AfResourceDo resourceInfo  = new AfResourceDo();
+	         
+	         resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(), H5GgActivity.DINEANDDASH.getCode());
+	        //未登录时初始化一些数据
+		if(resourceInfo != null){
+		    inviteFriendVo.setImage(resourceInfo.getValue());
+		    //inviteFriendVo.setText(text);
+		    inviteFriendVo.setActivityRule(resourceInfo.getValue1());
+		    inviteFriendVo.setExample(resourceInfo.getValue2());
+		   
+		}
+	    	 if(userId == null){
+	    	     return H5CommonResponse.getNewInstance(true, "获取邀请好友吃霸王餐页面信息成功",null,inviteFriendVo).toString();
+	    	 }
+	    
+	    	 //登录时返回数据
+	    	  AfUserDo uDo = afUserService.getUserById(userId);
+	    	  if(uDo != null){
+	    	      inviteFriendVo.setInviteCode(uDo.getRecommendCode());
+	    	  }
+    	    	 
+    	    	 	
+    	    	 resultStr =  H5CommonResponse.getNewInstance(true, "获取邀请好友吃霸王餐页面信息成功",null,inviteFriendVo).toString();
+	 	}catch(Exception e){
+	 	 logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
+		 resultStr = H5CommonResponse.getNewInstance(false, "获取邀请好友吃霸王餐页面信息失败").toString();
+	   }
+	return resultStr;
+	
+    }
+    
+    
+    @RequestMapping(value = "/inviteCeremony", method = RequestMethod.POST)
+    public String inviteCeremony(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+	FanbeiWebContext context = new FanbeiWebContext();
+	String resultStr = "";
+	try{
+	    	 context = doWebCheck(request, false);
+	         Long userId = convertUserNameToUserId(context.getUserName());
+	         BoluomeActivityInviteCeremonyVo inviteCeremonyVo  = new BoluomeActivityInviteCeremonyVo();
+	         AfResourceDo resourceInfo  = new AfResourceDo();
+	         
+	         resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(), H5GgActivity.INVITECERMONY.getCode());
+	        //未登录时初始化一些数据
+		if(resourceInfo != null){
+		    AfResourceDo    resource = afResourceService.getResourceByResourceId(Long.parseLong(resourceInfo.getValue1()));
+		    if(resource != null ){
+			inviteCeremonyVo.setCouponAmount(resource.getPic1());
+		    }
+		    inviteCeremonyVo.setImage(resourceInfo.getValue());
+		    inviteCeremonyVo.setSpePreference(resourceInfo.getValue2());
+		    inviteCeremonyVo.setActivityRule(resourceInfo.getValue3());
+		    inviteCeremonyVo.setExample(resourceInfo.getValue4());
+		}
+	    	 if(userId == null){
+	    	     return H5CommonResponse.getNewInstance(true, "获取邀请有礼页面信息成功",null,inviteCeremonyVo).toString();
+	    	 }
+	    
+	    	 //登录时返回数据
+	    	  AfUserDo uDo = afUserService.getUserById(userId);
+	    	  if(uDo != null){
+	    	    inviteCeremonyVo.setInviteCode(uDo.getRecommendCode());
+	    	  }
+    	    	 
+    	    	 	
+    	    	 resultStr =  H5CommonResponse.getNewInstance(true, "获取邀请有礼页面信息成功",null,inviteCeremonyVo).toString();
+	 	}catch(Exception e){
+	 	 logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
+		 resultStr = H5CommonResponse.getNewInstance(false, "获取邀请有礼页面信息失败").toString();
+	   }
+	return resultStr;
+	
+    }
+    
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
