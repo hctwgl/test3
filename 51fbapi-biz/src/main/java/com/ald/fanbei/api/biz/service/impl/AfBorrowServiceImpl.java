@@ -1158,7 +1158,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				afContractPdfCreateService.protocolInstalment(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
 				logger.info("protocolInstalment finish，borrowId=" + borrow.getRid());
 			} catch (Exception e) {
-				logger.info("protocolInstalment error，borrowId=" + borrow.getRid(),e);
+				logger.error("protocolInstalment error，borrowId=" + borrow.getRid(),e);
 			}
 		}
 		return resultValue;
