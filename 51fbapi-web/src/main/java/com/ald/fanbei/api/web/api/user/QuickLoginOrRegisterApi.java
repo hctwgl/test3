@@ -283,9 +283,9 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 	private AfUserDo quickRegister(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request){
 		String requestId = requestDataVo.getId();
-		String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
+		String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), "");
 		ClientTypeEnum clientType = StringUtil.judgeClientType(requestDataVo.getId());
-		String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), null);
+		String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), "");
 		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String userName = context.getUserName();
@@ -341,9 +341,21 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 				logger.warn("setRegisterPwdApi setRegisterChannelId source is not found,set into default.registerChannelPointId="+registerChannelPointId);
 			}
 		}
-		smsUtil.checkSmsByMobileAndType(context.getUserName(),verifyCode, SmsType.QUICK_LOGIN);//短信验证码判断
 		userDo.setRecommendId(0l);
 		userDo.setMajiabaoName(majiabaoName);
+		userDo.setPassword("");
+		userDo.setAddress("");
+		userDo.setAvatar("");
+		userDo.setBirthday("");
+		userDo.setCity("");
+		userDo.setCounty("");
+		userDo.setEmail("");
+		userDo.setProvince("");
+		userDo.setGender("");
+		userDo.setRealName("");
+		userDo.setFailCount(0);
+		userDo.setRecommendCode("");
+		userDo.setStatus("NORMAL");
 		afUserService.addUser(userDo);
 
 		Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();

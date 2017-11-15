@@ -123,7 +123,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
 						mobile, "", "", "");
 			}
-			resultSms = smsUtil.sendRegistVerifyCode(mobile);
+			resultSms = smsUtil.sendQuickRegistVerifyCode(mobile);
 			resp.addResponseData("code",1146);
 			break;
 		case MOBILE_BIND:// 更换手机号

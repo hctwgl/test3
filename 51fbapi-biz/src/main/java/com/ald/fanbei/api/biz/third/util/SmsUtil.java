@@ -112,6 +112,29 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
+     * 发送快捷注册短信验证码
+     *
+     * @param mobile
+     * @param content
+     */
+    public boolean sendQuickRegistVerifyCode(String mobile) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_LOGIN.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue()))
+                throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, 0l, smsResult);
+        return smsResult.isSucc();
+    }
+    /**
      * 发送登录验证码（可信登录）
      *
      * @param mobile
