@@ -68,7 +68,8 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
         BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
-
+    	BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
+		
 
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
@@ -137,6 +138,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 				borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
 			}*/
             BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
+            /*
             AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
             BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
             BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
@@ -149,12 +151,27 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 
             // 续期应缴费用(利息+手续费+滞纳金+要还本金)
             BigDecimal repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
+*/
+            //fmf_add 续借由用户手动操作  strat
+        	BigDecimal capital = BigDecimalUtil.subtract(afBorrowCashDo.getAmount(),renewalAmount).subtract(afBorrowCashDo.getRepayAmount());
+    		
+    		
+    		// 续借本金
+    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
+    		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(renewalAmount);;
+    		//BigDecimal allRenewalAmount= BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+    		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
+    		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
 
-            if (context.getAppVersion() < 380) {
+    		// 续期应缴费用(利息+手续费+滞纳金+要还本金)
+    		BigDecimal repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
+    		//fmf_add 续借由用户手动操作    end
+           
+    		if (context.getAppVersion() < 380) {
                 waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
                 repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount());
             }
-
+        	
             BigDecimal actualAmount = BigDecimalUtil.subtract(repaymentAmount, jfb).subtract(userAmount);
 
             if(! yiBaoUtility.checkCanNext(userId,1)){

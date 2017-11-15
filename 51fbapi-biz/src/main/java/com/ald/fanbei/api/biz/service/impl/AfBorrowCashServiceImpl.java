@@ -76,7 +76,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 
 	@Resource
 	AfContractPdfCreateService afContractPdfCreateService;
-	
+
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
 		Date currDate = new Date();
@@ -272,5 +272,20 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public int updateAuAmountByRid(long rid,BigDecimal auAmount) {
 		return afBorrowCashDao.updateAuAmountByRid(rid,auAmount);
+	}
+
+	@Override
+	public int updateBorrowCashLock(Long borrowId) {
+		return afBorrowCashDao.updateBorrowCashLock(borrowId);
+	}
+
+	@Override
+	public int updateBorrowCashUnLock(Long borrowId) {
+		return afBorrowCashDao.updateBorrowCashUnLock(borrowId);
+	}
+
+	@Override
+	public AfBorrowCashDo getBorrowCashByStatus() {
+		return afBorrowCashDao.getBorrowCashByStatus();
 	}
 }

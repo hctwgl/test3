@@ -95,10 +95,10 @@
 		</if>
 		WHERE user_id = #{userId}
 		<if test="rebateAmount != null">
-			 and <![CDATA[  rebate_amount + #{rebateAmount} >=0 ]]>      
+			 and <![CDATA[  rebate_amount + #{rebateAmount} >=0 ]]>
 		</if>
         <if test="jfbAmount != null">
-			and <![CDATA[  jfb_amount + #{jfbAmount} >=0 ]]>      
+			and <![CDATA[  jfb_amount + #{jfbAmount} >=0 ]]>
 		</if>
 	</update>
 
@@ -271,7 +271,7 @@
         #{item}  
    		</foreach>  
 	</update>
-	
+
 	<select id="getAuAmountByUserId" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
 			SELECT
 		au_amount
@@ -282,4 +282,13 @@
 		AND
 		user_id = #{userId}
 	</select>
+
+	<update id="updateUserAccountByUserId" >
+		UPDATE
+		`af_user_account`
+		SET
+		`gmt_modified` =now(),`used_amount` =`used_amount` +#{money}
+		WHERE
+		`user_id`=#{userId}
+	</update>
 </mapper>

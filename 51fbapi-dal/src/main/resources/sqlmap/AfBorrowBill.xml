@@ -515,4 +515,41 @@
 		ORDER BY abb.bill_year DESC,
 		abb.bill_month DESC
 	</select>
+
+	<select id="getBillIdsByUserId" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(id) billIds
+		FROM af_borrow_bill
+		WHERE is_delete=0  AND STATUS IN ('N')
+		AND user_id = #{userId}
+		AND gmt_pay_time<![CDATA[<=]]>DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
+	</select>
+
+	<update id="updateBorrowBillLockById" >
+		UPDATE
+		af_borrow_bill
+		SET
+		gmt_modified = NOW(),
+		lockdate = NOW(),
+		is_lock = 'Y'
+		WHERE
+		is_delete = 0
+		AND id = #{billId}
+		AND is_lock = 'N'
+	</update>
+
+	<update id="updateBorrowBillUnLockByIds" >
+		UPDATE
+		af_borrow_bill
+		SET
+		gmt_modified = NOW(),
+		lockdate = NOW(),
+		is_lock = 'N'
+		WHERE
+		is_delete = 0
+		AND id IN
+		<foreach collection="billIds" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+
+	</update>
 </mapper>

@@ -216,10 +216,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
 			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-			if (waitPaidAmount.compareTo(capital) <= 0) {
+			/*if (returnAmount.compareTo(capital) <= 0) {
+				data.put("renewalStatus", "N");
+			}*/
+			if (returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) <= 0) {
 				data.put("renewalStatus", "N");
 			}
-			
 		}
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());

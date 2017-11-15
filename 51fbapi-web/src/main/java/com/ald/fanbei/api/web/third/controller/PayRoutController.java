@@ -284,7 +284,7 @@ public class PayRoutController {
                 if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
                     afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId, false, "");
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-                    afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId);
+                    afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId,"");
                 } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                     afOrderService.dealBrandOrderFail(outTradeNo, transactionId, PayType.WECHAT.getCode());
                 }
@@ -335,8 +335,9 @@ public class PayRoutController {
                     afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
                 }
             } else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
+                String errorWarnMsg = "";
                 if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-                    String errorWarnMsg = "";
+
                     if (StringUtil.isNotBlank(respDesc)) {
                         errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
                     } else {
@@ -344,7 +345,14 @@ public class PayRoutController {
                     }
                     afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
-                    afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
+
+
+                    if (StringUtil.isNotBlank(respDesc)) {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+                    } else {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+                    }
+                    afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo,errorWarnMsg);
                 } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败	311
                     afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
@@ -410,7 +418,7 @@ public class PayRoutController {
             if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
                 afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo, false, "");
             } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-                afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
+                afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo,"");
             } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                 afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
             } else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {

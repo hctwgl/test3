@@ -197,8 +197,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
 		final String payTradeNo = repayNo;
+		String typeName = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;;
+		if(StringUtil.equals("sysJob",clientIp)){
+			typeName = "代扣付款";
+		}
 		// 新增还款记录,移至事务外，保证回调先回用户这笔还款发起有记录产生
-		final String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+		final String name = typeName;
+
 		final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
 				userId);
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
@@ -237,6 +242,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo);
 						Map<String, Object> map = new HashMap<String, Object>();
 						map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
+						map.put("refId", repayment.getRid());
 						return map;
 					}else{
 						logger.error("createRepayment exist error,need rollback,payTradeNo="+payTradeNo, e);
@@ -732,6 +738,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				}
 			}
 		});
+	}
+
+	@Override
+	public int updateRepaymentBorrowCashName(Long refId) {
+		return afRepaymentBorrowCashDao.updateRepaymentBorrowCashName(refId);
 	}
 
 }
