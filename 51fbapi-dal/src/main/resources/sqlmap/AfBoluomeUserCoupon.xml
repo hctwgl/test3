@@ -144,4 +144,14 @@
         <include refid="commonCondition"/>
     </select>
     
+     <select id="getUserCouponListByUerIdAndChannel" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_user_coupon
+        where  is_delete = 0
+        and  user_id  =  #{userId}
+        and  channel =  #{channel}
+       
+    </select>
+    
 </mapper>
