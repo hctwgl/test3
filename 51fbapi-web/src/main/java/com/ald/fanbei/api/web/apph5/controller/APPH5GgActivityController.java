@@ -2,7 +2,10 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -17,14 +20,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -33,12 +43,17 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfBoluomeUserCouponVo;
+import com.ald.fanbei.api.web.vo.userReturnBoluomeCouponVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -64,6 +79,14 @@ public class APPH5GgActivityController extends BaseController {
     BizCacheUtil bizCacheUtil;
     @Resource 
     AfBoluomeUserCouponService afBoluomeUserCouponService;
+    @Resource
+    AfOrderService afOrderService;
+    @Resource
+    AfResourceService afResourceService;
+    @Resource
+    AfShopService afShopService;
+    @Resource
+    BoluomeUtil boluomeUtil;
     
     
     
@@ -165,7 +188,7 @@ public class APPH5GgActivityController extends BaseController {
    		afBoluomeUserCouponDo.setUserId(NumberUtil.objToLong(inviteer));
    		afBoluomeUserCouponDo.setRefId(NumberUtil.objToLong(moblie));
    		afBoluomeUserCouponDo.setGmtCreate(new Date());
-   		afBoluomeUserCouponDo.setChannel("REGISTER");
+   		afBoluomeUserCouponDo.setChannel(H5GgActivity.REGISTER.getCode());
    		int saveResult = afBoluomeUserCouponService.saveRecord(afBoluomeUserCouponDo);
    		if(saveResult == 1){
    		 logger.info("h5GgActivity commitRegisterLogin saveResult success",afBoluomeUserCouponDo);  
@@ -190,7 +213,96 @@ public class APPH5GgActivityController extends BaseController {
 
        }
 
-    
+    @RequestMapping(value = "/returnCoupon", method = RequestMethod.POST)
+    public String returnCoupon(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	//String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+	FanbeiWebContext context = new FanbeiWebContext();
+	String resultStr = "";
+	try{
+	    	 context = doWebCheck(request, false);
+	    	 Long userId = convertUserNameToUserId(context.getUserName());
+	 	 List<userReturnBoluomeCouponVo> returnCouponList = new ArrayList<userReturnBoluomeCouponVo>();
+		 AfBoluomeUserCouponVo vo = new AfBoluomeUserCouponVo(); 
+	        //未登录时初始化一些数据
+		 AfShopDo shopDo = new AfShopDo();
+	    	       shopDo.setType(H5GgActivity.WAIMAI.getCode());
+	    	       AfShopDo shop = afShopService.getShopInfoBySecTypeOpen(shopDo);
+	    	       if(shop != null){
+	    	 	vo.setShopId(shop.getRid());
+	    	       }
+	    	 BigDecimal couponAmount = new BigDecimal(String.valueOf(0));
+	    	 BigDecimal inviteAmount = new BigDecimal(String.valueOf(0));
+	    	 vo.setInviteAmount(inviteAmount);
+	    	 vo.setCouponAmount(couponAmount);
+	 	 vo.setReturnCouponList(returnCouponList);
+	    	 if(userId == null){
+	    	     return H5CommonResponse.getNewInstance(true, "获取返券列表成功",null,vo).toString();
+	    	 }
+	    
+	    	 //登录时返回数据
+    	    	 AfBoluomeUserCouponDo  queryUserCoupon = new AfBoluomeUserCouponDo();
+    	    	 queryUserCoupon.setUserId(userId);
+    	    	 queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
+    	    	
+    	    	 List<AfBoluomeUserCouponDo> userCouponList =  afBoluomeUserCouponService.getUserCouponListByUerIdAndChannel(queryUserCoupon);
+    	    	 for(AfBoluomeUserCouponDo userCoupon:userCouponList){
+    	    	     	   long couponId =  userCoupon.getCouponId();
+    	    	     	   
+        	    	   userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
+        	    	   returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(userCoupon.getGmtCreate()));
+        	    	   //被邀请人没有订单：未消费; 有订单且订单没有一个是完成的(或者有订单且用户优惠券记录的优惠券id等于0)：未完成。 有完成的订单(或者有订单且用户优惠券记录的优惠券id大于0)：
+        	    	   long refUserId =   userCoupon.getRefId();
+        	    	   AfOrderDo order  = new AfOrderDo();
+        	    	   order.setUserId(refUserId);
+        	    	   int queryCount =   afOrderService.getOrderCountByStatusAndUserId(order);
+        	    	   if(queryCount<=0){
+        	    	       returnCouponVo.setStatus("未消费");
+        	    	   }
+        	    	   if(queryCount >0){
+        	    	       if(couponId<=0){
+        	    		returnCouponVo.setStatus("未完成");
+        	    	       }else{
+        	    		returnCouponVo.setStatus("已完成");
+        	    	       }
+        	    	   }
+        	    	 if(couponId<=0){
+        	    	     returnCouponVo.setReward("0");
+        	    	 }else{
+        	    	     AfResourceDo rDo =  afResourceService.getResourceByResourceId(couponId);
+        	    	     if(rDo != null){
+        	    		returnCouponVo.setReward(rDo.getName());
+        	    	     }
+        	    	  //通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
+      	    	     	   try{
+      	    	     	       	AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
+  				if(afResourceDo != null){
+  				List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil.getActivityCouponList(afResourceDo.getValue());
+  				BrandActivityCouponResponseBo bo = activityCouponList.get(0);
+          			BigDecimal money = new BigDecimal(String.valueOf(bo.getValue()));
+          			couponAmount = couponAmount.add(money);
+  				}
+      	    	     	   }catch(Exception e){
+      	    	     	       logger.error("get coluome activity inviteAmount error", e.getStackTrace());
+      	    	     	   }
+        	    	 }
+        	    	returnCouponList.add(returnCouponVo);
+        	     } 
+    	    	 
+    	    	       //获取外卖商城id
+    	    	  
+    	    	       //好友借钱邀请者得到的奖励总和  inviteAmount
+    	    	       
+    	    	 	vo.setReturnCouponList(returnCouponList);
+    	    	 	vo.setInviteAmount(inviteAmount);
+    	    	        vo.setCouponAmount(couponAmount);
+    	    	        resultStr =  H5CommonResponse.getNewInstance(true, "获取返券列表成功",null,vo).toString();
+	 	}catch(Exception e){
+	 	 logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
+		 resultStr = H5CommonResponse.getNewInstance(false, "获取返券列表失败").toString();
+	   }
+	return resultStr;
+	
+    }
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
@@ -219,7 +331,22 @@ public class APPH5GgActivityController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	/**
+	 * 
+	 * @Title: convertUserNameToUserId @Description: @param userName @return
+	 *         Long @throws
+	 */
+	private Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
 
+		}
+		return userId;
+	}
 	
 
 }

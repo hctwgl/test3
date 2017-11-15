@@ -377,6 +377,16 @@ public class DateUtil {
     }
 
     /**
+     * Format date as "yyyyMMdd".
+     * 
+     * @param date 日期
+     * @return 格式化后的日期字符串
+     */
+    public static String formatDateForPatternWithHyhen(final Date date) {
+        return formatDate(date, DEFAULT_PATTERN_WITH_HYPHEN);
+    }
+
+    /**
      * Format date as given date format.
      * 
      * @param date 日期

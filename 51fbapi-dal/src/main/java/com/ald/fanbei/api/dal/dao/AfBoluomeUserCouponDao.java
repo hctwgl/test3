@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 
 /**
@@ -11,6 +15,10 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfBoluomeUserCouponDao extends BaseDao<AfBoluomeUserCouponDo, Long> {
+
+    List<AfBoluomeUserCouponDo> getUserRecommendCouponListByUserId(@Param("userId")Long userId);
+
+    List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
 
     
 
