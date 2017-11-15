@@ -251,17 +251,18 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	}
 
 	@Override
-	public BigDecimal getUserOutMoney(Long userId) {
-		return afBorrowBillDao.getUserOutMoney(userId);
-	}
-
-	@Override
-	public BigDecimal getUserNotOutMoney(Long userId) {
-		return afBorrowBillDao.getUserNotOutMoney(userId);
-	}
-
-	@Override
 	public Date getLastPayDayByUserId(Long userId) {
 		return afBorrowBillDao.getLastPayDayByUserId(userId);
 	}
+
+	@Override
+	public BigDecimal getUserBillMoneyByQuery(AfBorrowBillQuery query) {
+		return afBorrowBillDao.getUserBillMoneyByQuery(query);
+	}
+
+	@Override
+	public List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQuery query) {
+		return afBorrowBillDao.getUserBillListByQuery(query);
+	}
+
 }

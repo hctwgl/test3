@@ -525,15 +525,55 @@
 			and user_id = #{userId} GROUP BY bill_month,bill_year)a
     </select>
     
-    <select id="getUserOutMoney" resultType="java.math.BigDecimal">
-		SELECT COALESCE(sum(bill_amount),0) from af_borrow_bill where is_delete = 0 and is_out = 1 and user_id = #{userId}
-    </select>
-    
-    <select id="getUserNotOutMoney" resultType="java.math.BigDecimal">
-		SELECT COALESCE(sum(bill_amount),0) from af_borrow_bill where is_delete = 0 and is_out = 0 and user_id = #{userId}
-    </select>
-    
     <select id="getLastPayDayByUserId" resultType="java.util.Date">
-		SELECT gmt_pay_time from af_borrow_bill where is_delete = 0 and is_out = 1 and user_id = 13989456693  ORDER BY gmt_pay_time LIMIT 0,1
+		SELECT gmt_pay_time from af_borrow_bill where is_delete = 0 and is_out = 1 and status = 'N' and user_id = #{userId}  ORDER BY gmt_pay_time LIMIT 0,1
     </select>
+    
+    <select id="getUserBillMoneyByQuery" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (sum(bill_amount), 0)
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND overdue_status = #{overdueStatus}
+		</if>
+		AND user_id = #{userId}
+    </select>
+    
+    <select id="getUserBillListByQuery" resultType="AfBorrowTotalBillDo">
+		SELECT
+			SUM(bill_amount) billAmount,
+			SUM(overdue_days) overdueDays,
+			bill_month billMonth,
+			bill_year billYear
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND overdue_status = #{overdueStatus}
+		</if>
+		AND user_id = #{userId}
+		GROUP BY
+			bill_year,
+			bill_month
+		ORDER BY
+			bill_year ASC,
+			bill_month ASC
+	</select>
+
 </mapper>

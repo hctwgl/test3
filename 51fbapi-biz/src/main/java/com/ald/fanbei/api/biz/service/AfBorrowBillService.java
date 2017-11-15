@@ -229,24 +229,6 @@ public interface AfBorrowBillService {
 	int getOverduedMonthByUserId(Long userId);
 
 	/**
-	 * 获取用户未付款的已出账单金额
-	 * @author yuyue
-	 * @Time 2017年11月10日 下午2:29:00
-	 * @param userId
-	 * @return
-	 */
-	BigDecimal getUserOutMoney(Long userId);
-
-	/**
-	 * 获取用户未出账单金额
-	 * @author yuyue
-	 * @Time 2017年11月10日 下午3:12:49
-	 * @param userId
-	 * @return
-	 */
-	BigDecimal getUserNotOutMoney(Long userId);
-
-	/**
 	 * 获取未逾期用户最后还款日
 	 * @author yuyue
 	 * @Time 2017年11月13日 下午3:42:33
@@ -254,6 +236,24 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	Date getLastPayDayByUserId(Long userId);
+
+	/**
+	 * 根据条件获取用户账单金额
+	 * @author yuyue
+	 * @Time 2017年11月15日 下午3:55:05
+	 * @param query
+	 * @return
+	 */
+	BigDecimal getUserBillMoneyByQuery(AfBorrowBillQuery query);
+
+	/**
+	 * 根据条件获取用户月账单金额
+	 * @author yuyue
+	 * @Time 2017年11月15日 下午4:56:00
+	 * @param query
+	 * @return
+	 */
+	List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQuery query);
 	
 	
 }

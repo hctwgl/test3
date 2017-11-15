@@ -12,6 +12,12 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 	private int billMonth;
 	
 	private Long userId;
+	
+	private String overdueStatus;
+	
+	private int isOut;
+	
+	private String status;
 
 	public int getBillYear() {
 		return billYear;
@@ -35,6 +41,30 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getOverdueStatus() {
+		return overdueStatus;
+	}
+
+	public void setOverdueStatus(String overdueStatus) {
+		this.overdueStatus = overdueStatus;
+	}
+
+	public int getIsOut() {
+		return isOut;
+	}
+
+	public void setIsOut(int isOut) {
+		this.isOut = isOut;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 }
