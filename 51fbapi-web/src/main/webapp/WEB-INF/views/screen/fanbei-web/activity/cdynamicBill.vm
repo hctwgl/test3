@@ -13,7 +13,6 @@
         <!--弹框!-->
         <div class="mask" v-show="ruleShow==='Y'" @click="maskClick()"></div>
         <div class="alertRule" v-show="ruleShow==='Y'">
-            <!--<p class="ruleTitle">规则</p>!-->
             <p class="ruleCont">1.有逾期账单者，不支持修改账单日<br/>
             2.账单日一年只允许更改一次<br/>
             3.修改账单，修改成功后账单日将在2个月之内生效<br/>
@@ -21,14 +20,13 @@
             <div class="close" v-show="ruleShow==='Y'" @click="maskClick()">X</div>
         </div>
         <div class="dynamic-top">
-            <div class="fork"><!--<img src="$src/dynamicBill-01.png" alt="">!--></span>
             <div class="personIn">
                 <img class="moren" :src="content.data.avatar || 'https://f.51fanbei.com/h5/app/activity/11/dynamicBill-04.png'" alt="">
                 <span class="personName">{{content.data.nick}}</span>
                 <span class="personPhone">{{content.data.userName}}</span>
             </div>
             <div class="rule" @click="ruleClick()">规则</div>
-        </div>
+        </span>
         <div class="dynamic-center">
             <span class="dateOne"><i class="monthOne">每月{{content.data.outDay}}号</i><br/><i class="count">出账日</i></span>
             <span class="line"></span>

@@ -18,10 +18,21 @@ body {
 .dynamic-top .personIn {
   width: 7.4rem;
   position: relative;
+  margin-top: -0.4rem;
+}
+.dynamic-top .personIn .over {
+  padding-top: .5rem;
 }
 .dynamic-top .personIn .unpaid {
   text-align: center;
-  font-size: 0.34rem;
+  font-size: 0.3rem;
+}
+.dynamic-top .personIn .down {
+  padding-top: 0.25rem;
+  line-height: 0.35rem;
+}
+.dynamic-top .personIn .success {
+  padding-top: .5rem;
 }
 .dynamic-top .personIn img {
   width: 1rem;
@@ -127,11 +138,11 @@ body {
   color: #fff;
   line-height: .33rem;
   position: absolute;
-  top: 14%;
+  top: 10%;
   left: 93%;
   width: 0.5rem;
   text-align: center;
-  background: rgba(0, 0, 0, 0);
+  background: rgba(0, 0, 0, 0.5);
   padding-top: 0.3rem;
 }
 .mask {
