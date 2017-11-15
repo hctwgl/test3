@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -87,6 +88,8 @@ public class APPH5GgActivityController extends BaseController {
     AfShopService afShopService;
     @Resource
     BoluomeUtil boluomeUtil;
+    @Resource
+    AfRecommendUserService afRecommendUserService;
     
     
     
@@ -249,20 +252,28 @@ public class APPH5GgActivityController extends BaseController {
     	    	     	   long couponId =  userCoupon.getCouponId();
     	    	     	   
         	    	   userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
-        	    	   returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(userCoupon.getGmtCreate()));
+//        	    	   returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(userCoupon.getGmtCreate()));
         	    	   //被邀请人没有订单：未消费; 有订单且订单没有一个是完成的(或者有订单且用户优惠券记录的优惠券id等于0)：未完成。 有完成的订单(或者有订单且用户优惠券记录的优惠券id大于0)：
         	    	   long refUserId =   userCoupon.getRefId();
+        	    	   //手机号
+        	    	   AfUserDo uDo = afUserService.getUserById(refUserId);
+        	    	   if( uDo != null){
+        	    	       returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
+        	    	       returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
+        	    	   }
+        	    	   
+        	    	   //订单状态
         	    	   AfOrderDo order  = new AfOrderDo();
         	    	   order.setUserId(refUserId);
         	    	   int queryCount =   afOrderService.getOrderCountByStatusAndUserId(order);
         	    	   if(queryCount<=0){
-        	    	       returnCouponVo.setStatus("未消费");
+        	    	       returnCouponVo.setStatus(H5GgActivity.NOCONSUME.getDescription());
         	    	   }
         	    	   if(queryCount >0){
         	    	       if(couponId<=0){
-        	    		returnCouponVo.setStatus("未完成");
+        	    		returnCouponVo.setStatus(H5GgActivity.NOFINISH.getDescription());
         	    	       }else{
-        	    		returnCouponVo.setStatus("已完成");
+        	    		returnCouponVo.setStatus(H5GgActivity.ALREADYCONSUME.getDescription());
         	    	       }
         	    	   }
         	    	 if(couponId<=0){
@@ -287,11 +298,9 @@ public class APPH5GgActivityController extends BaseController {
         	    	 }
         	    	returnCouponList.add(returnCouponVo);
         	     } 
+    	    	       //好友借钱邀请者得到的奖励总和  inviteAmount   af_recommend_money表
+    	    	        inviteAmount =  new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId));
     	    	 
-    	    	       //获取外卖商城id
-    	    	  
-    	    	       //好友借钱邀请者得到的奖励总和  inviteAmount
-    	    	       
     	    	 	vo.setReturnCouponList(returnCouponList);
     	    	 	vo.setInviteAmount(inviteAmount);
     	    	        vo.setCouponAmount(couponAmount);
@@ -347,6 +356,14 @@ public class APPH5GgActivityController extends BaseController {
 		}
 		return userId;
 	}
-	
+	private String changePhone(String userName) {
+		String newUserName = "";
+		if (!StringUtil.isBlank(userName)) {
+			newUserName = userName.substring(0, 3);
+			newUserName = newUserName + "****";
+			newUserName = newUserName + userName.substring(7, 11);
+		}
+		return newUserName;
+	}
 
 }
