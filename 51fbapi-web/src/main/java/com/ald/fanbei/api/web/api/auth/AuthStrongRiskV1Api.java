@@ -1,23 +1,8 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import com.ald.fanbei.api.biz.service.*;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
@@ -29,22 +14,9 @@ import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGameConfDo;
-import com.ald.fanbei.api.dal.domain.AfGameDo;
-import com.ald.fanbei.api.dal.domain.AfGameResultDo;
-import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -53,15 +25,23 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @类描述：提交风控审核
  * 
- * @author fmai 2017年6月6日 10:00
+ * @author chefeipeng 2017年11月6日 10:00
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("authStrongRiskApi")
-public class AuthStrongRiskApi implements ApiHandle {
+@Component("authStrongRiskV1Api")
+public class AuthStrongRiskV1Api implements ApiHandle {
 
 	@Resource
 	RiskUtil riskUtil;
@@ -127,7 +107,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 			}
 
 
-			if (!StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.A.getCode()) && !StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {// 已经走过强风控或者正在进行中
+			if(!StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.A.getCode()) && !StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.SECTOR.getCode())){
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
 			}
 
@@ -156,22 +136,30 @@ public class AuthStrongRiskApi implements ApiHandle {
 				AfUserAuthDo authDo = new AfUserAuthDo();
 				authDo.setUserId(context.getUserId());
 				authDo.setGmtRisk(new Date());
+				authDo.setGmtBasic(new Date());
 				try {
-					authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
+					if(!StringUtil.equals(afUserAuthDo.getRiskStatus(),RiskStatus.YES.getCode())){
+						authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
+					}
+					authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
+
 
 					afUserAuthService.updateUserAuth(authDo);
 
-					RiskRespBo riskResp = riskUtil.registerStrongRisk(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
+					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
 							card.getCardNumber(), riskOrderNo);
 					if (!riskResp.isSuccess()) {
-						authDo.setRiskStatus(RiskStatus.A.getCode());
+						if(!StringUtil.equals(afUserAuthDo.getRiskStatus(),RiskStatus.YES.getCode())){
+							authDo.setRiskStatus(RiskStatus.A.getCode());
+						}
+						authDo.setBasicStatus(RiskStatus.A.getCode());
 						afUserAuthService.updateUserAuth(authDo);
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_REGISTER_ERROR);
 					} else {
 						// 提交过信用认证,第一次给用户发放优惠劵
 						HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 						String creditRebateMsg = "";
-						if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode())) {
+						if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
 							// 发放优惠劵工作
 							// creditRebateMsg = getCreditAuthMsg(context,
 							// creditRebateMsg);
@@ -201,7 +189,10 @@ public class AuthStrongRiskApi implements ApiHandle {
 						}
 					}
 				} catch (Exception e) {
-					authDo.setRiskStatus(RiskStatus.A.getCode());
+					if(!StringUtil.equals(afUserAuthDo.getRiskStatus(),RiskStatus.YES.getCode())){
+						authDo.setRiskStatus(RiskStatus.A.getCode());
+					}
+					authDo.setBasicStatus(RiskStatus.A.getCode());
 					afUserAuthService.updateUserAuth(authDo);
 					logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);

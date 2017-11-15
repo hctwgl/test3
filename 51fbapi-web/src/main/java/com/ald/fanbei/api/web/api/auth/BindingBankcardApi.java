@@ -1,26 +1,8 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import com.ald.fanbei.api.common.util.UserUtil;
-import org.apache.commons.lang.ObjectUtils;
-import org.dbunit.util.Base64;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.ald.fanbei.api.biz.bo.IPTransferBo;
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.AfAuthTdService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankDidiRiskService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
-import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
@@ -32,15 +14,20 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankDidiRiskDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.dbunit.util.Base64;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  *@类现描述：签约银行卡时短信验证
@@ -48,8 +35,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("checkBankcardApi")
-public class CheckBankcardApi implements ApiHandle {
+@Component("bindingBankcardApi")
+public class BindingBankcardApi implements ApiHandle {
 
 	@Resource
 	private AfUserBankcardService afUserBankcardService;
@@ -75,7 +62,6 @@ public class CheckBankcardApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
 		Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("bankId")), null);
 		BigDecimal lat = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lat"), null);
@@ -86,11 +72,6 @@ public class CheckBankcardApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
 		}
 		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
-		UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"",bank.getCardNumber(), verifyCode, "02");
-
-		if(!upsResult.isSuccess()){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
-		}
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
 
 		//绑卡
@@ -132,6 +113,18 @@ public class CheckBankcardApi implements ApiHandle {
 		afUserBankDidiRiskService.saveRecord(didiInfo);
 		//新版本绑定银行卡是可以设置支付密码
 		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
+		if(context.getAppVersion()>397){
+			if(null != oldPassword){
+				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				String password = Base64.decodeToString(oldPassword);
+				String salt = UserUtil.getSalt();
+				String newPwd = UserUtil.getPassword(password, salt);
+				afUserAccountDo.setUserId(context.getUserId());
+				afUserAccountDo.setSalt(salt);
+				afUserAccountDo.setPassword(newPwd);
+				afUserAccountService.updateUserAccount(afUserAccountDo);
+			}
+		}
 		//判断是否需要设置支付密码
 		String allowPayPwd = YesNoStatus.YES.getCode();
 		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){
