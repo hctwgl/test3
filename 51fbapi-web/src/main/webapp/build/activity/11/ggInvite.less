@@ -253,15 +253,18 @@ body {
     margin-top: 0.34rem;
     color: #fff;
     text-align: center;
+    span{
+      padding-left:.6rem;
+    }
   }
   .buttons {
     margin-top: .3rem;
     overflow: hidden;
     &>div {
-      width: 3.14rem;
+      width: 32.5%;
       height: 0.75rem;
       color: #fff;
-      font-size: 0.32rem;
+      font-size: 0.22rem;
       text-align: center;
       line-height: 0.75rem;
       background-color: #bcbcbc;
@@ -270,8 +273,8 @@ body {
       &.active {
         background-color: #de5d18;
       }
-      &:first-child {
-        margin-right: .1rem;
+      &.leveltwo {
+        margin:0 1.2%;
       }
     }
   }
@@ -404,11 +407,37 @@ body {
     }
   }
   .specialCoupon{
-    width:100%;
+    width:49%;
     height:1.71rem;
     background: url('http://f.51fanbei.com/h5/app/activity/11/ggFix26.png') no-repeat;
     background-size: cover;
-    margin-top:.78rem;
+    margin:.78rem auto .5rem;
+    position:relative;
+    span{
+      color:#fff;
+      font-size: .8rem;
+      font-weight: 600;
+      position:absolute;
+      top: 13.5%;
+      left: 29%;
+    }
+  }
+  .limitRule{
+    width:78.1%;
+    font-size: .28rem;
+    line-height: .5rem;
+    letter-spacing: .02rem;
+    text-align: justify;
+    color: #000000;
+    margin:0 auto .4rem;
+  }
+  .exampleRule{
+    width:61%;
+    font-size: .28rem;
+    line-height: .42rem;
+    text-align: justify;
+    color: #5e5e5e;
+    padding-left:28%;
   }
 }
 
