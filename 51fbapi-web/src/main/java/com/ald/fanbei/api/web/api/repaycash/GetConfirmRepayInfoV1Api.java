@@ -276,10 +276,8 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 			} else if (cardId == -4) {
 
 			} else if (cardId > 0) {// 银行卡支付
-				AfUserBankcardDo card = afUserBankcardService
-						.getUserBankcardById(cardId);
-				card=null;
-				if (null != card) {
+				AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+				if (null == card) {
 					throw new FanbeiException(
 							FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 				}
