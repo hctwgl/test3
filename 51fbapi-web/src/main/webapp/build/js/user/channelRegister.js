@@ -118,7 +118,7 @@ $(function(){
             })
         } else{requestMsg("请填写正确的手机号");}
     }
-//第三方图片验证
+    //第三方图片验证
     $.ajax({
         url: "/fanbei-web/getGeetestCode",
         type: "get",
@@ -232,3 +232,51 @@ $(function(){
         } else{requestMsg("请填写正确的手机号");}
     });
 });
+
+
+
+// 拖动进度条相关代码
+$(function () {
+    var tag = false, ox = 0, left = 0, bgleft = 0; 
+    // 移动端对应down,move,up事件分别是touchstart,touchmove,touchend
+    var startEvent = 'touchstart';
+    var moveEvent = 'touchmove';
+    var upEvent ='touchend';
+    $('.progress_btn').on(startEvent, function (e) {
+        var originalEvent = e.originalEvent;
+        var touches = originalEvent.touches;
+        var touch;
+        if (touches) {
+            touch = touches[0];
+        } else {
+            touch = e;
+        }
+        console.log(touch);
+        ox = touch.pageX - left;
+        tag = true;
+    });
+    $(document).on(upEvent, function () {
+        tag = false;
+    });
+    $(document).on(moveEvent, function (e) {//鼠标移动
+        var originalEvent = e.originalEvent; // 这里要判断移动端多点触控的问题，jquery扩展的event对象没有这个属性
+        var touches = originalEvent.touches;// 获取源生event对象
+        var touch;
+        if (touches) { // 如果有touches属性，则代表是移动端touchmove事件
+            touch = touches[0]; // 取到多个触控点中的第一个，这样才能获取到触控点的对应位置
+        } else {
+            touch = e;
+        }
+        if (tag) {
+            left = touch.pageX - ox;
+            if (left <= 0) {
+                left = 0;
+            } else if (left > 300) {
+                left = 300;
+            }
+            $('.progress_btn').css('left', left);
+            $('.progress_bar').width(left/50+"rem");
+            $('.text').html(parseInt(left / 300*19500+500));
+        }
+    });
+})

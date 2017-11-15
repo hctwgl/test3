@@ -27,6 +27,15 @@
             <p>用户187****0576 成功借款 6000元</p>
         </marquee>
     #end
+    #if( $!{style}==6 )
+        <div class="progress" id="progress">
+            <div class="text">500</div>
+            <div class="progress_bg">
+                <div class="progress_bar"></div>
+            </div>
+            <div class="progress_btn" id="progress_btn"></div>
+        </div>
+    #end
     <div class="form">
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
         <ul class="iform clearfix">
