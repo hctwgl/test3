@@ -152,6 +152,19 @@
                     
                 
             }) 
+
+            //点击提交按钮加埋点
+            $.ajax({
+               url:'/fanbei-web/postMaidianInfo',
+               type:'post',
+               data:{maidianInfo:'/fanbei-web/activity/barginIndex?type=changeTwo'},
+               success:function (data) {
+                     console.log(data)
+                    }
+            });
+
+
+
         },
         //点击修改次数用完页面的返回首页按钮跳转到首页
         firstWeb(){

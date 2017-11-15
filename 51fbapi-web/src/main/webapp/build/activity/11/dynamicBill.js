@@ -30,6 +30,16 @@ let vm = new Vue({
                 
             })
 
+            //统计pvuv
+             $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:location.pathname+'?type=pvuv'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
+
         },
         //点击修改账单日
         changeBillDay(){
@@ -51,6 +61,19 @@ let vm = new Vue({
                 
             }) 
             refundState()
+
+              //点击修改账单日加埋点
+               $.ajax({
+                      url:'/fanbei-web/postMaidianInfo',
+                      type:'post',
+                      data:{maidianInfo:'/fanbei-web/activity/barginIndex?type=changOne'},
+                      success:function (data) {
+                      console.log(data)
+                        }
+                    });
+
+
+
         },
         // 点击活动规则
         ruleClick() {
