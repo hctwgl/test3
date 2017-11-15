@@ -395,7 +395,3 @@ function getUrlParam(url) {
     return param;
 }
 
-
-function focusFn(type) {
-    maidianFn(type);
-}
