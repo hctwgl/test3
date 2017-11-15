@@ -18,24 +18,24 @@
         </div>       
         <div class="phone">
             <span class="bicon"></span>
-            <input type="tel" maxLength=11 minLength=11  placeholder="请输入登录手机号" id="mobile" class="pinp mobile">
+            <input type="tel" maxLength=11 minLength=11 onfocus="maidianFn('phone')" placeholder="请输入登录手机号" id="mobile" class="pinp mobile">
             <span class="big-one">
                 <span class="xxicon mmicon"><img src="$src/fork.png" alt=""></span>
             </span>
         </div>
         <div class="pcheck phone">
             <span class="bicon"></span>
-            <input   placeholder="请输入短信验证码" class="check pinp" id='yzcheck' maxlength="6" pattern="[0-9]*">
-            <span class="checkbtn" isState=0>获取验证码</span>
+            <input  onfocus="maidianFn('code')"  placeholder="请输入短信验证码" class="check pinp" id='yzcheck' maxlength="6" pattern="[0-9]*">
+            <span class="checkbtn" onclick="maidianFn('codeBtn')" isState=0 id="checkbtn">获取验证码</span>
         </div>
         <div class="phone password">
             <span class="bicon"></span>
-            <input type="password" maxLength=18 minLength=6  placeholder="请输入密码" class="pinp mobile" id="password">
+            <input type="password" maxLength=18 minLength=6 onfocus="maidianFn('pwd')"  placeholder="请输入密码" class="pinp mobile" id="password">
             <span class="big-two">
                 <span class="xxicon pasicon"><img src="$src/fork.png" alt=""></span>
             </span>
         </div>
-        <div class="loginbtn">
+        <div class="loginbtn" onclick="maidianFn('registerBtn')">
             立即注册
         </div>
         <!--<div class="lspdiv clearFix">
@@ -58,6 +58,7 @@
 </body>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>
 <script type="text/javascript" src="/dist/activity/08/ggregister.js?ver=1233"></script>
 <div style="display:none"><script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script></div>
 </html>
