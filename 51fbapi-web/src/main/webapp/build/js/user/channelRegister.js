@@ -276,7 +276,9 @@ $(function () {
             }
             $('.progress_btn').css('left', left);
             $('.progress_bar').width(left/50+"rem");
-            $('.text').html(parseInt(left / 300*19500+500));
+            $('.text').html("￥"+parseInt(left / 300*19500+500));
+            $("#leftMoney").html("￥" + parseInt(left / 300 * 19500 + 500));
+            $("#rightMoney").html("￥" + (parseInt((left / 300 * 19500 + 500)) * 0.001).toFixed(2));
         }
     });
 })
