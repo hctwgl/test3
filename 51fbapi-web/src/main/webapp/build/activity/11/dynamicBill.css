@@ -21,7 +21,7 @@ body {
   margin-top: -0.4rem;
 }
 .dynamic-top .personIn .over {
-  padding-top: .5rem;
+  padding-top: .45rem;
 }
 .dynamic-top .personIn .unpaid {
   text-align: center;
@@ -144,6 +144,9 @@ body {
   text-align: center;
   background: rgba(0, 0, 0, 0.5);
   padding-top: 0.3rem;
+  border-radius: 5px 0 0 5px;
+  width: 0.6rem;
+  padding-right: 0.05rem;
 }
 .mask {
   position: fixed;
