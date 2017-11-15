@@ -404,5 +404,6 @@ public class Constants {
 
 	//首页滚动条
 	  public static final String HOMEPAGE_TOP_SCROLLBAR="HOMEPAGE_TOP_SCROLLBAR";
+	  public static final String BORROW_TOP_SCROLLBAR="H5_URL";
 
 }

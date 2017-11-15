@@ -41,7 +41,7 @@ public class homeScrollBarController implements ApiHandle {  //HOMEPAGE_TOP_SCRO
 				Map<String,String> info = new HashMap<String,String>();
 				info.put("wordUrl", afResourceDo.getValue2());
 				info.put("name", afResourceDo.getName());
-				info.put("type", afResourceDo.getType());
+				info.put("type", Constants.BORROW_TOP_SCROLLBAR);
 				info.put("content", afResourceDo.getDescription());
 				scrollBars.add(info);
 			}
