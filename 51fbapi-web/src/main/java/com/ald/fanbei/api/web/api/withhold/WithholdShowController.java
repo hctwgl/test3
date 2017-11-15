@@ -59,38 +59,50 @@ public class WithholdShowController  implements ApiHandle {
 	
 			AfUserDo userDo = afUserService.getUserByUserName(userName);
 			
-		/*	Map<String, String> bankInfo2 = new HashMap<String, String>();
+			Map<String, String> bankInfo1 = new HashMap<String, String>();
+			Map<String, String> bankInfo2 = new HashMap<String, String>();
 			Map<String, String> bankInfo3 = new HashMap<String, String>();
 			Map<String, String> bankInfo4 = new HashMap<String, String>();
-			Map<String, String> bankInfo5 = new HashMap<String, String>();*/
+			Map<String, String> bankInfo5 = new HashMap<String, String>();
 			
 			
 			List<Object> list1 = new ArrayList<Object>();
-			//List<Object> list2 = new ArrayList<Object>();
+			
 			Map<String, Object> cards = new HashMap<String, Object>();
 			
 			if (userDo != null) {
 				AfUserWithholdDo withhold = afUserWithholdService.getWithholdInfo(userDo.getRid());
 				
 				List<AfUserBankcardDo> afUserBankcardDoList = afUserBankCardService.getAfUserBankcardDoList(userDo.getRid());//得到所有的银行卡
+			
 				if (afUserBankcardDoList != null && afUserBankcardDoList.size() > 0) {
 					
 					for (AfUserBankcardDo afUserBankcardDo : afUserBankcardDoList) {
+						/*if(afUserBankcardDo.getRid().equals(withholdInfo.getCardId1())) {
+							if(afUserBankcardDo.getRid().equals(withholdInfo.getCardId2())) {
+								if(afUserBankcardDo.getRid().equals(withholdInfo.getCardId3())) {
+									if(afUserBankcardDo.getRid().equals(withholdInfo.getCardId4())) {
+										if(afUserBankcardDo.getRid().equals(withholdInfo.getCardId5())) {
+										  
+										} else{}
+									}
+								}
+							}
+							}
+							Map<String, String> bankInfo = new HashMap<String, String>();
+							if (afUserBankcardDo.getIsMain().equals("Y")) {
+								bankInfo.put("isMain", "Y");
+							} else {
+								bankInfo.put("isMain", "N");
+							}
+							String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
+							bankInfo.put("card", bank);
+							bankInfo.put("sort", "1");
+							bankInfo.put("cardId",afUserBankcardDo.getCardNumber()+"");
+							list1.add(bankInfo);
+						}*/
 						
-						Map<String, String> bankInfo = new HashMap<String, String>();
-						int i=1;
-						if (afUserBankcardDo.getIsMain().equals("Y")) {
-							bankInfo.put("isMain", "Y");
-						} else {
-							bankInfo.put("isMain", "N");
-						}
-						System.out.println(afUserBankcardDo.getCardNumber().length());
-						String bank = afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")";
-						bankInfo.put("card", bank);
-						bankInfo.put("sort", i+"");
-						bankInfo.put("cardId",afUserBankcardDo.getCardNumber()+"");
-						list1.add(bankInfo);
-						/*if (withhold.getCardNumber1() != null && withhold.getCardNumber1() != "" && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber1())) {
+						if (withhold.getCardNumber1() != null && withhold.getCardNumber1() != "" && afUserBankcardDo.getCardNumber().equals(withhold.getCardNumber1())) {
 							if (afUserBankcardDo.getIsMain().equals("Y")) {
 								bankInfo1.put("isMain", "Y");
 							} else {
@@ -146,20 +158,27 @@ public class WithholdShowController  implements ApiHandle {
 							bankInfo5.put("cardId",afUserBankcardDo.getCardNumber()+"");
 							list1.add(bankInfo5);
 						} else {
-							Map<String, String> bankInfos = new HashMap<String, String>();
-							
-							bankInfos.put("card",(afUserBankcardDo.getBankName() + "(" + afUserBankcardDo.getCardNumber().substring(afUserBankcardDo.getCardNumber().length() - 4) + ")"));
-							bankInfos.put("sort", "0");
-							bankInfos.put("cardId",afUserBankcardDo.getCardNumber()+"");
-							bankInfos.put("isMain", "N");
-							list2.add(bankInfos);
-						}*/
+							List<Object> list2 = new ArrayList<Object>();
+							int i=1;
+							for (AfUserBankcardDo afUserBankcardDos : afUserBankcardDoList) {
+								Map<String, String> bankInfos = new HashMap<String, String>();
+								
+								bankInfos.put("card",(afUserBankcardDos.getBankName() + "(" + afUserBankcardDos.getCardNumber().substring(afUserBankcardDos.getCardNumber().length() - 4) + ")"));
+								bankInfos.put("sort", i+"");
+								bankInfos.put("cardId",afUserBankcardDos.getCardNumber()+"");
+								bankInfos.put("isMain", afUserBankcardDos.getIsMain());
+								list2.add(bankInfos);
+								i++;
+							}
+							cards.put("card1", list2);
+							resp.setResponseData(cards);
+							return resp;
+						}
 					}
 				} 
 			}
 		
 			cards.put("card1", list1);
-			//cards.put("card2", list2);
 			resp.setResponseData(cards);
 			return resp;
 	}

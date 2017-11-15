@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.web.api.withhold;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -33,14 +35,19 @@ public class homeScrollBarController implements ApiHandle {  //HOMEPAGE_TOP_SCRO
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		
 		List<AfResourceDo> resourceListByType = afResourceService.getResourceListByType(Constants.HOMEPAGE_TOP_SCROLLBAR);
-		List<String> scrollBars = new ArrayList<String>();
+		List<Object> scrollBars = new ArrayList<Object>();
 		if(resourceListByType != null && resourceListByType.size()>0) {
 			for (AfResourceDo afResourceDo : resourceListByType) {
-				scrollBars.add(afResourceDo.getDescription());
+				Map<String,String> info = new HashMap<String,String>();
+				info.put("wordUrl", afResourceDo.getValue2());
+				info.put("name", afResourceDo.getName());
+				info.put("type", afResourceDo.getType());
+				info.put("content", afResourceDo.getDescription());
+				scrollBars.add(info);
 			}
 		}
 		resp.setResponseData(scrollBars);
-		return null;
+		return resp;
 	}
 
 }

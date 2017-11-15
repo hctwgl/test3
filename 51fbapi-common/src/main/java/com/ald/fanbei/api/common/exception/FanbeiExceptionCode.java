@@ -301,7 +301,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     TENEMENT_USER_INVALID("TENEMENT_USER_INVALID",7002,"tenement_user_invalid","对不起，该用户尚未进行注册/身份证认证"),
     //信息已审核
     TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改");
-    /**
+    
+	/**
      * 错误码
      */
     private String code;

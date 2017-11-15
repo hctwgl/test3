@@ -129,7 +129,7 @@
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
 				<value>/category/getAllGoodsCategory</value>
-				
+				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
 			</list>
 		</constructor-arg>
