@@ -1153,14 +1153,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			}
 		});
 		
-		if(resultValue > 0L){
+		/*if(resultValue > 0L){
 			try {
 				afContractPdfCreateService.protocolInstalment(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
 				logger.info("protocolInstalment finish，borrowId=" + borrow.getRid());
 			} catch (Exception e) {
 				logger.error("protocolInstalment error，borrowId=" + borrow.getRid(),e);
 			}
-		}
+		}*/
 		return resultValue;
 	}
 	

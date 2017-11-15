@@ -129,6 +129,13 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		});
 		
 		if(resultValue == 1){
+			try {
+				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
+				logger.info("updateRecommendUser=" + rr+"");
+			} catch (Exception e) {
+				logger.info("afRecommendUserService.updateRecommendByBorrow error，borrowCashId=" + afBorrowCashDo.getRid(),e);
+			}
+			
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.FUND_SIDE_BORROW_CASH.getCode(), AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
 			if (resourceDo != null && "1".equals(resourceDo.getValue())) {
 				//业务处理成功,和资金方关联处理添加
@@ -144,14 +151,12 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				logger.info("borrowSuccess ,rela fund site info is off,and jump it ,borrowCashId:"+afBorrowCashDo.getRid());
 			}
 			
-			int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(), afBorrowCashDo.getGmtCreate());
-			logger.info("updateRecommendUser=" + rr+"");
-			try {
+			/*try {
 				afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
 				logger.info("protocolCashLoan finish，borrowCashId=" + afBorrowCashDo.getRid());
 			} catch (Exception e) {
 				logger.info("protocolCashLoan error，borrowCashId=" + afBorrowCashDo.getRid(),e);
-			}
+			}*/
 			
 		}
 		return resultValue;
