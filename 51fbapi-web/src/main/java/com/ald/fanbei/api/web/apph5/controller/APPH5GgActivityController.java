@@ -11,15 +11,18 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jodd.util.StringUtil;
+
+
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
@@ -35,13 +38,18 @@ import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.H5GgActivity;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -91,8 +99,10 @@ public class APPH5GgActivityController extends BaseController {
     BoluomeUtil boluomeUtil;
     @Resource
     AfRecommendUserService afRecommendUserService;
+    @Resource
+    AfUserDao afUserDao;
     
-    
+    String  opennative = "/fanbei-web/opennative?name=";
     
     @RequestMapping(value = "/commitRegisterLogin", method = RequestMethod.POST)
     public String bouomeActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
@@ -186,8 +196,8 @@ public class APPH5GgActivityController extends BaseController {
    	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
    	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
    	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
-   	  
-   	    if(StringUtil.isNotEmpty(inviteer)){
+   	 
+   	    if(StringUtils.isNotEmpty(inviteer)){
    		AfBoluomeUserCouponDo  afBoluomeUserCouponDo = new AfBoluomeUserCouponDo();
    		afBoluomeUserCouponDo.setUserId(NumberUtil.objToLong(inviteer));
    		afBoluomeUserCouponDo.setRefId(NumberUtil.objToLong(moblie));
@@ -397,6 +407,94 @@ public class APPH5GgActivityController extends BaseController {
 	return resultStr;
 	
     }
+    
+    /**
+	 * @author qiao
+	 * @说明：逛逛活动点亮过程中的领券
+	 * @param: @param request
+	 * @param: @param model
+	 * @param: @return
+	 * @param: @throws IOException
+	 * @return: String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String pickBoluomeCouponV1(HttpServletRequest request, ModelMap model) throws IOException {
+		try {
+			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+			FanbeiWebContext context = new FanbeiWebContext();
+			context = doWebCheck(request, false);
+			String userName = context.getUserName();
+			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}",sceneId, userName);
+			if (sceneId == null) {
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+			}
+			
+			if (StringUtils.isEmpty(userName)) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "没有登录", notifyUrl,null )
+						.toString();
+			}
+			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+			if (afUserDo == null) {
+				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
+				return H5CommonResponse
+						.getNewInstance(false, "没有登录", notifyUrl,null )
+						.toString();
+			}
+			
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+			if (resourceInfo == null) {
+				logger.error("couponSceneId is invalid");
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+			}
+			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+			bo.setUser_id(afUserDo.getRid()+StringUtil.EMPTY);
+			
+			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+			
+			if (DateUtil.beforeDay(new Date(), gmtStart)) {
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+			}
+			if (DateUtil.afterDay(new Date(), gmtEnd)) {
+				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+			}
+			
+			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+			JSONObject resultJson = JSONObject.parseObject(resultString);
+			String code = resultJson.getString("code");
+			
+			if ("10222".equals(code) ||  "10206".equals(code) || "11206".equals(code)) {
+				return H5CommonResponse.getNewInstance(true, "您已领过优惠券，快去使用吧~").toString();
+			} else if ("10305".equals(code)){
+				return H5CommonResponse.getNewInstance(true, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
+			}
+			else if (!"0".equals(code)) {
+				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
+			} 
+			  //存入数据库
+			AfBoluomeUserCouponDo  userCoupon = new AfBoluomeUserCouponDo();
+			userCoupon.setChannel(H5GgActivity.PICK.getCode());
+			userCoupon.setCouponId(sceneId);
+			userCoupon.setUserId(afUserDo.getRid());
+			userCoupon.setStatus(1);
+			int result = afBoluomeUserCouponService.saveRecord(userCoupon);
+			if(result == 0){
+			    logger.info("pickBoluomeCoupon boluome and save userCoupon fail userCoupon = {},", JSONObject.toJSONString(userCoupon));
+			}
+			
+		 // bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.SECOND_OF_ONE_MONTH);
+		return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
+
+		} catch (Exception e) {
+			logger.error("pick brand coupon failed , e = {}", e.getMessage());
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+		}
+
+	}
     
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
