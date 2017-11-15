@@ -189,8 +189,6 @@
 				<entry key="/user/changeMobileCheckVerifyCode" value-ref="changeMobileCheckVerifyCodeApi"/>
 				<entry key="/user/changeMobileVerify" value-ref="changeMobileVerifyApi"/>
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
-				<entry key="/user/accountAppealCheckSms" value-ref="accountAppealCheckSmsApi"/>
-				<entry key="/user/accountAppealDo" value-ref="accountAppealDoApi"/>
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
 
