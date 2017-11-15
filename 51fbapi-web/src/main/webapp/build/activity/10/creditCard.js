@@ -1,4 +1,4 @@
-$(function(){
+/* $(function(){
     $('.credit-two').click(function(){
         window.location.href='https://e.czbank.com/weixinHTML/outInterface/creditCardApplyTemplateOutside.html?apOrigin=1348&pageFlag=a1111';
     })
@@ -8,4 +8,61 @@ $(function(){
      $('.credit-five').click(function(){
         window.location.href='http://xyk.cmbchina.com/Latte/card/cardList?WT.mc_id=N3700MMA061V164500BF';
     })
+}) */
+
+let vm=new Vue({
+    el: '#creditCard',
+    data: {},
+    created: function () {
+        this.theFirst();
+    },
+    methods: {
+        theFirst(){
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {maidianInfo: location.pathname + '?type=pvuv'},
+                success: function (data) {
+                    console.log(data)
+                }
+            });
+        },
+        clickOne(){
+            window.location.href = 'https://e.czbank.com/weixinHTML/outInterface/creditCardApplyTemplateOutside.html?apOrigin=1348&pageFlag=a1111';
+            //点击加埋点
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {maidianInfo: '/fanbei-web/activity/barginIndex?type=clickOne'},
+                success: function (data) {
+                    console.log(data)
+                }
+            });
+        },
+        clickTwo(){
+            window.location.href = 'https://ecentre.spdbccc.com.cn/creditcard/indexActivity.htm?data=P2224588';
+            //点击加埋点
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {maidianInfo: '/fanbei-web/activity/barginIndex?type=clickTwo'},
+                success: function (data) {
+                    console.log(data)
+                }
+            });
+        },
+        clickThree(){
+            window.location.href = 'http://xyk.cmbchina.com/Latte/card/cardList?WT.mc_id=N3700MMA061V164500BF';
+            //点击加埋点
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {maidianInfo: '/fanbei-web/activity/barginIndex?type=clickThree'},
+                success: function (data) {
+                    console.log(data)
+                }
+            });
+        }
+    }
 })
+    
