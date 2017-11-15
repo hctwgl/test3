@@ -286,7 +286,8 @@
 				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
 				<entry key="/auth/authAlipay" value-ref="authAlipayApi" />
                 <entry key="/auth/updateRealnameManual" value-ref="updateRealnameManualApi" />
-
+				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
+				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
