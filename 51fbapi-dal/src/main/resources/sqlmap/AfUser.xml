@@ -70,9 +70,9 @@
 		LIMIT 1
 	</select>
 
-	<select id="getUserByMobile" resultType="AfUserDo">
+	<select id="getUserByMobile" parameterType="java.lang.String" resultType="AfUserDo">
 		SELECT
-		id
+			<include refid="queryAllFields" />
 		FROM
 		af_user
 		WHERE

@@ -19,7 +19,12 @@ public interface AfUserService {
 	 * @return
 	 */
 	int addUser(AfUserDo afUserDo);
-
+	/**
+	 * 添加快速登录用户
+	 * @param afUserDo
+	 * @return
+	 */
+	int addUser(AfUserDo afUserDo,String type);
 	
 	/**
 	 * 根据用户id获取用户信息

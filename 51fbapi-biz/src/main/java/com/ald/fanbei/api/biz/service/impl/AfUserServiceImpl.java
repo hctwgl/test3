@@ -101,6 +101,56 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 	}
 
+	@Override
+	public int addUser(final AfUserDo afUserDo, final String type) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					afUserDao.addUser(afUserDo);
+					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+					afUserAuthDo.setUserId(afUserDo.getRid());
+					logger.info(StringUtil.appendStrs("yuyuegetaddUser",afUserDo.getRid()));
+					afUserAuthDao.addUserAuth(afUserAuthDo);
+
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUserId(afUserDo.getRid());
+					account.setUserName(afUserDo.getUserName());
+					afUserAccountDao.addUserAccount(account);
+					couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
+
+
+					long recommendId = afUserDo.getRecommendId();
+
+					//#region add by hongzhengpei
+					if(recommendId !=0){
+						//新增推荐记录表
+						AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
+						afRecommendUserDo.setUser_id(afUserDo.getRid());
+						afRecommendUserDo.setParentId(recommendId);
+						afRecommendUserDao.addRecommendUser(afRecommendUserDo);
+					}
+					//#endregion
+
+					//处理帐单日，还款日
+					addOutDay(afUserDo.getRid());
+					if ("Q".equals(type)){
+						AfUserRegisterTypeDo afUserRegisterTypeDo = new AfUserRegisterTypeDo();
+						afUserRegisterTypeDo.setUserId(afUserDo.getRid());
+						afUserRegisterTypeDo.setType(1);
+						afUserRegisterTypeDao.insert(afUserRegisterTypeDo);
+					}
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("addUser error:", e,afUserDo);
+					return 0;
+				}
+			}
+		});
+
+	}
+
 	/**
 	 * 帐单日处理
 	 * @param userId

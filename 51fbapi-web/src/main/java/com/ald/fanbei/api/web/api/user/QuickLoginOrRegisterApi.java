@@ -101,7 +101,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		}*/
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
-
+		smsUtil.checkSmsByMobileAndType(context.getUserName(),verifyCode, SmsType.QUICK_LOGIN);//短信验证码判断
 		if (afUserDo == null) {
 			afUserDo = quickRegister(requestDataVo,context,request);
 //			return resp;
@@ -115,7 +115,6 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			logger.error("sms record is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
-		smsUtil.checkSmsByMobileAndType(context.getUserName(),verifyCode, SmsType.QUICK_LOGIN);//短信验证码判断
 		// 判断验证码是否一致并且验证码是否已经做过验证
 		/*String realCode = smsDo.getVerifyCode();
 		if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 0) {
@@ -287,7 +286,6 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		ClientTypeEnum clientType = StringUtil.judgeClientType(requestDataVo.getId());
 		String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), "");
 		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
-		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String userName = context.getUserName();
 
 		String ip = CommonUtil.getIpAddr(request);
@@ -353,10 +351,10 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		userDo.setProvince("");
 		userDo.setGender("");
 		userDo.setRealName("");
-		userDo.setFailCount(0);
+		userDo.setFailCount(-1);
 		userDo.setRecommendCode("");
 		userDo.setStatus("NORMAL");
-		afUserService.addUser(userDo);
+		afUserService.addUser(userDo,"Q");
 
 		Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 		String inviteCode = Long.toString(invteLong, 36);
@@ -374,11 +372,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
 		}
-		AfUserRegisterTypeDo afUserRegisterTypeDo = new AfUserRegisterTypeDo();
-		afUserRegisterTypeDo.setUserId(afUserDo.getRid());
-		afUserRegisterTypeDo.setType(1);
-		afUserService.addQuickRegisterUser(afUserRegisterTypeDo);
-		return userDo;
+		return afUserDo;
 	}
 
 	private void ToutiaoAdActive(RequestDataVo requestDataVo, FanbeiContext context, AfUserDo afUserDo) {

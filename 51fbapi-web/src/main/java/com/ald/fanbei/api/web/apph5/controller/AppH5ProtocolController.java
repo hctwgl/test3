@@ -162,7 +162,7 @@ public class AppH5ProtocolController extends BaseController {
 
 		logger.info(JSON.toJSONString(model));
 	}
-	@RequestMapping("/getBorrowIdByNo")
+	@RequestMapping(value = { "getBorrowIdByNo" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String getBorrowIdByNo(String borrowNo){
 		if (null == borrowNo || "".equals(borrowNo)){

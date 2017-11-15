@@ -54,11 +54,11 @@ public class CheckQuickRegisteredPwdApi implements ApiHandle {
 //		Long userId = afUserService.getUserIdByMobile(mobile);
 		AfUserDo afUserDo = afUserService.getUserByMobile(mobile);
 		if(null != afUserDo && afUserDo.getRid()!=  null) {
-			if (null != afUserDo.getPassword()){
+			if (null != afUserDo.getPassword() && !"".equals(afUserDo.getPassword())){
 				data.put("password","Y");
 			}
 			AfUserRegisterTypeDo afUserRegisterTypeDo = afUserService.isQuickRegisterUser(afUserDo.getRid());
-			if (null == afUserRegisterTypeDo && 1 == afUserRegisterTypeDo.getType()){
+			if (null != afUserRegisterTypeDo && 1 == afUserRegisterTypeDo.getType()){
 				data.put("isQuick","Y");
 			}
 		}
