@@ -875,7 +875,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
         			jpushUtil.pushNotifyByAlias(resourceInfo.getValue1(), msgContext, extras, new String[] { userName });
 		    }
 		} catch (Exception e) {
-			logger.info("zhengxinRiskFault error", e);
+			logger.info("boluomeActivityMsg error", e);
 		}	
 		
 	}
