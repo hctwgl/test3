@@ -78,8 +78,9 @@
                     self.contentTwo = eval('(' + data + ')');
                     console.log(self.contentTwo,'self.contentTwo');
                     window.location.href='changeSuccess';//点击提交跳转修改成功页面
-                     if(self.contentTwo.success==false){
-                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                    //判断修改多次的时候跳到修改次数用完页面
+                     if(self.contentOne.msg==1){
+                            window.location.href='changeTimeOver';
                     } 
                      
                     
