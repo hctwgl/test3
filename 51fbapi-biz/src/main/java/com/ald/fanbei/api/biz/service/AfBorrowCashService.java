@@ -191,5 +191,7 @@ public interface AfBorrowCashService {
 
     int updateBorrowCashUnLock(Long borrowId);
 
-	AfBorrowCashDo getBorrowCashByStatus();
+	AfBorrowCashDo getBorrowCashByStatus(Long userId);
+
+	int updateAfBorrowCashPlanTime(Long userId);
 }

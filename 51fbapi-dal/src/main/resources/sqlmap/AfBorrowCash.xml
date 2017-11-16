@@ -436,6 +436,12 @@
 		<include refid="queryFields" />
 		FROM
 		`af_borrow_cash`
-		WHERE `is_delete` =0 AND `status` IN ("FINSH","TRANSED","TRANSEDING","WAITTRANSED")
+		WHERE `is_delete` =0 AND `status` IN ('TRANSED','TRANSEDING','WAITTRANSED')
+		AND user_id=#{userId}
+		limit 0,1
 	</select>
+	<update id="updateAfBorrowCashPlanTime" parameterType="java.lang.Long">
+		UPDATE
+		af_borrow_cash SET gmt_plan_repayment = NOW() WHERE user_id=#{userId} and  `status` = 'TRANSED'
+	</update>
 </mapper>

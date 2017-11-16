@@ -285,7 +285,12 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	}
 
 	@Override
-	public AfBorrowCashDo getBorrowCashByStatus() {
-		return afBorrowCashDao.getBorrowCashByStatus();
+	public AfBorrowCashDo getBorrowCashByStatus(Long userId) {
+		return afBorrowCashDao.getBorrowCashByStatus(userId);
+	}
+
+	@Override
+	public int updateAfBorrowCashPlanTime(Long userId) {
+		return afBorrowCashDao.updateAfBorrowCashPlanTime(userId);
 	}
 }
