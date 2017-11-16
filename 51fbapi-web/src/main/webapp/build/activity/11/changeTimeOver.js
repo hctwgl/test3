@@ -43,7 +43,7 @@
                          /* self.flag=true;
                          self.isA=true; */
                             //alert(11111)
-                            window.location.href='changeTimeOver';
+                            //window.location.href='changeTimeOver';
                     } 
                     /* if(self.contentOne.success==false) {
                         window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
