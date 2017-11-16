@@ -88,6 +88,9 @@ public class CollectionSystemUtil extends AbstractThird {
 		reqBo.put("card_number", cardNumber);
 		reqBo.put("card_name", cardName);
 		reqBo.put("repay_time", repayTime);
+		if(StringUtil.isEmpty(tradeNo)){
+			tradeNo = repayNo;
+		}
 		reqBo.put("trade_no", tradeNo);
 		reqBo.put("amount", amount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("rest_amount", restAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
