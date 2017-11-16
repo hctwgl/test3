@@ -179,4 +179,15 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
+	/**
+	 * judge the first_order during the second time to light the activity 
+	* @Title: findFirstOrder
+	* @Description: 
+	* @param orderId
+	* @return    
+	* @return int   
+	* @throws
+	 */
+	int findFirstOrder(@Param("orderId")Long orderId);
+
 }

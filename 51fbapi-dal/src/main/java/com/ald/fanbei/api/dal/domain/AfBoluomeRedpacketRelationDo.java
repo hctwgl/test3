@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author gaojibin_temple
  * @version 1.0.0 初始化
- * @date 2017-11-13 17:28:28
+ * @date 2017-11-15 17:52:01
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfBoluomeRedpacketRelationDo extends AbstractSerial {
@@ -35,12 +35,12 @@ import java.math.BigDecimal;
     /**
      * 
      */
-    private Integer thresholdId;
+    private Long thresholdId;
 
     /**
      * 
      */
-    private Integer redpacketId;
+    private Long redpacketId;
 
 
     /**
@@ -103,7 +103,7 @@ import java.math.BigDecimal;
      *
      * @return 
      */
-    public Integer getThresholdId(){
+    public Long getThresholdId(){
       return thresholdId;
     }
 
@@ -112,7 +112,7 @@ import java.math.BigDecimal;
      * 
      * @param thresholdId 要设置的
      */
-    public void setThresholdId(Integer thresholdId){
+    public void setThresholdId(Long thresholdId){
       this.thresholdId = thresholdId;
     }
 
@@ -121,7 +121,7 @@ import java.math.BigDecimal;
      *
      * @return 
      */
-    public Integer getRedpacketId(){
+    public Long getRedpacketId(){
       return redpacketId;
     }
 
@@ -130,7 +130,7 @@ import java.math.BigDecimal;
      * 
      * @param redpacketId 要设置的
      */
-    public void setRedpacketId(Integer redpacketId){
+    public void setRedpacketId(Long redpacketId){
       this.redpacketId = redpacketId;
     }
 
