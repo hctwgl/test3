@@ -40,6 +40,6 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/dist/activity/11/changeTineOver.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/11/changeTimeOver.js?version=$version"></script>
 <!--<script type="text/javascript" src="/dist/activity/11/dynamicBill.js?version=$version"></script>!-->
 </html>
