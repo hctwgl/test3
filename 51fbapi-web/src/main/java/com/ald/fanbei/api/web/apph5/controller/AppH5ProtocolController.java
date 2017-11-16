@@ -327,13 +327,17 @@ public class AppH5ProtocolController extends BaseController {
 	}
 
 	private void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
-		AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
-		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
-			model.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-		}
-		AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
-		if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
-			model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+		try {
+			AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
+				model.put("CompanyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+			}
+			AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
+			if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
+				model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+			}
+		}catch (Exception e){
+			logger.error("UserSeal create error",e);
 		}
 	}
 

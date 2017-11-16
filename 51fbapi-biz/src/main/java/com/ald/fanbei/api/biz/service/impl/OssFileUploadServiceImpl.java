@@ -36,13 +36,13 @@ public class OssFileUploadServiceImpl implements OssFileUploadService {
     public OssUploadResult uploadFileToOss(MultipartFile file) {
         String oldFileName = file.getOriginalFilename();
         String path = ConfigProperties.get(Constants.CONF_KEY_INVELOMENT_TYPE) + "/";
-        String newFileName = ImageUtil.getFileName(oldFileName);
+//        String newFileName = ImageUtil.getFileName(oldFileName);
         String contextType = "";
         if(oldFileName.lastIndexOf(".") >=0){
 //            newFileName = newFileName + oldFileName.substring(oldFileName.lastIndexOf("."));
             contextType = this.getImageFileContentType(oldFileName);
         }
-        return this.uploadFileToOss(file, contextType, path, newFileName);
+        return this.uploadFileToOss(file, contextType, path, oldFileName);
     }
     
     @Override

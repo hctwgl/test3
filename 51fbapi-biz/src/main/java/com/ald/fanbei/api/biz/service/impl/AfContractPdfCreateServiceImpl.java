@@ -156,7 +156,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             }
             long time = new Date().getTime();
 //            map.put("templatePath",src+"instalment"+".pdf");
-            map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/dbc284bc91877554.pdf");
+            map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/instalment.pdf");
             map.put("PDFPath",src+accountDo.getUserName()+"instalment"+time+1+".pdf");
             map.put("userPath",src+accountDo.getUserName()+"instalment"+time+2+".pdf");
             map.put("selfPath",src+accountDo.getUserName()+"instalment"+time+3+".pdf");
@@ -265,7 +265,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             }
             long time = new Date().getTime();
 //            map.put("templatePath",src+"cashLoan"+".pdf");
-            map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/b046c6f5026b7371.pdf");
+            map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/cashLoan.pdf");
             map.put("PDFPath",src+accountDo.getUserName()+"cashLoan"+time+1+".pdf");
             map.put("userPath",src+accountDo.getUserName()+"cashLoan"+time+2+".pdf");
             map.put("selfPath",src+accountDo.getUserName()+"cashLoan"+time+3+".pdf");
@@ -495,7 +495,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             long time = new Date().getTime();
 //            map.put("templatePath",src+"renewal"+".pdf");
-            map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/6cabe0372cfb91c4.pdf");
+            map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/renewal.pdf");
             map.put("PDFPath",src+accountDo.getUserName()+"renewal"+time + 1+".pdf");
             map.put("userPath",src+accountDo.getUserName()+"renewal"+time+2+".pdf");
             map.put("selfPath",src+accountDo.getUserName()+"renewal"+time+3+".pdf");

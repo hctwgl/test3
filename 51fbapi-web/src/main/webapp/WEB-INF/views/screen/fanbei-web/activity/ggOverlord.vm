@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711141355")
+    #set($version="201711151047")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>我要吃霸王餐</title>
@@ -9,26 +9,35 @@
 </head>
 <body>
 <div id="ggOverlord" class="ggOverlord">
-    <div class="banner"><img src="$src/ggFix17.png"></div>
+    <div class="loadingMask"><i class="loading"></i></div>
+    <div class="banner first"><img :src="baseData.image"></div>
     <div class="firstCont">
         <p class="inviteButton">有福同享 ></p>
-        <p class="inviteCode">点击复制邀请码：<span>23123</span></p>
-        <p class="inviteRule">活动规则：<br/>每个场景的首次消费均有惊喜返利金，其中第一次消费即返20元，之后惊喜不断，最高可达51元。每笔消费均有1%~10%的高额返利。</p>
-        <p class="exampleRule">例如：您首次点了一份总价为16元的外卖，立减15元后，只需支付1元，您将获得：惊喜返利金：20元返利：16*1%=0.16元</p>
+        <div class="clickInviteCode"><p class="inviteCode">点击复制邀请码：<span v-if="baseData.inviteCode">{{baseData.inviteCode}}</span></p></div>
+        <p class="inviteRule">活动规则：<br/>{{baseData.activityRule}}</p>
+        <p class="exampleRule">{{baseData.example}}</p>
     </div>
     <div class="secondCont">
         <div class="myPrize">
             <p class="prizeTop">我的奖励</p>
-            <p class="prizeBot">合计<span><i>1</i><i>2</i><i>1</i><i>1</i></span>外卖券</p>
+            <p class="prizeBot">合计<span><i v-for="item in inviteSumMoney">{{item}}</i></span>元外卖券</p>
         </div>
-        <p class="toCash">去账户提现>>></p>
+        <p class="toCash">去账户提现 ></p>
         <div class="rebateList">
             <p class="rebateTitle"><span>被邀请人</span><span>注册时间</span><span>状态</span><span>奖励</span></p>
-            <ul class="rebateCont">
-                <li><span>186****5604</span><span>2017.11.5</span><span>未完成</span><span>15元外卖券</span></li>
-                <li><span>186****5604</span><span>2017.11.5</span><span style="color:#f0110e">已完成</span><span>15元外卖券</span></li>
-                <li><span>186****5604</span><span>2017.11.5</span><span>未消费</span><span>15元外卖券</span></li>
-            </ul>
+            <div v-if="content.returnCouponList && couponLength>0">
+                <ul class="rebateCont">
+                    <li v-for="item in content.returnCouponList" class="clearFix">
+                        <span>{{item.inviteeMobile}}</span>
+                        <span>{{fixDate(item.registerTime)}}</span>
+                        <span v-if="item.status==='已完成'" style="color:#f0110e">{{item.status}}</span>
+                        <span v-else>{{item.status}}</span>
+                        <span>{{item.reward}}</span>
+                    </li>
+                </ul>
+                <p class="noteDes">注：状态“未完成”表示用户已消费但订单状态未确认完成；</p>
+            </div>
+            <p class="noPrize" v-else>您暂无奖励</p>
         </div>
     </div>
 </div>

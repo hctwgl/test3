@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
@@ -32,5 +35,12 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 		@Override
 	public BaseDao<AfBoluomeUserCouponDo, Long> getDao() {
 		return afBoluomeUserCouponDao;
+	}
+
+
+		@Override
+	public List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon) {
+		    // TODO Auto-generated method stub
+		 return afBoluomeUserCouponDao.getUserCouponListByUerIdAndChannel(queryUserCoupon);
 	}
 }

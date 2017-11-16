@@ -9,13 +9,21 @@
 </head>
 <body>
 <div id="ggFix" class="ggFix">
-    <div class="banner"><img src="$src/ggFix01.jpg"></div>
+    <div class="loadingMask"><i class="loading"></i></div>
+    <div class="banner first"><img src="$src/ggFix01.jpg"></div>
+    <p class="clickRule" @click="ruleClick()"><span>活动规则</span></p>
+    <div class="alertRule" v-show="ruleShow">
+        <p class="alertRuleTitle">活动规则</p>
+        <p class="alertRuleCont">您邀请的好友点外卖立享15元无门槛优惠，完成消费后，您即可获得1张“15元无门槛外卖券”，多邀多得，不设上限。</p>
+        <p class="closeRule" @click="closeClick()">X</p>
+    </div>
+    <div class="mask" v-show="ruleShow"  @click="closeClick()"></div>
     <div class="firstCont">
         <p class="firstTitle"><img src="$src/ggFix08.png">我想吃霸王餐</p>
         <div class="cont">
             <p class="contTop"><span>15</span></p>
-            <p class="contNewUser">新用户去吃霸王餐>>><br/><span>15元外卖券已发放至账户</span></p>
-            <p class="contOldUser">老用户同享霸王餐>>></p>
+            <p class="contNewUser">新用户去吃霸王餐 ><br/><span>15元外卖券已发放至账户</span></p>
+            <p class="contOldUser">老用户同享霸王餐 ></p>
         </div>
     </div>
     <div class="secondCont">
@@ -30,7 +38,7 @@
             <p class="prizeTop">我的奖励</p>
             <p class="prizeBot">合计<span><i>1</i><i>2</i><i>1</i><i>1</i></span>元返利金</p>
         </div>
-        <p class="toCash">去账户提现>>></p>
+        <p class="toCash">去账户提现 ></p>
         <div class="rebateList">
             <p class="rebateTitle"><span>消费场景</span><span>消费时间</span><span>返利(元)</span><span>惊喜返利金(元)</span></p>
             <ul class="rebateCont">
@@ -42,7 +50,7 @@
     </div>
     <div class="fourthCont">
         <p class="fourthTitle"><img src="$src/ggFix13.png">我的场景</p>
-        <p class="toRebateMoney">去“吃玩住行”领返利金>>></p>
+        <p class="toRebateMoney">去“吃玩住行”领返利金 ></p>
         <div class="couponList clearFix">
             <div class="coupon">
                 <p class="couponName">星巴克</p>

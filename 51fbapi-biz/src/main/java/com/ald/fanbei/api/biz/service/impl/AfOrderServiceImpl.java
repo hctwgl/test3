@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -2005,6 +2006,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public int getOldUserOrderAmount(long userId) {
 		// TODO Auto-generated method stub
 		return orderDao.getOldUserOrderAmount(userId);
+	}
+
+	@Override
+	public List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId) {
+		// TODO Auto-generated method stub
+		return orderDao.getOverOrderByGoodsIdAndUserId(goodsId,userId);
 	}
 
 }
