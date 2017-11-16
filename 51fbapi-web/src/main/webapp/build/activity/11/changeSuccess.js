@@ -43,7 +43,7 @@ let vm = new Vue({
         },
         //点击修改成功页面的返回首页按钮跳转到首页
         firstWeb(){
-            window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_HOME";//跳转到app首页
+            window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_HOME";//跳转到app首页
         }
     }
 })

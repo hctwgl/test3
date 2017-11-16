@@ -40,7 +40,7 @@
                     self.otherDate= self.contentOne.data.outDayList.slice(0,1)[0];
                     console.log( self.otherDate,' self.otherDate')
                     if(self.contentOne.success==false) {
-                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                         
                     }
                         
@@ -79,7 +79,7 @@
                     console.log(self.contentTwo,'self.contentTwo');
                     window.location.href='changeSuccess';//点击提交跳转修改成功页面
                      if(self.contentTwo.success==false){
-                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
+                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                     } 
                      
                     
@@ -103,13 +103,13 @@
         },
         //点击修改次数用完页面的返回首页按钮跳转到首页
         firstWeb(){
-            window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_HOME";//跳转app到首页
+            window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_HOME";//跳转app到首页
         },
         toPay(){
-            window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_TOPAY";//跳转app还款页
+            window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_TOPAY";//跳转app还款页
         },
        /*  toMove(){
-            window.location.href="http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_MOVE";//跳转app分期首页
+            window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_MOVE";//跳转app分期首页
         }, */
         //点击隐藏mask
         maskHide(){
