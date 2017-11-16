@@ -43,4 +43,11 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 		    // TODO Auto-generated method stub
 		 return afBoluomeUserCouponDao.getUserCouponListByUerIdAndChannel(queryUserCoupon);
 	}
+
+
+		@Override
+	public AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon) {
+		    // TODO Auto-generated method stub
+		 return afBoluomeUserCouponDao.getByCouponIdAndUserIdAndChannel(userCoupon);
+	}
 }

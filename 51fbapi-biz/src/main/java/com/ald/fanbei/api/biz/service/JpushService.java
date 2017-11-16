@@ -245,4 +245,6 @@ public interface JpushService {
 	public void zhengxinRiskFail(String userName);
 
 	public void zhengxinRiskFault(String userName);
+
+	void boluomeActivityMsg(String userName, String type, String SecType);
 }

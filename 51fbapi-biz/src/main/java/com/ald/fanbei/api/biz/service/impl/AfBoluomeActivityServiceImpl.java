@@ -22,14 +22,17 @@ import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserLoginService;
+import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
+import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -52,6 +55,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserRebateDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -111,6 +115,11 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	AfOrderService afOrderService;
 	@Resource
 	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
+	@Resource
+	AfBoluomeUserCouponService afBoluomeUserCouponService;
+	@Resource 
+	JpushService jpushService;
+	
         private static final Logger logger = LoggerFactory.getLogger(AfBoluomeActivityServiceImpl.class);
         private static String couponUrl = null;
 
@@ -179,6 +188,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 			AfBoluomeActivityItemsDo ItemsMessageSet = new AfBoluomeActivityItemsDo();
 			ItemsMessageSet.setRefId(shopId);
 			// ItemsMessageSet.setBoluomeActivityId(userLoginRecord.getBoluomeActivityId());
+			ItemsMessageSet.setBoluomeActivityId(afBoluomeActivityDo.getRid());
 			AfBoluomeActivityItemsDo afBoluomeActivityItemsDo  =  afBoluomeActivityItemsDao.getItemsInfo(ItemsMessageSet);
 			if(afBoluomeActivityItemsDo!= null){
 				//规则判断
@@ -616,6 +626,52 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	    
 	    return -1;
 	}
+	
+	
+	@Override
+	public int sentNewUserBoluomeCouponForDineDash(AfUserDo afUserDo) {
+	    //没有券且有注册时绑定的记录。
+	    //1.是否有绑定关系
+	    AfBoluomeActivityUserLoginDo userLoginDo = new AfBoluomeActivityUserLoginDo();
+	    userLoginDo.setUserId(afUserDo.getRid());
+	    List<AfBoluomeActivityUserLoginDo>  userLoginList=  afBoluomeActivityUserLoginService.getListByCommonCondition(userLoginDo);
+	    //有绑定记录
+	    if(userLoginList.size()>0){
+	    
+		  String  type = H5GgActivity.GGACTIVITY.getCode();
+		  String  secType =  H5GgActivity.BOLUOMECOUPON.getCode();
+		  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+		     if(resourceDo!= null){
+			long  boluomeCouponId = Long.parseLong(resourceDo.getValue()) ;
+			//2.记录表查询是否有券
+			AfBoluomeUserCouponDo userCouponDo = new AfBoluomeUserCouponDo();
+			userCouponDo.setChannel(H5GgActivity.REGISTER.getCode());
+			userCouponDo.setUserId(afUserDo.getRid());
+			userCouponDo.setCouponId(boluomeCouponId);
+			AfBoluomeUserCouponDo  userCoupon =  afBoluomeUserCouponService.getByCouponIdAndUserIdAndChannel(userCouponDo);
+			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(boluomeCouponId);
+			//无券则发券，并推送极光
+			if(userCoupon == null){
+			    if (resourceInfo != null) {
+				PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+				bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+				String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+				logger.info("sentBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+				JSONObject resultJson = JSONObject.parseObject(resultString);
+				String code = resultJson.getString("code");
+		        	//发券成功，推送极光 
+				if ("0".equals(code)) {
+				    jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GGACTIVITY.getCode(), H5GgActivity.GGSMSNEW.getCode());
+			    }
+			}
+		   }
+           }	    
+	  	    
+    }
+	    return 0;					    
+}
+	
+	
 	 private String getCouponYesNoStatus(AfResourceDo resourceInfo, AfUserDo UserDo) {
 
 		String uri = resourceInfo.getValue();
