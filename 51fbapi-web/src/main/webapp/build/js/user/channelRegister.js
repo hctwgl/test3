@@ -72,7 +72,7 @@ $(function(){
         timerS--;
         if (timerS<=0) {
             $("#register_codeBtn").removeAttr("disabled");
-            $("#register_codeBtn").text("获取验证码");
+            $("#register_codeBtn").text("点击获取");
             clearInterval(timerInterval);
             timerS = 60;
         } else {
@@ -144,7 +144,9 @@ $(function(){
                                 data=JSON.parse(data);
                                 if(data.data=='N'){
                                     captchaObj.verify();//调起图片验证
+                                    maidianFn("getCodeSuccess");
                                 }else{
+                                    maidianFn("getCodeRegistered");
                                     requestMsg(data.msg)
                                 }
                             }
@@ -165,8 +167,10 @@ $(function(){
                         },
                         success: function (data) {
                             if (data.data.status === 'success') {
+                                maidianFn("sendCodeSuccess");
                                 getCode();
                             } else if (data.data.status === 'fail') {
+                                maidianFn("sendCodeFail");
                                 requestMsg(data.msg);
                             }
                         }
@@ -176,8 +180,11 @@ $(function(){
         }
     });
 
+    maidianFn('channelRegister');
+
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
+        maidianFn('registerBtn');
         // md5加密
         var register_password = $("#register_password").val();
         var password_md5 = String(CryptoJS.MD5(register_password));
@@ -210,6 +217,7 @@ $(function(){
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {
+                                        maidianFn("registerSuccess");
                                         // js判断微信和QQ
                                         let ua = navigator.userAgent.toLowerCase();
                                         if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
@@ -220,6 +228,7 @@ $(function(){
                                         }
                                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {
+                                        maidianFn("registerFail");
                                         requestMsg(returnData.msg);
                                     }
                                 },

@@ -18,19 +18,19 @@
         </div>       
         <div class="phone">
             <span class="bicon"></span>
-            <input type="tel" maxLength=11 minLength=11 onfocus="maidianFn('phone')" placeholder="请输入登录手机号" id="mobile" class="pinp mobile">
+            <input type="tel" maxLength=11 minLength=11 onfocus="maidianFn('phone')" placeholder="请输入注册手机号" id="mobile" class="pinp mobile">
             <span class="big-one">
                 <span class="xxicon mmicon"><img src="$src/fork.png" alt=""></span>
             </span>
         </div>
         <div class="pcheck phone">
             <span class="bicon"></span>
-            <input  onfocus="maidianFn('code')"  placeholder="请输入短信验证码" class="check pinp" id='yzcheck' maxlength="6" pattern="[0-9]*">
-            <span class="checkbtn" onclick="maidianFn('codeBtn')" isState=0 id="checkbtn">获取验证码</span>
+            <input onfocus="maidianFn('code')" placeholder="请输入验证码" class="check pinp" id='yzcheck' maxlength="6" pattern="[0-9]*">
+            <button class="checkbtn" onclick="maidianFn('codeBtn')" isState=0 id="checkbtn">获取验证码</button>
         </div>
         <div class="phone password">
             <span class="bicon"></span>
-            <input type="password" maxLength=18 minLength=6 onfocus="maidianFn('pwd')"  placeholder="请输入密码" class="pinp mobile" id="password">
+            <input type="password" maxLength=18 minLength=6 onfocus="maidianFn('pwd')"  placeholder="密码长度为6-20位数字和英文" class="pinp mobile" id="password">
             <span class="big-two">
                 <span class="xxicon pasicon"><img src="$src/fork.png" alt=""></span>
             </span>
@@ -45,7 +45,7 @@
     </div>
     <div class="botimg"><img src="$src/pic-2.png" alt=""></div>
     <!--弹窗-->
-    <div class="registerMask hide"></div>
+    <!-- <div class="registerMask hide"></div>
     <div class="imgVftCodeWrap hide">
         <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
         <div class="imgVftCodeInput clearfix">
@@ -54,7 +54,7 @@
             <span class="imgVftCodeRefresh" id="imgVftCodeRefresh"><i></i></span>
         </div>
         <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
-    </div>
+    </div> -->
 </body>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>

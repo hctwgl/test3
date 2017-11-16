@@ -88,6 +88,7 @@ $(function () {
     function timeFunction() { // 60s倒计时
         timerS--;
         if (timerS <= 0) {
+            $(".checkbtn").removeAttr("disabled");
             $(".checkbtn").text("获取验证码");
             clearInterval(timerInterval);
             timerS = 60;
@@ -214,6 +215,7 @@ $(function () {
         if (isState == 0 || !isState) {
             var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(mobileNum));
             if (userck) {
+                $(".checkbtn").attr("disabled", true);
                 $.ajax({
                     url: "/app/user/getRegisterSmsCode4Geetest",
                     type: "POST",
@@ -224,17 +226,14 @@ $(function () {
                     },
                     success: function (returnData) {
                         if (returnData.success) {
-                            // 关闭弹窗
-                            // $(".registerMask").addClass("hide");
-                            // $(".imgVftCodeWrap").addClass("hide");
                             // 倒计时
                             $(".checkbtn").attr("isState", 1);
                             $(".checkbtn").text(timerS + " s");
-                            // $(".checkbtn").addClass("gray");
                             timerInterval = setInterval(timeFunction, 1000);
                             requestMsg("验证码已发送");
                         } else {
                             requestMsg(returnData.msg);
+                            $(".checkbtn").removeAttr("disabled");
                         }
                     },
                     error: function () {
