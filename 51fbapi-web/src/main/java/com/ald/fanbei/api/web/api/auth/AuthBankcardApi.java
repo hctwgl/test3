@@ -120,11 +120,12 @@ public class AuthBankcardApi implements ApiHandle {
 	}
 
 
-	public static boolean checkBankCard(String bankCard) {
+	public  boolean checkBankCard(String bankCard) {
+		boolean flag = true;
 		if(bankCard.length() < 16 || bankCard.length() > 19) {
-			return false;
+			flag = false;
 		}
-		return true;
+		return flag;
 	}
 
 
