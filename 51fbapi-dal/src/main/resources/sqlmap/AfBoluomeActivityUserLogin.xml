@@ -199,4 +199,13 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
 		AND boluome_activity_id = #{activityId}
 		AND binding_flag in ('Y','N');
     </select>
+    <select id="findRefUserId" resultType="java.lang.Long" paremeterType="java.lang.Long">
+    		SELECT
+				ref_user_id
+			FROM
+				af_boluome_activity_user_login
+			WHERE
+				user_id = #{userId}
+			LIMIT 1;
+    </select>
 </mapper>

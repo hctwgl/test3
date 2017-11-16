@@ -90,6 +90,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				accountDo.setUserId(userId);
 				accountDo.setRebateAmount(rebateDo.getRebateAmount());
 				afUserAccountDao.updateRebateAmount(accountDo);
+				
+				//call Jpush for rebate
 			}
 		} catch (Exception e) {
 			logger.error("afBoluomeRebateService.addRedPacket() error :", e);

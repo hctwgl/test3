@@ -153,5 +153,18 @@
         and  channel =  #{channel}
        
     </select>
+    <select id="checkIfHaveCoupon">
+	   	 SELECT COUNT(1) FROM af_boluome_user_coupon WHERE user_id =
+			(
+			SELECT
+				ref_user_id
+			FROM
+				af_boluome_activity_user_login
+			WHERE
+				user_id = #{userId}
+			LIMIT 1
+			) 
+			AND channel = 'RECOMMEND';
+    </select>
     
 </mapper>
