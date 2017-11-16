@@ -64,7 +64,6 @@ public class AuthBankcardApi implements ApiHandle {
 		}
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 
-		
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if(null ==auth||YesNoStatus.NO.getCode().equals(auth.getFacesStatus())){
 			throw new FanbeiException("user face auth error", FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
@@ -115,7 +114,6 @@ public class AuthBankcardApi implements ApiHandle {
 		bank.setUserId(userId);
 		return bank;
 	}
-
 
 
 
