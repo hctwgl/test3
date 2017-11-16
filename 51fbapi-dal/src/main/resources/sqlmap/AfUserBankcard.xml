@@ -195,6 +195,20 @@
 		ORDER BY gmt_create asc LIMIT 5
 	</select>
 	
+	<select id="getAfUserBankcardList" parameterType="java.lang.Long" resultType="java.lang.String">
+		SELECT
+			GROUP_CONCAT(CONCAT(id,"|",card_number))
+		FROM
+			af_user_bankcard
+		WHERE
+			is_delete=0 
+		AND
+			user_id=#{userId}
+		AND
+			status="B"
+		ORDER BY gmt_create asc LIMIT 5
+	</select>
+	
 	<select id="getUserBankcardIdByCardNumber" parameterType="java.lang.String" resultType="AfUserBankcardDo">
 		SELECT
 			<include refid="queryFields"/>

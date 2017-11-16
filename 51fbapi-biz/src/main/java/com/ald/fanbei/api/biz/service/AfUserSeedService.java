@@ -12,4 +12,10 @@ import com.ald.fanbei.api.dal.domain.AfUserSeedDo;
  */
 public interface AfUserSeedService extends ParentService<AfUserSeedDo, Long>{
 
+	/**
+	 * 根据用户Id查找种子用户
+	 * 
+	 * **/
+	AfUserSeedDo getAfUserSeedDoByUserId(long userId);
+	
 }

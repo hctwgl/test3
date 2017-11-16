@@ -33,4 +33,9 @@ public class AfUserSeedServiceImpl extends ParentServiceImpl<AfUserSeedDo, Long>
 	public BaseDao<AfUserSeedDo, Long> getDao() {
 		return afUserSeedDao;
 	}
+
+		@Override
+		public AfUserSeedDo getAfUserSeedDoByUserId(long userId) {
+			return afUserSeedDao.getAfUserSeedDoByUserId(userId);
+		}
 }
