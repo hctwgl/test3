@@ -113,6 +113,7 @@ public class WithholdInfoController implements ApiHandle {
 			}
 			if (currTime.getTime() > sdt1.getTime() && currTime.getTime() < edt1.getTime()) {
 				info.put("isDeal", "Y");
+				info.put("message", "抱歉，当前代扣进行中，暂时无法操作，请稍后再试！");
 				resp.setResponseData(info);
 				return resp;
 			} else {
@@ -120,6 +121,7 @@ public class WithholdInfoController implements ApiHandle {
 			}
 			if (currTime.getTime() > sdt2.getTime() && currTime.getTime() < edt2.getTime()) {
 				info.put("isDeal", "Y");
+				info.put("message", "抱歉，当前代扣进行中，暂时无法操作，请稍后再试！");
 				resp.setResponseData(info);
 				return resp;
 			} else {

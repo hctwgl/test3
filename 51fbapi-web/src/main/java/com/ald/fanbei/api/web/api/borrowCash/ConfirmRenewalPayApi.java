@@ -150,7 +150,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 			*/
 			
 			  //fmf_add 续借由用户手动操作  strat
-        	BigDecimal capital = BigDecimalUtil.subtract(afBorrowCashDo.getAmount(),renewalAmount).subtract(afBorrowCashDo.getRepayAmount());
+        	BigDecimal capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewalAmount);
     		
     		
     		// 续借本金
