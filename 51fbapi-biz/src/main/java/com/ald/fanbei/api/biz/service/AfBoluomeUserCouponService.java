@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
@@ -18,5 +19,7 @@ public interface AfBoluomeUserCouponService extends ParentService<AfBoluomeUserC
     List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
 
     AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
+    boolean sendCoupon(Long userId);
 
 }
+
