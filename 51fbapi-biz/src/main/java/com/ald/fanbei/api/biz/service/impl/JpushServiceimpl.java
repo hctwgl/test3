@@ -866,7 +866,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		    	if(resourceInfo!= null){
         			String msgContext = resourceInfo.getValue();
         			String pid = userName + "_" + System.currentTimeMillis();
-        			logger.info(StringUtil.appendStrs("zhengxinRiskFault,pid=", pid));
+        			logger.info(StringUtil.appendStrs("boluomeActivityMsg,pid=", pid));
         			Map<String, String> extras = new HashMap<String, String>();
         			extras.put(PID, pid);
         			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
