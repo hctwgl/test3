@@ -2,6 +2,7 @@
  * Created by nizhiwei-labtop on 2017/10/12.
  */
 let couponArr=[];
+var sendAjax=true;
 //数据统计
 $.ajax({
     url:'/fanbei-web/postMaidianInfo',
@@ -42,30 +43,33 @@ $(document).ready(function() {
         //点击红包的时候弹出模态层
         $(".li" + num).one('touchstart',function(){
             let self=this;
-            if(parseInt(Math.random() * 100)>90&&couponArr.length<3){   //概率50%并且总获奖数小于3
-                $.ajax({
-                    url:'/fanbei-web/redRain/applyHit',
-                    type:'post',
-                    success:function (data) {
-                        data=JSON.parse(data);
-                        console.log(data);
-                        if(data.success){
-                            couponArr.push(data.data);
-                            $(self).html('<div style="transform: none;color:white;font-size: .16rem;position: absolute;right:-.1rem;top:0rem;">+1</div>');
-                            self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain4.png)';
-                            redNum+=1;
-                            //中奖弹框显示
-                            $('.noWard').hide();
-                            $('.ward').show();
-                            $('.redNum span:nth-child(2)').text('中红包数量：'+redNum);
-                        }else{
+            if(parseInt(Math.random() * 100)>80&&couponArr.length<3&&sendAjax){   //概率20%并且总获奖数小于3并且没有并发ajax请求
+                    sendAjax=false;
+                    let time=new Date().getTime();
+                    $.ajax({
+                        url:'/fanbei-web/redRain/applyHit?time='+time,
+                        type:'post',
+                        success:function (data) {
+                            sendAjax=true;
+                            data=JSON.parse(data);
+                            console.log(data);
+                            if(data.success){
+                                couponArr.push(data.data);
+                                $(self).html('<div style="transform: none;color:white;font-size: .16rem;position: absolute;right:-.1rem;top:0rem;">+1</div>');
+                                self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain4.png)';
+                                redNum+=1;
+                                //中奖弹框显示
+                                $('.noWard').hide();
+                                $('.ward').show();
+                                $('.redNum span:nth-child(2)').text('中红包数量：'+redNum);
+                            }else{
+                                self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
+                            }
+                        },
+                        error:function () {
                             self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
                         }
-                    },
-                    error:function () {
-                        self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
-                    }
-                });
+                    });
             }else{
                 self.style.backgroundImage='url(https://f.51fanbei.com/h5/app/activity/11/redRain3.png)';
             }

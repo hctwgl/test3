@@ -385,6 +385,7 @@ public class UnionLoginController extends BaseController {
             //2.查询用户来源，通过 手机号+渠道
             AfUnionLoginRegisterDo condition = new AfUnionLoginRegisterDo();
             condition.setUserId(userInfo.getRid());
+            condition.setChannelCode(channelCode);
             AfUnionLoginRegisterDo exist = afUnionLoginRegisterService.getByCommonCondition(condition);
             if (exist != null) {
                 is_new_user = 2;

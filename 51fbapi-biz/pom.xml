@@ -188,5 +188,10 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.4.7</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+    </dependencies>
 </project>

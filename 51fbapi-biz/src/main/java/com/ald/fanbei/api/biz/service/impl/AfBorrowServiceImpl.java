@@ -123,6 +123,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	@Resource
 	AfOrderDao afOrderDao;
 
+	@Resource
+	AfContractPdfCreateService afContractPdfCreateService;
+
 
 	@Override
 	public Date getReyLimitDate(String billType, Date now) {
@@ -1120,7 +1123,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 
 	@Override
 	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType,final String orderType) {
-		return transactionTemplate.execute(new TransactionCallback<Long>() {
+		Long resultValue = 0L;
+		resultValue =  transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
@@ -1138,6 +1142,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 						afBorrowDao.addBorrowBill(billList);
 //					}
+
 					return borrow.getRid();
 
 				} catch (Exception e) {
@@ -1147,6 +1152,16 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				}
 			}
 		});
+		
+		/*if(resultValue > 0L){
+			try {
+				afContractPdfCreateService.protocolInstalment(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
+				logger.info("protocolInstalment finish，borrowId=" + borrow.getRid());
+			} catch (Exception e) {
+				logger.error("protocolInstalment error，borrowId=" + borrow.getRid(),e);
+			}
+		}*/
+		return resultValue;
 	}
 	
 	@Override

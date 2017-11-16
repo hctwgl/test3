@@ -897,8 +897,9 @@ public class DateUtil {
      * 返回中文格式的当前日期
      * 
      * @return [yyyy-mm-dd]
+     * @param date
      */
-    public static String getShortNow() {
+    public static String getShortNow(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date nowc = new Date();
         String pid = formatter.format(nowc);

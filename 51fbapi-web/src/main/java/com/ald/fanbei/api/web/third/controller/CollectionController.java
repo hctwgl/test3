@@ -230,9 +230,9 @@ public class CollectionController {
 					afBorrowCashDo.setRateAmount(BigDecimal.ZERO);
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
 					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getAmount().add(afBorrowCashDo.getSumRate())));//repay_amount-amount-sum_rate
-					
+
 					borrowCashService.updateBalancedDate(afBorrowCashDo);
-					
+
 					updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
 					updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
 					return updteBo;
@@ -249,6 +249,46 @@ public class CollectionController {
 			  updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
 			  return updteBo;
 		}
+	}
+
+	/**
+	 * 催收平台查询borrowId接口
+	 * @param borrowNo
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "/getBorrowIdByNo"}, method = RequestMethod.POST)
+	@ResponseBody
+	public CollectionUpdateResqBo getBorrowIdByNo(HttpServletRequest request, HttpServletResponse response){
+		String borrowNo = ObjectUtils.toString(request.getParameter("data"));
+		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+		String sign = ObjectUtils.toString(request.getParameter("sign"));
+
+		logger.info("getBorrowIdByNo data="+borrowNo+",timestamp="+timestamp+",sign1="+sign+"");
+
+		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
+		if(afBorrowCashDo==null) {
+			logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null" );
+			updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
+			return updteBo;
+		}
+		String sign1=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
+		if (StringUtil.equals(sign, sign1)) {	// 验签成功
+			updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+			Map<String,String> map=new HashMap<String,String>();
+			map.put("borrowId",afBorrowCashDo.getRid().toString());
+			String jsonString = JsonUtil.toJSONString(map);
+			updteBo.setData(jsonString);
+		} else {
+			logger.info("sign and sign is fail");
+			updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
+			return updteBo;
+		}
+		return updteBo;
 	}
 	
 	/**

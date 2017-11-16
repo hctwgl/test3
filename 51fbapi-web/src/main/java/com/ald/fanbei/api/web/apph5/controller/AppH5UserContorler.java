@@ -200,6 +200,7 @@ public class AppH5UserContorler extends BaseController {
                 return resp.toString();
             }
             // 发送短信前,加入图片验证码验证
+            
             String realCode = "";
             Object obj = bizCacheUtil.getObject(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
             if (obj == null) {
@@ -214,6 +215,7 @@ public class AppH5UserContorler extends BaseController {
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_IMAGE_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
+            
             bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
 
 
@@ -244,6 +246,53 @@ public class AppH5UserContorler extends BaseController {
 
     }
 
+    @ResponseBody
+    @RequestMapping(value = "getRegisterSmsCode4Geetest", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String getRegisterSmsCode4Geetest(HttpServletRequest request, ModelMap model) throws IOException {
+        Calendar calStart = Calendar.getInstance();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try {
+            String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+            String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            String channelCode = ObjectUtils.toString(request.getParameter("channelCode"), "").toString();
+            String pointCode = ObjectUtils.toString(request.getParameter("pointCode"), "").toString();
+            
+            AfUserDo afUserDo = afUserService.getUserByUserName(mobile);
+
+            if (afUserDo != null) {
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_HAS_REGIST_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+            
+            bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
+
+
+            try {
+                tongdunUtil.getPromotionSmsResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
+            } catch (Exception e) {
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+
+            boolean resultReg = smsUtil.sendRegistVerifyCode(mobile);
+            if (!resultReg) {
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SEND_SMS_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+
+            resp = H5CommonResponse.getNewInstance(true, "成功", "", null);
+            return resp.toString();
+
+        } catch (Exception e) {
+            logger.error("发送验证码失败：", e);
+            resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
+            return resp.toString();
+        } finally {
+            doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("mobile"));
+        }
+
+    }
+    
     @ResponseBody
     @RequestMapping(value = "commitRegister", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String commitRegister(HttpServletRequest request, ModelMap model) throws IOException {
