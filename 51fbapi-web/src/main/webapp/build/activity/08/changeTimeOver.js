@@ -34,7 +34,7 @@
             let self=this;
             $.ajax({
                 type:'post',
-                url:'/fanbei-web/changeOutDay/getOutDayList',
+                url:'/fanbei-web/changeOutDay/getUserOutDay',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
                     self.otherDate= self.contentOne.data.outDayList ? self.contentOne.data.outDayList.slice(0,1)[0]: [];
