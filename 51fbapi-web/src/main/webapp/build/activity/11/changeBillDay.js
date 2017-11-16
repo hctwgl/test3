@@ -79,7 +79,7 @@
                     console.log(self.contentTwo,'self.contentTwo');
                     window.location.href='changeSuccess';//点击提交跳转修改成功页面
                     //判断修改多次的时候跳到修改次数用完页面
-                     if(self.contentOne.msg==1){
+                     if(self.contentTwo.msg==1){
                             window.location.href='changeTimeOver';
                     } 
                      
