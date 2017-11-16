@@ -142,7 +142,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),
     AUTH_CARD_ERROR("AUTH_CARD_ERROR",1541,"auth card error","银行卡认证失败"),
     AUTH_BINDCARD_ERROR("AUTH_BINDCARD_ERROR",1542,"bind card error","绑定银行卡失败"),
-
+    PLEASE_INPUT_THE_CORRECT_BANK_CARD("Please input the correct bank card",1543,"please input the correct bank card","请输入正确的银行卡"),
 
     UPS_AUTH_BF_SIGN_ERROR("UPS_AUTH_BF_SIGN_ERROR",1550,"bao fu auth error","银行卡认证失败"),
     UPS_AUTH_YSB_SIGN_ERROR("UPS_AUTH_YSB_SIGN_ERROR",1551,"bao fu auth error","银行卡认证失败"),
