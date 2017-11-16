@@ -8,7 +8,8 @@ let vm = new Vue({
     data: {
         content: {},
         couponLength:'',
-        inviteSumMoney:''
+        inviteSumMoney:'',
+        baseData:''
     },
     created: function () {
         this.logData();
@@ -17,6 +18,19 @@ let vm = new Vue({
         //获取页面初始化信息
         logData() {
             let self = this;
+            //页面基本数据初始化
+            $.ajax({
+                type: 'post',
+                url: "/h5GgActivity/inviteFriend",
+                success: function (data) {
+                    console.log(data);
+                    self.baseData=data.data;
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！')
+                }
+            });
+            //外卖券奖励列表初始化
             $.ajax({
                 type: 'post',
                 url: "/h5GgActivity/returnCoupon",
@@ -24,7 +38,7 @@ let vm = new Vue({
                     console.log(data);
                     /*self.content=eval('('+data.data+')');*/
                     self.content=data.data;
-                    console.log(self.content);
+                    //console.log(self.content);
                     self.couponLength=self.content.returnCouponList.length;
                     self.content.inviteAmount=self.content.inviteAmount.toString();
                     self.inviteSumMoney=self.content.inviteAmount.split('');
@@ -52,4 +66,14 @@ let vm = new Vue({
             return date.replace(/-/g,'.');
         }
     }
+});
+//复制邀请码
+$(function(){
+    let clipboard = new Clipboard('.invitecode');
+    clipboard.on('success', function(e) {
+        console.log(e);
+    });
+    $('.copycode').on('click', ()=>{
+        alert('已复制到剪贴板，可粘贴');
+    })
 });

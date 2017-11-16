@@ -250,7 +250,7 @@ window.postshareex = (incase)=>{
 
 window.postshareaf = (incase)=>{
     // maidian(incase)
-}
+};
 $(function(){
     //初始化数据
     $.ajax({
@@ -258,11 +258,29 @@ $(function(){
         url: "/h5GgActivity/inviteCeremony",
         success: function (data) {
             console.log(data);
+            /*图片预加载*/
+            $(".first").each(function() {
+                var img = $(this);
+                img.load(function () {
+                    $(".loadingMask").fadeOut();
+                });
+                setTimeout(function () {
+                    $(".loadingMask").fadeOut();
+                },1000)
+            });
+            $(".loadingMask").fadeOut();
+            let content=data.data;
+            $('.specialPrizeTitle span').html(content.spePreference);
+            $('.specialCoupon span').html(content.couponAmount);
+            $('.limitRule').html(content.activityRule);
+            $('.exampleRule').html(content.example);
+            $('.top').append('<img src="'+content.image+'">');
         },
         error:function(){
             requestMsg('哎呀，出错了！')
         }
     });
+    //点击外卖券
   $('.levelthree').click(function(){
       $('.loading').show();
       $('.list').empty();

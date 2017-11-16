@@ -209,6 +209,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Resource
     AfContractPdfCreateService afContractPdfCreateService;
 
+    @Resource
+    AfBoluomeRebateService afBoluomeRebateService;
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
         return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -699,16 +701,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             } catch (Exception e) {
                                 logger.info("ggLightActivity error:", e);
                             }
+                            //qiao+2017-11-14 15:30:27:the second time to light the activity
+                            try{
+                            	logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",afOrder.getRid(),userId);
+                            	//send red packet 
+                            	afBoluomeRebateService.addRedPacket(afOrder.getRid(),userId);
+                            }catch (Exception e) {
+                            	logger.info("afBoluomeRebateService.addRedPacket error",e);
+                            }
+                            
 
 
-//                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-//						if(afBorrowDo !=null) {
-//							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-//							if(borrowList == null || borrowList.size()==0 ){
-//								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-//								afBorrowDao.addBorrowBill(billList);
-//							}
-//						}
                             break;
                         default:
                             logger.info(" status is {} ", afOrder.getStatus());

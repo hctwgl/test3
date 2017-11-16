@@ -107,5 +107,7 @@
         FROM af_boluome_redpacket_threshold
         <include refid="commonCondition"/>
     </select>
-    
+    <select id ="getAllThreadholds">
+    	SELECT * FROM af_boluome_redpacket_threshold;
+    </select>
 </mapper>

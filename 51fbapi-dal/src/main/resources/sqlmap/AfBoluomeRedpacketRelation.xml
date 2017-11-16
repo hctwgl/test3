@@ -108,4 +108,12 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getRedpacketIdListByThreshold" parameterType="java.lang.Long" resultType="java.lang.Long">
+   		SELECT
+			redpacket_id
+		FROM
+			af_boluome_redpacket_relation
+		WHERE
+			threshold_id = #{thresholdId};
+    </select>
 </mapper>

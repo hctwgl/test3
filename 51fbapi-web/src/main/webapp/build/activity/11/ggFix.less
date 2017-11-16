@@ -1,8 +1,99 @@
 @url: "http://f.51fanbei.com/h5/app/activity/11";
 .clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
 .clearFix{zoom:1}
+body{
+  position:relative;
+}
 .ggFix .banner{
   width:100%;
+  position:relative;
+}
+/*路线轨迹*/
+.firstStep{
+  position:absolute;
+  top:39%;
+  left:5%;
+}
+.firstStep .firstWord{
+  font-size:.2rem;
+  color:#fff;
+  line-height: .3rem;
+  opacity:0;
+}
+.firstStep .dian{
+  width:.1rem;
+  height:.1rem;
+  background:#fff;
+  border-radius: 50%;
+}
+.mask{
+  width:100%;
+  height:100%;
+  background:#000;
+  opacity: .7;
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:100;
+}
+.alertRule{
+  width: 85.5%;
+  height:7.12rem;
+  opacity: 0.9;
+  border-radius: .3rem;
+  background-color: #ffffff;
+  position:fixed;
+  left:50%;
+  top:2.5rem;
+  transform: translateX(-47.25%);
+  z-index:120;
+  .alertRuleTitle{
+    font-size: .32rem;
+    font-weight: 600;
+    letter-spacing: .02rem;
+    color: #000000;
+    padding:.76rem 0 .3rem .52rem;
+  }
+  .alertRuleCont{
+    width:85%;
+    padding-left:.52rem;
+    text-align: justify;
+    font-size: .32rem;
+    letter-spacing: .02rem;
+    color: #000000;
+  }
+  .closeRule{
+    width: .58rem;
+    height: .58rem;
+    background-color: #1fa9ef;
+    border-radius: 50%;
+    text-align: center;
+    font-size:.34rem;
+    color:#fff;
+    line-height: .58rem;
+    position:absolute;
+    top: -.2rem;
+    right: -.2rem;
+  }
+}
+.clickRule{
+  width:.61rem;
+  height:1.68rem;
+  background:url('@{url}/ggFix27.png') no-repeat;
+  background-size:cover;
+  position:absolute;
+  left:0;
+  top:2.1rem;
+  display: flex;
+  align-items: center;
+  span{
+    width: .3rem;
+    padding: 0 .15rem;
+    font-size: .26rem;
+    letter-spacing: .02rem;
+    color: #ffffff;
+}
+
 }
 /*我想吃霸王餐*/
 .ggFix .firstCont{
