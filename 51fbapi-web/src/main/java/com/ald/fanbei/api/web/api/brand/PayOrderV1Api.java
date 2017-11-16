@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfTradeOrderService afTradeOrderService;
     @Resource
     AfShareUserGoodsService afShareUserGoodsService;
+    @Resource
+    AfShareGoodsService afShareGoodsService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -129,21 +132,8 @@ public class PayOrderV1Api implements ApiHandle {
         }
         //----------------
 
-        /*// mqp_新人专享活动增加逻辑
-		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
-				&& StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-			AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
-					.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
-			if (shareUserGoodsDo != null && shareUserGoodsDo.getIsBuy() == 1) {
-				logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
-			}
-		}
-
-		// ----------------
-*/
         // mqp_新人专享活动增加逻辑
-        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
+        /*if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
                 && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
             AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
                     .getById(Long.parseLong(orderInfo.getThirdOrderNo()));
@@ -157,8 +147,18 @@ public class PayOrderV1Api implements ApiHandle {
                             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
                         }
             }
-        }
+        }*/
 
+        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) 
+        		&& afShareGoodsService.getCountByGoodsId(orderInfo.getGoodsId())!=0){
+        	
+    		if(afOrderService.getOverOrderByGoodsIdAndUserId(orderInfo.getGoodsId(),userId).size() >0){
+
+        		logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
+    		}
+        }
+        
         // ----------------
 
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
