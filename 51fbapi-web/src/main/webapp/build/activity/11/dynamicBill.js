@@ -21,7 +21,7 @@ let vm = new Vue({
                     console.log(self.content);
 
                     if(self.content.success==false){
-                        window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
+                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
                     }
                      
                     
