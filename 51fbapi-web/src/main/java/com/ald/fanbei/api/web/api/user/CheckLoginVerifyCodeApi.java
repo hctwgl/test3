@@ -191,7 +191,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		
 		//吃玩住行活动被邀请的新用户登录送券
 		try{
-			     afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
+			    afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
 			    logger.info("sentNewUserBoluomeCouponForDineDash success");
 			
 			}catch (Exception e){
