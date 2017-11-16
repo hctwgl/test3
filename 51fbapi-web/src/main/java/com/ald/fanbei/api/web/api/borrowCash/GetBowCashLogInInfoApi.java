@@ -219,7 +219,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			/*if (returnAmount.compareTo(capital) <= 0) {
 				data.put("renewalStatus", "N");
 			}*/
-			if (returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) <= 0) {
+			if (returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
 				data.put("renewalStatus", "N");
 			}
 		}
