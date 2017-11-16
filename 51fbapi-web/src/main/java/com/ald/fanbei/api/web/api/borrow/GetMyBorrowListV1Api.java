@@ -84,43 +84,23 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 			Map<String, Object> map = new HashMap<String, Object>();
 			BigDecimal money = new BigDecimal(0);
 			AfBorrowBillQuery query = new AfBorrowBillQuery();
+			query.setUserId(userId);
+			query.setStatus("N");
 			if (StringUtil.equals("nowBill", status)) {
-				Date nowDate = new Date();
-				Calendar nowCalendar = Calendar.getInstance();
-				Calendar outDayCalendar = Calendar.getInstance();
-				nowCalendar.setTime(nowDate);
-				outDayCalendar.setTime(nowDate);
-				outDayCalendar.set(Calendar.HOUR_OF_DAY, 0);
-				outDayCalendar.set(Calendar.MINUTE, 0);
-				outDayCalendar.set(Calendar.SECOND, 0);
-				outDayCalendar.set(Calendar.MILLISECOND, 0);
-				int nowDay = nowCalendar.get(Calendar.DAY_OF_MONTH);
-				AfUserOutDayDo userOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
-				int userOutDay = 0;
-				if (userOutDayDo != null && userOutDayDo.getId() != null) {
-					userOutDay = userOutDayDo.getOutDay();
-				}else {
-					userOutDay = 10;
-				}
-				if (nowDay < userOutDay) {
-					outDayCalendar.add(Calendar.MONTH, -1);
-				}
-				outDayCalendar.set(Calendar.DAY_OF_MONTH,userOutDay);
-//				money = afBorrowBillService.getUserBillMoneyByOutDay(DateUtil.formatDate(outDayCalendar.getTime(), DateUtil.DATE_TIME_SHORT));
-			}
-			if (StringUtil.equals("outBill", status)) {
+				// 本月已出
 				query.setIsOut(1);
-				query.setUserId(userId);
-				query.setStatus("N");
+				Calendar strDate = Calendar.getInstance();
+				Calendar endDate = Calendar.getInstance();
+			}else if (StringUtil.equals("outBill", status)) {
+				// 所有已出
+				query.setIsOut(1);
 			}else if (StringUtil.equals("overdueBill", status)){
+				// 逾期账单
 				query.setIsOut(1);
-				query.setUserId(userId);
-				query.setStatus("N");
 				query.setOverdueStatus("Y");
 			}else if (StringUtil.equals("notOutBill", status)) {
+				// 未出账单
 				query.setIsOut(0);
-				query.setUserId(userId);
-				query.setStatus("N");
 			}
 			money = afBorrowBillService.getUserBillMoneyByQuery(query);
 			List<AfBorrowBillDo> billList = afBorrowBillService.getUserBillListByQuery(query);

@@ -21,7 +21,9 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 	
 	private String status;
 	
-	private Date outDay;
+	private Date outDayStr;
+	
+	private Date outDayEnd;
 
 	public int getBillYear() {
 		return billYear;
@@ -71,13 +73,20 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 		this.status = status;
 	}
 
-	public Date getOutDay() {
-		return outDay;
+	public Date getOutDayStr() {
+		return outDayStr;
 	}
 
-	public void setOutDay(Date outDay) {
-		this.outDay = outDay;
+	public void setOutDayStr(Date outDayStr) {
+		this.outDayStr = outDayStr;
 	}
-	
+
+	public Date getOutDayEnd() {
+		return outDayEnd;
+	}
+
+	public void setOutDayEnd(Date outDayEnd) {
+		this.outDayEnd = outDayEnd;
+	}
 	
 }

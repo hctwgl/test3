@@ -545,6 +545,9 @@
 		<if test="overdueStatus != null and overdueStatus != ''">
 			AND overdue_status = #{overdueStatus}
 		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+		</if> 
 		AND user_id = #{userId}
     </select>
     
@@ -565,6 +568,9 @@
 		</if>
 		<if test="overdueStatus != null and overdueStatus != ''">
 			AND overdue_status = #{overdueStatus}
+		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
 		</if>
 		AND user_id = #{userId}
 		GROUP BY
