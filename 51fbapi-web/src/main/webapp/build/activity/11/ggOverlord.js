@@ -67,3 +67,13 @@ let vm = new Vue({
         }
     }
 });
+//复制邀请码
+$(function(){
+    let clipboard = new Clipboard('.invitecode');
+    clipboard.on('success', function(e) {
+        console.log(e);
+    });
+    $('.copycode').on('click', ()=>{
+        alert('已复制到剪贴板，可粘贴');
+    })
+});

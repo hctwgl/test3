@@ -10,7 +10,14 @@
 <body>
 <div id="ggFix" class="ggFix">
     <div class="loadingMask"><i class="loading"></i></div>
-    <div class="banner first"><img src="$src/ggFix01.jpg"></div>
+    <div class="banner first">
+        <img src="$src/ggFix01.jpg">
+        <div class="firstStep">
+            <p class="firstWord">小红点了份<br/>16元的外卖</p>
+            <p class="dian"></p>
+            <p class="firstLine"></p>
+        </div>
+    </div>
     <p class="clickRule" @click="ruleClick()"><span>活动规则</span></p>
     <div class="alertRule" v-show="ruleShow">
         <p class="alertRuleTitle">活动规则</p>

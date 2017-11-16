@@ -53,5 +53,7 @@ let vm = new Vue({
         }
     }
 });
-
-
+function step(){
+    $('.firstWord').animate({'opacity':1},2000)
+}
+step()

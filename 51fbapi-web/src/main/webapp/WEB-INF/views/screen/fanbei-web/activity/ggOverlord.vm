@@ -9,11 +9,14 @@
 </head>
 <body>
 <div id="ggOverlord" class="ggOverlord">
+    <textarea type="text" id="invitecode">23123</textarea>
     <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner first"><img :src="baseData.image"></div>
     <div class="firstCont">
         <p class="inviteButton">有福同享 ></p>
-        <div class="clickInviteCode"><p class="inviteCode">点击复制邀请码：<span v-if="baseData.inviteCode">{{baseData.inviteCode}}</span></p></div>
+        <div class="clickInviteCode">
+            <div class="copycode">点击复制邀请码：<span class="invitecode" data-clipboard-text="0">{{baseData.inviteCode}}</span></div>
+        </div>
         <p class="inviteRule">活动规则：<br/>{{baseData.activityRule}}</p>
         <p class="exampleRule">{{baseData.example}}</p>
     </div>
@@ -41,6 +44,7 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" src="/dist/js/clipboard.min.js"></script>
 <script type="text/javascript" src="/dist/activity/11/ggOverlord.js?version=$version"></script>
 </body>
 </html>
