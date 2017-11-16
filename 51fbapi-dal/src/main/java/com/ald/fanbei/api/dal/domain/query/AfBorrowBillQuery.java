@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.domain.query;
 
+import java.util.Date;
+
 import com.ald.fanbei.api.common.page.Page;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 
@@ -18,6 +20,8 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 	private int isOut;
 	
 	private String status;
+	
+	private Date outDay;
 
 	public int getBillYear() {
 		return billYear;
@@ -66,5 +70,14 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	public Date getOutDay() {
+		return outDay;
+	}
+
+	public void setOutDay(Date outDay) {
+		this.outDay = outDay;
+	}
+	
 	
 }

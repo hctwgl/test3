@@ -552,8 +552,7 @@
 		SELECT
 			SUM(bill_amount) billAmount,
 			SUM(overdue_days) overdueDays,
-			bill_month billMonth,
-			bill_year billYear
+			gmt_out_day gmtOutDay
 		FROM
 			af_borrow_bill
 		WHERE
@@ -569,11 +568,9 @@
 		</if>
 		AND user_id = #{userId}
 		GROUP BY
-			bill_year,
-			bill_month
+			gmt_out_day
 		ORDER BY
-			bill_year ASC,
-			bill_month ASC
+			gmt_out_day
 	</select>
 
 </mapper>

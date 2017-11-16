@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +40,16 @@ public class Test {
 //		}catch(Exception e){
 //			System.out.println(e);
 //		}
-
-		System.out.println(new Date(1508998500000L));
-		
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		System.out.println(calendar.get(Calendar.MONTH));
+		System.out.println(calendar.get(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.MONTH, 0);
+		Date time = calendar.getTime();
+		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(time));
+		calendar.add(Calendar.MONTH, -1);
+		time = calendar.getTime();
+		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(time));
 	}
 	
 	

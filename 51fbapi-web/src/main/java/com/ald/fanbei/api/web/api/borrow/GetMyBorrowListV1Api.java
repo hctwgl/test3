@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.borrow;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.jsoup.helper.DataUtil;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
@@ -23,14 +26,17 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.mysql.fabric.xmlrpc.base.Data;
 
 /**
  * 
@@ -44,16 +50,19 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 public class GetMyBorrowListV1Api implements ApiHandle{
 
 	@Resource
-	AfUserService afUserService;
+	private AfUserService afUserService;
 	
 	@Resource
-	AfUserAuthService afUserAuthService;
+	private AfUserAuthService afUserAuthService;
 	
 	@Resource
-	AfBorrowBillService afBorrowBillService;
+	private AfBorrowBillService afBorrowBillService;
 	
 	@Resource
-	AfUserAccountService afUserAccountService;
+	private AfUserAccountService afUserAccountService;
+	
+	@Resource
+	private AfUserOutDayDao afUserOutDayDao;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -73,7 +82,32 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 				return resp;
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
+			BigDecimal money = new BigDecimal(0);
 			AfBorrowBillQuery query = new AfBorrowBillQuery();
+			if (StringUtil.equals("nowBill", status)) {
+				Date nowDate = new Date();
+				Calendar nowCalendar = Calendar.getInstance();
+				Calendar outDayCalendar = Calendar.getInstance();
+				nowCalendar.setTime(nowDate);
+				outDayCalendar.setTime(nowDate);
+				outDayCalendar.set(Calendar.HOUR_OF_DAY, 0);
+				outDayCalendar.set(Calendar.MINUTE, 0);
+				outDayCalendar.set(Calendar.SECOND, 0);
+				outDayCalendar.set(Calendar.MILLISECOND, 0);
+				int nowDay = nowCalendar.get(Calendar.DAY_OF_MONTH);
+				AfUserOutDayDo userOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+				int userOutDay = 0;
+				if (userOutDayDo != null && userOutDayDo.getId() != null) {
+					userOutDay = userOutDayDo.getOutDay();
+				}else {
+					userOutDay = 10;
+				}
+				if (nowDay < userOutDay) {
+					outDayCalendar.add(Calendar.MONTH, -1);
+				}
+				outDayCalendar.set(Calendar.DAY_OF_MONTH,userOutDay);
+//				money = afBorrowBillService.getUserBillMoneyByOutDay(DateUtil.formatDate(outDayCalendar.getTime(), DateUtil.DATE_TIME_SHORT));
+			}
 			if (StringUtil.equals("outBill", status)) {
 				query.setIsOut(1);
 				query.setUserId(userId);
@@ -88,13 +122,17 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 				query.setUserId(userId);
 				query.setStatus("N");
 			}
-			BigDecimal money = afBorrowBillService.getUserBillMoneyByQuery(query);
+			money = afBorrowBillService.getUserBillMoneyByQuery(query);
 			List<AfBorrowBillDo> billList = afBorrowBillService.getUserBillListByQuery(query);
 			if (billList != null && billList.size() > 0) {
 				for (AfBorrowBillDo afBorrowBillDo : billList) {
 					if (afBorrowBillDo.getOverdueDays() > 0) {
 						afBorrowBillDo.setOverdueStatus("Y");
 					}
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(afBorrowBillDo.getGmtOutDay());
+					afBorrowBillDo.setBillMonth(calendar.get(Calendar.MONTH) + 1);
+					afBorrowBillDo.setBillYear(calendar.get(Calendar.YEAR));
 				}
 			}
 			map.put("money", money);
