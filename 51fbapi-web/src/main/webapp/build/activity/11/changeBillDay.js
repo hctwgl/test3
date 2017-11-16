@@ -39,6 +39,9 @@
                     self.contentOne = eval('(' + data + ')');
                     self.otherDate= self.contentOne.data.outDayList.slice(0,1)[0];
                     console.log( self.otherDate,' self.otherDate')
+                    if(self.contentOne.msg==2){
+                            window.location.href='changeTimeOver';
+                    } 
                     if(self.contentOne.success==false) {
                         window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
                         
