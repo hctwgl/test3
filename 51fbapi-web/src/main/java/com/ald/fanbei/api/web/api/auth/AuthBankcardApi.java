@@ -64,10 +64,7 @@ public class AuthBankcardApi implements ApiHandle {
 		}
 		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
 
-		boolean flag = checkBankCard(bankName);
-		if(!flag){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
-		}
+		
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if(null ==auth||YesNoStatus.NO.getCode().equals(auth.getFacesStatus())){
 			throw new FanbeiException("user face auth error", FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
@@ -120,13 +117,7 @@ public class AuthBankcardApi implements ApiHandle {
 	}
 
 
-	public  boolean checkBankCard(String bankCard) {
-		boolean flag = true;
-		if(bankCard.length() < 16 || bankCard.length() > 19) {
-			flag = false;
-		}
-		return flag;
-	}
+
 
 
 
