@@ -923,8 +923,8 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void sendRebateMsg(String userName, String scence, BigDecimal rebateAmount) {
 		try {
-			String msgContext = "恭喜您邀请好友成功！15元无门槛外卖券已发放到您的账户，请记得查收并使用！";
-			String errorMsg = "老用户发送优惠券失败";
+			String msgContext = "您已参与“" + scence + "”场景获得" + rebateAmount + "元惊喜返利金！参与越多，奖励越多，最高领取188元>>>";
+			String errorMsg = "恭喜您赢得返利";
 			commonMethod(userName,msgContext,errorMsg);
 		} catch (Exception e) {
 			logger.info("send15Coupon error", e);
