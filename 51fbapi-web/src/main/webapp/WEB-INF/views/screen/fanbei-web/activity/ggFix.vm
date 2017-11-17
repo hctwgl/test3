@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711141519")
+    #set($version="201711170955")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -13,9 +13,20 @@
     <div class="banner first">
         <img src="$src/ggFix01.jpg">
         <div class="firstStep">
-            <p class="firstWord">小红点了份<br/>16元的外卖</p>
-            <p class="dian"></p>
-            <p class="firstLine"></p>
+            <p class="word01"></p>
+            <p class="lineBox01"><span class="line01"></span></p>
+        </div>
+        <div class="secondStep">
+            <p class="word02"></p>
+            <p class="lineBox02"><span class="line02"></span></p>
+        </div>
+        <div class="thirdStep">
+            <p class="word03"></p>
+            <p class="lineBox03"><span class="line03"></span></p>
+        </div>
+        <div class="fourthStep">
+            <p class="word04"></p>
+            <p class="lineBox04"><span class="line04"></span></p>
         </div>
     </div>
     <p class="clickRule" @click="ruleClick()"><span>活动规则</span></p>
