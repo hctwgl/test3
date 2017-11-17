@@ -21,6 +21,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketRelationDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo;
+import com.ald.fanbei.api.dal.domain.AfRebateDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.timevale.esign.sdk.tech.impl.model.GetAccountInfoModel;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -138,6 +139,32 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 			
 		}
 		return result;
+	}
+
+	/**
+	 * 
+	* @Title: getListByUserId
+	* @author qiao
+	* @date 2017年11月17日 下午12:59:03
+	* @Description: 根据用户查所有返利
+	* @param userId
+	* @return    
+	* @throws
+	 */
+	@Override
+	public List<AfBoluomeRebateDo> getListByUserId(Long userId) {
+		
+		return afBoluomeRebateDao.getListByUserId(userId);
+	}
+
+	@Override
+	public Long getLightShopId(Long orderId) {
+		return afBoluomeRebateDao.getLightShopId(orderId);
+	}
+
+	@Override
+	public List<AfRebateDo> getRebateList(Long userId) {
+		return afBoluomeRebateDao.getRebateList(userId);
 	}
 
 }
