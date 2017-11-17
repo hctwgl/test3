@@ -98,14 +98,13 @@ public class CollectionSystemUtil extends AbstractThird {
 		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-
+		reqBo.put("channel", "3");//APP还款类型写3 , 线下还款写4
+		
 		String json = JsonUtil.toJSONString(reqBo);
 		data.setData(json);// 数据集合
 		data.setSign(DigestUtil.MD5(json));
 		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
-		//APP还款类型写3 , 线下还款写4
-		data.setChannel("3");
 		try {
 			String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
 			if (StringUtil.isBlank(reqResult)) {
