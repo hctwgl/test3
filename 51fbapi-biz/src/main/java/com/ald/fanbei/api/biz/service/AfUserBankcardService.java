@@ -73,5 +73,12 @@ public interface AfUserBankcardService {
 	 * **/
 	AfUserBankcardDo getUserBankcardIdByCardNumber(String cardNumber);
 
+	/**
+	 * 获取银行卡cardNumber ,cardId
+	 *
+	 * **/
+
+	String getAfUserBankcardList(long userId);
+
 	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
 }

@@ -120,4 +120,12 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getAfUserSeedDoByUserId" parameterType="java.lang.Long" resultType="AfUserSeedDo">
+    	SELECT
+        <include refid="queryFields" />
+        FROM af_user_seed
+        WHERE is_delete=0
+        AND user_id=#{userId}
+    </select>
+    
 </mapper>

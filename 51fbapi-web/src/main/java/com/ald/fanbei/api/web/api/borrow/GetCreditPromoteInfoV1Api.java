@@ -187,7 +187,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		}
 
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
-				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())){
+				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())
+				|| (StringUtil.equals(authDo.getRiskStatus(),RiskStatus.A.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.A.getCode()))){
 			data.put("title1","你好，"+userDto.getRealName());
 			data.put("title2","完善基本资料即可获取3000-20000额度");
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.PROCESS.getCode())
@@ -204,13 +205,13 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 			}
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.YES.getCode())
 				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){
-			data.put("highestAmount",userDto.getAuAmount());
-			data.put("currentAmount",afResource.getValue());
+			data.put("highestAmount",afResource.getValue());
+			data.put("currentAmount",userDto.getAuAmount());
 			data.put("title2","每完成一项补充认证都会提高相应额度");
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())
 				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){//信用认证页面（基础认证失败状态，补充认证成功状态）
-			data.put("highestAmount",userDto.getAuAmount());
-			data.put("currentAmount",afResource.getValue());
+			data.put("highestAmount",afResource.getValue());
+			data.put("currentAmount",userDto.getAuAmount());
 			if (between > 0) {
 				data.put("title2", "请"+between+"天后尝试重新提交，完成补充认证可提高成功率");
 			} else {
@@ -218,13 +219,13 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 			}
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.SECTOR.getCode())
 				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){
-			data.put("highestAmount",userDto.getAuAmount());
-			data.put("currentAmount",afResource.getValue());
+			data.put("highestAmount",afResource.getValue());
+			data.put("currentAmount",userDto.getAuAmount());
 			data.put("title2","可以尝试重新提交啦，完成基础认证可大幅度提高你的额度");
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.PROCESS.getCode())
 				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())){
-			data.put("highestAmount",userDto.getAuAmount());
-			data.put("currentAmount",afResource.getValue());
+			data.put("highestAmount",afResource.getValue());
+			data.put("currentAmount",userDto.getAuAmount());
 			data.put("title2","你的基础认证正在审核中，完成基础认证可大幅度提高你的额度");
 		}
 

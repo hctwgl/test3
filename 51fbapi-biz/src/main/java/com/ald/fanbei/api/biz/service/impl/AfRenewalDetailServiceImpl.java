@@ -238,7 +238,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		try {
 			smsUtil.sendRenewalFailWarnMsg(userDo.getUserName(), errorMsg, errorTimes);
 		} catch (Exception e) {
-
+			logger.error("sendRenewalFailWarnMsg is Fail, e"+e);
 		}
 
 		return dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), afRenewalDetailDo.getRid());

@@ -422,6 +422,7 @@
 				<entry key="/Withhold/updateWithholdSwitch" value-ref="updateWithholdSwitchApi" />
 				<entry key="/Withhold/updateWithholdCard" value-ref="updateWithholdCardApi" />
 				<entry key="/Withhold/showUserBankCard" value-ref="showUserBankCardApi" />
+				<entry key="/Withhold/WithholdCheck" value-ref="getWithholdCheckApi" />
 
 				<!-- 首页滚动条 -->
 				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
