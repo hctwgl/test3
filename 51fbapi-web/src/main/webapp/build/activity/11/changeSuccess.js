@@ -10,14 +10,8 @@ let vm = new Vue({
     methods:{
         logData(){
             let self=this;
-            //修改成功页面初始化信息
-            /* let outDay=document.getElementById("outDay").innerHTML;//获取出账日
-            let payDay=document.getElementById("payDay").innerHTML;//获取还款日 */
-            // console.log(payDay)
             var outDay= localStorage.getItem("outDay",outDay);//将手机号存储到本地
             var payDay=localStorage.getItem("payDay",payDay);//将短信验证码存储到本地
-            console.log(outDay,'pengxiangyu');
-            console.log(payDay,'payDay')
             $.ajax({
                 type:'post',
                 url:'/fanbei-web/changeOutDay/getUserOutDay',
