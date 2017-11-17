@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 @Component("EviDoc")
 public class EviDoc {
-	private static Logger LOG = LoggerFactory.getLogger(EviDoc.class);
+	private static Logger logger = LoggerFactory.getLogger(EviDoc.class);
 	private static String encoding = null;
 	private static String algorithm = null;
 	private static String projectId = null;
@@ -127,6 +127,7 @@ public class EviDoc {
 				while ((readLine = responseReader.readLine()) != null) {
 					strBuffer.append(readLine);
 				}
+				logger.info("存证信息:",strBuffer);
 				responseReader.close();
 			}
 		} catch (MalformedURLException e) {
@@ -221,7 +222,7 @@ public class EviDoc {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			LOG.info("设置请求报头 HTTP Headers异常：" + e.getMessage());
+			logger.info("设置请求报头 HTTP Headers异常：" + e.getMessage());
 		}
 	}
 

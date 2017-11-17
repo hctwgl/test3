@@ -19,12 +19,15 @@
     <include refid="Base_Column_List" />
     from af_user_seal
     where user_id = #{userId,jdbcType=BIGINT}
+    and is_delete = 0
+    limit 1
   </select>
   <select id="selectByUserType" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
     <include refid="Base_Column_List" />
     from af_user_seal
     where user_type = #{userType}
+    and is_delete = 0
   </select>
   <delete id="deleteById" parameterType="java.lang.Long" >
     delete from af_user_seal
