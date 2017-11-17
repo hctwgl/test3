@@ -132,7 +132,31 @@
         <include refid="commonCondition"/>
     </select>
     <select id="checkOrderTimes" parameterType="java.lang.Long">
-    	SELECT COUNT(1) FROM af_boluome_rebate WHERE user_id = #{userId};
+    	SELECT COUNT(1) FROM af_boluome_rebate WHERE user_id = #{userId}
+    	AND is_delete = 0;
+    </select>
+    <select id="getListByUserId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
+    	SELECT * FROM af_boluome_rebate WHERE user_id = #{userId} 
+		AND is_delete = 0;
+    </select>
+    <select id="getLightShopId" parameterType="java.lang.Long"  resultType="java.lang.Long">
+	    SELECT s.id as shopId FROM af_order o 
+		INNER JOIN af_shop s ON o.sec_type = s.type  and o.is_delete = s.is_delete = 0
+		and  o.id = #{orderId}
+		LIMIT 0,1;
+    </select>
+    <select id="getRebateList" parameterType="java.lang.Long"  resultType="com.ald.fanbei.api.dal.domain.AfRebateDo">
+	    SELECT 
+		s.`name` as consumeScene
+		,o.gmt_create as consumeTime
+		,o.rebate_amount as sceneRebate 
+		, br.rebate_amount as surpriseRebate 
+		FROM af_boluome_rebate br 
+		INNER JOIN af_order o on o.id = br.order_id 
+		INNER JOIN af_shop s on o.sec_type = s.type
+		AND o.is_delete = br.is_delete = s.is_delete = 0
+		AND br.user_id = #{userId}
+		;
     </select>
      <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
         SELECT

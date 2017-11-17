@@ -15,9 +15,12 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserLoginDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.JpushService;
 
 /**
  * 点亮活动新版ServiceImpl
@@ -39,6 +42,10 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	AfBoluomeActivityUserLoginDao afBoluomeActivityUserLoginDao;
 	@Resource
 	AfResourceDao afResourceDao;
+	@Resource 
+	JpushService jpushService;
+	@Resource
+	AfUserDao afUserDao;
 
 	@Override
 	public BaseDao<AfBoluomeUserCouponDo, Long> getDao() {
@@ -81,6 +88,10 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 					afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
 					result = true;
 					//call Jpush for rebate
+					String userName = convertToUserName(userId);
+					if (userName != null) {
+						jpushService.send15Coupon(userName);
+					}
 					
 				}
 
@@ -91,6 +102,21 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 
 	}
 
+
+	private String convertToUserName(Long userId) {
+		AfUserDo userDo = afUserDao.getUserById(userId);
+		String userName = "";
+		if (userDo != null) {
+			userName = userDo.getUserName();
+		}
+		return userName;
+	}
+
+	@Override
+	public int isHasCouponInDb(Long userId, Long couponId) {
+		return afBoluomeUserCouponDao.isHasCouponInDb(userId,couponId);
+
+	}
 	@Override
 	public AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId) {
 	    // TODO Auto-generated method stub

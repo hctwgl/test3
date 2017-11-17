@@ -162,7 +162,7 @@
         and  channel =  #{channel}
         and  coupon_id = # {couponId}
     </select>
-      <select id="checkIfHaveCoupon">
+    <select id="checkIfHaveCoupon">
 	   	 SELECT COUNT(1) FROM af_boluome_user_coupon WHERE user_id =
 			(
 			SELECT
@@ -175,8 +175,15 @@
 			) 
 			AND channel = 'RECOMMEND';
     </select>
+
+    <select id = "isHasCouponInDb" parameterType = "java.lang.Long" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM af_boluome_user_coupon 
+		where is_delete = 0
+		AND user_id = #{userId}
+		AND coupon_id = #{couponId} ;
+    </select>
     
-     <select id="getLastUserCouponByUserId"  resultType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo" parameterType="java.lang.Long">
+   <select id="getLastUserCouponByUserId"  resultType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo" parameterType="java.lang.Long">
 	   	select 
 	   	<include refid="queryFields" />
 	   	 FROM af_boluome_user_coupon
@@ -186,6 +193,5 @@
 	   	 limit 0,1
 	   	  
     </select>
-    
     
 </mapper>

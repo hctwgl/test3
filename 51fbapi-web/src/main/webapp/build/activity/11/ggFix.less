@@ -9,22 +9,158 @@ body{
   position:relative;
 }
 /*路线轨迹*/
+//transition 延迟时间来决定顺序
 .firstStep{
   position:absolute;
-  top:39%;
-  left:5%;
+  top:40%;
+  left:6%;
+  .word01{
+    width:.94rem;
+    height:.4rem;
+    background:url('@{url}/ggFix28.png') no-repeat;
+    background-size:cover;
+    margin-bottom: .1rem;
+    opacity: 0;
+    transition: opacity .5s linear 1s;
+    &.wordShow01{
+      opacity: 1;
+    }
+  }
+  .lineBox01{
+    width: .01rem;
+    height: .5rem;
+    position: absolute;
+    bottom: -.25rem;
+    right: -.1rem;
+    overflow: hidden;
+    transition: width 1s linear;
+    &.lineShow01{
+      width: 1.2rem;
+    }
+    .line01{
+      width:1.12rem;
+      height:.13rem;
+      background:url('@{url}/ggFix32.png') no-repeat;
+      background-size:cover;
+      position: absolute;
+      top: 50%;
+      right: 0;
+    }
+  }
 }
-.firstStep .firstWord{
-  font-size:.2rem;
-  color:#fff;
-  line-height: .3rem;
-  opacity:0;
+.secondStep{
+  position:absolute;
+  top:29%;
+  left:20%;
+  .word02{
+    width:1.13rem;
+    height:.4rem;
+    background:url('@{url}/ggFix29.png') no-repeat;
+    background-size:cover;
+    margin-bottom: .1rem;
+    opacity: 0;
+    transition: opacity 1s linear 2.5s;
+    &.wordShow02{
+      opacity: 1;
+    }
+  }
+  .lineBox02{
+    width: 0;
+    height: .5rem;
+    position: absolute;
+    bottom: -.25rem;
+    right: 0;
+    overflow: hidden;
+    transition: width 1s linear 1.5s;
+    &.lineShow02{
+      width: 1.2rem;
+    }
+    .line02{
+      width:1.12rem;
+      height:.13rem;
+      background:url('@{url}/ggFix33.png') no-repeat;
+      background-size:cover;
+      position: absolute;
+      top: 50%;
+      right: 0;
+    }
+  }
 }
-.firstStep .dian{
-  width:.1rem;
-  height:.1rem;
-  background:#fff;
-  border-radius: 50%;
+.thirdStep{
+  position:absolute;
+  top:30%;
+  left:79%;
+  .word03{
+    width:.84rem;
+    height:.23rem;
+    background:url('@{url}/ggFix30.png') no-repeat;
+    background-size:cover;
+    margin: 0 0 .1rem .1rem;
+    opacity: 0;
+    transition: opacity .5s linear 4s;
+    &.wordShow03{
+      opacity: 1;
+    }
+  }
+  .lineBox03{
+    width: 0;
+    height: .5rem;
+    position: absolute;
+    bottom: -.25rem;
+    left: 0;
+    overflow: hidden;
+    transition: width 1s linear 3s;
+    &.lineShow03{
+      width: 1.2rem;
+    }
+    .line03{
+      width:.97rem;
+      height:.14rem;
+      background:url('@{url}/ggFix34.png') no-repeat;
+      background-size:cover;
+      position: absolute;
+      top: 50%;
+      left:0;
+    }
+  }
+}
+.fourthStep{
+  position:absolute;
+  top:78%;
+  left:36%;
+  .word04{
+    width:.93rem;
+    height:.4rem;
+    background:url('@{url}/ggFix31.png') no-repeat;
+    background-size:cover;
+    margin: 0 0 0 -225%;
+    opacity: 0;
+    transition: opacity 0.5s linear 6s;
+    &.wordShow04{
+      opacity: 1;
+    }
+  }
+  .lineBox04{
+    width: 0;
+    height: .7rem;
+    position: absolute;
+    top:0;
+    right: 0;
+    overflow: hidden;
+    transition: width 1.5s linear 4.5s;
+    &.lineShow04{
+      width: 3.3rem;
+    }
+    .line04{
+      width:3.26rem;
+      height:.56rem;
+      background:url('@{url}/ggFix35.png') no-repeat;
+      background-size:cover;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
 }
 .mask{
   width:100%;
@@ -347,7 +483,6 @@ body{
 /*fourthCont*/
 .ggFix .fourthCont{
   width:100%;
-  height:14.34rem;
   background:url('@{url}/ggFix05.jpg') no-repeat;
   background-size:cover;
   padding-top:.37rem;
@@ -429,6 +564,9 @@ body{
     margin: 5.8% 11% 0 0;
   }
 }
+.cardList{
+  padding-bottom: .6rem;
+}
 .card{
   width: 29.3%;
   height:3.05rem;
@@ -437,5 +575,10 @@ body{
   margin:0 0 .24rem 3.02%;
   float:left;
 }
-
+.noRebateMoney{
+  font-size: .3rem;
+  text-align: center;
+  padding-top: .4rem;
+  line-height: .5rem;
+}
 
