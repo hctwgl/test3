@@ -1020,4 +1020,17 @@
 		AND 
 			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
 	</select>
+	
+	
+	<select id="getOverOrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM af_order
+		WHERE
+			goods_id=#{goodsId}
+		AND
+			user_id=#{userId}
+		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+	</select>
+	
 </mapper>

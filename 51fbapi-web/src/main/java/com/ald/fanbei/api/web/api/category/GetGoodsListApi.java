@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -72,11 +73,17 @@ public class GetGoodsListApi implements ApiHandle {
         for(AfGoodsCategoryDto goodsDo : list) {
 //            double volume = new Long(goodsDo.getVolume()).intValue();
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
+            String url = "";
             goodsInfo.put("goodName",goodsDo.getName());
             goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
             goodsInfo.put("saleAmount",goodsDo.getSaleAmount());
             goodsInfo.put("priceAmount",goodsDo.getPriceAmount());
-            goodsInfo.put("goodsIcon",goodsDo.getGoodsPic1());
+            if(!StringUtil.isEmpty(goodsDo.getGoodsPic1())){
+                url = goodsDo.getGoodsPic1();
+            }else{
+                url = goodsDo.getGoodsIcon();
+            }
+            goodsInfo.put("goodsIcon",url);
             goodsInfo.put("goodsId",goodsDo.getId());
             goodsInfo.put("goodsUrl",goodsDo.getGoodsUrl());
             goodsInfo.put("source",goodsDo.getSource());

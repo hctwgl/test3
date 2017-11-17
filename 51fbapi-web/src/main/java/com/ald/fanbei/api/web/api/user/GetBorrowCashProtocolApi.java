@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.user;
 
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.EviDoc;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
@@ -34,10 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -81,6 +79,8 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
     EviDoc eviDoc;
     @Resource
     private EsignPublicInit esignPublicInit;
+    @Resource
+    private ContractPdfThreadPool contractPdfThreadPool;
 
     private static final String src = "F:/doc/";
     @Override
@@ -451,14 +451,27 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
     }
 
     private boolean pdfCreate(Map map) throws IOException {
+        OutputStream fos = null;
+        ByteArrayOutputStream bos = null;
         try {
-            PdfCreateUtil.create(map);
+            PdfCreateUtil.create(map,fos,bos);
         } catch (Exception e) {
             logger.error("pdf合同生成失败：", e);
             return true;
+        }finally {
+            if (null != fos){
+                fos.flush();
+                fos.close();
+            }
+            if (null != bos){
+                bos.close();
+            }
         }
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);
+            if (fileDigestSignResult.isErrShow()){
+                return true;
+            }
             map.put("esignIdFirst",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("甲方盖章证书生成失败：", e);
@@ -467,6 +480,9 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
 
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.selfSign(map);
+            if (fileDigestSignResult.isErrShow()){
+                return true;
+            }
             map.put("esignIdSecond",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("丙方盖章证书生成失败：", e);
@@ -474,6 +490,9 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
         }
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);
+            if (fileDigestSignResult.isErrShow()){
+                return true;
+            }
             map.put("esignIdThird",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("乙方盖章证书生成失败：", e.getMessage());
@@ -513,9 +532,6 @@ public class GetBorrowCashProtocolApi implements ApiHandle {
                     afContractPdfDo.setTypeId((Long)map.get("renewalId"));
                 }
                 afContractPdfDao.insert(afContractPdfDo);
-            }
-            if (ossUploadResult.isSuccess()){
-
             }
         }catch (Exception e){
             logger.error("证书上传oss失败：", e.getMessage());
