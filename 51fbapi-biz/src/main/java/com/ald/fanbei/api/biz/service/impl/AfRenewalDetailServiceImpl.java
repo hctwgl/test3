@@ -347,8 +347,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			}*/
 			//返呗续期通知接口，向催收平台同步续期信息
 			try {
-				CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
-				logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+				if (currAfBorrowCashDo.getOverdueStatus().equals("Y") || currAfBorrowCashDo.getOverdueDay() > 0) {					
+					CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
+					logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+				}else{
+					logger.info("collection renewalNotify req unPush, renewalNo=" + afRenewalDetailDo.getPayTradeNo());
+				}
 			}catch(Exception e){
 				logger.error("向催收平台同步续期信息",e);
 			}

@@ -528,7 +528,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			
 			//会对逾期的借款还款，向催收平台同步还款信息
 			AfBorrowCashDo currAfBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
-			if(DateUtil.compareDate(new Date(), afBorrowCashDo.getGmtPlanRepayment())){
+			if(DateUtil.compareDate(new Date(), afBorrowCashDo.getGmtPlanRepayment()) || currAfBorrowCashDo.getOverdueStatus().equals("Y")){
 				try {
 					CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(repayment.getRepayNo(), currAfBorrowCashDo.getBorrowNo(), repayment.getCardNumber(), repayment.getCardName(),DateUtil.formatDateTime(new Date()),tradeNo,repayment.getRepaymentAmount(), (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).subtract(currAfBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)), (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)), currAfBorrowCashDo.getOverdueAmount(), currAfBorrowCashDo.getRepayAmount(),currAfBorrowCashDo.getRateAmount());
 					logger.info("collection consumerRepayment req success, respinfo={}",respInfo);
