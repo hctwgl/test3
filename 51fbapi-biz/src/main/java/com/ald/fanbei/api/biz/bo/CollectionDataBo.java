@@ -14,6 +14,7 @@ public class CollectionDataBo extends HashMap<String,String>{
 	private String sign;//MD5签名,对data的json串签名
 	private String timestamp;
 	private String data;//数据集合
+	private String channel;
 	
 	public String getSign() {
 		return sign;
@@ -35,5 +36,13 @@ public class CollectionDataBo extends HashMap<String,String>{
 	public void setData(String data) {
 		this.data = data;
 		this.put("data",data);
+	}
+	
+	public String getChannel() {
+		return channel;
+	}
+	public void setChannel(String channel) {
+		this.channel = channel;
+		this.put("channel",channel);
 	}
 }
