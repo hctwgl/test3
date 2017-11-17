@@ -31,13 +31,8 @@
                     if(self.contentOne.msg==2){
                          /* self.flag=true;
                          self.isA=true; */
-                            //alert(11111)
                             window.location.href='cdynamicBill';
                     } 
-                    /* if(self.contentOne.success==false) {
-                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
-                        
-                    } */
                         
                 }
                     
@@ -58,7 +53,6 @@
             let self=this;
             let outDay=document.getElementById("outDay").innerHTML;//获取出账日
             let payDay=document.getElementById("payDay").innerHTML;//获取还款日
-            // console.log(outDay,'outDay')
             localStorage.setItem("outDay",outDay);//将手机号存储到本地
             localStorage.setItem("payDay",payDay);//将短信验证码存储到本地
             console.log(outDay,'peng2222');
@@ -78,8 +72,7 @@
                       /* if(self.contentTwo.msg==1){
                             window.location.href='changeTimeOver';
                     }   */
-                     
-                    
+                       
                 }
                     
                 
@@ -105,9 +98,6 @@
         toPay(){
             window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_TOPAY";//跳转app还款页
         },
-       /*  toMove(){
-            window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_MOVE";//跳转app分期首页
-        }, */
         //点击隐藏mask
         maskHide(){
             $('.mask').hide();

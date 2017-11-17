@@ -19,14 +19,12 @@ let vm = new Vue({
                 success:function(data){
                     self.content = eval('(' + data + ')');
                     console.log(self.content);
-
                     if(self.content.success==false){
                         location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
                     }
                      
                     
-                }
-                    
+                }     
                 
             })
 
@@ -54,23 +52,19 @@ let vm = new Vue({
                             }else if(self.contentOne.msg==2){
                             window.location.href='changeTimeOver';//有逾期账单返回2跳账修改次数用完页面
                         } 
-                     
-                    
                 }
                     
                 
             }) 
-            refundState()
-
-              //点击修改账单日加埋点
-               $.ajax({
+            //点击修改账单日加埋点
+            $.ajax({
                       url:'/fanbei-web/postMaidianInfo',
                       type:'post',
                       data:{maidianInfo:'/fanbei-web/activity/barginIndex?type=changOne'},
                       success:function (data) {
                       console.log(data)
                         }
-                    });
+            });
 
 
 
@@ -87,23 +81,3 @@ let vm = new Vue({
         }
     }
 })
-/* function refundState(){
-    var picker = new mui.PopPicker();
-    picker.setData([{
-        value: "REFUNDING",
-        text: "退款中",
-    }, {
-        value: "REFUND",
-        text: "已退款"
-    }, {
-        value: "REFUNDFAIL",
-        text: "退款失败"
-    }
-    ])
-    picker.pickers[0].setSelectedIndex(0, 2000);
-    picker.show(function(SelectedItem) {
-        stateStatus=SelectedItem[0].value;
-        $('.startTime').text(SelectedItem[0].text);
-        picker.dispose(); 
-    })
-} */
