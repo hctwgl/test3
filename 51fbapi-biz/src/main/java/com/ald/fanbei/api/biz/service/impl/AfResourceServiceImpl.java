@@ -536,4 +536,14 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getLaunchImageInfoByType(resourceType);
 	}
 
+	@Override
+	public List<AfResourceDo> getEcommercePositionUpRescoure() {
+		return afResourceDao.getEcommercePositionUpRescoure();
+	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionDownRescoure() {
+		return afResourceDao.getEcommercePositionDownRescoure();
+	}
+
 }

@@ -187,4 +187,8 @@ public interface AfResourceService {
 	AfResourceDo getLaunchImageInfoByType(String resourceType);
 
 	AfResourceDo getOpenBoluomeCouponById(long rid);
+
+	List<AfResourceDo> getEcommercePositionUpRescoure();
+
+	List<AfResourceDo> getEcommercePositionDownRescoure();
 }

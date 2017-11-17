@@ -149,4 +149,15 @@
 		AND is_grab_success = 0
 		AND num_id = #{numId}
 	</select>
+	
+	
+	<select id="getGoodsByCategoryId">
+		SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE 
+			is_delete = 0
+		AND
+			category_id = #{categoryId}
+	</select>
 </mapper>
