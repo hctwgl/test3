@@ -478,10 +478,9 @@ public class APPH5GgActivityController extends BaseController {
 		try {
 			context = doWebCheck(request, false);
 			String userName = context.getUserName();
-			if (userName != null) {
-				Long userId = convertUserNameToUserId(userName);
+	
 				
-				AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getDescription(), "HOMEPAGEINFO");
+				AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GGACTIVITY", "HOMEPAGEINFO");
 				if (resourceDo != null) {
 					//if the user has not login 
 					String ruleDescript = resourceDo.getDescription();
@@ -508,6 +507,8 @@ public class APPH5GgActivityController extends BaseController {
 						
 						Map<String, Object> data = new HashMap<>();
 						//if the user has already login 
+						if (userName != null) {
+							Long userId = convertUserNameToUserId(userName);
 						if (userId != null) {
 							List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
 							rebateList = afBoluomeRebateService.getListByUserId(userId);
@@ -519,15 +520,13 @@ public class APPH5GgActivityController extends BaseController {
 							data.put("totalRebate", totalRebate);
 							data.put("rebateList", rebateeList);
 						}
-						
-						
+					}
 						data.put("image", image);
 						data.put("resultList", resultList);
 						data.put("ruleDescript", ruleDescript);
 						data.put("cardList", cardList);
 						resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
 						return resultStr.toString();
-					}
 				}
 			}
 		} catch (FanbeiException e) {
@@ -583,7 +582,7 @@ public class APPH5GgActivityController extends BaseController {
 			context = doWebCheck(request, false);
 			List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
 			
-			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("ACTIVITY", "BOLUOMECOUPON");
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GGACTIVITY", "BOLUOMECOUPON");
 			if (resourceDo != null) {
 				List<String> bList = new ArrayList<>();
 				bList.add(resourceDo.getValue2());

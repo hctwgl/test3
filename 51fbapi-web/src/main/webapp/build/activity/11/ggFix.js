@@ -16,9 +16,10 @@ let vm = new Vue({
         //获取页面初始化信息
         logData() {
             let self = this;
+            //初始化数据
             $.ajax({
                 type: 'post',
-                url: "/activity/freshmanShare/homePage",
+                url: "/h5GgActivity/homePage",
                 success: function (data) {
                     console.log(data);
                     /*self.content=eval('('+data.data+')');*/
@@ -39,7 +40,19 @@ let vm = new Vue({
                 error:function(){
                     requestMsg('哎呀，出错了！')
                 }
-            })
+            });
+            //优惠券初始化
+            $.ajax({
+                type: 'post',
+                url: "/h5GgActivity/boluomeCoupon",
+                success: function (data) {
+                    console.log(data);
+
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！')
+                }
+            });
         },
         //点击活动规则
         ruleClick(){
