@@ -13,21 +13,10 @@
         isA:false
     },
     created:function(){
-        this.logData();
+        //this.logData();
     },
     mounted: function () {
-        /* this.$nextTick(()=>{
-            var mySwiper = new Swiper('.swiper-container', {
-                direction: 'vertical',
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-
-            });
-
-        }) */
-
+        this.logData();
     },
     methods:{
         logData(){

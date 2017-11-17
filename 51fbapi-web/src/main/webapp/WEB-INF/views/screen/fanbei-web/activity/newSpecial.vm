@@ -26,10 +26,10 @@
     </div>
     <div class="mask" v-show="ruleShow" @click="closeClick"></div>
     <div class="shareBtn clearFix">
-        <p class="shareNow" @click="shareNowClick"><img src="$src/newUser02.png"></p>
-        <p class="inviteNow" @click="inviteNowClick"><img src="$src/newUser03.png"></p>
+        <p class="shareNow" @click="shareNowClick">立即分享</p>
+        <p class="inviteNow" @click="inviteNowClick">邀请赚钱</p>
     </div>
-    <p class="title"><img src="$src/newUser04.png"></p>
+    <!--<p class="title"><img src="$src/newUser04.png"></p>!-->
     <div class="goodList">
         <div class="good clearFix" @click="buyNowClick(item)" v-for="item in content">
             <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
