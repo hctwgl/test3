@@ -12,7 +12,8 @@ let vm = new Vue({
         firstTitle:'',
         firstValue:'',
         secondTitle:'',
-        secondValue:''
+        secondValue:'',
+        myRebateMoney:''
     },
     created: function () {
         this.logData();
@@ -29,10 +30,17 @@ let vm = new Vue({
                     //console.log(data);
                     self.content=eval('('+data+')').data;
                     console.log(self.content);
+                    /*外卖券+返利金*/
                     self.firstTitle=self.content.resultList[0].name;
                     self.firstValue=self.content.resultList[0].value;
                     self.secondTitle=self.content.resultList[1].name;
                     self.secondValue=self.content.resultList[1].value;
+                    /*我的奖励*/
+                    if(self.content.totalRebate && self.content.totalRebate!=0){
+                        console.log(self.content.totalRebate)
+                        self.content.totalRebate=self.content.totalRebate.toString(); //奖励金金额
+                        self.myRebateMoney=self.content.totalRebate.split('');
+                    }
                     self.$nextTick(function () {
                         /*图片预加载*/
                         $(".first").each(function() {
