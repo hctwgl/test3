@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserSeedService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserWithholdService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -76,7 +77,7 @@ public class WithholdCheckController implements ApiHandle {
 		AfUserDo userDo = afUserService.getUserByUserName(userName);
 		Map<String, Object> info = new HashMap<String, Object>();
 
-		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype("WITH_HOLD_SWITCH");
+		AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.WITH_HOLD_SWITCH);
 
 		if(resourceDo.getValue1().equals("Y")) {  //初步针对白名单使用开关
 			AfUserSeedDo afUserSeedDo = afUserSeedService.getAfUserSeedDoByUserId(userDo.getRid());
