@@ -73,7 +73,7 @@ public class AuthBankcardApi implements ApiHandle {
 			throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
 		}
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
-		UpsAuthSignRespBo upsResult = upsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
+//		UpsAuthSignRespBo upsResult = upsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
 		
 //		if(!upsResult.isSuccess()){
 //			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
@@ -87,7 +87,7 @@ public class AuthBankcardApi implements ApiHandle {
 			isMain = YesNoStatus.YES.getCode();
 		}
 		//TODO 新建卡
-		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(),bankName, cardNumber, mobile, context.getUserId(),isMain);
+		AfUserBankcardDo bankDo = getUserBankcardDo(bankCode,bankName, cardNumber, mobile, context.getUserId(),isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
 
 		Map<String,Object> map = new HashMap<String,Object>();
