@@ -162,6 +162,19 @@ public class AppH5ChangeOutDayController extends BaseController{
     			data.put("payDay", payDay);
     			AfUserOutDayDo userOutDay = afUserOutDayDao.getUserOutDayByUserId(afUser.getRid());
     			if(userOutDay != null && userOutDay.getId() != null) {
+    				Calendar calendar = Calendar.getInstance();
+        			Calendar outDayCalendar = Calendar.getInstance();
+        			outDayCalendar.setTime(userOutDay.getGmtModify());
+        			if (calendar.get(Calendar.YEAR) == outDayCalendar.get(Calendar.YEAR)) {
+        				// 判断是否是新用户，新用户logCount = 0
+        				int logCount = afUserOutDayDao.countUserOutDayLogByUserId(afUser.getRid());
+        				if (logCount > 0) {
+        					data.put("outDay", userOutDay.getOutDay());
+        					data.put("payDay", userOutDay.getPayDay());
+        					resp = H5CommonResponse.getNewInstance(true, "1","",data);
+        					return resp.toString();
+						}
+					}
     				if (outDay == userOutDay.getOutDay()) {
     					resp = H5CommonResponse.getNewInstance(false, "出账日重复");
     					return resp.toString();
