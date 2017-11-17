@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/dynamicBill.css">
 </head>
 <body>
-    <div id="dynamicBill">
+    <div id="changeSuccess">
         <!--弹框!-->
         <div class="mask" v-show="ruleShow==='Y'" @click="maskClick()"></div>
         <div class="alertRule" v-show="ruleShow==='Y'">

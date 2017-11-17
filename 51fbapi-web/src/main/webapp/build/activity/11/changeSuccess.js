@@ -1,5 +1,5 @@
 let vm = new Vue({
-    el:'#dynamicBill',
+    el:'#changeSuccess',
     data:{
         contentThree:'',
         ruleShow: ''

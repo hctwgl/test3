@@ -32,4 +32,5 @@
 <script src="js/LCalendar.js" type="/dist/activity/11//javascript"></script>
 <script type="text/javascript" src="/common/mui.picker.min.js"></script>
 <script type="text/javascript" src="/dist/activity/11/changeBillDay.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/11/changeSuccess.js?version=$version"></script>
 </html>
