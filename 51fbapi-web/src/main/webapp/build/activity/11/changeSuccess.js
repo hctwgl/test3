@@ -44,6 +44,10 @@ let vm = new Vue({
         //点击修改成功页面的返回首页按钮跳转到首页
         firstWeb(){
             window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_HOME";//跳转到app首页
+        },
+        //原生调取方法
+        goMain(){
+            window.location.href="cdynamicBill?name=goMain";//跳转到app首页
         }
     }
 })

@@ -43,7 +43,8 @@
                          /* self.flag=true;
                          self.isA=true; */
                             //alert(11111)
-                            window.location.href='cdynamicBill';
+                            //window.location.href='cdynamicBill';
+                            //$.config = {router: false};//全局禁用自带的路由
                     } 
                     /* if(self.contentOne.success==false) {
                         window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
