@@ -513,7 +513,12 @@ public class APPH5GgActivityController extends BaseController {
 							List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
 							rebateList = afBoluomeRebateService.getListByUserId(userId);
 							//the status of items 
-							cardList = convertItemsListToCardList(rebateList,itemsList);
+							List<AfCardDo> cardsList = convertItemsListToCardList(rebateList,itemsList);
+							if(cardsList != null && cardsList.size() > 0){
+								cardList = cardsList;
+							}else{
+								cardList = convertItemsListToCardList(itemsList,true);
+							}
 							//the rebate stuff 
 							List<AfRebateDo> rebateeList = afBoluomeRebateService.getRebateList(userId);
 							BigDecimal totalRebate = getTotalRebate(rebateeList);
@@ -591,7 +596,7 @@ public class APPH5GgActivityController extends BaseController {
 					for (String resouceIdStr : bList) {
 						Long resourceId = Long.parseLong(resouceIdStr);
 						AfResourceDo couponResourceDo = afResourceService.getResourceByResourceId(resourceId);
-						logger.info("initHomePage getCouponUrl resourceId = {},couponResourceDo = {}", resourceId,
+						logger.info("boluomeCoupon  resourceId = {},couponResourceDo = {}", resourceId,
 								couponResourceDo);
 						if (couponResourceDo != null) {
 							String uri = couponResourceDo.getValue();
@@ -628,7 +633,7 @@ public class APPH5GgActivityController extends BaseController {
 												}
 												List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil
 														.getActivityCouponList(uri);
-												BrandActivityCouponResponseBo bo = activityCouponList.get(0);
+												//BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 												if (userName != null) {
 													Long userId = convertUserNameToUserId(userName);
 													if (userId != null) {

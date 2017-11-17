@@ -7,7 +7,12 @@ let vm = new Vue({
     el: '#ggFix',
     data: {
         content: {},
-        ruleShow:false
+        ruleShow:false,
+        couponCont:{},
+        firstTitle:'',
+        firstValue:'',
+        secondTitle:'',
+        secondValue:''
     },
     created: function () {
         this.logData();
@@ -21,8 +26,13 @@ let vm = new Vue({
                 type: 'post',
                 url: "/h5GgActivity/homePage",
                 success: function (data) {
-                    console.log(data);
-                    /*self.content=eval('('+data.data+')');*/
+                    //console.log(data);
+                    self.content=eval('('+data+')').data;
+                    console.log(self.content);
+                    self.firstTitle=self.content.resultList[0].name;
+                    self.firstValue=self.content.resultList[0].value;
+                    self.secondTitle=self.content.resultList[1].name;
+                    self.secondValue=self.content.resultList[1].value;
                     self.$nextTick(function () {
                         /*图片预加载*/
                         $(".first").each(function() {
@@ -46,8 +56,9 @@ let vm = new Vue({
                 type: 'post',
                 url: "/h5GgActivity/boluomeCoupon",
                 success: function (data) {
-                    console.log(data);
-
+                    //console.log(data);
+                    self.couponCont=eval('('+data+')').data;
+                    console.log(self.couponCont);
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
