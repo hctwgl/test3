@@ -41,7 +41,7 @@ import com.alibaba.fastjson.JSONObject;
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
 
-	private static String url = "http://127.0.0.1:2532";
+	private static String url = null;
 
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
