@@ -3,6 +3,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 
 /**
@@ -20,6 +22,8 @@ public interface AfBoluomeUserCouponService extends ParentService<AfBoluomeUserC
 
     AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
     boolean sendCoupon(Long userId);
+
+	int isHasCouponInDb(Long userId, Long couponId);
 
 }
 

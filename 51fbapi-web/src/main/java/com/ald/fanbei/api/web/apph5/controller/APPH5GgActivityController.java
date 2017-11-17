@@ -21,7 +21,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseBo;
+import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
+import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
+import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
@@ -41,6 +45,7 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.SmsType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
@@ -51,6 +56,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
@@ -70,6 +76,7 @@ import com.ald.fanbei.api.web.vo.BoluomeActivityInviteCeremonyVo;
 import com.ald.fanbei.api.web.vo.BoluomeActivityInviteFriendVo;
 import com.ald.fanbei.api.web.vo.userReturnBoluomeCouponVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -458,20 +465,6 @@ public class APPH5GgActivityController extends BaseController {
 		return newUserName;
 	}
 
-/*public static void main(String[] args) {
-	List<Object> list = new ArrayList<>();
-	Map<String, Object> map = new HashMap<>();
-	map.put("name", "resourceDo.getValue1()");
-	map.put("value", "resourceDo.getValue2()");
-	list.add(map);
-	Map<String, Object> map1 = new HashMap<>();
-	map1.put("name", "resourceDo.getValue3()");
-	map1.put("value", "resourceDo.getValue4()");
-	list.add(map);
-	
-	System.out.println(list.toString());
-}*/
-
 	/**
 	 * 
 	 * @Title: homePage @author qiao @date 2017年11月16日
@@ -556,7 +549,140 @@ public class APPH5GgActivityController extends BaseController {
 
 		return resultStr.toString();
 	}
+	/**
+	 * 
+	 * @说明：获得用户优惠券列表
+	 * @param: @return
+	 * @return: String
+	 */
+	private static String couponUrl = null;
+	private static String getCouponUrl() {
+		if (couponUrl == null) {
+			couponUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_COUPON_URL);
+			return couponUrl;
+		}
+		return couponUrl;
+	}
+	/**
+	 * 
+	* @Title: boluomeCoupon
+	* @author qiao
+	* @date 2017年11月17日 下午2:58:57
+	* @Description: 优惠券展示接口
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/boluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	public String boluomeCoupon(HttpServletRequest request, HttpServletResponse response) {
+		H5CommonResponse resultStr = H5CommonResponse.getNewInstance(false, "初始化数据失败");
+		FanbeiWebContext context = new FanbeiWebContext();
+		try {
+			context = doWebCheck(request, false);
+			List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
+			
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("ACTIVITY", "BOLUOMECOUPON");
+			if (resourceDo != null) {
+				List<String> bList = new ArrayList<>();
+				bList.add(resourceDo.getValue2());
+				bList.add(resourceDo.getValue3());
+				if (bList != null && bList.size() > 0) {
+					for (String resouceIdStr : bList) {
+						Long resourceId = Long.parseLong(resouceIdStr);
+						AfResourceDo couponResourceDo = afResourceService.getResourceByResourceId(resourceId);
+						logger.info("initHomePage getCouponUrl resourceId = {},couponResourceDo = {}", resourceId,
+								couponResourceDo);
+						if (couponResourceDo != null) {
+							String uri = couponResourceDo.getValue();
+							String[] pieces = uri.split("/");
+							if (pieces.length > 9) {
+								String app_id = pieces[6];
+								String campaign_id = pieces[8];
+								String user_id = "0";
+								// 获取boluome的券的内容
+								String url = getCouponUrl() + "?" + "app_id=" + app_id + "&user_id=" + user_id
+										+ "&campaign_id=" + campaign_id;
+								String reqResult = HttpUtil.doGet(url, 10);
+								logger.info("initHomePage getCouponUrl reqResult = {}", reqResult);
+								if (!StringUtil.isBlank(reqResult)) {
+									ThirdResponseBo thirdResponseBo = JSONObject.parseObject(reqResult,
+											ThirdResponseBo.class);
+									if (thirdResponseBo != null && "0".equals(thirdResponseBo.getCode())) {
+										List<BoluomeCouponResponseParentBo> listParent = JSONArray
+												.parseArray(thirdResponseBo.getData(), BoluomeCouponResponseParentBo.class);
+										if (listParent != null && listParent.size() > 0) {
+											BoluomeCouponResponseParentBo parentBo = listParent.get(0);
+											if (parentBo != null) {
+												String activityCoupons = parentBo.getActivity_coupons();
+												String result = activityCoupons.substring(1, activityCoupons.length() - 1);
+												String replacement = "," + "\"sceneId\":" + resourceId + "}";
+												String rString = result.replaceAll("}", replacement);
+												// 字符串转为json对象
+												BoluomeCouponResponseBo BoluomeCouponResponseBo = JSONObject
+														.parseObject(rString, BoluomeCouponResponseBo.class);
+												String userName = context.getUserName();
+												// 为了兼容从我也要点亮中调用主页接口
+												if (StringUtil.isBlank(userName)) {
+													userName = request.getParameter("userName");
+												}
+												List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil
+														.getActivityCouponList(uri);
+												BrandActivityCouponResponseBo bo = activityCouponList.get(0);
+												if (userName != null) {
+													Long userId = convertUserNameToUserId(userName);
+													if (userId != null) {
+														// 判断用户是否拥有该优惠券 或者已经被领取完毕
+														int  flag = afBoluomeUserCouponService.isHasCouponInDb(userId ,resourceId);
+														if (flag != 0)
+														{
+															BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
+														} else {
+															BoluomeCouponResponseBo.setIsHas(YesNoStatus.NO.getCode());
+														}
+													}
+												}
+												boluomeCouponList.add(BoluomeCouponResponseBo);
+												Map<String, Object> data = new HashMap<>();
+												data.put("boluomeCouponList", boluomeCouponList);
+												resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
+												
+											}
+										}
 
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+		}
+		catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data);
+				return resultStr.toString();
+			}
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc());
+			logger.error("/boluomeCoupon resultStr = {}", resultStr);
+			logger.error("/homePage 初始化数据失败  e = {} , resultStr = {}", e, resultStr);
+		} catch (Exception exception) {
+			resultStr = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage());
+			logger.error("/boluomeCoupon 初始化数据失败  e = {} , resultStr = {}", exception, resultStr);
+		}
+
+		return resultStr.toString();
+	}
+	
+				
+				
+				
 	private BigDecimal getTotalRebate(List<AfRebateDo> rebateList) {
 		BigDecimal result = BigDecimal.ZERO;
 		if (rebateList != null && rebateList.size() > 0) {

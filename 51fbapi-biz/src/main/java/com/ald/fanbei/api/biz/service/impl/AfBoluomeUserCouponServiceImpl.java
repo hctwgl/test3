@@ -91,4 +91,9 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 
 	}
 
+	@Override
+	public int isHasCouponInDb(Long userId, Long couponId) {
+		return afBoluomeUserCouponDao.isHasCouponInDb(userId,couponId);
+	}
+
 }
