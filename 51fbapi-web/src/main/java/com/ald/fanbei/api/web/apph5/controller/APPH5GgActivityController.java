@@ -633,13 +633,12 @@ public class APPH5GgActivityController extends BaseController {
 												}
 												List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil
 														.getActivityCouponList(uri);
-												//BrandActivityCouponResponseBo bo = activityCouponList.get(0);
 												if (userName != null) {
 													Long userId = convertUserNameToUserId(userName);
 													if (userId != null) {
 														// 判断用户是否拥有该优惠券 或者已经被领取完毕
-														int  flag = afBoluomeUserCouponService.isHasCouponInDb(userId ,resourceId);
-														if (flag != 0)
+														Integer  flag = afBoluomeUserCouponService.isHasCouponInDb(userId ,resourceId);
+														if (flag != 0 && flag != null)
 														{
 															BoluomeCouponResponseBo.setIsHas(YesNoStatus.YES.getCode());
 														} else {
