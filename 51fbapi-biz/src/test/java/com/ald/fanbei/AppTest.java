@@ -1,91 +1,122 @@
 package com.ald.fanbei;
 
-import com.ald.fanbei.AppTest;
-import com.alibaba.fastjson.JSON;
-
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.PostMethod;
+
+import com.ald.fanbei.api.common.util.Base64;
+
 /**
  * Unit test for simple App.
  */
 public class AppTest extends TestCase {
-	/**
-	 * Create the test case
-	 *
-	 * @param testName
-	 *            name of the test case
-	 */
-	public AppTest(String testName) {
-		super(testName);
-		    //username=system&
-		    //password=alapay2017
+    /**
+     * Create the test case
+     *
+     * @param testName
+     *            name of the test case
+     */
+    public AppTest(String testName) {
+	super(testName);
 
-		    //dnsUrl=https://yupsadmin.51fanbei.com&orderNos=hq20171002205034152581
+	checkFaceImage("http://f.51fanbei.com/online/ae2968b3b4a49488.png", "肖柯表", "440923198903160550");
+    }
 
-		// 登陆 Url
-	            String loginUrl = "https://yupsadmin.51fanbei.com/system/user/login.htm";
-	            // 需登陆后访问的 Url
-	            String dataUrl = "https://yupsadmin.51fanbei.com/modules/manage/tpp/batch/query/trade.htm?dnsUrl=https://yupsadmin.51fanbei.com&orderNos=hq20171002205034152581,hq20171002205034152581";
+    private void checkFaceImage(String faceInamgeUrl, String name, String idcard) {
+	try {
+	    String authUrl = "http://api.chinadatapay.com/communication/personal/2014";
+	    InputStream inputStream = getImage(faceInamgeUrl);
+	    String faceBase64 = GetImageStrByInPut(inputStream);
+	    // System.out.println(faceBase64);
 
-	            HttpClient httpClient = new HttpClient();
-	            // 模拟登陆，按实际服务器端要求选用 Post 或 Get 请求方式
-	            PostMethod postMethod = new PostMethod(loginUrl);
+	    // 设置登陆时要求的信息，用户名和密码
+	    NameValuePair[] data = { new NameValuePair("key", "b14e7dbe34394ed2d7f16f4d2c56aa07"), new NameValuePair("name", name), new NameValuePair("idcard", idcard), new NameValuePair("image", faceBase64) };
+	    HttpClient httpClient = new HttpClient();
+	    // 模拟登陆，按实际服务器端要求选用 Post 或 Get 请求方式
+	    PostMethod postMethod = new PostMethod(authUrl);
 
-	            // 设置登陆时要求的信息，用户名和密码
-	            NameValuePair[] data = { new NameValuePair("username", "gaojibin"),
-	                    new NameValuePair("password", "123456") };
-	            postMethod.setRequestBody(data);
-	            try {
-	                // 设置 HttpClient 接收 Cookie,用与浏览器一样的策略
-	                httpClient.getParams().setCookiePolicy(
-	                        CookiePolicy.BROWSER_COMPATIBILITY);
-	                httpClient.executeMethod(postMethod);
-	                // 获得登陆后的 Cookie
-	                Cookie[] cookies = httpClient.getState().getCookies();
-	                StringBuffer tmpcookies = new StringBuffer();
-	                for (Cookie c : cookies) {
-	                    tmpcookies.append(c.toString() + ";");
-	                }
+	    postMethod.setRequestBody(data);
+	    System.out.println(httpClient.executeMethod(postMethod));
 
-	                // 进行登陆后的操作
-	                GetMethod getMethod = new GetMethod(dataUrl);
-	                // 每次访问需授权的网址时需带上前面的 cookie 作为通行证
-	                getMethod.setRequestHeader("cookie", tmpcookies.toString());
-	                httpClient.executeMethod(getMethod);
-	                // 打印出返回数据，检验一下是否成功
-	                String text = getMethod.getResponseBodyAsString();
-	                System.out.println(text);
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
+	    // 打印出返回数据，检验一下是否成功
+	    String text = postMethod.getResponseBodyAsString();
+	    System.out.println(text);
 
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
 
+    private HttpURLConnection httpUrl = null;
+
+    /**
+     * 从URL中读取图片,转换成流形式.
+     * 
+     * @param destUrl
+     * @return
+     */
+    public InputStream getImage(String destUrl) {
+
+	URL url = null;
+	InputStream in = null;
+	try {
+	    url = new URL(destUrl);
+	    httpUrl = (HttpURLConnection) url.openConnection();
+	    httpUrl.connect();
+	    httpUrl.getInputStream();
+	    in = httpUrl.getInputStream();
+	    return in;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+	return null;
+    }
+
+    /**
+     * 读取输入流,转换为Base64字符串
+     * 
+     * @param input
+     * @return
+     */
+    public String GetImageStrByInPut(InputStream input) {
+	byte[] data = null;
+	// 读取图片字节数组
+	try {
+	    data = new byte[input.available()];
+	    input.read(data);
+	    input.close();
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
 
-	/**
-	 * @return the suite of tests being tested
-	 */
-	public static Test suite() {
-		return new TestSuite(AppTest.class);
-	}
+	// 对字节数组Base64编码
+	return Base64.encode(data);// 返回Base64编码过的字节数组字符串
+    }
 
-	/**
-	 * Rigourous Test :-)
-	 */
-	public void testApp() {
-		assertTrue(true);
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(("wef:afwe:saofe".split(":")).length);
-	}
+    /**
+     * @return the suite of tests being tested
+     */
+    public static Test suite() {
+	return new TestSuite(AppTest.class);
+    }
+
+    /**
+     * Rigourous Test :-)
+     */
+    public void testApp() {
+	assertTrue(true);
+    }
+
+    public static void main(String[] args) {
+	System.out.println(("wef:afwe:saofe".split(":")).length);
+    }
 }
