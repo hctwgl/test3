@@ -17,6 +17,8 @@ import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfRepayCollectionType;
+import com.ald.fanbei.api.common.enums.AfRepeatCollectionType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -105,7 +107,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
 		//APP还款类型写3 , 线下还款写4
-		data.setChannel("3");
+		data.setChannel(AfRepayCollectionType.APP.getCode());
 		try {
 			String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
 			if (StringUtil.isBlank(reqResult)) {
@@ -120,7 +122,7 @@ public class CollectionSystemUtil extends AbstractThird {
 				throw new FanbeiException("renewalNotify fail , respInfo info is " + JSONObject.toJSONString(respInfo));
 			}
 		} catch (Exception e) {
-			commitRecordUtil.addRecord("repaymentCollection", borrowNo, json, getUrl() + "/api/getway/repayment/repaymentAchieve");
+			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json, getUrl() + "/api/getway/repayment/repaymentAchieve");
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
@@ -165,7 +167,7 @@ public class CollectionSystemUtil extends AbstractThird {
 				throw new FanbeiException("renewalNotify fail , respInfo info is " + JSONObject.toJSONString(respInfo));
 			}
 		} catch (Exception e) {
-			commitRecordUtil.addRecord("renewalCollection", borrowNo, json, getUrl() + "/api/getway/repayment/renewalAchieve");
+			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_RENEWAL.getCode(), borrowNo, json, getUrl() + "/api/getway/repayment/renewalAchieve");
 			throw new FanbeiException("renewalNotify fail Exception is " + e + ",renewalNotify send again");
 		}
 
