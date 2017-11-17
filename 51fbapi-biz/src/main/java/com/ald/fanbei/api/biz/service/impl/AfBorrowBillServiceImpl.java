@@ -387,7 +387,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
             public Object doInTransaction(TransactionStatus transactionStatus) {
                 if(afUserOutDayDao.insertUserOutDay(userId,outDay,payDay)>0){
                     returnValue[0] =afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
-                    updateBorrowBills(userId,outDay,10,outDay);
+                    updateBorrowBills(userId,outDay,10,payDay);
                 }
                 return null;
             }
