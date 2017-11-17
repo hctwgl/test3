@@ -110,5 +110,6 @@ public interface AfUserBankcardDao {
 	 * 根据银行卡号获取ID
 	 * **/
 	AfUserBankcardDo getUserBankcardIdByCardNumber(String cardNumber);
-	
+
+	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
 }

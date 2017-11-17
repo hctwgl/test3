@@ -208,4 +208,16 @@
 			status="B"
 		LIMIT 1
 	</select>
+	<select id="getUserBankcardByIdAndStatus" resultType="AfUserBankcardDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+		af_user_bankcard
+		WHERE
+		is_delete=0
+		AND
+		id = #{rid}
+		AND
+		status="B"
+	</select>
 </mapper>

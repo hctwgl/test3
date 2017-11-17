@@ -32,6 +32,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ *
+ * @类描述:代扣任务请求
+ *
+ * @auther hqj 2017年11月1日
+ * @注意:本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
 @Controller
 @RequestMapping("/userWithhold")
 public class UserWithholdController extends BaseController {
@@ -243,7 +250,7 @@ public class UserWithholdController extends BaseController {
             for(int j=1;j<=cardMap.size();j++){
                 Long cardId = cardMap.get(j);
                 if(cardId!=null&&cardId!=0l){
-                    AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+                    AfUserBankcardDo card = afUserBankcardService.getUserBankcardByIdAndStatus(cardId);
                     if (null == card) {
                         continue;
                     }
@@ -456,7 +463,7 @@ public class UserWithholdController extends BaseController {
             for(int j=1;j<=cardMap.size();j++) {
                 Long cardId = cardMap.get(j);
                 if(cardId!=null&&cardId!=0){//银行卡支付
-                    AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+                    AfUserBankcardDo card = afUserBankcardService.getUserBankcardByIdAndStatus(cardId);
                     if(null == card){
                         continue;
                     }
