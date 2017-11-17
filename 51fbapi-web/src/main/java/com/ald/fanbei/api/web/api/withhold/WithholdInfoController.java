@@ -83,7 +83,7 @@ public class WithholdInfoController implements ApiHandle {
 				info.put("usebalance", withholdInfo.getUsebalance());
 			} else {
 				info.put("IsWithhold", "0");
-				info.put("usebalance", "0");
+				info.put("usebalance", "1");
 			}
 		}
 		resp.setResponseData(info);
