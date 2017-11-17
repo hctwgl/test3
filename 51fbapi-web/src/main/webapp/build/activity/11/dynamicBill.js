@@ -20,7 +20,22 @@ let vm = new Vue({
                     self.content = eval('(' + data + ')');
                     console.log(self.content);
                     if(self.content.success==false){
-                        location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
+                        //location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
+                        
+                        function creadiv(l,r,t){ //l是距左的距离,r是距右的距离,t是要显示的文本内容
+                            var dd=document.createElement("div");
+                            dd.style.position="absolute";
+                            dd.style.left=111+"px";
+                            dd.style.right=0+"px"
+                            dd.innerText='您还未登录，请先进行登录';
+                            document.body.appendChild(dd);
+                        }
+                        creadiv();
+                        $('body').style('background-color','red');
+
+
+
+
                     }
                      
                     
