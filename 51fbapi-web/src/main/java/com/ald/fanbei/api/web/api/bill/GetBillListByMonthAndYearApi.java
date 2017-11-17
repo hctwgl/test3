@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.api.borrow;
+package com.ald.fanbei.api.web.api.bill;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,14 +40,14 @@ import com.mysql.fabric.xmlrpc.base.Data;
 
 /**
  * 
-* @ClassName: GetMyBorrowListV1Api 
-* @Description: 用户获取账单列表的api——账单二期
+* @ClassName: GetBillListByMonthAndYearApi 
+* @Description: 获取某期的账单的bill列表
 * @author yuyue
-* @date 2017年11月15日 上午10:47:56 
+* @date 2017年11月16日 下午6:47:11 
 *
  */
-@Component("getMyBorrowListV1Api")
-public class GetMyBorrowListV1Api implements ApiHandle{
+@Component("getBillListByMonthAndYearApi")
+public class GetBillListByMonthAndYearApi implements ApiHandle{
 
 	@Resource
 	private AfUserService afUserService;
@@ -69,57 +69,46 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		try {
 			Long userId = context.getUserId();
-			String status = ObjectUtils.toString(requestDataVo.getParams().get("status"));
+			int inMonth = NumberUtil.objToIntDefault(requestDataVo.getParams().get("billMonth"), 0);
+			int inYear = NumberUtil.objToIntDefault(requestDataVo.getParams().get("billYear"), 0);
+			if (inMonth == 0 || inYear == 0) {
+				logger.info("getBillListByMonthAndYearApi billMonth or billYear is null ,RequestDataVo id =" + requestDataVo.getId());
+				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+				return resp;
+			}
 			if (userId == null) {
-				logger.info("getMyBorrowListV1Api userId is null ,RequestDataVo id =" + requestDataVo.getId());
+				logger.info("getBillListByMonthAndYearApi userId is null ,RequestDataVo id =" + requestDataVo.getId());
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 				return resp;
 			}
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 			if (afUserDo == null || afUserDo.getRid() == null) {
-				logger.info("getMyBorrowListV1Api user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
+				logger.info("getBillListByMonthAndYearApi user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 				return resp;
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
-			BigDecimal money = new BigDecimal(0);
+			// 计算所属账期
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.MONTH,inMonth - 1);
+			calendar.set(Calendar.YEAR,inYear);
+			Date strOutDay = DateUtil.getFirstOfMonth(calendar.getTime());
+			strOutDay = DateUtil.addHoures(strOutDay, -12);
+			Date endOutDay = DateUtil.addMonths(strOutDay, 1);
+			calendar.setTime(endOutDay);
+			calendar.add(Calendar.SECOND, -1);
+			endOutDay = calendar.getTime();
+			
 			AfBorrowBillQuery query = new AfBorrowBillQuery();
 			query.setUserId(userId);
+			query.setOutDayStr(strOutDay);
+			query.setOutDayEnd(endOutDay);
 			query.setStatus("N");
-			if (StringUtil.equals("nowBill", status)) {
-				// 本月已出
-				query.setIsOut(1);
-				Calendar strDate = Calendar.getInstance();
-				Calendar endDate = Calendar.getInstance();
-			}else if (StringUtil.equals("outBill", status)) {
-				// 所有已出
-				query.setIsOut(1);
-			}else if (StringUtil.equals("overdueBill", status)){
-				// 逾期账单
-				query.setIsOut(1);
-				query.setOverdueStatus("Y");
-			}else if (StringUtil.equals("notOutBill", status)) {
-				// 未出账单
-				query.setIsOut(0);
-			}
-			money = afBorrowBillService.getUserBillMoneyByQuery(query);
-			List<AfBorrowBillDo> billList = afBorrowBillService.getUserBillListByQuery(query);
-			if (billList != null && billList.size() > 0) {
-				for (AfBorrowBillDo afBorrowBillDo : billList) {
-					if (afBorrowBillDo.getOverdueDays() > 0) {
-						afBorrowBillDo.setOverdueStatus("Y");
-					}
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(afBorrowBillDo.getGmtOutDay());
-					afBorrowBillDo.setBillMonth(calendar.get(Calendar.MONTH) + 1);
-					afBorrowBillDo.setBillYear(calendar.get(Calendar.YEAR));
-				}
-			}
-			map.put("money", money);
-			map.put("billList", billList);
+			BigDecimal money = afBorrowBillService.getUserBillMoneyByQuery(query);
+			
 			resp.setResponseData(map);
 		} catch (Exception e) {
-			logger.error("getMyBorrowListV1Api error :" , e);
+			logger.error("getBillListByMonthAndYearApi error :" , e);
 			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.CALCULATE_SHA_256_ERROR);
 			return resp;
 		}

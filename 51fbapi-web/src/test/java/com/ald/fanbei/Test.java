@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.alibaba.druid.util.StringUtils;
@@ -40,16 +42,31 @@ public class Test {
 //		}catch(Exception e){
 //			System.out.println(e);
 //		}
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		System.out.println(calendar.get(Calendar.MONTH));
-		System.out.println(calendar.get(Calendar.DAY_OF_MONTH));
-		calendar.set(Calendar.MONTH, 0);
-		Date time = calendar.getTime();
-		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(time));
-		calendar.add(Calendar.MONTH, -1);
-		time = calendar.getTime();
-		System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(time));
+		try {
+//			Date date2 = DateUtil.stringToDate(fDate);
+//			System.out.println(DateUtil.formatDate(date2, DateUtil.DATE_TIME_SHORT));
+//			Date firstOfMonth = DateUtil.getFirstOfMonth(date2);
+//			firstOfMonth = DateUtil.addHoures(firstOfMonth, -12);
+//			Date end = DateUtil.addMonths(firstOfMonth, 1);
+//			Calendar eCalendar = Calendar.getInstance();
+//			eCalendar.setTime(end);
+//			eCalendar.add(Calendar.SECOND, -1);
+//			end = eCalendar.getTime();
+//			System.out.println(DateUtil.formatDate(firstOfMonth, DateUtil.DATE_TIME_SHORT));
+//			System.out.println(DateUtil.formatDate(end, DateUtil.DATE_TIME_SHORT));
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.MONTH,0);
+			Date firstOfMonth = DateUtil.getFirstOfMonth(calendar.getTime());
+			firstOfMonth = DateUtil.addHoures(firstOfMonth, -12);
+			Date end = DateUtil.addMonths(firstOfMonth, 1);
+			calendar.setTime(end);
+			calendar.add(Calendar.SECOND, -1);
+			end = calendar.getTime();
+			System.out.println(DateUtil.formatDate(firstOfMonth, DateUtil.DATE_TIME_SHORT));
+			System.out.println(DateUtil.formatDate(end, DateUtil.DATE_TIME_SHORT));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 	
 	

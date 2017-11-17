@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.api.borrow;
+package com.ald.fanbei.api.web.api.bill;
 
 import java.math.BigDecimal;
 import java.util.Date;
