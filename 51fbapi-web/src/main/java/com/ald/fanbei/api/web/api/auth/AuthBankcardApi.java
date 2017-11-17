@@ -75,11 +75,11 @@ public class AuthBankcardApi implements ApiHandle {
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
 		UpsAuthSignRespBo upsResult = upsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
 		
-		if(!upsResult.isSuccess()){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
-		}else if(!"10".equals(upsResult.getNeedCode())){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR);
-		}
+//		if(!upsResult.isSuccess()){
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
+//		}else if(!"10".equals(upsResult.getNeedCode())){
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR);
+//		}
 		String isMain = YesNoStatus.NO.getCode();
 		//判断是否已绑定主卡
 		AfUserBankcardDo bank = afUserBankcardDao.getUserMainBankcardByUserId(context.getUserId());
