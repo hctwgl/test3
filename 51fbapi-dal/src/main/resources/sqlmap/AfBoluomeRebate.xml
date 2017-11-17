@@ -134,4 +134,14 @@
     <select id="checkOrderTimes" parameterType="java.lang.Long">
     	SELECT COUNT(1) FROM af_boluome_rebate WHERE user_id = #{userId};
     </select>
+     <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_boluome_rebate
+        where  is_delete = 0
+	    and user_id = #{userId}
+	   	order by  id desc 
+	   	limit 0,1
+    </select>
+    
 </mapper>

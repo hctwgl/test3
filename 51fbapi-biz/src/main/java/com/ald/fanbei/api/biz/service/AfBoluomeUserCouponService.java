@@ -21,5 +21,7 @@ public interface AfBoluomeUserCouponService extends ParentService<AfBoluomeUserC
     AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
     boolean sendCoupon(Long userId);
 
+    AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId);
+
 }
 

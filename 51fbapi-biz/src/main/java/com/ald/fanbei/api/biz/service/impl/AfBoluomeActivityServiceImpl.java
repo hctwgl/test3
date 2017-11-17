@@ -632,6 +632,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	public int sentNewUserBoluomeCouponForDineDash(AfUserDo afUserDo) {
 	    //没有券且有注册时绑定的记录。
 	    //1.是否有绑定关系
+	    logger.info("sentNewUserBoluomeCouponForDineDash start afUserDo = {}", afUserDo);
 	    AfBoluomeActivityUserLoginDo userLoginDo = new AfBoluomeActivityUserLoginDo();
 	    userLoginDo.setUserId(afUserDo.getRid());
 	    List<AfBoluomeActivityUserLoginDo>  userLoginList=  afBoluomeActivityUserLoginService.getListByCommonCondition(userLoginDo);
@@ -641,6 +642,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 		  String  type = H5GgActivity.GGACTIVITY.getCode();
 		  String  secType =  H5GgActivity.BOLUOMECOUPON.getCode();
 		  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
+		  logger.info("sentNewUserBoluomeCouponForDineDash resourceDo = {}", resourceDo);
 		     if(resourceDo!= null){
 			long  boluomeCouponId = Long.parseLong(resourceDo.getValue()) ;
 			//2.记录表查询是否有券
@@ -650,6 +652,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 			userCouponDo.setCouponId(boluomeCouponId);
 			AfBoluomeUserCouponDo  userCoupon =  afBoluomeUserCouponService.getByCouponIdAndUserIdAndChannel(userCouponDo);
 			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(boluomeCouponId);
+			logger.info("sentNewUserBoluomeCouponForDineDash resourceInfo = {}", resourceInfo);
 			//无券则发券，并推送极光
 			if(userCoupon == null){
 			    if (resourceInfo != null) {

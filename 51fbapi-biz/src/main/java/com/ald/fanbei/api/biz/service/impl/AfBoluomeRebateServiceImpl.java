@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRebateDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketDao;
@@ -21,6 +22,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketRelationDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.timevale.esign.sdk.tech.impl.model.GetAccountInfoModel;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -140,4 +142,12 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		return result;
 	}
 
+	@Override
+	public AfBoluomeRebateDo getLastUserRebateByUserId(Long userId) {
+	    // TODO Auto-generated method stub
+	    return afBoluomeRebateDao.getLastUserRebateByUserId(userId);
+	}
+
+
+	
 }

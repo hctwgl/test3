@@ -25,6 +25,8 @@ public interface AfBoluomeUserCouponDao extends BaseDao<AfBoluomeUserCouponDo, L
 
     int checkIfHaveCoupon(@Param("userId") Long userId);
 
+    AfBoluomeUserCouponDo getLastUserCouponByUserId(@Param("userId") Long userId);
+
     
 
 }

@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 
 /**
  * 点亮活动新版Dao
@@ -15,6 +16,11 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 	int checkOrderTimes(@Param("userId")Long userId);
+
+	AfBoluomeRebateDo getLastUserRebateByUserId(@Param("userId") Long userId);
+
+
+	AfShopDo getShopInfoByOrderId(@Param("orderId") long orderId);
 
     
 

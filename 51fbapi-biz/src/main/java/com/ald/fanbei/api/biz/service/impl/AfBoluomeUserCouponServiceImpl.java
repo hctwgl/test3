@@ -91,4 +91,10 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 
 	}
 
+	@Override
+	public AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId) {
+	    // TODO Auto-generated method stub
+	    return afBoluomeUserCouponDao.getLastUserCouponByUserId(userId);
+	}
+
 }

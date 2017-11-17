@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 
 /**
  * 点亮活动新版Service
@@ -13,5 +14,8 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo, Long>{
 
 	void addRedPacket(Long rid, Long userId) throws Exception;
+
+	AfBoluomeRebateDo getLastUserRebateByUserId(Long userId);
+
 
 }
