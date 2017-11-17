@@ -31,7 +31,7 @@
                     if(self.contentOne.msg==2){
                          /* self.flag=true;
                          self.isA=true; */
-                            window.location.href='cdynamicBill';
+                            //window.location.href='cdynamicBill';
                     } 
                         
                 }
@@ -67,11 +67,10 @@
                     self.contentTwo = eval('(' + data + ')');
                     console.log(self.contentTwo,'self.contentTwo');
                     console.log(self.contentTwo.msg,'console.log')
-                    window.location.href='changeSuccess';//点击提交跳转修改成功页面
-                    //判断修改多次的时候跳到修改次数用完页面
-                      /* if(self.contentTwo.msg==1){
-                            window.location.href='changeTimeOver';
-                    }   */
+                    //window.location.href='changeSuccess';//点击提交跳转修改成功页面
+                    //点击提交按钮显示隐藏的changeSuccess div页面
+                    $('#changeSuccess').show();
+                    $('#changbillDay').hide();
                        
                 }
                     

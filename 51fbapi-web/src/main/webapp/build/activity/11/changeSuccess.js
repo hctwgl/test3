@@ -1,4 +1,4 @@
-let vm = new Vue({
+let vm2 = new Vue({
     el:'#changeSuccess',
     data:{
         contentThree:'',
