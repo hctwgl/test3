@@ -535,6 +535,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 				}catch(Exception e){
 					logger.error("向催收平台同步还款信息失败",e);
 				}
+			}else{
+				logger.info("collection consumerRepayment not push,borrowCashId="+currAfBorrowCashDo.getRid());
 			}
 		}
 		
