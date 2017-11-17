@@ -146,16 +146,24 @@
 		LIMIT 0,1;
     </select>
     <select id="getRebateList" parameterType="java.lang.Long"  resultType="com.ald.fanbei.api.dal.domain.AfRebateDo">
-	    SELECT 
-		s.`name` as consumeScene
-		,o.gmt_create as consumeTime
-		,o.rebate_amount as sceneRebate 
-		, br.rebate_amount as surpriseRebate 
-		FROM af_boluome_rebate br 
+		SELECT
+			s.`name` AS consumeScene,
+			o.gmt_create AS consumeTime,
+			o.rebate_amount AS sceneRebate,
+			br.rebate_amount AS surpriseRebate
+		FROM
+			af_boluome_rebate br
+		INNER JOIN af_order o ON o.id = br.order_id
+		INNER JOIN af_shop s ON o.sec_type = s.type
+		AND o.is_delete = br.is_delete = s.is_delete = 0
+		AND br.user_id = 1;
+    </select>
+    <select id="getScence" parameterType="java.lang.Long" resultType="java.lang.String">
+	    SELECT s.`name` FROM af_boluome_rebate br 
 		INNER JOIN af_order o on o.id = br.order_id 
-			AND o.is_delete = br.is_delete = s.is_delete = 0
-			AND br.user_id = #{userId}
-		INNER JOIN af_shop s on o.sec_type = s.type
+		INNER JOIN af_shop s on s.type = o.sec_type 
+		AND br.is_delete = o.is_delete = s.is_delete
+		AND br.user_id = #{userId}
 		;
     </select>
 </mapper>

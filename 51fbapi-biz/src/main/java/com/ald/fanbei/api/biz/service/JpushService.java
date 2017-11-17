@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -247,4 +248,8 @@ public interface JpushService {
 	public void zhengxinRiskFault(String userName);
 
 	void boluomeActivityMsg(String userName, String type, String SecType);
+
+	public void send15Coupon(String userName);
+
+	public void sendRebateMsg(String userName, String scence, BigDecimal rebateAmount);
 }

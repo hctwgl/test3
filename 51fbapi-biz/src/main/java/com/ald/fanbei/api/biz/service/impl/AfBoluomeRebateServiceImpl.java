@@ -17,14 +17,17 @@ import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketRelationDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketThresholdDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketRelationDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.timevale.esign.sdk.tech.impl.model.GetAccountInfoModel;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.JpushService;
 
 /**
  * 点亮活动新版ServiceImpl
@@ -52,14 +55,26 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	AfBoluomeRedpacketDao dao;
 	@Resource
 	AfBoluomeRedpacketRelationDao relationDao;
+	@Resource
+	AfUserDao afUserDao;
 	@Override
 	public BaseDao<AfBoluomeRebateDo, Long> getDao() {
 		return afBoluomeRebateDao;
 	}
+	@Resource 
+	JpushService jpushService;
 
 	/**
-	 * mqp 2017-11-15 14:58:13 ：the second time light activity some logics
-	 * during the order is finished .
+	 * 
+	* @Title: addRedPacket
+	* @author qiao
+	* @date 2017年11月17日 下午3:59:57
+	* @Description: the second time light activity some logics
+	* during the order is finished .
+	* @param orderId
+	* @param userId
+	* @throws Exception    
+	* @throws
 	 */
 	@Override
 	public void addRedPacket(Long orderId, Long userId) throws Exception {
@@ -93,12 +108,27 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				afUserAccountDao.updateRebateAmount(accountDo);
 				
 				//call Jpush for rebate
+				String userName = convertToUserName(userId);
+				if (userName != null) {
+					String scence = afBoluomeRebateDao.getScence(userId);
+					jpushService.sendRebateMsg(userName,scence,rebateDo.getRebateAmount());
+				}
+				
 			}
 		} catch (Exception e) {
 			logger.error("afBoluomeRebateService.addRedPacket() error :", e);
 			throw new Exception();
 		}
 
+	}
+	
+	private String convertToUserName(Long userId) {
+		AfUserDo userDo = afUserDao.getUserById(userId);
+		String userName = "";
+		if (userDo != null) {
+			userName = userDo.getUserName();
+		}
+		return userName;
 	}
 
 	/**
@@ -157,11 +187,31 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		return afBoluomeRebateDao.getListByUserId(userId);
 	}
 
+	/**
+	 * 
+	* @Title: getLightShopId
+	* @author qiao
+	* @date 2017年11月17日 下午3:59:24
+	* @Description: 
+	* @param orderId
+	* @return    
+	* @throws
+	 */
 	@Override
 	public Long getLightShopId(Long orderId) {
 		return afBoluomeRebateDao.getLightShopId(orderId);
 	}
 
+	/**
+	 * 
+	* @Title: getRebateList
+	* @author qiao
+	* @date 2017年11月17日 下午3:59:30
+	* @Description: 
+	* @param userId
+	* @return    
+	* @throws
+	 */
 	@Override
 	public List<AfRebateDo> getRebateList(Long userId) {
 		return afBoluomeRebateDao.getRebateList(userId);
