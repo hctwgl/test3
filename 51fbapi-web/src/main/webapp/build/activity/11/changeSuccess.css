@@ -58,7 +58,7 @@ body {
   top: 2.65rem;
   transform: translateX(-50%);
 }
-.dynamic-center {
+.dynamic-centerR {
   width: 7.32rem;
   height: 6.68rem;
   background: url('https://f.51fanbei.com/h5/app/activity/11/dynamicBill-05.png') no-repeat;
@@ -66,35 +66,35 @@ body {
   margin-top: 43%;
   position: relative;
 }
-.dynamic-center .dateOne {
+.dynamic-centerR .dateOneR {
   position: absolute;
   top: 55%;
   left: 18%;
   text-align: center;
 }
-.dynamic-center .dateOne .monthOne {
+.dynamic-centerR .dateOneR .monthOneR {
   color: #646464;
   font-size: 0.4rem;
 }
-.dynamic-center .dateOne .count {
+.dynamic-centerR .dateOneR .countR {
   font-size: 0.28rem;
   color: #969696;
 }
-.dynamic-center .dateTwo {
+.dynamic-centerR .dateTwoR {
   position: absolute;
   top: 55%;
   right: 18%;
   text-align: center;
 }
-.dynamic-center .dateTwo .monthTwo {
+.dynamic-centerR .dateTwoR .monthTwoR {
   color: #646464;
   font-size: 0.4rem;
 }
-.dynamic-center .dateTwo .pay {
+.dynamic-centerR .dateTwoR .payR {
   font-size: 0.28rem;
   color: #969696;
 }
-.dynamic-center .line {
+.dynamic-centerR .lineR {
   width: 0.06rem;
   height: 0.9rem;
   border: solid 1px #ededed;

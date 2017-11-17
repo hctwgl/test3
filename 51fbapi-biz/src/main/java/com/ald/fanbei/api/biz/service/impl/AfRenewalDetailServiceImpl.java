@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -101,8 +102,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	RedisTemplate redisTemplate;
 
 	@Resource
-	AfContractPdfCreateService afContractPdfCreateService;
-
+	ContractPdfThreadPool contractPdfThreadPool;
 
 	@Override
 	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
@@ -357,7 +357,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 				logger.error("向催收平台同步续期信息",e);
 			}
 		}
-
+		if (resultValue == 1L){
+			//生成续期凭据
+			contractPdfThreadPool.protocolRenewalPdf(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
+		}
 		return resultValue;
 	}
 	
