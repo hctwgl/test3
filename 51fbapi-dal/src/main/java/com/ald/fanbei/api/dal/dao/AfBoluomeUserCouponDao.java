@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
@@ -20,6 +21,11 @@ public interface AfBoluomeUserCouponDao extends BaseDao<AfBoluomeUserCouponDo, L
 
     List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
 
+    AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
+
+    int checkIfHaveCoupon(@Param("userId") Long userId);
+
     
 
 }
+

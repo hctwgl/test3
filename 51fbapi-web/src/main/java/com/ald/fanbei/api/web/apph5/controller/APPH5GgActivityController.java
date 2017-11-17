@@ -75,512 +75,356 @@ import com.alibaba.fastjson.JSONObject;
 @RestController
 @RequestMapping(value = "/h5GgActivity", produces = "application/json;charset=UTF-8")
 public class APPH5GgActivityController extends BaseController {
-	@Resource
-	AfUserService afUserService;
-	@Resource
-	AfSmsRecordService afSmsRecordService;
-	@Resource
-	TongdunUtil tongdunUtil;
-	@Resource
-	BizCacheUtil bizCacheUtil;
-	@Resource
-	AfBoluomeUserCouponService afBoluomeUserCouponService;
-	@Resource
-	AfOrderService afOrderService;
-	@Resource
-	AfResourceService afResourceService;
-	@Resource
-	AfShopService afShopService;
-	@Resource
-	BoluomeUtil boluomeUtil;
-	@Resource
-	AfRecommendUserService afRecommendUserService;
-	@Resource
-	AfUserDao afUserDao;
 
-	String opennative = "/fanbei-web/opennative?name=";
+    @Resource
+    AfUserService afUserService;
+    @Resource
+    AfSmsRecordService afSmsRecordService;
+    @Resource
+    TongdunUtil tongdunUtil;
+    @Resource
+    BizCacheUtil bizCacheUtil;
+    @Resource
+    AfBoluomeUserCouponService afBoluomeUserCouponService;
+    @Resource
+    AfOrderService afOrderService;
+    @Resource
+    AfResourceService afResourceService;
+    @Resource
+    AfShopService afShopService;
+    @Resource
+    BoluomeUtil boluomeUtil;
+    @Resource
+    AfRecommendUserService afRecommendUserService;
+    @Resource
+    AfUserDao afUserDao;
 
-	@RequestMapping(value = "/commitRegisterLogin", method = RequestMethod.POST)
-	public String bouomeActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model)
-			throws IOException {
-		String resultStr = "";
-		String referer = request.getHeader("referer");
-		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"), referer,
-				"calling h5GgActivity commitRegisterLogin", request.getParameter("registerMobile"));
-		try {
-			String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
-			String inviteer = ObjectUtils.toString(request.getParameter("inviteer"), "").toString();
-			String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
-			String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
-			String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
-			String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+    String opennative = "/fanbei-web/opennative?name=";
 
-			AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
-			logger.info("h5GgActivity commitRegisterLogin eUserDo", eUserDo, moblie);
-			if (eUserDo != null) {
-				logger.error("h5GgActivity commitRegisterLogin user regist account exist", moblie);
-				return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(),
-						"Register", null).toString();
+    @RequestMapping(value = "/returnCoupon", method = RequestMethod.POST)
+    public String returnCoupon(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	// String userName =
+	// ObjectUtils.toString(request.getParameter("userName"),
+	// "").toString();
+	FanbeiWebContext context = new FanbeiWebContext();
+	String resultStr = "";
+	try {
+	    context = doWebCheck(request, false);
+	    Long userId = convertUserNameToUserId(context.getUserName());
+	    List<userReturnBoluomeCouponVo> returnCouponList = new ArrayList<userReturnBoluomeCouponVo>();
+	    AfBoluomeUserCouponVo vo = new AfBoluomeUserCouponVo();
+	    // 未登录时初始化一些数据
+	    AfShopDo shopDo = new AfShopDo();
+	    shopDo.setType(H5GgActivity.WAIMAI.getCode());
+	    AfShopDo shop = afShopService.getShopInfoBySecTypeOpen(shopDo);
+	    if (shop != null) {
+		vo.setShopId(shop.getRid());
+	    }
+	    BigDecimal couponAmount = new BigDecimal(String.valueOf(0));
+	    BigDecimal inviteAmount = new BigDecimal(String.valueOf(0));
+	    vo.setInviteAmount(inviteAmount);
+	    vo.setCouponAmount(couponAmount);
+	    vo.setReturnCouponList(returnCouponList);
+	    if (userId == null) {
+		return H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, vo).toString();
+	    }
 
-			}
-			AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
-			if (smsDo == null) {
-				logger.error("h5GgActivity commitRegisterLogin sms record is empty", moblie);
-				resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "Register", null).toString();
-				return resultStr;
-			}
+	    // 登录时返回数据
+	    AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
+	    queryUserCoupon.setUserId(userId);
+	    queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
 
-			String realCode = smsDo.getVerifyCode();
-			if (!StringUtils.equals(verifyCode, realCode)) {
-				logger.error("h5GgActivity commitRegisterLogin verifyCode is invalid", moblie);
-				resultStr = H5CommonResponse
-						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "Register", null)
-						.toString();
-				return resultStr;
-			}
-			if (smsDo.getIsCheck() == 1) {
-				logger.error("h5GgActivity commitRegisterLogin verifyCode is already invalid", moblie);
-				resultStr = H5CommonResponse.getNewInstance(false,
-						FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "Register", null).toString();
-				return resultStr;
-			}
-			// 判断验证码是否过期
-			if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-				logger.error("h5GgActivity commitRegisterLogin user regist sms overdue", moblie);
-				resultStr = H5CommonResponse
-						.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "Register", null)
-						.toString();
-				return resultStr;
+	    List<AfBoluomeUserCouponDo> userCouponList = afBoluomeUserCouponService.getUserCouponListByUerIdAndChannel(queryUserCoupon);
+	    for (AfBoluomeUserCouponDo userCoupon : userCouponList) {
+		long couponId = userCoupon.getCouponId();
 
-			}
-			try {
-				tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
-			} catch (Exception e) {
-				logger.error("h5GgActivity commitRegisterLogin tongtun fengkong error", moblie);
-				resultStr = H5CommonResponse.getNewInstance(false,
-						FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
-				return resultStr;
-			}
-
-			// 更新为已经验证
-			afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
-
-			String salt = UserUtil.getSalt();
-			String password = UserUtil.getPassword(passwordSrc, salt);
-
-			AfUserDo userDo = new AfUserDo();
-			userDo.setSalt(salt);
-			userDo.setUserName(moblie);
-			userDo.setMobile(moblie);
-			userDo.setNick("");
-			userDo.setPassword(password);
-			userDo.setRecommendId(0l);
-			// 邀请码
-			if (!StringUtils.isBlank(recommendCode)) {
-				AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
-				userDo.setRecommendId(userRecommendDo.getRid());
-			}
-			logger.info("h5GgActivity commitRegisterLogin userDo", userDo, moblie);
-			int result = afUserService.addUser(userDo);
-			logger.info("h5GgActivity commitRegisterLogin result", result, moblie);
-			Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
-			String inviteCode = Long.toString(invteLong, 36);
-			userDo.setRecommendCode(inviteCode);
-			afUserService.updateUser(userDo);
-			// 获取邀请分享地址
-			String appDownLoadUrl = "";
-			// AfResourceDo resourceCodeDo =
-			// afResourceService.getSingleResourceBytype(AfResourceType.AppDownloadUrl.getCode());
-			// if (resourceCodeDo != null) {
-			// appDownLoadUrl = resourceCodeDo.getValue();
-			// }
-			resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
-			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),
-					"/h5GgActivity/commitRegisterLogin success", moblie);
-			// save token to cache
-			String token1 = UserUtil.generateToken(moblie);
-			String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
-			CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie,
-					Constants.SECOND_OF_HALF_HOUR_INT);
-			CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token,
-					Constants.SECOND_OF_HALF_HOUR_INT);
-			bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
-			try {
-				if (StringUtils.isNotEmpty(inviteer)) {
-					AfBoluomeUserCouponDo afBoluomeUserCouponDo = new AfBoluomeUserCouponDo();
-					afBoluomeUserCouponDo.setUserId(NumberUtil.objToLong(inviteer));
-					afBoluomeUserCouponDo.setRefId(NumberUtil.objToLong(moblie));
-					afBoluomeUserCouponDo.setChannel(H5GgActivity.REGISTER.getCode());
-					afBoluomeUserCouponDo.setStatus(2);
-					int saveResult = afBoluomeUserCouponService.saveRecord(afBoluomeUserCouponDo);
-					if (saveResult == 1) {
-						logger.info("h5GgActivity commitRegisterLogin saveResult success", afBoluomeUserCouponDo);
-					} else {
-						logger.info("h5GgActivity commitRegisterLogin saveResult fial", afBoluomeUserCouponDo);
-					}
-				}
-			} catch (Exception e) {
-				logger.error("h5GgActivity save boluomeUserCoupon record error" + e.getMessage());
-			}
-			return resultStr;
-
-		} catch (FanbeiException e) {
-			logger.error("commitRegister fanbei exception" + e.getMessage());
-			resultStr = H5CommonResponse.getNewInstance(false, "失败", "Register", null).toString();
-			return resultStr;
-		} catch (Exception e) {
-			logger.error("commitRegister exception", e);
-			resultStr = H5CommonResponse.getNewInstance(false, "失败", "Register", null).toString();
-			return resultStr;
-		} finally {
-
+		userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
+		// returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(userCoupon.getGmtCreate()));
+		// 被邀请人没有订单：未消费; 有订单且订单没有一个是完成的(或者有订单且用户优惠券记录的优惠券id等于0)：未完成。
+		// 有完成的订单(或者有订单且用户优惠券记录的优惠券id大于0)：
+		long refUserId = userCoupon.getRefId();
+		// 手机号
+		AfUserDo uDo = afUserService.getUserById(refUserId);
+		if (uDo != null) {
+		    returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
+		    returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
 		}
 
-	}
-
-	@RequestMapping(value = "/returnCoupon", method = RequestMethod.POST)
-	public String returnCoupon(HttpServletRequest request, HttpServletResponse response, ModelMap model)
-			throws IOException {
-		// String userName =
-		// ObjectUtils.toString(request.getParameter("userName"),
-		// "").toString();
-		FanbeiWebContext context = new FanbeiWebContext();
-		String resultStr = "";
-		try {
-			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
-			List<userReturnBoluomeCouponVo> returnCouponList = new ArrayList<userReturnBoluomeCouponVo>();
-			AfBoluomeUserCouponVo vo = new AfBoluomeUserCouponVo();
-			// 未登录时初始化一些数据
-			AfShopDo shopDo = new AfShopDo();
-			shopDo.setType(H5GgActivity.WAIMAI.getCode());
-			AfShopDo shop = afShopService.getShopInfoBySecTypeOpen(shopDo);
-			if (shop != null) {
-				vo.setShopId(shop.getRid());
-			}
-			BigDecimal couponAmount = new BigDecimal(String.valueOf(0));
-			BigDecimal inviteAmount = new BigDecimal(String.valueOf(0));
-			vo.setInviteAmount(inviteAmount);
-			vo.setCouponAmount(couponAmount);
-			vo.setReturnCouponList(returnCouponList);
-			if (userId == null) {
-				return H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, vo).toString();
-			}
-
-			// 登录时返回数据
-			AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
-			queryUserCoupon.setUserId(userId);
-			queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
-
-			List<AfBoluomeUserCouponDo> userCouponList = afBoluomeUserCouponService
-					.getUserCouponListByUerIdAndChannel(queryUserCoupon);
-			for (AfBoluomeUserCouponDo userCoupon : userCouponList) {
-				long couponId = userCoupon.getCouponId();
-
-				userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
-				// returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(userCoupon.getGmtCreate()));
-				// 被邀请人没有订单：未消费; 有订单且订单没有一个是完成的(或者有订单且用户优惠券记录的优惠券id等于0)：未完成。
-				// 有完成的订单(或者有订单且用户优惠券记录的优惠券id大于0)：
-				long refUserId = userCoupon.getRefId();
-				// 手机号
-				AfUserDo uDo = afUserService.getUserById(refUserId);
-				if (uDo != null) {
-					returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
-					returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
-				}
-
-				// 订单状态
-				AfOrderDo order = new AfOrderDo();
-				order.setUserId(refUserId);
-				int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
-				if (queryCount <= 0) {
-					returnCouponVo.setStatus(H5GgActivity.NOCONSUME.getDescription());
-				}
-				if (queryCount > 0) {
-					if (couponId <= 0) {
-						returnCouponVo.setStatus(H5GgActivity.NOFINISH.getDescription());
-					} else {
-						returnCouponVo.setStatus(H5GgActivity.ALREADYCONSUME.getDescription());
-					}
-				}
-				if (couponId <= 0) {
-					returnCouponVo.setReward("0");
-				} else {
-					AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
-					if (rDo != null) {
-						returnCouponVo.setReward(rDo.getName());
-					}
-					// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
-					try {
-						AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
-						if (afResourceDo != null) {
-							// List<BrandActivityCouponResponseBo>
-							// activityCouponList =
-							// boluomeUtil.getActivityCouponList(afResourceDo.getValue());
-							// BrandActivityCouponResponseBo bo =
-							// activityCouponList.get(0);
-							BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
-							couponAmount = couponAmount.add(money);
-						}
-					} catch (Exception e) {
-						logger.error("get coluome activity inviteAmount error", e.getStackTrace());
-					}
-				}
-				returnCouponList.add(returnCouponVo);
-			}
-			// 好友借钱邀请者得到的奖励总和 inviteAmount af_recommend_money表
-			inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId));
-
-			vo.setReturnCouponList(returnCouponList);
-			vo.setInviteAmount(inviteAmount);
-			vo.setCouponAmount(couponAmount);
-			resultStr = H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, vo).toString();
-		} catch (Exception e) {
-			logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
-			resultStr = H5CommonResponse.getNewInstance(false, "获取返券列表失败").toString();
+		// 订单状态
+		AfOrderDo order = new AfOrderDo();
+		order.setUserId(refUserId);
+		int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
+		if (queryCount <= 0) {
+		    returnCouponVo.setStatus(H5GgActivity.NOCONSUME.getDescription());
 		}
-		return resultStr;
-
-	}
-
-	@RequestMapping(value = "/inviteFriend", method = RequestMethod.POST)
-	public String inviteFriend(HttpServletRequest request, HttpServletResponse response, ModelMap model)
-			throws IOException {
-		// String userName =
-		// ObjectUtils.toString(request.getParameter("userName"),
-		// "").toString();
-		FanbeiWebContext context = new FanbeiWebContext();
-		String resultStr = "";
-		try {
-			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
-			BoluomeActivityInviteFriendVo inviteFriendVo = new BoluomeActivityInviteFriendVo();
-			AfResourceDo resourceInfo = new AfResourceDo();
-
-			resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
-					H5GgActivity.DINEANDDASH.getCode());
-			// 未登录时初始化一些数据
-			if (resourceInfo != null) {
-				inviteFriendVo.setImage(resourceInfo.getValue());
-				// inviteFriendVo.setText(text);
-				inviteFriendVo.setActivityRule(resourceInfo.getValue1());
-				inviteFriendVo.setExample(resourceInfo.getValue2());
-
-			}
-			if (userId == null) {
-				return H5CommonResponse.getNewInstance(true, "获取邀请好友吃霸王餐页面信息成功", null, inviteFriendVo).toString();
-			}
-
-			// 登录时返回数据
-			AfUserDo uDo = afUserService.getUserById(userId);
-			if (uDo != null) {
-				inviteFriendVo.setInviteCode(uDo.getRecommendCode());
-			}
-
-			resultStr = H5CommonResponse.getNewInstance(true, "获取邀请好友吃霸王餐页面信息成功", null, inviteFriendVo).toString();
-		} catch (Exception e) {
-			logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
-			resultStr = H5CommonResponse.getNewInstance(false, "获取邀请好友吃霸王餐页面信息失败").toString();
+		if (queryCount > 0) {
+		    if (couponId <= 0) {
+			returnCouponVo.setStatus(H5GgActivity.NOFINISH.getDescription());
+		    } else {
+			returnCouponVo.setStatus(H5GgActivity.ALREADYCONSUME.getDescription());
+		    }
 		}
-		return resultStr;
-
-	}
-
-	@RequestMapping(value = "/inviteCeremony", method = RequestMethod.POST)
-	public String inviteCeremony(HttpServletRequest request, HttpServletResponse response, ModelMap model)
-			throws IOException {
-		// String userName =
-		// ObjectUtils.toString(request.getParameter("userName"),
-		// "").toString();
-		FanbeiWebContext context = new FanbeiWebContext();
-		String resultStr = "";
-		try {
-			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
-			BoluomeActivityInviteCeremonyVo inviteCeremonyVo = new BoluomeActivityInviteCeremonyVo();
-			AfResourceDo resourceInfo = new AfResourceDo();
-
-			resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
-					H5GgActivity.INVITECERMONY.getCode());
-			// 未登录时初始化一些数据
-			if (resourceInfo != null) {
-				AfResourceDo resource = afResourceService
-						.getResourceByResourceId(Long.parseLong(resourceInfo.getValue1()));
-				if (resource != null) {
-					inviteCeremonyVo.setCouponAmount(resource.getPic1());
-				}
-				inviteCeremonyVo.setImage(resourceInfo.getValue());
-				inviteCeremonyVo.setSpePreference(resourceInfo.getValue2());
-				inviteCeremonyVo.setActivityRule(resourceInfo.getValue3());
-				inviteCeremonyVo.setExample(resourceInfo.getValue4());
+		if (couponId <= 0) {
+		    returnCouponVo.setReward("0");
+		} else {
+		    AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
+		    if (rDo != null) {
+			returnCouponVo.setReward(rDo.getName());
+		    }
+		    // 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
+		    try {
+			AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
+			if (afResourceDo != null) {
+			    // List<BrandActivityCouponResponseBo>
+			    // activityCouponList =
+			    // boluomeUtil.getActivityCouponList(afResourceDo.getValue());
+			    // BrandActivityCouponResponseBo bo =
+			    // activityCouponList.get(0);
+			    BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
+			    couponAmount = couponAmount.add(money);
 			}
-			if (userId == null) {
-				return H5CommonResponse.getNewInstance(true, "获取邀请有礼页面信息成功", null, inviteCeremonyVo).toString();
-			}
-
-			// 登录时返回数据
-			AfUserDo uDo = afUserService.getUserById(userId);
-			if (uDo != null) {
-				inviteCeremonyVo.setInviteCode(uDo.getRecommendCode());
-			}
-
-			resultStr = H5CommonResponse.getNewInstance(true, "获取邀请有礼页面信息成功", null, inviteCeremonyVo).toString();
-		} catch (Exception e) {
-			logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
-			resultStr = H5CommonResponse.getNewInstance(false, "获取邀请有礼页面信息失败").toString();
+		    } catch (Exception e) {
+			logger.error("get coluome activity inviteAmount error", e.getStackTrace());
+		    }
 		}
-		return resultStr;
+		returnCouponList.add(returnCouponVo);
+	    }
+	    // 好友借钱邀请者得到的奖励总和 inviteAmount af_recommend_money表
+	    inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId));
 
+	    vo.setReturnCouponList(returnCouponList);
+	    vo.setInviteAmount(inviteAmount);
+	    vo.setCouponAmount(couponAmount);
+	    resultStr = H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, vo).toString();
+	} catch (Exception e) {
+	    logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
+	    resultStr = H5CommonResponse.getNewInstance(false, "获取返券列表失败").toString();
 	}
+	return resultStr;
 
-	/**
-	 * @author qiao
-	 * @说明：逛逛活动点亮过程中的领券
-	 * @param: @param
-	 *             request
-	 * @param: @param
-	 *             model
-	 * @param: @return
-	 * @param: @throws
-	 *             IOException
-	 * @return: String
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	public String pickBoluomeCouponV1(HttpServletRequest request, ModelMap model) throws IOException {
-		try {
-			Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
-			FanbeiWebContext context = new FanbeiWebContext();
-			context = doWebCheck(request, false);
-			String userName = context.getUserName();
-			logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}", sceneId, userName);
-			if (sceneId == null) {
-				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc())
-						.toString();
-			}
+    }
 
-			if (StringUtils.isEmpty(userName)) {
-				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				return H5CommonResponse.getNewInstance(false, "没有登录", notifyUrl, null).toString();
-			}
-			AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
-			if (afUserDo == null) {
-				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				return H5CommonResponse.getNewInstance(false, "没有登录", notifyUrl, null).toString();
-			}
+    @RequestMapping(value = "/inviteFriend", method = RequestMethod.POST)
+    public String inviteFriend(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	// String userName =
+	// ObjectUtils.toString(request.getParameter("userName"),
+	// "").toString();
+	FanbeiWebContext context = new FanbeiWebContext();
+	String resultStr = "";
+	try {
+	    context = doWebCheck(request, false);
+	    Long userId = convertUserNameToUserId(context.getUserName());
+	    BoluomeActivityInviteFriendVo inviteFriendVo = new BoluomeActivityInviteFriendVo();
+	    AfResourceDo resourceInfo = new AfResourceDo();
 
-			AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
-			if (resourceInfo == null) {
-				logger.error("couponSceneId is invalid");
-				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
-			}
-			PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
-			bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+	    resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(), H5GgActivity.DINEANDDASH.getCode());
+	    // 未登录时初始化一些数据
+	    if (resourceInfo != null) {
+		inviteFriendVo.setImage(resourceInfo.getValue());
+		// inviteFriendVo.setText(text);
+		inviteFriendVo.setActivityRule(resourceInfo.getValue1());
+		inviteFriendVo.setExample(resourceInfo.getValue2());
 
-			Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
-			Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+	    }
+	    if (userId == null) {
+		return H5CommonResponse.getNewInstance(true, "获取邀请好友吃霸王餐页面信息成功", null, inviteFriendVo).toString();
+	    }
 
-			if (DateUtil.beforeDay(new Date(), gmtStart)) {
-				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc())
-						.toString();
-			}
-			if (DateUtil.afterDay(new Date(), gmtEnd)) {
-				return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc())
-						.toString();
-			}
+	    // 登录时返回数据
+	    AfUserDo uDo = afUserService.getUserById(userId);
+	    if (uDo != null) {
+		inviteFriendVo.setInviteCode(uDo.getRecommendCode());
+	    }
 
-			String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
-			logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo),
-					resultString);
-			JSONObject resultJson = JSONObject.parseObject(resultString);
-			String code = resultJson.getString("code");
+	    resultStr = H5CommonResponse.getNewInstance(true, "获取邀请好友吃霸王餐页面信息成功", null, inviteFriendVo).toString();
+	} catch (Exception e) {
+	    logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
+	    resultStr = H5CommonResponse.getNewInstance(false, "获取邀请好友吃霸王餐页面信息失败").toString();
+	}
+	return resultStr;
 
-			if ("10222".equals(code) || "10206".equals(code) || "11206".equals(code)) {
-				return H5CommonResponse.getNewInstance(true, "您已领过优惠券，快去使用吧~").toString();
-			} else if ("10305".equals(code)) {
-				return H5CommonResponse.getNewInstance(true, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
-			} else if (!"0".equals(code)) {
-				return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
-			}
-			// 存入数据库
-			AfBoluomeUserCouponDo userCoupon = new AfBoluomeUserCouponDo();
-			userCoupon.setChannel(H5GgActivity.PICK.getCode());
-			userCoupon.setCouponId(sceneId);
-			userCoupon.setUserId(afUserDo.getRid());
-			userCoupon.setStatus(1);
-			int result = afBoluomeUserCouponService.saveRecord(userCoupon);
-			if (result == 0) {
-				logger.info("pickBoluomeCoupon boluome and save userCoupon fail userCoupon = {},",
-						JSONObject.toJSONString(userCoupon));
-			}
+    }
 
-			// bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.SECOND_OF_ONE_MONTH);
-			return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
+    @RequestMapping(value = "/inviteCeremony", method = RequestMethod.POST)
+    public String inviteCeremony(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	// String userName =
+	// ObjectUtils.toString(request.getParameter("userName"),
+	// "").toString();
+	FanbeiWebContext context = new FanbeiWebContext();
+	String resultStr = "";
+	try {
+	    context = doWebCheck(request, false);
+	    Long userId = convertUserNameToUserId(context.getUserName());
+	    BoluomeActivityInviteCeremonyVo inviteCeremonyVo = new BoluomeActivityInviteCeremonyVo();
+	    AfResourceDo resourceInfo = new AfResourceDo();
 
-		} catch (Exception e) {
-			logger.error("pick brand coupon failed , e = {}", e.getMessage());
-			return H5CommonResponse
-					.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
+	    resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(), H5GgActivity.INVITECERMONY.getCode());
+	    // 未登录时初始化一些数据
+	    if (resourceInfo != null) {
+		AfResourceDo resource = afResourceService.getResourceByResourceId(Long.parseLong(resourceInfo.getValue1()));
+		if (resource != null) {
+		    inviteCeremonyVo.setCouponAmount(resource.getPic1());
 		}
+		inviteCeremonyVo.setImage(resourceInfo.getValue());
+		inviteCeremonyVo.setSpePreference(resourceInfo.getValue2());
+		inviteCeremonyVo.setActivityRule(resourceInfo.getValue3());
+		inviteCeremonyVo.setExample(resourceInfo.getValue4());
+	    }
+	    if (userId == null) {
+		return H5CommonResponse.getNewInstance(true, "获取邀请有礼页面信息成功", null, inviteCeremonyVo).toString();
+	    }
 
+	    // 登录时返回数据
+	    AfUserDo uDo = afUserService.getUserById(userId);
+	    if (uDo != null) {
+		inviteCeremonyVo.setInviteCode(uDo.getRecommendCode());
+	    }
+
+	    resultStr = H5CommonResponse.getNewInstance(true, "获取邀请有礼页面信息成功", null, inviteCeremonyVo).toString();
+	} catch (Exception e) {
+	    logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
+	    resultStr = H5CommonResponse.getNewInstance(false, "获取邀请有礼页面信息失败").toString();
+	}
+	return resultStr;
+
+    }
+
+    /**
+     * @author qiao
+     * @说明：逛逛活动点亮过程中的领券
+     * @param: @param request
+     * @param: @param model
+     * @param: @return
+     * @param: @throws IOException
+     * @return: String
+     */
+    @ResponseBody
+    @RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String pickBoluomeCouponV1(HttpServletRequest request, ModelMap model) throws IOException {
+	try {
+	    Long sceneId = NumberUtil.objToLongDefault(request.getParameter("sceneId"), null);
+	    FanbeiWebContext context = new FanbeiWebContext();
+	    context = doWebCheck(request, false);
+	    String userName = context.getUserName();
+	    logger.info(" pickBoluomeCoupon begin , sceneId = {}, userName = {}", sceneId, userName);
+	    if (sceneId == null) {
+		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST.getDesc()).toString();
+	    }
+
+	    if (StringUtils.isEmpty(userName)) {
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+		return H5CommonResponse.getNewInstance(false, "没有登录", notifyUrl, null).toString();
+	    }
+	    AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+	    if (afUserDo == null) {
+		String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative + H5OpenNativeType.AppLogin.getCode();
+		return H5CommonResponse.getNewInstance(false, "没有登录", notifyUrl, null).toString();
+	    }
+
+	    AfResourceDo resourceInfo = afResourceService.getResourceByResourceId(sceneId);
+	    if (resourceInfo == null) {
+		logger.error("couponSceneId is invalid");
+		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+	    }
+	    PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+	    bo.setUser_id(afUserDo.getRid() + StringUtil.EMPTY);
+
+	    Date gmtStart = DateUtil.parseDate(resourceInfo.getValue1(), DateUtil.DATE_TIME_SHORT);
+	    Date gmtEnd = DateUtil.parseDate(resourceInfo.getValue2(), DateUtil.DATE_TIME_SHORT);
+
+	    if (DateUtil.beforeDay(new Date(), gmtStart)) {
+		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_NOT_START.getDesc()).toString();
+	    }
+	    if (DateUtil.afterDay(new Date(), gmtEnd)) {
+		return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_DATE_END.getDesc()).toString();
+	    }
+
+	    String resultString = HttpUtil.doHttpPostJsonParam(resourceInfo.getValue(), JSONObject.toJSONString(bo));
+	    logger.info("pickBoluomeCoupon boluome bo = {}, resultString = {}", JSONObject.toJSONString(bo), resultString);
+	    JSONObject resultJson = JSONObject.parseObject(resultString);
+	    String code = resultJson.getString("code");
+
+	    if ("10222".equals(code) || "10206".equals(code) || "11206".equals(code)) {
+		return H5CommonResponse.getNewInstance(true, "您已领过优惠券，快去使用吧~").toString();
+	    } else if ("10305".equals(code)) {
+		return H5CommonResponse.getNewInstance(true, "您下手慢了哦，优惠券已领完，下次再来吧").toString();
+	    } else if (!"0".equals(code)) {
+		return H5CommonResponse.getNewInstance(true, resultJson.getString("msg")).toString();
+	    }
+	    // 存入数据库
+	    AfBoluomeUserCouponDo userCoupon = new AfBoluomeUserCouponDo();
+	    userCoupon.setChannel(H5GgActivity.PICK.getCode());
+	    userCoupon.setCouponId(sceneId);
+	    userCoupon.setUserId(afUserDo.getRid());
+	    userCoupon.setStatus(1);
+	    int result = afBoluomeUserCouponService.saveRecord(userCoupon);
+	    if (result == 0) {
+		logger.info("pickBoluomeCoupon boluome and save userCoupon fail userCoupon = {},", JSONObject.toJSONString(userCoupon));
+	    }
+
+	    // bizCacheUtil.saveObject("boluome:coupon:"+resourceInfo.getRid()+afUserDo.getUserName(),"Y",2*Constants.SECOND_OF_ONE_MONTH);
+	    return H5CommonResponse.getNewInstance(true, "恭喜您领券成功").toString();
+
+	} catch (Exception e) {
+	    logger.error("pick brand coupon failed , e = {}", e.getMessage());
+	    return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
 	}
 
-	@Override
-	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-		// TODO Auto-generated method stub
-		return null;
+    }
+
+    @Override
+    public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+	try {
+	    RequestDataVo reqVo = new RequestDataVo();
+
+	    JSONObject jsonObj = JSON.parseObject(requestData);
+	    reqVo.setId(jsonObj.getString("id"));
+	    reqVo.setMethod(request.getRequestURI());
+	    reqVo.setSystem(jsonObj);
+
+	    return reqVo;
+	} catch (Exception e) {
+	    throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 	}
+    }
 
-	@Override
-	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		try {
-			RequestDataVo reqVo = new RequestDataVo();
+    @Override
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
+    /**
+     * 
+     * @Title: convertUserNameToUserId @Description: @param userName @return
+     *         Long @throws
+     */
+    private Long convertUserNameToUserId(String userName) {
+	Long userId = null;
+	if (!StringUtil.isBlank(userName)) {
+	    AfUserDo user = afUserService.getUserByUserName(userName);
+	    if (user != null) {
+		userId = user.getRid();
+	    }
 
-			return reqVo;
-		} catch (Exception e) {
-			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-		}
 	}
+	return userId;
+    }
 
-	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
-			HttpServletRequest httpServletRequest) {
-		// TODO Auto-generated method stub
-		return null;
+    private String changePhone(String userName) {
+	String newUserName = "";
+	if (!StringUtil.isBlank(userName)) {
+	    newUserName = userName.substring(0, 3);
+	    newUserName = newUserName + "****";
+	    newUserName = newUserName + userName.substring(7, 11);
 	}
-
-	/**
-	 * 
-	 * @Title: convertUserNameToUserId @Description: @param userName @return
-	 *         Long @throws
-	 */
-	private Long convertUserNameToUserId(String userName) {
-		Long userId = null;
-		if (!StringUtil.isBlank(userName)) {
-			AfUserDo user = afUserService.getUserByUserName(userName);
-			if (user != null) {
-				userId = user.getRid();
-			}
-
-		}
-		return userId;
-	}
-
-	private String changePhone(String userName) {
-		String newUserName = "";
-		if (!StringUtil.isBlank(userName)) {
-			newUserName = userName.substring(0, 3);
-			newUserName = newUserName + "****";
-			newUserName = newUserName + userName.substring(7, 11);
-		}
-		return newUserName;
-	}
+	return newUserName;
+    }
 
 }

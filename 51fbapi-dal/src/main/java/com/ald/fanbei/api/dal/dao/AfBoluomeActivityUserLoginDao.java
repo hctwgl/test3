@@ -28,6 +28,8 @@ public interface AfBoluomeActivityUserLoginDao extends BaseDao<AfBoluomeActivity
 	int updateBindingFlagIsN(AfBoluomeActivityUserLoginDo updateBidingflag);
 	Integer getBindingNum(@Param("activityId")Long activityId, @Param("refUserId")Long refUserId);
 
+	Long findRefUserId(@Param("userId")Long userId);
+
     
 
 }

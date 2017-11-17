@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
  */
 public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo, Long>{
 
+	void addRedPacket(Long rid, Long userId) throws Exception;
+
 }

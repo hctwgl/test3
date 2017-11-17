@@ -19,7 +19,7 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 
-		String tables = "af_boluome_rebate,af_boluome_redpacket,af_boluome_redpacket_relation,af_boluome_redpacket_threshold,af_boluome_user_coupon";
+		String tables = "af_boluome_redpacket_relation";
 
 		// 配置作者及Domain说明
 		String classAuthor = "gaojibin_temple";

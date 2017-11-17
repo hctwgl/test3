@@ -131,5 +131,7 @@
         FROM af_boluome_rebate
         <include refid="commonCondition"/>
     </select>
-    
+    <select id="checkOrderTimes" parameterType="java.lang.Long">
+    	SELECT COUNT(1) FROM af_boluome_rebate WHERE user_id = #{userId};
+    </select>
 </mapper>

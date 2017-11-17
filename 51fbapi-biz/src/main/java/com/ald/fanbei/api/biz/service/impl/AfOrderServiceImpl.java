@@ -11,8 +11,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +26,27 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
+import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfContractPdfCreateService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -209,6 +228,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Resource
     AfContractPdfCreateService afContractPdfCreateService;
 
+    @Resource
+    AfBoluomeRebateService afBoluomeRebateService;
+    @Resource
+    AfBoluomeUserCouponService afBoluomeUserCouponService;
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
         return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -699,16 +722,28 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             } catch (Exception e) {
                                 logger.info("ggLightActivity error:", e);
                             }
+                            //qiao+2017-11-14 15:30:27:the second time to light the activity
+                            try{
+                            	logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",afOrder.getRid(),userId);
+                            	//send red packet 
+                            	afBoluomeRebateService.addRedPacket(afOrder.getRid(),userId);
+                            }catch (Exception e) {
+                            	logger.info("afBoluomeRebateService.addRedPacket error",e);
+                            }
+                            //qiao+2017-11-14 15:30:27:the second time to light the activity
+                            try{
+                            	logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",afOrder.getRid(),userId);
+                            	//send coupon
+                            	boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+                            	if (!flag1) {
+									throw new Exception();
+								}
+                            }catch (Exception e) {
+                            	logger.info("afBoluomeRebateService.sendCoupon error",e);
+                            }
+                            
 
 
-//                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-//						if(afBorrowDo !=null) {
-//							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-//							if(borrowList == null || borrowList.size()==0 ){
-//								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-//								afBorrowDao.addBorrowBill(billList);
-//							}
-//						}
                             break;
                         default:
                             logger.info(" status is {} ", afOrder.getStatus());
