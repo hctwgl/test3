@@ -35,6 +35,7 @@ public class homeScrollBarController implements ApiHandle {  //HOMEPAGE_TOP_SCRO
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		
 		List<AfResourceDo> resourceListByType = afResourceService.getResourceListByType(Constants.HOMEPAGE_TOP_SCROLLBAR);
+		Map<String,Object> infos = new HashMap<String,Object>();
 		List<Object> scrollBars = new ArrayList<Object>();
 		if(resourceListByType != null && resourceListByType.size()>0) {
 			for (AfResourceDo afResourceDo : resourceListByType) {
@@ -46,7 +47,8 @@ public class homeScrollBarController implements ApiHandle {  //HOMEPAGE_TOP_SCRO
 				scrollBars.add(info);
 			}
 		}
-		resp.setResponseData(scrollBars);
+		infos.put("infos", scrollBars);
+		resp.setResponseData(infos);
 		return resp;
 	}
 
