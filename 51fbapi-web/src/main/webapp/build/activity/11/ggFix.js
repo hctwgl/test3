@@ -54,6 +54,16 @@ let vm = new Vue({
     }
 });
 function step(){
-    $('.firstWord').animate({'opacity':1},2000)
+    //方法二
+    setTimeout(function(){
+        $('.lineBox01').addClass('lineShow01');
+        $('.word01').addClass('wordShow01');
+        $('.lineBox02').addClass('lineShow02');
+        $('.word02').addClass('wordShow02');
+        $('.lineBox03').addClass('lineShow03');
+        $('.word03').addClass('wordShow03');
+        $('.lineBox04').addClass('lineShow04');
+        $('.word04').addClass('wordShow04');
+    }, 500);
 }
-step()
+step();
