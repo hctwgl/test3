@@ -71,6 +71,7 @@
                     //点击提交按钮显示隐藏的changeSuccess div页面
                     $('#changeSuccess').show();
                     $('#changbillDay').hide();
+                    vm2.logData()
                        
                 }
                     

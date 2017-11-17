@@ -49,9 +49,9 @@
             <div class="rule" @click="ruleClick()">规则</div>
         </div>
         <div class="dynamic-centerR">
-            <span class="dateOneR"><i class="monthOneR">每月{{contentThree.data.outDay}}号</i><br/><i class="countR">出账日</i></span>
+            <span class="dateOneR"><i class="monthOneR">每月<i class="outDayO">{{contentThree.data.outDay}}</i>号</i><br/><i class="countR">出账日</i></span>
             <span class="lineR"></span>
-            <span class="dateTwoR"><i class="monthTwoR">每月{{contentThree.data.payDay}}号</i><br/><i class="payR">还款日</i></span>
+            <span class="dateTwoR"><i class="monthTwoR">每月<i class="payDayO">{{contentThree.data.payDay}}</i>号</i><br/><i class="payR">还款日</i></span>
         </div>
         <div class="dynamic-bottom">
             <button class="btn" @click="firstWeb()">返回首页</button>
