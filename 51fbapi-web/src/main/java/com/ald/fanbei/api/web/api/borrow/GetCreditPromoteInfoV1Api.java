@@ -187,7 +187,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		}
 
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
-				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())){
+				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())
+				|| (StringUtil.equals(authDo.getRiskStatus(),RiskStatus.A.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.A.getCode()))){
 			data.put("title1","你好，"+userDto.getRealName());
 			data.put("title2","完善基本资料即可获取3000-20000额度");
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.PROCESS.getCode())
