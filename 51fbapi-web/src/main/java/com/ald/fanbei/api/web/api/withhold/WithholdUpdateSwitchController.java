@@ -74,6 +74,7 @@ public class WithholdUpdateSwitchController  implements ApiHandle {
 					userWithholdDo.setCardNumber1(mainBankcard.getCardNumber());
 					userWithholdDo.setCardId1(mainBankcard.getRid());
 					userWithholdDo.setIsWithhold(Integer.parseInt(IsSwitch));
+					userWithholdDo.setUsebalance(1);
 					afUserWithholdService.insertAfUserWithholdDto(userWithholdDo);
 				} catch (Exception e){
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);

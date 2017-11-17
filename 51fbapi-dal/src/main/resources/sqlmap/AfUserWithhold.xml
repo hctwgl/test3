@@ -27,8 +27,8 @@
 	    </select>
 
     <insert id="insertAfUserWithholdDto" keyProperty="id" useGeneratedKeys="true" parameterType="AfUserWithholdDo">
-    	INSERT INTO `af_user_withhold` (user_name,user_id,is_withhold,card_number1,card_id1)
-		VALUES(#{userName},#{userId},#{isWithhold},#{cardNumber1},#{cardId1})
+    	INSERT INTO `af_user_withhold` (user_name,user_id,is_withhold,usebalance,card_number1,card_id1)
+		VALUES(#{userName},#{userId},#{isWithhold},#{usebalance},#{cardNumber1},#{cardId1})
     </insert>
 
     <update id="updateAfUserWithholdDtoByUserId">
