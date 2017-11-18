@@ -27,8 +27,72 @@
 	    </select>
 
     <insert id="insertAfUserWithholdDto" keyProperty="id" useGeneratedKeys="true" parameterType="AfUserWithholdDo">
-    	INSERT INTO `af_user_withhold` (user_name,user_id,is_withhold,usebalance,card_number1,card_id1)
-		VALUES(#{userName},#{userId},#{isWithhold},#{usebalance},#{cardNumber1},#{cardId1})
+    	INSERT INTO 
+    	`af_user_withhold` 
+    	(user_name,user_id,is_withhold,usebalance
+    	<if test="cardNumber1 != null">
+			,card_number1
+		</if>
+		<if test="cardNumber2 != null">
+			,card_number2
+		</if>
+		<if test="cardNumber3 != null">
+			,card_number3
+		</if>
+		<if test="cardNumber4 != null">
+			,card_number4
+		</if>
+		<if test="cardNumber5 != null">
+			,card_number5
+		</if>
+		<if test="cardId1 != null">
+			,card_id1
+		</if>
+		<if test="cardId2 != null">
+			,card_id2
+		</if>
+		<if test="cardId3 != null">
+			,card_id3
+		</if>
+		<if test="cardId4 != null">
+			,card_id4
+		</if>
+		<if test="cardId5 != null">
+			,card_id5
+		</if>
+	)
+		VALUES(#{userName},#{userId},#{isWithhold},#{usebalance}
+		<if test="cardNumber1 != null">
+			,#{cardNumber1}
+		</if>
+		<if test="cardNumber2 != null">
+			,#{cardNumber2}
+		</if>
+		<if test="cardNumber3 != null">
+			,#{cardNumber3}
+		</if>
+		<if test="cardNumber4 != null">
+			,#{cardNumber4}
+		</if>
+		<if test="cardNumber5 != null">
+			,#{cardNumber5}
+		</if>
+		<if test="cardId1 != null">
+			,#{cardId1}
+		</if>
+		<if test="cardId2 != null">
+			,#{cardId2}
+		</if>
+		<if test="cardId3 != null">
+			,#{cardId3}
+		</if>
+		<if test="cardId4 != null">
+			,#{cardId4}
+		</if>
+		<if test="cardId5 != null">
+			,#{cardId5}
+		</if>
+		)
     </insert>
 
     <update id="updateAfUserWithholdDtoByUserId">
