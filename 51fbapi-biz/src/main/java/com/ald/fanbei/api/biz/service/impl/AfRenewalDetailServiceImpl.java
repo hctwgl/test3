@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -101,8 +102,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	RedisTemplate redisTemplate;
 
 	@Resource
-	AfContractPdfCreateService afContractPdfCreateService;
-
+	ContractPdfThreadPool contractPdfThreadPool;
 
 	@Override
 	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
@@ -311,8 +311,6 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					afUserAccountDao.updateUserAccount(account);
 
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
-					//生成续期凭据
-					afContractPdfCreateService.protocolRenewal(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -340,15 +338,29 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			//当续期成功时,同步逾期天数为0
 			dealWithSynchronizeOverduedOrder(currAfBorrowCashDo);
 
+			/*try {
+				//生成续期凭据
+				afContractPdfCreateService.protocolRenewal(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
+				logger.error("生成续期凭据成功，renewId="+afRenewalDetailDo.getUserId());
+			} catch (Exception e) {
+				logger.error("生成续期凭据异常，renewId="+afRenewalDetailDo.getUserId(),e);
+			}*/
 			//返呗续期通知接口，向催收平台同步续期信息
 			try {
-				CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
-				logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+				if (currAfBorrowCashDo.getOverdueStatus().equals("Y") || currAfBorrowCashDo.getOverdueDay() > 0) {					
+					CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
+					logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+				}else{
+					logger.info("collection renewalNotify req unPush, renewalNo=" + afRenewalDetailDo.getPayTradeNo());
+				}
 			}catch(Exception e){
 				logger.error("向催收平台同步续期信息",e);
 			}
 		}
-
+		if (resultValue == 1L){
+			//生成续期凭据
+			contractPdfThreadPool.protocolRenewalPdf(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
+		}
 		return resultValue;
 	}
 	

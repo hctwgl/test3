@@ -106,10 +106,8 @@ public class AfESdkServiceImpl implements AfESdkService {
 		String type = map.get("signType");// 签章类型
 		SignType signType = null;
 		String sealData = map.get("personUserSeal");// 签章数据
-		// srcFile = "F:/doc/t.pdf";
 		fileName = "反呗合同";
 		type = "Multi";
-		// dstFile = "F:/doc/m2.pdf";
 		if ("Single".equalsIgnoreCase(type)) {
 			signType = SignType.Single;
 		} else if ("Multi".equalsIgnoreCase(type)) {
@@ -164,10 +162,8 @@ public class AfESdkServiceImpl implements AfESdkService {
 		String type = map.get("signType");// 签章类型
 		SignType signType = null;
 		String sealData = map.get("secondSeal");// 签章数据
-		// srcFile = "F:/doc/t.pdf";
 		fileName = "反呗合同";
 		type = "Multi";
-		// dstFile = "F:/doc/m2.pdf";
 		if ("Single".equalsIgnoreCase(type)) {
 			signType = SignType.Single;
 		} else if ("Multi".equalsIgnoreCase(type)) {
@@ -249,9 +245,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		String key = map.get("key");
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
-		// srcFile = "F:/doc/m2.pdf";
 		fileName = "反呗合同";
-		// dstFile = "F:/doc/mm.pdf";
 		posPage = "5";
 		PosBean pos = new PosBean();
 		pos.setPosType(posType);
@@ -316,7 +310,6 @@ public class AfESdkServiceImpl implements AfESdkService {
 			}
 		}
 		return num;
-
 	}
 
 	@Override

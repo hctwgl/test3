@@ -3,6 +3,7 @@
 }
 body {
   background-color: white;
+  overflow-x: hidden;
 }
 .dynamic-top {
   height: 6.1rem;
@@ -18,13 +19,21 @@ body {
 .dynamic-top .personIn {
   width: 7.4rem;
   position: relative;
+  margin-top: -0.4rem;
+}
+.dynamic-top .personIn .over {
+  padding-top: .45rem;
 }
 .dynamic-top .personIn .unpaid {
   text-align: center;
-  font-size: 0.34rem;
+  font-size: 0.3rem;
 }
 .dynamic-top .personIn .down {
-  padding-top: 0.2rem;
+  padding-top: 0.25rem;
+  line-height: 0.35rem;
+}
+.dynamic-top .personIn .success {
+  padding-top: .5rem;
 }
 .dynamic-top .personIn img {
   width: 1rem;
@@ -33,6 +42,7 @@ body {
   left: 50%;
   top: 1rem;
   transform: translateX(-50%);
+  border-radius: 50%;
 }
 .dynamic-top .personIn .personName {
   font-size: 0.3rem;
@@ -93,6 +103,10 @@ body {
   right: 50%;
   transform: translateX(-50%);
 }
+.dynamic-bottom {
+  width: 100%;
+  height: 4rem;
+}
 .dynamic-bottom .oneTime {
   color: #999;
   font-size: 0.2rem;
@@ -115,4 +129,78 @@ body {
   font-size: .32rem;
   color: #fff;
   margin-left: 8%;
+  margin-bottom: 2rem;
+}
+.rule {
+  height: 1.33rem;
+  border-radius: .04rem;
+  font-size: .32rem;
+  letter-spacing: .02rem;
+  color: #fff;
+  line-height: .33rem;
+  position: absolute;
+  top: 10%;
+  left: 92%;
+  width: 0.5rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding-top: 0.3rem;
+  border-radius: 5px 0 0 5px;
+  width: 0.6rem;
+  padding-left: 1%;
+}
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: .6;
+  display: block;
+  z-index: 10;
+}
+.alertRule {
+  width: 5.4rem;
+  height: 6.6rem;
+  border-radius: .1rem;
+  background: #fff;
+  position: absolute;
+  top: 3.3rem;
+  left: 60%;
+  display: block;
+  transform: translateX(-3.3rem);
+  z-index: 20;
+  background: url('https://f.51fanbei.com/h5/app/activity/11/ruleBill.png') no-repeat;
+  background-size: contain;
+  padding: 2rem 0.3rem;
+}
+.ruleTitle {
+  font-size: .32rem;
+  text-align: center;
+  padding: .4rem 0 .3rem 0;
+}
+.ruleCont {
+  width: 90%;
+  margin: -0.2rem auto;
+  text-align: justify;
+  padding-bottom: .7rem;
+  font-size: 0.3rem;
+  color: #838383;
+}
+.close {
+  width: .5rem;
+  height: .5rem;
+  border: 2px solid #a9a4a4;
+  text-align: center;
+  line-height: .5rem;
+  border-radius: 50%;
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translateX(-0.25rem);
+  z-index: 20;
+  color: #a9a4a4;
+  font-size: .3rem;
+  font-weight: bold;
 }
