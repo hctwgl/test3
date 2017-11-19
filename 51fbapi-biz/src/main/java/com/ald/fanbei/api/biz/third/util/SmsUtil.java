@@ -458,6 +458,7 @@ public class SmsUtil extends AbstractThird {
             }
         }
         if (StringUtil.isNotBlank(content)) {
+            logger.error("sendRepaymentBorrowCashSuccess success,mobile:"+mobile+"content:"+content);
             SmsResult smsResult = sendSmsToDhst(mobile, content);
             return smsResult.isSucc();
         }
@@ -493,6 +494,7 @@ public class SmsUtil extends AbstractThird {
             	}
                 String content = StringUtil.null2Str(resourceDo.getValue());
                 content = content.replace("&errorMsg", errorMsg);
+                logger.error("sendRepaymentBorrowCashFail success,mobile:"+mobile+"content:"+content);
                 SmsResult smsResult = sendSmsToDhst(mobile, content);
                 return smsResult.isSucc();
             }else{
@@ -837,7 +839,7 @@ public class SmsUtil extends AbstractThird {
                 String content = StringUtil.null2Str(resourceDo.getValue());
                 content = content.replace("&errorMsg", errorMsg);
                 SmsResult smsResult = sendSmsToDhst(mobile, content);
-                logger.error("sendRepaymentBorrowBill success,mobile:"+mobile+"content:"+content);
+                logger.error("sendRepaymentBorrowBillFail success,mobile:"+mobile+"content:"+content);
                 return smsResult.isSucc();
             }else{
                 logger.error("sendRepaymentBorrowBillFail false,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
@@ -857,7 +859,7 @@ public class SmsUtil extends AbstractThird {
                 String month = DateUtil.getMonth(date);
                 String content = BorrowBillMessageSuccess.replace("x", month);
                 SmsResult smsResult = sendSmsToDhst(mobile, content);
-                logger.error("sendRepaymentBorrowBillsuccess,mobile:"+mobile+"content:"+content);
+                logger.error("sendRepaymentBorrowBillsuccess success,mobile:"+mobile+"content:"+content);
                 return smsResult.isSucc();
             }else{
                 logger.error("sendRepaymentBorrowBillsuccess false,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
