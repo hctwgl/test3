@@ -224,7 +224,22 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 								bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
 						if (!respBo.isSuccess()) {
 							if(StringUtil.isNotBlank(respBo.getRespDesc())){
-								dealRepaymentFail(payTradeNo, "",true,StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));	
+								String addMsg = "";
+								try{
+									if(bank!=null){
+										String bankName = bank.getBankName();
+										String cardNum = bank.getCardNumber();
+										if(StringUtil.isNotBlank(bankName)&&StringUtil.isNotBlank(cardNum)){
+											if(cardNum.length()>4){
+												cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
+												addMsg = "{"+ bankName + cardNum + "}";
+											}
+										}
+									}
+								}catch (Exception e){
+									logger.error("BorrowCash sendMessage but addMsg error for:"+e);
+								}
+								dealRepaymentFail(payTradeNo, "",true,addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
 							}else{
 								dealRepaymentFail(payTradeNo, "",false,"");	
 							}
