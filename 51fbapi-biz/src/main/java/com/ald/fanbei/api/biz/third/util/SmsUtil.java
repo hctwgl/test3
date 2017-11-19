@@ -525,7 +525,7 @@ public class SmsUtil extends AbstractThird {
 	         String content = StringUtil.null2Str(resourceDo.getValue());
 	         content = content.replace("&errorMsg", errorMsg);
 	         SmsResult smsResult = sendSmsToDhst(mobile, content);
-	         logger.info("sendRenewalFailWarnMsg is success"); 
+	         logger.info("ssendRenewalFailWarnMsg is succes ;content={}"+content);
 	         return smsResult.isSucc();
 	     }else{
 	     	logger.error("sendRenewalFailWarnMsg false,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);

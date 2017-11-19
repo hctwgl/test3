@@ -62,19 +62,37 @@ public class WithholdUpdateSwitchController  implements ApiHandle {
 		Map<String,Integer> map = new HashMap<String,Integer>();
 		AfUserWithholdDo afUserWithholdDo = afUserWithholdService.getAfUserWithholdDtoByUserId(userDo.getRid());
 		if (afUserWithholdDo == null) {
-				AfUserBankcardDo mainBankcard = afUserBankCardService.getUserMainBankcardByUserId(userDo.getRid());
-			/*	List<AfUserBankcardDo> afUserBankcardDoList = afUserBankCardService.getAfUserBankcardDoList(userDo.getRid());//得到所有的银行卡
-				if (afUserBankcardDoList != null && afUserBankcardDoList.size() > 0) {
-					
-				}*/
+				//AfUserBankcardDo mainBankcard = afUserBankCardService.getUserMainBankcardByUserId(userDo.getRid());
 				AfUserWithholdDo userWithholdDo = new AfUserWithholdDo();
+				String str = afUserBankCardService.getAfUserBankcardList(userDo.getRid());// 得到所有的银行卡字符串
+				
+				String[] card = str.split("\\,");
 				try {
 					userWithholdDo.setUserName(userDo.getUserName());
 					userWithholdDo.setUserId(userDo.getRid());
-					userWithholdDo.setCardNumber1(mainBankcard.getCardNumber());
-					userWithholdDo.setCardId1(mainBankcard.getRid());
 					userWithholdDo.setIsWithhold(Integer.parseInt(IsSwitch));
 					userWithholdDo.setUsebalance(1);
+					if(card.length >= 1) {
+						String[] split1 = card[0].split("\\|");
+						userWithholdDo.setCardNumber1(split1[1]);
+						userWithholdDo.setCardId1(Long.parseLong(split1[0]));
+					}if(card.length >= 2) {
+						String[] split2 = card[1].split("\\|");
+						userWithholdDo.setCardNumber2(split2[1]);
+						userWithholdDo.setCardId2(Long.parseLong(split2[0]));
+					}  if(card.length >= 3) {
+						String[] split3 = card[2].split("\\|");
+						userWithholdDo.setCardNumber3(split3[1].toString());
+						userWithholdDo.setCardId3(Long.parseLong(split3[0].toString()));
+					}  if(card.length >= 4) {
+						String[] split4 = card[3].split("\\|");
+						userWithholdDo.setCardNumber4(split4[1]);
+						userWithholdDo.setCardId4(Long.parseLong(split4[0]));
+					} if(card.length >= 5) {
+						String[] split5 = card[4].split("\\|");
+						userWithholdDo.setCardNumber5(split5[1]);
+						userWithholdDo.setCardId5(Long.parseLong(split5[0]));
+					}
 					afUserWithholdService.insertAfUserWithholdDto(userWithholdDo);
 				} catch (Exception e){
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
@@ -82,44 +100,6 @@ public class WithholdUpdateSwitchController  implements ApiHandle {
 		} else {
 			afUserWithholdService.updateAfUserWithholdDtoByUserId(userDo.getRid(), Integer.parseInt(IsSwitch));
 		}
-		
-		String str = afUserBankCardService.getAfUserBankcardList(userDo.getRid());// 得到所有的银行卡
-		
-		String[] card = str.split("\\,");
-		
-		AfUserWithholdDo userWithholdDo = new AfUserWithholdDo();
-		//if (afUserBankcardList != null && afUserBankcardList.size() > 0) {
-			/*
-			 int i = 0;
-			 String[] card = new String[afUserBankcardList.size()];
-			 long[] cardId = new long[afUserBankcardList.size()];
-			for (AfUserBankcardDo afUserBankcardDo : afUserBankcardList) {
-					card[i++] = afUserBankcardDo.getCardNumber();
-					cardId[i++] = afUserBankcardDo.getRid();
-			}*/
-			if(card.length >= 0) {
-				String[] split1 = card[0].split("\\|");
-				userWithholdDo.setCardNumber1(split1[1]);
-				userWithholdDo.setCardId1(Long.parseLong(split1[0]));
-			}if(card.length >= 1) {
-				String[] split2 = card[1].split("\\|");
-				userWithholdDo.setCardNumber2(split2[1]);
-				userWithholdDo.setCardId2(Long.parseLong(split2[0]));
-			}  if(card.length >= 2) {
-				String[] split3 = card[2].split("\\|");
-				userWithholdDo.setCardNumber3(split3[1].toString());
-				userWithholdDo.setCardId3(Long.parseLong(split3[0].toString()));
-			}  if(card.length >= 3) {
-				String[] split4 = card[3].split("\\|");
-				userWithholdDo.setCardNumber4(split4[1]);
-				userWithholdDo.setCardId4(Long.parseLong(split4[0]));
-			} if(card.length >= 4) {
-				String[] split5 = card[4].split("\\|");
-				userWithholdDo.setCardNumber5(split5[1]);
-				userWithholdDo.setCardId5(Long.parseLong(split5[0]));
-			}
-			userWithholdDo.setUserId(userDo.getRid());
-			afUserWithholdService.updateAfUserWithholdDo(userWithholdDo);
 
 		AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());
 		map.put("isWithhold", withholdInfo.getIsWithhold());
