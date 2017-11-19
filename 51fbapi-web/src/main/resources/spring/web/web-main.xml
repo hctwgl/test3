@@ -91,12 +91,15 @@
 	<bean id="beforeLoginApiList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
+				<value>/auth/getFaceType</value>
+			
 				<value>/user/login</value>
 				<value>/user/getVerifyCode</value>
 				<value>/user/setRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
 				<value>/user/checkLoginVerifyCode</value>
+				<value>/user/accountAppealCheckSms</value>
 				<value>/goods/getHomeInfo</value>
 				<value>/goods/getHomeInfoV1</value>
 				<value>/good/getSearchHome</value>

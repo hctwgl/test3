@@ -55,7 +55,9 @@ public class AccountAppealCheckSmsApi implements ApiHandle {
 		
 		smsUtil.checkSmsByMobileAndType(newMobile, smsCode, SmsType.MOBILE_BIND);
 		
+		//短信校验成功以后
 		afUserAppealLogDao.insert(AfUserAppealLogDo.generate(context.getUserId(), newMobile, AfUserAppealLogStatusEnum.ING));
+		// TODO bizCacheUtil.set 成功标识符
 		
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 	}
