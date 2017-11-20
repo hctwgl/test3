@@ -402,7 +402,7 @@ public class AppH5UserContorler extends BaseController {
 
     }
     
-    @RequestMapping(value = "/checkMobileRegistered", method = {RequestMethod.POST,RequestMethod.GET}, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/checkMobileRegistered", method = {RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String checkMobileRegistered(HttpServletRequest request, ModelMap model) throws IOException {
     	Calendar calStart = Calendar.getInstance();
