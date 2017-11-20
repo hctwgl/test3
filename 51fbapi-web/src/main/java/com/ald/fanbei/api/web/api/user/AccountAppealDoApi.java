@@ -44,21 +44,24 @@ public class AccountAppealDoApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		Map<String, Object> params = requestDataVo.getParams();
 		final String password = params.get("password").toString();
-		String username = context.getUserName();
+		final String oldMobile = params.get("oldMobile").toString();
 		
-		if(StringUtils.isBlank(password)) {
+		if(StringUtils.isBlank(password) || StringUtils.isBlank(oldMobile)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 		}
 		
-		final Long userId = context.getUserId();
+		String mobileInfoStr = bizCacheUtil.hget(Constants.CACHEKEY_REAL_AUTH_MOBILE_INFO, oldMobile);
+		logger.info("AccountAppealDoApi,getMobileInfo from cache,info=" + mobileInfoStr);
+		final Long userId = Long.valueOf(mobileInfoStr.split(",")[1]);
+		
 		AfUserAppealLogDo appealLog = afUserAppealLogDao.getLatestByUserId(userId);
 		if(appealLog == null) {return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_SYSTEM_NOT_EXIST);}
 		
 		final String newMobile = appealLog.getNewMobile();
-		String citizen_id = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX + username).toString();
-		String realname = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + username).toString();
-		Object facePassFlag = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_PASS_PREFFIX + username);
-		logger.info("AccountAppealDoApi,userName=" + username + ",newMobile=" + newMobile + ",citizenId=" + citizen_id + ",realName=" + realname + ",faccePassFlag" + facePassFlag);
+		String citizen_id = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX + oldMobile).toString();
+		String realname = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + oldMobile).toString();
+		Object facePassFlag = bizCacheUtil.getObject(Constants.CACHEKEY_REAL_AUTH_PASS_PREFFIX + oldMobile);
+		logger.info("AccountAppealDoApi,userName=" + oldMobile + ",newMobile=" + newMobile + ",citizenId=" + citizen_id + ",realName=" + realname + ",faccePassFlag" + facePassFlag);
 		appealLog.setRealName(realname);
 		appealLog.setCitizenId(citizen_id);
 		

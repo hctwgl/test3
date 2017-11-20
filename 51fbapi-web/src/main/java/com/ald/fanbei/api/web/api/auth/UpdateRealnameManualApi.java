@@ -34,7 +34,13 @@ public class UpdateRealnameManualApi implements ApiHandle {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
         
-        bizCacheUtil.saveObjectForever(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + context.getUserName(), realname);
+        String userName = context.getUserName();
+        userName = StringUtils.isBlank(userName) ? (String)params.get("oldMobile"):userName;//兼容免登
+        if(StringUtils.isBlank(userName)) {
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
+        
+        bizCacheUtil.saveObjectForever(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + userName, realname);
         
         return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
     }

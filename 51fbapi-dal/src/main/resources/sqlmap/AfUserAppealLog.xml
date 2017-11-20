@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAppealLogDao">
 
 	<sql id="allFields">
-		id rid,user_id,new_mobile,real_name,citizen_id,msg,status,gmt_create,gmt_modified,is_delete
+		id rid,user_id,old_mobile,new_mobile,real_name,citizen_id,msg,status,gmt_create,gmt_modified,is_delete
 	</sql>
 	
 	<select id="getLatestByUserId" parameterType="java.lang.Long" resultType="AfUserAppealLogDo">
@@ -19,6 +19,7 @@
 	<insert id="insert" parameterType="AfUserAppealLogDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_user_appeal_log (
 		  user_id,
+		  old_mobile,
 		  new_mobile,
           status,
 		  gmt_create,

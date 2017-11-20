@@ -143,6 +143,7 @@ public class Constants {
     public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX 		= "real_auth_citizen_card$";
     public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX 		= "real_auth_real_name$";
     public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX 				= "real_auth_pass$";
+    public static final String CACHEKEY_REAL_AUTH_MOBILE_INFO 				= "real_auth_mobile_info";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";

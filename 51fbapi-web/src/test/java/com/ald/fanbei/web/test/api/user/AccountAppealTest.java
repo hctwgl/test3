@@ -41,6 +41,7 @@ public class AccountAppealTest extends BaseTest{
 		String url = urlBase + "/user/accountAppealCheckSms";
 		Map<String,String> params = new HashMap<>();
 		params.put("verifyCode", "888888");
+		
 		params.put("newMobile", "15869648535");
 		testApi(url, params, userName, true);
 	}
@@ -49,6 +50,7 @@ public class AccountAppealTest extends BaseTest{
 	public void updateRealnameManual(){
 		String url = urlBase + "/auth/updateRealnameManual";
 		Map<String,String> params = new HashMap<>();
+		params.put("oldMobile", userName);
 		params.put("realname", "王卿");
 		testApi(url, params, userName, true);
 		
@@ -60,6 +62,7 @@ public class AccountAppealTest extends BaseTest{
 	public void accountAppealDo(){
 		String url = urlBase + "/user/accountAppealDo";
 		Map<String,String> params = new HashMap<>();
+		params.put("oldMobile", userName);
 		params.put("password", DigestUtils.md5Hex("88888888"));
 		testApi(url, params, userName, true);
 	}
