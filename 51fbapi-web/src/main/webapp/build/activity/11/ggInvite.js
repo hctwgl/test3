@@ -80,7 +80,7 @@ window.onload = ()=>{
         $('.rulewindow .content').append(rulehtml.join(''))
         $('.invitecode').text(invitationCode)
         $('.invitecode')[0].dataset.clipboardText = invitationCode
-        $('.myreward span').text(sum)
+        $('.myreward').find('.firstSpan').text(sum);
 
         let protocol = window.location.protocol;
         let host = window.location.host;
@@ -275,6 +275,7 @@ $(function(){
             $('.limitRule').html(content.activityRule);
             $('.exampleRule').html(content.example);
             $('.top').append('<img src="'+content.image+'">');
+            $('.secondSpan').html('+'+content.spePreference);
         },
         error:function(){
             requestMsg('哎呀，出错了！')

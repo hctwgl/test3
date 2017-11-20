@@ -13,7 +13,9 @@ let vm = new Vue({
         firstValue:'',
         secondTitle:'',
         secondValue:'',
-        myRebateMoney:''
+        myRebateMoney:'',
+        alertData:'',
+        alertShow:false
     },
     created: function () {
         this.logData();
@@ -39,9 +41,20 @@ let vm = new Vue({
                     if(self.content.totalRebate && self.content.totalRebate!=0){
                         self.content.totalRebate=self.content.totalRebate.toString(); //奖励金金额
                         self.myRebateMoney=self.content.totalRebate.split('');
+                        if(self.myRebateMoney.indexOf(".")==-1){ //判断整数
+                            return ;
+                        }else{  //判断小数
+                            self.$nextTick(function () {
+                                let pointIndex = self.myRebateMoney.indexOf(".");
+                                $('.fanMoneyStyle i').eq(pointIndex).addClass('pointSpecialStyle');
+                                $('.fanMoneyStyle i:gt('+pointIndex+')').addClass('decimalSpecialStyle');
+                                console.log(pointIndex);
+                            });
+                        }
                     }
+
                     self.$nextTick(function () {
-                        /*图片预加载*/
+                        /*/!*图片预加载*!/
                         $(".first").each(function() {
                             var img = $(this);
                             img.load(function () {
@@ -50,7 +63,7 @@ let vm = new Vue({
                             setTimeout(function () {
                                 $(".loadingMask").fadeOut();
                             },1000)
-                        });
+                        });*/
                         $(".loadingMask").fadeOut();
                     })
                 },
@@ -76,6 +89,22 @@ let vm = new Vue({
                             }
                         }
                     })
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！')
+                }
+            });
+            //弹窗初始化
+            $.ajax({
+                type: 'post',
+                url: "/h5GgActivity/popUp",
+                success: function (data) {
+                    //console.log(data);
+                    self.alertData=data.data;
+                    console.log(self.alertData);
+                    if((self.alertData.couponToPop && self.alertData.couponToPop=='Y') || (self.alertData.rebateToPop && self.alertData.rebateToPop=='Y')){
+                        self.alertShow=true;
+                    }
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
@@ -178,6 +207,8 @@ let vm = new Vue({
         closeClick(){
             let self=this;
             self.ruleShow=false;
+            $('.toast').hide();
+            self.alertShow=false;
         }
     }
 });

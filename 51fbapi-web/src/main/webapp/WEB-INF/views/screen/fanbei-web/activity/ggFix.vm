@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711180955")
+    #set($version="201711201606")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -10,8 +10,8 @@
 <body>
 <div id="ggFix" class="ggFix">
     <div class="loadingMask"><i class="loading"></i></div>
-    <div class="banner first">
-        <img src="$src/ggFix01.jpg">
+    <div class="banner">
+        <img class="first" src="$src/ggFix01.jpg">
         <div class="firstStep">
             <p class="word01"></p>
             <p class="lineBox01"><span class="line01"></span></p>
@@ -54,14 +54,15 @@
     <div class="thirdCont">
         <div class="myPrize">
             <p class="prizeTop">我的奖励</p>
-            <p class="prizeBot">合计
-                <span v-if="content.totalRebate">
+            <p class="prizeBot">
+                <span>合计</span>
+                <span v-if="content.totalRebate" class="fanMoneyStyle">
                     <i v-for="item in myRebateMoney">{{item}}</i>
                 </span>
                 <span v-else>
                     <i>0</i>
                 </span>
-                元返利金
+                <span>元返利金</span>
             </p>
         </div>
         <p class="toCash">去账户提现 ></p>
@@ -97,6 +98,16 @@
             <div class="card" v-for="item in content.cardList" @click="cardClick(item)"><img :src="item.image"></div>
         </div>
     </div>
+    <div class="toast">
+       <div class="fanMoney" v-if="alertData.rebateToPop && alertData.rebateToPop==='Y'">
+           <p class="title01">您已参与“{{alertData.sceneName}}”场景<br/><span>获得<i>{{alertData.rebateAmount}}元</i>返利金</span></p>
+           <p class="toGet">领取188元 ></p>
+       </div>
+        <div class="takeOutFood" v-if="alertData.couponToPop && alertData.couponToPop==='Y' && ((alertData.rebateToPop && alertData.rebateToPop==='N') || !alertData.rebateToPop)">
+            <p class="toUse" @click="contNewUserClick()"></p>
+        </div>
+    </div>
+    <div class="mask" v-show="alertShow"  @click="closeClick()"></div>
 </div>
 <script type="text/javascript" src="/dist/activity/11/ggFix.js?version=$version"></script>
 </body>

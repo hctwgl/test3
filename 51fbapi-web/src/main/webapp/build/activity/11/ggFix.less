@@ -3,6 +3,7 @@
 .clearFix{zoom:1}
 body{
   position:relative;
+  background:#e33333;
 }
 .ggFix .banner{
   width:100%;
@@ -372,7 +373,7 @@ body{
   margin-top:-.1rem;
 }
 .myPrize{
-  width: 5.35rem;
+  width: 87%;
   height: 1.4rem;
   border-radius: .3rem;
   border:2px solid #ffffff;
@@ -395,7 +396,7 @@ body{
   }
   .prizeBot{
     font-size: .32rem;
-    width:4.64rem;
+    width:86%;
     height: .83rem;
     line-height: .4rem;
     letter-spacing: .04rem;
@@ -404,9 +405,13 @@ body{
     background:#f74a48;
     position: absolute;
     bottom: -.25rem;
-    left: 50%;
-    transform: translateX(-2.32rem);
-    span i{
+    left: 7%;
+    display: flex;
+    justify-content: space-around;
+    span:nth-child(1),span:nth-child(3){
+      padding-top:.4rem;
+    }
+    .fanMoneyStyle i{
       width: .49rem;
       height: .83rem;
       border-radius: .04rem;
@@ -415,8 +420,22 @@ body{
       font-size:.65rem;
       color:#fff;
       font-weight: 600;
-      line-height: .83rem;
+      line-height: 1rem;
       text-align: center;
+      float:left;
+      &.pointSpecialStyle{
+        width:auto;
+        background:transparent;
+        margin-top: .1rem;
+        line-height: .75rem;
+      }
+      &.decimalSpecialStyle{
+        width:.35rem;
+        height:.6rem;
+        font-size:.4rem;
+        margin-top: .2rem;
+        line-height: .75rem;
+      }
     }
   }
 }
@@ -488,6 +507,7 @@ body{
 /*fourthCont*/
 .ggFix .fourthCont{
   width:100%;
+  height:14.71rem;
   background:url('@{url}/ggFix05.jpg') no-repeat;
   background-size:cover;
   padding-top:.37rem;
@@ -581,6 +601,7 @@ body{
   float:left;
 }
 .noRebateMoney{
+  height:2rem;
   font-size: .3rem;
   text-align: center;
   padding-top: .4rem;
@@ -595,4 +616,61 @@ body{
   filter: grayscale(100%);
 
   filter: gray;
+}
+.toast{
+  .takeOutFood{
+    width:5.38rem;
+    height:5.63rem;
+    background:url('@{url}/ggFix38.png') no-repeat;
+    background-size:cover;
+    position:absolute;
+    top:2.5rem;
+    left:14.13%;
+    z-index:200;
+    .toUse{
+      width:2.6rem;
+      height:.55rem;
+      position:absolute;
+      bottom:.5rem;
+      left:24.2%;
+      border-radius: .21rem;
+    }
+  }
+  .fanMoney{
+    width:5.4rem;
+    height:6.6rem;
+    position:absolute;
+    top:2.5rem;
+    left:14.13%;
+    background:url('@{url}/ggFix40.png') no-repeat;
+    background-size:cover;
+    z-index: 200;
+    .title01{
+      padding-top:.35rem;
+      text-align: center;
+      font-size:.28rem;
+      color:#fff;
+      letter-spacing: .04rem;
+      span{
+        font-size:.42rem;
+        i{
+          color:#fff602;
+        }
+      }
+    }
+    .toGet{
+      width:2.76rem;
+      height:.55rem;
+      position:absolute;
+      bottom:.45rem;
+      left:24.2%;
+      border-radius: .25rem;
+      border:1px solid #fff602;
+      text-align: center;
+      line-height: .55rem;
+      font-size:.32rem;
+      color:#fff602;
+      letter-spacing: .04rem;
+    }
+  }
 }
