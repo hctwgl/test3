@@ -1,11 +1,15 @@
 package com.ald.fanbei.api.web.api.repayment;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.AfUserWithholdService;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
+import com.ald.fanbei.api.common.enums.BorrowType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserWithholdDo;
@@ -19,6 +23,8 @@ import tool.code.generator.Create;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/test")
 public class test111 {
@@ -30,6 +36,10 @@ public class test111 {
     AfBorrowCashService afBorrowCashService;
     @Resource
     AfUserAccountService afUserAccountService;
+    @Resource
+    AfBorrowBillService afBorrowBillService;
+    @Resource
+    AfBorrowDao afBorrowDao;
     @RequestMapping(value = "/creatBorrow", method = RequestMethod.POST)
     @ResponseBody
     public String CreatBorrow() {
@@ -88,7 +98,35 @@ public class test111 {
                 afUserAccountService.updateUserAccountByUserId(userId,400);
 
                 //生成分期账单
-
+                /*AfBorrowBillDo bill = new AfBorrowBillDo();
+                bill.setUserId(userId);
+                bill.setBorrowId(borrow.getRid());
+                bill.setBorrowNo(borrow.getBorrowNo());
+                bill.setName(borrow.getName());
+                bill.setGmtBorrow(borrow.getGmtCreate());
+                Map<String, Integer> timeMap = getCurrentYearAndMonth(now);
+                bill.setBillYear(timeMap.get(Constants.DEFAULT_YEAR));
+                bill.setBillMonth(timeMap.get(Constants.DEFAULT_MONTH));
+                bill.setNper(borrow.getNper());
+                bill.setBillNper(i);
+                if (i <= freeNper) {
+                    bill.setInterestAmount(BigDecimal.ZERO);
+                    bill.setIsFreeInterest(YesNoStatus.YES.getCode());
+                    bill.setPoundageAmount(BigDecimal.ZERO);
+                } else {
+                    bill.setInterestAmount(interestAmount);
+                    bill.setIsFreeInterest(YesNoStatus.NO.getCode());
+                    bill.setPoundageAmount(poundageAmount);
+                }
+                if (i == 1) {
+                    bill.setPrincipleAmount(firstPrincipleAmount);
+                } else {
+                    bill.setPrincipleAmount(principleAmount);
+                }
+                bill.setBillAmount(BigDecimalUtil.add(bill.getInterestAmount(), bill.getPoundageAmount(), bill.getPrincipleAmount()));
+                bill.setStatus(BorrowBillStatus.NO.getCode());
+                bill.setType(BorrowType.CONSUME.getCode());
+                afBorrowDao.addBorrowBillInfo(bill);*/
             }
         }
         return "";
