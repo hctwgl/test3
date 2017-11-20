@@ -9,7 +9,7 @@
     <title>惊艳双11 一触即发</title>
 
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/doubleEleven.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/doubleTwelve.css">
     <style>
         * {
             margin: 0;
@@ -52,10 +52,43 @@
 </head>
 
 <body>
-   
+    <div class="main">
+        <div class="banner">
+            <div class="top-box flex jc-sa">
+                <div class="flex fd-column ai-c">
+                    <div class="line"></div>
+                    <p class="txt1">双12欢乐购</p>
+                    <p class="txt2">12.01-12.04</p>
+                </div>
+                <div class="flex fd-column ai-c current">
+                    <div class="line"></div>
+                    <p class="txt1">秒打牌抢神券</p>
+                    <p class="txt2">12.05-12.09</p>
+                </div>
+                <div class="flex fd-column ai-c">
+                    <div class="line"></div>
+                    <p class="txt1">疯狂红包雨</p>
+                    <p class="txt2">12.10-12.12</p>
+                </div>
+
+            </div>
+        </div>
+        <div class="coupon-box">
+            <div>每日10点</div>
+            <div class="txt">12月05日开始</div>
+            <ul class="coupon-ul flex fw-w">
+                <li class="coupon-li"></li>
+                <li class="coupon-li"></li>
+                <li class="coupon-li"></li>
+                <li class="coupon-li"></li>
+                <li class="coupon-li"></li>
+            </ul>
+            <div class="more">查看更多</div>
+        </div>
+    </div>
 </body>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
-<script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="/dist/activity/11/doubleEleven.js?version=$version"></script>
+<!-- <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.1.4.min.js"></script> -->
+<script type="text/javascript" src="/dist/activity/11/doubleTwelve.js?version=$version"></script>
 
 </html>
