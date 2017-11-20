@@ -254,7 +254,6 @@ public class AppH5ProtocolController extends BaseController {
 		model.put("dayRate", bankService);//日利率
 		model.put("overdueRate", overdue);//逾期费率（日）
 		model.put("poundageRate", poundage);//手续费率
-		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
 		GetSeal(model, afUserDo, accountDo);
 
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));

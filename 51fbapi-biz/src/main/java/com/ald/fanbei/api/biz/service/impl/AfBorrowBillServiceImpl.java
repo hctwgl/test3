@@ -1,22 +1,33 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
@@ -35,7 +46,13 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	private AfBorrowBillDao afBorrowBillDao;
 	
 	@Resource
+	private AfUserOutDayDao afUserOutDayDao;
+
+	@Resource
 	private AfUserBankcardDao bankcardDao;
+
+	@Resource
+    TransactionTemplate transactionTemplate;
 
 	@Override
 	public List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query) {
@@ -243,6 +260,156 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		}
 		return null;
 	}
+
+	@Override
+	public int countNotPayOverdueBill(Long userId) {
+		return afBorrowBillDao.countNotPayOverdueBill(userId);
+	}
+
+	private void updateBorrowBills(long userId, int outDay, int oldOutDay,int payDay) {
+
+		List<AfBorrowBillDo> list =  afBorrowBillDao.getNoPayBillByUserId(userId,new Date());
+		if(list ==null || list.size() ==0)return;
+		AfBorrowBillDo lastOutBill = afBorrowBillDao.getLastOutBill(userId);
+		Date now = new Date();
+
+		Map<String, Object> map = getCurrentYearAndMonth(list.get(0).getGmtOutDay(),outDay,payDay);
+		int needPlus = 0;
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.DAY_OF_MONTH,outDay);
+		if(lastOutBill == null){
+			//正常修改
+
+		}
+		else{
+
+
+			//比较出帐日
+			int oldYearMonth = getYearMonth(lastOutBill.getGmtOutDay());
+			if(oldYearMonth >= (Integer) map.get("OUT")){
+				needPlus = needPlus +1;
+			}
+
+			if(needPlus == 0) {
+				//比较还款日
+				int oldYearMonth_pay = getYearMonth(lastOutBill.getGmtPayTime());
+				if (oldYearMonth_pay >=(Integer) map.get("PAY")) {
+					needPlus = needPlus + 1;
+				}
+			}
+		}
+		if(needPlus ==0){
+			if(new Date().compareTo((Date)map.get("OUT_TIME"))>=0){
+				needPlus = needPlus +1;
+			}
+		}
+
+		//修改;
+		for(AfBorrowBillDo afBorrowBillDo :list){
+			Date _now = afBorrowBillDo.getGmtOutDay();
+			if(needPlus != 0){
+				Calendar datetime = Calendar.getInstance();
+				datetime.setTime(_now);
+				datetime.add(Calendar.MONTH,1);
+				_now = datetime.getTime();
+			}
+			Map<String, Object> map1 = getCurrentYearAndMonth(_now,outDay,payDay);
+			int billYear = afBorrowBillDo.getBillYear();
+			int billMonth = afBorrowBillDo.getBillMonth();
+			if(needPlus >0){
+				billMonth = billMonth +1;
+				if(billMonth>12) {
+					billMonth =1;
+					billYear =billYear+1;
+				}
+			}
+			afBorrowBillDao.updateBillOutDay(afBorrowBillDo.getRid(),(Date) map1.get("OUT_TIME"),(Date)map1.get("PAY_TIME"),billYear,billMonth);
+		}
+
+	}
+
+	private Map<String, Object> getCurrentYearAndMonth(Date now,int outDay, int payDay) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 账单日
+
+		int default_out_day = outDay;
+		int default_pay_day = payDay;
+
+
+
+		int billYear = 0, billMonth = 0;
+		String[] billDay = DateUtil.formatDate(now, DateUtil.MONTH_PATTERN).split("-");
+		if (billDay.length == 2) {
+			billYear = NumberUtil.objToIntDefault(billDay[0], 0);
+			billMonth = NumberUtil.objToIntDefault(billDay[1], 0);
+		}
+		map.put(Constants.DEFAULT_YEAR, billYear);
+		map.put(Constants.DEFAULT_MONTH, billMonth);
+
+		Calendar out_datetime = Calendar.getInstance();
+		out_datetime.setTime(now);
+		//out_datetime.add(Calendar.MONTH,1);
+		out_datetime.set(Calendar.DAY_OF_MONTH,default_out_day);
+		out_datetime.set(Calendar.HOUR_OF_DAY,0);
+		out_datetime.set(Calendar.MINUTE,0);
+		out_datetime.set(Calendar.SECOND,0);
+		out_datetime.set(Calendar.MILLISECOND,0);
+
+		Calendar pay_datetime = Calendar.getInstance();
+		pay_datetime.setTime(now);
+		if(default_pay_day < default_out_day) {
+			pay_datetime.add(Calendar.MONTH, 1);
+		}
+		pay_datetime.set(Calendar.DAY_OF_MONTH,default_pay_day);
+		pay_datetime.set(Calendar.HOUR_OF_DAY,23);
+		pay_datetime.set(Calendar.MINUTE,59);
+		pay_datetime.set(Calendar.SECOND,59);
+		//pay_datetime.set(Calendar.MILLISECOND,999);
+
+		map.put("OUT",getYearMonth(out_datetime.getTime()));
+		map.put("PAY",getYearMonth(pay_datetime.getTime()));
+		map.put("OUT_TIME",out_datetime.getTime());
+		map.put("PAY_TIME",pay_datetime.getTime());
+		return map;
+	}
+
+	private Integer getYearMonth(Date date) {
+		String[] billDay1 = DateUtil.formatDate(date, DateUtil.MONTH_PATTERN).split("-");
+		return Integer.parseInt(billDay1[0]+billDay1[1]);
+	}
+
+	@Override
+	public int addUserOutDay(final long userId, final int outDay, final int payDay) {
+        final int[] returnValue={0};
+        transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                if(afUserOutDayDao.insertUserOutDay(userId,outDay,payDay)>0){
+                    returnValue[0] =afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
+                    updateBorrowBills(userId,outDay,10,payDay);
+                }
+                return null;
+            }
+        });
+        return returnValue[0];
+    }
+
+	@Override
+	public int updateUserOutDay(final long userId, final int outDay, final int payDay) {
+        final int[] returnValue = {0};
+        transactionTemplate.execute(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus transactionStatus) {
+                if(afUserOutDayDao.updateUserOutDay(userId,outDay,payDay)>0){
+                    returnValue[0]  = afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
+                    updateBorrowBills(userId,outDay,10,payDay);
+                }
+                return null;
+            }
+        });
+        return returnValue[0];
+    }
 
 	@Override
 	public String getBillIdsByUserId(Long userId) {

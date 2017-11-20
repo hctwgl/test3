@@ -150,7 +150,7 @@ public class PayRoutController {
         String merPriv = request.getParameter("merPriv");
         String tradeState = request.getParameter("tradeState");
         long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
-        logger.info("delegatePay begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result, ",outTradeNo=" + outTradeNo);
+        logger.info("delegatePay begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result+ ",outTradeNo=" + outTradeNo);
         try {
             if (TRADE_STATUE_SUCC.equals(tradeState)) {//代付成功
                 if (UserAccountLogType.CASH.getCode().equals(merPriv)) {//现金借款

@@ -31,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -496,7 +493,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             long time = new Date().getTime();
 //            map.put("templatePath",src+"renewal"+".pdf");
             map.put("templatePath","http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/renewal.pdf");
-            map.put("PDFPath",src+accountDo.getUserName()+"renewal"+time + 1+".pdf");
+            map.put("PDFPath",src+accountDo.getUserName()+"renewal"+time+1+".pdf");
             map.put("userPath",src+accountDo.getUserName()+"renewal"+time+2+".pdf");
             map.put("selfPath",src+accountDo.getUserName()+"renewal"+time+3+".pdf");
             map.put("secondPath",src+accountDo.getUserName()+"renewal"+time+4+".pdf");
@@ -512,14 +509,27 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     }
 
     private boolean pdfCreate(Map map) throws IOException {
+        OutputStream fos = null;
+        ByteArrayOutputStream bos = null;
         try {
-            PdfCreateUtil.create(map);
+            PdfCreateUtil.create(map,fos,bos);
         } catch (Exception e) {
             logger.error("pdf合同生成失败：", e);
             return true;
+        }finally {
+            if (null != fos){
+                fos.flush();
+                fos.close();
+            }
+            if (null != bos){
+                bos.close();
+            }
         }
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);
+            if (fileDigestSignResult.isErrShow()){
+                return true;
+            }
             map.put("esignIdFirst",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("甲方盖章证书生成失败：", e);
@@ -528,6 +538,9 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
 
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.selfSign(map);
+            if (fileDigestSignResult.isErrShow()){
+                return true;
+            }
             map.put("esignIdSecond",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("丙方盖章证书生成失败：", e);
@@ -535,6 +548,9 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         }
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);
+            if (fileDigestSignResult.isErrShow()){
+                return true;
+            }
             map.put("esignIdThird",fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("乙方盖章证书生成失败：", e);

@@ -25,6 +25,12 @@
             <span class="zhaoshang-word">信用卡</span>
             <span class="zhaoshang-des">高额度，免年费，极速发卡</span>
         </div>
+        <div class="zhongXinBank" @click="zhongXinBankClick()">
+            <img src="$src/credit101.png">
+            <span class="bankName">中信银行</span>
+            <span class="bankCard">信用卡</span>
+            <span class="bankDes">9元享看海量视频，周三周六消费5折</span>
+        </div>
         <div class="credit-three" @click="clickTwo()">
             <img class="nonghang-img" src="$src/credit-02.png" alt="">
             <span class="nonghang">浦发银行</span>
