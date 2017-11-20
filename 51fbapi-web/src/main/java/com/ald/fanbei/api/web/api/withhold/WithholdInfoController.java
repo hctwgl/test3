@@ -72,9 +72,6 @@ public class WithholdInfoController implements ApiHandle {
 		}
 		AfUserDo userDo = afUserService.getUserByUserName(userName);
 		Map<String, Object> info = new HashMap<String, Object>();
-
-		
-		
 		
 		if (userDo != null) {
 			AfUserWithholdDo withholdInfo = afUserWithholdService.getWithholdInfo(userDo.getRid());

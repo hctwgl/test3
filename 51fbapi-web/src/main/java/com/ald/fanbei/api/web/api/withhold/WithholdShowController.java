@@ -74,7 +74,7 @@ public class WithholdShowController  implements ApiHandle {
 				AfUserWithholdDo withhold = afUserWithholdService.getWithholdInfo(userDo.getRid());
 				
 				List<AfUserBankcardDo> afUserBankcardDoList = afUserBankCardService.getAfUserBankcardDoList(userDo.getRid());//得到所有的银行卡
-			
+			try{
 				if (afUserBankcardDoList != null && afUserBankcardDoList.size() > 0) {
 					
 					for (AfUserBankcardDo afUserBankcardDo : afUserBankcardDoList) {
@@ -176,6 +176,9 @@ public class WithholdShowController  implements ApiHandle {
 						}
 					}
 				} 
+			} catch (Exception e) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR); 
+			}
 			}
 		
 			cards.put("card1", list1);

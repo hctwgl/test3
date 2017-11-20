@@ -155,7 +155,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
 			data.put("basicStatus", RiskStatus.A.getCode());
 		} else {
-			data.put("basicStatus", authDo.getRiskStatus());
+			data.put("basicStatus", authDo.getBasicStatus());
 		}
 
 		data.put("faceStatus", authDo.getFacesStatus());
@@ -176,8 +176,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		} else {
 			data.put("isUploadImage", "N");
 		}
-		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
-			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtRisk()), 10);
+		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())) {
+			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtBasic()), 10);
 			between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 			if (between > 0) {
 				data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
@@ -191,6 +191,9 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 				|| (StringUtil.equals(authDo.getRiskStatus(),RiskStatus.A.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.A.getCode()))){
 			data.put("title1","你好，"+userDto.getRealName());
 			data.put("title2","完善基本资料即可获取3000-20000额度");
+		}else if(StringUtil.equals(authDo.getRiskStatus(),RiskStatus.SECTOR.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.SECTOR.getCode())){
+			data.put("title1","暂无信用额度");
+			data.put("title2","可以尝试重新提交啦，完成补充认证可以提高成功率");
 		}else if(StringUtil.equals(authDo.getBasicStatus(), RiskStatus.PROCESS.getCode())
 				&& StringUtil.equals(authDo.getRiskStatus(), RiskStatus.PROCESS.getCode())){//信用认证页面（认证中状态）
 			data.put("title1","基础信息认证中");
