@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.*;
@@ -124,7 +125,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	AfOrderDao afOrderDao;
 
 	@Resource
-	AfContractPdfCreateService afContractPdfCreateService;
+	ContractPdfThreadPool contractPdfThreadPool;
 
 
 	@Override
@@ -1152,7 +1153,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				}
 			}
 		});
-		
+
 		/*if(resultValue > 0L){
 			try {
 				afContractPdfCreateService.protocolInstalment(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
@@ -1161,7 +1162,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				logger.error("protocolInstalment error，borrowId=" + borrow.getRid(),e);
 			}
 		}*/
-		return resultValue;
+		if (0l !=resultValue){
+			contractPdfThreadPool.protocolInstalmentPdf(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
+		}
+        return resultValue;
 	}
 	
 	@Override
