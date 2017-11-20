@@ -28,5 +28,7 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 	
 	AfBoluomeRebateDo getLastUserRebateByUserId(Long userId);
 
+	AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId);
+
 
 }

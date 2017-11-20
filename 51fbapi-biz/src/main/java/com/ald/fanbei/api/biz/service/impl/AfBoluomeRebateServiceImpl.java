@@ -230,5 +230,11 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	    return afBoluomeRebateDao.getLastUserRebateByUserId(userId);
 	}
 
+	@Override
+	public AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId) {
+		
+		return afBoluomeRebateDao.getHighestNeverPopedRebate(userId);
+	}
+
 
 }

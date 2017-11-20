@@ -650,7 +650,10 @@ public class APPH5GgActivityController extends BaseController {
 	    
 	  
 	   AfBoluomeUserCouponDo userCouponDo =  afBoluomeUserCouponService.getLastUserCouponByUserId(userId);
-	   AfBoluomeRebateDo     userRebateDo =  afBoluomeRebateService.getLastUserRebateByUserId(userId);
+	   //mqp:modify to the highest rebate that never popped up before 
+	   AfBoluomeRebateDo  userRebateDo =  afBoluomeRebateService.getHighestNeverPopedRebate(userId);
+	   //AfBoluomeRebateDo  userRebateDo =  afBoluomeRebateService.getLastUserRebateByUserId(userId);
+	   
 	   AfBoluomeActivityMsgIndexDo  afBoluomeActivityMsgIndexDo = new AfBoluomeActivityMsgIndexDo();
 	   //---------------------------------------------------优惠券------------------------------------------
 	   //该用户获得最后一张优惠券是否有记录

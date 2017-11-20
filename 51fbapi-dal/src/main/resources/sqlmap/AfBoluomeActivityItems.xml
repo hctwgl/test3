@@ -178,7 +178,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         FROM af_boluome_activity_items
         <include refid="commonCondition"/> 
          AND status = 'O'
-        limit 0,1
+        limit 0,1;
     </select>
                
     <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
@@ -186,7 +186,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/>
-         AND status = 'O'
+         AND status = 'O';
     </select>
     
       <select id="getItemsInfo" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
@@ -194,7 +194,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/>
-         AND status = 'O'
+         AND status = 'O';
     </select>
     
      <select id="getItemsInfoByOrderId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="java.lang.Long">
@@ -215,7 +215,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
 	         )
          AND STATUS = 'O' AND is_delete = 0
          LIMIT 0 ,1
-         )
+         );
     </select>
     
 </mapper>
