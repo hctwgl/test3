@@ -147,4 +147,15 @@
     AND
     repay_no = #{tradeNo}      
   </update>
+
+	<update id="updateRepaymentName">
+		UPDATE
+		af_repayment
+		SET
+		NAME = '代扣还款'
+		WHERE
+		is_delete = 0
+		AND
+		id = #{refId}
+	</update>
 </mapper>

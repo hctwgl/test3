@@ -536,4 +536,9 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getLaunchImageInfoByType(resourceType);
 	}
 
+	@Override
+	public List<AfResourceDo> getScrollbarListByType(String type) {
+		return afResourceDao.getScrollbarListByType(type);
+	}
+
 }

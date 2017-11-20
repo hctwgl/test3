@@ -515,16 +515,53 @@
 		ORDER BY abb.bill_year DESC,
 		abb.bill_month DESC
 	</select>
-	
-	<select id="countNotPayOverdueBill" resultType="java.lang.Integer">
-		SELECT COUNT(1) from af_borrow_bill where is_delete = 0 and `status` = 'N' and overdue_status = 'Y' and user_id = #{userId} 
+
+	<select id="getBillIdsByUserId" resultType="java.lang.String">
+		SELECT GROUP_CONCAT(id) billIds
+		FROM af_borrow_bill
+		WHERE is_delete=0  AND STATUS IN ('N')
+		AND user_id = #{userId}
+		AND gmt_pay_time<![CDATA[<=]]>DATE_FORMAT(NOW(),'%Y-%m-%d 23:59:59')
 	</select>
-	
+
+	<update id="updateBorrowBillLockById" >
+		UPDATE
+		af_borrow_bill
+		SET
+		gmt_modified = NOW(),
+		lockdate = NOW(),
+		is_lock = 'Y'
+		WHERE
+		is_delete = 0
+		AND id = #{billId}
+		AND is_lock = 'N'
+	</update>
+
+	<update id="updateBorrowBillUnLockByIds" >
+		UPDATE
+		af_borrow_bill
+		SET
+		gmt_modified = NOW(),
+		lockdate = NOW(),
+		is_lock = 'N'
+		WHERE
+		is_delete = 0
+		AND id IN
+		<foreach collection="billIds" item="item" index="index" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+
+	</update>
+
+	<select id="countNotPayOverdueBill" resultType="java.lang.Integer">
+		SELECT COUNT(1) from af_borrow_bill where is_delete = 0 and `status` = 'N' and overdue_status = 'Y' and user_id = #{userId}
+	</select>
+
 	<select id="getNoPayBillByUserId" resultType="AfBorrowBillDo">
 		SELECT <include refid="queryFields"/> from af_borrow_bill
 		where user_id = #{userId} and  (status = 'N' or gmt_out_day > #{gmt_out_day}) and is_out = 0 and is_delete = 0 order by gmt_out_day asc, bill_year asc,bill_month asc;
 	</select>
-	
+
 	<update id="updateBillOutDay">
 		update af_borrow_bill set gmt_out_day = #{gmtOutDay},gmt_pay_time = #{gmtPayTime},bill_year =#{billYear},bill_month = #{billMonth} where id = #{id}
 	</update>

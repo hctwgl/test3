@@ -110,6 +110,7 @@ public class FanbeiController extends BaseController {
     		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
     		"/user/submitShareAction","/user/checkMobileRegistered","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
+            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts",
             "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -124,7 +125,7 @@ public class FanbeiController extends BaseController {
     		"/bill/getMyBillHomeInfo","/bill/getMyBillList","/bill/getBillDetailList","/bill/getBillDetailInfo","/repay/getRepaymentConfirmInfo",
             "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo","/borrow/getOtherPayWay"
             ,"/borrow/getRepaymentInfo","/borrow/submitRepaymentByYiBao","/bill/getRepayMentAmountByMonth","/repay/getRepaymentConfirmInfoV1"
-            ,"/bill/getBillListByStatus"
+            ,"/bill/getBillListByStatus","/borrow/getCreditPromoteInfoV1"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -143,11 +144,11 @@ public class FanbeiController extends BaseController {
      */
 	@RequestMapping(value = { "/auth/authRealname", "/auth/authContacts", "/auth/authCredit", "/auth/authZhima", "/auth/authBankcard", "/auth/checkBankcard", "/auth/getBankList",
 			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor","/auth/authChsi","/auth/authZhengxin", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
-			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi",
+			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi","/auth/bindingBankcard","/auth/checkMessages",
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
 			"/auth/authSupplyCertify","/auth/authFund","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
-			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/updateIdCardForFacePlus"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -281,5 +282,21 @@ public class FanbeiController extends BaseController {
             afResourceService.cleanLocalCache();
         }
 	}
+
+	   /**
+     * 代扣相关
+     * @param body
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/Withhold/updateWithholdSwitch","/Withhold/getWithholdInfo","/Withhold/updateWithholdCard","/Withhold/showUserBankCard","/homePage/homeScrollBar","/Withhold/WithholdCheck"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @ResponseBody
+    public String withHoldRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        return this.processRequest(body, request, false);
+    }
 
 }
