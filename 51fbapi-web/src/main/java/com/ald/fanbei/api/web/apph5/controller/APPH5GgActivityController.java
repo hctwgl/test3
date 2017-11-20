@@ -467,7 +467,7 @@ public class APPH5GgActivityController extends BaseController {
 								cardList = convertItemsListToCardList(itemsList,true);
 							}
 							//the rebate stuff 
-							List<AfRebateDo> rebateeList = afBoluomeRebateService.getRebateList(userId);
+							List<AfRebateDo> rebateeList =afBoluomeRebateService.getRebateList(userId);
 							BigDecimal totalRebate = getTotalRebate(rebateeList);
 							data.put("totalRebate", totalRebate);
 							data.put("rebateList", rebateeList);
@@ -777,7 +777,7 @@ public class APPH5GgActivityController extends BaseController {
 		BigDecimal result = BigDecimal.ZERO;
 		if (rebateList != null && rebateList.size() > 0) {
 			for(AfRebateDo rebateDo : rebateList){
-				result.add(rebateDo.getSceneRebate()).add(rebateDo.getSurpriseRebate());
+				result = result.add(rebateDo.getSceneRebate()).add(rebateDo.getSurpriseRebate());
 			}
 		}
 		return result;
