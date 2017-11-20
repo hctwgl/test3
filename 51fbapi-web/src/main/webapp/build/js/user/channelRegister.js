@@ -113,7 +113,7 @@ $(function(){
                     }
                 },
                 error: function(){
-                    requestMsg("网络跑丢了，请稍候重试");
+                    requestMsg(returnData.msg);
                 }
             })
         } else{requestMsg("请填写正确的手机号");}
