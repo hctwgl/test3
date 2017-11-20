@@ -4,7 +4,10 @@ let domainName = protocol+'//'+host;
 let currentUrl = window.location.href;
 let param = getUrlParam(currentUrl);
 let shopId= param['shopId03'];
-
+let userName = "";//获取用户名
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
 //获取数据
 let vm = new Vue({
     el: '#ggOverlord',
@@ -28,6 +31,16 @@ let vm = new Vue({
                 success: function (data) {
                     console.log(data);
                     self.baseData=data.data;
+                    //复制邀请码
+                    setTimeout(function(){
+                        let clipboard = new Clipboard('.invitecode');
+                        clipboard.on('success', function(e) {
+                            console.log(e);
+                        });
+                        $('.copycode').on('click', ()=>{
+                            alert('已复制到剪贴板，可粘贴');
+                        })
+                    },0);
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
@@ -95,16 +108,6 @@ let vm = new Vue({
             return date.replace(/-/g,'.');
         }
     }
-});
-//复制邀请码
-$(function(){
-    let clipboard = new Clipboard('.invitecode');
-    clipboard.on('success', function(e) {
-        console.log(e);
-    });
-    $('.copycode').on('click', ()=>{
-        alert('已复制到剪贴板，可粘贴');
-    })
 });
 
 //截取字符串方法

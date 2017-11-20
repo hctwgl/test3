@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711171146")
+    #set($version="201711201865")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -10,7 +10,7 @@
 <body>
 <div id="ggFixShare" class="ggFixShare">
     <!--首页轮播图-->
-    #*<div class="loadingMask"><i class="loading"></i></div>*#
+    <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner first">
         <img src="$src/ggFix01.jpg">
         <div class="firstStep">

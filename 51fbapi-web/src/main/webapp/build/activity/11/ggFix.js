@@ -198,7 +198,7 @@ let vm = new Vue({
         contOldUserClick(){
             let self=this;
             let shopId03=self.content.waiMaiShopId;
-            window.location.href='ggOverlord?shopId03='+shopId03;
+            window.location.href='ggOverlord?addUiName=SHOWSHARE&shopId03='+shopId03;
         },
         //去账户提现
         toCashClick(){
