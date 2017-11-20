@@ -214,7 +214,7 @@ let vm = new Vue({
             if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
                 window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.main.ui.MainActivity_1';
             }else{
-                window.location.href='/fanbei-web/opennative?name=GG_ALABrandViewController';
+                window.location.href='/fanbei-web/opennative?name=GG_ALABrandViewController_1';
             }
         },
         //领取188元页面scroll到我的场景
