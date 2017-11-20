@@ -102,6 +102,7 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 
 	}
 
+
 	private String convertToUserName(Long userId) {
 		AfUserDo userDo = afUserDao.getUserById(userId);
 		String userName = "";
@@ -114,6 +115,12 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	@Override
 	public int isHasCouponInDb(Long userId, Long couponId) {
 		return afBoluomeUserCouponDao.isHasCouponInDb(userId,couponId);
+
+	}
+	@Override
+	public AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId) {
+	    // TODO Auto-generated method stub
+	    return afBoluomeUserCouponDao.getLastUserCouponByUserId(userId);
 	}
 
 }

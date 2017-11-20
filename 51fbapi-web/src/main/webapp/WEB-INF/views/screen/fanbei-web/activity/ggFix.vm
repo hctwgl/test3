@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711170955")
+    #set($version="201711180955")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -41,7 +41,7 @@
         <div class="cont">
             <p class="contTop"><span>{{firstValue}}</span></p>
             <p class="contNewUser">新用户去吃霸王餐 ><br/><span>{{firstValue}}元外卖券已发放至账户</span></p>
-            <p class="contOldUser">老用户同享霸王餐 ></p>
+            <p class="contOldUser" @click="contOldUserClick()">老用户同享霸王餐 ></p>
         </div>
     </div>
     <div class="secondCont">
@@ -54,41 +54,47 @@
     <div class="thirdCont">
         <div class="myPrize">
             <p class="prizeTop">我的奖励</p>
-            <p class="prizeBot">合计<span><i>1</i><i>2</i><i>1</i><i>1</i></span>元返利金</p>
+            <p class="prizeBot">合计
+                <span v-if="content.totalRebate">
+                    <i v-for="item in myRebateMoney">{{item}}</i>
+                </span>
+                <span v-else>
+                    <i>0</i>
+                </span>
+                元返利金
+            </p>
         </div>
         <p class="toCash">去账户提现 ></p>
         <div class="rebateList">
             <p class="rebateTitle"><span>消费场景</span><span>消费时间</span><span>返利(元)</span><span>惊喜返利金(元)</span></p>
-            <ul class="rebateCont">
-                <li><span>饿了么</span><span>2017.11.5 12:00</span><span>0.63</span><span>0.56</span></li>
-                <li><span>饿了么</span><span>2017.11.5 12:00</span><span>0.63</span><span>0.56</span></li>
-                <li><span>饿了么</span><span>2017.11.5 12:00</span><span>0.63</span><span>0.56</span></li>
+            <ul class="rebateCont" v-if="content.rebateList && content.rebateList!=''">
+                <li v-for="item in content.rebateList">
+                    <span>{{item.consumeScene}}</span>
+                    <span>{{item.consumeTime}}</span>
+                    <span>{{item.sceneRebate}}</span>
+                    <span>{{item.surpriseRebate}}</span>
+                </li>
             </ul>
+            <p class="noRebateMoney" v-else>您暂无返利！<br/>参与场景消费，领取188元返利金！</p>
         </div>
     </div>
     <div class="fourthCont">
         <p class="fourthTitle"><img src="$src/ggFix13.png">我的场景</p>
         <p class="toRebateMoney">去“吃玩住行”领返利金 ></p>
         <div class="couponList clearFix">
-            <div class="coupon">
-                <p class="couponName">星巴克</p>
+            <div class="coupon" v-for="(item,index) in couponCont.boluomeCouponList" @click="couponClick(index)">
+                <p class="couponName">{{item.name}}</p>
                 <div class="middle">
-                    <p class="couponAmount">￥<span>15</span></p>
-                    <p class="couponLimit">满100元可用</p>
-                </div>
-                <p class="getCoupon">领取</p>
-            </div>
-            <div class="coupon">
-                <p class="couponName">星巴克</p>
-                <div class="middle">
-                    <p class="couponAmount">￥<span>15</span></p>
-                    <p class="couponLimit">满100元可用</p>
+                    <p class="couponAmount" v-if="item.type===1">￥<span>{{item.value}}</span></p>
+                    <p class="couponAmount" v-if="item.type===2"><span>{{item.discount*10}}</span>折</p>
+                    <p class="couponLimit" v-if="item.threshold>0">满{{item.threshold}}元可用</p>
+                    <p class="couponLimit" v-else>无门槛</p>
                 </div>
                 <p class="getCoupon">领取</p>
             </div>
         </div>
         <div class="cardList clearFix">
-            <div class="card" v-for="item in content.cardList"><img :src="item.image"></div>
+            <div class="card" v-for="item in content.cardList" @click="cardClick(item)"><img :src="item.image"></div>
         </div>
     </div>
 </div>

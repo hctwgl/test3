@@ -12,9 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.impl.client.TargetAuthenticationStrategy;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +25,7 @@ import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityMsgIndexService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -39,25 +38,21 @@ import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.H5GgActivity;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityCouponDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityMsgIndexDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCardDo;
@@ -65,7 +60,6 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
-import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -74,8 +68,8 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBoluomeUserCouponVo;
 import com.ald.fanbei.api.web.vo.BoluomeActivityInviteCeremonyVo;
 import com.ald.fanbei.api.web.vo.BoluomeActivityInviteFriendVo;
+import com.ald.fanbei.api.web.vo.BoluomeActivityPoPupVo;
 import com.ald.fanbei.api.web.vo.userReturnBoluomeCouponVo;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -92,33 +86,41 @@ import com.alibaba.fastjson.JSONObject;
 @RequestMapping(value = "/h5GgActivity", produces = "application/json;charset=UTF-8")
 public class APPH5GgActivityController extends BaseController {
 
-	@Resource
-	AfUserService afUserService;
-	@Resource
-	AfSmsRecordService afSmsRecordService;
-	@Resource
-	TongdunUtil tongdunUtil;
-	@Resource
-	BizCacheUtil bizCacheUtil;
-	@Resource
-	AfBoluomeUserCouponService afBoluomeUserCouponService;
-	@Resource
-	AfOrderService afOrderService;
-	@Resource
-	AfResourceService afResourceService;
-	@Resource
-	AfShopService afShopService;
-	@Resource
-	BoluomeUtil boluomeUtil;
-	@Resource
-	AfRecommendUserService afRecommendUserService;
-	@Resource
-	AfUserDao afUserDao;
-	@Resource
-	AfBoluomeRebateService afBoluomeRebateService;
-	@Resource
-	AfBoluomeActivityItemsService afBoluomeActivityItemsService;
-	String opennative = "/fanbei-web/opennative?name=";
+
+    @Resource
+    AfUserService afUserService;
+    @Resource
+    AfSmsRecordService afSmsRecordService;
+    @Resource
+    TongdunUtil tongdunUtil;
+    @Resource
+    BizCacheUtil bizCacheUtil;
+    @Resource
+    AfBoluomeUserCouponService afBoluomeUserCouponService;
+    @Resource
+    AfOrderService afOrderService;
+    @Resource
+    AfResourceService afResourceService;
+    @Resource
+    AfShopService afShopService;
+    @Resource
+    BoluomeUtil boluomeUtil;
+    @Resource
+    AfRecommendUserService afRecommendUserService;
+    @Resource
+    AfUserDao afUserDao;
+    @Resource
+    AfBoluomeActivityMsgIndexService  afBoluomeActivityMsgIndexService;
+    @Resource
+    AfBoluomeRebateService afBoluomeRebateService;
+    @Resource
+    AfBoluomeActivityItemsService afBoluomeActivityItemsService;
+    
+    
+
+    String opennative = "/fanbei-web/opennative?name=";
+
+
 
 	@RequestMapping(value = "/returnCoupon", method = RequestMethod.POST)
 	public String returnCoupon(HttpServletRequest request, HttpServletResponse response, ModelMap model)
@@ -220,6 +222,7 @@ public class APPH5GgActivityController extends BaseController {
 		} catch (Exception e) {
 			logger.error("/h5GgActivity/returnCoupon" + context + "error = {}", e.getStackTrace());
 			resultStr = H5CommonResponse.getNewInstance(false, "获取返券列表失败").toString();
+
 		}
 		return resultStr;
 
@@ -407,62 +410,6 @@ public class APPH5GgActivityController extends BaseController {
 					.getNewInstance(true, FanbeiExceptionCode.PICK_BRAND_COUPON_FAILED.getDesc(), "", null).toString();
 		}
 
-	}
-
-	@Override
-	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-		try {
-			RequestDataVo reqVo = new RequestDataVo();
-
-			JSONObject jsonObj = JSON.parseObject(requestData);
-			reqVo.setId(jsonObj.getString("id"));
-			reqVo.setMethod(request.getRequestURI());
-			reqVo.setSystem(jsonObj);
-
-			return reqVo;
-		} catch (Exception e) {
-			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-		}
-	}
-
-	@Override
-	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
-			HttpServletRequest httpServletRequest) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * 
-	 * @Title: convertUserNameToUserId @Description: @param userName @return
-	 *         Long @throws
-	 */
-	private Long convertUserNameToUserId(String userName) {
-		Long userId = null;
-		if (!StringUtil.isBlank(userName)) {
-			AfUserDo user = afUserService.getUserByUserName(userName);
-			if (user != null) {
-				userId = user.getRid();
-			}
-
-		}
-		return userId;
-	}
-
-	private String changePhone(String userName) {
-		String newUserName = "";
-		if (!StringUtil.isBlank(userName)) {
-			newUserName = userName.substring(0, 3);
-			newUserName = newUserName + "****";
-			newUserName = newUserName + userName.substring(7, 11);
-		}
-		return newUserName;
 	}
 
 	/**
@@ -685,8 +632,146 @@ public class APPH5GgActivityController extends BaseController {
 		return resultStr.toString();
 	}
 	
-				
-				
+    @RequestMapping(value = "/popUp", method = RequestMethod.POST)
+    public String popUp(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
+	FanbeiWebContext context = new FanbeiWebContext();
+	String resultStr = "";
+	try {
+	    context = doWebCheck(request, false);
+	    Long userId = convertUserNameToUserId(context.getUserName());
+	    // 未登录时不弹窗
+	    BoluomeActivityPoPupVo poPupVo = new BoluomeActivityPoPupVo();
+	    poPupVo.setCouponToPop(H5GgActivity.NOPOPUP.getCode());
+	    poPupVo.setRebateToPop(H5GgActivity.NOPOPUP.getCode());
+	    if (userId == null) {
+		return H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+	    }
+	    // 登录时返回数据
+	    
+	  
+	   AfBoluomeUserCouponDo userCouponDo =  afBoluomeUserCouponService.getLastUserCouponByUserId(userId);
+	   AfBoluomeRebateDo     userRebateDo =  afBoluomeRebateService.getLastUserRebateByUserId(userId);
+	   AfBoluomeActivityMsgIndexDo  afBoluomeActivityMsgIndexDo = new AfBoluomeActivityMsgIndexDo();
+	   //---------------------------------------------------优惠券------------------------------------------
+	   //该用户获得最后一张优惠券是否有记录
+	   if(userCouponDo != null){
+	       //设置金额
+	       long couponId  =  userCouponDo.getCouponId();
+	       AfResourceDo couponInfo =  afResourceService.getResourceByResourceId(couponId);
+	       if(couponInfo !=null ){
+		   logger.error( "popUp couponInfo = {},userId = {}",couponInfo,userId);
+		   poPupVo.setCouponAmount(couponInfo.getPic1());
+	       }
+	      //设置图片
+	       AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),  H5GgActivity.COUPONIMAGE.getCode());
+	      if(imageInfo != null){
+		  logger.error( "popUp coupon imageInfo = {}",imageInfo);
+		  poPupVo.setCouponImage(imageInfo.getValue());
+	      }
+	   //是否有弹窗记录
+	   AfBoluomeActivityMsgIndexDo  msgIndexDo =  afBoluomeActivityMsgIndexService.getByUserId(userId);
+	   if(msgIndexDo == null){
+	     //没有记录，设置弹窗并添加记录到db
+	       poPupVo.setCouponToPop(H5GgActivity.TOPOPUP.getCode());
+	       afBoluomeActivityMsgIndexDo.setCouponIndex(userCouponDo.getRid());
+	       afBoluomeActivityMsgIndexDo.setUserId(userId);
+	       afBoluomeActivityMsgIndexService.saveRecord(afBoluomeActivityMsgIndexDo);
+	   }else  if (msgIndexDo != null){
+	     //有记录。couponId = coupon_index ?
+	        if(msgIndexDo.getCouponIndex() == null){
+        	            poPupVo.setCouponToPop(H5GgActivity.TOPOPUP.getCode());
+        	            afBoluomeActivityMsgIndexDo.setCouponIndex(userCouponDo.getRid());
+        		    afBoluomeActivityMsgIndexDo.setUserId(userId);
+        		    afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+        		    afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
+	        }else if(msgIndexDo.getCouponIndex() != null){
+	            if(msgIndexDo.getCouponIndex() < userCouponDo.getRid()){
+	        	    poPupVo.setCouponToPop(H5GgActivity.TOPOPUP.getCode());
+		            afBoluomeActivityMsgIndexDo.setCouponIndex(userCouponDo.getRid());
+			    afBoluomeActivityMsgIndexDo.setUserId(userId);
+			    afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+			    afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
+	            }
+	        }
+	     
+	    }
+	  }
+	   
+	   //---------------------------------------返利-----------------------------------------------------
+	   //该用户获得最后返利是否有记录
+	   if(userRebateDo != null){
+	       //设置金额
+	       String rebateAmount  =  userRebateDo.getRebateAmount().toString();
+	       logger.error( "popUp rebateAmount = {},userId = {}",rebateAmount,userId);
+	       poPupVo.setRebateAmount(rebateAmount);
+	      //设置图片
+	       AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),  H5GgActivity.REBATEIMAGE.getCode());
+	      if(imageInfo != null){
+		  logger.error( "popUp rebate imageInfo = {}",imageInfo);
+		  poPupVo.setRebateImage(imageInfo.getValue());
+	      }
+	      //设置场景名
+	      long orderId = userRebateDo.getOrderId();
+	     AfBoluomeActivityItemsDo itemsInfo =    afBoluomeActivityItemsService.getItemsInfoByOrderId(orderId);
+	      if(itemsInfo != null){
+		  poPupVo.setSceneName(itemsInfo.getName());
+	      }
+	      //是否有弹窗记录
+	      AfBoluomeActivityMsgIndexDo  msgIndexDo =  afBoluomeActivityMsgIndexService.getByUserId(userId);
+		   if(msgIndexDo == null){
+		     //没有记录，设置弹窗并添加记录到db
+		       poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
+		       afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());
+		       afBoluomeActivityMsgIndexDo.setUserId(userId);
+		       afBoluomeActivityMsgIndexService.saveRecord(afBoluomeActivityMsgIndexDo);
+		   }else  if (msgIndexDo != null){
+		        //有记录。couponId = coupon_index ?
+		      
+		        //如果插入coupon_index = null insert coupon_index
+		       if(msgIndexDo.getRebateIndex() == null ){
+			    poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
+			    afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());;
+			    afBoluomeActivityMsgIndexDo.setUserId(userId);
+			    afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+			    afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
+		       }
+			 else if (msgIndexDo.getRebateIndex() != null){
+		        //if  rebateIndex > rebate_index  :do  update 
+		        if(msgIndexDo.getRebateIndex() < userRebateDo.getRid()){
+			   //设置弹窗，更新db记录
+		            poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
+		            afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());;
+			    afBoluomeActivityMsgIndexDo.setUserId(userId);
+			    afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+			    afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
+		        }
+		       }
+		   } 
+	      
+	   }
+	   //rebate end
+	   
+	    resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+	} catch (Exception e) {
+	    logger.error("/h5GgActivity/popUp" + context + "error = {}", e.getStackTrace());
+	    resultStr = H5CommonResponse.getNewInstance(false, "获取弹窗信息失败").toString();
+	}
+	return resultStr;
+
+    }
+    
+   
+
+	private String changePhone(String userName) {
+		String newUserName = "";
+		if (!StringUtil.isBlank(userName)) {
+			newUserName = userName.substring(0, 3);
+			newUserName = newUserName + "****";
+			newUserName = newUserName + userName.substring(7, 11);
+		}
+		return newUserName;
+	}
+
 				
 	private BigDecimal getTotalRebate(List<AfRebateDo> rebateList) {
 		BigDecimal result = BigDecimal.ZERO;
@@ -746,8 +831,41 @@ public class APPH5GgActivityController extends BaseController {
 		}
 		return resultList;
 	}
+
+
+	/**
+	 * 
+	 * @Title: convertUserNameToUserId @Description: @param userName @return
+	 *         Long @throws
+	 */
+	private Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
+		}
+		return userId;
+	}
 	
-	
-	
+
+	@Override
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+	@Override
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context,
+			HttpServletRequest httpServletRequest) {
+		// TODO Auto-generated method stub
+		return null;
+
+	}
+	 @Override
+	    public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
+		// TODO Auto-generated method stub
+		return null;
+	    }
 	
 }

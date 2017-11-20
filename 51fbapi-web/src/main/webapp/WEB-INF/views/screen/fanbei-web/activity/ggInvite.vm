@@ -34,7 +34,7 @@
     <div class="specialPrize">
         <p class="specialPrizeTitle">特惠奖励 每成功邀请1人得<span></span></p>
         <p class="specialCoupon"><span></span></p>
-        <p class="goFixPage">去活动现场看看></p>
+        <a class="goFixPage" href="ggFix">去活动现场看看></a>
         <p class="limitRule"></p>
         <p class="exampleRule"></p>
     </div>

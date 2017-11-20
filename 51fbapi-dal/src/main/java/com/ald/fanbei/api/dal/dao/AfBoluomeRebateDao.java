@@ -5,7 +5,11 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
+
+import com.ald.fanbei.api.dal.domain.AfShopDo;
+
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
+
 
 /**
  * 点亮活动新版Dao
@@ -19,6 +23,8 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 	int checkOrderTimes(@Param("userId")Long userId);
 
+	AfShopDo getShopInfoByOrderId(@Param("orderId") long orderId);
+
 	List<AfBoluomeRebateDo> getListByUserId(@Param("userId")Long userId);
 
 	Long getLightShopId(@Param("orderId")Long orderId);
@@ -26,6 +32,9 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 	List<AfRebateDo> getRebateList(@Param("userId")Long userId);
 
 	String getScence(@Param("userId")Long userId);
+	
+	AfBoluomeRebateDo getLastUserRebateByUserId(@Param("userId") Long userId);
+
 
     
 
