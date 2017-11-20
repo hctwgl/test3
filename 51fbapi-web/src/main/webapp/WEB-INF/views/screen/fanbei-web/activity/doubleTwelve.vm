@@ -73,7 +73,7 @@
 
             </div>
         </div>
-        <div class="coupon-box">
+        <div class="coupon-box flex-column ai-c">
             <div>每日10点</div>
             <div class="txt">12月05日开始</div>
             <ul class="coupon-ul flex fw-w">
@@ -85,6 +85,10 @@
             </ul>
             <div class="more">查看更多</div>
         </div>
+        <div class="seckill-box">
+            
+        </div>
+        
     </div>
 </body>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
