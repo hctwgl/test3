@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    #set($version="20171117")
+    #set($src="https://f.51fanbei.com/h5/app/activity/11")
+    <meta charset="UTF-8">
+    <title>信用卡中心</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/card.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
+</head>
+
+<body>
+    <div class="main">
+        <div class="banner">banner</div>
+        <div class="recommend-box">
+            <div class="title">今日推荐</div>
+            <div class="swiper-box">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">slider1</div>
+                        <div class="swiper-slide">slider2</div>
+                        <div class="swiper-slide">slider3</div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+        <div class="bank-box">
+            <div class="title">热门银行</div>
+            <div>
+                <ul class="flex bank-ul">
+                    <li class="bank-li flex fd-row">
+                        <img class="bank-img" src="https://f.51fanbei.com/h5/app/activity/11/image/head.png" alt="银行">
+                        <div class="bank-txt">
+                            <p class="bank-name">浙商银行<i class="tip">秒批</i></p>
+                            <p class="bank-intro">最长免息33天，5元看大片</p>
+                        </div>
+                    </li>
+                    
+                    <li class="bank-li flex fd-row">
+                        <img class="bank-img" src="https://f.51fanbei.com/h5/app/activity/11/image/head.png" alt="银行">
+                        <div class="bank-txt">
+                            <p class="bank-name">浙商银行<i class="tip">秒批</i></p>
+                            <p class="bank-intro">最长免息33天，5元看大片</p>
+                        </div>
+                    </li>
+                    <li class="bank-li flex fd-row">
+                        <img class="bank-img" src="https://f.51fanbei.com/h5/app/activity/11/image/head.png" alt="银行">
+                        <div class="bank-txt">
+                            <p class="bank-name">浙商银行<i class="tip">秒批</i></p>
+                            <p class="bank-intro">最长免息33天，5元看大片</p>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
+<script type="text/javascript" src="/dist/activity/11/card.js?version=$version"></script>
+</html>
