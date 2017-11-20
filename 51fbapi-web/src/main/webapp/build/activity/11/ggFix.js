@@ -37,7 +37,6 @@ let vm = new Vue({
                     self.secondValue=self.content.resultList[1].value;
                     /*我的奖励*/
                     if(self.content.totalRebate && self.content.totalRebate!=0){
-                        console.log(self.content.totalRebate)
                         self.content.totalRebate=self.content.totalRebate.toString(); //奖励金金额
                         self.myRebateMoney=self.content.totalRebate.split('');
                     }
@@ -67,11 +66,84 @@ let vm = new Vue({
                     //console.log(data);
                     self.couponCont=eval('('+data+')').data;
                     console.log(self.couponCont);
+                    //判断优惠券初始化状态
+                    self.$nextTick(function () {
+                        for(var k=0;k<self.couponCont.boluomeCouponList.length;k++){
+                            //console.log(self.couponCont.boluomeCouponList[k].isHas);
+                            if(self.couponCont.boluomeCouponList[k].isHas=='Y'){
+                                $('.coupon').eq(k).addClass('changeGray');
+                                $('.coupon').eq(k).find('.getCoupon').html('已领取');
+                            }
+                        }
+                    })
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
                 }
             });
+        },
+        //点击领取优惠券
+        couponClick:function(index){
+            let self = this;
+            let sceneId=self.couponCont.boluomeCouponList[index].sceneId;
+            $.ajax({
+                url: "/h5GgActivity/pickBoluomeCoupon",
+                type: "POST",
+                dataType: "JSON",
+                data: {'sceneId':sceneId},
+                success: function(returnData){
+                    console.log(returnData);
+                    if(returnData.success){
+                        if(self.couponCont.boluomeCouponList[index].isHas=='N'){
+                            requestMsg(returnData.msg);
+                            $('.coupon').eq(index).addClass('changeGray');
+                            $('.coupon').eq(index).find('.getCoupon').html('已领取');
+                        }else{
+                            requestMsg(returnData.msg);
+                        }
+                    }else{
+                        window.location.href=returnData.url;
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
+
+        },
+        //点击卡片
+        cardClick:function(e){
+            let shopId=e.shopId;
+            $.ajax({
+                type: 'post',
+                url: '/fanbei-web/getBrandUrlV1',
+                data:{'shopId':shopId},
+                dataType:'JSON',
+                success: function (returnData) {
+                    console.log(returnData);
+                    if(returnData.success){
+                        location.href=returnData.url;
+                    }else{
+                        location.href=returnData.url;
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
+            //点击卡片加埋点
+            /*$.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?type=card&typeId='+shopId},
+                success:function (data) {
+                    console.log(data)
+                }
+            });*/
+        },
+        //老用户同享霸王餐
+        contOldUserClick(){
+            window.location.href='ggOverlord';
         },
         //点击活动规则
         ruleClick(){

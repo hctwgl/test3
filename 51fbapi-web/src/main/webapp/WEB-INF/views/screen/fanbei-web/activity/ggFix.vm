@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711170955")
+    #set($version="201711180955")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -41,7 +41,7 @@
         <div class="cont">
             <p class="contTop"><span>{{firstValue}}</span></p>
             <p class="contNewUser">新用户去吃霸王餐 ><br/><span>{{firstValue}}元外卖券已发放至账户</span></p>
-            <p class="contOldUser">老用户同享霸王餐 ></p>
+            <p class="contOldUser" @click="contOldUserClick()">老用户同享霸王餐 ></p>
         </div>
     </div>
     <div class="secondCont">
@@ -67,22 +67,22 @@
         <p class="toCash">去账户提现 ></p>
         <div class="rebateList">
             <p class="rebateTitle"><span>消费场景</span><span>消费时间</span><span>返利(元)</span><span>惊喜返利金(元)</span></p>
-            <ul class="rebateCont" v-if="content.rebateList && content.rebateList!=''" v-for="item in content.rebateList">
-                <li>
+            <ul class="rebateCont" v-if="content.rebateList && content.rebateList!=''">
+                <li v-for="item in content.rebateList">
                     <span>{{item.consumeScene}}</span>
                     <span>{{item.consumeTime}}</span>
                     <span>{{item.sceneRebate}}</span>
                     <span>{{item.surpriseRebate}}</span>
                 </li>
             </ul>
-            <p class="noRebateMoney">您暂无返利！<br/>参与场景消费，领取188元返利金！</p>
+            <p class="noRebateMoney" v-else>您暂无返利！<br/>参与场景消费，领取188元返利金！</p>
         </div>
     </div>
     <div class="fourthCont">
         <p class="fourthTitle"><img src="$src/ggFix13.png">我的场景</p>
         <p class="toRebateMoney">去“吃玩住行”领返利金 ></p>
         <div class="couponList clearFix">
-            <div class="coupon" v-for="item in couponCont.boluomeCouponList">
+            <div class="coupon" v-for="(item,index) in couponCont.boluomeCouponList" @click="couponClick(index)">
                 <p class="couponName">{{item.name}}</p>
                 <div class="middle">
                     <p class="couponAmount" v-if="item.type===1">￥<span>{{item.value}}</span></p>
@@ -94,7 +94,7 @@
             </div>
         </div>
         <div class="cardList clearFix">
-            <div class="card" v-for="item in content.cardList"><img :src="item.image"></div>
+            <div class="card" v-for="item in content.cardList" @click="cardClick(item)"><img :src="item.image"></div>
         </div>
     </div>
 </div>
