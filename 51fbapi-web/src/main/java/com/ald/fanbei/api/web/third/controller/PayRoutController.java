@@ -399,7 +399,7 @@ public class PayRoutController {
                                     addMsg = "{"+ bankName + cardNum + "}";
                                     errorWarnMsg = addMsg + errorWarnMsg;
                                     //还款失败短信通知
-                                    afRepaymentService.sendFailMessage(Long.valueOf(userNo),errorWarnMsg);
+                                    afRepaymentService.sendFailMessage(Long.valueOf(userNo), errorWarnMsg, outTradeNo, tradeNo);
                                 }
                             }
                         }

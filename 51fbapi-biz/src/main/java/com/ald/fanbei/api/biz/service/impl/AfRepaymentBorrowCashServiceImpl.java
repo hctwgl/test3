@@ -602,7 +602,14 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		
 		if(isNeedMsgNotice){
 			//用户信息及当日还款失败次数校验
-			int errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimes(repayment.getUserId());
+			int errorTimes = 0;
+			//如果是代扣，不校验次数
+			String payType = repayment.getName();
+			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+				errorTimes = 0;
+			}else{
+				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
+			}
 			AfUserDo afUserDo = afUserService.getUserById(repayment.getUserId());
 			//还款失败短信通知
 			smsUtil.sendRepaymentBorrowCashFail(afUserDo.getMobile(),errorMsg,errorTimes);

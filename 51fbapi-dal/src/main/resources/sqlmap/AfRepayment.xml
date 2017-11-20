@@ -64,7 +64,7 @@
 	
 	<select id="getRepaymentByPayTradeNo" resultType="AfRepaymentDo">
 		select 
-			<include refid="queryFields"/> 
+			<include refid="queryFields"/>,name
 		from af_repayment WHERE is_delete=0 and pay_trade_no=#{payTradeNo};
 	</select>
 	

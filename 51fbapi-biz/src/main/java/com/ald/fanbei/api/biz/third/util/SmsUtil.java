@@ -72,7 +72,7 @@ public class SmsUtil extends AbstractThird {
     private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
     private static String TRADE_HOME_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
     private static String TEST_VERIFY_CODE = "888888";
-    private static String BorrowBillMessageSuccess = "您有一笔分期账单已成功还款，请登录51返呗查看详情。";
+    private static String BorrowBillMessageSuccess = "您x月份分期账单已成功还款，请登录51返呗查看详情。";
 
 
     // public static String sendUserName = "suweili@edspay.com";
@@ -831,11 +831,12 @@ public class SmsUtil extends AbstractThird {
             //发送短信的大开关
             if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
                 //单日单个用户发送次数限制校验
-                int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
+                //手动还款暂不发短信,所以不需要判断次数，代扣最多口两次
+                /*int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
                 if(maxSendTimes<errorTimes){
                     logger.error("sendRepaymentBorrowBillFail false,maxSendTimes:"+maxSendTimes+",errorTimes:"+errorTimes+",mobile:"+mobile);
                     return false;
-                }
+                }*/
                 String content = StringUtil.null2Str(resourceDo.getValue());
                 content = content.replace("&errorMsg", errorMsg);
                 SmsResult smsResult = sendSmsToDhst(mobile, content);

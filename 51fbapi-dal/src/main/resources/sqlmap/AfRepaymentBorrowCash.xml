@@ -262,6 +262,18 @@
 		and `status` = 'N'
 		and  gmt_create  >= CURDATE()
 	</select>
+	<select id="getCurrDayRepayErrorTimesByUser" resultType="java.lang.Integer">
+		SELECT
+		count(*)
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and `status` = 'N' and name!='代扣付款'
+		and  gmt_create  >= CURDATE()
+	</select>
 	<update id="updateRepaymentBorrowCashName" parameterType="java.lang.Long">
 		UPDATE
 		af_repayment_borrow_cash SET name = '代扣还款' WHERE id=#{refId}

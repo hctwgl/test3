@@ -269,7 +269,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 									addMsg = "{"+ bankName + cardNum + "}";
 									//AfUserDo afUserDo = afUserService.getUserById(userId);
 									//还款失败短信通知
-									sendFailMessage(userId,addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+									sendFailMessage(userId,addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()), payTradeNo,"");
 								}
 							}
 						}
@@ -288,7 +288,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				if(StringUtil.equals("sysJob",clientIp)){
 					//处理代扣短信
 					//AfUserDo afUserDo = afUserService.getUserById(userId);
-					sendSuccessMessage(userId,"","");
+					sendSuccessMessage(userId,payTradeNo,"");
 				}
 			}catch (Exception e){
 				logger.error("BorrowCash sendMessage error for:"+e);
@@ -299,13 +299,22 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		return map;
 	}
 
-	 public boolean sendFailMessage(Long userId, String content) {
+	 public boolean sendFailMessage(Long userId, String content, String outTradeNo, String tradeNo) {
 		try{
 			if(userId!=null&&StringUtil.isNotBlank(content)){
-				int errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
-				AfUserDo afUserDo = afUserService.getUserById(userId);
-				//还款失败短信通知
-				smsUtil.sendRepaymentBorrowBillFail(afUserDo.getMobile(),content,errorTimes);
+				AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+				String payType = repayment.getName();
+				if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+					int errorTimes = 0;
+					/*int errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
+					if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+						errorTimes = 0;
+					}*/
+					AfUserDo afUserDo = afUserService.getUserById(userId);
+					//还款失败短信通知
+					smsUtil.sendRepaymentBorrowBillFail(afUserDo.getMobile(),content,errorTimes);
+				}
+
 			}
 		}catch (Exception e ){
 			logger.error("sendRepaymentBorrowBillFail exception:" + e);
@@ -314,12 +323,16 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
 
 	@Override
-	public boolean sendSuccessMessage(Long userId,String outTradeNo,String tradeNo) {
+	public boolean sendSuccessMessage(Long userId, String outTradeNo, String tradeNo) {
 		try{
 			if(userId!=null){
-				//还款成功短信通知
-				AfUserDo afUserDo = afUserService.getUserById(userId);
-				smsUtil.sendRepaymentBorrowBillSuccess(afUserDo.getMobile());
+				AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+				String payType = repayment.getName();
+				if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+					//还款成功短信通知
+					AfUserDo afUserDo = afUserService.getUserById(userId);
+					smsUtil.sendRepaymentBorrowBillSuccess(afUserDo.getMobile());
+				}
 			}
 		}catch (Exception e ){
 			logger.error("sendRepaymentBorrowBillFail exception:" + e);
