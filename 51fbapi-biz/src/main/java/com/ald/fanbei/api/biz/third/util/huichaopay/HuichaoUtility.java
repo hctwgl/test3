@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.AfHuicaoOrderDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
@@ -20,6 +21,7 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.helper.DataUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -42,9 +44,9 @@ import java.util.*;
 @Component("huichaoUtility")
 public class HuichaoUtility implements ThirdInterface {
     //测试用参数值
-    static String merid = "100001";
+    static String merid = "yft2017102300002";
     static String noncestr="test2";
-    static String key = "wuhLhyqW4kB4Q4yOrwH80HuVnXNSehOr";
+    static String key = "rof7L97aPmhNO6jILbGaMLadVG0x3xGp";
     //static int payResult = 0;
     static String notifyUrl="ceshi";//以接口文档为准
     static String quickUrl="http://jh.yizhibank.com/api/createQuickOrder";//以接口文档为准
@@ -408,13 +410,22 @@ public class HuichaoUtility implements ThirdInterface {
                 continue;
             }
             else{
+                String sendStatus = HuiCaoOrderStatus.PROCESSING.getCode();
                 String _payResult = String .valueOf( result.get("payResult"));
-                if(_payResult.equals("3")){
-                    //处理中
-                    ret = false;
+                if(_payResult.equals("0")){
+                    if(DateUtil.addMins( afHuicaoOrderDo.getGmtCreate(),10).compareTo(new Date())>0) {
+                        //处理中
+                        ret = false;
+                    }else{
+                        sendStatus = HuiCaoOrderStatus.FAIL.getCode();
+                    }
                 }
+                else{
+                    sendStatus = HuiCaoOrderStatus.SUCCESS.getCode();
+                }
+
                 //要获取处理中状态
-                proessUpdate(afHuicaoOrderDo,_payResult,bizType);
+                proessUpdate(afHuicaoOrderDo,sendStatus,bizType);
             }
         }
         return ret;

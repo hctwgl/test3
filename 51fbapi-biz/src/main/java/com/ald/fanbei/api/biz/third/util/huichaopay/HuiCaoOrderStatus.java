@@ -9,9 +9,9 @@ import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayNameEnum;
  */
 public enum HuiCaoOrderStatus {
     SUCCESS( "成功","1"),
-    FAIL( "失败","0"),
-    TIMEOUT( "超时","2"),
-    PROCESSING( "处理中","3");
+    FAIL( "失败","2"),
+    PROCESSING( "处理中","3"),
+    TIMEOUT( "超时","3");
 
     private String name;
     private String code;

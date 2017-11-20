@@ -832,11 +832,23 @@ public class TestController {
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
+		String appid =  AesUtil.decrypt("Ehw14/ML0cbFSiBoVFC1mu6iw/dWDLmwlSlJTCWC/veLZVdz4LtvQ7My3Rfnuzwq/du56FGZDN1TRs9yv/Zn+4N2RXBD1dBHtugwJDhi3Bs=","Cw5bM6x@6sH$2dlw^3JueH");
+		String puk = AesUtil.decrypt("QRaDVWb2pC9by28Rxt8sMQ==","Cw5bM6x@6sH$2dlw^3JueH");
+		String pik = AesUtil.decrypt("fnzwqgFMW/RyuzDKRkH9uP/XN6RgBH5QkvtGwHR2gVs=","Cw5bM6x@6sH$2dlw^3JueH");
+
+		AesUtil.encryptToBase64(appid,"Cw5bM6x@6sH$2dlw^3JueH");
+
+
+
 //		Map m = yiBaoUtility.createOrder(BigDecimal.TEN,"hk"+String.valueOf (new Date().getTime()/1000),20158l,PayOrderSource.BORROWCASH);
 //		String token =  m.get("token").toString();
 //		String d= yiBaoUtility.getCashier(token,20158l);
 //		String e="";
-		huichaoUtility.getHuiCaoOrder("1509598766744");
+		//huichaoUtility.getHuiCaoOrder("1509598766744");
+
+
+		HashMap srce =  huichaoUtility.createOrderZFB("zfaaaabcdef","1",980219l, PayOrderSource.REPAYMENT);
+		String e = "";
 	}
 
 
