@@ -124,17 +124,17 @@ public class WithholdCheckController implements ApiHandle {
 			} catch (ParseException e) {
 				logger.error("DateTime is Exception: Exception= " + e);
 			}
-			if (currTime.getTime() > sdt1.getTime() && currTime.getTime() < edt1.getTime()) {
+			if (currTime.getTime() > sdt1.getTime() && currTime.getTime() < edt1.getTime()) {  //如果在代扣处理中，不让用户进行操作
 				info.put("isDeal", "Y");
-				info.put("message", "抱歉，当前代扣进行中，暂时无法操作，请稍后再试！");
+				info.put("message", FanbeiExceptionCode.WHIT_HOLD_DEALING.getErrorMsg());  //message 加入配置文件表中
 				resp.setResponseData(info);
 				return resp;
 			} else {
 				info.put("isDeal", "N");
 			}
-			if (currTime.getTime() > sdt2.getTime() && currTime.getTime() < edt2.getTime()) {
+			if (currTime.getTime() > sdt2.getTime() && currTime.getTime() < edt2.getTime()) {	//如果在代扣处理中，不让用户进行操作
 				info.put("isDeal", "Y");
-				info.put("message", "抱歉，当前代扣进行中，暂时无法操作，请稍后再试！");
+				info.put("message", FanbeiExceptionCode.WHIT_HOLD_DEALING.getErrorMsg());
 				resp.setResponseData(info);
 				return resp;
 			} else {

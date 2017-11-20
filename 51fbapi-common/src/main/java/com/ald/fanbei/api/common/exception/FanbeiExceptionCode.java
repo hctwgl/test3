@@ -308,6 +308,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     //物流信息不存在
     LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"order_not_exist","物流信息不存在"),
 
+    //代扣提示信息
+    WHIT_HOLD_DEALING("WHIT_HOLD_DEALING",5555,"whithold is dealing","抱歉，当前代扣进行中，暂时无法操作，请稍后再试！"),
+    
     //租房使用
     TENEMENT_USER_INVALID("TENEMENT_USER_INVALID",7002,"tenement_user_invalid","对不起，该用户尚未进行注册/身份证认证"),
     //信息已审核
