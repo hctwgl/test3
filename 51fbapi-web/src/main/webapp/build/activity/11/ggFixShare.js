@@ -35,6 +35,7 @@ var currentUrl = window.location.href;
 var param = getUrlParam(currentUrl);
 var timerInterval;
 var timerS = 60;
+var userName=param['userName'];
 var typeFrom=param['typeFrom'];//渠道类型
 var typeFromNum=param['typeFromNum'];//渠道类型数
 $(function () {
@@ -185,13 +186,15 @@ $(function () {
         console.log(registerMobile)
         if (( (userck) && yztrue&&yzcheck!='')&& ( mmtrue&& password!=undefined)) {
             $.ajax({
-                url: "/H5GGShare/boluomeActivityRegisterLogin",
+                url: "/H5GGShare/boluomeActivityRegisterLogin\n",
                 type: 'post',
                 data: {
                     "registerMobile": registerMobile,
                     "smsCode":smsCode,
                     "password":password_md5,
                     token:token,
+                    'inviteer':userName,
+                    'activityId':'1000',
                     'typeFrom':typeFrom,
                     'typeFromNum':typeFromNum
                 },
@@ -304,7 +307,8 @@ let vm = new Vue({
         },
         //点击已有账号
         hasUserNameClick(){
-            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            bombBox ();
+            //window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
         }
     }
 });
@@ -322,3 +326,26 @@ function step(){
     }, 500);
 }
 step();
+
+function bombBox () {
+    var loadDateTime = new Date();
+    if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i)) {
+        window.location.href = "com.91ala.www://home://";
+        window.setTimeout(function () {
+            var timeOutDateTime = new Date();
+            if (timeOutDateTime - loadDateTime < 5000 && location.href.indexOf('com.91ala.www://home//') == -1) {
+                window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            } else {
+                window.close();
+            }
+        }, 2000);
+    } else if (navigator.userAgent.match(/android/i)) {
+        window.location.href = "myapp://jp.app/openwith??isBrowser=1";
+        setTimeout(function () {
+            var timeOutDateTime = new Date();
+            if (timeOutDateTime - loadDateTime < 5000) {
+                window.location = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            }
+        }, 2000);
+    }
+};

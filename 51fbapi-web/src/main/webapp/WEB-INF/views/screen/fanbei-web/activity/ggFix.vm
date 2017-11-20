@@ -59,13 +59,13 @@
                 <span v-if="content.totalRebate" class="fanMoneyStyle">
                     <i v-for="item in myRebateMoney">{{item}}</i>
                 </span>
-                <span v-else>
+                <span v-else class="fanMoneyStyle01">
                     <i>0</i>
                 </span>
                 <span>元返利金</span>
             </p>
         </div>
-        <p class="toCash">去账户提现 ></p>
+        <p class="toCash" @click="toCashClick()">去账户提现 ></p>
         <div class="rebateList">
             <p class="rebateTitle"><span>消费场景</span><span>消费时间</span><span>返利(元)</span><span>惊喜返利金(元)</span></p>
             <ul class="rebateCont" v-if="content.rebateList && content.rebateList!=''">
@@ -81,7 +81,7 @@
     </div>
     <div class="fourthCont">
         <p class="fourthTitle"><img src="$src/ggFix13.png">我的场景</p>
-        <p class="toRebateMoney">去“吃玩住行”领返利金 ></p>
+        <p class="toRebateMoney" @click="toRebateMoneyClick()">去“吃玩住行”领返利金 ></p>
         <div class="couponList clearFix">
             <div class="coupon" v-for="(item,index) in couponCont.boluomeCouponList" @click="couponClick(index)">
                 <p class="couponName">{{item.name}}</p>
@@ -101,7 +101,7 @@
     <div class="toast">
        <div class="fanMoney" v-if="alertData.rebateToPop && alertData.rebateToPop==='Y'">
            <p class="title01">您已参与“{{alertData.sceneName}}”场景<br/><span>获得<i>{{alertData.rebateAmount}}元</i>返利金</span></p>
-           <p class="toGet">领取188元 ></p>
+           <p class="toGet" @click="toGetClick()">领取188元 ></p>
        </div>
         <div class="takeOutFood" v-if="alertData.couponToPop && alertData.couponToPop==='Y' && ((alertData.rebateToPop && alertData.rebateToPop==='N') || !alertData.rebateToPop)">
             <p class="toUse" @click="contNewUserClick()"></p>

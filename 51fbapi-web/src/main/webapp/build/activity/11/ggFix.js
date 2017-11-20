@@ -1,7 +1,10 @@
 let protocol = window.location.protocol;//域名
 let host = window.location.host;
 let domainName = protocol+'//'+host;
-
+let userName = "";//获取用户名
+if(getInfo().userName){
+    userName=getInfo().userName;
+};
 //获取数据
 let vm = new Vue({
     el: '#ggFix',
@@ -52,9 +55,8 @@ let vm = new Vue({
                             });
                         }
                     }
-
+                    /*图片预加载*/
                     self.$nextTick(function () {
-                        /*/!*图片预加载*!/
                         $(".first").each(function() {
                             var img = $(this);
                             img.load(function () {
@@ -63,7 +65,7 @@ let vm = new Vue({
                             setTimeout(function () {
                                 $(".loadingMask").fadeOut();
                             },1000)
-                        });*/
+                        });
                         $(".loadingMask").fadeOut();
                     })
                 },
@@ -198,6 +200,18 @@ let vm = new Vue({
             let shopId03=self.content.waiMaiShopId;
             window.location.href='ggOverlord?shopId03='+shopId03;
         },
+        //去账户提现
+        toCashClick(){
+            window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
+        },
+        //去'吃玩住行'首页
+        toRebateMoneyClick(){
+            window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.main.ui.MainActivity_1';
+        },
+        //领取188元页面scroll到我的场景
+        toGetClick(){
+            $('html,body').animate({scrollTop: $('.fourthCont').offset().top}, 800);
+        },
         //点击活动规则
         ruleClick(){
             let self=this;
@@ -235,10 +249,11 @@ function alaShareData(){
         "shareAppTitle": "有人@你~你有最高188元惊喜金待领取！",  // 分享的title
         'shareAppContent': "16元外卖1元购，下单即返20元现金（可提现）~",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare",  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?userName="+userName,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggFixShare" // 分享的页面
     };
     var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
     return dataStr;
 };
+
