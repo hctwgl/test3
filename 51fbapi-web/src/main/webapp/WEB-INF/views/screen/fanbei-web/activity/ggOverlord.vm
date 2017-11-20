@@ -13,7 +13,7 @@
     <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner first"><img :src="baseData.image"></div>
     <div class="firstCont">
-        <p class="inviteButton">有福同享 ></p>
+        <p class="inviteButton" @click="inviteButtonClick()">有福同享 ></p>
         <div class="clickInviteCode">
             <div class="copycode">点击复制邀请码：<span class="invitecode" data-clipboard-text="0">{{baseData.inviteCode}}</span></div>
         </div>
@@ -25,7 +25,7 @@
             <p class="prizeTop">我的奖励</p>
             <p class="prizeBot">合计<span><i v-for="item in inviteSumMoney">{{item}}</i></span>元外卖券</p>
         </div>
-        <p class="toCash">去账户提现 ></p>
+        <p class="toCash" @click="toCashClick()">去使用外卖券 ></p>
         <div class="rebateList">
             <p class="rebateTitle"><span>被邀请人</span><span>注册时间</span><span>状态</span><span>奖励</span></p>
             <div v-if="content.returnCouponList && couponLength>0">

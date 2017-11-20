@@ -21,7 +21,7 @@ body{
     background-size:cover;
     margin-bottom: .1rem;
     opacity: 0;
-    transition: opacity .5s linear 1s;
+    transition: opacity .5s linear .5s;
     &.wordShow01{
       opacity: 1;
     }
@@ -33,7 +33,7 @@ body{
     bottom: -.25rem;
     right: -.1rem;
     overflow: hidden;
-    transition: width 1s linear;
+    transition: width .5s linear;
     &.lineShow01{
       width: 1.2rem;
     }
@@ -59,7 +59,7 @@ body{
     background-size:cover;
     margin-bottom: .1rem;
     opacity: 0;
-    transition: opacity 1s linear 2.5s;
+    transition: opacity .5s linear 1.5s;
     &.wordShow02{
       opacity: 1;
     }
@@ -71,7 +71,7 @@ body{
     bottom: -.25rem;
     right: 0;
     overflow: hidden;
-    transition: width 1s linear 1.5s;
+    transition: width .5s linear 1s;
     &.lineShow02{
       width: 1.2rem;
     }
@@ -97,7 +97,7 @@ body{
     background-size:cover;
     margin: 0 0 .1rem .1rem;
     opacity: 0;
-    transition: opacity .5s linear 4s;
+    transition: opacity .5s linear 2.5s;
     &.wordShow03{
       opacity: 1;
     }
@@ -109,7 +109,7 @@ body{
     bottom: -.25rem;
     left: 0;
     overflow: hidden;
-    transition: width 1s linear 3s;
+    transition: width .5s linear 2s;
     &.lineShow03{
       width: 1.2rem;
     }
@@ -135,7 +135,7 @@ body{
     background-size:cover;
     margin: 0 0 0 -225%;
     opacity: 0;
-    transition: opacity 0.5s linear 6s;
+    transition: opacity 0.5s linear 4s;
     &.wordShow04{
       opacity: 1;
     }
@@ -147,7 +147,7 @@ body{
     top:0;
     right: 0;
     overflow: hidden;
-    transition: width 1.5s linear 4.5s;
+    transition: width 1s linear 3s;
     &.lineShow04{
       width: 3.3rem;
     }
@@ -434,7 +434,7 @@ body{
 }
 .rebateList{
   width: 95.6%;
-  height: 2.91rem;
+  /*height: 2.91rem;*/
   border-radius: .05rem;
   background-color: #ffffff;
   box-shadow: .05rem .05rem .12rem 0 rgba(118, 16, 15, 0.55);
@@ -459,12 +459,16 @@ body{
       width:31%;
     }
   }
-  .rebateCont li{
+  .rebateCont{
+    height: 2.4rem;
+    overflow: auto;
+    li{
     height:.79rem;
     line-height:.79rem;
     font-size:.26rem;
     span{
       text-align: center;
+      float: left;
     }
     span:nth-child(1),span:nth-child(3){
       width:19.5%;
@@ -478,6 +482,7 @@ body{
     span:nth-child(3),span:nth-child(4){
       letter-spacing: .05rem;
     }
+  }
   }
 }
 /*fourthCont*/

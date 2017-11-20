@@ -40,7 +40,7 @@
         <p class="firstTitle"><img src="$src/ggFix08.png">{{firstTitle}}</p>
         <div class="cont">
             <p class="contTop"><span>{{firstValue}}</span></p>
-            <p class="contNewUser">新用户去吃霸王餐 ><br/><span>{{firstValue}}元外卖券已发放至账户</span></p>
+            <p class="contNewUser" @click="contNewUserClick()">新用户去吃霸王餐 ><br/><span>{{firstValue}}元外卖券已发放至账户</span></p>
             <p class="contOldUser" @click="contOldUserClick()">老用户同享霸王餐 ></p>
         </div>
     </div>

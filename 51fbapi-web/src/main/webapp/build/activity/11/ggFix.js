@@ -113,11 +113,11 @@ let vm = new Vue({
         },
         //点击卡片
         cardClick:function(e){
-            let shopId=e.shopId;
+            let shopId01=e.shopId;
             $.ajax({
                 type: 'post',
                 url: '/fanbei-web/getBrandUrlV1',
-                data:{'shopId':shopId},
+                data:{'shopId':shopId01},
                 dataType:'JSON',
                 success: function (returnData) {
                     console.log(returnData);
@@ -141,9 +141,33 @@ let vm = new Vue({
                 }
             });*/
         },
+        //点击新用户吃霸王餐
+        contNewUserClick(){
+            let self=this;
+            let shopId02=self.content.waiMaiShopId;
+            $.ajax({
+                type: 'post',
+                url: '/fanbei-web/getBrandUrlV1',
+                data:{'shopId':shopId02},
+                dataType:'JSON',
+                success: function (returnData) {
+                    console.log(returnData);
+                    if(returnData.success){
+                        location.href=returnData.url;
+                    }else{
+                        location.href=returnData.url;
+                    }
+                },
+                error: function(){
+                    requestMsg("请求失败");
+                }
+            });
+        },
         //老用户同享霸王餐
         contOldUserClick(){
-            window.location.href='ggOverlord';
+            let self=this;
+            let shopId03=self.content.waiMaiShopId;
+            window.location.href='ggOverlord?shopId03='+shopId03;
         },
         //点击活动规则
         ruleClick(){
@@ -171,3 +195,19 @@ function step(){
     }, 500);
 }
 step();
+
+// app调用web的分享方法
+function alaShareData(){
+    var dataObj = { // 分享内容
+        "appLogin": "Y", // 是否需要登录，Y需要，N不需要
+        "type": "share", // 此页面的类型
+        "shareAppTitle": "有人@你~你有最高188元惊喜金待领取！",  // 分享的title
+        'shareAppContent': "16元外卖1元购，下单即返20元现金（可提现）~",  // 分享的内容
+        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",  // 分享右边小图
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare",  // 分享后的链接
+        "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
+        "sharePage": "ggFixShare" // 分享的页面
+    };
+    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
+    return dataStr;
+};
