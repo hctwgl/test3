@@ -526,6 +526,8 @@ public class APPH5GgActivityController extends BaseController {
 							data.put("rebateList", rebateeList);
 						}
 					}
+						Long shopId = afShopService.getWaiMainShopId();
+						data.put("waiMaiShopId", shopId);
 						data.put("image", image);
 						data.put("resultList", resultList);
 						data.put("ruleDescript", ruleDescript);
