@@ -155,7 +155,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
 			data.put("basicStatus", RiskStatus.A.getCode());
 		} else {
-			data.put("basicStatus", authDo.getRiskStatus());
+			data.put("basicStatus", authDo.getBasicStatus());
 		}
 
 		data.put("faceStatus", authDo.getFacesStatus());
