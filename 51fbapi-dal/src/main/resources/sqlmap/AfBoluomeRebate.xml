@@ -140,10 +140,25 @@
 		AND is_delete = 0;
     </select>
     <select id="getLightShopId" parameterType="java.lang.Long"  resultType="java.lang.Long">
-	    SELECT s.id as shopId FROM af_order o 
-		INNER JOIN af_shop s ON o.sec_type = s.type  and o.is_delete = s.is_delete = 0
-		and  o.id = #{orderId}
-		LIMIT 0,1;
+			SELECT
+				s.id
+			FROM
+				af_shop s
+			INNER JOIN (
+				SELECT
+				IF (
+					o.sec_type = 'HUAFEI'
+					OR o.sec_type = 'LIULIANG',
+					'CHONGZHI',
+					o.sec_type
+				) AS type
+				FROM af_order o
+				WHERE
+					o.id = #{orderId}
+				AND o.is_delete = 0
+			) AS tt ON s.type = tt.type
+			AND s.is_delete = 0
+			LIMIT 0,1;
     </select>
     <select id="getRebateList" parameterType="java.lang.Long"  resultType="com.ald.fanbei.api.dal.domain.AfRebateDo">
 	   		SELECT s.name as consumeScene, tt.surpriseRebate,tt.consumeTime,tt.sceneRebate
@@ -175,13 +190,14 @@
 	   	limit 0,1
     </select>
     <select id="getHighestNeverPopedRebate" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
-		SELECT
+		<![CDATA[SELECT
 			id rid,gmt_create,gmt_modified,user_id,first_order,order_id, MAX(rebate_amount) as rebate_amount
 		FROM
 			af_boluome_rebate
 		WHERE
 			user_id = #{userId}
 		and is_delete = 0
+		
 		AND id > IFNULL(1,(
 			SELECT
 				rebate_index
@@ -190,9 +206,9 @@
 			WHERE
 				user_id = #{userId}
 				and is_delete = 0
-		LIMIT 0,1
+		LIMIT 0,1 
 		)) LIMIT 0,1
-		;
+		;]]>
     
     </select>
     
