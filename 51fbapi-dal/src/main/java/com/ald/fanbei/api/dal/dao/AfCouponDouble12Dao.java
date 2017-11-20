@@ -16,6 +16,12 @@ public interface AfCouponDouble12Dao extends BaseDao<AfCouponDouble12Do, Long> {
 
 	List<AfCouponDouble12Do> getCouponList();
 
+	AfCouponDouble12Do getCouponByCouponId(Long couponId);
+
+	void updateCountById(AfCouponDouble12Do afCouponDouble12Do);
+
+	void updateReCountById(AfCouponDouble12Do afCouponDouble12Do);
+
     
 
 }

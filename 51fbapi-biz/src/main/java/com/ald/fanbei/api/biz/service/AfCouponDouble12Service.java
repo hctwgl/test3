@@ -16,4 +16,10 @@ public interface AfCouponDouble12Service extends ParentService<AfCouponDouble12D
 
 	List<AfCouponDouble12Do> getCouponList();
 
+	AfCouponDouble12Do getCouponByCouponId(Long couponId);
+
+	void updateCountById(AfCouponDouble12Do afCouponDouble12Do);
+
+	void updateReCountById(AfCouponDouble12Do afCouponDouble12Do);
+
 }

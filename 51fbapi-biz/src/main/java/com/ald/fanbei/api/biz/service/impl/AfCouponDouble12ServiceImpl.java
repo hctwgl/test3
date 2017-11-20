@@ -42,4 +42,22 @@ public class AfCouponDouble12ServiceImpl extends ParentServiceImpl<AfCouponDoubl
 		// TODO Auto-generated method stub
 		return afCouponDouble12Dao.getCouponList();
 	}
+
+	@Override
+	public AfCouponDouble12Do getCouponByCouponId(Long couponId) {
+		// TODO Auto-generated method stub
+		return afCouponDouble12Dao.getCouponByCouponId(couponId);
+	}
+
+	@Override
+	public void updateCountById(AfCouponDouble12Do afCouponDouble12Do) {
+		// TODO Auto-generated method stub
+		afCouponDouble12Dao.updateCountById(afCouponDouble12Do);
+	}
+
+	@Override
+	public void updateReCountById(AfCouponDouble12Do afCouponDouble12Do) {
+		// TODO Auto-generated method stub
+		afCouponDouble12Dao.updateReCountById(afCouponDouble12Do);
+	}
 }

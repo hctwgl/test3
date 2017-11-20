@@ -33,7 +33,7 @@ import java.math.BigDecimal;
     private Date gmtModified;
 
     /**
-     * 优惠券数量（每天有额定数量）
+     * 优惠券实时可领数量（每领取减一）
      */
     private Long count;
 
@@ -57,8 +57,20 @@ import java.math.BigDecimal;
      */
     private Integer sort;
 
-
     /**
+     * 优惠券数量（每天有额定数量）
+     */
+    private Long total;
+
+    public Long getTotal() {
+		return total;
+	}
+
+	public void setTotal(Long total) {
+		this.total = total;
+	}
+
+	/**
      * 获取主键Id
      *
      * @return rid
@@ -114,18 +126,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取优惠券数量（每天有额定数量）
+     * 获取优惠券实时可领数量（每领取减一）
      *
-     * @return 优惠券数量（每天有额定数量）
+     * @return 优惠券实时可领数量（每领取减一）
      */
     public Long getCount(){
       return count;
     }
 
     /**
-     * 设置优惠券数量（每天有额定数量）
+     * 设置优惠券实时可领数量（每领取减一）
      * 
-     * @param count 要设置的优惠券数量（每天有额定数量）
+     * @param count 要设置的优惠券实时可领数量（每领取减一）
      */
     public void setCount(Long count){
       this.count = count;

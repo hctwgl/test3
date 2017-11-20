@@ -18,7 +18,14 @@ public class afCouponDouble12Vo extends AbstractSerial {
 	private long id;
 	private String name;
 	private String threshold;
+	private String isShow;// Y:在活动期间；N:不在活动期间
 	
+	public String getIsShow() {
+		return isShow;
+	}
+	public void setIsShow(String isShow) {
+		this.isShow = isShow;
+	}
 	public afCouponDouble12Vo() {
 	}
 	public afCouponDouble12Vo(long id, String name, String threshold) {
