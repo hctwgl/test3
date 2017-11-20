@@ -176,8 +176,8 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		} else {
 			data.put("isUploadImage", "N");
 		}
-		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
-			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtRisk()), 10);
+		if (StringUtil.equals(authDo.getBasicStatus(), RiskStatus.NO.getCode())) {
+			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtBasic()), 10);
 			between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
 			if (between > 0) {
 				data.put("riskRetrialRemind", "审核不通过，"+between+"天后可重新提交审核");
