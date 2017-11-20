@@ -5,7 +5,7 @@
 
 		id
 		rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
-		sec_type,value_1,value_2,value_3,value_4,sort,pic1,pic2
+		sec_type,value_1,value_2,value_3,value_4,sort,pic1,pic2,hottag
 	</sql>
 	<sql id="queryManyAllFields">
 
