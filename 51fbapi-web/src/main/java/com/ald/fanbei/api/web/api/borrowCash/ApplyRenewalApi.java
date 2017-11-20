@@ -59,7 +59,8 @@ public class ApplyRenewalApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
 		Long rid = NumberUtil.objToLongDefault(requestDataVo.getParams().get("borrowId"), 0l);
-
+		BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
+		
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 		if (afBorrowCashDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
@@ -70,7 +71,7 @@ public class ApplyRenewalApi implements ApiHandle {
 			throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
 		}
 
-		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo, context.getAppVersion());
+		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo, context.getAppVersion(), renewalAmount);
 
 		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(afBorrowCashDo.getUserId());
 
@@ -92,7 +93,7 @@ public class ApplyRenewalApi implements ApiHandle {
 		return resp;
 	}
 
-	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo, Integer appVersion) {
+	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo, Integer appVersion,BigDecimal renewAmount) {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
@@ -102,15 +103,25 @@ public class ApplyRenewalApi implements ApiHandle {
 		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + afBorrowCashDo.getUserId());
 		if (poundageRateCash != null) {
 			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
-		}*/
+		}
+		*/
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
-		AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
-		BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
-		BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-
+		//AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+		//BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
+		//BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+		BigDecimal capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewAmount);
+		
+		
+		if (capital.compareTo(afBorrowCashDo.getAmount()) == 1) {   //判断续借金额是否大于借款金额
+			throw new FanbeiException(
+					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+		}
+		
 		// 续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
+		
+		BigDecimal allRenewalAmount= BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
 		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
 
@@ -131,6 +142,8 @@ public class ApplyRenewalApi implements ApiHandle {
 		data.put("renewalPayAmount", renewalPayAmount);// 续期应缴费用
 		data.put("renewalAmount", waitPaidAmount);// 续期金额
 		data.put("renewalDay", allowRenewalDay);// 续期天数
+		
+		data.put("allRenewalAmount", allRenewalAmount);//所有续借的金额
 		return data;
 	}
 

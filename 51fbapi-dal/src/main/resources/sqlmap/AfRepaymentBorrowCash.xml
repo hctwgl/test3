@@ -262,5 +262,8 @@
 		and `status` = 'N'
 		and  gmt_create  >= CURDATE()
 	</select>
-	
+	<update id="updateRepaymentBorrowCashName" parameterType="java.lang.Long">
+		UPDATE
+		af_repayment_borrow_cash SET name = '代扣还款' WHERE id=#{refId}
+	</update>
 </mapper>

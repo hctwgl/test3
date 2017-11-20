@@ -213,6 +213,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}else if(BorrowType.CASH.getCode().equals(billDo.getType())){
 			name +=billDo.getBorrowNo();
 		}
+		if(StringUtil.equals("sysJob",clientIp)){
+			name = "代扣付款";
+		}
 		final AfRepaymentDo repayment = buildRepayment(jfbAmount,repaymentAmount, repayNo, now, actualAmount,coupon, 
 				rebateAmount, billIds, cardId, payTradeNo,name,userId);
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -633,5 +636,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			
 		
 	}
-	
+
+	@Override
+	public int updateRepaymentName(Long refId) {
+		return afRepaymentDao.updateRepaymentName(refId);
+	}
+
 }

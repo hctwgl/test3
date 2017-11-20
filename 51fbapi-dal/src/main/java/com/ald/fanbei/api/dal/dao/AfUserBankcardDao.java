@@ -99,4 +99,23 @@ public interface AfUserBankcardDao {
 	 */
 	List<AfUserBankcardDo> getUserBankList(AfUserBankQuery query);
 	
+	/**
+	 * 获取银行卡列表
+	 * 
+	 * **/
+	
+	List<AfUserBankcardDo> getAfUserBankcardDoList(long userId);
+	
+	/**
+	 * 获取银行卡cardNumber ,cardId
+	 * 
+	 * **/
+	
+	String getAfUserBankcardList(long userId);
+	/**
+	 * 根据银行卡号获取ID
+	 * **/
+	AfUserBankcardDo getUserBankcardIdByCardNumber(String cardNumber);
+
+	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
 }

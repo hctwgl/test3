@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -309,26 +308,9 @@ public interface AfBorrowBillDao {
 	 */
 	List<AfOverdueBillDto> getAfOverdueBillDtoByConsumerNo(@Param("orderId")Long orderId);
 
-	/**
-	 * 根据用户ID查询未还逾期账单总数
-	 * @author yuyue
-	 * @Time 2017年11月6日 下午4:00:16
-	 * @param userId
-	 * @return
-	 */
-	int countNotPayOverdueBill(@Param("userId")Long userId);
+	String getBillIdsByUserId(@Param("userId")Long userId);
 
-	List<AfBorrowBillDo> getNoPayBillByUserId(@Param("userId")Long userId,@Param("gmt_out_day") Date gmt_out_day);
+	int updateBorrowBillLockById(@Param("billId")String billId);
 
-	/**
-	 * 更改出账日
-	 * @author yuyue
-	 * @Time 2017年11月7日 下午1:48:42
-	 * @param rid
-	 * @param date
-	 * @param date2
-	 * @param billYear
-	 * @param billMonth
-	 */
-	void updateBillOutDay(@Param("id")Long id,@Param("gmtOutDay")Date gmtOutDay,@Param("gmtPayTime") Date gmtPayTime,@Param("billYear") int billYear,@Param("billMonth") int billMonth);
+	int updateBorrowBillUnLockByIds(@Param("billIds") List<String> billIds);
 }
