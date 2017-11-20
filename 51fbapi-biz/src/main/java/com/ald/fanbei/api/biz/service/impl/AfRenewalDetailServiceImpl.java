@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
+import com.ald.fanbei.api.biz.third.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -349,6 +351,13 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			//当续期成功时,同步逾期天数为0
 			dealWithSynchronizeOverduedOrder(currAfBorrowCashDo);
 
+			/*try {
+				//生成续期凭据
+				afContractPdfCreateService.protocolRenewal(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
+				logger.error("生成续期凭据成功，renewId="+afRenewalDetailDo.getUserId());
+			} catch (Exception e) {
+				logger.error("生成续期凭据异常，renewId="+afRenewalDetailDo.getUserId(),e);
+			}*/
 			//返呗续期通知接口，向催收平台同步续期信息
 			try {
 				if (currAfBorrowCashDo.getOverdueStatus().equals("Y") || currAfBorrowCashDo.getOverdueDay() > 0) {
