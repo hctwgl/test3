@@ -65,11 +65,17 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	@Override
 	public boolean sendCoupon(Long userId) {
 		boolean result = false;
+		String log = String.format("sendCoupon || params: userId = {}", userId);
+		logger.info(log);
 		int isHave = afBoluomeUserCouponDao.checkIfHaveCoupon(userId);
+		log = log + String.format("middle business params isHave = {}", isHave);
+		logger.info(log);
 		if (isHave == 0) {
 			// have never sent coupon before , right now send it .
 			Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
-
+			log = log + String.format("refUserIdTemp = {}", refUserIdTemp);
+			logger.info(log);
+			
 			if (refUserIdTemp != null) {
 				AfBoluomeUserCouponDo afBoluomeUserCouponDo = new AfBoluomeUserCouponDo();
 				afBoluomeUserCouponDo.setGmtCreate(new Date());
@@ -78,17 +84,26 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 				afBoluomeUserCouponDo.setUserId(refUserIdTemp);
 				afBoluomeUserCouponDo.setStatus(1);
 				afBoluomeUserCouponDo.setChannel("RECOMMEND");
-
+				
 				AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GGACTIVITY", "BOLUOMECOUPON");
+				
+				log = log + String.format("AfBoluomeUserCouponDo = {} , AfResourceDo = {} ", afBoluomeUserCouponDo.toString(), resourceDo.toString());
+				logger.info(log);
+				
 				if (resourceDo != null) {
 					String couponIdStr = resourceDo.getValue();
 					Long couponId = Long.parseLong(couponIdStr);
 					afBoluomeUserCouponDo.setCouponId(couponId);
 
+					log = log + String.format("couponId = {} ", couponId);
+					logger.info(log);
+					
 					afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
 					result = true;
 					//call Jpush for rebate
 					String userName = convertToUserName(userId);
+					log = log + String.format("userName = {} ", userName);
+					logger.info(log);
 					if (userName != null) {
 						jpushService.send15Coupon(userName);
 					}

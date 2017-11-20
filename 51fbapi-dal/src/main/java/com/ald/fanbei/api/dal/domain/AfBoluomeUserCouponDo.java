@@ -218,4 +218,11 @@ import java.math.BigDecimal;
       this.refId = refId;
     }
 
+	@Override
+	public String toString() {
+		return "AfBoluomeUserCouponDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified
+				+ ", userId=" + userId + ", couponId=" + couponId + ", status=" + status + ", channel=" + channel
+				+ ", refId=" + refId + "]";
+	}
+
 }
