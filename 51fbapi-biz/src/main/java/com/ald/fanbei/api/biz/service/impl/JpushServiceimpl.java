@@ -913,6 +913,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
 			extras.put(PUSH_JUMP_TYPE, "229");
 			extras.put(DATA, "");
+			logger.info("commonMethod params : userName = {} , msgContext = {} , title = {} , pushNotifyByAlias params : extras = {}" ,new Object[]{userName,msgContext,title,extras});
 			jpushUtil.pushNotifyByAlias(title, msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("zhengxinRiskFault error", e);
@@ -923,6 +924,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	@Override
 	public void sendRebateMsg(String userName, String scence, BigDecimal rebateAmount) {
 		try {
+			logger.info("sendRebateMsg params : userName = {} , scence = {} , rebateAmount = {}" ,new Object[]{userName,scence,rebateAmount});
 			String msgContext = "您已参与“" + scence + "”场景获得" + rebateAmount + "元惊喜返利金！参与越多，奖励越多，最高领取188元>>>";
 			String errorMsg = "恭喜您赢得返利";
 			commonMethod(userName,msgContext,errorMsg);
