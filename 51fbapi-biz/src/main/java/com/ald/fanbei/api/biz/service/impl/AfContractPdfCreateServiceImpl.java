@@ -173,7 +173,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("selfPath", src + accountDo.getUserName() + "instalment" + time + 3 + ".pdf");
             map.put("secondPath", src + accountDo.getUserName() + "instalment" + time + 4 + ".pdf");
             map.put("fileName", accountDo.getUserName() + "instalment" + time + 4);
-            if (pdfCreate(map))
+            if (!pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             logger.info(JSON.toJSONString(map));
         } catch (Exception e) {
@@ -282,7 +282,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("selfPath", src + accountDo.getUserName() + "cashLoan" + time + 3 + ".pdf");
             map.put("secondPath", src + accountDo.getUserName() + "cashLoan" + time + 4 + ".pdf");
             map.put("fileName", accountDo.getUserName() + "cashLoan" + time + 4);
-            if (pdfCreate(map))
+            if (!pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
             logger.info(JSON.toJSONString(map));
@@ -521,7 +521,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             map.put("selfPath", src + accountDo.getUserName() + "renewal" + time + 3 + ".pdf");
             map.put("secondPath", src + accountDo.getUserName() + "renewal" + time + 4 + ".pdf");
             map.put("fileName", accountDo.getUserName() + "renewal" + time + 4);
-            if (pdfCreate(map))
+            if (!pdfCreate(map))
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
             logger.info(JSON.toJSONString(map));
@@ -534,11 +534,13 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     private boolean pdfCreate(Map map) throws IOException {
         OutputStream fos = null;
         ByteArrayOutputStream bos = null;
+        boolean result = true;
         try {
             PdfCreateUtil.create(map, fos, bos);
         } catch (Exception e) {
-            logger.error("pdf合同生成失败 => {}", e);
-            return true;
+            logger.error("pdf合同生成失败 => {}", e.getMessage());
+            result = false;
+            return result;
         } finally {
             if (null != fos) {
                 fos.flush();
@@ -547,44 +549,85 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             if (null != bos) {
                 bos.close();
             }
+            if (!result){
+                File file1 = new File(map.get("PDFPath").toString());
+                file1.delete();
+            }
         }
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.userSign(map);
             if (fileDigestSignResult.isErrShow()) {
-                return true;
+                result = false;
+                logger.error("甲方盖章证书生成失败 => {}",fileDigestSignResult);
+                return result;
             }
             map.put("esignIdFirst", fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("甲方盖章证书生成失败 => {}", e);
-            return true;
+            result = false;
+            return result;
+        }finally {
+            if (!result){
+                File file1 = new File(map.get("PDFPath").toString());
+                file1.delete();
+                file1 = new File(map.get("userPath").toString());
+                file1.delete();
+            }
         }
 
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.selfSign(map);
             if (fileDigestSignResult.isErrShow()) {
-                return true;
+                result = false;
+                logger.error("丙方盖章证书生成失败 => {}",fileDigestSignResult);
+                return result;
             }
             map.put("esignIdSecond", fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("丙方盖章证书生成失败 => {}", e);
-            return true;
+            result = false;
+            return result;
+        }finally {
+            if (!result){
+                File file1 = new File(map.get("PDFPath").toString());
+                file1.delete();
+                file1 = new File(map.get("userPath").toString());
+                file1.delete();
+                file1 = new File(map.get("selfPath").toString());
+                file1.delete();
+            }
         }
         try {
             FileDigestSignResult fileDigestSignResult = afESdkService.secondSign(map);
             if (fileDigestSignResult.isErrShow()) {
-                return true;
+                result = false;
+                logger.error("乙方盖章证书生成失败 => {}",fileDigestSignResult);
+                return result;
             }
             map.put("esignIdThird", fileDigestSignResult.getSignServiceId());
         } catch (Exception e) {
             logger.error("乙方盖章证书生成失败 => {}", e);
-            return true;
+            result = false;
+            return result;
+        }finally {
+            if (!result){
+                File file1 = new File(map.get("PDFPath").toString());
+                file1.delete();
+                file1 = new File(map.get("userPath").toString());
+                file1.delete();
+                file1 = new File(map.get("selfPath").toString());
+                file1.delete();
+                file1 = new File(map.get("secondPath").toString());
+                file1.delete();
+            }
         }
-        String evId = "";
+        //存证暂时不用
+        /*String evId = "";
         try {
             evId = eviPdf(map);
         } catch (Exception e) {
             logger.error("e签宝存证生成失败 => {}", e);
-        }
+        }*/
         InputStream input = null;
         try {
             File file = new File(map.get("secondPath").toString());
@@ -596,9 +639,9 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             if (null != ossUploadResult.getUrl()) {
                 String protocolCashType = map.get("protocolCashType").toString();
                 AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
-                if (!"".equals(evId)) {
-                    afContractPdfDo.setEvId(evId);
-                }
+//                if (!"".equals(evId)) {
+//                    afContractPdfDo.setEvId(evId);
+//                }
                 if ("1".equals(protocolCashType)) {//借款协议
                     afContractPdfDo.setType((byte) 1);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());
