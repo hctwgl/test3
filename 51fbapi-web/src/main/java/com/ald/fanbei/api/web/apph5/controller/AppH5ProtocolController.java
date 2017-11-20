@@ -139,22 +139,6 @@ public class AppH5ProtocolController extends BaseController {
         logger.info(JSON.toJSONString(model));
     }
 
-    @RequestMapping("/getBorrowIdByNo")
-    @ResponseBody
-    public String getBorrowIdByNo(String borrowNo) {
-        if (null == borrowNo || "".equals(borrowNo)) {
-            return H5CommonResponse.getNewInstance(false, "borrowNo is null", "", "").toString();
-        }
-        AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
-        Map map = new HashMap();
-        if (null != afBorrowCashDo) {
-            map.put("borrowId", afBorrowCashDo.getRid().toString());
-            return H5CommonResponse.getNewInstance(true, "get borrowId success", "", map).toString();
-        }
-        map.put("borrowId", "");
-        return H5CommonResponse.getNewInstance(false, "get borrowId fail", "", map).toString();
-    }
-
     @RequestMapping(value = {"numProtocol"}, method = RequestMethod.GET)
     public void numProtocol(HttpServletRequest request, ModelMap model) throws IOException {
         FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
