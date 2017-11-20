@@ -885,8 +885,9 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	public void send15Coupon(String userName) {
 		try {
 			String msgContext = "恭喜您邀请好友成功！15元无门槛外卖券已发放到您的账户，请记得查收并使用！";
-			String errorMsg = "恭喜您邀请好友成功";
-			commonMethod(userName,msgContext,errorMsg);
+			String title = "恭喜您邀请好友成功";
+			logger.info("send15Coupon params ：　userName = {} , middle business params : msgContext = {} ,  title = {}",userName,msgContext,title);
+			commonMethod(userName,msgContext,title);
 		} catch (Exception e) {
 			logger.info("send15Coupon error", e);
 		}	

@@ -160,6 +160,14 @@ public class AfResourceDo extends AbstractSerial {
 	public void setPic2(String pic2) {
 		this.pic2 = pic2;
 	}
+	@Override
+	public String toString() {
+		return "AfResourceDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", creator="
+				+ creator + ", modifier=" + modifier + ", dataType=" + dataType + ", type=" + type + ", typeDesc="
+				+ typeDesc + ", name=" + name + ", value=" + value + ", description=" + description + ", secType="
+				+ secType + ", value1=" + value1 + ", value2=" + value2 + ", value3=" + value3 + ", value4=" + value4
+				+ ", sort=" + sort + ", pic1=" + pic1 + ", pic2=" + pic2 + "]";
+	}
 	
 
 
