@@ -5,6 +5,7 @@ let userName = "";//获取用户名
 if(getInfo().userName){
     userName=getInfo().userName;
 };
+let returnNum = getBlatFrom();  // 判断1为Android，2为ios
 //获取数据
 let vm = new Vue({
     el: '#ggFix',
@@ -202,11 +203,19 @@ let vm = new Vue({
         },
         //去账户提现
         toCashClick(){
-            window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
+            if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
+                window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
+            }else{
+                window.location.href='/fanbei-web/opennative?name=GG_ALACashBorrowingViewController';
+            }
         },
         //去'吃玩住行'首页
         toRebateMoneyClick(){
-            window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.main.ui.MainActivity_1';
+            if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
+                window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.main.ui.MainActivity_1';
+            }else{
+                window.location.href='/fanbei-web/opennative?name=GG_ALABrandViewController';
+            }
         },
         //领取188元页面scroll到我的场景
         toGetClick(){
