@@ -367,14 +367,4 @@
 	<select id="getActivityRule" resultType="String">
 		SELECT value from af_resource where is_delete = 0 and type =#{type}
 	</select>
-	
-	
-	<select id="getScrollbarListByType" resultType="AfResourceDo">
-		SELECT
-		<include refid="queryAllFields" />
-		FROM
-		af_resource
-		WHERE
-		type = #{type} AND is_delete = 0 and value_4 ='O'
-	</select>
 </mapper>
