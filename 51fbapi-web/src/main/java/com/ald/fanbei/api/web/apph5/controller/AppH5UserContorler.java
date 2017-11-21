@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +46,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.ImageUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
@@ -400,13 +402,18 @@ public class AppH5UserContorler extends BaseController {
 
     }
     
-    @RequestMapping(value = "/checkMobileRegistered", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/checkMobileRegistered", method = {RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String checkMobileRegistered(HttpServletRequest request, ModelMap model) throws IOException {
     	Calendar calStart = Calendar.getInstance();
     	H5CommonResponse resp = H5CommonResponse.getNewInstance();
         try {
         	String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+        	String exsitMobile = (String) bizCacheUtil.getObject("h5register"+mobile);
+        	if (StringUtils.isNotBlank(exsitMobile)) {
+        		resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_FREQUENTLY_ERROR.getDesc(), "", null);
+        		return resp.toString();
+			}
         	if(StringUtils.isEmpty(mobile)){
         		throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
         	}
@@ -417,6 +424,7 @@ public class AppH5UserContorler extends BaseController {
      		}
      		String isRegistered="N";
             AfUserDo UserDo = afUserService.getUserByUserName(mobile);
+            bizCacheUtil.saveObject("h5register"+mobile, mobile,Constants.SECOND_OF_ONE_MINITS);
             if (UserDo != null) {
             	isRegistered="Y";
             	resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", isRegistered);
