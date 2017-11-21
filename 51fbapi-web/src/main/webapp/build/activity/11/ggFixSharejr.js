@@ -89,7 +89,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_img&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+            data:{maidianInfo:'/fanbei-web/activity/ggFixSharejr?type=new_img&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -166,7 +166,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_sure&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+            data:{maidianInfo:'/fanbei-web/activity/ggFixSharejr?type=new_sure&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -204,6 +204,8 @@ $(function () {
                     var a=JSON.parse(returnData);
                     if (a.success) {
                         requestMsg("注册成功");
+                        //转化代码
+                        _taq.push({convert_id:"72607366923",  event_type:"form"});
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                     }else{
                         requestMsg(a.msg);
@@ -226,7 +228,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_get&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+            data:{maidianInfo:'/fanbei-web/activity/ggFixSharejr?type=new_get&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -249,7 +251,7 @@ function getUrlParam(url) {
 }
 //页面初始化数据
 let vm = new Vue({
-    el: '#ggFixShare',
+    el: '#ggFixSharejr',
     data: {
         content: {},
         ruleShow:false
@@ -289,7 +291,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_ini&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+                data:{maidianInfo:'/fanbei-web/activity/ggFixSharejr?type=new_ini&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
                 success:function (data) {
                     console.log(data)
                 }

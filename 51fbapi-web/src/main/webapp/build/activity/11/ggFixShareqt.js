@@ -89,7 +89,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_img&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+            data:{maidianInfo:'/fanbei-web/activity/ggFixShareqt?type=new_img&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -166,7 +166,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_sure&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+            data:{maidianInfo:'/fanbei-web/activity/ggFixShareqt?type=new_sure&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -226,7 +226,7 @@ $(function () {
         $.ajax({
             url:'/fanbei-web/postMaidianInfo',
             type:'post',
-            data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_get&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+            data:{maidianInfo:'/fanbei-web/activity/ggFixShareqt?type=new_get&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
             success:function (data) {
                 console.log(data)
             }
@@ -249,7 +249,7 @@ function getUrlParam(url) {
 }
 //页面初始化数据
 let vm = new Vue({
-    el: '#ggFixShare',
+    el: '#ggFixShareqt',
     data: {
         content: {},
         ruleShow:false
@@ -289,7 +289,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_ini&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+                data:{maidianInfo:'/fanbei-web/activity/ggFixShareqt?type=new_ini&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
                 success:function (data) {
                     console.log(data)
                 }
