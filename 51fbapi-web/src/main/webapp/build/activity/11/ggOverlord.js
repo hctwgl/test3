@@ -77,13 +77,22 @@ let vm = new Vue({
                 }
             });
         },
-        //点击有福同享--分享
+        //点击有福同享--分享++埋点
         inviteButtonClick(){
             let dat='{"shareAppTitle":"老铁~快来吃霸王餐啦~","shareAppContent":"节日剁手不吃土，来51返呗点餐立减15元，有福同享，你也快来>>>","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggFixShare?userName="'+userName+',"isSubmit":"Y","sharePage":"ggFixShare"}';
             let base64 = BASE64.encoder(dat);
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
+            //点击有福同享加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=callPeople'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
-        //去使用我的优惠券
+        //去使用我的优惠券+埋点
         toCashClick(){
             $.ajax({
                 type: 'post',
@@ -100,6 +109,15 @@ let vm = new Vue({
                 },
                 error: function(){
                     requestMsg("请求失败");
+                }
+            });
+            //点击去使用我的优惠券加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=toUseCoupon'},
+                success:function (data) {
+                    console.log(data)
                 }
             });
         },

@@ -6,6 +6,7 @@ if(getInfo().userName){
     userName=getInfo().userName;
 };
 let returnNum = getBlatFrom();  // 判断1为Android，2为ios
+let typeFrom=getUrl('typeFrom');
 //获取数据
 let vm = new Vue({
     el: '#ggFix',
@@ -113,6 +114,15 @@ let vm = new Vue({
                     requestMsg('哎呀，出错了！')
                 }
             });
+            //初始化加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom='+typeFrom},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //点击领取优惠券
         couponClick:function(index){
@@ -143,9 +153,10 @@ let vm = new Vue({
             });
 
         },
-        //点击卡片
+        //点击卡片+埋点
         cardClick:function(e){
             let shopId01=e.shopId;
+            let cardName=e.name;
             $.ajax({
                 type: 'post',
                 url: '/fanbei-web/getBrandUrlV1',
@@ -164,16 +175,16 @@ let vm = new Vue({
                 }
             });
             //点击卡片加埋点
-            /*$.ajax({
+            $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/ggFix?type=card&typeId='+shopId},
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=cardClick&cardName='+cardName},
                 success:function (data) {
                     console.log(data)
                 }
-            });*/
+            });
         },
-        //点击新用户吃霸王餐
+        //点击新用户吃霸王餐+埋点
         contNewUserClick(){
             let self=this;
             let shopId02=self.content.waiMaiShopId;
@@ -194,28 +205,64 @@ let vm = new Vue({
                     requestMsg("请求失败");
                 }
             });
+            //点击新用户吃霸王餐加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=newUserBtn'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
-        //老用户同享霸王餐
+        //老用户同享霸王餐+埋点
         contOldUserClick(){
             let self=this;
             let shopId03=self.content.waiMaiShopId;
             window.location.href='ggOverlord?addUiName=SHOWSHARE&shopId03='+shopId03;
+            //点击老用户同吃霸王餐加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=oldUserBtn'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
-        //去账户提现
+        //去账户提现+埋点
         toCashClick(){
             if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
                 window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
             }else{
                 window.location.href='/fanbei-web/opennative?name=GG_ALACashBorrowingViewController';
             }
+            //点击去账户提现加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=toCash'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
-        //去'吃玩住行'首页
+        //去'吃玩住行'首页+埋点
         toRebateMoneyClick(){
             if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
                 window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.main.ui.MainActivity_1';
             }else{
                 window.location.href='/fanbei-web/opennative?name=GG_ALABrandViewController_1';
             }
+            //点击去'吃玩住行'首页加埋点
+            $.ajax({
+                url:'/fanbei-web/postMaidianInfo',
+                type:'post',
+                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=toGuangGuangBtn'},
+                success:function (data) {
+                    console.log(data)
+                }
+            });
         },
         //领取188元页面scroll到我的场景
         toGetClick(){
