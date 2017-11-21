@@ -165,8 +165,7 @@ $(function(){
         var i = $(this).index();
         $(this).find("span").addClass("current");
         $(this).siblings().find("span").removeClass("current");
-        let categoryObj = eval('(' + categoryList + ')');
-        typeCurrentNum =  categoryObj[i].type;
+        typeCurrentNum =  categoryList[i].type;
         var ulOffsetLeft = $(".nav").offset().left;
         var thisLiOffsetUl = liWArr[i].offsetLeft;
         var thisLiOffsetDiv = thisLiOffsetUl + ulOffsetLeft; //距离 边框的距离
