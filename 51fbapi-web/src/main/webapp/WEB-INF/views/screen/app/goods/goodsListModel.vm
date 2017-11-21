@@ -7,11 +7,6 @@
     <link rel="stylesheet" type="text/css" href="/dist/css/goods/goodsListModel.css?version=$version">
 </head>
 <body>
-    <input type="hidden" id="typeCurrent" name="typeCurrent" value="$!{typeCurrent}">
-    <input type="hidden" id="categoryList" name="categoryList" value=$jsonUtil.toJSONString(${categoryList})>
-    <input type="hidden" id="notifyUrl" name="notifyUrl" value="$!{notifyUrl}">
-    <input type="hidden" id="couponList" name="couponList" value="$!{couponList}">
-
     #if($!{goodsList.size()}==0)
         <div class="nullPrompt">
             <img src="$commonUrl/common/images/040101wuyouhui.png">
@@ -84,7 +79,10 @@
         </div>
     #end
     <script>
-        var goodsList = $jsonUtil.toJSONString(${goodsList})
+        var categoryList = $jsonUtil.toJSONString(${categoryList});
+        var goodsList = $jsonUtil.toJSONString(${goodsList});
+        var typeCurrentNum = $!{typeCurrent};
+        var notifyUrl = '$!{notifyUrl}';
     </script>
     <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="/dist/js/goods/goodsListModel.js?version=$version"></script>
