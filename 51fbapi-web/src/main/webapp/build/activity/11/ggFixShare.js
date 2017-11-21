@@ -204,6 +204,15 @@ $(function () {
                     var a=JSON.parse(returnData);
                     if (a.success) {
                         requestMsg("注册成功");
+                        //注册成功加埋点
+                        $.ajax({
+                            url:'/fanbei-web/postMaidianInfo',
+                            type:'post',
+                            data:{maidianInfo:'/fanbei-web/activity/ggFixShare?type=new_success&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+                            success:function (data) {
+                                console.log(data)
+                            }
+                        });
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                     }else{
                         requestMsg(a.msg);

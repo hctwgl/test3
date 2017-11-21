@@ -206,6 +206,15 @@ $(function () {
                         requestMsg("注册成功");
                         //转化代码
                         _taq.push({convert_id:"72607366923",  event_type:"form"});
+                        //注册成功加埋点
+                        $.ajax({
+                            url:'/fanbei-web/postMaidianInfo',
+                            type:'post',
+                            data:{maidianInfo:'/fanbei-web/activity/ggFixSharejr?type=new_success&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+                            success:function (data) {
+                                console.log(data)
+                            }
+                        });
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                     }else{
                         requestMsg(a.msg);
