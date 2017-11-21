@@ -62,7 +62,7 @@ public class GetFaceTypeApi implements ApiHandle {
 			type=YITU;
 		}
 		data.put("type",type);
-		data.put("switch",switch_type);
+		data.put("switchType",switch_type);
 		resp.setResponseData(data);
 		return resp;
 	}
