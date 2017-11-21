@@ -424,7 +424,7 @@
 
 	<update id="updateBorrowCashLock" parameterType="java.lang.Long">
 		UPDATE
-		af_borrow_cash SET gmt_modified = NOW(), lockdate = NOW(), is_lock = 'Y' WHERE id=#{borrowId} and is_lock='N'
+		af_borrow_cash SET gmt_modified = NOW(), lockdate = NOW(), is_lock = 'Y' WHERE id=#{borrowId} AND status = 'TRANSED' and is_lock='N'
 	</update>
 
 	<update id="updateBorrowCashUnLock" parameterType="java.lang.Long">

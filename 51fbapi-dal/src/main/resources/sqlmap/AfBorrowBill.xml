@@ -547,6 +547,7 @@
 		WHERE
 		is_delete = 0
 		AND id = #{billId}
+		AND status = 'N'
 		AND is_lock = 'N'
 	</update>
 
