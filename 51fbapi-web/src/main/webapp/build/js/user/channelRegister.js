@@ -72,7 +72,7 @@ $(function(){
         timerS--;
         if (timerS<=0) {
             $("#register_codeBtn").removeAttr("disabled");
-            $("#register_codeBtn").text("获取验证码");
+            $("#register_codeBtn").text("点击获取");
             clearInterval(timerInterval);
             timerS = 60;
         } else {
@@ -118,7 +118,7 @@ $(function(){
             })
         } else{requestMsg("请填写正确的手机号");}
     }
-//第三方图片验证
+    //第三方图片验证
     $.ajax({
         url: "/fanbei-web/getGeetestCode",
         type: "get",
@@ -144,7 +144,9 @@ $(function(){
                                 data=JSON.parse(data);
                                 if(data.data=='N'){
                                     captchaObj.verify();//调起图片验证
+                                    maidianFn("getCodeSuccess");
                                 }else{
+                                    maidianFn("getCodeRegistered");
                                     requestMsg(data.msg)
                                 }
                             }
@@ -165,8 +167,10 @@ $(function(){
                         },
                         success: function (data) {
                             if (data.data.status === 'success') {
+                                maidianFn("sendCodeSuccess");
                                 getCode();
                             } else if (data.data.status === 'fail') {
+                                maidianFn("sendCodeFail");
                                 requestMsg(data.msg);
                             }
                         }
@@ -176,8 +180,11 @@ $(function(){
         }
     });
 
+    maidianFn('channelRegister');
+
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
+        maidianFn('registerBtn');
         // md5加密
         var register_password = $("#register_password").val();
         var password_md5 = String(CryptoJS.MD5(register_password));
@@ -210,6 +217,7 @@ $(function(){
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {
+                                        maidianFn("registerSuccess");
                                         // js判断微信和QQ
                                         let ua = navigator.userAgent.toLowerCase();
                                         if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
@@ -220,6 +228,7 @@ $(function(){
                                         }
                                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {
+                                        maidianFn("registerFail");
                                         requestMsg(returnData.msg);
                                     }
                                 },
@@ -232,3 +241,54 @@ $(function(){
         } else{requestMsg("请填写正确的手机号");}
     });
 });
+
+
+
+// 拖动进度条相关代码
+// $(function () {
+    var tag = false, ox = 0, left = 0, bgleft = 0; 
+    // 移动端对应down,move,up事件分别是touchstart,touchmove,touchend
+    var startEvent = 'touchstart';
+    var moveEvent = 'touchmove';
+    var upEvent ='touchend';
+    var totalLength = 300 * document.documentElement.clientWidth /375;
+    $('.progress_btn').on(startEvent, function (e) {
+        var originalEvent = e.originalEvent;
+        var touches = originalEvent.touches;
+        var touch;
+        if (touches) {
+            touch = touches[0];
+        } else {
+            touch = e;
+        }
+        console.log(touch);
+        ox = touch.pageX - left;
+        tag = true;
+    });
+    $(document).on(upEvent, function () {
+        tag = false;
+    });
+    $(document).on(moveEvent, function (e) {//鼠标移动
+        var originalEvent = e.originalEvent; // 这里要判断移动端多点触控的问题，jquery扩展的event对象没有这个属性
+        var touches = originalEvent.touches;// 获取源生event对象
+        var touch;
+        if (touches) { // 如果有touches属性，则代表是移动端touchmove事件
+            touch = touches[0]; // 取到多个触控点中的第一个，这样才能获取到触控点的对应位置
+        } else {
+            touch = e;
+        }
+        if (tag) {
+            left = touch.pageX - ox;
+            if (left <= 0) {
+                left = 0;
+            } else if (left > totalLength) {
+                left = totalLength;
+            }
+            $('.progress_btn').css('left', left);
+            $('.progress_bar').width(left / (100 * (document.documentElement.clientWidth / 750))+"rem");
+            $('.text').html("￥" + parseInt(left / totalLength*19500+500));
+            $("#leftMoney").html("￥" + parseInt(left / totalLength * 19500 + 500));
+            $("#rightMoney").html("￥" + (parseInt((left / totalLength * 19500 + 500)) * 0.001).toFixed(2));
+        }
+    });
+// })

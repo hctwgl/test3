@@ -11,6 +11,21 @@
 <input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
 <input type="hidden" id="style" value="$!{style}">
 <div class="wrap" id="theme$!{style}">
+    #if( $!{style}!=17 && $!{style}!=1)
+        <marquee behavior="scroll" direction="up" scrollamount="1" class="mar">
+            <p>用户131****8880 成功借款 8000元</p>
+            <p>用户137****9767 成功借款 6000元</p>
+            <p>用户186****2099 成功借款 7000元</p>
+            <p>用户178****3863 成功借款 6000元</p>
+            <p>用户187****9793 成功借款 4000元</p>
+            <p>用户176****0389 成功借款 6000元</p>
+            <p>用户157****3696 成功借款 5000元</p>
+            <p>用户183****7197 成功借款 4000元</p>
+            <p>用户137****0925 成功借款 7000元</p>
+            <p>用户135****5276 成功借款 3000元</p>
+            <p>用户187****0576 成功借款 6000元</p>
+        </marquee>
+    #end
     <img class="background" src="$commonUrl/channel$!{style}_01.jpg">
     #if( $!{style}==17 )
         <marquee behavior="scroll" direction="up" scrollamount="1" bgcolor="transparent" class="mar17">
@@ -27,35 +42,68 @@
             <p>用户187****0576 成功借款 6000元</p>
         </marquee>
     #end
+    #if( $!{style}==6 )
+        <div class="progress" id="progress">
+            <div class="text">￥500</div>
+            <div class="progress_bg">
+                <div class="progress_bar"></div>
+            </div>
+            <div class="progress_btn" id="progress_btn"></div>
+            <div class="moneyFlag">
+                <span class="lf" id="leftMoney">￥500</span>
+                <span class="fr" id="rightMoney">￥0.5</span>
+            </div>
+        </div>
+    #end
     <div class="form">
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
-        <ul class="clearfix">
-            <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"></li>
-            <li><input type="password" id="register_password" placeholder="请输入密码" name="words" maxlength="18"></li>
-            <li class="clearfix">
-                <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入短信验证码">
-                <button id="register_codeBtn">点击获取</button>
-            </li>
-            <li><button id="register_submitBtn"></button></li>
-            <div class="clearfix register_checkbox">
-                <input type="checkbox" class="input_check" id="input_check" checked="checked">
-                <label for="input_check"></label>
-                <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《51返呗用户注册协议》</a></p>
-            </div>
-            <p class="clearfix" style="width: 3.0rem; margin: 0 auto; color: #fff; font-size: 0.28rem;">
-                <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
-                <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;">直接登录</a>
-            </p>
+        <ul class="iform clearfix">
+            <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="maidianFn('phone')"></li>
+
+            #if( $!{style}==17 ||$!{style}==1)
+                <li><input type="password" id="register_password" placeholder="密码长度为6-20位数字和英文" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
+                <li class="clearfix">
+                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
+                    <button id="register_codeBtn" onclick="maidianFn('codeBtn')">点击获取</button>
+                </li>
+                <li><button id="register_submitBtn"></button></li>
+                <div class="clearfix register_checkbox">
+                    <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                    <label for="input_check"></label>
+                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《51返呗用户注册协议》</a></p>
+                </div>
+                <p class="clearfix" style="width: 3.0rem; margin: 0 auto; color: #fff; font-size: 0.28rem;">
+                    <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
+                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;" onclick="maidianFn('toLoginz')">直接登录</a>
+                </p>
+            #else
+                <li class="clearfix">
+                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
+                    <button id="register_codeBtn" onclick="maidianFn('codeBtn')">点击获取</button>
+                </li>
+                <li><input type="password" id="register_password" placeholder="密码长度为6-20位数字和英文" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
+                <li><button id="register_submitBtn"></button></li>
+                <div class="clearfix register_checkbox">
+                    <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                    <label for="input_check"></label>
+                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《用户协议》</a></p>
+                </div>
+                <p class="clearfix" style="width: 3.0rem; margin: .5rem auto 0; color: #fff; font-size: 0.26rem;">
+                    <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册?</span>
+                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ff5b56" onclick="maidianFn('toLogin')">点我马上登录</a>
+                </p>
+            #end
+
         </ul>
     </div>
-    #if( $!{style}==17 )
-        <img src="$commonUrl/reg3.jpg">
-        <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
-    #else
+    #if( $!{style}==1 )
         <div class="copyright">
             版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
             <br>
         </div>
+    #else
+        <img src="$commonUrl/channel$!{style}_03.jpg">
+        <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
     #end
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/core.js"></script>
