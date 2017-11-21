@@ -1030,7 +1030,7 @@
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
-	<select id="findFirstOrder" parameterType="java.lang.Long">
+	<select id="findFirstOrder" parameterType="java.lang.Long" resultType = "java.lang.Integer">
 			SELECT
 				count(1)
 			FROM

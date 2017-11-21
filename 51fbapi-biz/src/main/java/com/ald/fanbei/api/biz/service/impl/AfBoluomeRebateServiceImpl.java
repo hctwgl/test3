@@ -124,7 +124,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				log = log + String.format("userName = %s , rebateAmount = %s", flag,  rebateDo.getRebateAmount());
 				logger.info(log);
 				if (userName != null) {
-					String scence = afBoluomeRebateDao.getScence(userId);
+					String scence = afBoluomeRebateDao.getScence(orderId);
 					log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
 					logger.info(log);
 					jpushService.sendRebateMsg(userName,scence,rebateDo.getRebateAmount());
@@ -132,7 +132,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				
 			}
 		} catch (Exception e) {
-			logger.error("afBoluomeRebateService.addRedPacket() error :", e);
+			logger.error("afBoluomeRebateService.addRedPacket() error :",  e);
 			throw new Exception();
 		}
 

@@ -107,7 +107,10 @@
         FROM af_boluome_redpacket_threshold
         <include refid="commonCondition"/>
     </select>
-    <select id ="getAllThreadholds">
-    	SELECT * FROM af_boluome_redpacket_threshold;
+    <select id ="getAllThreadholds" resultType = "com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo">
+    	SELECT 
+    	 <include refid="queryFields" />
+    	 FROM af_boluome_redpacket_threshold
+    	 <include refid="commonCondition"/>
     </select>
 </mapper>
