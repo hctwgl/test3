@@ -25,7 +25,7 @@
         <p class="closeRule" @click="closeClick">X</p>
     </div>
     <div class="mask" v-show="ruleShow" @click="closeClick"></div>
-    <div class="goodList">
+    <div class="goodList goodListAll">
         <div class="good clearFix" @click="buyNowClick(item)" v-for="item in content">
             <img class="newPic" :src="item.goodsIcon" alt="">
         </div>
