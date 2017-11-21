@@ -8,7 +8,8 @@ let vm = new Vue({
     el: "#bankBox",
     data: {
         allData: [],
-        len: 0
+        len: 0,
+        topLen: 0
     },
     created: function () {
         this.logData();
@@ -16,12 +17,22 @@ let vm = new Vue({
     },
     mounted: function () {
         this.$nextTick(() => {
-            var mySwiper = new Swiper('.swiper-container', {
-                pagination: '.swiper-pagination', // 如果需要分页器
+            var mySwiper2 = new Swiper('.bannerSwiper', {
+                pagination: '.mypagination1', // 如果需要分页器
                 observer: true,//修改swiper自己或子元素时，自动初始化swiper
                 observeParents: true//修改swiper的父元素时，自动初始化swiper
             });
-            mySwiper.update()
+            mySwiper2.update();
+
+
+            var mySwiper = new Swiper('.bankSwiper', {
+                pagination: '.mypagination2', // 如果需要分页器
+                observer: true,//修改swiper自己或子元素时，自动初始化swiper
+                observeParents: true//修改swiper的父元素时，自动初始化swiper
+            });
+            mySwiper.update();
+            
+
         })
     },
     methods: {
@@ -33,11 +44,11 @@ let vm = new Vue({
                 // dataType: 'json',
                 success: function (data) {
                     data = eval('(' + data + ')');
-                    console.log(data.success)
                     if (data.success) {
                         self.allData = data.data;
+                        // self.allData.lunbanner = data.data.creditbanner;
                         self.len = data.data.creditbanner.length;
-                        console.log(">>>>>>>>>>")
+                        self.topLen = data.data.lunbanner.length;
                     } else {
                         requestMsg("哎呀，出错了！");
                     }
