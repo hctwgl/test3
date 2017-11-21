@@ -10,45 +10,6 @@
 
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/doubleTwelve.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        .swiper-container {
-            width: 7.5rem;
-            height: 3.7rem;
-        }
-
-        .swiper-slide {
-            width: 7.5rem !important;
-            margin-left: 0.02rem;
-        }
-
-        .swiper-button-prev {
-            opacity: 0.7;
-        }
-
-        .swiper-button-next {
-            color: #8e8e8e !important;
-            opacity: 0.7;
-        }
-
-        .swiper-button-next,
-        .swiper-container-rtl .swiper-button-prev {
-            background-image: none !important;
-        }
-
-        .swiper-button-prev,
-        .swiper-container-rtl .swiper-button-next {
-            background-image: none !important;
-        }
-
-        #content-detail {
-            overflow: initial !important;
-        }
-    </style>
 </head>
 
 <body>
@@ -73,7 +34,7 @@
 
             </div>
         </div>
-        <div class="coupon-box flex-column ai-c">
+        <div class="coupon-box flex fd-column ai-c">
             <div>每日10点</div>
             <div class="txt">12月05日开始</div>
             <ul class="coupon-ul flex fw-w">
@@ -85,10 +46,82 @@
             </ul>
             <div class="more">查看更多</div>
         </div>
-        <div class="seckill-box">
-            
+        <div class="seckill-box flex fd-column ai-c">
+            <div class="super-icon">超级秒杀</div>
+            <div class="super-txt">双十二秒get大牌</div>
+            <div class="day-box">
+                <ul class="day-ul flex fd-row">
+                    <li class="day-li status-1">12月6日
+                        <p>已结束</p>
+                    </li>
+                    <li class="day-li status-1">12月7日
+                        <p>已结束</p>
+                    </li>
+                    <li class="day-li status-2">12月8日
+                        <p>秒杀中</p>
+                    </li>
+                    <li class="day-li status-3">12月9日
+                        <p>即将开始</p>
+                    </li>
+                    <li class="day-li status-3">12月10日
+                        <p>即将开始</p>
+                    </li>
+                    <li class="day-li status-3">12月11日
+                        <p>即将开始</p>
+                    </li>
+                    <li class="day-li status-3">12月12日
+                        <p>即将开始</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="product-box">
+                <div class="product-li flex fd-row">
+                    <img src="http://f.51fanbei.com/online/bffbcba7405e55ea.jpg">
+                    <div class="intro-box">
+                        <p class="p-title">iPhoneX全网通官方正品马上发货</p>
+                        <div class="p-price">
+                            <span class="p-price-1">￥1253</span>
+                            <span class="p-price-2">原价
+                                <i>￥1533</i>
+                            </span>
+                        </div>
+                        <div class="p-button flex fd-row ai-c">
+                            <div class="p-left p-status-1">
+                                还剩5件
+                                <i class="progress"></i>
+                            </div>
+                            <div class="buy-btn buy-btn-2">已结束</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-li flex fd-row">
+                    <img src="http://f.51fanbei.com/online/bffbcba7405e55ea.jpg">
+                    <div class="intro-box">
+                        <p class="p-title">iPhoneX全网通官方正品马上发货</p>
+                        <div class="p-price">
+                            <span class="p-price-1">￥1253</span>
+                            <span class="p-price-2">原价
+                                <i>￥1533</i>
+                            </span>
+                        </div>
+                        <div class="p-button flex fd-row ai-c">
+                            <div class="p-left p-status-2">
+                                还剩5件
+                                <i class="progress"></i>
+                            </div>
+                            <div class="buy-btn buy-btn-1">去秒杀</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="redRain-box">
+                    <div>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
-        
+
     </div>
 </body>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
