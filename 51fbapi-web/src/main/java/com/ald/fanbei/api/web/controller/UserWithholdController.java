@@ -286,6 +286,7 @@ public class UserWithholdController extends BaseController {
                         break;
                     }else{
                         afWithholdLogDo.setStatus(0);
+                        returnjson.put("success",true);
                         afWithholdLogDo.setRemark(map==null?"":map.toString());
                         //插入代扣日志
                         afWithholdLogService.saveRecord(afWithholdLogDo);
@@ -381,7 +382,7 @@ public class UserWithholdController extends BaseController {
             if(StringUtil.isBlank(billIds)){
                 logger.info("withhold for borrowbill fail for billIds is null,userId:"+userId+"billIds:"+billIds);
                 returnjson.put("success",false);
-                returnjson.put("msg",FanbeiExceptionCode.BORROW_BILL_UPDATE_ERROR);
+                returnjson.put("msg","withhold for borrowbill fail for billIds is null");
                 return returnjson;
             }
 
@@ -491,12 +492,14 @@ public class UserWithholdController extends BaseController {
                         returnjson.put("tradeNo", upsResult.getTradeNo());
                         returnjson.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
                         afWithholdLogDo.setStatus(1);
+                        returnjson.put("success",true);
                         afWithholdLogDo.setRemark(map.toString());
                         //插入代扣日志
                         afWithholdLogService.saveRecord(afWithholdLogDo);
                         break;
                     }else{
                         afWithholdLogDo.setStatus(0);
+                        returnjson.put("success",true);
                         afWithholdLogDo.setRemark(map==null?"":map.toString());
                         //插入代扣日志
                         afWithholdLogService.saveRecord(afWithholdLogDo);
