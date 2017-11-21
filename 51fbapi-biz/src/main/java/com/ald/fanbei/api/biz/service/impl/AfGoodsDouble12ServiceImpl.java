@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDouble12Dao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do;
@@ -33,4 +36,10 @@ public class AfGoodsDouble12ServiceImpl extends ParentServiceImpl<AfGoodsDouble1
 	public BaseDao<AfGoodsDouble12Do, Long> getDao() {
 		return afGoodsDouble12Dao;
 	}
+
+		@Override
+		public List<AfGoodsDouble12Do> getAfGoodsDouble12List() {
+			// TODO Auto-generated method stub
+			return afGoodsDouble12Dao.getAfGoodsDouble12List();
+		}
 }

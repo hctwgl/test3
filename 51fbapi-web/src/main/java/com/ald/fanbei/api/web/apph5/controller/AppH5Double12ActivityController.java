@@ -31,6 +31,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDouble12Do;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -38,6 +39,7 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfDouble12GoodsVo;
 import com.ald.fanbei.api.web.vo.afCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -137,14 +139,32 @@ public class AppH5Double12ActivityController extends BaseController{
 		try {
 			doWebCheck(request, false);
 			
-			/*List<AfGoodsDouble12Do> goodsList = AfGoodsDouble12Service.getAfGoodsDouble12List();
+			List<AfGoodsDouble12Do> goodsList = AfGoodsDouble12Service.getAfGoodsDouble12List();
+			List<AfDouble12GoodsVo> double12GoodsVoList = new ArrayList<AfDouble12GoodsVo>();
 			
 			if(goodsList!=null){
 				for (AfGoodsDouble12Do afGoodsDouble12Do : goodsList) {
-					
+					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(afGoodsDouble12Do.getGoodsid());
+					if(afGoodsDo!=null){
+						AfDouble12GoodsVo afDouble12GoodsVo = new AfDouble12GoodsVo();
+						afDouble12GoodsVo.setNumId(String.valueOf(afGoodsDo.getRid()));
+						afDouble12GoodsVo.setSaleAmount(afGoodsDo.getPriceAmount().toString());
+						afDouble12GoodsVo.setRealAmount(afGoodsDo.getSaleAmount().toString());
+						afDouble12GoodsVo.setRebateAmount(afGoodsDo.getRebateAmount().toString());
+						afDouble12GoodsVo.setGoodsName(afGoodsDo.getName());
+						afDouble12GoodsVo.setGoodsIcon(afGoodsDo.getGoodsIcon());
+						afDouble12GoodsVo.setThumbnailIcon(afGoodsDo.getThumbnailIcon());
+						afDouble12GoodsVo.setGoodsUrl(afGoodsDo.getGoodsDetail().split(";")[0]);
+						afDouble12GoodsVo.setOpenId(afGoodsDo.getOpenId());
+						afDouble12GoodsVo.setSource(afGoodsDo.getSource());
+						afDouble12GoodsVo.setStockCount(afGoodsDo.getStockCount());
+						double12GoodsVoList.add(afDouble12GoodsVo);
+					}
 				}
-			}*/
-			
+			}
+			logger.info(JSON.toJSONString(double12GoodsVoList));
+			data.put("goodsList", double12GoodsVoList);
+			result = H5CommonResponse.getNewInstance(true, "获取秒杀商品列表成功", null, data).toString();
 			
 		} catch (Exception e) {
 			logger.error("/activity/double12/goodsHomePage error = {}", e.getStackTrace());
