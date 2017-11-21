@@ -7,7 +7,8 @@ let vm = new Vue({
     el: '#newUser',
     data: {
         content: {},
-        ruleShow:false
+        ruleShow:false,
+       
     },
     created: function () {
         this.logData();
