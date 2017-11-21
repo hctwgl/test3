@@ -245,6 +245,14 @@ public class AppH5UserContorler extends BaseController {
             resp = H5CommonResponse.getNewInstance(true, "成功", "", null);
             return resp.toString();
 
+        }catch (FanbeiException e) {
+            logger.error("发送验证码失败：", e);
+            if(e.getErrorCode()!=null && StringUtil.isNotBlank(e.getErrorCode().getDesc())&&e.getErrorCode().getDesc().equals(FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME.getDesc())){
+            	resp = H5CommonResponse.getNewInstance(false, e.getErrorCode().getDesc(), "", null);
+            }else{
+            	resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
+            }
+            return resp.toString();
         } catch (Exception e) {
             logger.error("发送验证码失败：", e);
             resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
