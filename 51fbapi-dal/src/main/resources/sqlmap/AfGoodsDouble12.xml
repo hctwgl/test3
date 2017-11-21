@@ -132,4 +132,14 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getAfGoodsDouble12List" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do">
+	    SELECT
+			<include refid="queryFields" />
+		FROM
+			af_goods_double12
+		WHERE
+			is_delete = 0
+		ORDER BY sort ASC;
+    </select>
+    
 </mapper>
