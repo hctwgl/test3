@@ -5,7 +5,6 @@
 * @Last Modified time: 2017-05-11 14:21:03
 */
 
-let notifyUrl = $("#notifyUrl").val();//商品跳转原生的链接
 
 let finished = 0;//防止多次请求ajax
 
@@ -158,7 +157,6 @@ $(function(){
     }else{
         $(".nav").css("width", ulW+5+"px");
     }
-    let typeCurrentNum = $("#typeCurrent").val(); // 获取当前的type类型
     let modelIdNum = getUrl("modelId"); // 获取modelId参数
 
     // 点击导航事件
@@ -167,7 +165,7 @@ $(function(){
         var i = $(this).index();
         $(this).find("span").addClass("current");
         $(this).siblings().find("span").removeClass("current");
-        let categoryObj = eval('(' + $("#categoryList").val() + ')');
+        let categoryObj = eval('(' + categoryList + ')');
         typeCurrentNum =  categoryObj[i].type;
         var ulOffsetLeft = $(".nav").offset().left;
         var thisLiOffsetUl = liWArr[i].offsetLeft;
