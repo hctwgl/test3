@@ -32,7 +32,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.Base64;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
@@ -50,29 +52,30 @@ public class AppTest extends TestCase {
 
 	try {
 	    
-	    System.out.println(CommodityPrices.QueryCommodity("Num10428", "2d477a24ec9c4d4ba65403f031cd5d9f", "wy001jk"));
+	    //System.out.println(CommodityPrices.QueryCommodity("Num10428", "2d477a24ec9c4d4ba65403f031cd5d9f", "wy001jk"));
 	    
 	    
-	    System.out.println(CommOrderQry.QueryOrder("Num10428", "123", "2d477a24ec9c4d4ba65403f031cd5d9f", "19.6"));
+	    System.out.println(CommOrderQry.QueryOrder("Num10428", "123", "2d477a24ec9c4d4ba65403f031cd5d9f", "0.98"));
 	    
-	    OrderEntity orderEntity = new OrderEntity();
-	    orderEntity.setAcctType("网易通行证账号");
-	    orderEntity.setBusinessId("Num10428");
-	    orderEntity.setGameAcct("");
-	    orderEntity.setGameArea("");
-	    orderEntity.setGameName("网易梦幻西游2");
-	    orderEntity.setGameSrv("");
-	    orderEntity.setGameType("帐号直充");
-	    orderEntity.setGoodsId("wy001jk");
-	    orderEntity.setGoodsNum(20);
-	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
-	    orderEntity.setNoticeUrl("http://testapi.51fanbei.com");
-	    orderEntity.setOrderArea("");
-	    orderEntity.setOrderIp("");
-	    orderEntity.setUnitPrice("19.6");
-	    orderEntity.setUserName("00000000@e2p.com");
-	    orderEntity.setUserOrderId("123");
-	   System.out.println( OrderReceive.SendOrder(orderEntity));
+//	    OrderEntity orderEntity = new OrderEntity();
+//	    orderEntity.setAcctType("网易通行证账号");
+//	    orderEntity.setBusinessId("Num10428");
+//	    orderEntity.setGameAcct("");
+//	    orderEntity.setGameArea("");
+//	    orderEntity.setGameName("网易梦幻西游2");
+//	    orderEntity.setGameSrv("");
+//	    orderEntity.setGameType("帐号直充");
+//	    orderEntity.setGoodsId("wy001jk");
+//	    orderEntity.setGoodsNum(1);
+//	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
+//	    String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+//	    orderEntity.setNoticeUrl("http://testapp.51fanbei.com/game/pay/callback");
+//	    orderEntity.setOrderArea("");
+//	    orderEntity.setOrderIp("");
+//	    orderEntity.setUnitPrice("0.98");
+//	    orderEntity.setUserName("00000000@e2p.com");
+//	    orderEntity.setUserOrderId("123");
+//	   System.out.println( OrderReceive.SendOrder(orderEntity));
 	} catch (Exception e) { // TODO Auto-generated
 	    e.printStackTrace();
 	}
