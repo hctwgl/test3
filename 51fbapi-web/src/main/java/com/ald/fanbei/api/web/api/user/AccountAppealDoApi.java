@@ -70,11 +70,15 @@ public class AccountAppealDoApi implements ApiHandle {
 			appealLog.setStatus(AfUserAppealLogStatusEnum.FAIL.name());
 			appealLog.setMsg(FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR.getErrorMsg());
 			afUserAppealLogDao.update(appealLog);
+			
+			clearReferCache(oldMobile);//操作失败也清理所有缓存，强制流程从头开始
+			
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_INFO_ATYPISM_ERROR);
 		}
 		
 		//更改用户手机号和登陆密码
 		afUserService.updateUserCoreInfo(userId, newMobile, password);
+		clearReferCache(oldMobile);
 		
 		try {
 			appealLog.setStatus(AfUserAppealLogStatusEnum.SUCCESS.name());
@@ -84,6 +88,13 @@ public class AccountAppealDoApi implements ApiHandle {
 		}
 		
 		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+	}
+	
+	private void clearReferCache(String oldMobile) {
+		bizCacheUtil.delCache(Constants.CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX + oldMobile);
+		bizCacheUtil.delCache(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + oldMobile);
+		bizCacheUtil.delCache(Constants.CACHEKEY_REAL_AUTH_PASS_PREFFIX + oldMobile);
+		bizCacheUtil.hdel(Constants.CACHEKEY_REAL_AUTH_MOBILE_INFO, oldMobile);
 	}
 
 }

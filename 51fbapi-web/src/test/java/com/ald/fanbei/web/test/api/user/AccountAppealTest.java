@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.common.Constants;
@@ -17,23 +16,23 @@ public class AccountAppealTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = "13370127054";
-	
+	String oldMoble = "15869648535";
+	String newMobile = "13370127054";
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
 	 */
-	@Before
+//	@Before
 	public void init(){
-		super.init(userName);
+		super.init(oldMoble);
 	}
 	
 //	@Test
 	public void  testGetVerifyCodeApi() {
 		String url = urlBase + "/user/getVerifyCode";
 		Map<String,String> params = new HashMap<>();
-		params.put("mobile", "15869648535");
+		params.put("mobile", newMobile);
 		params.put("type", "M");
-		testApi(url, params, userName ,false);
+		testApi(url, params, oldMoble ,false);
 	}
 	
 //	@Test
@@ -41,30 +40,30 @@ public class AccountAppealTest extends BaseTest{
 		String url = urlBase + "/user/accountAppealCheckSms";
 		Map<String,String> params = new HashMap<>();
 		params.put("verifyCode", "888888");
-		
-		params.put("newMobile", "15869648535");
-		testApi(url, params, userName, true);
+		params.put("oldMobile", oldMoble);
+		params.put("newMobile", newMobile);
+		testApi(url, params, oldMoble, false);
 	}
 	
 //	@Test
 	public void updateRealnameManual(){
 		String url = urlBase + "/auth/updateRealnameManual";
 		Map<String,String> params = new HashMap<>();
-		params.put("oldMobile", userName);
+		params.put("oldMobile", oldMoble);
 		params.put("realname", "王卿");
-		testApi(url, params, userName, true);
+		testApi(url, params, oldMoble, false);
 		
-		RedisClient.setRaw(Constants.CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX + userName, "13012519880111854x");
-		RedisClient.setRaw(Constants.CACHEKEY_REAL_AUTH_PASS_PREFFIX + userName, 1);
+		RedisClient.setRaw(Constants.CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX + oldMoble, "130125198801118542");
+		RedisClient.setRaw(Constants.CACHEKEY_REAL_AUTH_PASS_PREFFIX + oldMoble, 1);
 	}
 	
 //	@Test
 	public void accountAppealDo(){
 		String url = urlBase + "/user/accountAppealDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("oldMobile", userName);
+		params.put("oldMobile", oldMoble);
 		params.put("password", DigestUtils.md5Hex("88888888"));
-		testApi(url, params, userName, true);
+		testApi(url, params, oldMoble, false);
 	}
 	
 	@Test

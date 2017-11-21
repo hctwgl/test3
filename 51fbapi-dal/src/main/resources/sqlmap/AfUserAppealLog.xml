@@ -27,6 +27,7 @@
 		  ) 
 		VALUES (
 		  #{userId},
+		  #{oldMobile},
 		  #{newMobile},
 		  #{status},
 		  NOW(),
