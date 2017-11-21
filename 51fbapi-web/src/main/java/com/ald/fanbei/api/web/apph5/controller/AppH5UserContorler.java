@@ -409,20 +409,13 @@ public class AppH5UserContorler extends BaseController {
     	H5CommonResponse resp = H5CommonResponse.getNewInstance();
         try {
         	String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
-        	Long timestamp = NumberUtil.objToLongDefault(request.getParameter("timestamp"),0L);
-			Date curTime = new Date(timestamp);
-        	HttpSession session = request.getSession();
-        	String exsitMobile = (String) session.getAttribute("exsitMobile");
+        	String exsitMobile = (String) bizCacheUtil.getObject("h5register"+mobile);
+        	if (StringUtils.isNotBlank(exsitMobile)) {
+        		resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_FREQUENTLY_ERROR.getDesc(), "", null);
+        		return resp.toString();
+			}
         	if(StringUtils.isEmpty(mobile)){
         		throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-        	}
-        	if (mobile.equals(exsitMobile)) {
-        		Long preTimestamp = (Long) session.getAttribute("preTimestamp");
-        		Date preTime = new Date(preTimestamp);
-        		if (DateUtil.getNumberOfMinuteBetween(preTime, curTime)<1) {
-        			resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_FREQUENTLY_ERROR.getDesc(), "", null);
-                	return resp.toString();
-				}
         	}
             Pattern numPattern = Pattern.compile("^1[3|4|5|7|8][0-9]{9}$");
             Matcher matcher = numPattern.matcher(mobile);
@@ -431,9 +424,7 @@ public class AppH5UserContorler extends BaseController {
      		}
      		String isRegistered="N";
             AfUserDo UserDo = afUserService.getUserByUserName(mobile);
-            session.setAttribute("exsitMobile", mobile);
-            long currentTimeMillis = System.currentTimeMillis();
-            session.setAttribute("preTimestamp", currentTimeMillis);
+            bizCacheUtil.saveObject("h5register"+mobile, mobile,Constants.SECOND_OF_ONE_MINITS);
             if (UserDo != null) {
             	isRegistered="Y";
             	resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", isRegistered);
