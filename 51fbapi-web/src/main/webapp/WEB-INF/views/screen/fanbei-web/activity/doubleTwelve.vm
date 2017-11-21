@@ -2,52 +2,72 @@
 <html lang="en">
 
 <head>
-    #set($src="https://f.51fanbei.com/h5/app/activity/11")
+    #set($src="https://f.51fanbei.com/h5/app/activity/12")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>惊艳双11 一触即发</title>
 
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/doubleTwelve.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/12/doubleTwelve.css">
 </head>
 
 <body>
     <div class="main">
-        <div class="banner">
-            <div class="top-box flex jc-sa">
-                <div class="flex fd-column ai-c">
-                    <div class="line"></div>
-                    <p class="txt1">双12欢乐购</p>
-                    <p class="txt2">12.01-12.04</p>
-                </div>
-                <div class="flex fd-column ai-c current">
-                    <div class="line"></div>
-                    <p class="txt1">秒打牌抢神券</p>
-                    <p class="txt2">12.05-12.09</p>
-                </div>
-                <div class="flex fd-column ai-c">
-                    <div class="line"></div>
-                    <p class="txt1">疯狂红包雨</p>
-                    <p class="txt2">12.10-12.12</p>
-                </div>
-
-            </div>
-        </div>
+        <div class="banner"></div>
         <div class="coupon-box flex fd-column ai-c">
-            <div>每日10点</div>
+            <div class="flex fd-row ai-c title-box">
+                <div class="line-left-1"></div>
+                <div class="line-title">每日10点 / 限量神券</div>
+                <div class="line-right-1"></div>
+            </div>
             <div class="txt">12月05日开始</div>
             <ul class="coupon-ul flex fw-w">
-                <li class="coupon-li"></li>
-                <li class="coupon-li"></li>
-                <li class="coupon-li"></li>
-                <li class="coupon-li"></li>
-                <li class="coupon-li"></li>
+                <li class="coupon-li coupon-active">
+                    <div class="coupon-price">
+                        ￥
+                        <span>50</span>
+                    </div>
+                    <div class="coupon-tip">满299元全场通用</div>
+                    <div class="coupon-get">立即领取</div>
+                </li>
+
+                <li class="coupon-li coupon-quiet">
+                    <div class="coupon-price">
+                        ￥
+                        <span>100</span>
+                    </div>
+                    <div class="coupon-tip">满299元全场通用</div>
+                    <div class="coupon-get">已领取</div>
+                </li>
+
+                <li class="coupon-li coupon-active">
+                    <div class="coupon-price">
+                        ￥
+                        <span>50</span>
+                    </div>
+                    <div class="coupon-tip">满299元全场通用</div>
+                    <div class="coupon-get">立即领取</div>
+                </li>
+
+                <li class="coupon-li coupon-active">
+                    <div class="coupon-price">
+                        ￥
+                        <span>200</span>
+                    </div>
+                    <div class="coupon-tip">满299元全场通用</div>
+                    <div class="coupon-get">立即领取</div>
+                </li>
+
             </ul>
             <div class="more">查看更多</div>
         </div>
         <div class="seckill-box flex fd-column ai-c">
-            <div class="super-icon">超级秒杀</div>
+            <div class="flex fd-row ai-c title-box">
+                <div class="line-left-1"></div>
+                <div class="line-title">超级秒杀 / 1212元秒iPhoneX</div>
+                <div class="line-right-1"></div>
+            </div>
             <div class="super-txt">双十二秒get大牌</div>
             <div class="day-box">
                 <ul class="day-ul flex fd-row">
@@ -76,7 +96,10 @@
             </div>
             <div class="product-box">
                 <div class="product-li flex fd-row">
-                    <img src="http://f.51fanbei.com/online/2dac9099210d99f5.jpg">
+                    <div class="seckill-image">
+                        <img src="$src/double12_product.png">
+                        <i class="seckill-icon"></i>
+                    </div>
                     <div class="intro-box">
                         <p class="p-title">iPhoneX全网通官方正品马上发货</p>
                         <div class="p-price">
@@ -95,7 +118,10 @@
                     </div>
                 </div>
                 <div class="product-li flex fd-row">
-                    <img src="http://f.51fanbei.com/online/bffbcba7405e55ea.jpg">
+                    <div class="seckill-image">
+                        <img src="$src/double12_product.png">
+                        <i class="seckill-icon"></i>
+                    </div>
                     <div class="intro-box">
                         <p class="p-title">iPhoneX全网通官方正品马上发货</p>
                         <div class="p-price">
@@ -113,19 +139,74 @@
                         </div>
                     </div>
                 </div>
-                <div class="redRain-box">
-                    <div>
-
+                <!-- <div class="product-li flex fd-row">
+                    <div class="seckill-image">
+                        <img src="$src/double12_product.png">
+                        <i class="seckill-icon"></i>
+                    </div>
+                    <div class="intro-box">
+                        <p class="p-title">iPhoneX全网通官方正品马上发货</p>
+                        <div class="p-price">
+                            <span class="p-price-1">￥1253</span>
+                            <span class="p-price-2">原价
+                                <i>￥1533</i>
+                            </span>
+                        </div>
+                        <div class="p-button flex fd-row ai-c">
+                            <div class="p-left p-status-3">
+                                还剩5件
+                                <i class="progress"></i>
+                            </div>
+                            <div class="buy-btn buy-btn-1">去秒杀</div>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="product-li flex fd-row">
+                    <div class="seckill-image">
+                        <img src="$src/double12_product.png">
+                        <i class="seckill-icon"></i>
+                    </div>
+                    <div class="intro-box">
+                        <p class="p-title">iPhoneX全网通官方正品马上发货</p>
+                        <div class="p-price">
+                            <span class="p-price-1">￥1253</span>
+                            <span class="p-price-2">原价
+                                <i>￥1533</i>
+                            </span>
+                        </div>
+                        <div class="p-button flex fd-row ai-c">
+                            <div class="p-left p-status-2">
+                                还剩5件
+                                <i class="progress"></i>
+                            </div>
+                            <div class="buy-btn buy-btn-3">即将开始</div>
+                        </div>
                     </div>
                 </div>
-
             </div>
         </div>
-
+        <div class="redRain-box flex jc-c">
+            <div class="redRain-bg">
+                <div class="time-box flex fd-row jc-c">
+                    <div class="time">2</div>
+                    <div class="time">20</div>
+                    <div class="time">59</div>
+                    <div class="time">60</div>
+                </div>
+            </div>
+        </div>
+        <div class="brand-box flex fd-column ai-c">
+            <div class="flex fd-row ai-c title-box">
+                <div class="line-left-2"></div>
+                <div class="line-title-2">品牌大咖 / 玩转潮流</div>
+                <div class="line-right-2"></div>
+            </div>
+            <div class="super-txt-2">双十二秒get大牌</div>
+        </div>
     </div>
 </body>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
 <!-- <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.1.4.min.js"></script> -->
-<script type="text/javascript" src="/dist/activity/11/doubleTwelve.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/12/doubleTwelve.js?version=$version"></script>
 
 </html>
