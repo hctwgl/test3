@@ -122,6 +122,36 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Resource
 	AfBorrowBillDao afBorrowBillDao;
 
+
+	private void addUseAmountDetail(AfRepaymentDo afRepaymentDo){
+		BigDecimal total = afRepaymentDo.getRepaymentAmount();  //总金额
+		List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(afRepaymentDo.getBillIds().split(","), new Converter<String, Long>() {
+			@Override
+			public Long convert(String source) {
+				return Long.parseLong(source);
+			}
+		});
+		List<AfBorrowBillDo> afBorrowBillDoList = afBorrowBillService.getBorrowBillByIds(billIdList);
+		BigDecimal principleAmount = BigDecimal.ZERO;        //本金
+		BigDecimal poundageAmount = BigDecimal.ZERO;        //手续费
+		BigDecimal overdueInterestAmount = BigDecimal.ZERO;       //逾期利息
+
+
+		BigDecimal yohuijuang = BigDecimal.ZERO;   //优惠卷
+		BigDecimal yuer = BigDecimal.ZERO;
+		yohuijuang = afRepaymentDo.getCouponAmount();
+		yuer = afRepaymentDo.getRebateAmount().add(afRepaymentDo.getJfbAmount());
+
+		for(AfBorrowBillDo afBorrowBillDo : afBorrowBillDoList){
+			principleAmount =principleAmount.add(afBorrowBillDo.getPrincipleAmount());
+			overdueInterestAmount =overdueInterestAmount.add(afBorrowBillDo.getOverdueInterestAmount().add(afBorrowBillDo.getOverduePoundageAmount()));
+			poundageAmount = poundageAmount.add(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));
+		}
+
+		
+	}
+
+
 	public Map<String,Object> createRepaymentYiBao(final BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
 												   BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp,
