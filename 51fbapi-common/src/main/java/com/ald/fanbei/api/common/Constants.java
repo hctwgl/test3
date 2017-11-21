@@ -344,6 +344,8 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+	//实名认证修改姓名开关
+	public static final String SWITCH = "SWITCH";
 	
 	//H5用户以及token cookie
 	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
