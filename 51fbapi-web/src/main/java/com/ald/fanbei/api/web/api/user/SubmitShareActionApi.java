@@ -44,7 +44,7 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 		if("gameShare".equals(sharePage)){
 			afGameChanceService.dealWithShareGame(context.getMobile());
 		}
-		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "分享"),"sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl").toString());
+		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "分享"),"sharePage="+sharePage, context.getMobile());
 		//maidianLog.info("sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl"));
 //		if("ggIndexShare".equals(sharePage)){
 //			maidianLog.info(context.getUserName() + "ggIndexShare");
