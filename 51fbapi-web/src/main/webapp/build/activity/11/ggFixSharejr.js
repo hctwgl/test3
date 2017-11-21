@@ -318,8 +318,9 @@ let vm = new Vue({
         },
         //点击已有账号
         hasUserNameClick(){
-            bombBox ();
+            //bombBox ();
             //window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            window.location.href="ggFixShareLogin?typeFrom="+typeFrom+"&typeFromNum="+typeFromNum;
         }
     }
 });
