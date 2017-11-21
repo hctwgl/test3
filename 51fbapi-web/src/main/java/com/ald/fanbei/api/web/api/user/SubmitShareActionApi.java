@@ -22,6 +22,7 @@ import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.h5.controller.H5GGShareController;
 
@@ -52,31 +53,32 @@ public class SubmitShareActionApi implements ApiHandle {
 		if("gameShare".equals(sharePage)){
 			afGameChanceService.dealWithShareGame(context.getMobile());
 		}
+		maidianLog.info("sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl"));
 //		if("ggIndexShare".equals(sharePage)){
 //			maidianLog.info(context.getUserName() + "ggIndexShare");
 //		}
 //
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
-		String[] strings = sharePage.split("_");
-		if (strings != null && strings.length == 3) {
-		       maidianLog.info(context.getUserName() +strings[0]);
-			if ("ggpresents".equals(strings[0])) {
-				String strUserItemsId = strings[2];
-				Long userItemsId = Long.parseLong(strUserItemsId);
-				//进行冻结卡片
-				try {
-					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
-					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
-						afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
-					}
-				} catch (Exception e) {
-					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-					
-				}
-				
-			}
-			
-		}
+//		String[] strings = sharePage.split("_");
+//		if (strings != null && strings.length == 3) {
+//		       maidianLog.info(context.getUserName() +strings[0]);
+//			if ("ggpresents".equals(strings[0])) {
+//				String strUserItemsId = strings[2];
+//				Long userItemsId = Long.parseLong(strUserItemsId);
+//				//进行冻结卡片
+//				try {
+//					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+//					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+//						afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+//					}
+//				} catch (Exception e) {
+//					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+//					
+//				}
+//				
+//			}
+//			
+//		}
 		
 		return resp;
 	}
