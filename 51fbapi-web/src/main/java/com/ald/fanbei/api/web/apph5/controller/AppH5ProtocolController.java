@@ -260,16 +260,8 @@ public class AppH5ProtocolController extends BaseController {
             model.put("lender", lenderDo.getValue());// 出借人
         }
         AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
-        if (null != companyUserSealDo) {
-            if ("浙江名信信息科技有限公司".equals(companyUserSealDo.getUserName())) {
-                if (null != companyUserSealDo.getUserSeal()) {
-                    model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-                }
-            } else if ("浙江名恒投资管理有限公司".equals(companyUserSealDo.getUserName())) {
-                if (null != companyUserSealDo.getUserSeal()) {
-                    model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-                }
-            }
+        if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+            model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
         }
     }
 

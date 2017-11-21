@@ -710,18 +710,9 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         }
         if (null != lenderDo.getValue()) {
             AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(lenderDo.getValue());
-            if (null != companyUserSealDo) {
-                if ("浙江名信信息科技有限公司".equals(companyUserSealDo.getUserName())) {
-                    if (null != companyUserSealDo.getUserSeal()) {
-                        map.put("secondSeal", companyUserSealDo.getUserSeal());
-                        map.put("secondAccoundId", companyUserSealDo.getUserAccountId());
-                    }
-                } else if ("浙江名恒投资管理有限公司".equals(companyUserSealDo.getUserName())) {
-                    if (null != companyUserSealDo.getUserSeal()) {
-                        map.put("secondSeal", companyUserSealDo.getUserSeal());
-                        map.put("secondAccoundId", companyUserSealDo.getUserAccountId());
-                    }
-                }
+            if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+                map.put("secondSeal", companyUserSealDo.getUserSeal());
+                map.put("secondAccoundId", companyUserSealDo.getUserAccountId());
             }
         }
     }
