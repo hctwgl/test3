@@ -85,6 +85,7 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg","params is null");
             return returnjson;
         }
+        logger.info("withhold for borrowbill userId:"+userId+",borrowId:"+borrowId+",lowCashPrice:"+lowCashPrice);
 
         AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
         if (rbCashDo != null && StringUtils.equals(rbCashDo.getStatus(),
@@ -324,6 +325,8 @@ public class UserWithholdController extends BaseController {
             returnjson.put("msg","params is null");
             return returnjson;
         }
+        logger.info("withhold for borrowbill userId:"+userId+",lowBillPrice:"+lowBillPrice);
+
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         if (afUserAccountDo == null) {
             logger.info("withhold for borrowbill fail for USER_ACCOUNT_NOT_EXIST_ERROR,userId:"+userId);
