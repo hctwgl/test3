@@ -32,15 +32,6 @@ public class AfResourceDo extends AbstractSerial {
 	private Long sort;//排序
 	private String pic1;
 	private String pic2;
-	private String hottag;//信用卡中心标签
-
-	public String getHottag() {
-		return hottag;
-	}
-
-	public void setHottag(String hottag) {
-		this.hottag = hottag;
-	}
 
 	/**
 	 * @return the value4

@@ -287,6 +287,8 @@ public class AppH5ActivityController extends BaseController {
 		try {
 			List<AfResourceDo> hotbannerInfoList = afResourceService.getConfigByTypes(ResourceType.HOT_BANK_BANNER.getCode());
 			List<AfResourceDo> creditbannerInfoList = afResourceService.getConfigByTypes(ResourceType.CREDIT_CARD_BANNER.getCode());
+			List<AfResourceDo> lunbannerInfoList = afResourceService.getConfigByTypes(ResourceType.HOT_CARD_BANNER.getCode());
+			returnData.put("lunbanner", lunbannerInfoList);
 			returnData.put("hotbanner", hotbannerInfoList);
 			returnData.put("creditbanner", creditbannerInfoList);
 			returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
