@@ -20,22 +20,26 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
  * 实名认证-用户手动修改扫描后不正确的姓名
  * @author zhujiangfeng
  */
-@Component("updateRealnameManualApi")
-public class UpdateRealnameManualApi implements ApiHandle {
+@Component("updateRealnameManualFreeApi")
+public class UpdateRealnameManualFreeApi implements ApiHandle {
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	
 	@Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		Map<String, Object> params = requestDataVo.getParams();
+        Map<String, Object> params = requestDataVo.getParams();
         String realname = (String)params.get("realname");
-        logger.info("UpdateRealnameManualApi realname=>" + realname);
         if(StringUtils.isBlank(realname)) {
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
         
-        bizCacheUtil.saveObjectForever(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + context.getUserName(), realname);
+        String userName = (String)params.get("oldMobile");
+        if(StringUtils.isBlank(userName)) {
+        	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
+        
+        bizCacheUtil.saveObjectForever(Constants.CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX + userName, realname);
         
         return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
     }
