@@ -16,4 +16,8 @@ public interface AfGoodsDouble12Service extends ParentService<AfGoodsDouble12Do,
 
 	List<AfGoodsDouble12Do> getAfGoodsDouble12List();
 
+	AfGoodsDouble12Do getByGoodsId(Long goodsId);
+
+	void updateCountById(Long goodsId);
+
 }

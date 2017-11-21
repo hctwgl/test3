@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -135,44 +137,54 @@ public class AppH5Double12ActivityController extends BaseController{
 	@RequestMapping(value = "/goodsHomePage", method = RequestMethod.POST)
 	public String goodsHomePage(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
+		Map<String, List<AfDouble12GoodsVo>> goodsMap = new HashMap<String, List<AfDouble12GoodsVo>>();
 		String result = "";
 		try {
 			doWebCheck(request, false);
 			
 			List<AfGoodsDouble12Do> goodsList = AfGoodsDouble12Service.getAfGoodsDouble12List();
-			List<AfDouble12GoodsVo> double12GoodsVoList = new ArrayList<AfDouble12GoodsVo>();
 			
 			if(goodsList!=null){
 				for (AfGoodsDouble12Do afGoodsDouble12Do : goodsList) {
-					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(afGoodsDouble12Do.getGoodsid());
-					if(afGoodsDo!=null){
-						AfDouble12GoodsVo afDouble12GoodsVo = new AfDouble12GoodsVo();
-						afDouble12GoodsVo.setNumId(String.valueOf(afGoodsDo.getRid()));
-						afDouble12GoodsVo.setSaleAmount(afGoodsDo.getPriceAmount().toString());
-						afDouble12GoodsVo.setRealAmount(afGoodsDo.getSaleAmount().toString());
-						afDouble12GoodsVo.setRebateAmount(afGoodsDo.getRebateAmount().toString());
-						afDouble12GoodsVo.setGoodsName(afGoodsDo.getName());
-						afDouble12GoodsVo.setGoodsIcon(afGoodsDo.getGoodsIcon());
-						afDouble12GoodsVo.setThumbnailIcon(afGoodsDo.getThumbnailIcon());
-						afDouble12GoodsVo.setGoodsUrl(afGoodsDo.getGoodsDetail().split(";")[0]);
-						afDouble12GoodsVo.setOpenId(afGoodsDo.getOpenId());
-						afDouble12GoodsVo.setSource(afGoodsDo.getSource());
-						afDouble12GoodsVo.setStockCount(afGoodsDo.getStockCount());
-						double12GoodsVoList.add(afDouble12GoodsVo);
+					//将秒杀开始时间具体日作为map的key
+					Calendar c =Calendar.getInstance();
+					c.setTime(afGoodsDouble12Do.getStarttime());
+					String key = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
+					//根据秒杀开始的时间，封装秒杀商品List到map
+					switch (key) {
+					case "5":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
+					case "6":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
+					case "7":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
+					case "8":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
+					case "9":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
 					}
 				}
 			}
-			logger.info(JSON.toJSONString(double12GoodsVoList));
-			data.put("goodsList", double12GoodsVoList);
+			logger.info(JSON.toJSONString(goodsMap));
+			if(goodsMap.isEmpty()){
+				return H5CommonResponse.getNewInstance(false, "获取秒杀商品列表为空", null, "").toString();
+			}
+			data.put("goodsMap", goodsMap);
 			result = H5CommonResponse.getNewInstance(true, "获取秒杀商品列表成功", null, data).toString();
 			
 		} catch (Exception e) {
+			//e.printStackTrace();
 			logger.error("/activity/double12/goodsHomePage error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取秒杀商品列表失败", null, "").toString();
 		}
 		return result;
 	}
-	
+
 	
 	/**
 	 * @Title: getCoupon
@@ -257,13 +269,66 @@ public class AppH5Double12ActivityController extends BaseController{
 	 * @author yanghailong
 	 * @data  2017年11月17日
 	 */
-	@RequestMapping(value = "/isbuy", method = RequestMethod.POST)
+	/*@RequestMapping(value = "/isbuy", method = RequestMethod.POST)
 	public String isbuy(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		
 		return result;
+	}*/
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 
+	 * @Title: getGoodsMap
+	 * @Description:  将秒杀商品加到map中
+	 * @return  void  
+	 * @author yanghailong
+	 * @data  2017年11月21日
+	 */
+	private void getGoodsMap(Map<String, List<AfDouble12GoodsVo>> goodsMap,
+			AfGoodsDouble12Do afGoodsDouble12Do, String key) {
+		if(goodsMap.get(key)!=null){
+			goodsMap.get(key).add(getAfDouble12GoodsVo(afGoodsDouble12Do));
+		}else{
+			List<AfDouble12GoodsVo> double12GoodsVoList = new ArrayList<AfDouble12GoodsVo>();
+			double12GoodsVoList.add(getAfDouble12GoodsVo(afGoodsDouble12Do));
+			goodsMap.put(key, double12GoodsVoList);
+		}
 	}
 	
+	/**
+	 * 
+	 * @Title: getAfDouble12GoodsVo
+	 * @Description:  将商品信息数据封装到Vo
+	 * @return  AfDouble12GoodsVo  
+	 * @author yanghailong
+	 * @data  2017年11月21日
+	 */
+	private AfDouble12GoodsVo getAfDouble12GoodsVo(AfGoodsDouble12Do afGoodsDouble12Do){
+		//根据goodsId查询商品信息
+		AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(afGoodsDouble12Do.getGoodsid());
+		AfDouble12GoodsVo afDouble12GoodsVo = new AfDouble12GoodsVo();
+		if(afGoodsDo!=null){
+			afDouble12GoodsVo.setNumId(String.valueOf(afGoodsDo.getRid()));
+			afDouble12GoodsVo.setSaleAmount(afGoodsDo.getPriceAmount().toString());
+			afDouble12GoodsVo.setRealAmount(afGoodsDo.getSaleAmount().toString());
+			afDouble12GoodsVo.setRebateAmount(afGoodsDo.getRebateAmount().toString());
+			afDouble12GoodsVo.setGoodsName(afGoodsDo.getName());
+			afDouble12GoodsVo.setGoodsIcon(afGoodsDo.getGoodsIcon());
+			afDouble12GoodsVo.setThumbnailIcon(afGoodsDo.getThumbnailIcon());
+			afDouble12GoodsVo.setGoodsUrl(afGoodsDo.getGoodsDetail().split(";")[0]);
+			afDouble12GoodsVo.setOpenId(afGoodsDo.getOpenId());
+			afDouble12GoodsVo.setSource(afGoodsDo.getSource());
+			afDouble12GoodsVo.setStockCount(afGoodsDo.getStockCount());
+			afDouble12GoodsVo.setCount(afGoodsDouble12Do.getCount().toString());
+		}
+		return afDouble12GoodsVo;
+	}
 	
 	/**
 	 * 

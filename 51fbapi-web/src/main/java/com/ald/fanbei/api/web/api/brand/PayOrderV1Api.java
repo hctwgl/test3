@@ -87,6 +87,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfShareUserGoodsService afShareUserGoodsService;
     @Resource
     AfShareGoodsService afShareGoodsService;
+    @Resource
+	AfGoodsDouble12Service afGoodsDouble12Service;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -345,6 +347,13 @@ public class PayOrderV1Api implements ApiHandle {
                         afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
+                    
+                    // 双十二秒杀新增逻辑 ---->update
+                    if(afGoodsDouble12Service.getByGoodsId(orderInfo.getGoodsId())!=null){
+                    	//更新秒杀商品余量（count-1）
+                    	afGoodsDouble12Service.updateCountById(orderInfo.getGoodsId());
+                    }
+                    
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
                     ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);

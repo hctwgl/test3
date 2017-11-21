@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,6 +69,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	AfGoodsDouble12Service afGoodsDouble12Service;
 
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
@@ -175,6 +178,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 			//mqp_新人专享活动增加逻辑
 			if (userId != null) {
 
+				// 双十二秒杀新增逻辑+++++++++++++>
+				double12GoodsCheck(userId, goodsId);
+				// +++++++++++++++++++++++++<
+				
 				//查询用户订单数
 				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
 				if(oldUserOrderAmount==0){
@@ -284,6 +291,34 @@ public class BuySelfGoodsApi implements ApiHandle {
 		return resp;
 	}
 
+	/**
+	 * 
+	 * @Title: double12GoodsCheck
+	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
+	 * @return  void  
+	 * @author yanghailong
+	 * @data  2017年11月21日
+	 */
+	private void double12GoodsCheck(Long userId, Long goodsId){
+		
+		AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
+		if(null != afGoodsDouble12Do){
+			//这个商品是双十二秒杀商品
+			if(afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId).size()>0){
+				//报错提示已秒杀过（已生成过秒杀订单）
+				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+			}
+			
+			if(afGoodsDouble12Do.getCount()<=0){
+				//报错提示秒杀商品已售空
+				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+			}
+		}
+		
+		
+	}
+	
+	
 	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo, int count) {
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setConsignee(addressDo.getConsignee());

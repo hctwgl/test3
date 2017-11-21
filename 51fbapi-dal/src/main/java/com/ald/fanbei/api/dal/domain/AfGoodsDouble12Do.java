@@ -51,9 +51,22 @@ import java.math.BigDecimal;
      * 排序
      */
     private Integer sort;
-
-
+    
     /**
+     * 秒杀商品余量
+     */
+    private Integer count;
+
+
+    public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	/**
      * 获取主键Id
      *
      * @return rid

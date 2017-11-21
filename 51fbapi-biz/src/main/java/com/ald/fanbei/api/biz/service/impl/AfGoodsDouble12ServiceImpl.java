@@ -42,4 +42,16 @@ public class AfGoodsDouble12ServiceImpl extends ParentServiceImpl<AfGoodsDouble1
 			// TODO Auto-generated method stub
 			return afGoodsDouble12Dao.getAfGoodsDouble12List();
 		}
+
+		@Override
+		public AfGoodsDouble12Do getByGoodsId(Long goodsId) {
+			// TODO Auto-generated method stub
+			return afGoodsDouble12Dao.getByGoodsId(goodsId);
+		}
+
+		@Override
+		public void updateCountById(Long goodsId) {
+			// TODO Auto-generated method stub
+			afGoodsDouble12Dao.updateCountById(goodsId);
+		}
 }

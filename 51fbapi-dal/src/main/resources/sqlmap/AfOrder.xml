@@ -1032,5 +1032,15 @@
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
+
+	<select id="getDouble12OrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM af_order
+		WHERE
+			goods_id=#{goodsId}
+		AND
+			user_id=#{userId}
+	</select>
 	
 </mapper>

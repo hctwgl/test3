@@ -2014,4 +2014,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.getOverOrderByGoodsIdAndUserId(goodsId,userId);
 	}
 
+	@Override
+	public List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,
+			Long userId) {
+		// TODO Auto-generated method stub
+		return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId,userId);
+	}
+
 }

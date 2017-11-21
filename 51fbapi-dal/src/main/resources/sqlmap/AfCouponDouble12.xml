@@ -188,4 +188,15 @@
 			is_delete = 0
     </select>
     
+    <select id="getByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfCouponDouble12Do" parameterType="java.lang.Long">
+	    SELECT
+			<include refid="queryFields" />
+		FROM
+			af_coupon_double12
+		WHERE
+			goodsId=#{goodsId}
+		AND
+			is_delete = 0
+    </select>
+    
 </mapper>

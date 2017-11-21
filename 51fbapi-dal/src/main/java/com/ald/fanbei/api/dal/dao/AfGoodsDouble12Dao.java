@@ -16,6 +16,10 @@ public interface AfGoodsDouble12Dao extends BaseDao<AfGoodsDouble12Do, Long> {
 
 	List<AfGoodsDouble12Do> getAfGoodsDouble12List();
 
+	AfGoodsDouble12Do getByGoodsId(Long goodsId);
+
+	void updateCountById(Long goodsId);
+
     
 
 }
