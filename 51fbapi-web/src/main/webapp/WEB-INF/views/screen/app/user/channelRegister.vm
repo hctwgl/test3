@@ -61,7 +61,7 @@
             <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="maidianFn('phone')"></li>
 
             #if( $!{style}==17 ||$!{style}==1)
-                <li><input type="password" id="register_password" placeholder="密码长度为6-20位数字和英文" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
+                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
                 <li class="clearfix">
                     <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
                     <button id="register_codeBtn" onclick="maidianFn('codeBtn')">点击获取</button>
@@ -81,7 +81,7 @@
                     <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
                     <button id="register_codeBtn" onclick="maidianFn('codeBtn')">点击获取</button>
                 </li>
-                <li><input type="password" id="register_password" placeholder="密码长度为6-20位数字和英文" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
+                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
                 <li><button id="register_submitBtn"></button></li>
                 <div class="clearfix register_checkbox">
                     <input type="checkbox" class="input_check" id="input_check" checked="checked">
