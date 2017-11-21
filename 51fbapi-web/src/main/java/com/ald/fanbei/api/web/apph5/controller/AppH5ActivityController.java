@@ -279,25 +279,7 @@ public class AppH5ActivityController extends BaseController {
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData).toString();
 		}
 	}
-	@ResponseBody
-	@RequestMapping(value = "/getHotBanksInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
-	public String getHotBanksInfo(HttpServletRequest request, ModelMap model) throws IOException {
-		Map<String, Object> returnData = new HashMap<String, Object>();
 
-		try {
-			List<AfResourceDo> hotbannerInfoList = afResourceService.getConfigByTypes(ResourceType.HOT_BANK_BANNER.getCode());
-			List<AfResourceDo> creditbannerInfoList = afResourceService.getConfigByTypes(ResourceType.CREDIT_CARD_BANNER.getCode());
-			List<AfResourceDo> lunbannerInfoList = afResourceService.getConfigByTypes(ResourceType.HOT_CARD_BANNER.getCode());
-			returnData.put("lunbanner", lunbannerInfoList);
-			returnData.put("hotbanner", hotbannerInfoList);
-			returnData.put("creditbanner", creditbannerInfoList);
-			returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
-			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
-		} catch (Exception e) {
-			returnData.put("status", FanbeiExceptionCode.FAILED.getCode());
-			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData).toString();
-		}
-	}
 	/**
 	 * 商品信息转换
 	 * 
