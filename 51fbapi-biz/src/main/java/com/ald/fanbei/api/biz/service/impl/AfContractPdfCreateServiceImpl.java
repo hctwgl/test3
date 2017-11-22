@@ -78,7 +78,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
     @Resource
     private EsignPublicInit esignPublicInit;
 
-    private static final String src = "/home/aladin/project/app_contract";
+    private static final String src = "F:/doc/";
 
     @Override
     public void protocolInstalment(long userId, Integer nper, BigDecimal amount, Long borrowId) {//分期
@@ -673,7 +673,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             file1 = new File(map.get("secondPath").toString());
             file1.delete();
         }
-        return false;
+        return true;
     }
 
     private String eviPdf(Map map) {
