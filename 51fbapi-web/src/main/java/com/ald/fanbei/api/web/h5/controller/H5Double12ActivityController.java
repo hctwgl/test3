@@ -104,6 +104,7 @@ public class H5Double12ActivityController extends BaseController{
 					afCouponDouble12Vo.setName(coupon.getName());
 					afCouponDouble12Vo.setThreshold(coupon.getUseRule());
 					afCouponDouble12Vo.setAmount(coupon.getAmount());
+					afCouponDouble12Vo.setIsGet("N");
 					if(new Date().before(afCouponDouble12Do.getStarttime())||new Date().after(afCouponDouble12Do.getEndtime())){	
 						//不在活动时间内
 						afCouponDouble12Vo.setIsShow("N");

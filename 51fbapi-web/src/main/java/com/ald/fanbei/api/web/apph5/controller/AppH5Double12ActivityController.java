@@ -42,6 +42,7 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfDouble12GoodsTimeTypeVo;
 import com.ald.fanbei.api.web.vo.AfDouble12GoodsVo;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
@@ -163,7 +164,7 @@ public class AppH5Double12ActivityController extends BaseController{
 	@RequestMapping(value = "/goodsHomePage", method = RequestMethod.POST)
 	public String goodsHomePage(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		Map<String, List<AfDouble12GoodsVo>> goodsMap = new HashMap<String, List<AfDouble12GoodsVo>>();
+		Map<String, AfDouble12GoodsTimeTypeVo> goodsMap = new HashMap<String, AfDouble12GoodsTimeTypeVo>();
 		String result = "";
 		try {
 			doWebCheck(request, false);
@@ -321,12 +322,6 @@ public class AppH5Double12ActivityController extends BaseController{
 		return result;
 	}*/
 	
-	
-	
-	
-	
-	
-	
 	/**
 	 * 
 	 * @Title: getGoodsMap
@@ -335,14 +330,26 @@ public class AppH5Double12ActivityController extends BaseController{
 	 * @author yanghailong
 	 * @data  2017年11月21日
 	 */
-	private void getGoodsMap(Map<String, List<AfDouble12GoodsVo>> goodsMap,
+	private void getGoodsMap(Map<String, AfDouble12GoodsTimeTypeVo> goodsMap,
 			AfGoodsDouble12Do afGoodsDouble12Do, String key) {
 		if(goodsMap.get(key)!=null){
-			goodsMap.get(key).add(getAfDouble12GoodsVo(afGoodsDouble12Do));
+			goodsMap.get(key).getGoodsList().add(getAfDouble12GoodsVo(afGoodsDouble12Do));
 		}else{
 			List<AfDouble12GoodsVo> double12GoodsVoList = new ArrayList<AfDouble12GoodsVo>();
 			double12GoodsVoList.add(getAfDouble12GoodsVo(afGoodsDouble12Do));
-			goodsMap.put(key, double12GoodsVoList);
+			
+			Date starttime = afGoodsDouble12Do.getStarttime();
+			AfDouble12GoodsTimeTypeVo afDouble12TypeVo = new AfDouble12GoodsTimeTypeVo();
+			afDouble12TypeVo.setGoodsList(double12GoodsVoList);
+			if(new Date().before(afGoodsDouble12Do.getStarttime())){
+				afDouble12TypeVo.setType("N");//秒杀未开始
+			}else if(new Date().after(afGoodsDouble12Do.getEndtime())){
+				afDouble12TypeVo.setType("E");//秒杀已结束
+			}else {
+				afDouble12TypeVo.setType("O");//秒杀进行中
+			}
+			
+			goodsMap.put(key, afDouble12TypeVo);
 		}
 	}
 	
