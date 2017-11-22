@@ -98,6 +98,12 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 			Map<String, Object> map = new HashMap<String, Object>();
 			BigDecimal money = new BigDecimal(-1);
 			List<AfBorrowBillDto> billList = new ArrayList<AfBorrowBillDto>();
+			AfUserOutDayDo userOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+			if (userOutDayDo == null || userOutDayDo.getId() == null) {
+				userOutDayDo = new AfUserOutDayDo();
+				userOutDayDo.setOutDay(10);
+				userOutDayDo.setPayDay(20);
+			}
 			// 计算所属账期
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.MONTH,inMonth - 1);
@@ -117,6 +123,12 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 			query.setIsOut(1);
 			int outBillCount = afBorrowBillService.countBillByQuery(query);
 			if (outBillCount > 0) {
+				// 计算账期
+				Date end = DateUtil.addDays(strOutDay, userOutDayDo.getOutDay() - 2);
+				Date str = DateUtil.addMonths(strOutDay, -1);
+				str = DateUtil.addDays(str, userOutDayDo.getOutDay() - 1);
+				map.put("str", DateUtil.formatAndMonthAndDay(str));
+				map.put("end", DateUtil.formatAndMonthAndDay(end));
 				// 有已出未还账单，获取金额
 				money = afBorrowBillService.getUserBillMoneyByQuery(query);
 				map.put("money", money);
@@ -155,8 +167,25 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 				map.put("money", money);
 				billList = afBorrowBillService.getBillListByQuery(query);
 				map.put("billList", billList);
+				// 获取未入账账单
 				// TODO: 方法未完成
 				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
+				// 未入账笔数
+				// 未入账金额
+				map.put("borrowList", borrowList);
+				// 出账日
+				Date outDate = DateUtil.addDays(strOutDay, userOutDayDo.getOutDay() - 1);
+				map.put("outDay", DateUtil.formatAndMonthAndDay(outDate));
+				resp.setResponseData(map);
+				return resp;
+			}else {
+				map.put("status", "noBill");
+				// 获取未入账账单
+				// TODO: 方法未完成
+				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
+				map.put("borrowList", borrowList);
+				// 未入账笔数
+				// 未入账金额
 			}
 			resp.setResponseData(map);
 		} catch (Exception e) {
