@@ -160,7 +160,7 @@
         where  is_delete = 0
         and  user_id  =  #{userId}
         and  channel =  #{channel}
-        and  coupon_id = # {couponId}
+        and  coupon_id = #{couponId}
     </select>
     <select id="checkIfHaveCoupon" resultType = "java.lang.Integer">
 	   	 SELECT COUNT(1) FROM af_boluome_user_coupon WHERE user_id =

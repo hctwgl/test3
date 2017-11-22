@@ -664,6 +664,14 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 				String code = resultJson.getString("code");
 		        	//发券成功，推送极光 
 				if ("0".equals(code)) {
+				    //保存记录
+				    AfBoluomeUserCouponDo boluomeUserCoupon = new AfBoluomeUserCouponDo();
+				    boluomeUserCoupon.setChannel(H5GgActivity.REGISTER.getCode());
+				    boluomeUserCoupon.setCouponId(resourceInfo.getRid());
+				    boluomeUserCoupon.setStatus(1);
+				    boluomeUserCoupon.setUserId(afUserDo.getRid());
+				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
+				    //推送极光
 				    jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GGACTIVITY.getCode(), H5GgActivity.GGSMSNEW.getCode());
 			    }
 			}
