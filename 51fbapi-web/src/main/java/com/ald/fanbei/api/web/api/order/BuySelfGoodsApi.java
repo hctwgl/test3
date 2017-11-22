@@ -304,7 +304,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
 		if(null != afGoodsDouble12Do){
 			//这个商品是双十二秒杀商品
-			if(afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId).size()>0){
+			if(afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0){
 				//报错提示已秒杀过（已生成过秒杀订单）
 				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 			}
@@ -314,8 +314,6 @@ public class BuySelfGoodsApi implements ApiHandle {
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
 		}
-		
-		
 	}
 	
 	
