@@ -892,7 +892,7 @@ public class RiskUtil extends AbstractThird {
                     if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
                         AfUserAccountDo accountDo = new AfUserAccountDo();
                         accountDo.setUserId(consumerNo);
-                        accountDo.setAuAmount(BigDecimal.ZERO);
+                        accountDo.setAuAmount(au_amount);
                         afUserAccountService.updateUserAccount(accountDo);
                     } else {
                         AfUserAccountDo accountDo = new AfUserAccountDo();
