@@ -13,7 +13,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * @date 2017年11月20日
  * @version V1.0  
  */
-public class afCouponDouble12Vo extends AbstractSerial {
+public class AfCouponDouble12Vo extends AbstractSerial {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -21,6 +21,13 @@ public class afCouponDouble12Vo extends AbstractSerial {
 	private String name;
 	private String threshold;
 	private String isShow;// Y:在活动期间；N:不在活动期间
+	private String isGet;//用户是否领过
+	public String getIsGet() {
+		return isGet;
+	}
+	public void setIsGet(String isGet) {
+		this.isGet = isGet;
+	}
 	private BigDecimal amount;//金额
 	
 	public BigDecimal getAmount() {
@@ -35,9 +42,9 @@ public class afCouponDouble12Vo extends AbstractSerial {
 	public void setIsShow(String isShow) {
 		this.isShow = isShow;
 	}
-	public afCouponDouble12Vo() {
+	public AfCouponDouble12Vo() {
 	}
-	public afCouponDouble12Vo(long id, String name, String threshold) {
+	public AfCouponDouble12Vo(long id, String name, String threshold) {
 		this.id = id;
 		this.name = name;
 		this.threshold = threshold;

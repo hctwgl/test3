@@ -43,7 +43,7 @@ import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfDouble12GoodsVo;
-import com.ald.fanbei.api.web.vo.afCouponDouble12Vo;
+import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -88,18 +88,24 @@ public class AppH5Double12ActivityController extends BaseController{
 	@RequestMapping(value = "/couponHomePage", method = RequestMethod.POST)
 	public String couponHomePage(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
+		FanbeiWebContext context = new FanbeiWebContext();
 		String result = "";
 		
 		try {
-			doWebCheck(request, false);
-		
+			context = doWebCheck(request, true);
+			
+			String userName = context.getUserName();
+			logger.info("/activity/double12/getCoupon params: userName ={}", userName);
+			Long userId = convertUserNameToUserId(userName);
+			
+			
 			List<AfCouponDouble12Do> couponList = afCouponDouble12Service.getCouponList();
-			List<afCouponDouble12Vo> couponVoList = new ArrayList<afCouponDouble12Vo>();
+			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
 			
 			if(couponList!=null){
 				for (AfCouponDouble12Do afCouponDouble12Do : couponList) {
 					AfCouponDo coupon = afCouponService.getCoupon(afCouponDouble12Do.getCouponid());
-					afCouponDouble12Vo afCouponDouble12Vo = new afCouponDouble12Vo();
+					AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
 					afCouponDouble12Vo.setId(coupon.getRid());
 					afCouponDouble12Vo.setName(coupon.getName());
 					afCouponDouble12Vo.setThreshold(coupon.getUseRule());
@@ -112,9 +118,16 @@ public class AppH5Double12ActivityController extends BaseController{
 							afCouponDouble12Service.updateReCountById(afCouponDouble12Do);
 						};
 					}else{
+						//在活动时间内
 						afCouponDouble12Vo.setIsShow("Y");
 					}
-					
+					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,coupon.getRid()) != 0){
+						//已领取
+						afCouponDouble12Vo.setIsGet("Y");
+					}else{
+						//未领取
+						afCouponDouble12Vo.setIsGet("N");
+					}
 					couponVoList.add(afCouponDouble12Vo);
 					
 				}
@@ -124,6 +137,15 @@ public class AppH5Double12ActivityController extends BaseController{
 			data.put("couponList", couponVoList);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 		
+		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+			logger.error("/activity/double12/getCoupon" + context + "login error ");
+			result = H5CommonResponse.getNewInstance(false, "没有登录", null, data).toString();
+			}
 		} catch (Exception e) {
 			logger.error("/activity/double12/couponHomePage error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
@@ -169,6 +191,15 @@ public class AppH5Double12ActivityController extends BaseController{
 						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
 						break;
 					case "9":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
+					case "10":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
+					case "11":
+						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
+						break;
+					case "12":
 						getGoodsMap(goodsMap, afGoodsDouble12Do, key);
 						break;
 					}
