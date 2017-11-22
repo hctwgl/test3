@@ -240,4 +240,35 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getHotGoodsList" resultType="com.ald.fanbei.api.dal.domain.dto.GameGoods">
+	    SELECT id,`name`,hot_image as image,offical_discount as discout, user_rebate as rebate
+		FROM af_sup_game
+		where is_delete = 0 AND is_hot = 1 and type = #{type}
+		ORDER BY sort
+    </select>
+    
+    <resultMap id = "gameGoodsGroup" type="com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup">
+    	<id column="groupName" property="groupName" />
+		<collection property="goodsList" ofType="com.ald.fanbei.api.dal.domain.dto.GameGoods"  column="id"  >
+			<id column="id" property="id" />
+			<result column="name" property="name" />
+			<result column="image" property="image" />
+			<result column="discout" property="discout" />
+			<result column="rebate" property="rebate" />
+		</collection> 
+    </resultMap>
+    
+    <select id="getGoodsList" resultMap="gameGoodsGroup">
+	    SELECT 
+		    <if test="type == 'GAME'">
+		    	first_char as groupName,
+		    </if>
+		    <if test="type == 'AMUSEMENT'">
+		    	sec_type as groupName,
+		    </if>
+		    id,`name`,hot_image as image,offical_discount as discout, user_rebate as rebate
+		FROM af_sup_game
+		where is_delete = 0 and type = #{type}
+		order by groupName,`name`
+    </select>
 </mapper>
