@@ -20,7 +20,7 @@
         })(window);
     </script>
     <!--转化代码-->
-    #set($version="201711211536")
+    #set($version="201711221445")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -52,7 +52,7 @@
     <p class="clickRule" @click="ruleClick()"><span>活动规则</span></p>
     <div class="alertRule" v-show="ruleShow">
         <p class="alertRuleTitle">活动规则</p>
-        <p class="alertRuleCont">您邀请的好友点外卖立享15元无门槛优惠，完成消费后，您即可获得1张“15元无门槛外卖券”，多邀多得，不设上限。</p>
+        <p class="alertRuleCont" v-html="content.popupDescript"></p>
         <p class="closeRule" @click="closeClick()">X</p>
     </div>
     <div class="mask" v-show="ruleShow"  @click="closeClick()"></div>

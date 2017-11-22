@@ -272,19 +272,31 @@ let vm = new Vue({
         //获取页面初始化信息
         logData() {
             let self = this;
-            self.$nextTick(function () {
-                /*图片预加载*/
-                $(".first").each(function() {
-                    var img = $(this);
-                    img.load(function () {
+            //初始化数据
+            $.ajax({
+                type: 'post',
+                url: "/h5GgActivity/homePage",
+                success: function (data) {
+                    self.content=eval('('+data+')').data;
+                    console.log(self.content);
+                    /*图片预加载*/
+                    self.$nextTick(function () {
+                        $(".first").each(function() {
+                            var img = $(this);
+                            img.load(function () {
+                                $(".loadingMask").fadeOut();
+                            });
+                            setTimeout(function () {
+                                $(".loadingMask").fadeOut();
+                            },1000)
+                        });
                         $(".loadingMask").fadeOut();
-                    });
-                    setTimeout(function () {
-                        $(".loadingMask").fadeOut();
-                    },1000)
-                });
-                $(".loadingMask").fadeOut();
-            })
+                    })
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！')
+                }
+            });
             //点击加埋点
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
