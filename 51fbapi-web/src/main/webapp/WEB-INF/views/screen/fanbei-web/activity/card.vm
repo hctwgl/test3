@@ -53,7 +53,7 @@
                         <img class="bank-img" :src="hotBank.value" alt="银行">
                         <div class="bank-txt">
                             <p class="bank-name">{{hotBank.name}}
-                                <i class="tip" v-if="hotBank.hottag=='hotting'"></i>
+                                <i class="tip" v-if="hotBank.value3!=''"></i>
                             </p>
                             <p class="bank-intro">{{hotBank.description}}</p>
                         </div>

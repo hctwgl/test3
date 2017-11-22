@@ -46,7 +46,6 @@ let vm = new Vue({
                     data = eval('(' + data + ')');
                     if (data.success) {
                         self.allData = data.data;
-                        // self.allData.lunbanner = data.data.creditbanner;
                         self.len = data.data.creditbanner.length;
                         self.topLen = data.data.lunbanner.length;
                     } else {
