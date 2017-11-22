@@ -151,7 +151,7 @@
 	</select>
 	
 	
-	<select id="getGoodsByCategoryId">
+	<select id="getGoodsByCategoryId" resultType="AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>
 		FROM af_goods

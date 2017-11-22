@@ -31,13 +31,11 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
-import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -157,7 +155,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// 首页分类商品信息
 		data.put("categoryGoodsInfo", categoryGoodsInfo);
 		// 首页背景图
-		data.put("backgroundSet", backgroundList);
+		data.put("backgroundList", backgroundList);
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -190,7 +188,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		
 		if(categoryInfoList != null && !categoryInfoList.isEmpty()) {
 			
-			Map<String,Object> infoMap = categoryInfoList.get(1);
+			Map<String,Object> infoMap = categoryInfoList.get(0);
 			Long categoryId = (Long) infoMap.get("categoryId");
 			// 第一个类目下查询商品
 			List <AfGoodsDo> goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
@@ -301,20 +299,38 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	}
 
 	private List<Object> getHomeBrandPositonInfoResourceDoList(List<AfResourceDo> brandPositionRescList) {
+		// 如果少于4个，则不展示
+		if(brandPositionRescList != null && brandPositionRescList.size() < 4) {
+			return new ArrayList<Object>();
+		}
 		return getHomeObjectInfoWithResourceDolist(brandPositionRescList);
 	}
 
 	private List<Object> getHomeNomalPositonInfoResourceDoList(List<AfResourceDo> homeNomalPositonRescList) {
 		List<Object> homeNomalPositionList = new ArrayList<Object>();
-		for (AfResourceDo afResourceDo : homeNomalPositonRescList) {
+		int nomalPosCount = 0;
+		if(homeNomalPositonRescList != null) {
+			nomalPosCount = homeNomalPositonRescList.size();
+		}
+		// 如果配置小于两个，则不显示
+		if(nomalPosCount < 2) {
+			return homeNomalPositionList;
+		}
+		// 如果配置少于4个，则只显示两个
+		if(2 <= nomalPosCount && nomalPosCount < 4) {
+			nomalPosCount = 2;
+		}
+		// 如果配置多余4个，则只显示4个
+		if(nomalPosCount >=  4) {
+			nomalPosCount = 4;
+		}
+		
+		for (int i = 0; i < nomalPosCount; i++) {
+			AfResourceDo afResourceDo = homeNomalPositonRescList.get(i);
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("imageUrl", afResourceDo.getValue());
 			data.put("titleName", afResourceDo.getName());
-			if (afResourceDo.getType().equals(AfResourceType.HomeNavigation.getCode())) {
-				data.put("type", afResourceDo.getSecType());
-			} else {
-				data.put("type", afResourceDo.getValue1());
-			}
+			data.put("type", afResourceDo.getValue1());
 			data.put("content", afResourceDo.getValue2());
 			data.put("sort", afResourceDo.getSort());
 			homeNomalPositionList.add(data);

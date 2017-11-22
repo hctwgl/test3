@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.controller;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.AbTestUrl;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -254,6 +255,9 @@ public class FanbeiController extends BaseController {
 
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+		// 灰度测试
+		abTest(requestDataVo,context, httpServletRequest);
+		
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         ApiHandleResponse handelResult;
         try {
@@ -270,6 +274,14 @@ public class FanbeiController extends BaseController {
             logger.error("sys exception",e);
             throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
         }
+	}
+
+	private void abTest(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+		// 首页AB测试
+		if(AbTestUrl.HOME_PAGE.equalsIgnoreCase(requestDataVo.getMethod())) {
+			requestDataVo.setMethod(AbTestUrl.HOME_PAGE_V2);
+		}
+		
 	}
 
 	@RequestMapping(value = { "re1fla5shLoc3alReesC8a1sh" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")

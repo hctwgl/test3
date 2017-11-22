@@ -15,12 +15,12 @@
 		order by gmt_create desc
 	</select>
 	
-	<select id="getHomePageCategoryInfo">
+	<select id="getHomePageCategoryInfo"  resultType="AfCategoryDo">
 		SELECT 
 		<include refid="queryFields"/>
  		FROM 
  		af_category 
- 		WHERE parent_id  (
+ 		WHERE parent_id  IN(
 		SELECT c1.id FROM af_category c1 LEFT JOIN af_category c2 ON c1.parent_id = c2.id WHERE c2.tag='HOMEPAGE'
 		)
 	</select>
