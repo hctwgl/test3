@@ -17,6 +17,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Param;
@@ -50,6 +51,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -1424,5 +1426,10 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			now = DateUtil.addMonths(now, 1);
 		}
 		return list;
+	}
+
+	@Override
+	public List<AfBorrowDto> getUserNotInBorrow(Long userId) {
+		return afBorrowDao.getUserNotInBorrow(userId);
 	}
 }

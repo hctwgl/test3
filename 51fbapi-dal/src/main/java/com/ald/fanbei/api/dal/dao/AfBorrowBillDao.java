@@ -344,4 +344,31 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQuery query);
+
+	/**
+	 * 根据条件查询子账单个数
+	 * @author yuyue
+	 * @Time 2017年11月20日 下午4:33:48
+	 * @param query
+	 * @return
+	 */
+	int countBillByQuery(AfBorrowBillQuery query);
+
+	/**
+	 * 根据条件查询子账单详情
+	 * @author yuyue
+	 * @Time 2017年11月21日 下午1:18:44
+	 * @param query
+	 * @return
+	 */
+	List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQuery query);
+
+	/**
+	 * 根据条件查询月账单逾期利息
+	 * @author yuyue
+	 * @Time 2017年11月21日 下午2:38:14
+	 * @param query
+	 * @return
+	 */
+	BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQuery query);
 }

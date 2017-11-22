@@ -16,10 +16,12 @@ import org.jsoup.helper.DataUtil;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -28,10 +30,13 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -64,6 +69,9 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 	@Resource
 	private AfUserOutDayDao afUserOutDayDao;
 	
+	@Resource
+	private AfBorrowService afBorrowService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -88,6 +96,8 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 				return resp;
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
+			BigDecimal money = new BigDecimal(-1);
+			List<AfBorrowBillDto> billList = new ArrayList<AfBorrowBillDto>();
 			// 计算所属账期
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.MONTH,inMonth - 1);
@@ -98,14 +108,56 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 			calendar.setTime(endOutDay);
 			calendar.add(Calendar.SECOND, -1);
 			endOutDay = calendar.getTime();
-			
+			// 展示逻辑上先已出，再未出
 			AfBorrowBillQuery query = new AfBorrowBillQuery();
 			query.setUserId(userId);
 			query.setOutDayStr(strOutDay);
 			query.setOutDayEnd(endOutDay);
-			query.setStatus("N");
-			BigDecimal money = afBorrowBillService.getUserBillMoneyByQuery(query);
-			
+			query.setStatus(BorrowBillStatus.NO.getCode());
+			query.setIsOut(1);
+			int outBillCount = afBorrowBillService.countBillByQuery(query);
+			if (outBillCount > 0) {
+				// 有已出未还账单，获取金额
+				money = afBorrowBillService.getUserBillMoneyByQuery(query);
+				map.put("money", money);
+				billList = afBorrowBillService.getBillListByQuery(query);
+				map.put("billList", billList);
+				query.setOverdueStatus("Y");
+				// 逾期笔数
+				int overdueBillCount = afBorrowBillService.countBillByQuery(query);
+				if (overdueBillCount > 0) {
+					map.put("status", "overdue");
+					// 有逾期的情况
+					map.put("overdueBillCount", overdueBillCount);
+					// 总逾期费
+					BigDecimal overdeuMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+					map.put("overdeuMoney", overdeuMoney);
+					// 逾期利息
+					BigDecimal overdeuInterest = afBorrowBillService.getUserOverdeuInterestByQuery(query);
+					map.put("overdeuInterest", overdeuInterest);
+				}else {
+					// 没有逾期的情况
+					map.put("status", "out");
+					// 最后还款日期
+					Date lastPayDay = afBorrowBillService.getLastPayDayByUserId(userId);
+					map.put("lastPayDay", lastPayDay);
+				}
+				resp.setResponseData(map);
+				return resp;
+			}
+			// 没有已出账单
+			query.setIsOut(0);
+			int notOutBillCount = afBorrowBillService.countBillByQuery(query);
+			if (notOutBillCount > 0) {
+				// 查询未出
+				map.put("status", "notOut");
+				money = afBorrowBillService.getUserBillMoneyByQuery(query);
+				map.put("money", money);
+				billList = afBorrowBillService.getBillListByQuery(query);
+				map.put("billList", billList);
+				// TODO: 方法未完成
+				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
+			}
 			resp.setResponseData(map);
 		} catch (Exception e) {
 			logger.error("getBillListByMonthAndYearApi error :" , e);
