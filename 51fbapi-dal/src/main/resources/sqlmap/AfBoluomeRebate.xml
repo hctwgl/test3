@@ -217,7 +217,7 @@
 		FROM af_boluome_activity_items i                 
 		WHERE  i.ref_id = (
 	    	SELECT
-					s.`name`
+					s.id
 				FROM
 					af_shop s
 				INNER JOIN (
