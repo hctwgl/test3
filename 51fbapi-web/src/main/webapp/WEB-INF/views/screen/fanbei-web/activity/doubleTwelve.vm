@@ -6,14 +6,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>惊艳双11 一触即发</title>
+    <title>双12欢乐购</title>
 
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
     <link rel="stylesheet" type="text/css" href="/dist/activity/12/doubleTwelve.css">
 </head>
 
 <body>
-    <div class="main">
+    <div class="main" id="main">
         <div class="banner"></div>
         <div class="coupon-box flex fd-column ai-c">
             <div class="flex fd-row ai-c title-box">
@@ -22,45 +22,16 @@
                 <div class="line-right-1"></div>
             </div>
             <div class="txt">12月05日开始</div>
-            <ul class="coupon-ul flex fw-w">
-                <li class="coupon-li coupon-active">
-                    <div class="coupon-price">
-                        ￥
-                        <span>50</span>
-                    </div>
-                    <div class="coupon-tip">满299元全场通用</div>
-                    <div class="coupon-get">立即领取</div>
+            <ul class="coupon-ul flex fw-w" :class="{couponHeight1:couponFlag}">
+                <li class="coupon-li" v-for="item in couponData" @click="couponClick(item)" :class="[item.isGet=='N'?'coupon-active':'coupon-quiet']">
+                    <div class="coupon-price">￥<span>{{item.amount}}</span></div>
+                    <div class="coupon-tip">{{item.threshold}}</div>
+                    <div class="coupon-get" v-if="item.isGet=='Y'">已领取</div>
+                    <div class="coupon-get" v-else>立即领取</div>
                 </li>
-
-                <li class="coupon-li coupon-quiet">
-                    <div class="coupon-price">
-                        ￥
-                        <span>100</span>
-                    </div>
-                    <div class="coupon-tip">满299元全场通用</div>
-                    <div class="coupon-get">已领取</div>
-                </li>
-
-                <li class="coupon-li coupon-active">
-                    <div class="coupon-price">
-                        ￥
-                        <span>50</span>
-                    </div>
-                    <div class="coupon-tip">满299元全场通用</div>
-                    <div class="coupon-get">立即领取</div>
-                </li>
-
-                <li class="coupon-li coupon-active">
-                    <div class="coupon-price">
-                        ￥
-                        <span>200</span>
-                    </div>
-                    <div class="coupon-tip">满299元全场通用</div>
-                    <div class="coupon-get">立即领取</div>
-                </li>
-
             </ul>
-            <div class="more">查看更多</div>
+            <div class="more" @click="changeFlag()" v-show="couponFlag">查看更多</div>
+            <div class="more" @click="changeFlag()" v-show="!couponFlag">点击收起</div>
         </div>
         <div class="seckill-box flex fd-column ai-c">
             <div class="flex fd-row ai-c title-box">
