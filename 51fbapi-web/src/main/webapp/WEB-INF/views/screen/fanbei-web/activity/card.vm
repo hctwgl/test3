@@ -33,7 +33,7 @@
                                 <p class="name">{{item.name}}</p>
                                 <p class="desc">{{item.description}}</p>
                             </div>
-                            <div class="card-box flex fd-column ai-c" v-if="index+1<allData.creditbanner.length" @click="allData.creditbanner[index+1].value2">
+                            <div class="card-box flex fd-column ai-c" v-if="index+1<allData.creditbanner.length" @click="jump(allData.creditbanner[index+1].value2)">
                                 <img :src="allData.creditbanner[index+1].value">
                                 <p class="name">{{allData.creditbanner[index+1].name}}</p>
                                 <p class="desc">{{allData.creditbanner[index+1].description}}</p>
@@ -52,9 +52,7 @@
                     <li class="bank-li flex fd-row" v-for="hotBank in allData.hotbanner" @click="jump(hotBank.value2)">
                         <img class="bank-img" :src="hotBank.value" alt="银行">
                         <div class="bank-txt">
-                            <p class="bank-name">{{hotBank.name}}
-                                <i class="tip" v-if="hotBank.value3!=''"></i>
-                            </p>
+                            <p class="bank-name">{{hotBank.name}}<i class="tip" v-if="hotBank.value3!=''">{{hotBank.value3}}</i></p>
                             <p class="bank-intro">{{hotBank.description}}</p>
                         </div>
                     </li>
