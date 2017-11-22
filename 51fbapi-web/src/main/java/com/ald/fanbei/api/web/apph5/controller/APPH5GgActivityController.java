@@ -425,11 +425,13 @@ public class APPH5GgActivityController extends BaseController {
 			String log = String.format("/homePage userName = %s", userName);
 			logger.info(log);
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GGACTIVITY", "HOMEPAGEINFO");
+			AfResourceDo resourceInfo = afResourceService.getConfigByTypesAndSecType("GGACTIVITY", "HOMEPAGERULE");
 			log = log + String.format("middle business params: resourceDo = %s", resourceDo.toString());
 			logger.info(log);
+			Map<String, Object> data = new HashMap<>();
 			if (resourceDo != null) {
 				// if the user has not login
-				String ruleDescript = resourceDo.getDescription();
+				//String ruleDescript = resourceDo.getDescription();
 				String image = resourceDo.getValue();
 				List<Object> resultList = new ArrayList<>();
 				Map<String, Object> map = new HashMap<>();
@@ -451,7 +453,7 @@ public class APPH5GgActivityController extends BaseController {
 				if (itemsList != null && itemsList.size() > 0) {
 					cardList = convertItemsListToCardList(itemsList, false);
 
-					Map<String, Object> data = new HashMap<>();
+					
 					// if the user has already login
 					if (userName != null) {
 						Long userId = convertUserNameToUserId(userName);
@@ -476,15 +478,24 @@ public class APPH5GgActivityController extends BaseController {
 					data.put("waiMaiShopId", shopId);
 					data.put("image", image);
 					data.put("resultList", resultList);
-					data.put("ruleDescript", ruleDescript);
+//					data.put("ruleDescript", ruleDescript);
+//					data.put("popupDescript", popupDescript);
 					data.put("cardList", cardList);
 					
 					resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
 					log = log +  String.format("response: resultStr = %s", resultStr);
 					logger.info(log);
-					return resultStr.toString();
+					
 				}
 			}
+				   if(resourceInfo != null){
+				       String ruleDescript = resourceInfo.getValue2();
+				       String popupDescript = resourceInfo.getValue3();
+				       data.put("ruleDescript", ruleDescript);
+				       data.put("popupDescript", popupDescript);
+				   }
+			
+			     return resultStr.toString();
 		} catch (FanbeiException e) {
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
