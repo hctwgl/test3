@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    #set($version="201711221634")
+    #set($src="http://f.51fanbei.com/h5/app/activity/11")
+    <meta charset="UTF-8">
+    <title>游戏充值</title>
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/gamePayIndex.css?version=$version">
+</head>
+<body>
+<div id="gamePayIndex" class="gamePayIndex">
+    <div class="hotGame">
+      <p class="title">热门游戏</p>
+      <ul class="hotGameList clearFix">
+          <li>
+              <p class="gameImg"></p>
+              <p class="gameName" style="-webkit-box-orient: vertical;">QQ黄钻会员QQ黄钻会员QQ黄钻会员</p>
+              <p class="fanMoney">返利2.8%</p>
+          </li>
+          <li>
+              <p class="gameImg"></p>
+              <p class="gameName" style="-webkit-box-orient: vertical;">QQ黄钻会员QQ黄钻会员QQ黄钻会员</p>
+              <p class="fanMoney">返利2.8%</p>
+          </li>
+          <li>
+              <p class="gameImg"></p>
+              <p class="gameName" style="-webkit-box-orient: vertical;">QQ黄钻会员QQ黄钻会员QQ黄钻会员</p>
+              <p class="fanMoney">返利2.8%</p>
+          </li>
+      </ul>
+  </div>
+    <div class="gameRank">
+        <ul class="rankList">
+            <li>
+                <p class="rankTitle">A</p>
+                <div class="everyCont">
+                    <p class="everyImg"></p>
+                    <p class="everyName">APP Stare充值卡</p>
+                    <p class="everyFan">返利 2.8%</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript" src="/dist/activity/11/gamePayIndex.js?version=$version"></script>
+</body>
+</html>
