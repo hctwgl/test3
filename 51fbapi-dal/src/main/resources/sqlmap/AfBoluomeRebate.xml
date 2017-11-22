@@ -174,7 +174,7 @@
 			) as type 
 			FROM
 				af_boluome_rebate br
-			INNER JOIN af_order o ON o.id = br.order_id AND o.is_delete = br.is_delete = 0
+			INNER JOIN af_order o ON o.id = br.order_id AND o.is_delete = 0 and br.is_delete = 0
 			WHERE
 				br.user_id = #{userId}
 			) as tt 
