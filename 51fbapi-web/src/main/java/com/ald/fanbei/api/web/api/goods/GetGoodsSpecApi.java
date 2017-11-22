@@ -91,10 +91,9 @@ public class GetGoodsSpecApi implements ApiHandle {
 		    AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getUserGoodsPrice(context.getUserId(), afGoodsPriceDo.getPriceId());
 		    if(afDeUserGoodsDo !=null)
 		    {
-		    //后端优化:商品详情页面展示的商品价格，各个规格的价格取后台商品的售价即可；（商品的售价会维护成商品折扣后的新人价）
 			//更新商品价格为砍价后价格
-			//BigDecimal actualAmount = afGoodsPriceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice());
-			//afGoodsPriceDo.setActualAmount(actualAmount);
+			BigDecimal actualAmount = afGoodsPriceDo.getActualAmount().subtract(afDeUserGoodsDo.getCutprice());
+			afGoodsPriceDo.setActualAmount(actualAmount);
 		    }
 		}
 		
@@ -109,14 +108,15 @@ public class GetGoodsSpecApi implements ApiHandle {
 				condition.setGoodsId(goodsId);
 				AfShareGoodsDo resultDo = afShareGoodsService.getByCommonCondition(condition);
 				if (null != resultDo) {
+					//后端优化:商品详情页面展示的商品价格，各个规格的价格取后台商品的售价即可；（商品的售价会维护成商品折扣后的新人价）
 					//这个商品是否是砍价商品
-					BigDecimal decreasePrice = resultDo.getDecreasePrice();
+					/*BigDecimal decreasePrice = resultDo.getDecreasePrice();
 					for ( AfGoodsPriceVo afGoodsPriceDo : priceData) {
 						//更新商品价格为砍价后价格
 						BigDecimal actualAmount = afGoodsPriceDo.getActualAmount().subtract(decreasePrice);
 						afGoodsPriceDo.setActualAmount(actualAmount);
 					    
-					}
+					}*/
 				}
 				
 			}
