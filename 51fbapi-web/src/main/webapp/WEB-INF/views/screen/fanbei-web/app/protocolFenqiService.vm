@@ -45,7 +45,7 @@
 				<li><i>利息和手续费</i><i>#if($!{poundage})¥$!{poundage}#end</i></li>
 				<li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")#end</i></li>
 				<!-- <li><i>还款方式</i><i>等本等息</i></li> -->
-				<li><i>还款日</i><i>每月20日</i></li>
+				<li><i>还款日</i><i>每月$!{repayDay}日</i></li>
 				<li><i>借款用途</i><i>个人消费</i></li>
 			</ul><br>
 
