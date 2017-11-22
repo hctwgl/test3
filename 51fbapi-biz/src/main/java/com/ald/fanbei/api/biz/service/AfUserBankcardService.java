@@ -60,4 +60,25 @@ public interface AfUserBankcardService {
 	 * 获取银行身份信息
 	 */
 	AfUserBankDto getUserBankInfo(Long bankId);
+	
+	/**
+	 * 获取银行卡列表
+	 * 
+	 * **/
+	
+	List<AfUserBankcardDo> getAfUserBankcardDoList(long userId);
+	
+	/**
+	 * 根据银行卡号获取ID
+	 * **/
+	AfUserBankcardDo getUserBankcardIdByCardNumber(String cardNumber);
+
+	/**
+	 * 获取银行卡cardNumber ,cardId
+	 *
+	 * **/
+
+	String getAfUserBankcardList(long userId);
+
+	AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId);
 }

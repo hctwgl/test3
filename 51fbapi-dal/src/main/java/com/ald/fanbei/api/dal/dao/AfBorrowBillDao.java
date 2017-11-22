@@ -331,4 +331,10 @@ public interface AfBorrowBillDao {
 	 * @param billMonth
 	 */
 	void updateBillOutDay(@Param("id")Long id,@Param("gmtOutDay")Date gmtOutDay,@Param("gmtPayTime") Date gmtPayTime,@Param("billYear") int billYear,@Param("billMonth") int billMonth);
+
+	String getBillIdsByUserId(@Param("userId")Long userId);
+
+	int updateBorrowBillLockById(@Param("billId")String billId);
+
+	int updateBorrowBillUnLockByIds(@Param("billIds") List<String> billIds);
 }

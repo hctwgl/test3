@@ -70,7 +70,16 @@ let vm = new Vue({
         dayMonth(){
             if(this.content.payMethod==1){
                 return '月'
-            }else{
+            }else if(this.content.payMethod==3){
+                return '周'
+            }else {
+                return '日'
+            }
+        },
+        dayMonthRate(){
+            if(this.content.payMethod==1){
+                return '月'
+            }else {
                 return '日'
             }
         },

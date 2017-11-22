@@ -44,6 +44,7 @@ public enum ResourceType {
 	APP_UPDATE_COUPON_NEW("APP_UPDATE_COUPON_NEW","版本升级优惠券（新用户）"),
 
 	HOMEPAGE_BACKGROUND("HOMEPAGE_BACKGROUND","首页背景图");
+
 	private String code;
 
 	private String description;
