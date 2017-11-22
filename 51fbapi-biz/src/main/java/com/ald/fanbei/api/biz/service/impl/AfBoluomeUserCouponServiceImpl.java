@@ -101,7 +101,7 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 					afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
 					result = true;
 					//call Jpush for rebate
-					String userName = convertToUserName(userId);
+					String userName = convertToUserName(refUserIdTemp);
 					log = log + String.format("userName = {} ", userName);
 					logger.info(log);
 					if (userName != null) {

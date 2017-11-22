@@ -173,7 +173,9 @@
 				user_id = #{userId}
 			LIMIT 1
 			) 
-			AND channel = 'RECOMMEND';
+			AND channel = 'RECOMMEND'
+			and is_delete = 0 ;
+			
     </select>
 
     <select id = "isHasCouponInDb" parameterType = "java.lang.Long" resultType="java.lang.Integer">
