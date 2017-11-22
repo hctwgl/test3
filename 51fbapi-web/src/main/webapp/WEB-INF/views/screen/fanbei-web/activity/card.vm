@@ -18,7 +18,7 @@
                         <img :src="item.value" @click="jump(item.value2)">
                     </div>
                 </div>
-                <div class="swiper-pagination mypagination1" v-show="topLen>2"></div>
+                <div class="swiper-pagination mypagination1" v-show="topLen>1"></div>
             </div>
         </div>
         <div class="devide"></div>
@@ -27,7 +27,7 @@
             <div class="swiper-box">
                 <div class="swiper-container bankSwiper">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide flex fd-row jc-sb" v-for="(item,index) in allData.creditbanner" v-if="index%2==0">
+                        <div class="swiper-slide card-slide flex fd-row jc-sb" v-for="(item,index) in allData.creditbanner" v-if="index%2==0">
                             <div class="card-box flex fd-column ai-c" @click="jump(item.value2)">
                                 <img :src="item.value">
                                 <p class="name">{{item.name}}</p>
