@@ -42,7 +42,6 @@ $(function () {
     var urlName = param['urlName'];
     var typeFrom=param['typeFrom'];//渠道类型
     var typeFromNum=param['typeFromNum'];//渠道类型数
-    console.log(urlName)
     //用戶名叉叉點擊清楚所有文字
     $('.yhicon').click(function () {
         $("#yhinp").val('');

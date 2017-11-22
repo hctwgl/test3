@@ -270,30 +270,19 @@ let vm = new Vue({
         //获取页面初始化信息
         logData() {
             let self = this;
-            $.ajax({
-                type: 'post',
-                url: "/activity/freshmanShare/homePage",
-                success: function (data) {
-                    console.log(data);
-                    /*self.content=eval('('+data.data+')');*/
-                    self.$nextTick(function () {
-                        /*图片预加载*/
-                        $(".first").each(function() {
-                            var img = $(this);
-                            img.load(function () {
-                                $(".loadingMask").fadeOut();
-                            });
-                            setTimeout(function () {
-                                $(".loadingMask").fadeOut();
-                            },1000)
-                        });
+            self.$nextTick(function () {
+                /*图片预加载*/
+                $(".first").each(function() {
+                    var img = $(this);
+                    img.load(function () {
                         $(".loadingMask").fadeOut();
-                    })
-                },
-                error:function(){
-                    requestMsg('哎呀，出错了！')
-                }
-            });
+                    });
+                    setTimeout(function () {
+                        $(".loadingMask").fadeOut();
+                    },1000)
+                });
+                $(".loadingMask").fadeOut();
+            })
             //点击加埋点
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
