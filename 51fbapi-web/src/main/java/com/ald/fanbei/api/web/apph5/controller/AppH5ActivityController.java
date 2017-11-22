@@ -285,9 +285,9 @@ public class AppH5ActivityController extends BaseController {
 		Map<String, Object> returnData = new HashMap<String, Object>();
 
 		try {
-			List<AfResourceDo> hotbannerInfoList = afResourceService.getConfigByTypes(ResourceType.HOT_BANK_BANNER.getCode());
-			List<AfResourceDo> creditbannerInfoList = afResourceService.getConfigByTypes(ResourceType.CREDIT_CARD_BANNER.getCode());
-			List<AfResourceDo> lunbannerInfoList = afResourceService.getConfigByTypes(ResourceType.HOT_CARD_BANNER.getCode());
+			List<AfResourceDo> hotbannerInfoList = afResourceService.getResourceListByTypeOrderBy(ResourceType.HOT_BANK_BANNER.getCode());
+			List<AfResourceDo> creditbannerInfoList = afResourceService.getResourceListByTypeOrderBy(ResourceType.CREDIT_CARD_BANNER.getCode());
+			List<AfResourceDo> lunbannerInfoList = afResourceService.getResourceListByTypeOrderBy(ResourceType.HOT_CARD_BANNER.getCode());
 			returnData.put("lunbanner", lunbannerInfoList);
 			returnData.put("hotbanner", hotbannerInfoList);
 			returnData.put("creditbanner", creditbannerInfoList);
