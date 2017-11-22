@@ -18,6 +18,7 @@ let vm = new Vue({
     mounted: function () {
         this.$nextTick(() => {
             var mySwiper2 = new Swiper('.bannerSwiper', {
+                autoplay: 5000,
                 pagination: '.mypagination1', // 如果需要分页器
                 observer: true,//修改swiper自己或子元素时，自动初始化swiper
                 observeParents: true//修改swiper的父元素时，自动初始化swiper
@@ -26,6 +27,7 @@ let vm = new Vue({
 
 
             var mySwiper = new Swiper('.bankSwiper', {
+                autoplay: 5000,
                 pagination: '.mypagination2', // 如果需要分页器
                 observer: true,//修改swiper自己或子元素时，自动初始化swiper
                 observeParents: true//修改swiper的父元素时，自动初始化swiper
