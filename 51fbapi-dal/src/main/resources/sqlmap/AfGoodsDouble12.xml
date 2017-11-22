@@ -159,6 +159,7 @@
 		SET count = count - 1    
         WHERE is_delete = 0 
         AND goodsId = #{goodsId}
+        AND count > 0
     </update>
     
 </mapper>

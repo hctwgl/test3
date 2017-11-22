@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -72,6 +73,8 @@ public class AppH5Double12ActivityController extends BaseController{
 	AfUserService afUserService;
 	@Resource
 	AfGoodsService afGoodsService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	
 	String opennative = "/fanbei-web/opennative?name=";
 	
@@ -100,6 +103,7 @@ public class AppH5Double12ActivityController extends BaseController{
 					afCouponDouble12Vo.setId(coupon.getRid());
 					afCouponDouble12Vo.setName(coupon.getName());
 					afCouponDouble12Vo.setThreshold(coupon.getUseRule());
+					afCouponDouble12Vo.setAmount(coupon.getAmount());
 					if(new Date().before(afCouponDouble12Do.getStarttime())||new Date().after(afCouponDouble12Do.getEndtime())){	
 						//不在活动时间内
 						afCouponDouble12Vo.setIsShow("N");
@@ -198,6 +202,7 @@ public class AppH5Double12ActivityController extends BaseController{
 		Map<String, Object> data = new HashMap<String, Object>();
 		FanbeiWebContext context = new FanbeiWebContext();
 		String result = "";
+		String key = "";
 		try {
 			context = doWebCheck(request, true);
 			
@@ -205,43 +210,50 @@ public class AppH5Double12ActivityController extends BaseController{
 			Long couponId = NumberUtil.objToLong(request.getParameter("couponId"));
 			logger.info("/activity/double12/getCoupon params: userName ={} , couponId = {}", userName, couponId);
 			Long userId = convertUserNameToUserId(userName);
+			key = Constants.CACHKEY_GET_COUPON_LOCK + ":" + userId + ":" + couponId;
 			
-			AfCouponDouble12Do afCouponDouble12Do = afCouponDouble12Service.getCouponByCouponId(couponId);
-			
-			if(new Date().before(afCouponDouble12Do.getStarttime())){	
-				//活动暂未开始
-				return H5CommonResponse.getNewInstance(false, "活动暂未开始", null, "").toString();
-			}
-			if(new Date().after(afCouponDouble12Do.getEndtime())){
-				//活动已结束
-				return H5CommonResponse.getNewInstance(false, "活动已结束", null, "").toString();
-			}
-			
-			Long count = afCouponDouble12Do.getCount();
-			if(count > 0){
-				//优惠券未抢完
-				if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,couponId) == 0){
-					//用户未领取
-					
-					afCouponDouble12Service.updateCountById(afCouponDouble12Do);
-					
-					AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
-					afUserCouponDo.setUserId(userId);
-					afUserCouponDo.setCouponId(couponId);
-					afUserCouponService.addUserCoupon(afUserCouponDo);
-					
-					data.put("result", "Y");
-					result = H5CommonResponse.getNewInstance(true, "领取优惠券成功", null, data).toString();
-				}else {
-					//用户已领取
-					data.put("result", "N");
-					result = H5CommonResponse.getNewInstance(true, "用户已领过该优惠券", null, data).toString();
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
+			if (isNotLock) {
+				AfCouponDouble12Do afCouponDouble12Do = afCouponDouble12Service.getCouponByCouponId(couponId);
+				
+				if(new Date().before(afCouponDouble12Do.getStarttime())){	
+					//活动暂未开始
+					return H5CommonResponse.getNewInstance(false, "活动暂未开始", null, "").toString();
+				}
+				if(new Date().after(afCouponDouble12Do.getEndtime())){
+					//活动已结束
+					return H5CommonResponse.getNewInstance(false, "活动已结束", null, "").toString();
 				}
 				
-			}else{
-				//优惠券已抢完
-				data.put("result", "O");
-				result = H5CommonResponse.getNewInstance(true, "优惠券已领完", null, data).toString();
+				Long count = afCouponDouble12Do.getCount();
+				if(count > 0){
+					//优惠券未抢完
+					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,couponId) == 0){
+						//用户未领取
+						
+						afCouponDouble12Service.updateCountById(afCouponDouble12Do);
+						
+						AfCouponDo afCoupon = afCouponService.getCoupon(couponId);
+						AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+						afUserCouponDo.setUserId(userId);
+						afUserCouponDo.setCouponId(couponId);
+						afUserCouponDo.setGmtStart(afCoupon.getGmtStart());
+						afUserCouponDo.setGmtEnd(afCoupon.getGmtEnd());
+						afUserCouponService.addUserCoupon(afUserCouponDo);
+						
+						data.put("result", "Y");
+						result = H5CommonResponse.getNewInstance(true, "领取优惠券成功", null, data).toString();
+					}else {
+						//用户已领取
+						data.put("result", "N");
+						result = H5CommonResponse.getNewInstance(true, "用户已领过该优惠券", null, data).toString();
+					}
+					
+				}else{
+					//优惠券已抢完
+					data.put("result", "O");
+					result = H5CommonResponse.getNewInstance(true, "优惠券已领完", null, data).toString();
+				}
 			}
 		
 		} catch (FanbeiException e) {
@@ -257,6 +269,8 @@ public class AppH5Double12ActivityController extends BaseController{
 			//e.printStackTrace();
 			logger.error("/activity/double12/getCoupon error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "领取优惠券失败", null, "").toString();
+		} finally {
+			bizCacheUtil.delCache(key);
 		}
 		return result;
 	}

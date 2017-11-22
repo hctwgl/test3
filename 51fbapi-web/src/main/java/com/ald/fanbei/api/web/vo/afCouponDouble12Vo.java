@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.vo;
 
+import java.math.BigDecimal;
+
 import com.ald.fanbei.api.common.AbstractSerial;
 
 /**  
@@ -19,7 +21,14 @@ public class afCouponDouble12Vo extends AbstractSerial {
 	private String name;
 	private String threshold;
 	private String isShow;// Y:在活动期间；N:不在活动期间
+	private BigDecimal amount;//金额
 	
+	public BigDecimal getAmount() {
+		return amount;
+	}
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
 	public String getIsShow() {
 		return isShow;
 	}

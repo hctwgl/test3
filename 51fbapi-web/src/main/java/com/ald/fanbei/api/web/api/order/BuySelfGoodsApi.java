@@ -6,6 +6,7 @@ package com.ald.fanbei.api.web.api.order;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -82,6 +83,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfShareUserGoodsService afShareUserGoodsService;
 	@Resource
 	TransactionTemplate transactionTemplate;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 
 	@Override
@@ -300,20 +303,37 @@ public class BuySelfGoodsApi implements ApiHandle {
 	 * @data  2017年11月21日
 	 */
 	private void double12GoodsCheck(Long userId, Long goodsId){
-		
-		AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
-		if(null != afGoodsDouble12Do){
-			//这个商品是双十二秒杀商品
-			if(afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0){
-				//报错提示已秒杀过（已生成过秒杀订单）
-				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
+		try {
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
+			if (isNotLock) {
+				AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
+				if(null != afGoodsDouble12Do){
+					//这个商品是双十二秒杀商品
+					if(afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0){
+						//报错提示已秒杀过（已生成过秒杀订单）
+						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+					if(afGoodsDouble12Do.getCount()<=0){
+						//报错提示秒杀商品已售空
+						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+					}
+					// ---->update
+		            if(afGoodsDouble12Service.getByGoodsId(goodsId)!=null){
+		            	//更新秒杀商品余量（count-1）
+		            	afGoodsDouble12Service.updateCountById(goodsId);
+		            }
+				}
 			}
-			
-			if(afGoodsDouble12Do.getCount()<=0){
-				//报错提示秒杀商品已售空
-				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
-			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("double12 activity order error = {}", e.getStackTrace());
+			throw new FanbeiException(FanbeiExceptionCode.DOUBLE12ORDER_ERROR);
+		} finally{
+			bizCacheUtil.delCache(key);
 		}
+		
 	}
 	
 	

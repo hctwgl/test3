@@ -352,12 +352,6 @@ public class PayOrderV1Api implements ApiHandle {
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
                     
-                    // 双十二秒杀新增逻辑 ---->update
-                    if(afGoodsDouble12Service.getByGoodsId(orderInfo.getGoodsId())!=null){
-                    	//更新秒杀商品余量（count-1）
-                    	afGoodsDouble12Service.updateCountById(orderInfo.getGoodsId());
-                    }
-                    
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
                     ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
