@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
@@ -34,16 +35,6 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BorrowBillStatus;
-import com.ald.fanbei.api.common.enums.BorrowStatus;
-import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.PayStatus;
-import com.ald.fanbei.api.common.enums.RepaymentStatus;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -121,6 +112,75 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
 	@Resource
 	AfBorrowBillDao afBorrowBillDao;
+
+	@Resource
+	AfUserAmountDetailDao afUserAmountDetailDao;
+	@Resource
+	AfUserAmountLogDao afUserAmountLogDao;
+	@Resource
+	AfUserAmountDao afUserAmountDao;
+
+	/**
+	 * 支付成功后生成
+	 * @param afRepaymentDo
+	 */
+	private void addUseAmountDetail(AfRepaymentDo afRepaymentDo){
+		BigDecimal total = afRepaymentDo.getRepaymentAmount();  //总金额
+		List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(afRepaymentDo.getBillIds().split(","), new Converter<String, Long>() {
+			@Override
+			public Long convert(String source) {
+				return Long.parseLong(source);
+			}
+		});
+		List<AfBorrowBillDo> afBorrowBillDoList = afBorrowBillService.getBorrowBillByIds(billIdList);
+		BigDecimal principleAmount = BigDecimal.ZERO;        //本金
+		BigDecimal poundageAmount = BigDecimal.ZERO;        //手续费
+		BigDecimal overdueInterestAmount = BigDecimal.ZERO;       //逾期利息
+
+
+		BigDecimal yohuijuang = BigDecimal.ZERO;   //优惠卷
+		BigDecimal yuer = BigDecimal.ZERO;
+		yohuijuang = afRepaymentDo.getCouponAmount();
+		yuer = afRepaymentDo.getRebateAmount().add(afRepaymentDo.getJfbAmount());
+
+		for(AfBorrowBillDo afBorrowBillDo : afBorrowBillDoList){
+			principleAmount =principleAmount.add(afBorrowBillDo.getPrincipleAmount());
+			overdueInterestAmount =overdueInterestAmount.add(afBorrowBillDo.getOverdueInterestAmount().add(afBorrowBillDo.getOverduePoundageAmount()));
+			poundageAmount = poundageAmount.add(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));
+		}
+
+		AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
+		AfUserAmountLogDo afUserAmountLogDo = new AfUserAmountLogDo();
+		afUserAmountLogDo.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
+		afUserAmountLogDo.setSourceId(afRepaymentDo.getRid());
+		afUserAmountLogDo.setStatus(2);
+		afUserAmountLogDao.addUserAmountLog(afUserAmountLogDo);
+
+		afUserAmountDo.setAmount(afRepaymentDo.getRepaymentAmount());
+		afUserAmountDo.setBizOrderNo(afRepaymentDo.getRepayNo());
+		afUserAmountDo.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
+		afUserAmountDo.setSourceId(afRepaymentDo.getRid());
+		afUserAmountDo.setUserId(afRepaymentDo.getUserId());
+		afUserAmountDo.setRemark("");
+		afUserAmountDao.addUserAmount(afUserAmountDo);
+
+		if(BigDecimal.ZERO.compareTo(principleAmount) !=0){
+
+		}
+	}
+
+	private AfUserAmountDetailDo buildAmountDetail(long userAmountId,BigDecimal amount,int count,AfUserAmountDetailType type){
+		AfUserAmountDetailDo afUserAmountDetailDo = new AfUserAmountDetailDo();
+		afUserAmountDetailDo.setUserAmountId(userAmountId);
+		afUserAmountDetailDo.setAmount(amount);
+		afUserAmountDetailDo.setCount(1);
+		afUserAmountDetailDo.setType(type.getCode());
+		afUserAmountDetailDo.setTitle(type.getName());
+		afUserAmountDetailDo.setRemark("");
+		return afUserAmountDetailDo;
+	}
+
+
 
 	public Map<String,Object> createRepaymentYiBao(final BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
