@@ -889,6 +889,7 @@ public class RiskUtil extends AbstractThird {
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，则将额度变更为已使用额度。
 	                                                否则把用户的额度设置成分控返回的额度*/
                     AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
+                    //这里修改逻辑永远以风控为准
                     if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0) {
                         AfUserAccountDo accountDo = new AfUserAccountDo();
                         accountDo.setUserId(consumerNo);
@@ -897,7 +898,7 @@ public class RiskUtil extends AbstractThird {
                     } else {
                         AfUserAccountDo accountDo = new AfUserAccountDo();
                         accountDo.setUserId(consumerNo);
-                        accountDo.setAuAmount(userAccountDo.getUsedAmount());
+                        accountDo.setAuAmount(au_amount);
                         afUserAccountService.updateUserAccount(accountDo);
                     }
                     jpushService.strongRiskFail(userAccountDo.getUserName());
