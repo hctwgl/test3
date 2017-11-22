@@ -125,9 +125,9 @@
     5、本协议若有修改或者补充的，均由丙方以电子文本形式在其平台及合作方处进行公布，修改后或者补充后的内容与本协议有冲突的，以修改后或者补充后的效力为准。<br>
     <br>
     <br>
-    <span style="margin: 0 1rem">甲方：      #if($!{personUserSeal})<img style="width: 1.5rem" src="$!{personUserSeal}">#end</span>
-    <span>乙方：      #if($!{secondSeal})<img style="width: 2.5rem" src="$!{secondSeal}">#end</span>
-    <p style="margin: 0 1rem">丙方：      #if($!{CompanyUserSeal})<img style="width: 2.5rem" src="$!{CompanyUserSeal}">#end</p>
+    <span style="margin: 0 1rem">甲方：      #if($!{personUserSeal})<img style="max-width: 1.5rem" src="$!{personUserSeal}">#end</span>
+    <span>乙方：      #if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</span>
+    <p style="margin: 0 1rem">丙方：      #if($!{CompanyUserSeal})<img style="max-width: 2.5rem" src="$!{CompanyUserSeal}">#end</p>
 
     </p>
 </div>
