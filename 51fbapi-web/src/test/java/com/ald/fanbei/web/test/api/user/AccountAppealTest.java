@@ -47,12 +47,19 @@ public class AccountAppealTest extends BaseTest{
 	}
 	
 	@Test
+	public void getFaceTypeFree(){
+		String url = urlBase + "/auth/getFaceTypeFree";
+		Map<String,String> params = new HashMap<>();
+		testApi(url, params, "", false);
+	}
+	
+//	@Test
 	public void updateRealnameManual(){
-		String url = urlBase + "/auth/updateRealnameManual";
+		String url = urlBase + "/auth/updateRealnameManualFree";
 		Map<String,String> params = new HashMap<>();
 		params.put("oldMobile", oldMoble);
 		params.put("realname", "王卿");
-		testApi(url, params, oldMoble, false);
+		testApi(url, params, "", false);
 		
 		RedisClient.setRaw(Constants.CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX + oldMoble, "130125198801118542");
 		RedisClient.setRaw(Constants.CACHEKEY_REAL_AUTH_PASS_PREFFIX + oldMoble, 1);
