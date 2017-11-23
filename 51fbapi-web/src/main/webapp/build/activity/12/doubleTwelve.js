@@ -50,6 +50,45 @@ let vm = new Vue({
                         location.href = data.data.loginUrl;
                         return false;
                     }
+                    data = {
+                        "data": {
+                            "couponList": [{
+                                "amount": 6.00,
+                                "id": 1047,
+                                "isGet": "Y",
+                                "isShow": "Y",
+                                "ishas": "Y",
+                                "name": "6元还款抵用券",
+                                "threshold": "6元还款抵用券"
+                            }, {
+                                "amount": 3.00,
+                                "id": 1046,
+                                "isGet": "N",
+                                "isShow": "Y",
+                                "ishas": "N",
+                                "name": "3元还款抵用券",
+                                "threshold": "3元还款抵用券"
+                            }, {
+                                "amount": 1.00,
+                                "id": 1045,
+                                "isGet": "N",
+                                "isShow": "Y",
+                                "ishas": "Y",
+                                "name": "抓娃娃1元现金红包",
+                                "threshold": "抓娃娃1元现金红包"
+                            }, {
+                                "amount": 9.00,
+                                "id": 1048,
+                                "isGet": "N",
+                                "isShow": "N",
+                                "ishas": "Y",
+                                "name": "9元还款抵用券",
+                                "threshold": "9元还款抵用券"
+                            }]
+                        },
+                        "msg": "获取优惠券列表成功",
+                        "success": true
+                    }
                     self.couponData = data.data.couponList;
                 },
                 error: function () {
@@ -227,7 +266,7 @@ let vm = new Vue({
         changeFlag: function () {
             this.couponFlag = !this.couponFlag;
         },
-        changeProduct:function(key){
+        changeProduct: function (key) {
             this.currentData = this.goodsData[key];
         }
     }

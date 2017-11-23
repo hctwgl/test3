@@ -23,13 +23,14 @@
             </div>
             <div class="txt">12月05日开始</div>
             <ul class="coupon-ul flex fw-w" :class="{couponHeight1:couponFlag}">
-                <li class="coupon-li" v-for="item in couponData" @click="couponClick(item)" :class="[item.isGet=='N'?'coupon-active':'coupon-quiet']">
+                <li class="coupon-li" v-for="item in couponData" @click="couponClick(item)" :class="[(item.ishas=='Y'&&item.isGet=='N')?'coupon-active':'coupon-quiet']">
                     <div class="coupon-price">￥
                         <span>{{item.amount}}</span>
                     </div>
                     <div class="coupon-tip">{{item.threshold}}</div>
-                    <div class="coupon-get" v-if="item.isGet=='Y'">已领取</div>
-                    <div class="coupon-get" v-else>立即领取</div>
+                    <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
+                    <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='N'">立即领取</div>
+                    <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
                 </li>
             </ul>
             <div class="more" @click="changeFlag()" v-show="couponFlag">查看更多</div>
