@@ -274,6 +274,8 @@ public class AppH5Double12ActivityController extends BaseController{
 						afUserCouponDo.setCouponId(couponId);
 						afUserCouponDo.setGmtStart(afCoupon.getGmtStart());
 						afUserCouponDo.setGmtEnd(afCoupon.getGmtEnd());
+						afUserCouponDo.setStatus("NOUSE");//未使用
+						afUserCouponDo.setSourceType("SPECIAL");//专场
 						afUserCouponService.addUserCoupon(afUserCouponDo);
 						
 						data.put("result", "Y");
