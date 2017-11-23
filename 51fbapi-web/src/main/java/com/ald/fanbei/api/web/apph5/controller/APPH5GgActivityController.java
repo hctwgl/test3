@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityItemsService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityMsgIndexService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserLoginService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
@@ -53,6 +54,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityMsgIndexDo;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCardDo;
@@ -115,6 +117,8 @@ public class APPH5GgActivityController extends BaseController {
 	AfBoluomeRebateService afBoluomeRebateService;
 	@Resource
 	AfBoluomeActivityItemsService afBoluomeActivityItemsService;
+	@Resource
+	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
 
 	String opennative = "/fanbei-web/opennative?name=";
 
@@ -129,6 +133,7 @@ public class APPH5GgActivityController extends BaseController {
 		try {
 			context = doWebCheck(request, false);
 			Long userId = convertUserNameToUserId(context.getUserName());
+			
 			List<userReturnBoluomeCouponVo> returnCouponList = new ArrayList<userReturnBoluomeCouponVo>();
 			AfBoluomeUserCouponVo vo = new AfBoluomeUserCouponVo();
 			// 未登录时初始化一些数据
@@ -147,67 +152,69 @@ public class APPH5GgActivityController extends BaseController {
 				return H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, vo).toString();
 			}
 
-			// 登录时返回数据
-			AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
-			queryUserCoupon.setUserId(userId);
-			queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
-
-			List<AfBoluomeUserCouponDo> userCouponList = afBoluomeUserCouponService
-					.getUserCouponListByUerIdAndChannel(queryUserCoupon);
-			for (AfBoluomeUserCouponDo userCoupon : userCouponList) {
-				long couponId = userCoupon.getCouponId();
-
+			//从登录表取数据，遍历list.查询是否有订单，没有订单：未消费。有订单未完成：未完成。有订单且已完成：已消费
+		
+			long activityId = 1000L;
+			List<AfBoluomeActivityUserLoginDo>  afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService.getByRefUserIdAndActivityId(userId,activityId);
+			if(afBoluomeActivityUserLoginList.size() > 0){
+			    for(AfBoluomeActivityUserLoginDo uDo:afBoluomeActivityUserLoginList){
 				userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
-				// returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(userCoupon.getGmtCreate()));
-				// 被邀请人没有订单：未消费; 有订单且订单没有一个是完成的(或者有订单且用户优惠券记录的优惠券id等于0)：未完成。
-				// 有完成的订单(或者有订单且用户优惠券记录的优惠券id大于0)：
-				long refUserId = userCoupon.getRefId();
-				// 手机号
-				AfUserDo uDo = afUserService.getUserById(refUserId);
-				if (uDo != null) {
-					returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
-					returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
-				}
-
+				returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
+				returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
+				returnCouponVo.setReward("0");
 				// 订单状态
 				AfOrderDo order = new AfOrderDo();
-				order.setUserId(refUserId);
+				order.setUserId(uDo.getUserId());
 				int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
+				
 				if (queryCount <= 0) {
 					returnCouponVo.setStatus(H5GgActivity.NOCONSUME.getDescription());
 				}
 				if (queryCount > 0) {
-					if (couponId <= 0) {
+				    AfOrderDo orderStatus = new AfOrderDo();
+				    orderStatus.setUserId(uDo.getUserId());
+				    orderStatus.setOrderStatus("FINISHED");
+				    int orderCount = afOrderService.getOrderCountByStatusAndUserId(orderStatus);
+					if (orderCount <= 0) {
 						returnCouponVo.setStatus(H5GgActivity.NOFINISH.getDescription());
 					} else {
-						returnCouponVo.setStatus(H5GgActivity.ALREADYCONSUME.getDescription());
-					}
-				}
-				if (couponId <= 0) {
-					returnCouponVo.setReward("0");
-				} else {
-					AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
-					if (rDo != null) {
-						returnCouponVo.setReward(rDo.getName());
-					}
-					// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
-					try {
-						AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
-						if (afResourceDo != null) {
-							// List<BrandActivityCouponResponseBo>
-							// activityCouponList =
-							// boluomeUtil.getActivityCouponList(afResourceDo.getValue());
-							// BrandActivityCouponResponseBo bo =
-							// activityCouponList.get(0);
-							BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
-							couponAmount = couponAmount.add(money);
+						returnCouponVo.setStatus(H5GgActivity.ALREADYFINISH.getDescription());
+						//查询该优惠券金额
+						AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
+						queryUserCoupon.setUserId(uDo.getRefUserId());
+						queryUserCoupon.setRefId(uDo.getUserId());
+						queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
+
+						AfBoluomeUserCouponDo userCoupon = afBoluomeUserCouponService
+								.getUserCouponByUerIdAndRefIdAndChannel(queryUserCoupon);
+						
+						
+						if(userCoupon != null){
+						long couponId = userCoupon.getCouponId();
+						AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
+//						if (rDo != null) {
+//							returnCouponVo.setReward(rDo.getName());
+//						}
+						// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
+						try {
+							AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
+							if (afResourceDo != null) {
+								BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
+								returnCouponVo.setReward(money+"元外卖券");
+								couponAmount = couponAmount.add(money);
+							}
+						} catch (Exception e) {
+							logger.error("get coluome activity inviteAmount error", e.getStackTrace());
 						}
-					} catch (Exception e) {
-						logger.error("get coluome activity inviteAmount error", e.getStackTrace());
+					   }
+						
 					}
 				}
 				returnCouponList.add(returnCouponVo);
-			}
+			    }//for
+			}//if
+			
+			
 			// 好友借钱邀请者得到的奖励总和 inviteAmount af_recommend_money表
 			inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId));
 

@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserLoginDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
@@ -29,14 +32,20 @@ public class AfBoluomeActivityUserLoginServiceImpl extends ParentServiceImpl<AfB
     @Resource
     private AfBoluomeActivityUserLoginDao afBoluomeActivityUserLoginDao;
 
-		@Override
-	public BaseDao<AfBoluomeActivityUserLoginDo, Long> getDao() {
-		return afBoluomeActivityUserLoginDao;
-	}
+        		@Override
+        	public BaseDao<AfBoluomeActivityUserLoginDo, Long> getDao() {
+        		return afBoluomeActivityUserLoginDao;
+        	}
 
 		@Override
 		public Integer getBindingNum(Long activityId, Long refUserId) {
 			
 			return afBoluomeActivityUserLoginDao.getBindingNum(activityId,refUserId);
+		}
+
+		@Override
+		public List<AfBoluomeActivityUserLoginDo> getByRefUserIdAndActivityId(Long userId,Long activityId) {
+		    // TODO Auto-generated method stub
+		    return afBoluomeActivityUserLoginDao.getByRefUserIdAndActivityId(userId,activityId);
 		}
 }

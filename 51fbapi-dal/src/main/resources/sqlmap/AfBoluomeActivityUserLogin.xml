@@ -208,4 +208,16 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
 				user_id = #{userId}
 			LIMIT 1;
     </select>
+     <select id = "getByRefUserIdAndActivityId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" parameterType="java.lang.Long">
+	    SELECT
+		 <include refid="queryFields" />
+		FROM
+			af_boluome_activity_user_login
+		WHERE
+			is_delete = 0
+			AND ref_user_id = #{userId}
+			AND boluome_activity_id = #{activityId}
+			ORDER BY gmt_create DESC
+    </select>
+    
 </mapper>

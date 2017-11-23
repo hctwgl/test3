@@ -18,12 +18,13 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 public interface AfBoluomeUserCouponService extends ParentService<AfBoluomeUserCouponDo, Long>{
 
 
-    List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
+ //   List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
 
     AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
     boolean sendCoupon(Long userId);
     int isHasCouponInDb(Long userId, Long couponId);
     AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId);
+    AfBoluomeUserCouponDo getUserCouponByUerIdAndRefIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
 
 
 }

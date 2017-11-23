@@ -56,16 +56,12 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 		return afBoluomeUserCouponDao;
 	}
 
-	@Override
-	public List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon) {
-
-		return afBoluomeUserCouponDao.getUserCouponListByUerIdAndChannel(queryUserCoupon);
-	}
-	@Override
-	public AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon) {
-		    // TODO Auto-generated method stub
-		 return afBoluomeUserCouponDao.getByCouponIdAndUserIdAndChannel(userCoupon);
-	}
+//	@Override
+//	public List<AfBoluomeUserCouponDo> getUserCouponListByUerIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon) {
+//
+//		return afBoluomeUserCouponDao.getUserCouponListByUerIdAndChannel(queryUserCoupon);
+//	}
+	
 	@Override
 	public boolean sendCoupon(Long userId) {
 		boolean result = false;
@@ -153,6 +149,18 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	public AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId) {
 	    // TODO Auto-generated method stub
 	    return afBoluomeUserCouponDao.getLastUserCouponByUserId(userId);
+	}
+	
+	@Override
+	public AfBoluomeUserCouponDo getUserCouponByUerIdAndRefIdAndChannel(AfBoluomeUserCouponDo userCoupon) {
+		    // TODO Auto-generated method stub
+		 return afBoluomeUserCouponDao.getUserCouponByUerIdAndRefIdAndChannel(userCoupon);
+	}
+
+	@Override
+	public AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon) {
+	    // TODO Auto-generated method stub
+	         return afBoluomeUserCouponDao.getByCouponIdAndUserIdAndChannel(userCoupon);
 	}
 
 }
