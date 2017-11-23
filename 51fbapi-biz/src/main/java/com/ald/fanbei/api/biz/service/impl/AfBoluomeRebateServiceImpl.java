@@ -59,33 +59,30 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	AfBoluomeRedpacketRelationDao relationDao;
 	@Resource
 	AfUserDao afUserDao;
+
 	@Override
 	public BaseDao<AfBoluomeRebateDo, Long> getDao() {
 		return afBoluomeRebateDao;
 	}
-	@Resource 
+
+	@Resource
 	JpushService jpushService;
 
 	/**
 	 * 
-	* @Title: addRedPacket
-	* @author qiao
-	* @date 2017年11月17日 下午3:59:57
-	* @Description: the second time light activity some logics
-	* during the order is finished .
-	* @param orderId
-	* @param userId
-	* @throws Exception    
-	* @throws
+	 * @Title: addRedPacket @author qiao @date 2017年11月17日
+	 * 下午3:59:57 @Description: the second time light activity some logics during
+	 * the order is finished . @param orderId @param userId @throws
+	 * Exception @throws
 	 */
 	@Override
 	public void addRedPacket(Long orderId, Long userId) throws Exception {
 		try {
-			//check if this orderId has already been rebated
+			// check if this orderId has already been rebated
 			int isHave = afBoluomeRebateDao.getRebateNumByOrderId(orderId);
 			if (isHave == 0) {
 
-				String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId ,userId);
+				String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId, userId);
 				logger.info(log);
 				AfBoluomeRebateDo rebateDo = new AfBoluomeRebateDo();
 
@@ -97,54 +94,57 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				logger.info(log);
 				if (orderTimes == 0) {
 					rebateDo.setFirstOrder(1);
-				} else {
-					rebateDo.setFirstOrder(0);
-				}
-				// check if the order times for red packet
-				int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
-				log = log + String.format("redOrderTimes = %s ", redOrderTimes);
-				logger.info(log);
-				
-				redOrderTimes += 1;
-				// check the red packet amount
-				boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
-				
-				log = log + String.format("flag = %s ", flag);
-				logger.info(log);
-				if (flag) {
-					// insert the table af_boluome_redpacket
-					rebateDo.setGmtCreate(new Date());
-					rebateDo.setGmtModified(new Date());
-					afBoluomeRebateDao.saveRecord(rebateDo);
-					
-					// update the table af_user_account
-					AfUserAccountDo accountDo = new AfUserAccountDo();
-					accountDo.setUserId(userId);
-					accountDo.setRebateAmount(rebateDo.getRebateAmount());
-					afUserAccountDao.updateRebateAmount(accountDo);
-					
-					//call Jpush for rebate
-					String userName = convertToUserName(userId);
-					log = log + String.format("userName = %s , rebateAmount = %s", flag,  rebateDo.getRebateAmount());
+					// mqp:2017-11-23 19:18:22modify : right now just the first
+					// time order should have the condition to send red packet
+					/*
+					 * } else { rebateDo.setFirstOrder(0); }
+					 */
+					// check if the order times for red packet
+					int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
+					log = log + String.format("redOrderTimes = %s ", redOrderTimes);
 					logger.info(log);
-					if (userName != null) {
-						String scence = afBoluomeRebateDao.getScence(orderId);
-						log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
+
+					redOrderTimes += 1;
+					// check the red packet amount
+					boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
+
+					log = log + String.format("flag = %s ", flag);
+					logger.info(log);
+					if (flag) {
+						// insert the table af_boluome_redpacket
+						rebateDo.setGmtCreate(new Date());
+						rebateDo.setGmtModified(new Date());
+						afBoluomeRebateDao.saveRecord(rebateDo);
+
+						// update the table af_user_account
+						AfUserAccountDo accountDo = new AfUserAccountDo();
+						accountDo.setUserId(userId);
+						accountDo.setRebateAmount(rebateDo.getRebateAmount());
+						afUserAccountDao.updateRebateAmount(accountDo);
+
+						// call Jpush for rebate
+						String userName = convertToUserName(userId);
+						log = log
+								+ String.format("userName = %s , rebateAmount = %s", flag, rebateDo.getRebateAmount());
 						logger.info(log);
-						jpushService.sendRebateMsg(userName,scence,rebateDo.getRebateAmount());
+						if (userName != null) {
+							String scence = afBoluomeRebateDao.getScence(orderId);
+							log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
+							logger.info(log);
+							jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount());
+						}
+
 					}
-					
 				}
 			}
-			
-			
+
 		} catch (Exception e) {
-			logger.error("afBoluomeRebateService.addRedPacket() error :",  e);
+			logger.error("afBoluomeRebateService.addRedPacket() error :", e);
 			throw new Exception();
 		}
 
 	}
-	
+
 	private String convertToUserName(Long userId) {
 		AfUserDo userDo = afUserDao.getUserById(userId);
 		String userName = "";
@@ -157,31 +157,31 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	/**
 	 * 
 	 * @Title: getAmountAndName @author qiao @date 2017年11月15日
-	 * 下午5:13:00 @Description: @param rebateDo @param redOrderTimes @return
-	 * void @throws
+	 *         下午5:13:00 @Description: @param rebateDo @param
+	 *         redOrderTimes @return void @throws
 	 */
 	boolean getAmountAndName(AfBoluomeRebateDo rebateDo, int redOrderTimes) {
 		boolean result = false;
 		List<AfBoluomeRedpacketThresholdDo> thresholdList = thresholdDao.getAllThreadholds();
 		if (thresholdList != null && thresholdList.size() > 0) {
 			Long thresholdId = 0L;
-			
-			for(AfBoluomeRedpacketThresholdDo thresholdDo : thresholdList){
+
+			for (AfBoluomeRedpacketThresholdDo thresholdDo : thresholdList) {
 				if (redOrderTimes >= thresholdDo.getStart() && redOrderTimes <= thresholdDo.getEnd()) {
 					thresholdId = thresholdDo.getRid();
 					break;
 				}
 			}
-			
+
 			Long redpacketId = 0L;
-			//get the relationDo
+			// get the relationDo
 			List<Long> redpacketIdList = relationDao.getRedpacketIdListByThreshold(thresholdId);
 			if (redpacketIdList != null && redpacketIdList.size() > 0) {
 				int length = redpacketIdList.size();
-				int index = (int)Math.random()*(length - 1);
+				int index = (int) Math.random() * (length - 1);
 				redpacketId = redpacketIdList.get(index);
 			}
-			
+
 			if (redpacketId != 0L) {
 				AfBoluomeRedpacketDo redpacketDo = dao.getById(redpacketId);
 				if (redpacketDo != null) {
@@ -189,40 +189,26 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					result = true;
 				}
 			}
-			
+
 		}
 		return result;
 	}
 
-
-
-	
-
 	/**
 	 * 
-	* @Title: getListByUserId
-	* @author qiao
-	* @date 2017年11月17日 下午12:59:03
-	* @Description: 根据用户查所有返利
-	* @param userId
-	* @return    
-	* @throws
+	 * @Title: getListByUserId @author qiao @date 2017年11月17日
+	 * 下午12:59:03 @Description: 根据用户查所有返利 @param userId @return @throws
 	 */
 	@Override
 	public List<AfBoluomeRebateDo> getListByUserId(Long userId) {
-		
+
 		return afBoluomeRebateDao.getListByUserId(userId);
 	}
 
 	/**
 	 * 
-	* @Title: getLightShopId
-	* @author qiao
-	* @date 2017年11月17日 下午3:59:24
-	* @Description: 
-	* @param orderId
-	* @return    
-	* @throws
+	 * @Title: getLightShopId @author qiao @date 2017年11月17日
+	 * 下午3:59:24 @Description: @param orderId @return @throws
 	 */
 	@Override
 	public Long getLightShopId(Long orderId) {
@@ -231,31 +217,24 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 
 	/**
 	 * 
-	* @Title: getRebateList
-	* @author qiao
-	* @date 2017年11月17日 下午3:59:30
-	* @Description: 
-	* @param userId
-	* @return    
-	* @throws
+	 * @Title: getRebateList @author qiao @date 2017年11月17日
+	 * 下午3:59:30 @Description: @param userId @return @throws
 	 */
 	@Override
 	public List<AfRebateDo> getRebateList(Long userId) {
 		return afBoluomeRebateDao.getRebateList(userId);
 	}
 
-
 	@Override
 	public AfBoluomeRebateDo getLastUserRebateByUserId(Long userId) {
-	    // TODO Auto-generated method stub
-	    return afBoluomeRebateDao.getLastUserRebateByUserId(userId);
+		// TODO Auto-generated method stub
+		return afBoluomeRebateDao.getLastUserRebateByUserId(userId);
 	}
 
 	@Override
 	public AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId) {
-		
+
 		return afBoluomeRebateDao.getHighestNeverPopedRebate(userId);
 	}
-
 
 }
