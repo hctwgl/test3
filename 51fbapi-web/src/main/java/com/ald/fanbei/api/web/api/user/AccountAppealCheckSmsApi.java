@@ -82,7 +82,7 @@ public class AccountAppealCheckSmsApi implements ApiHandle {
 		smsUtil.checkSmsByMobileAndType(newMobile, smsCode, SmsType.MOBILE_BIND);
 		
 		// 短信校验成功以后
-		afUserAppealLogDao.insert(AfUserAppealLogDo.generate(context.getUserId(), oldMobile, newMobile, AfUserAppealLogStatusEnum.ING));
+		afUserAppealLogDao.insert(AfUserAppealLogDo.generate(oldUserDo.getRid(), oldMobile, newMobile, AfUserAppealLogStatusEnum.ING));
 		// 前置条件全部通过，以oldMobile为key缓存newMobile+uid，有效期一天
 		bizCacheUtil.hset(Constants.CACHEKEY_REAL_AUTH_MOBILE_INFO, oldMobile, newMobile+","+oldUserDo.getRid(), DateUtil.getEndOfDate(new Date()));
 		
