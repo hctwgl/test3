@@ -353,8 +353,10 @@ public class AppH5ProtocolController extends BaseController {
 					model.put("amountLower", afBorrowCashDo.getAmount());
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					lender(model, fundSideInfo);
-					GetSeal(model, afUserDo, accountDo);
+					if (renewalId > 0){
+						lender(model, fundSideInfo);
+						GetSeal(model, afUserDo, accountDo);
+					}
                     /*if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
 						model.put("lender", fundSideInfo.getName());// 出借人
 					}else{
