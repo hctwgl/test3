@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -84,7 +85,7 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 			Map<String, Object> map = new HashMap<String, Object>();
 			AfBorrowBillQuery query = new AfBorrowBillQuery();
 			query.setUserId(userId);
-			query.setStatus("N");
+			query.setStatus(BorrowBillStatus.NO.getCode());
 			if (StringUtil.equals("nowBill", status)) {
 				// 本月已出
 				query.setIsOut(1);

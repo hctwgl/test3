@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -274,5 +276,14 @@ public interface AfBorrowService {
 	List<AfBorrowBillDo> getBorrowBillListY(Long userId,Integer billYear,Integer billMonth);
 
 	HashMap addHomeBorrow(final Long orderId, final int nper, final Long userId,Date date);
+
+	/**
+	 * 获取用户所有未入账账单
+	 * @author yuyue
+	 * @Time 2017年11月21日 下午4:59:01
+	 * @param userId
+	 * @return
+	 */
+	List<AfBorrowDto> getUserNotInBorrow(Long userId);
 
 }

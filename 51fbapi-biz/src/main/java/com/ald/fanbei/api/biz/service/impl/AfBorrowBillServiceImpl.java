@@ -265,4 +265,19 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		return afBorrowBillDao.getUserBillListByQuery(query);
 	}
 
+	@Override
+	public int countBillByQuery(AfBorrowBillQuery query) {
+		return afBorrowBillDao.countBillByQuery(query);
+	}
+
+	@Override
+	public List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQuery query) {
+		return afBorrowBillDao.getBillListByQuery(query);
+	}
+
+	@Override
+	public BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQuery query) {
+		return afBorrowBillDao.getUserOverdeuInterestByQuery(query);
+	}
+
 }

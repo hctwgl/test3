@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.domain.dto;
 
+import java.util.Date;
+
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 
 /**
@@ -15,6 +17,9 @@ public class AfBorrowBillDto extends AfBorrowBillDo {
 	private String orderNo;//订单编号
 
 	private Long orderId;//订单id
+	
+	// 订单完成时间
+	private Date payDate;
 
 	public String getOrderNo() {
 		return orderNo;
@@ -30,6 +35,14 @@ public class AfBorrowBillDto extends AfBorrowBillDo {
 
 	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
+	}
+
+	public Date getPayDate() {
+		return payDate;
+	}
+
+	public void setPayDate(Date payDate) {
+		this.payDate = payDate;
 	}
 	
 }

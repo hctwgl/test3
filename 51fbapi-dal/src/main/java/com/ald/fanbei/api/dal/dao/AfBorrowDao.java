@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 
 /**
  * 
@@ -78,4 +79,14 @@ public interface AfBorrowDao {
 	 * @return
 	 */
 	AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo);
+
+	
+	/**
+	 * 获取用户所有未入账账单
+	 * @author yuyue
+	 * @Time 2017年11月21日 下午5:00:51
+	 * @param userId
+	 * @return
+	 */
+	List<AfBorrowDto> getUserNotInBorrow(@Param("userId")Long userId);
 }
