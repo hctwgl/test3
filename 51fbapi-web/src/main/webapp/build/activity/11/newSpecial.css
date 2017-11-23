@@ -237,11 +237,11 @@ body {
   text-align: center;
   line-height: 0.9rem;
   font-size: 0.34rem;
-  color: #b5bbc4;
+  color: #0076ff;
   margin-left: 13%;
 }
 .alertApp .alertContent .cansole {
-  color: #0076ff;
+  color: #b5bbc4;
   font-size: 0.34rem;
   width: 50%;
   border-right: .01rem solid #4d4d4d;
