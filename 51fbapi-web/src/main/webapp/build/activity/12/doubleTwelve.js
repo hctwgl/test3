@@ -9,6 +9,7 @@ let vm = new Vue({
         goodsData: {}, //所有商品数据
         couponData: [],
         currentData: [],
+        redRainData: [],
         couponFlag: true, // 显示优惠券flag
         downTime: {
             d: 0,
@@ -50,45 +51,6 @@ let vm = new Vue({
                         location.href = data.data.loginUrl;
                         return false;
                     }
-                    data = {
-                        "data": {
-                            "couponList": [{
-                                "amount": 6.00,
-                                "id": 1047,
-                                "isGet": "Y",
-                                "isShow": "Y",
-                                "ishas": "Y",
-                                "name": "6元还款抵用券",
-                                "threshold": "6元还款抵用券"
-                            }, {
-                                "amount": 3.00,
-                                "id": 1046,
-                                "isGet": "N",
-                                "isShow": "Y",
-                                "ishas": "N",
-                                "name": "3元还款抵用券",
-                                "threshold": "3元还款抵用券"
-                            }, {
-                                "amount": 1.00,
-                                "id": 1045,
-                                "isGet": "N",
-                                "isShow": "Y",
-                                "ishas": "Y",
-                                "name": "抓娃娃1元现金红包",
-                                "threshold": "抓娃娃1元现金红包"
-                            }, {
-                                "amount": 9.00,
-                                "id": 1048,
-                                "isGet": "N",
-                                "isShow": "N",
-                                "ishas": "Y",
-                                "name": "9元还款抵用券",
-                                "threshold": "9元还款抵用券"
-                            }]
-                        },
-                        "msg": "获取优惠券列表成功",
-                        "success": true
-                    }
                     self.couponData = data.data.couponList;
                 },
                 error: function () {
@@ -121,15 +83,28 @@ let vm = new Vue({
                     requestMsg("哎呀，出错了！");
                 }
             });
+            // 获取红包雨开始时间
+            $.ajax({
+                url: "/activity/double12/startTime",
+                type: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    if (!data.success) {
+                        return false;
+                    }
+                    self.redRainData = data.data;
+                    self.countDown();
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
+                }
+            });
 
-        },
-        toProduct: function (id, type) { // 跳转到商品页
-            location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&userName=" + name + "&spread=" + spread;
         },
         countDown: function () { // 倒计时
             let self = this;
             let timer = setInterval(function () {
-                let t = (self.totalData.endTime - new Date().getTime()) / 1000;
+                let t = (self.redRainData.startTime - self.redRainData.currentTime) / 1000;
                 let d = 0;
                 let h = 0;
                 let m = 0;
@@ -144,18 +119,32 @@ let vm = new Vue({
                 self.downTime.h = h;
                 self.downTime.m = m;
                 self.downTime.s = s;
+                self.redRainData.currentTime += 1000;
             }, 1000);
         },
         /*点击优惠券*/
         couponClick: function (item, index) {
             let self = this;
             let couponId = item.id;
+            if (!self.isApp) {
+                // TODO: 跳转登录页
+                // location.href = "";
+                return false;
+            }
             if (item.isGet == "Y") {
                 requestMsg("您已经领取过了，快去使用吧");
                 return false;
             }
+            if (item.isShow=='N') {
+                requestMsg("活动暂未开始");
+                return false;
+            }
+            if (item.isShow=='E') {
+                requestMsg("活动已结束");
+                return false;
+            }
             $.ajax({
-                url: self.couponUrl,
+                url: "/activity/double12/getCoupon",
                 type: "POST",
                 dataType: "JSON",
                 data: {
@@ -163,27 +152,21 @@ let vm = new Vue({
                 },
                 success: function (returnData) {
                     console.log("returnData=>>", returnData)
+                    let d = returnData.data;
                     if (returnData.success) {
-
-                        requestMsg("优惠劵领取成功");
-                        self.$set(self.couponData[index], 'state', 1);
+                        if (d.result=='Y') {
+                            requestMsg("优惠劵领取成功");
+                            self.$set(self.couponData[index], 'isGet', 'Y');
+                        } else if (d.result == 'N') {
+                            requestMsg("您已经领取过了，快去使用吧");
+                        } else {
+                            requestMsg("今日优惠券已领取完毕，明天再来领取吧");
+                        }
                     } else {
-                        var status = returnData.data["status"];
-                        if (status == "USER_NOT_EXIST") { // 用户不存在
-                            if (self.isWx) {
-                                location.href = "./barginLogin";
-                            } else {
-                                window.location.href = returnData.url;
-                            }
-                        }
-                        if (status == "OVER") { // 优惠券个数超过最大领券个数
-                            requestMsg("您已经领取，快去使用吧");
-                        }
-                        if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                            requestMsg(returnData.msg);
-                        }
-                        if (status == "MORE_THAN") { // 优惠券已领取完
-                            requestMsg(returnData.msg);
+                        if (d=='') {
+                            requestMsg("哎呀，出错了！");
+                        } else {
+                            location.href = d.loginUrl;
                         }
                     }
                 },
@@ -194,56 +177,12 @@ let vm = new Vue({
                     self.ajaxFlag = true;
                 }
             });
-            /*  if (item.state == 2) {
-                 if (self.ajaxFlag) {
-                     self.ajaxFlag = false;
-                     $.ajax({
-                         url: self.url_2,
-                         type: "POST",
-                         dataType: "JSON",
-                         data: {
-                             couponId: couponId
-                         },
-                         success: function (returnData) {
-                             if (returnData.success) {
-                                 requestMsg("优惠劵领取成功");
-                                 self.$set(self.couponData[index], 'state', 1);
-                             } else {
-                                 var status = returnData.data["status"];
-                                 if (status == "USER_NOT_EXIST") { // 用户不存在
-                                     if (self.isWx) {
-                                         location.href = "./barginLogin";
-                                     } else {
-                                         window.location.href = returnData.url;
-                                     }
-                                 }
-                                 if (status == "OVER") { // 优惠券个数超过最大领券个数
-                                     requestMsg("您已经领取，快去使用吧");
-                                 }
-                                 if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
-                                     requestMsg(returnData.msg);
-                                 }
-                                 if (status == "MORE_THAN") { // 优惠券已领取完
-                                     requestMsg(returnData.msg);
-                                 }
-                             }
-                         },
-                         error: function () {
-                             requestMsg("哎呀，出错了！");
-                         },
-                         complete: function () {
-                             self.ajaxFlag = true;
-                         }
-                     });
-                 }
-             } else if (item.state == 1) {
-                 requestMsg("您已经领取，快去使用吧");
-             } */
         },
         buy: function (id) {
-            if (this.isWX) {
-                // 跳转应用商城
-                location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www';
+            if (this.isApp) {
+                // 跳转注册页
+                // TODO:
+                location.href = '';
             } else {
                 // 跳转原生app商品购买页
                 window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + id + '"}';
