@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfCouponDouble12Service;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -30,12 +31,14 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDouble12Do;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -76,6 +79,8 @@ public class AppH5Double12ActivityController extends BaseController{
 	AfGoodsService afGoodsService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfResourceService afResourceService;
 	
 	String opennative = "/fanbei-web/opennative?name=";
 	
@@ -307,18 +312,67 @@ public class AppH5Double12ActivityController extends BaseController{
 	
 	
 	/**
-	 * @Title: isbuy
-	 * @Description:  秒杀商品校验（验证登录）
+	 * @Title: startTime
+	 * @Description:  获取红包雨开始时间
 	 * @return  String  
 	 * @author yanghailong
 	 * @data  2017年11月17日
 	 */
-	/*@RequestMapping(value = "/isbuy", method = RequestMethod.POST)
-	public String isbuy(HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/startTime", method = RequestMethod.POST)
+	public String startTime(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
-		
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			// 当前时间
+			Date currentTime = new Date();
+			// 开始时间
+			Date startTime = null;
+			
+			AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12");
+			if(afResourceDo==null){
+				return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
+			}
+			String[] startTimeStrs = afResourceDo.getValue().split(",");
+			
+			if(currentTime.before(dateFormat.parse(startTimeStrs[0]))){
+				//2017-12-10 10:00号之前
+				startTime = dateFormat.parse(startTimeStrs[0]);
+			}
+			
+			/*if(currentTime.after(dateFormat.parse(startTimeStrs[0]))&&currentTime.before(dateFormat.parse(startTimeStrs[1]))){
+				//2017-12-10 10:00号  —— 2017-12-10 14:00号
+				startTime = dateFormat.parse(startTimeStrs[1]);
+			}*/
+			if(startTime==null){
+				for (int i = 0; i < startTimeStrs.length-1; i++) {
+					if(currentTime.after(dateFormat.parse(startTimeStrs[i]))&&currentTime.before(dateFormat.parse(startTimeStrs[i+1]))){
+						startTime = dateFormat.parse(startTimeStrs[i+1]);
+						System.out.println(i+1);
+					}
+				}
+			}
+			if(startTime==null){
+				startTime=currentTime;
+			}
+			map.put("startTime", startTime);
+			map.put("currentTime", currentTime);
+
+			if(currentTime.after(dateFormat.parse(startTimeStrs[8]))){
+				//2017-12-12 20:00号之后  最后一场，无下一场时间
+				map.put("startTime", 0);
+			}
+			
+			result = H5CommonResponse.getNewInstance(true, "获取活动时间成功", null, map).toString();
+		} catch (Exception e) {
+			//e.printStackTrace();
+			logger.error("/activity/double12/startTime" + "error = {}", e.getStackTrace());
+			result = H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
+		}
 		return result;
-	}*/
+	}
+	
+	
 	
 	/**
 	 * 
