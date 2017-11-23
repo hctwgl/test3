@@ -138,6 +138,7 @@ let sixty = () => {
   }, 1000)
   setTimeout(() => {
     clearInterval(timer)
+    $(".getcode").removeAttr("disabled");
     $('.getcode')
       .removeClass('disabled')
       .text('获取验证码')
@@ -174,7 +175,186 @@ window.onload = () => {
   $('.roll ul').append(insertroll(users))
   timescroll(users)
 
-  $('.getcode').on('click', () => {
+
+
+
+
+  var timerS = 60;
+  //第三方图片验证
+  $.ajax({
+    url: "/fanbei-web/getGeetestCode",
+    type: "get",
+    dataType: "json",
+    success: function (data) {
+      initGeetest({
+        gt: data.gt,
+        challenge: data.challenge,
+        new_captcha: data.new_captcha, // 用于宕机时表示是新验证码的宕机
+        offline: !data.success, // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+        product: "bind", // 产品形式，包括：float，popup
+      }, function (captchaObj) {
+        document.getElementById('checkbtn').addEventListener('click', function () {
+          var mobileNum = $("#user").val();
+          if (!(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum))) { // 验证码不能为空、判断电话开头
+            requestMsg('请输入手机号')
+          } else {
+            $.ajax({
+              url: '/app/user/checkMobileRegistered',
+              type: 'post',
+              data: {
+                mobile: mobileNum
+              },
+              success: function (data) {
+                $('.getcode').removeClass('pending');
+                data = JSON.parse(data);
+                if (data.data == 'N') {
+                  captchaObj.verify(); //调起图片验证
+                  maidianFn("getCodeSuccess");
+                } else {
+                  maidianFn("getCodeRegistered");
+                  if (data.msg == "用户已存在") {
+                    requestMsg("您已注册，请直接登录")
+                  } else {
+                    requestMsg(data.msg)
+                  }
+                }
+              }
+            })
+          }
+        });
+        captchaObj.onSuccess(function () {
+          var result = captchaObj.getValidate();
+          $.ajax({
+            url: '/fanbei-web/verifyGeetestCode',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              userId: data.userId,
+              geetestChallenge: result.geetest_challenge,
+              geetestValidate: result.geetest_validate,
+              geetestSeccode: result.geetest_seccode
+            },
+            success: function (data) {
+              if (data.data.status === 'success') {
+                maidianFn("sendCodeSuccess");
+                getCode();
+              } else if (data.data.status === 'fail') {
+                maidianFn("sendCodeFail");
+                requestMsg(data.msg);
+              }
+            }
+          })
+        });
+      });
+    }
+  });
+
+  maidianFn('inviteRegister');
+
+  function getCode() {
+    if (checkphone()) {
+      var mobileNum = $("#user").val();
+      $(".getcode").attr("disabled", true);
+      /* $.ajax({
+        url: "/app/user/getImgCode",
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          mobile: $('#user').val()
+        },
+        success: function (r) {
+          $('.getcode').removeClass('pending')
+          // 显示弹窗
+          $(".registerMask").removeClass("hide")
+          $(".imgVftCodeWrap").removeClass("hide")
+          $("#imgVftCodeWrapImg").attr("src", "data:image/png;base64," + r.data);
+          $('.imgVftCodeRefresh').on('click', () => {
+            $.ajax({
+              url: "/app/user/getImgCode",
+              type: "POST",
+              dataType: "JSON",
+              data: {
+                mobile: $('#user').val()
+              },
+              success: function (r) {
+                $("#imgVftCodeWrapImg").attr("src", "data:image/png;base64," + r.data);
+              },
+              error: function () {
+                requestMsg("请求失败")
+              }
+            });
+          })
+          $('.imgVftCodeSbumit').on('click', () => {
+            $.ajax({
+              url: "/app/user/getRegisterSmsCode",
+              type: "POST",
+              dataType: "JSON",
+              data: {
+                mobile: $('#user').val(),
+                token: token,
+                verifyImgCode: $("#imgVftCode").val()
+              },
+              success: function (returnData) {
+                if (returnData.success) {
+                  // 关闭弹窗
+                  $(".registerMask").addClass("hide");
+                  $(".imgVftCodeWrap").addClass("hide");
+                  // 倒计时
+                  $('.getcode').addClass('disabled')
+                  sixty()
+                } else {
+                  requestMsg(returnData.msg);
+                  $(".getcode").removeClass("disabled");
+                }
+              },
+              error: function () {
+                requestMsg("请求失败");
+              }
+            })
+          })
+          $("#imgVftCodeClose").click(function () { // 关闭弹窗
+            $(".registerMask").addClass("hide")
+            $(".imgVftCodeWrap").addClass("hide")
+          })
+        },
+        error: function () {
+          $('.getcode').removeClass('pending')
+          requestMsg("请求失败")
+        }
+      }); */
+      $.ajax({
+        url: "/app/user/getRegisterSmsCode4Geetest",
+        type: "POST",
+        dataType: "json",
+        data: {
+          "mobile": mobileNum, //将手机号码传给后台
+          token: token
+        },
+        success: function (returnData) {
+          if (returnData.success) {
+            // 倒计时
+            $(".checkbtn").attr("isState", 1);
+            $(".checkbtn").text(timerS + " s");
+            // $(".checkbtn").addClass("gray");
+            // timerInterval = setInterval(timeFunction, 1000);
+            sixty()
+            requestMsg("验证码已发送");
+          } else {
+            requestMsg(returnData.msg);
+            $(".getcode").removeAttr("disabled");
+          }
+        },
+        error: function () {
+          requestMsg("请求失败");
+        }
+      })
+    } else if (!checkphone()) {
+      requestMsg("请填写正确的手机号")
+    }
+  }
+
+
+  /* $('.getcode').on('click', () => {
     if (checkphone() && !$('.getcode').hasClass('disabled') && !$('.getcode').hasClass('pending')) {
       $('.getcode').addClass('pending')
       $.ajax({
@@ -247,9 +427,10 @@ window.onload = () => {
     } else if (!checkphone()) {
       requestMsg("请填写正确的手机号")
     }
-  })
+  }) */
 
   $('.reg').on('click', () => {
+    maidianFn('registerBtn')
     const boolphone = checkphone()
     const boolpwd = checkpwd()
     const boolverify = checkverify()
@@ -273,10 +454,12 @@ window.onload = () => {
             token: token
           },
           success: function (returnData) {
+            maidianFn("registerSuccess");
             $('.reg').removeClass('pending')
             if (returnData.success) {
               window.location.href = returnData.url;
             } else {
+              maidianFn("registerFail");
               requestMsg(returnData.msg);
             }
           },

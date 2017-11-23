@@ -321,5 +321,14 @@ public interface AfOrderService {
      * @return
      */
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
+    
+    /**
+     * 获取查询菠萝蜜订单详情地址
+     * @author gaojb
+     * @Time 2017年11月23日 下午6:23:25
+     * @param afOrderDo
+     * @return
+     */
+    String getBoluomeOrderDetailUrl(AfOrderDo orderInfo);
 	
 }

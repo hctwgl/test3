@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -105,6 +106,7 @@ import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
 
@@ -2013,5 +2015,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		// TODO Auto-generated method stub
 		return orderDao.getOverOrderByGoodsIdAndUserId(goodsId,userId);
 	}
+
+    @Override
+    public String getBoluomeOrderDetailUrl(AfOrderDo orderInfo) {
+	Map<String, String> buildParams = new HashMap<String, String>();
+
+	buildParams.put(BoluomeCore.CUSTOMER_USER_ID, orderInfo.getUserId() + StringUtils.EMPTY);
+	buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, orderInfo.getMobile());
+	buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() / 1000 + StringUtils.EMPTY);
+
+	String sign = BoluomeCore.buildSignStr(buildParams);
+	buildParams.put(BoluomeCore.SIGN, sign);
+
+	String paramsStr = BoluomeCore.createLinkString(buildParams);
+
+	return orderInfo.getThirdDetailUrl() + "?" + paramsStr;
+    }
 
 }
