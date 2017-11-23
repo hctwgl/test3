@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -24,13 +25,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfRepaymentService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -120,65 +114,17 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	@Resource
 	AfUserAmountDao afUserAmountDao;
 
-	/**
-	 * 支付成功后生成
-	 * @param afRepaymentDo
-	 */
-	private void addUseAmountDetail(AfRepaymentDo afRepaymentDo){
-		BigDecimal total = afRepaymentDo.getRepaymentAmount();  //总金额
-		List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(afRepaymentDo.getBillIds().split(","), new Converter<String, Long>() {
-			@Override
-			public Long convert(String source) {
-				return Long.parseLong(source);
-			}
-		});
-		List<AfBorrowBillDo> afBorrowBillDoList = afBorrowBillService.getBorrowBillByIds(billIdList);
-		BigDecimal principleAmount = BigDecimal.ZERO;        //本金
-		BigDecimal poundageAmount = BigDecimal.ZERO;        //手续费
-		BigDecimal overdueInterestAmount = BigDecimal.ZERO;       //逾期利息
+	@Resource
+	AfUserAmountService afUserAmountService;
 
-
-		BigDecimal yohuijuang = BigDecimal.ZERO;   //优惠卷
-		BigDecimal yuer = BigDecimal.ZERO;
-		yohuijuang = afRepaymentDo.getCouponAmount();
-		yuer = afRepaymentDo.getRebateAmount().add(afRepaymentDo.getJfbAmount());
-
-		for(AfBorrowBillDo afBorrowBillDo : afBorrowBillDoList){
-			principleAmount =principleAmount.add(afBorrowBillDo.getPrincipleAmount());
-			overdueInterestAmount =overdueInterestAmount.add(afBorrowBillDo.getOverdueInterestAmount().add(afBorrowBillDo.getOverduePoundageAmount()));
-			poundageAmount = poundageAmount.add(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));
-		}
-
-		AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
-		AfUserAmountLogDo afUserAmountLogDo = new AfUserAmountLogDo();
-		afUserAmountLogDo.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
-		afUserAmountLogDo.setSourceId(afRepaymentDo.getRid());
-		afUserAmountLogDo.setStatus(2);
-		afUserAmountLogDao.addUserAmountLog(afUserAmountLogDo);
-
-		afUserAmountDo.setAmount(afRepaymentDo.getRepaymentAmount());
-		afUserAmountDo.setBizOrderNo(afRepaymentDo.getRepayNo());
-		afUserAmountDo.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
-		afUserAmountDo.setSourceId(afRepaymentDo.getRid());
-		afUserAmountDo.setUserId(afRepaymentDo.getUserId());
-		afUserAmountDo.setRemark("");
-		afUserAmountDao.addUserAmount(afUserAmountDo);
-
-		if(BigDecimal.ZERO.compareTo(principleAmount) !=0){
-
-		}
+	public void testbackDetail(){
+		AfRepaymentDo afRepaymentDo =  afRepaymentDao.getRepaymentById(94901l);
+		afUserAmountService.addUseAmountDetail(afRepaymentDo);
+		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS,afRepaymentDo);
+		afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.SUCCESS,afRepaymentDo);
 	}
 
-	private AfUserAmountDetailDo buildAmountDetail(long userAmountId,BigDecimal amount,int count,AfUserAmountDetailType type){
-		AfUserAmountDetailDo afUserAmountDetailDo = new AfUserAmountDetailDo();
-		afUserAmountDetailDo.setUserAmountId(userAmountId);
-		afUserAmountDetailDo.setAmount(amount);
-		afUserAmountDetailDo.setCount(1);
-		afUserAmountDetailDo.setType(type.getCode());
-		afUserAmountDetailDo.setTitle(type.getName());
-		afUserAmountDetailDo.setRemark("");
-		return afUserAmountDetailDo;
-	}
+
 
 
 
@@ -208,7 +154,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		});
 		if(cardId==-1 || cardId ==-3){//微信支付 或 支付宝
 			afRepaymentDao.addRepayment(repayment);
-
+			afUserAmountService.addUseAmountDetail(repayment);
 
 			//修改账单状态
 			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
@@ -223,11 +169,14 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			afYibaoOrderDo.setUserId(userId);
 			afYibaoOrderDo.setoType(2);
 			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
+
+			afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS,repayment);
 		}
 		else if(cardId>0){//银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 			afRepaymentDao.addRepayment(repayment);
+			afUserAmountService.addUseAmountDetail(repayment);
 			afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(),
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(),
@@ -240,11 +189,15 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
 //			}
 			if (!respBo.isSuccess()) {
+				afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL,repayment);
 				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
+			afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS,repayment);
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			afRepaymentDao.addRepayment(repayment);
+			afUserAmountService.addUseAmountDetail(repayment);
+			afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS,repayment);
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
 		}
 		map.put("refId", repayment.getRid());
@@ -293,6 +246,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			repayment.setStatus(RepaymentStatus.PROCESS.getCode());
 			afRepaymentDao.addRepayment(repayment);
+			afUserAmountService.addUseAmountDetail(repayment);
 			afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.DEALING.getCode());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo,actualAmount, userId+"", afUserAccountDo.getRealName(), bank.getMobile(), 
 					bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), 
@@ -309,6 +263,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				if(!RepaymentStatus.YES.getCode().equals(currRepayment.getStatus())){
 					afBorrowBillService.updateBorrowBillStatusByBillIdsAndStatus(billIdList, BorrowBillStatus.NO.getCode());
 					afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), null, repayment.getRid());
+					afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL, repayment);
 				}else{
 					logger.info("createRepayment ups response fail,bug syn have process success.repayNo:"+repayNo+",repaymentId:"+repayment.getRid());
 				}
@@ -318,6 +273,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}else if(cardId==-2){//余额支付
 			afRepaymentDao.addRepayment(repayment);
 			//addRepaymentyDetail(totalAmount,repaymentAmount,repayment.getRid());
+			repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+			afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
 			dealRepaymentSucess(repayment.getPayTradeNo(), "");
 		}
 		map.put("refId", repayment.getRid());
@@ -483,6 +440,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //						afUserAccountDao.updateRebateAmount(afUserAccountDo);
 //						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT_OUT, afRepaymentDetalDo.getAmount(), repayment.getUserId(), repayment.getRid()));
 //					}
+
+
+					afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.SUCCESS,repayment);
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -640,7 +600,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
 					// 变更还款记录未还款状态
 					afRepaymentDao.updateRepayment(RepaymentStatus.FAIL.getCode(), tradeNo, repayment.getRid());
-					
+
+					afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL,repayment);
 					
 					return 1;
 				} catch (Exception e) {

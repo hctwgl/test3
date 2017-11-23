@@ -14,4 +14,6 @@ public interface AfUserAmountDao {
      * @return
      */
     int addUserAmount(AfUserAmountDo afUserAmountDo);
+
+    int updateUserAmountStatus(AfUserAmountDo afUserAmountDo);
 }

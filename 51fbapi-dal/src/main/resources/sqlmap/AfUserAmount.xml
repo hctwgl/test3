@@ -3,11 +3,11 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAmountDao">
 	
 	<sql id="activitySqlField">
-		id,biz_order_no,biz_type,user_id,source_id,gmt_create,gmt_modified,remark,amount
+		id,biz_order_no,biz_type,user_id,source_id,gmt_create,gmt_modified,remark,amount,status
 	</sql>
 
 	<insert id="addUserAmount" parameterType="AfUserAmountDo" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO af_user_amount(biz_order_no , biz_type , user_id , source_id , gmt_create , gmt_modified , remark , amount)
+		INSERT INTO af_user_amount(biz_order_no , biz_type , user_id , source_id , gmt_create , gmt_modified , remark , amount,status)
 		VALUES (
 		#{bizOrderNo},
 		#{bizType},
@@ -16,8 +16,20 @@
 		NOW(),
 		NOW(),
 		#{remark},
-		#{amount}
+		#{amount},
+		#{status}
 		)
 	</insert>
 
+
+	<update id="updateUserAmountStatus" parameterType="AfUserAmountDo" >
+		UPDATE af_user_amount SET gmt_modified = NOW()
+			,status=#{status}
+		WHERE source_id = #{sourceId} and biz_type =#{bizType}
+	</update>
+
+
+	<select id="checkHasLog">
+		
+	</select>
 </mapper>
