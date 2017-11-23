@@ -112,23 +112,21 @@ public class AppH5Double12ActivityController extends BaseController{
 					afCouponDouble12Vo.setThreshold(coupon.getUseRule());
 					afCouponDouble12Vo.setAmount(coupon.getAmount());
 					if(new Date().before(afCouponDouble12Do.getStarttime())||new Date().after(afCouponDouble12Do.getEndtime())){	
-						//不在活动时间内
-						afCouponDouble12Vo.setIsShow("N");
-						if(afCouponDouble12Do.getCount()!=afCouponDouble12Do.getTotal()){
-							//重置count
-							afCouponDouble12Service.updateReCountById(afCouponDouble12Do);
-						};
+						afCouponDouble12Vo.setIsShow("N");//不在活动时间内
 					}else{
-						//在活动时间内
-						afCouponDouble12Vo.setIsShow("Y");
+						afCouponDouble12Vo.setIsShow("Y");//在活动时间内
 					}
 					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,coupon.getRid()) != 0){
-						//已领取
-						afCouponDouble12Vo.setIsGet("Y");
+						afCouponDouble12Vo.setIsGet("Y");//已领取
 					}else{
-						//未领取
-						afCouponDouble12Vo.setIsGet("N");
+						afCouponDouble12Vo.setIsGet("N");//未领取
 					}
+					if(afCouponDouble12Do.getCount() > 0){
+						afCouponDouble12Vo.setIshas("Y");//优惠券还有
+					}else {
+						afCouponDouble12Vo.setIshas("N");//优惠券已领完
+					}
+					
 					couponVoList.add(afCouponDouble12Vo);
 					
 				}
