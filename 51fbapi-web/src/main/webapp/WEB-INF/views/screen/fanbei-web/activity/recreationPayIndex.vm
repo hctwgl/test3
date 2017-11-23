@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711221634")
+    #set($version="201711231344")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
-    <title>游戏充值</title>
+    <title>娱乐充值</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/gamePayIndex.css?version=$version">
 </head>
 <body>
-<div id="gamePayIndex" class="gamePayIndex">
+<div id="recreationPayIndex" class="gamePayIndex">
     <div class="kong"></div>
     <div class="hotGame">
-      <div class="title01">热门游戏</div>
+      <div class="title02"><p>热门推荐</p><p>免广告、看大片、全网最低</p></div>
       <ul class="hotGameList clearFix">
           <li>
               <p class="gameImg"></p>
@@ -32,7 +32,7 @@
   </div>
     <ul class="gameRankList">
         <li>
-            <p class="rankTitle">A</p>
+            <p class="rankTitle">QQ会员充值</p>
             <div class="everyCont clearFix">
                 <p class="everyImg"></p>
                 <p class="everyName">APP Stare充值卡</p>
@@ -45,7 +45,7 @@
             </div>
         </li>
         <li>
-            <p class="rankTitle">B</p>
+            <p class="rankTitle">视频会员充值</p>
             <div class="everyCont clearFix">
                 <p class="everyImg"></p>
                 <p class="everyName">APP Stare充值卡</p>
@@ -59,6 +59,6 @@
         </li>
     </ul>
 </div>
-<script type="text/javascript" src="/dist/activity/11/gamePayIndex.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/11/recreationPayIndex.js?version=$version"></script>
 </body>
 </html>
