@@ -187,69 +187,90 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         return repay;
     }
 
-    @Override
-    public Map<String, Object> createRepayment(final BigDecimal jfbAmount, final BigDecimal repaymentAmount, final BigDecimal actualAmount, final AfUserCouponDto coupon, final BigDecimal rebateAmount,
-                                               final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo) {
-        Date now = new Date();
-        String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
-        final String payTradeNo = repayNo;
-        // 新增还款记录,移至事务外，保证回调先回用户这笔还款发起有记录产生
-        final String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-        final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
-                userId);
-        afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
-        logger.info("createRepayment addRepaymentBorrowCash finish,payTradeNo=" + payTradeNo + ",repaymentId=" + (repayment != null ? repayment.getRid() : 0));
-        if (cardId > 0) {
-            dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
-        }
-        return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> doInTransaction(TransactionStatus status) {
-                try {
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    if (cardId == -1) {// 微信支付
-                        map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
-                    } else if (cardId > 0) {// 银行卡支付
-                        AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-                        UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-                                bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
-                        if (!respBo.isSuccess()) {
-                            if (StringUtil.isNotBlank(respBo.getRespDesc())) {
-                                dealRepaymentFail(payTradeNo, "", true, StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
-                            } else {
-                                dealRepaymentFail(payTradeNo, "", false, "");
-                            }
-                            throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                        }
-                        map.put("resp", respBo);
-                    } else if (cardId == -2) {// 余额支付
-                        dealRepaymentSucess(repayment.getPayTradeNo(), "");
-                    }
-                    map.put("refId", repayment.getRid());
-                    map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
-                    return map;
-                } catch (Exception e) {
-                    if (e instanceof FanbeiException) {
-                        logger.error("createRepayment exist catch error,donot need rollback,payTradeNo=" + payTradeNo);
-                        Map<String, Object> map = new HashMap<String, Object>();
-                        map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
-                        return map;
-                    } else {
-                        logger.error("createRepayment exist error,need rollback,payTradeNo=" + payTradeNo, e);
-                        status.setRollbackOnly();
-                        throw e;
-                    }
-                }
-            }
-        });
-    }
+	@Override
+	public Map<String, Object> createRepayment(final BigDecimal jfbAmount,final BigDecimal repaymentAmount,final BigDecimal actualAmount,final AfUserCouponDto coupon,final BigDecimal rebateAmount,
+			final Long borrow,final Long cardId,final Long userId,final String clientIp,final AfUserAccountDo afUserAccountDo) {
+		Date now = new Date();
+		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+		final String payTradeNo = repayNo;
+		String typeName = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;;
+		if(StringUtil.equals("sysJob",clientIp)){
+			typeName = "代扣付款";
+		}
+		// 新增还款记录,移至事务外，保证回调先回用户这笔还款发起有记录产生
+		final String name = typeName;
 
-
-    public Map<String, Object> createRepaymentYiBao(final BigDecimal jfbAmount, final BigDecimal repaymentAmount, final BigDecimal actualAmount, final AfUserCouponDto coupon, final BigDecimal rebateAmount,
-                                                    final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo) {
-
-        Date now = new Date();
-        String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+		final AfRepaymentBorrowCashDo repayment = buildRepayment(jfbAmount, repaymentAmount, repayNo, now, actualAmount, coupon, rebateAmount, borrow, cardId, payTradeNo, name,
+				userId);
+		afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+		logger.info("createRepayment addRepaymentBorrowCash finish,payTradeNo="+payTradeNo+",repaymentId="+(repayment!=null?repayment.getRid():0));
+		if(cardId > 0){
+			dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
+		}
+		return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+			@Override
+			public Map<String, Object> doInTransaction(TransactionStatus status) {
+				try {
+					Map<String, Object> map = new HashMap<String, Object>();
+					if (cardId == -1) {// 微信支付
+						map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
+					} else if (cardId > 0) {// 银行卡支付
+						AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+						UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
+								bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
+						if (!respBo.isSuccess()) {
+							if(StringUtil.isNotBlank(respBo.getRespDesc())){
+								String addMsg = "";
+								try{
+									if(bank!=null){
+										String bankName = bank.getBankName();
+										String cardNum = bank.getCardNumber();
+										if(StringUtil.isNotBlank(bankName)&&StringUtil.isNotBlank(cardNum)){
+											if(cardNum.length()>4){
+												cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
+												addMsg = "{"+ bankName + cardNum + "}";
+											}
+										}
+									}
+								}catch (Exception e){
+									logger.error("BorrowCash sendMessage but addMsg error for:"+e);
+								}
+								dealRepaymentFail(payTradeNo, "",true,addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+							}else{
+								dealRepaymentFail(payTradeNo, "",false,"");
+							}
+							throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+						}
+						map.put("resp", respBo);
+					} else if (cardId == -2) {// 余额支付
+						dealRepaymentSucess(repayment.getPayTradeNo(), "");
+					}
+					map.put("refId", repayment.getRid());
+					map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
+					return map;
+				}catch (Exception e){
+					if(e instanceof FanbeiException){
+						logger.error("createRepayment exist catch error,donot need rollback,payTradeNo="+payTradeNo);
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
+						map.put("refId", repayment.getRid());
+						return map;
+					}else{
+						logger.error("createRepayment exist error,need rollback,payTradeNo="+payTradeNo, e);
+						status.setRollbackOnly();
+						throw e;
+					}
+				}
+			}
+		});
+	}
+	
+	
+	public Map<String, Object> createRepaymentYiBao(final BigDecimal jfbAmount,final BigDecimal repaymentAmount,final BigDecimal actualAmount,final AfUserCouponDto coupon,final BigDecimal rebateAmount,
+											  final Long borrow,final Long cardId,final Long userId,final String clientIp,final AfUserAccountDo afUserAccountDo){
+		
+		Date now = new Date();
+		String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
 
         final String payTradeNo = repayNo;
         // 新增还款记录
@@ -394,7 +415,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         interest = afBorrowCashDo.getRateAmount();
                         tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getRateAmount());
                     } else {
-                        bcashDo.setSumRate(BigDecimalUtil.add(bcashDo.getSumRate(), tempRepayAmount));
+                        bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), tempRepayAmount));
                         bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
                         interest = tempRepayAmount;
                         tempRepayAmount = BigDecimal.ZERO;
@@ -413,7 +434,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         overdueAmount = afBorrowCashDo.getOverdueAmount();
                         tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
                     } else {
-                        bcashDo.setSumOverdue(BigDecimalUtil.add(bcashDo.getSumOverdue(), tempRepayAmount));
+                        bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), tempRepayAmount));
                         bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
                         overdueAmount = tempRepayAmount;
                         tempRepayAmount = BigDecimal.ZERO;
@@ -574,23 +595,30 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         return accountLog;
     }
 
-    @Override
-    public long dealRepaymentFail(String outTradeNo, String tradeNo, boolean isNeedMsgNotice, String errorMsg) {
-        AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
-        if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
-            return 0l;
-        }
-        long rowNums = dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repayment.getRid());
-
-        if (isNeedMsgNotice) {
-            //用户信息及当日还款失败次数校验
-            int errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimes(repayment.getUserId());
-            AfUserDo afUserDo = afUserService.getUserById(repayment.getUserId());
-            //还款失败短信通知
-            smsUtil.sendRepaymentBorrowCashFail(afUserDo.getMobile(), errorMsg, errorTimes);
-        }
-        return rowNums;
-    }
+	@Override
+	public long dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg) {
+		AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
+		if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
+			return 0l;
+		}
+		long rowNums = dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), repayment.getRid());
+		
+		if(isNeedMsgNotice){
+			//用户信息及当日还款失败次数校验
+			int errorTimes = 0;
+			//如果是代扣，不校验次数
+			String payType = repayment.getName();
+			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+				errorTimes = 0;
+			}else{
+				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
+			}
+			AfUserDo afUserDo = afUserService.getUserById(repayment.getUserId());
+			//还款失败短信通知
+			smsUtil.sendRepaymentBorrowCashFail(afUserDo.getMobile(),errorMsg,errorTimes);
+		}
+		return rowNums;
+	}
 
     long dealChangStatus(String outTradeNo, String tradeNo, String status, Long rid) {
         AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
@@ -736,5 +764,10 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             }
         });
     }
+
+	@Override
+	public int updateRepaymentBorrowCashName(Long refId) {
+		return afRepaymentBorrowCashDao.updateRepaymentBorrowCashName(refId);
+	}
 
 }
