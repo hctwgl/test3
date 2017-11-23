@@ -1,8 +1,8 @@
 /*
  * @Author: yoe
  * @Date:   2017-02-15 09:59:54
- * @Last Modified by:   Marte
- * @Last Modified time: 2017-06-08 11:22:16
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2017-11-14 16:04:14
  * @title:  公用的
  */
 
@@ -235,3 +235,15 @@ function loading(){
     $("body").append(loadDoc());
 }
 
+
+function maidianFn(data) {
+    //数据统计            // 推广埋点
+    $.ajax({
+        url: '/fanbei-web/postMaidianInfo',
+        type: 'post',
+        data:{maidianInfo: location.pathname+'?type='+data},
+        success: function (data) {
+            console.log(data)
+        }
+    });
+}
