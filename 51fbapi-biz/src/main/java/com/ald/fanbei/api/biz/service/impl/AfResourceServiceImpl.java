@@ -254,6 +254,23 @@ public class AfResourceServiceImpl implements AfResourceService {
 		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
 		return borrowRate;
 	}
+	@Override
+	public BorrowRateBo borrowRateWithResourceCredit(Integer realTotalNper) {
+		BorrowRateBo borrowRate = new BorrowRateBo();
+		JSONObject borrowRateOverdueJson = getBorrowOverdueRateResource(realTotalNper);
+		borrowRate.setNper(1);
+		borrowRate.setRate(BigDecimal.ZERO);
+		borrowRate.setPoundageRate(BigDecimal.ZERO);
+		borrowRate.setRangeBegin(BigDecimal.ZERO);
+		borrowRate.setRangeEnd(BigDecimal.ZERO);
+
+		borrowRate.setOverdueRate(borrowRateOverdueJson.getBigDecimal("overdueRate"));
+		borrowRate.setOverduePoundageRate(borrowRateOverdueJson.getBigDecimal("overduePoundageRate"));
+		borrowRate.setOverdueRangeBegin(borrowRateOverdueJson.getBigDecimal("overdueRangeBegin"));
+		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
+		return borrowRate;
+	}
+
 
 	@Override
 	public JSONObject borrowRateWithResourceOld(Integer realTotalNper) {
@@ -554,6 +571,31 @@ public class AfResourceServiceImpl implements AfResourceService {
 	@Override
 	public List<AfResourceDo> getNavigationDownTwoResourceDoList(String code) {
 		return afResourceDao.getNavigationUpOneResourceDoList(code);
+	}
+
+	@Override
+	public AfResourceDo getOpenBoluomeCouponById(long rid) {
+	    // TODO Auto-generated method stub
+	    AfResourceDo afResourceDo;
+			afResourceDo = afResourceDao.getOpenBoluomeCouponById(rid);
+
+		return afResourceDo;
+	}
+
+	@Override
+	public AfResourceDo getLaunchImageInfoByTypeAndVersion(String resourceType, String appVersion) {
+		return afResourceDao.getLaunchImageInfoByTypeAndVersion(resourceType,appVersion);
+	}
+
+	@Override
+	public AfResourceDo getLaunchImageInfoByType(String resourceType) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getLaunchImageInfoByType(resourceType);
+	}
+
+	@Override
+	public List<AfResourceDo> getScrollbarListByType(String type) {
+		return afResourceDao.getScrollbarListByType(type);
 	}
 
 }

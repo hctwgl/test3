@@ -28,7 +28,7 @@ public interface AfRenewalDetailService {
 
 	public long dealRenewalSucess(String outTradeNo, String tradeNo);
 
-	public long dealRenewalFail(final String outTradeNo, final String tradeNo);
+	public long dealRenewalFail(final String outTradeNo, final String tradeNo,String errorMsg);
 
 	/**
 	 * 续借信息

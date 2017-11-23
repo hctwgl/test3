@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsPropertyService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfPropertyValueService;
+import com.ald.fanbei.api.biz.service.AfShareGoodsService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -24,6 +26,7 @@ import com.ald.fanbei.api.dal.domain.AfDeUserGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsPropertyDo;
 import com.ald.fanbei.api.dal.domain.AfPropertyValueDo;
+import com.ald.fanbei.api.dal.domain.AfShareGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -60,6 +63,12 @@ public class GetGoodsSpecApi implements ApiHandle {
 	
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
+	
+	@Resource
+	AfOrderService afOrderService;
+	
+	@Resource
+	AfShareGoodsService afShareGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -87,6 +96,31 @@ public class GetGoodsSpecApi implements ApiHandle {
 			afGoodsPriceDo.setActualAmount(actualAmount);
 		    }
 		}
+		
+		//mqp_新人专享活动增加逻辑
+		Long userId = context.getUserId();
+		if (userId != null) {
+			//查询用户订单数
+			int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
+			if(oldUserOrderAmount==0){
+				//是新用户
+				AfShareGoodsDo condition = new AfShareGoodsDo();
+				condition.setGoodsId(goodsId);
+				AfShareGoodsDo resultDo = afShareGoodsService.getByCommonCondition(condition);
+				if (null != resultDo) {
+					//这个商品是否是砍价商品
+					BigDecimal decreasePrice = resultDo.getDecreasePrice();
+					for ( AfGoodsPriceVo afGoodsPriceDo : priceData) {
+						//更新商品价格为砍价后价格
+						BigDecimal actualAmount = afGoodsPriceDo.getActualAmount().subtract(decreasePrice);
+						afGoodsPriceDo.setActualAmount(actualAmount);
+					    
+					}
+				}
+				
+			}
+		}
+		//----------------------------------------------
 
 		propertyDo.setGoodsId(goodsId);
 		List<AfGoodsPropertyDo> propertyDos = afGoodsPropertyService.getListByCommonCondition(propertyDo);

@@ -35,6 +35,11 @@
 				<value>fbapi.face.plus.appkey</value>
 				<value>fbapi.face.plus.secret</value>
 				
+				<value>fbfile.oss.access.key</value>
+				<value>fbfile.oss.access.secret</value>
+
+				<!--<value>fbapi.esign.project.id</value>-->
+				<!--<value>fbapi.esign.project.secret</value>-->
 			</list>
 		</property>
 		<property name="locations">

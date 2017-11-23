@@ -13,6 +13,9 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
+import com.ald.fanbei.api.biz.third.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,16 +26,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -45,6 +44,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -109,6 +109,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 	@Resource
 	ThirdPayUtility thirdPayUtility;
+	@Resource
+	ContractPdfThreadPool contractPdfThreadPool;
+    @Resource
+    SmsUtil smsUtil;
 	@Override
 	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
 		Date now = new Date();
@@ -137,7 +141,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
 			if (!respBo.isSuccess()) {
-				dealRenewalFail(payTradeNo, "");
+				dealRenewalFail(payTradeNo, "","");
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
@@ -169,7 +173,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
 			if (!respBo.isSuccess()) {
-				dealRenewalFail(payTradeNo, "");
+				dealRenewalFail(payTradeNo, "",StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
@@ -209,7 +213,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	}
 
 	@Override
-	public long dealRenewalFail(String outTradeNo, String tradeNo) {
+	public long dealRenewalFail(String outTradeNo, String tradeNo,String errorMsg) {
 		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByPayTradeNo(outTradeNo);
 		if (YesNoStatus.YES.getCode().equals(afRenewalDetailDo.getStatus())) {
 			return 0l;
@@ -220,6 +224,14 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		}
 		catch (Exception e){
 
+		}
+		//fmf_add 续借失败短信通知
+		//用户信息及当日还款失败次数校验
+		int errorTimes = afRenewalDetailDao.getCurrDayRepayErrorTimes(afRenewalDetailDo.getUserId());
+		try {
+			smsUtil.sendRenewalFailWarnMsg(userDo.getUserName(), errorMsg, errorTimes);
+		} catch (Exception e) {
+			logger.error("sendRenewalFailWarnMsg is Fail, e"+e);
 		}
 
 		return dealChangStatus(outTradeNo, tradeNo, AfBorrowCashRepmentStatus.NO.getCode(), afRenewalDetailDo.getRid());
@@ -307,7 +319,6 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					afUserAccountDao.updateUserAccount(account);
 
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
-
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -335,15 +346,29 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			//当续期成功时,同步逾期天数为0
 			dealWithSynchronizeOverduedOrder(currAfBorrowCashDo);
 
+			/*try {
+				//生成续期凭据
+				afContractPdfCreateService.protocolRenewal(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
+				logger.error("生成续期凭据成功，renewId="+afRenewalDetailDo.getUserId());
+			} catch (Exception e) {
+				logger.error("生成续期凭据异常，renewId="+afRenewalDetailDo.getUserId(),e);
+			}*/
 			//返呗续期通知接口，向催收平台同步续期信息
 			try {
-				CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
-				logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+				if (currAfBorrowCashDo.getOverdueStatus().equals("Y") || currAfBorrowCashDo.getOverdueDay() > 0) {
+					CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
+					logger.info("collection renewalNotify req success, respinfo={}",respInfo);
+				}else{
+					logger.info("collection renewalNotify req unPush, renewalNo=" + afRenewalDetailDo.getPayTradeNo());
+				}
 			}catch(Exception e){
 				logger.error("向催收平台同步续期信息",e);
 			}
 		}
-
+		if (resultValue == 1L){
+			//生成续期凭据
+			contractPdfThreadPool.protocolRenewalPdf(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
+		}
 		return resultValue;
 	}
 	

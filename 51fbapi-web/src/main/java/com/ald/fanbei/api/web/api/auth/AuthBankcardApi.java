@@ -6,7 +6,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 import org.apache.commons.lang.ObjectUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
@@ -54,7 +58,12 @@ public class AuthBankcardApi implements ApiHandle {
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 		String bankCode = ObjectUtils.toString(requestDataVo.getParams().get("bankCode"));
 		String bankName = ObjectUtils.toString(requestDataVo.getParams().get("bankName"));
-		
+		Long userId = context.getUserId();
+		if(StringUtil.isEmpty(userId.toString())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
+		AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
+
 		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if(null ==auth||YesNoStatus.NO.getCode().equals(auth.getFacesStatus())){
 			throw new FanbeiException("user face auth error", FanbeiExceptionCode.USER_FACE_AUTH_ERROR);
@@ -80,8 +89,15 @@ public class AuthBankcardApi implements ApiHandle {
 		//TODO 新建卡
 		AfUserBankcardDo bankDo = getUserBankcardDo(upsResult.getBankCode(),bankName, cardNumber, mobile, context.getUserId(),isMain);
 		afUserBankcardDao.addUserBankcard(bankDo);
-		
+
 		Map<String,Object> map = new HashMap<String,Object>();
+		if(null == afUserAccountDo){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}else if(StringUtil.isEmpty(afUserAccountDo.getPassword())){
+			map.put("setPwd","Y");
+		}else{
+			map.put("setPwd","N");
+		}
 		map.put("bankId", bankDo.getRid());
 		resp.setResponseData(map);
 		return resp;
@@ -98,4 +114,9 @@ public class AuthBankcardApi implements ApiHandle {
 		bank.setUserId(userId);
 		return bank;
 	}
+
+
+
+
+
 }

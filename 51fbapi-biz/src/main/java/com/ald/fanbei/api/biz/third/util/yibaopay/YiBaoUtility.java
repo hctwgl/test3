@@ -380,7 +380,7 @@ public class YiBaoUtility  implements ThirdInterface{
         }
         else{
             //关闭
-            afRenewalDetailService.dealRenewalFail(orderNo,thirdOrderNo);
+            afRenewalDetailService.dealRenewalFail(orderNo,thirdOrderNo,"");
         }
     }
 

@@ -6,7 +6,9 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.UserUtil;
 import org.apache.commons.lang.ObjectUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -85,7 +87,7 @@ public class CheckBankcardApi implements ApiHandle {
 		}
 		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
 		UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"",bank.getCardNumber(), verifyCode, "02");
-		
+
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
 		}
@@ -128,7 +130,8 @@ public class CheckBankcardApi implements ApiHandle {
 		}
 		AfUserBankDidiRiskDo didiInfo = BuildInfoUtil.buildUserBankDidiRiskInfo(ipAddress, lat, lng, context.getUserId(), bankId, uuid, wifiMac);
 		afUserBankDidiRiskService.saveRecord(didiInfo);
-		
+		//新版本绑定银行卡是可以设置支付密码
+		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
 		//判断是否需要设置支付密码
 		String allowPayPwd = YesNoStatus.YES.getCode();
 		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){

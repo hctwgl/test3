@@ -77,10 +77,15 @@ public class Constants {
 	/**三方调用 ，例如还款等调用时，事务内出现自定义异常时，向上返回map对应key值**/
 	public static final String THIRD_REQ_EXCEP_KEY = "fanbei_third_reqexp_key";
 
+	//用户未完成订单
+	public  static final  String NO_FINISH_ORDER = "NO_FINISH_ORDER";
+	public  static final  String FIRST_TIME = "FIRST_TIME";
 
 
 
 
+	public static final String CONF_KEY_INVELOMENT_TYPE = "fbapi.inveloment.type";
+	public static final String FILE_CLOUD_PATH = "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/";
 	public static final Long INVITE_START_VALUE = 1679625L;
 	public static final String INVELOMENT_TYPE_TEST = "test";
 	public static final String INVELOMENT_TYPE_ONLINE = "online";
@@ -134,6 +139,10 @@ public class Constants {
     public static final String CACHEKEY_REDRAIN_MISC = "redrain_misc";
     public static final String CACHEKEY_REDRAIN_COUNTERS = "redrain_counters";
     public static final String CACHEKEY_REDRAIN_SINK = "redrain_sink";
+    // 实名认证缓存key前缀
+    public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX 		= "real_auth_citizen_card$";
+    public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX 		= "real_auth_real_name$";
+    public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX 				= "real_auth_pass$";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
@@ -335,6 +344,8 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+	//实名认证修改姓名开关
+	public static final String SWITCH = "SWITCH";
 	
 	//H5用户以及token cookie
 	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
@@ -387,10 +398,21 @@ public class Constants {
 	public static final String THIRD_GOODS_TYPE = "third_goods";
 
 	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
-	
+
 	//双十一砍价活动
 	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
+//借钱费率配置相关
+	 public static final String BORROW_RATE="BORROW_RATE";
+	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
+	 public static final String BORROW_CASH_OVERDUE_POUNDAGE="BORROW_CASH_OVERDUE_POUNDAGE";
+
+	//首页滚动条
+	  public static final String HOMEPAGE_TOP_SCROLLBAR="HOMEPAGE_TOP_SCROLLBAR";
+	  public static final String BORROW_TOP_SCROLLBAR="H5_URL";
+	  
+	//代扣
+	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
 
 }

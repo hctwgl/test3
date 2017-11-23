@@ -115,7 +115,11 @@ public interface AfResourceService {
 	 */
 
 	BorrowRateBo borrowRateWithResource(Integer realTotalNper);
+	  	/*
+	 * 获取信用支付手续费等信息
+	 */
 
+	BorrowRateBo borrowRateWithResourceCredit(Integer realTotalNper);
 	/**
 	 * 获取首页导航栏配置
 	 * 
@@ -185,4 +189,18 @@ public interface AfResourceService {
 
 
 	List<AfResourceDo> getBackGroundByType(String code);
+
+	AfResourceDo getLaunchImageInfoByTypeAndVersion(String resourceType, String appVersion);
+
+	AfResourceDo getLaunchImageInfoByType(String resourceType);
+
+	AfResourceDo getOpenBoluomeCouponById(long rid);
+
+	/**
+	 * 根据type获取滚动条列表
+	 *
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getScrollbarListByType(String type);
 }
