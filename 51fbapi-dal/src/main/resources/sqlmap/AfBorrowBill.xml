@@ -263,6 +263,7 @@
 		af_borrow_bill
 		WHERE is_delete = 0
 		AND borrow_id = #{borrowId}
+		ORDER BY bill_nper
 	</select>
     
     <select id="getPaidBillNumByBorrowId" resultType="java.lang.Integer">
@@ -644,5 +645,25 @@
 			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
 		</if> 
 		AND user_id = #{userId}
+	</select>
+	
+	<select id="getInterestByBorrowId" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (sum(interest_amount), 0)
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		AND borrow_id = #{borrowId}
+	</select>
+	
+	<select id="getOverdueInterestByBorrowId" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (sum(overdue_interest_amount), 0)
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		AND borrow_id = #{borrowId}
 	</select>
 </mapper>

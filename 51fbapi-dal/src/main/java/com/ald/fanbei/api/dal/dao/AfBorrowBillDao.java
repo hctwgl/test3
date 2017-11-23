@@ -371,4 +371,22 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQuery query);
+
+	/**
+	 * 根据borrowId查询账单利息
+	 * @author yuyue
+	 * @Time 2017年11月23日 下午2:05:34
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getInterestByBorrowId(@Param("userId")Long borrowId);
+
+	/**
+	 * 根据borrowId查询账单逾期利息
+	 * @author yuyue
+	 * @Time 2017年11月23日 下午2:14:21
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getOverdueInterestByBorrowId(@Param("userId")Long borrowId);
 }

@@ -280,4 +280,14 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		return afBorrowBillDao.getUserOverdeuInterestByQuery(query);
 	}
 
+	@Override
+	public BigDecimal getInterestByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getInterestByBorrowId(borrowId);
+	}
+
+	@Override
+	public BigDecimal getOverdueInterestByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getOverdueInterestByBorrowId(borrowId);
+	}
+
 }
