@@ -821,13 +821,18 @@ public class TestController {
 	AfYibaoOrderDao afYiBaoOrderDao;
 	@Resource
 	private AfRepaymentDetalDao afRepaymentDetalDao;
+
+	@Resource
+	AfRepaymentService afRepaymentService;
+
 	/**
 	 *
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
-		Map aaa = yiBaoUtility.getYiBaoOrder("xj20170925150926247561","1001201709250000000018962175");
-		String e = "";
+		afRepaymentService.testbackDetail();
+//		Map aaa = yiBaoUtility.getYiBaoOrder("xj20170925150926247561","1001201709250000000018962175");
+//		String e = "";
 
 //		Date repayDate = afBorrowService.getReyLimitDate("C",new Date());
 //		Map<String,Integer> map22 = afBorrowService.getCurrentTermYearAndMonth("C",new Date());

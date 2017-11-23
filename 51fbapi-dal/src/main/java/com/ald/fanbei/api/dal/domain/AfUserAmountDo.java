@@ -20,6 +20,7 @@ public class AfUserAmountDo extends AbstractSerial {
     private Date gmtModified;
     private String remark;
     private BigDecimal amount;
+    private Integer status;
 
     public Long getId() {
         return id;
@@ -91,5 +92,13 @@ public class AfUserAmountDo extends AbstractSerial {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }
