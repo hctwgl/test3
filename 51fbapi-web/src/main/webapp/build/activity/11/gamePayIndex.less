@@ -1,9 +1,16 @@
 @url: "http://f.51fanbei.com/h5/app/activity/11";
 .clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
 .clearFix{zoom:1}
+body{
+  background:#fff;
+}
+.kong{
+  width:100%;
+  height:.2rem;
+  background:#f6f6f6;
+}
 /*热门推荐*/
 .hotGame{
-  background:#fff;
   .title{
     width:96.5%;
     height:1.2rem;
@@ -46,5 +53,43 @@
     }
 }
 /*游戏排序*/
-
+.gameRankList li {
+  .rankTitle{
+    width: 96.7%;
+    height:.44rem;
+    padding-left: 3.3%;
+    background:#f6f6f6;
+    line-height: .44rem;
+    font-size:.24rem;
+    color:rgb(181,187,196);
+  }
+  .everyCont{
+    width: 96.7%;
+    height:1.2rem;
+    margin-left: 3.3%;
+    border-bottom: 1px solid rgb(238,238,238);
+    line-height: 1.2rem;
+    .everyImg{
+      width:.6rem;
+      height:.6rem;
+      background:green;
+      float:left;
+      margin:.3rem .2rem 0 .2rem;
+    }
+    .everyName{
+      font-size:.26rem;
+      color:rgb(35,35,35);
+      float:left;
+    }
+    .everyFan{
+      font-size:.26rem;
+      color:rgb(255,85,70);
+      float:right;
+      margin-right:.28rem;
+    }
+  }
+  .everyCont:last-child{
+    border:0;
+  }
+}
 

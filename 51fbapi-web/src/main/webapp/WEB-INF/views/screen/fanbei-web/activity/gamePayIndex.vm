@@ -9,6 +9,7 @@
 </head>
 <body>
 <div id="gamePayIndex" class="gamePayIndex">
+    <div class="kong"></div>
     <div class="hotGame">
       <p class="title">热门游戏</p>
       <ul class="hotGameList clearFix">
@@ -29,18 +30,34 @@
           </li>
       </ul>
   </div>
-    <div class="gameRank">
-        <ul class="rankList">
-            <li>
-                <p class="rankTitle">A</p>
-                <div class="everyCont">
-                    <p class="everyImg"></p>
-                    <p class="everyName">APP Stare充值卡</p>
-                    <p class="everyFan">返利 2.8%</p>
-                </div>
-            </li>
-        </ul>
-    </div>
+    <ul class="gameRankList">
+        <li>
+            <p class="rankTitle">A</p>
+            <div class="everyCont clearFix">
+                <p class="everyImg"></p>
+                <p class="everyName">APP Stare充值卡</p>
+                <p class="everyFan">返利 2.8%</p>
+            </div>
+            <div class="everyCont clearFix">
+                <p class="everyImg"></p>
+                <p class="everyName">APP Stare充值卡</p>
+                <p class="everyFan">返利 2.8%</p>
+            </div>
+        </li>
+        <li>
+            <p class="rankTitle">B</p>
+            <div class="everyCont clearFix">
+                <p class="everyImg"></p>
+                <p class="everyName">APP Stare充值卡</p>
+                <p class="everyFan">返利 2.8%</p>
+            </div>
+            <div class="everyCont clearFix">
+                <p class="everyImg"></p>
+                <p class="everyName">APP Stare充值卡</p>
+                <p class="everyFan">返利 2.8%</p>
+            </div>
+        </li>
+    </ul>
 </div>
 <script type="text/javascript" src="/dist/activity/11/gamePayIndex.js?version=$version"></script>
 </body>
