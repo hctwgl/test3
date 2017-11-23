@@ -354,12 +354,12 @@ public class StartCashierApi implements ApiHandle {
                 rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
             }
         }
-        if(userDto.getUserName().equals("13656648524")){
-            rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
-        }
-        if(userDto.getUserName().equals("17710378476")){
-            rejectCode=RiskErrorCode.OVERDUE_BORROW.getCode();
-        }
+//        if(userDto.getUserName().equals("13656648524")){
+//            rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
+//        }
+//        if(userDto.getUserName().equals("17710378476")){
+//            rejectCode=RiskErrorCode.OVERDUE_BORROW.getCode();
+//        }
         //endregion
 
         //region 测试分期逾期白名单
@@ -377,9 +377,9 @@ public class StartCashierApi implements ApiHandle {
             switch (erorrCode) {
                 case OVERDUE_BORROW:
                     String borrowNo = resp.getBorrowNo();
-                    if(userDto.getUserName().equals("17710378476")){
-                        borrowNo="jk2017111218003479890";
-                    }
+//                    if(userDto.getUserName().equals("17710378476")){
+//                        borrowNo="jk2017111218003479890";
+//                    }
                     AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
                     Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
                     cashierTypeVo.setBillId(billId);

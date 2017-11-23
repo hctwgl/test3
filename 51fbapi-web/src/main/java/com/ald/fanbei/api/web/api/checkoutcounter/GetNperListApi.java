@@ -115,6 +115,7 @@ public class GetNperListApi implements ApiHandle {
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                     nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
             resp.addResponseData("nperList", nperList);
+            //resp.addResponseData("credit_state", nperList);
             return resp;
         }
 

@@ -63,4 +63,6 @@ public interface AfRenewalDetailDao {
 	 * **/
 	public List<AfRenewalDetailDo> getRenewalDetailListByBorrowId(Long borrowId);
 
+	int getCurrDayRepayErrorTimes(@Param("userId") Long userId);
+
 }

@@ -37,4 +37,11 @@
 			</if>
 		WHERE id = #{rid}
 	</update>
+	<select id="getBankNameByCode" resultType="java.lang.String">
+		SELECT
+		bank_name
+		FROM af_bank
+		WHERE is_delete = 0 AND bank_code=#{bankCode}
+		LIMIT 0,1
+	</select>
 </mapper>

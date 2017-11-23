@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import org.apache.commons.lang.ObjectUtils;
@@ -91,6 +92,9 @@ public class AppH5ProtocolController extends BaseController {
 	@Resource
 	AfContractPdfDao afContractPdfDao;
 
+	@Resource
+	AfUserOutDayDao afUserOutDayDao;
+
 	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
 	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
@@ -159,6 +163,12 @@ public class AppH5ProtocolController extends BaseController {
 				model.put("overdueRate", nperDo.getRate() != null?nperDo.getRate():"");
 			}
 		}
+		int repayDay = 20;
+		AfUserOutDayDo afUserOutDayDo =  afUserOutDayDao.getUserOutDayByUserId(userId);
+		if(afUserOutDayDo !=null) {
+			repayDay = afUserOutDayDo.getPayDay();
+		}
+		model.put("repayDay", repayDay);
 
 		logger.info(JSON.toJSONString(model));
 	}
@@ -254,7 +264,6 @@ public class AppH5ProtocolController extends BaseController {
 		model.put("dayRate", bankService);//日利率
 		model.put("overdueRate", overdue);//逾期费率（日）
 		model.put("poundageRate", poundage);//手续费率
-		model.put("overduePoundageRate", overduePoundage);//逾期手续费率
 		GetSeal(model, afUserDo, accountDo);
 
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));

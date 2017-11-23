@@ -111,6 +111,27 @@ public class RiskController {
 			return "FAIL";
 		}
 	}
+
+	@RequestMapping(value = { "/registerStrongRiskV1" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String registerStrongRiskV1(HttpServletRequest request, HttpServletResponse response) {
+		String code = ObjectUtils.toString(request.getParameter("code"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		String msg = ObjectUtils.toString(request.getParameter("msg"));
+		String signInfo = ObjectUtils.toString(request.getParameter("signInfo"));
+
+		logger.info("asyRegisterStrongRiskV1 begin,code=" + code + ",data=" + data + ",msg=" + msg + ",signInfo=" + signInfo);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			try {
+				riskUtil.asyRegisterStrongRiskV1(code, data, msg, signInfo);
+				return "SUCCESS";
+			} catch (Exception e) {
+				return "FAIL";
+			}
+		} else {
+			return "FAIL";
+		}
+	}
 	/**
 	 * 公积金异步回调
 	 * @param request

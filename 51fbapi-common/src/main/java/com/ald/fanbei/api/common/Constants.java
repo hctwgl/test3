@@ -140,6 +140,10 @@ public class Constants {
     public static final String CACHEKEY_REDRAIN_MISC = "redrain_misc";
     public static final String CACHEKEY_REDRAIN_COUNTERS = "redrain_counters";
     public static final String CACHEKEY_REDRAIN_SINK = "redrain_sink";
+    // 实名认证缓存key前缀
+    public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX 		= "real_auth_citizen_card$";
+    public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX 		= "real_auth_real_name$";
+    public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX 				= "real_auth_pass$";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
@@ -341,6 +345,8 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+	//实名认证修改姓名开关
+	public static final String SWITCH = "SWITCH";
 	
 	//H5用户以及token cookie
 	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
@@ -402,4 +408,12 @@ public class Constants {
 	 public static final String BORROW_RATE="BORROW_RATE";
 	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
 	 public static final String BORROW_CASH_OVERDUE_POUNDAGE="BORROW_CASH_OVERDUE_POUNDAGE";
+
+	//首页滚动条
+	  public static final String HOMEPAGE_TOP_SCROLLBAR="HOMEPAGE_TOP_SCROLLBAR";
+	  public static final String BORROW_TOP_SCROLLBAR="H5_URL";
+	  
+	//代扣
+	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
+
 }

@@ -1,9 +1,53 @@
+.flex {
+    display: flex;
+}
+
+.fd-row {
+    flex-direction: row;
+}
+
+.fd-column {
+    flex-direction: column;
+}
+
+.jc-c {
+    justify-content: center;
+}
+
+.jc-sb {
+    justify-content: space-between;
+}
+
+.jc-sa {
+    justify-content: space-around;
+}
+
+.ai-c {
+    align-items: center;
+}
+
+.ml30 {
+    margin-left: .3rem;
+}
+
+.por {
+    position: relative;
+}
+
 * {
     box-sizing: border-box;
 }
+
 .main {
-    background-color: rgb(172, 169, 169);
+    background-color: #fff;
 }
+
+.devide {
+    height: .24rem;
+    width: 100%;
+    background-color: rgb(246, 246, 246);
+}
+
 .banner {
     width: 100%;
     height: 1.84rem;
@@ -11,59 +55,51 @@
 }
 
 .recommend-box {
-    margin-top: 0.24rem;
     background-color: #fff;
 }
+
 .title {
     padding-left: 0.17rem;
     width: 100%;
     height: .88rem;
     line-height: .88rem;
     font-size: .32rem;
-    color: rgb(2,24,24);
-    border-bottom: solid 1px #ccc;
+    color: rgb(2, 24, 24);
+    border-bottom: solid 1px rgb(246, 246, 246);
 }
 
 .swiper-box {
+    padding-top: .4rem;
     width: 100%;
     height: 3.6rem;
 }
+
 .swiper-container {
     height: 100%;
-    background-color: #5934be;
 }
 
- /*包裹自定义分页器的div的位置等CSS样式*/  
- .swiper-pagination{
-     
- }
- .swiper-pagination-bullet {
-    width: .2rem;
-    height: .1rem;
-    background: #fff;
- }
-// .swiper-pagination-custom {  
-//     bottom: 10px;  
-//     left: 0;  
-//     width: 100%;  
-// }  
-// /*自定义分页器的样式，这个你自己想要什么样子自己写*/  
-// .swiper-pagination-customs {  
-//     width: 30px;  
-//     height: 4px;  
-//     display: inline-block;  
-//     background: #000;  
-//     opacity: .3;  
-//     margin: 0 5px;  
-// }  
-// /*自定义分页器激活时的样式表现*/  
-// .swiper-pagination-customs-active {  
-//     opacity: 1;  
-//     background-color: #F78E00;  
-// }  
+
+/*包裹自定义分页器的div的位置等CSS样式*/
+
+.swiper-pagination-bullet-active {
+    background: rgb(100, 100, 100)!important;
+}
+
+.swiper-pagination-bullet {
+    width: .24rem!important;
+    height: .04rem!important;
+    border-radius: 0!important;
+    background: rgb(247, 247, 247);
+}
+
+.card-slide {
+    padding-left: .6rem;
+    padding-right: .6rem;
+}
 
 .bank-box {
     margin-top: 0.24rem;
+    padding-bottom: .24rem;
     background: #fff
 }
 
@@ -76,10 +112,11 @@
     margin-top: .52rem;
     margin-right: .8rem;
 }
+
 .bank-img {
     width: 0.92rem;
     height: 0.92rem;
-    border-radius: 50%; 
+    border-radius: 50%;
 }
 
 .bank-txt {
@@ -91,13 +128,53 @@
     position: relative;
     font-size: .28rem;
     color: rgb(67, 67, 67);
-    .tip {
-        position: absolute;
-        background: orangered;
-        color: #fff;
+}
+
+.tip {
+    margin-top: -.08rem;
+    margin-left: .05rem;
+    width: 0.68rem;
+    height: 0.32rem;
+    background: url('https://f.51fanbei.com/h5/app/activity/11/card_mp.png');
+    background-size: 100% 100%;
+    position: absolute;
+    color: #fff;
+    font-size: .24rem;
+    color: #fff;
+    line-height: .32rem;
+    text-align: center;
+    padding-left: 0.08rem;
+}
+
+.bank-intro {
+    width: 1.6rem;
+    font-size: .22rem;
+    color: rgb(142, 142, 142);
+    word-break: break-all;
+}
+
+.card-box {
+    img {
+        width: 2.72rem;
+        height: 1.64rem;
+    }
+    .name {
+        margin-top: 0.1rem;
+        font-size: .28rem;
+        color: #434343;
+    }
+    .desc {
+        margin-top: 0.1rem;
+        font-size: .22rem;
+        color: #8E8E8E;
     }
 }
-.bank-intro {
-    font-size: .22rem;
-    color: rgb(142, 142, 142)
+
+.tip-word {
+    margin-left: 0.08rem;
+    width: 0.6rem;
+    height: 0.32rem;
+    background: rgb(255, 153, 0);
+    font-size: .12rem;
+    text-align: center;
 }

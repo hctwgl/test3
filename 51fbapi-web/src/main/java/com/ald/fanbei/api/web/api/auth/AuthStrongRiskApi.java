@@ -126,6 +126,7 @@ public class AuthStrongRiskApi implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 			}
 
+
 			if (!StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.A.getCode()) && !StringUtils.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode())) {// 已经走过强风控或者正在进行中
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
 			}
