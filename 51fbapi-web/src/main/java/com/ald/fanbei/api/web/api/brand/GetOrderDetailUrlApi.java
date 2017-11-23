@@ -3,14 +3,18 @@
  */
 package com.ald.fanbei.api.web.api.brand;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -52,7 +56,20 @@ public class GetOrderDetailUrlApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		resp.addResponseData("detailUrl", afOrderService.getBoluomeOrderDetailUrl(orderInfo));
+		Map<String, String> buildParams = new HashMap<String, String>();
+		
+		String detailUrl = orderInfo.getThirdDetailUrl();
+		
+		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
+		buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());
+		buildParams.put(BoluomeCore.TIME_STAMP, requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_TIME) + StringUtils.EMPTY);
+		
+		String sign =  BoluomeCore.buildSignStr(buildParams);
+		buildParams.put(BoluomeCore.SIGN, sign);
+		
+		String paramsStr = BoluomeCore.createLinkString(buildParams);
+		
+		resp.addResponseData("detailUrl", detailUrl+"?"+paramsStr);
 		return resp;
 	}
 
