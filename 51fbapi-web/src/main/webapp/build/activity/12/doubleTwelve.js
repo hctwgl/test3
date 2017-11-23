@@ -8,6 +8,7 @@ let vm = new Vue({
     data: {
         goodsData: {}, //所有商品数据
         couponData: [],
+        currentData: [],
         couponFlag: true, // 显示优惠券flag
         downTime: {
             d: 0,
@@ -19,8 +20,7 @@ let vm = new Vue({
         couponUrl: "/activity/double12/couponHomePage",
     },
     created: function () {
-        this.logData();
-        this.isApp();
+        this.isAppFn();
     },
     computed: {
         couponNum() {
@@ -30,26 +30,33 @@ let vm = new Vue({
         }
     },
     methods: {
+        isAppFn: function () {
+            let isAppParam = getUrl('spread');
+            if (isAppParam != '') {
+                this.isApp = false;
+                this.couponUrl = "/activityH5/double12/couponHomePage";
+            }
+            this.logData();
+        },
         logData: function () { // get 初始化 信息
             let self = this;
+            // 获取优惠券信息
             $.ajax({
-                url: "/activity/double12/couponHomePage",
+                url: self.couponUrl,
                 type: 'POST',
                 dataType: 'json',
                 success: function (data) {
                     if (!data.success) {
-                        requestMsg("哎呀，获取优惠券出错了！");
+                        location.href = data.data.loginUrl;
                         return false;
                     }
-
                     self.couponData = data.data.couponList;
-                    // $(".loadingMask").fadeOut();
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");
                 }
             });
-
+            // 获取秒杀商品列表
             $.ajax({
                 url: "/activity/double12/goodsHomePage",
                 type: 'POST',
@@ -61,20 +68,21 @@ let vm = new Vue({
                         return false;
                     }
                     self.goodsData = data.data.goodsMap;
-                    $(".loadingMask").fadeOut();
+                    for (const key in self.goodsData) {
+                        if (self.goodsData.hasOwnProperty(key)) {
+                            const element = self.goodsData[key];
+                            if (element.type == "O") {
+                                self.currentData = element;
+                            }
+                        }
+                    }
+                    // $(".loadingMask").fadeOut();
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");
                 }
             });
 
-        },
-        isApp(){
-            let isApp =  getUrl('spread');
-            if (isApp != '') {
-                this.isApp = false;
-                this.couponUrl = "/activityH5/double12/couponHomePage";
-            }
         },
         toProduct: function (id, type) { // 跳转到商品页
             location.href = "/fanbei-web/activity/barginProduct?goodsId=" + id + "&productType=" + type + "&userName=" + name + "&spread=" + spread;
@@ -103,7 +111,7 @@ let vm = new Vue({
         couponClick: function (item, index) {
             let self = this;
             let couponId = item.id;
-            if (item.isGet=="Y") {
+            if (item.isGet == "Y") {
                 requestMsg("您已经领取过了，快去使用吧");
                 return false;
             }
@@ -216,8 +224,11 @@ let vm = new Vue({
                 }
             });
         },
-        changeFlag() {
+        changeFlag: function () {
             this.couponFlag = !this.couponFlag;
+        },
+        changeProduct:function(key){
+            this.currentData = this.goodsData[key];
         }
     }
 });

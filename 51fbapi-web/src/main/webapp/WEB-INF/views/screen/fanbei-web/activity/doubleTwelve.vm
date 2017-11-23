@@ -24,7 +24,9 @@
             <div class="txt">12月05日开始</div>
             <ul class="coupon-ul flex fw-w" :class="{couponHeight1:couponFlag}">
                 <li class="coupon-li" v-for="item in couponData" @click="couponClick(item)" :class="[item.isGet=='N'?'coupon-active':'coupon-quiet']">
-                    <div class="coupon-price">￥<span>{{item.amount}}</span></div>
+                    <div class="coupon-price">￥
+                        <span>{{item.amount}}</span>
+                    </div>
                     <div class="coupon-tip">{{item.threshold}}</div>
                     <div class="coupon-get" v-if="item.isGet=='Y'">已领取</div>
                     <div class="coupon-get" v-else>立即领取</div>
@@ -42,53 +44,41 @@
             <div class="super-txt">双十二秒get大牌</div>
             <div class="day-box">
                 <ul class="day-ul flex fd-row">
-                    <li class="day-li status-1">12月6日
-                        <p>已结束</p>
-                    </li>
-                    <li class="day-li status-1">12月7日
-                        <p>已结束</p>
-                    </li>
-                    <li class="day-li status-2">12月8日
-                        <p>秒杀中</p>
-                    </li>
-                    <li class="day-li status-3">12月9日
-                        <p>即将开始</p>
-                    </li>
-                    <li class="day-li status-3">12月10日
-                        <p>即将开始</p>
-                    </li>
-                    <li class="day-li status-3">12月11日
-                        <p>即将开始</p>
-                    </li>
-                    <li class="day-li status-3">12月12日
-                        <p>即将开始</p>
+                    <li class="day-li" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N', }"
+                        @click="changeProduct(key)">12月{{key}}日
+                        <p v-if="value.type=='E'">已结束</p>
+                        <p v-if="value.type=='O'">秒杀中</p>
+                        <p v-if="value.type=='N'">即将开始</p>
                     </li>
                 </ul>
             </div>
             <div class="product-box">
-                <div class="product-li flex fd-row">
+                <div class="product-li flex fd-row" v-for="item in currentData.goodsList">
                     <div class="seckill-image">
-                        <img src="$src/double12_product.png">
+                        <img :src="item.goodsIcon">
                         <i class="seckill-icon"></i>
+                        <div class="seckill-end" v-if="currentData.type=='E'"></div>
                     </div>
                     <div class="intro-box">
-                        <p class="p-title">iPhoneX全网通官方正品马上发货</p>
+                        <p class="p-title">{{item.goodsName}}</p>
                         <div class="p-price">
-                            <span class="p-price-1">￥1253</span>
+                            <span class="p-price-1">￥{{item.realAmount}}</span>
                             <span class="p-price-2">原价
-                                <i>￥1533</i>
+                                <i>￥{{item.saleAmount}}</i>
                             </span>
                         </div>
                         <div class="p-button flex fd-row ai-c">
-                            <div class="p-left p-status-1">
-                                还剩5件
-                                <i class="progress"></i>
+                            <div class="p-left" :class="[currentData.type=='E'?'p-status-1':'p-status-2']">
+                                还剩{{item.count}}件
+                                <i class="progress" :style="{width: 1.6*(item.count/item.stockCount)+'rem' }"></i>
                             </div>
-                            <div class="buy-btn buy-btn-2">已结束</div>
+                            <div class="buy-btn buy-btn-2" v-if="currentData.type=='E'">已结束</div>
+                            <div class="buy-btn buy-btn-1" v-if="currentData.type=='O'">去秒杀</div>
+                            <div class="buy-btn buy-btn-3" v-if="currentData.type=='N'">即将开始</div>
                         </div>
                     </div>
                 </div>
-                <div class="product-li flex fd-row">
+                <!-- <div class="product-li flex fd-row">
                     <div class="seckill-image">
                         <img src="$src/double12_product.png">
                         <i class="seckill-icon"></i>
@@ -109,7 +99,7 @@
                             <div class="buy-btn buy-btn-1">去秒杀</div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- <div class="product-li flex fd-row">
                     <div class="seckill-image">
                         <img src="$src/double12_product.png">
@@ -132,7 +122,7 @@
                         </div>
                     </div>
                 </div> -->
-                <div class="product-li flex fd-row">
+                <!-- <div class="product-li flex fd-row">
                     <div class="seckill-image">
                         <img src="$src/double12_product.png">
                         <i class="seckill-icon"></i>
@@ -153,7 +143,7 @@
                             <div class="buy-btn buy-btn-3">即将开始</div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
         <div class="redRain-box flex jc-c">

@@ -172,13 +172,14 @@
     margin-top: 0.4rem;
     overflow: hidden;
 }
+
 .couponHeight1 {
     height: 2.6rem;
 }
+
 .couponHeight2 {
     height: auto;
 }
-
 
 .coupon-li {
     margin-left: 0.3rem;
@@ -230,10 +231,10 @@
 
 .seckill-box {
     margin-top: 0.8rem;
+    padding-bottom: .2rem;
     background: #ffffff;
     border-radius: .24rem;
     width: 100%;
-    height: 12.65rem;
 }
 
 .seckill-image {
@@ -251,6 +252,17 @@
     background-size: 100% 100%;
 }
 
+.seckill-end {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.8rem;
+    height: 2.8rem;
+    background: url('@{imageUrl}/double12_seckillEnd.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
 .super-icon {
     margin-top: 0.6rem;
 }
@@ -261,6 +273,7 @@
     color: #fd1a2b;
     text-align: center;
 }
+
 .super-txt-2 {
     opacity: 0.6;
     font-size: .28rem;
@@ -388,6 +401,14 @@
         border: solid 1px #999999;
         color: #999999;
         background: #eee;
+        .progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: .3rem;
+            background: rgba(145, 144, 144, 0.16);
+        }
     } // 秒杀状态
     .p-status-2 {
         border: solid 1px #fd1a2b;
