@@ -19,8 +19,12 @@ import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.alibaba.fastjson.JSONObject;
+import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 
 /**
  * 点亮活动新版ServiceImpl
@@ -65,15 +69,15 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	@Override
 	public boolean sendCoupon(Long userId) {
 		boolean result = false;
-		String log = String.format("sendCoupon || params: userId = {}", userId);
+		String log = String.format("sendCoupon || params: userId = %s", userId);
 		logger.info(log);
 		int isHave = afBoluomeUserCouponDao.checkIfHaveCoupon(userId);
-		log = log + String.format("middle business params isHave = {}", isHave);
+		log = log + String.format("middle business params isHave =  %s", isHave);
 		logger.info(log);
 		if (isHave == 0) {
 			// have never sent coupon before , right now send it .
 			Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
-			log = log + String.format("refUserIdTemp = {}", refUserIdTemp);
+			log = log + String.format("refUserIdTemp =  %s", refUserIdTemp);
 			logger.info(log);
 			
 			if (refUserIdTemp != null) {
@@ -87,22 +91,35 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 				
 				AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GGACTIVITY", "BOLUOMECOUPON");
 				
-				log = log + String.format("AfBoluomeUserCouponDo = {} , AfResourceDo = {} ", afBoluomeUserCouponDo.toString(), resourceDo.toString());
+				log = log + String.format("AfBoluomeUserCouponDo = %s , AfResourceDo = %s ", afBoluomeUserCouponDo.toString(), resourceDo.toString());
 				logger.info(log);
 				
 				if (resourceDo != null) {
-					String couponIdStr = resourceDo.getValue();
+					String couponIdStr = resourceDo.getValue1();
 					Long couponId = Long.parseLong(couponIdStr);
 					afBoluomeUserCouponDo.setCouponId(couponId);
 
-					log = log + String.format("couponId = {} ", couponId);
+					log = log + String.format("couponId =  %s ", couponId);
 					logger.info(log);
 					
 					afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
+					
+					//send coupon
+					AfResourceDo temCoupon = afResourceDao.getResourceByResourceId(couponId);
+					if (temCoupon != null) {
+						PickBrandCouponRequestBo bo = new PickBrandCouponRequestBo();
+						bo.setUser_id(refUserIdTemp + StringUtil.EMPTY);
+						String resultString = HttpUtil.doHttpPostJsonParam(temCoupon.getValue(), JSONObject.toJSONString(bo));
+						log = log + String.format("sendBoluomeCoupon  bo =  %s, resultString =  %s", JSONObject.toJSONString(bo),
+								resultString);
+						logger.info(log);
+					
+					}
+					
 					result = true;
 					//call Jpush for rebate
 					String userName = convertToUserName(refUserIdTemp);
-					log = log + String.format("userName = {} ", userName);
+					log = log + String.format("userName = %s ", userName);
 					logger.info(log);
 					if (userName != null) {
 						jpushService.send15Coupon(userName);

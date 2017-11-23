@@ -37,6 +37,8 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 	AfBoluomeRebateDo getHighestNeverPopedRebate(@Param("userId")Long userId);
 
+	int getRebateNumByOrderId(@Param("orderId")Long orderId);
+
 
     
 

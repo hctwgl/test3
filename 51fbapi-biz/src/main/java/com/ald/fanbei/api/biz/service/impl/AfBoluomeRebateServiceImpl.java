@@ -81,56 +81,63 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	@Override
 	public void addRedPacket(Long orderId, Long userId) throws Exception {
 		try {
-			String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId ,userId);
-			logger.info(log);
-			AfBoluomeRebateDo rebateDo = new AfBoluomeRebateDo();
+			//check if this orderId has already been rebated
+			int isHave = afBoluomeRebateDao.getRebateNumByOrderId(orderId);
+			if (isHave == 0) {
 
-			rebateDo.setOrderId(orderId);
-			rebateDo.setUserId(userId);
-			// check if its the first time for one specific channel
-			int orderTimes = afOrderDao.findFirstOrder(orderId);
-			log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
-			logger.info(log);
-			if (orderTimes == 0) {
-				rebateDo.setFirstOrder(1);
-			} else {
-				rebateDo.setFirstOrder(0);
-			}
-			// check if the order times for red packet
-			int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
-			log = log + String.format("redOrderTimes = %s ", redOrderTimes);
-			logger.info(log);
-			
-			redOrderTimes += 1;
-			// check the red packet amount
-			boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
-			
-			log = log + String.format("flag = %s ", flag);
-			logger.info(log);
-			if (flag) {
-				// insert the table af_boluome_redpacket
-				rebateDo.setGmtCreate(new Date());
-				rebateDo.setGmtModified(new Date());
-				afBoluomeRebateDao.saveRecord(rebateDo);
-				
-				// update the table af_user_account
-				AfUserAccountDo accountDo = new AfUserAccountDo();
-				accountDo.setUserId(userId);
-				accountDo.setRebateAmount(rebateDo.getRebateAmount());
-				afUserAccountDao.updateRebateAmount(accountDo);
-				
-				//call Jpush for rebate
-				String userName = convertToUserName(userId);
-				log = log + String.format("userName = %s , rebateAmount = %s", flag,  rebateDo.getRebateAmount());
+				String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId ,userId);
 				logger.info(log);
-				if (userName != null) {
-					String scence = afBoluomeRebateDao.getScence(orderId);
-					log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
-					logger.info(log);
-					jpushService.sendRebateMsg(userName,scence,rebateDo.getRebateAmount());
+				AfBoluomeRebateDo rebateDo = new AfBoluomeRebateDo();
+
+				rebateDo.setOrderId(orderId);
+				rebateDo.setUserId(userId);
+				// check if its the first time for one specific channel
+				int orderTimes = afOrderDao.findFirstOrder(orderId);
+				log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
+				logger.info(log);
+				if (orderTimes == 0) {
+					rebateDo.setFirstOrder(1);
+				} else {
+					rebateDo.setFirstOrder(0);
 				}
+				// check if the order times for red packet
+				int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
+				log = log + String.format("redOrderTimes = %s ", redOrderTimes);
+				logger.info(log);
 				
+				redOrderTimes += 1;
+				// check the red packet amount
+				boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
+				
+				log = log + String.format("flag = %s ", flag);
+				logger.info(log);
+				if (flag) {
+					// insert the table af_boluome_redpacket
+					rebateDo.setGmtCreate(new Date());
+					rebateDo.setGmtModified(new Date());
+					afBoluomeRebateDao.saveRecord(rebateDo);
+					
+					// update the table af_user_account
+					AfUserAccountDo accountDo = new AfUserAccountDo();
+					accountDo.setUserId(userId);
+					accountDo.setRebateAmount(rebateDo.getRebateAmount());
+					afUserAccountDao.updateRebateAmount(accountDo);
+					
+					//call Jpush for rebate
+					String userName = convertToUserName(userId);
+					log = log + String.format("userName = %s , rebateAmount = %s", flag,  rebateDo.getRebateAmount());
+					logger.info(log);
+					if (userName != null) {
+						String scence = afBoluomeRebateDao.getScence(orderId);
+						log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
+						logger.info(log);
+						jpushService.sendRebateMsg(userName,scence,rebateDo.getRebateAmount());
+					}
+					
+				}
 			}
+			
+			
 		} catch (Exception e) {
 			logger.error("afBoluomeRebateService.addRedPacket() error :",  e);
 			throw new Exception();
