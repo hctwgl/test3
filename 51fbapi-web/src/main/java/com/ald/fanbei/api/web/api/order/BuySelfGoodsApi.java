@@ -182,7 +182,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if (userId != null) {
 
 				// 双十二秒杀新增逻辑+++++++++++++>
-				double12GoodsCheck(userId, goodsId);
+				double12GoodsCheck(userId, goodsId,count);
 				// +++++++++++++++++++++++++<
 				
 				//查询用户订单数
@@ -302,7 +302,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 	 * @author yanghailong
 	 * @data  2017年11月21日
 	 */
-	private void double12GoodsCheck(Long userId, Long goodsId){
+	private void double12GoodsCheck(Long userId, Long goodsId, Integer count){
 		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
 		try {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
@@ -310,8 +310,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 				AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
 				if(null != afGoodsDouble12Do){
 					//这个商品是双十二秒杀商品
-					if(afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0){
-						//报错提示已秒杀过（已生成过秒杀订单）
+					if (count != 1 || afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
+						//报错提示只能买一件商品  或  报错提示已秒杀过（已生成过秒杀订单）
 						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 					}
 					
