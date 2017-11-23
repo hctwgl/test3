@@ -2,8 +2,7 @@
 <html lang="en">
 
 <head>
-    #set($version="20171117")
-    #set($src="https://f.51fanbei.com/h5/app/activity/11")
+    #set($version="20171117") #set($src="https://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>信用卡中心</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/card.css?version=$version">
@@ -13,15 +12,22 @@
 <body>
     <div class="main" id="bankBox">
         <div class="banner">
-            <img src="$src/card_banner.png" alt="">
+            <div class="swiper-container bannerSwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" v-for="(item,index) in allData.lunbanner">
+                        <img :src="item.value" @click="jump(item.value2)">
+                    </div>
+                </div>
+                <div class="swiper-pagination mypagination1" v-show="topLen>1"></div>
+            </div>
         </div>
         <div class="devide"></div>
         <div class="recommend-box">
             <div class="title">今日推荐</div>
             <div class="swiper-box">
-                <div class="swiper-container">
+                <div class="swiper-container bankSwiper">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide flex fd-row jc-sb" v-for="(item,index) in allData.creditbanner" v-if="index%2==0">
+                        <div class="swiper-slide card-slide flex fd-row jc-sb" v-for="(item,index) in allData.creditbanner" v-if="index%2==0">
                             <div class="card-box flex fd-column ai-c" @click="jump(item.value2)">
                                 <img :src="item.value">
                                 <p class="name">{{item.name}}</p>
@@ -34,7 +40,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="swiper-pagination" v-show="len>2"></div>
+                    <div class="swiper-pagination mypagination2" v-show="len>2"></div>
                 </div>
             </div>
         </div>
@@ -46,7 +52,9 @@
                     <li class="bank-li flex fd-row" v-for="hotBank in allData.hotbanner" @click="jump(hotBank.value2)">
                         <img class="bank-img" :src="hotBank.value" alt="银行">
                         <div class="bank-txt">
-                            <p class="bank-name">{{hotBank.name}}<i class="tip" v-if="hotBank.hottag=='hotting'"></i></p>
+                            <p class="bank-name">{{hotBank.name}}
+                                <i class="tip" v-if="hotBank.value3!=''"></i>
+                            </p>
                             <p class="bank-intro">{{hotBank.description}}</p>
                         </div>
                     </li>
@@ -58,4 +66,5 @@
 
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
 <script type="text/javascript" src="/dist/activity/11/card.js?version=$version"></script>
+
 </html>
