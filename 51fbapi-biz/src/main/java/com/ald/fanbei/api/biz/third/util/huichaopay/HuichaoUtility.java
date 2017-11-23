@@ -19,9 +19,12 @@ import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.helper.DataUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -137,7 +140,7 @@ public class HuichaoUtility implements ThirdInterface {
         return ret;
     }
 
-
+    protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
     private  String step1(String orderNo,String orderMoney,String orderTime)  {
         String baseUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
@@ -147,8 +150,11 @@ public class HuichaoUtility implements ThirdInterface {
         paraMap.put("merid", merid);
         paraMap.put("noncestr", noncestr);
         paraMap.put("notifyUrl",baseUrl+"/third/ups/huicaoback");
+
         paraMap.put("orderMoney",orderMoney);
         paraMap.put("orderTime", orderTime);
+
+        thirdLog.info("start huicao order:"+ JSON.toJSONString(paraMap));
 
         String stringA = formatUrlMap(paraMap, true, false);
         try {

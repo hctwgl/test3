@@ -549,7 +549,7 @@ public class PayRoutController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value = { "/huicaoback" },method = RequestMethod.POST)
+	@RequestMapping(value = { "/huicaoback" })
 	@ResponseBody
 	public String huicaoback(HttpServletRequest request, HttpServletResponse response){
 		//String siginString = huichaoUtility.getSign("merchantOutOrderNo=1509598766744&merid=100001&msg={\"payMoney\":\"1.00\"}&noncestr=test2&orderNo=0000015095987667441&payResult=1");
