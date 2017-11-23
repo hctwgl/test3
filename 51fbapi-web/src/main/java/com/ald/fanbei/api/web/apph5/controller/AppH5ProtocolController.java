@@ -239,20 +239,25 @@ public class AppH5ProtocolController extends BaseController {
         model.put("phone", userName);//联系方式
         List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
         Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
-        AfBorrowCashDo afBorrowCashDos = afBorrowCashService.getBorrowCashByrid(borrowId);
         BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
         BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
-        BigDecimal poundage = afBorrowCashDos.getPoundageRate();
+        BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
+        ;
         BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 
         BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
+
+        AfBorrowCashDo afBorrowCashDo = null;
+        if (borrowId > 0) {
+            afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+            poundage = afBorrowCashDo.getPoundageRate();
+        }
         BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
 
         Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
         if (poundageRateCash != null) {
             poundage = new BigDecimal(poundageRateCash.toString());
         }
-
         //fmf_得到逾期费率
         AfResourceDo afResourceDo1 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_POUNDAGE);
         AfResourceDo afResourceDo2 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_OVERDUE_POUNDAGE);
@@ -270,7 +275,7 @@ public class AppH5ProtocolController extends BaseController {
         model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
         model.put("amountLower", borrowAmount);
         if (borrowId > 0) {
-            AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+            afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
             model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借人
             AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
             afContractPdfDo.setType((byte) 3);
@@ -421,7 +426,7 @@ public class AppH5ProtocolController extends BaseController {
                     AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
                     lender(model, fundSideInfo);
                     /*if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
-						model.put("lender", fundSideInfo.getName());// 出借人
+                        model.put("lender", fundSideInfo.getName());// 出借人
 					}else{
 						AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 						model.put("lender", lenderDo.getValue());// 出借人
