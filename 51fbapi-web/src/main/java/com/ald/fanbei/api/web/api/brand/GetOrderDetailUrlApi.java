@@ -56,20 +56,7 @@ public class GetOrderDetailUrlApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		
-		Map<String, String> buildParams = new HashMap<String, String>();
-		
-		String detailUrl = orderInfo.getThirdDetailUrl();
-		
-		buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId()+StringUtils.EMPTY);
-		buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());
-		buildParams.put(BoluomeCore.TIME_STAMP, requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_TIME) + StringUtils.EMPTY);
-		
-		String sign =  BoluomeCore.buildSignStr(buildParams);
-		buildParams.put(BoluomeCore.SIGN, sign);
-		
-		String paramsStr = BoluomeCore.createLinkString(buildParams);
-		
-		resp.addResponseData("detailUrl", detailUrl+"?"+paramsStr);
+		resp.addResponseData("detailUrl", afOrderService.getBoluomeOrderDetailUrl(orderInfo));
 		return resp;
 	}
 
