@@ -126,7 +126,7 @@ public class WithholdCheckController implements ApiHandle {
 			}
 			if (currTime.getTime() > sdt1.getTime() && currTime.getTime() < edt1.getTime()) {  //如果在代扣处理中，不让用户进行操作
 				info.put("isDeal", "Y");
-				info.put("message", FanbeiExceptionCode.WHIT_HOLD_DEALING.getErrorMsg());  //message 加入配置文件表中
+				info.put("message", FanbeiExceptionCode.WHIT_HOLD_DEALING.getDesc());  //message 加入配置文件表中
 				resp.setResponseData(info);
 				return resp;
 			} else {
@@ -134,7 +134,7 @@ public class WithholdCheckController implements ApiHandle {
 			}
 			if (currTime.getTime() > sdt2.getTime() && currTime.getTime() < edt2.getTime()) {	//如果在代扣处理中，不让用户进行操作
 				info.put("isDeal", "Y");
-				info.put("message", FanbeiExceptionCode.WHIT_HOLD_DEALING.getErrorMsg());
+				info.put("message", FanbeiExceptionCode.WHIT_HOLD_DEALING.getDesc());
 				resp.setResponseData(info);
 				return resp;
 			} else {

@@ -673,7 +673,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             file1 = new File(map.get("secondPath").toString());
             file1.delete();
         }
-        return false;
+        return true;
     }
 
     private String eviPdf(Map map) {

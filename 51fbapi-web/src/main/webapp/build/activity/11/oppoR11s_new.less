@@ -42,7 +42,24 @@
 
 
 body {
-    background-image: linear-gradient(90deg, #ff446c, #fd5d57, #ea4a48);
+    // background: #7c3e85;
+    background:#16171c;
+}
+
+.banner {
+    position: relative;
+}
+.bookBtn {
+    position: absolute;
+    top: 2rem;
+    right: 1.8rem;
+    width: 2rem;
+    height: .62rem;
+}
+
+.firstCont  {
+    position: relative;
+    z-index: 2;
 }
 
 #schoolLife .couponList {
@@ -99,8 +116,9 @@ body {
 #schoolLife .firstCont .contTitle {
     width: 7.5rem;
     height: 1rem;
-    background:url("@{url}/superPhone_iPhone.png");
+    background:url("@{url}/oppoR11s_title.png");
     background-size: cover;
+    margin-bottom: .15rem;
 }
 
 .contTitle2 {
@@ -142,15 +160,63 @@ body {
 
 #schoolLife .firstCont .good {
     width: 3.48rem;
-    padding-top: .57rem;
+    // padding-top: .57rem;
     background: #fff;
     margin: 0 0 .2rem .18rem;
     float: left;
 }
 
+.good2{
+    box-sizing: border-box;
+    margin: 0 0 .2rem .18rem;
+    // padding: .3rem;
+    width: 7.14rem;
+    height: 3rem;
+    background: #fff;
+    float: left;
+    .goodImg {
+        width: 3rem;
+        height: 3rem;
+        // background: green;
+        img {
+            width: 3rem;
+            height: 3rem;
+            
+        }
+    }
+    .goodDes {
+        font-size: .32rem;
+        color: #000;
+        height: .32rem;
+        line-height: .32rem;
+    }
+    .goodPrice {
+        margin-top: .1rem;
+    }
+    .originPrice {
+        font-size: .3rem;
+        color: #363636;
+        padding-top: .27rem;
+        height: .3rem;
+        line-height: .3rem;
+        display: block;
+        float: left;
+       
+    }
+    .fanMoney {
+        background-image: linear-gradient(90deg, #984bc2, #e62051);
+        background-image: -webkit-gradient(90deg, #984bc2, #e62051);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+}
+
+
+
 #schoolLife .firstCont .good .goodImg {
-    width: 2.9rem;
-    height: 2.9rem;
+    width: 3.48rem;
+    height: 3.48rem;
     margin: 0 auto;
     // background: green;
 }
@@ -178,17 +244,17 @@ body {
     
 }
 
-#schoolLife .firstCont .good .goodPrice .fan {
+.fan {
     width: .38rem;
     height: .38rem;
-    background: url("https://f.51fanbei.com/h5/app/activity/08/apple01.png");
+    background: url("https://f.51fanbei.com/h5/app/activity/11/newfan.png");
     background-size: contain;
     display: block;
     float: left;
     margin: .2rem .1rem 0;
 }
 
-#schoolLife .firstCont .good .goodPrice .fanMoney {
+.fanMoney {
     font-size: .28rem;
     color: #363636;
     padding-top: .27rem;
@@ -198,15 +264,45 @@ body {
     float: left;
 }
 
-#schoolLife .firstCont .good .monthPrice {
+.goodRight {
+    margin-left: .4rem;
+    padding-top: .3rem;
+}
+
+.monthPrice {
     width: 100%;
     height: .56rem;
-    background-color: #f23739;
+    // background-color: #f23739;
+    background-image: linear-gradient(90deg, #fdcb7b, #fdcf85);
     font-size: .28rem;
     color: #fff;
     line-height: .56rem;
     text-align: center;
     margin-top: .19rem;
+}
+
+.monthPrice2{   
+    display: inline-block;
+    margin-top: .27rem;
+    width: 100%;
+    height: .4rem;
+    font-size: .24rem;
+    line-height: .56rem;
+    background-image: linear-gradient(90deg, #984bc2, #e62051);
+    background-image: -webkit-gradient(90deg, #984bc2, #e62051);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.buy {
+    width: 1.73rem;
+    height: .46rem;
+    line-height: .46rem;
+    text-align: center;
+    font-size: .24rem;
+    margin-top: .19rem;
+    color: #fff;
+    border-radius: 3px;
+    background-image: linear-gradient(90deg, #984bc2, #e62051);
 }
 
 #schoolLife .secondCont .contTitle .titleName,
