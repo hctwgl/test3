@@ -101,6 +101,7 @@ public class HuichaoUtility implements ThirdInterface {
         String sdate=sdf.format(new Date());
 //        String stringA=step1(thirdNo,orderMoney,sdate);
         String stringA=step1(thirdNo,"1",sdate);
+        
         String stringsignTemp=stringA+"&key="+key;
         String sign= getMD5(stringsignTemp);
         String stringB = stringA+"&sign=" +sign;
