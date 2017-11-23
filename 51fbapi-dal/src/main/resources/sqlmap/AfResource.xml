@@ -65,7 +65,8 @@
 		FROM
 		af_resource
 		WHERE
-		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+		is_delete = 0 AND type = #{type} AND sec_type =
+		#{secType}
 		LIMIT 1
 
 	</select>
@@ -79,15 +80,15 @@
 		LIMIT 1
 
 	</select>
- <select id="getOpenBoluomeCouponById"  resultType="AfResourceDo">
+	<select id="getOpenBoluomeCouponById" resultType="AfResourceDo">
 		SELECT
-			<include refid="queryAllFields" />
-			FROM af_resource 
-			WHERE is_delete = 0
-			AND  value_4 = 'O'
-			AND value_2 > NOW() 
-			AND id = #{rid}
-			LIMIT 1
+		<include refid="queryAllFields" />
+		FROM af_resource
+		WHERE is_delete = 0
+		AND value_4 = 'O'
+		AND value_2 > NOW()
+		AND id = #{rid}
+		LIMIT 1
 	</select>
 
 
@@ -122,8 +123,9 @@
 		order by
 		sort desc
 	</select>
-	
-	<select id="getResourceHomeListByTypeOrderByOnPreEnv" resultType="AfResourceDo">
+
+	<select id="getResourceHomeListByTypeOrderByOnPreEnv"
+		resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
 		FROM
@@ -145,7 +147,7 @@
 		AND is_delete = 0
 		LIMIT 1
 	</select>
-	
+
 	<select id="getLaunchImageInfoByTypeAndVersion" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
@@ -155,13 +157,13 @@
 		type = #{type}
 		AND is_delete = 0
 		AND value = 'PART'
-		AND   #{version} >= value_1
+		AND #{version} >= value_1
 		AND value_2 >= #{version}
 		AND value_4 = 'O'
 		order by gmt_create desc
 		LIMIT 1
 	</select>
-	
+
 	<select id="getLaunchImageInfoByType" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
@@ -198,14 +200,17 @@
 		r1.type = #{type}
 		AND r1.sec_type = ''
 		AND r2.value_4 !=''
-		AND r1.is_delete =0
+		AND
+		r1.is_delete =0
 		AND r2.is_delete =0
 		AND r1.value_4 = 'O'
 		ORDER BY
-		r1.sort ,r1.id , r2.sort
+		r1.sort
+		,r1.id , r2.sort
 	</select>
-	
-	<select id="getOneToManyResourceOrderByBytypeOnPreEnv" resultType="AfResourceDo">
+
+	<select id="getOneToManyResourceOrderByBytypeOnPreEnv"
+		resultType="AfResourceDo">
 		SELECT
 		<include refid="queryManyAllFields" />
 		FROM
@@ -215,13 +220,14 @@
 		r1.type = #{type}
 		AND r1.sec_type = ''
 		AND r2.value_4 !=''
-		AND r1.is_delete =0
+		AND
+		r1.is_delete =0
 		AND r2.is_delete =0
-	<!-- 	AND r1.value_4 = 'O' -->
+		<!-- AND r1.value_4 = 'O' -->
 		ORDER BY
 		r1.sort ,r1.id , r2.sort
 	</select>
-	
+
 	<select id="getCarouselToManyResourceOrderByType" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryManyAllFieldsTwo" />
@@ -231,7 +237,8 @@
 		af_resource r2
 		ON r1.value_4=r2.id
 		where
-		r1.type= #{type} and r2.value_4='O' and r2.type is not null and r1.is_delete=0
+		r1.type= #{type} and r2.value_4='O' and r2.type is not null and
+		r1.is_delete=0
 		ORDER BY
 		r1.sort ,r1.id
 	</select>
@@ -245,7 +252,8 @@
 		af_resource r2
 		ON r1.value_4=r2.id
 		where
-		r1.type= #{type} and r2.value_4='O' and r2.type is not null and r1.is_delete=0
+		r1.type= #{type} and r2.value_4='O' and r2.type is not null and
+		r1.is_delete=0
 		ORDER BY
 		r1.sort ,r1.id
 	</select>
@@ -277,7 +285,7 @@
 		ORDER BY
 		sort
 	</select>
-	
+
 	<select id="selectBorrowHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
@@ -289,13 +297,14 @@
 		( (
 		type ='BORROW_RATE'
 		AND
-		sec_type in
+		sec_type
+		in
 		('BASE_BANK_RATE','BORROW_CASH_RANGE','BORROW_CASH_BASE_BANK_DOUBLE','BORROW_CASH_POUNDAGE','BORROW_CASH_OVERDUE_POUNDAGE','BORROW_CASH_LENDER','BORROW_CASH_SUPUER_SWITCH','BORROW_CASH_TOTAL_SWITCH','BORROW_CASH_SHOW_NUM','BORROW_CASH_LENDER_FOR_CASH')
 		)Or type ='BORROW_CASH_DAY')
 
 	</select>
 
-	<select id = "selectActivityConfig" resultType = "AfResourceDo">
+	<select id="selectActivityConfig" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
 		FROM
@@ -306,9 +315,9 @@
 		<![CDATA[
 		AND  DATE_FORMAT(value_1,'%Y-%m-%d') <= DATE_FORMAT(NOW(),'%Y-%m-%d')
 		AND DATE_FORMAT(value_2,'%Y-%m-%d') >= DATE_FORMAT(NOW(),'%Y-%m-%d')	
-		]]>	
+		]]>
 	</select>
-	<select id = "getScrollbarByType" resultType = "AfResourceDo">
+	<select id="getScrollbarByType" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
 		FROM
@@ -316,9 +325,10 @@
 		WHERE
 		is_delete = 0
 		AND type = 'BORROW_TOP_SCROLLBAR'
-		AND value_4 = 'O'
+		AND
+		value_4 = 'O'
 	</select>
-	<select id = "getFakePersonByActivityId" resultType = "AfResourceDo">
+	<select id="getFakePersonByActivityId" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />
 		FROM
@@ -326,24 +336,27 @@
 		WHERE
 		is_delete = 0
 		AND type = 'GG_FAKE_PERSON'
-		AND value = #{activityId}
+		AND value
+		= #{activityId}
 	</select>
-	<select id = "getGGSpecificBanner" resultType = "AfResourceDo">
+	<select id="getGGSpecificBanner" resultType="AfResourceDo">
 		SELECT
-			*
+		*
 		FROM
-			af_resource
+		af_resource
 		WHERE
-			type = 'GG_TOP_BANNER'
+		type = 'GG_TOP_BANNER'
 		AND is_delete = 0
 		AND value_4 ='O'
-		AND value_2 = #{value2};
+		AND value_2 =
+		#{value2};
 	</select>
-	
-	<select id="getActivieResourceByType" resultType = "AfResourceDo">
+
+	<select id="getActivieResourceByType" resultType="AfResourceDo">
 		select
 		<include refid="queryAllFields" />
-		from af_resource WHERE type = #{type} and is_delete = 0 ORDER BY sort asc
+		from af_resource WHERE type = #{type} and is_delete = 0 ORDER BY sort
+		asc
 	</select>
 	<select id="getConfigsByTypesAndSecType" resultType="AfResourceDo">
 		SELECT
@@ -351,7 +364,8 @@
 		FROM
 		af_resource
 		WHERE
-		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+		is_delete = 0 AND type = #{type} AND sec_type =
+		#{secType}
 		and value_4 ='O';
 	</select>
 
@@ -361,10 +375,38 @@
 		FROM
 		af_resource
 		WHERE
-		is_delete = 0 AND type = #{type} AND sec_type = '1'
+		is_delete = 0 AND
+		type = #{type} AND sec_type = '1'
+	</select>
+
+	<select id="getActivityRule" resultType="String">
+		SELECT value from
+		af_resource where is_delete = 0 and type =#{type}
 	</select>
 	
-	<select id="getActivityRule" resultType="String">
-		SELECT value from af_resource where is_delete = 0 and type =#{type}
+	<select id="getEcommercePositionUpRescoure" resultType="AfResourceDo">
+		SELECT 
+		<include refid="queryAllFields"></include>
+		FROM
+		af_resource
+		WHERE
+		type = 'HOME_IMAGE_ECOMMERCE_POSITION'
+		AND
+		value_3
+		IN
+		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_UP','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_UP','HOME_IMAGE_ECOMMERCE_POSITION_MID_MID','HOME_IMAGE_ECOMMERCE_POSITION_LEFT_MID')
+	</select>
+	
+	<select id="getEcommercePositionDownRescoure" resultType="AfResourceDo">
+		SELECT 
+		<include refid="queryAllFields"></include>
+		FROM
+		af_resource
+		WHERE
+		type = 'HOME_IMAGE_ECOMMERCE_POSITION'
+		AND
+		value_3
+		IN
+		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_MID_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_DOWN')
 	</select>
 </mapper>

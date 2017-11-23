@@ -159,4 +159,8 @@ public interface AfResourceDao {
 
 	AfResourceDo getOpenBoluomeCouponById(@Param("rid") Long rid);
 
+	List<AfResourceDo> getEcommercePositionUpRescoure();
+
+	List<AfResourceDo> getEcommercePositionDownRescoure();
+
 }
