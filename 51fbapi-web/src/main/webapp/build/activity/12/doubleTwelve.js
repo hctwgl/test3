@@ -1,13 +1,19 @@
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol + '//' + host;
-let goodArr = Object.keys(Array.apply(null, {length: 8})).map(()=>{
+let groupId = getUrl('groupId');
+
+let goodArr = Object.keys(Array.apply(null, {
+    length: 8
+})).map(() => {
     return {
         img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
         link: 'http://baidu.com'
     }
 })
-let goodArr1 = Object.keys(Array.apply(null, {length: 8})).map(()=>{
+let goodArr1 = Object.keys(Array.apply(null, {
+    length: 8
+})).map(() => {
     return {
         img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
         link: 'http://baidu.com'
@@ -24,8 +30,7 @@ let vm = new Vue({
         goodsData: [
 
         ],
-        tabs: [
-            {
+        tabs: [{
                 tab: "电子数码",
                 key: 0,
             },
@@ -41,7 +46,7 @@ let vm = new Vue({
                 tab: "美妆护肤",
                 key: 3
             },
-        ], 
+        ],
         goods: [
             goodArr,
             goodArr1,
@@ -76,20 +81,20 @@ let vm = new Vue({
     watch: {
         nowkey(val) {
             var width = -$('.rule').width()
-            this.$nextTick(()=>{
+            this.$nextTick(() => {
                 $('.goodpi').css({
-                    transform: "translateX("+ width*val +"px)",
-                })   
+                    transform: "translateX(" + width * val + "px)",
+                })
             })
         },
         touchdefx(val) {
-            if(!this.isScroll) return 
-            if(val > 80) {
-                if(this.nowkey < this.goods.length -1 ) {
-                    this.nowkey ++
+            if (!this.isScroll) return
+            if (val > 80) {
+                if (this.nowkey < this.goods.length - 1) {
+                    this.nowkey++
                 }
-            } else if(val< -80){
-                if(this.nowkey > 0) {
+            } else if (val < -80) {
+                if (this.nowkey > 0) {
                     this.nowkey--
                 }
             }
@@ -104,12 +109,12 @@ let vm = new Vue({
         isScroll() {
             return Math.abs(this.touchdefy) < 50
         }
-    
+
     },
     mounted() {
         var self = this
-        this.$nextTick(()=>{
-            setTimeout(()=>{
+        this.$nextTick(() => {
+            setTimeout(() => {
                 $('.good_tab').pin({
                     containerSelector: ".good_con"
                 })
@@ -120,19 +125,19 @@ let vm = new Vue({
                     width: $('.rule').width() + 'px'
                 })
 
-                $(".goodpi").on('touchstart', function(e) {
+                $(".goodpi").on('touchstart', function (e) {
                     var _touch = e.originalEvent.targetTouches[0]
-                    self.touchstartx= _touch.pageX
-                    self.touchstarty= _touch.clientY
+                    self.touchstartx = _touch.pageX
+                    self.touchstarty = _touch.clientY
                 })
-                $(".goodpi").on('touchend', function(e) {
+                $(".goodpi").on('touchend', function (e) {
                     var _touch = e.originalEvent.changedTouches[0]
-                    self.touchendx= _touch.pageX
-                    self.touchendy= _touch.clientY
-                    self.touchdefy = self.touchstarty -self.touchendy
-                    self.touchdefx = self.touchstartx -self.touchendx
+                    self.touchendx = _touch.pageX
+                    self.touchendy = _touch.clientY
+                    self.touchdefy = self.touchstarty - self.touchendy
+                    self.touchdefx = self.touchstartx - self.touchendx
                 })
-            }, 0) 
+            }, 0)
         })
     },
     methods: {
@@ -141,7 +146,11 @@ let vm = new Vue({
             this.nowkey = i
         },
         linkto(good) {
-            window.location.href=good.link
+            this.maidian("good=" +encodeURI(good.link));
+            if (!this.isApp) {
+                this.toRegister();
+            }
+            window.location.href = good.link
         },
         isAppFn: function () {
             let isAppParam = getUrl('spread');
@@ -153,11 +162,26 @@ let vm = new Vue({
         },
         logData: function () { // get 初始化 信息
             let self = this;
+            // $.ajax({
+            //     type: 'post',
+            //     url: "/fanbei-web/activityCouponInfo",
+            //     data: { 'groupId': groupId },
+            //     success: function (data) {
+            //         let couponCont = eval('(' + data + ')').data;
+            //         console.log(couponCont);
+            //     },
+            //     error: function () {
+            //         requestMsg("哎呀，出错了！");
+            //     }
+            // });
             // 获取优惠券信息
             $.ajax({
                 url: self.couponUrl,
                 type: 'POST',
                 dataType: 'json',
+                data: {
+                    groupId: groupId
+                },
                 success: function (data) {
                     if (!data.success) {
                         location.href = data.data.loginUrl;
@@ -192,7 +216,7 @@ let vm = new Vue({
                     self.$nextTick(() => {
                         let allWidth = $("#dayBox").width();
                         let w = $(".status-2").width();
-                        let shouldX = (allWidth-w)/2;
+                        let shouldX = (allWidth - w) / 2;
                         let posX = $(".status-2").offset().left;
                         if (posX > shouldX) {
                             let moveX = posX - shouldX;
@@ -264,7 +288,7 @@ let vm = new Vue({
                 requestMsg("活动已结束");
                 return false;
             }
-            $.ajax({
+           /*  $.ajax({
                 url: "/activity/double12/getCoupon",
                 type: "POST",
                 dataType: "JSON",
@@ -300,6 +324,43 @@ let vm = new Vue({
                 complete: function () {
                     self.ajaxFlag = true;
                 }
+            }); */
+            $.ajax({
+                url: "/fanbei-web/pickCoupon",
+                type: "POST",
+                dataType: "JSON",
+                data: {
+                    couponId: couponId
+                },
+                success: function (returnData) {
+                    console.log(returnData)
+                    if (returnData.success) {
+                        requestMsg("优惠劵领取成功");
+                        self.$set(self.couponData[index], 'isGet', 'Y');
+                        self.maidian("couponSuccess=true");
+                    } else {
+                        var status = returnData.data["status"];
+                        if (status == "USER_NOT_EXIST") { // 用户不存在
+                            window.location.href = returnData.url;
+                        }
+                        if (status == "OVER") { // 优惠券个数超过最大领券个数
+                            // requestMsg(returnData.msg);
+                            requestMsg("您已经领取过了，快去使用吧");
+                            self.maidian("couponSuccess=got")
+                        }
+                        if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
+                            requestMsg(returnData.msg);
+                            self.maidian("couponSuccess=noCoupon")
+                        }
+                        if (status == "MORE_THAN") { // 优惠券已领取完
+                            requestMsg(returnData.msg);
+                            self.maidian("couponSuccess=end")
+                        }
+                    }
+                },
+                error: function () {
+                    requestMsg("哎呀，出错了！");
+                }
             });
         },
         buy: function (id) {
@@ -318,7 +379,7 @@ let vm = new Vue({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
                 data: {
-                    maidianInfo: '/fanbei-web/activity/doubleTwelve?userName=' + userName+"&" +data + "&spread="+ spread
+                    maidianInfo: '/fanbei-web/activity/doubleTwelve?userName=' + userName + "&" + data + "&spread=" + spread
                 },
                 success: function (data) {
                     console.log(data)
@@ -333,6 +394,6 @@ let vm = new Vue({
         },
         toRegister: function () {
             location.href = "doubleTwelveRegister?spread=" + spread;
-         }    
+        }
     }
 });

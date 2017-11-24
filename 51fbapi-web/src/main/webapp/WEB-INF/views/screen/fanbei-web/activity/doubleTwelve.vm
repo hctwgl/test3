@@ -27,7 +27,7 @@
                     <div class="coupon-price">￥
                         <span>{{item.amount}}</span>
                     </div>
-                    <div class="coupon-tip">{{item.threshold}}</div>
+                    <div class="coupon-tip">{{item.name}}</div>
                     <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
                     <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='N'">立即领取</div>
                     <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
