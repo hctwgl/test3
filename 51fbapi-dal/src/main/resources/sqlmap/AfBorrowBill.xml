@@ -552,10 +552,10 @@
 		AND user_id = #{userId}
     </select>
     
-    <select id="getUserBillListByQuery" resultType="AfBorrowTotalBillDo">
+    <select id="getUserBillListByQuery" resultType="AfBorrowBillDo">
 		SELECT
-			SUM(bill_amount) billAmount,
-			SUM(overdue_days) overdueDays,
+			COALESCE (sum(bill_amount), 0) billAmount,
+			COALESCE (sum(overdue_days), 0) overdueDays,
 			gmt_out_day gmtOutDay
 		FROM
 			af_borrow_bill
@@ -666,4 +666,22 @@
 			is_delete = 0
 		AND borrow_id = #{borrowId}
 	</select>
+	
+	<select id="getUserAllMonthBill" resultType="AfBorrowBillDo">
+		SELECT
+			COALESCE (sum(bill_amount), 0) billAmount,
+			gmt_out_day gmtOutDay
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+			AND is_out = 1
+			AND user_id = #{userId}
+		GROUP BY
+			DATE_FORMAT(gmt_out_day,'%Y-%c')
+		ORDER BY
+			DATE_FORMAT(gmt_out_day,'%Y-%c') desc
+		LIMIT #{begin},#{pageSize}
+	</select>
+	
 </mapper>

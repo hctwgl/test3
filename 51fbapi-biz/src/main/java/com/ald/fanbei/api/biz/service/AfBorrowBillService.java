@@ -299,6 +299,17 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	BigDecimal getOverdueInterestByBorrowId(Long borrowId);
+
+	/**
+	 * 查询用户历史账单
+	 * @author yuyue
+	 * @Time 2017年11月24日 下午1:30:14
+	 * @param userId
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	List<AfBorrowBillDo> getUserAllMonthBill(Long userId, int page, int pageSize);
 	
 	
 }
