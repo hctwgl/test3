@@ -130,6 +130,7 @@
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
+				<value>/goods/getHomeGoodsList</value>
 				<value>/category/getAllGoodsCategory</value>
 
 				<value>/resource/getRedRainRounds</value>
@@ -416,6 +417,7 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
 			</map>
 		</constructor-arg>
