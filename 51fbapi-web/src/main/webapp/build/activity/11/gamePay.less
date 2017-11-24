@@ -5,62 +5,67 @@
   width:100%;
   height:.2rem;
 }
-.gameName{
-  width:91%;
-  padding:0 5.6% 0 3.4%;
-  height:.88rem;
-  background:#fff;
-  border-top: 1px solid rgb(238,238,238);
-  line-height: .88rem;
-  p{
-    font-size:.26rem;
-    color:rgb(35,35,35);
-    width:35%;
-    float:left;
-    letter-spacing: .02rem;
+.gamePay{
+  padding-top:.2rem;
+  .gameName{
+    padding:0 5.6% 0 3.4%;
+    height:.88rem;
+    background:#fff;
+    border-top: 1px solid rgb(238,238,238);
+    line-height: .88rem;
+    p{
+      font-size:.26rem;
+      color:rgb(35,35,35);
+      width:35%;
+      float:left;
+      letter-spacing: .02rem;
+      margin:0;
+    }
+    input{
+      width:65%;
+      height:.4rem;
+      font-size:.28rem;
+      color:rgb(35,35,35);
+      line-height: .4rem;
+      float:left;
+      margin:.22rem 0 0 0;
+      letter-spacing: .02rem;
+      padding:0;
+      border:0;
+    }
+    span{
+      font-size: .26rem;
+      color: rgb(187,192,199);
+    }
+    i{
+      font-size: .26rem;
+      color: rgb(187,192,199);
+      float:right;
+    }
+    input::-webkit-input-placeholder{
+      font-size: .26rem;
+      color: rgb(187,192,199);
+    }
+    input:-moz-placeholder, textarea:-moz-placeholder {
+      font-size: .26rem;
+      color: rgb(187,192,199);
+    }
+    input::-moz-placeholder, textarea::-moz-placeholder {
+      font-size: .26rem;
+      color: rgb(187,192,199);
+    }
+    input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+      font-size: .26rem;
+      color: rgb(187,192,199);
+    }
   }
-  input{
-    width:65%;
-    height:.4rem;
-    font-size:.28rem;
-    color:rgb(35,35,35);
-    line-height: .4rem;
-    float:left;
-    margin-top:.22rem;
-    letter-spacing: .02rem;
+  .gameName:first-child{
+    border:0;
   }
-  span{
-    font-size: .26rem;
-    color: rgb(187,192,199);
-  }
-  i{
-    font-size: .26rem;
-    color: rgb(187,192,199);
-    float:right;
-  }
-  input::-webkit-input-placeholder{
-    font-size: .26rem;
-    color: rgb(187,192,199);
-  }
-  input:-moz-placeholder, textarea:-moz-placeholder {
-    font-size: .26rem;
-    color: rgb(187,192,199);
-  }
-  input::-moz-placeholder, textarea::-moz-placeholder {
-    font-size: .26rem;
-    color: rgb(187,192,199);
-  }
-  input:-ms-input-placeholder, textarea:-ms-input-placeholder {
-    font-size: .26rem;
-    color: rgb(187,192,199);
-  }
-}
-.gameName:nth-child(1){
-  border:0;
 }
 .gameType{
   margin-top:.2rem;
-  width:97%;
+  /*width:97%;*/
   padding:0 0 .3rem 3%;
   background:#fff;
   .title{
@@ -118,16 +123,15 @@
 }
 
 .footer{
-  width:95%;
+  width:100%;
   height:1rem;
-  padding-left:5%;
   background:#fff;
   position:fixed;
   bottom: 0;
   left:0;
   .left{
     float:left;
-    width:55%;
+    padding-left: 5%;
     .payMoney{
       height:.4rem;
       line-height: .4rem;

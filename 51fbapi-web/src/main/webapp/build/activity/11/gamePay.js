@@ -2,8 +2,7 @@
 let vm = new Vue({
     el: '#gamePay',
     data: {
-        content: {},
-        ruleShow:false
+        content: {}
     },
     created: function () {
         this.logData();

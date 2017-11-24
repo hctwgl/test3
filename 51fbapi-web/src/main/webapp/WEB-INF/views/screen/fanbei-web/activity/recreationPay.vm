@@ -9,7 +9,6 @@
 </head>
 <body>
 <div id="recreationPay" class="gamePay">
-    <div class="kong"></div>
     <div class="gameName">
        <p>服务名称</p>
        <input type="text" placeholder="请输入服务名称"/>
