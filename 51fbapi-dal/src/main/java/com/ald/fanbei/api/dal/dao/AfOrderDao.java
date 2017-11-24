@@ -179,4 +179,13 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
+	
+	/**
+	 * 根据订单号，查询订单信息
+	 * @author gaojb
+	 * @Time 2017年11月24日 下午5:10:47
+	 * @param orderNo
+	 * @return
+	 */
+	AfOrderDo getOrderByOrderNo(String orderNo);
 }

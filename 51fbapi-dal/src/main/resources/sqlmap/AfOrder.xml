@@ -1033,4 +1033,14 @@
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
 	
+	<select id="getOrderByOrderNo" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryAllFields"/>
+		FROM
+			af_order 
+		WHERE
+			is_delete=0 
+		AND
+			order_no=#{orderNo}
+	</select>
 </mapper>
