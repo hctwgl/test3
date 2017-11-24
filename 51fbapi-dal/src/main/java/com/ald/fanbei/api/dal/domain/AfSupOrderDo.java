@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 新人专享实体
+ * 游戏充值实体
  * 
- * @author gaojibin_temple
+ * @author 高继斌_temple
  * @version 1.0.0 初始化
- * @date 2017-11-22 13:57:29
+ * @date 2017-11-24 16:00:31
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfSupOrderDo extends AbstractSerial {
@@ -35,7 +35,7 @@ import java.math.BigDecimal;
     /**
      * 关联af_order表的id
      */
-    private Long orderId;
+    private String orderNo;
 
     /**
      * 关联af_sup_game表的id
@@ -153,17 +153,17 @@ import java.math.BigDecimal;
      *
      * @return 关联af_order表的id
      */
-    public Long getOrderId(){
-      return orderId;
+    public String getOrderNo(){
+      return orderNo;
     }
 
     /**
      * 设置关联af_order表的id
      * 
-     * @param orderId 要设置的关联af_order表的id
+     * @param orderNo 要设置的关联af_order表的id
      */
-    public void setOrderId(Long orderId){
-      this.orderId = orderId;
+    public void setOrderNo(String orderNo){
+      this.orderNo = orderNo;
     }
 
     /**

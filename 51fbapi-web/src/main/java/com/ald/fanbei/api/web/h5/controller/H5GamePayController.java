@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfSupGameService;
+import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.MD5Helper;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
@@ -42,7 +43,7 @@ public class H5GamePayController extends H5Controller {
 	FanbeiH5Context context = doH5Check(request, false);
 	try {
 	    String type = request.getParameter("type");
-
+	    // 查询列表
 	    if (StringUtils.isNotBlank(type)) {
 		List<GameGoods> hotList = afSupGameService.getHotGoodsList(type);
 		List<GameGoodsGroup> groupList = afSupGameService.getGoodsList(type);
@@ -68,7 +69,7 @@ public class H5GamePayController extends H5Controller {
 	    String goodsId = request.getParameter("goodsId");
 
 	    if (StringUtils.isNotBlank(goodsId)) {
-
+		// 查询详情
 		AfSupGameDo afSupGameDo = afSupGameService.getById(Long.parseLong(goodsId));
 		if (afSupGameDo != null) {
 		    data.put("goodsId", goodsId);
@@ -89,6 +90,7 @@ public class H5GamePayController extends H5Controller {
 	Map<String, Object> data = new HashMap<String, Object>();
 	FanbeiH5Context context = doH5Check(request, false);
 	try {
+	    // 验证参数
 	    String goodsId = request.getParameter("goodsId");
 	    if (StringUtils.isBlank(goodsId)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
@@ -120,10 +122,44 @@ public class H5GamePayController extends H5Controller {
 	    String gameSrv = request.getParameter("gameSrv");
 	    String userIp = request.getParameter("userIp");
 
+	    // 下单逻辑
+
 	    return H5CommonResponse.getNewInstance(true, "充值请求提交成功", "", data);
 	} catch (Exception e) {
 	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
 	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
+	}
+    }
+
+    @RequestMapping(value = "/callback", method = RequestMethod.GET)
+    public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	FanbeiH5Context context = doH5Check(request, false);
+	try {
+	    // 获取参数
+	    String businessId = request.getParameter("businessId");
+	    String userOrderId = request.getParameter("userOrderId");
+	    // 01成功 02失败
+	    String status = request.getParameter("status");
+	    String mes = request.getParameter("mes");
+	    String kminfo = request.getParameter("kminfo");
+	    String payoffPriceTotal = request.getParameter("payoffPriceTotal");
+	    String sign = request.getParameter("sign");
+	    // 验签
+	    String signCheck = MD5Helper.md5(businessId + userOrderId + status + "key");
+	    if (sign.equals(signCheck)) {
+
+		// 记录回调结果
+		// 更新订单状态
+
+		return "<receive>ok</receive>";
+	    } else {
+		return "<receive>sign error</receive>";
+	    }
+	} catch (Exception e) {
+
+	    logger.error("/game/pay/callback" + context + "error:", e);
+	    return "<receive>exception error</receive>";
 	}
     }
 }
