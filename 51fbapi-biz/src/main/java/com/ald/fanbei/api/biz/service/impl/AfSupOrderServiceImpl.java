@@ -9,13 +9,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfSupCallbackService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
 import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.MD5Helper;
 import com.ald.fanbei.api.dal.dao.AfSupOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSupCallbackDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -34,6 +37,8 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     private AfSupOrderDao afSupOrderDao;
     @Autowired
     private AfSupCallbackService afSupCallbackService;
+    @Autowired
+    private AfOrderService afOrderService;
 
     @Override
     public BaseDao<AfSupOrderDo, Long> getDao() {
@@ -44,30 +49,45 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     public String processCallbackResult(String userOrderId, String status, String mes, String kminfo, String payoffPriceTotal, String sign) {
 
 	try {
-	    // 计算签名
-	    String signCheck = MD5Helper.md5("businessId" + userOrderId + status + "key");
-	    // 记录回调数据
-	    AfSupCallbackDo afSupCallbackDo = new AfSupCallbackDo();
-	    afSupCallbackDo.setKminfo(kminfo);
-	    afSupCallbackDo.setMes(mes);
-	    afSupCallbackDo.setOrderNo(userOrderId);
-	    afSupCallbackDo.setPayoffPriceTotal(new BigDecimal(payoffPriceTotal));
-	    afSupCallbackDo.setSign(sign);
-	    afSupCallbackDo.setSignCheck(signCheck);
-	    afSupCallbackDo.setStatus(status);
-	    if (sign.equals(signCheck)) {
-		afSupCallbackDo.setResult(1);
+	    // 幂等处理
+	    AfSupCallbackDo afSupCallbackDoExist = afSupCallbackService.getByOrderNo(userOrderId);
+	    if (afSupCallbackDoExist == null) {
+		// 计算签名
+		String signCheck = MD5Helper.md5("businessId" + userOrderId + status + "key");
+		// 记录回调数据
+		AfSupCallbackDo afSupCallbackDo = new AfSupCallbackDo();
+		afSupCallbackDo.setKminfo(kminfo);
+		afSupCallbackDo.setMes(mes);
+		afSupCallbackDo.setOrderNo(userOrderId);
+		afSupCallbackDo.setPayoffPriceTotal(new BigDecimal(payoffPriceTotal));
+		afSupCallbackDo.setSign(sign);
+		afSupCallbackDo.setSignCheck(signCheck);
+		afSupCallbackDo.setStatus(status);
+		if (sign.equals(signCheck)) {
+		    afSupCallbackDo.setResult(1);
+		} else {
+		    afSupCallbackDo.setResult(0);
+		}
+		afSupCallbackService.saveRecord(afSupCallbackDo);
+
+		if (afSupCallbackDo.getResult() == 1) {
+
+		    AfOrderDo afOrderDo = afOrderService.getOrderByOrderNo(userOrderId);
+		    // 验签通过，处理订单信息
+		    if (afSupCallbackDo.getStatus().equals("01")) {// 充值成功
+			// 修改订单状态
+
+		    } else { // 充值失败
+
+			// 修改订单状态
+			// 退款
+		    }
+		    return "<receive>ok</receive>";
+		} else {
+		    return "<receive>sing error</receive>";
+		}
 	    } else {
-		afSupCallbackDo.setResult(0);
-	    }
-	    afSupCallbackService.saveRecord(afSupCallbackDo);
-
-	    if (afSupCallbackDo.getResult() == 1) {
-		// 验签通过，处理订单信息（事物）
-
 		return "<receive>ok</receive>";
-	    } else {
-		return "<receive>sing error</receive>";
 	    }
 	} catch (Exception e) {
 	    logger.error("/game/pay/callback processCallbackResult error:", e);

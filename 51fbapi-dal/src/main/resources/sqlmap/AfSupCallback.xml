@@ -180,4 +180,10 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByOrderNo" resultType="com.ald.fanbei.api.dal.domain.AfSupCallbackDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sup_callback
+        WHERE is_delete = 0 AND order_no=#{order_no}
+    </select>
 </mapper>
