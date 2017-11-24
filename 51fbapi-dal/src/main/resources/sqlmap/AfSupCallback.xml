@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,order_no,status,mes,kminfo,payoffpricetotal,sign,signcheck,result 
+        id rid,gmt_create,gmt_modified,order_no,status,mes,kminfo,payoff_price_total,sign,sign_check,result 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -32,14 +32,14 @@
         <if test="kminfo != null and kminfo != ''">
             AND kminfo = #{kminfo,jdbcType=VARCHAR}
         </if>
-        <if test="payoffpricetotal != null and payoffpricetotal != ''">
-            AND payoffpricetotal = #{payoffpricetotal,jdbcType=DECIMAL}
+        <if test="payoffPriceTotal != null and payoffPriceTotal != ''">
+            AND payoff_price_total = #{payoffPriceTotal,jdbcType=DECIMAL}
         </if>
         <if test="sign != null and sign != ''">
             AND sign = #{sign,jdbcType=VARCHAR}
         </if>
-        <if test="signcheck != null and signcheck != ''">
-            AND signcheck = #{signcheck,jdbcType=VARCHAR}
+        <if test="signCheck != null and signCheck != ''">
+            AND sign_check = #{signCheck,jdbcType=VARCHAR}
         </if>
         <if test="result != null and result != ''">
             AND result = #{result,jdbcType=INTEGER}
@@ -72,14 +72,14 @@
 	        <if test="kminfo != null">        
 	            kminfo,
 	        </if>
-	        <if test="payoffpricetotal != null">        
-	            payoffpricetotal,
+	        <if test="payoffPriceTotal != null">        
+	            payoff_price_total,
 	        </if>
 	        <if test="sign != null">        
 	            sign,
 	        </if>
-	        <if test="signcheck != null">        
-	            signcheck,
+	        <if test="signCheck != null">        
+	            sign_check,
 	        </if>
 	        <if test="result != null">        
 	            result,
@@ -105,14 +105,14 @@
 		    <if test="kminfo != null" >
 		       #{kminfo,jdbcType=VARCHAR},
 		    </if>
-		    <if test="payoffpricetotal != null" >
-		       #{payoffpricetotal,jdbcType=DECIMAL},
+		    <if test="payoffPriceTotal != null" >
+		       #{payoffPriceTotal,jdbcType=DECIMAL},
 		    </if>
 		    <if test="sign != null" >
 		       #{sign,jdbcType=VARCHAR},
 		    </if>
-		    <if test="signcheck != null" >
-		       #{signcheck,jdbcType=VARCHAR},
+		    <if test="signCheck != null" >
+		       #{signCheck,jdbcType=VARCHAR},
 		    </if>
 		    <if test="result != null" >
 		       #{result,jdbcType=INTEGER},
@@ -141,14 +141,14 @@
             <if test="kminfo != null and kminfo != '' ">        
                 kminfo = #{kminfo,jdbcType=VARCHAR},                
             </if>
-            <if test="payoffpricetotal != null and payoffpricetotal != '' ">        
-                payoffpricetotal = #{payoffpricetotal,jdbcType=DECIMAL},                
+            <if test="payoffPriceTotal != null and payoffPriceTotal != '' ">        
+                payoff_price_total = #{payoffPriceTotal,jdbcType=DECIMAL},                
             </if>
             <if test="sign != null and sign != '' ">        
                 sign = #{sign,jdbcType=VARCHAR},                
             </if>
-            <if test="signcheck != null and signcheck != '' ">        
-                signcheck = #{signcheck,jdbcType=VARCHAR},                
+            <if test="signCheck != null and signCheck != '' ">        
+                sign_check = #{signCheck,jdbcType=VARCHAR},                
             </if>
             <if test="result != null and result != '' ">        
                 result = #{result,jdbcType=INTEGER}                

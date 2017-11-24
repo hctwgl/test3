@@ -1,15 +1,20 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.service.AfSupCallbackService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
 import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.MD5Helper;
 import com.ald.fanbei.api.dal.dao.AfSupOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfSupCallbackDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 
 /**
@@ -27,6 +32,8 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 
     @Resource
     private AfSupOrderDao afSupOrderDao;
+    @Autowired
+    private AfSupCallbackService afSupCallbackService;
 
     @Override
     public BaseDao<AfSupOrderDo, Long> getDao() {
@@ -39,13 +46,29 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	try {
 	    // 计算签名
 	    String signCheck = MD5Helper.md5("businessId" + userOrderId + status + "key");
-	    //记录回调数据
-	    
+	    // 记录回调数据
+	    AfSupCallbackDo afSupCallbackDo = new AfSupCallbackDo();
+	    afSupCallbackDo.setKminfo(kminfo);
+	    afSupCallbackDo.setMes(mes);
+	    afSupCallbackDo.setOrderNo(userOrderId);
+	    afSupCallbackDo.setPayoffPriceTotal(new BigDecimal(payoffPriceTotal));
+	    afSupCallbackDo.setSign(sign);
+	    afSupCallbackDo.setSignCheck(signCheck);
+	    afSupCallbackDo.setStatus(status);
 	    if (sign.equals(signCheck)) {
-		// 验签通过，处理订单信息（事物）
-	    
+		afSupCallbackDo.setResult(1);
+	    } else {
+		afSupCallbackDo.setResult(0);
 	    }
-	    return "<receive>ok</receive>";
+	    afSupCallbackService.saveRecord(afSupCallbackDo);
+
+	    if (afSupCallbackDo.getResult() == 1) {
+		// 验签通过，处理订单信息（事物）
+
+		return "<receive>ok</receive>";
+	    } else {
+		return "<receive>sing error</receive>";
+	    }
 	} catch (Exception e) {
 	    logger.error("/game/pay/callback processCallbackResult error:", e);
 	    return "<receive>exception error</receive>";

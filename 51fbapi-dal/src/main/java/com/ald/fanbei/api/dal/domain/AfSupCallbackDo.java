@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author 高继斌_temple
  * @version 1.0.0 初始化
- * @date 2017-11-24 16:45:31
+ * @date 2017-11-24 16:56:45
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfSupCallbackDo extends AbstractSerial {
@@ -55,7 +55,7 @@ import java.math.BigDecimal;
     /**
      * 结算总金额
      */
-    private BigDecimal payoffpricetotal;
+    private BigDecimal payoffPriceTotal;
 
     /**
      * 回调参数签名
@@ -65,7 +65,7 @@ import java.math.BigDecimal;
     /**
      * 程序验签计算产生的签名
      */
-    private String signcheck;
+    private String signCheck;
 
     /**
      * 验签结果1 通过 0未通过
@@ -205,17 +205,17 @@ import java.math.BigDecimal;
      *
      * @return 结算总金额
      */
-    public BigDecimal getPayoffpricetotal(){
-      return payoffpricetotal;
+    public BigDecimal getPayoffPriceTotal(){
+      return payoffPriceTotal;
     }
 
     /**
      * 设置结算总金额
      * 
-     * @param payoffpricetotal 要设置的结算总金额
+     * @param payoffPriceTotal 要设置的结算总金额
      */
-    public void setPayoffpricetotal(BigDecimal payoffpricetotal){
-      this.payoffpricetotal = payoffpricetotal;
+    public void setPayoffPriceTotal(BigDecimal payoffPriceTotal){
+      this.payoffPriceTotal = payoffPriceTotal;
     }
 
     /**
@@ -241,17 +241,17 @@ import java.math.BigDecimal;
      *
      * @return 程序验签计算产生的签名
      */
-    public String getSigncheck(){
-      return signcheck;
+    public String getSignCheck(){
+      return signCheck;
     }
 
     /**
      * 设置程序验签计算产生的签名
      * 
-     * @param signcheck 要设置的程序验签计算产生的签名
+     * @param signCheck 要设置的程序验签计算产生的签名
      */
-    public void setSigncheck(String signcheck){
-      this.signcheck = signcheck;
+    public void setSignCheck(String signCheck){
+      this.signCheck = signCheck;
     }
 
     /**
