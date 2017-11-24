@@ -83,4 +83,19 @@ public class H5GamePayController extends H5Controller {
 	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
 	}
     }
+    
+    @RequestMapping(value = "/order", method = RequestMethod.POST)
+    public H5CommonResponse createOrder(HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	FanbeiH5Context context = doH5Check(request, false);
+	try {
+	    String goodsId = request.getParameter("goodsId");
+
+	    
+	    return H5CommonResponse.getNewInstance(false, "参数错误");
+	} catch (Exception e) {
+	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
+	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
+	}
+    }
 }
