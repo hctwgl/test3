@@ -83,4 +83,47 @@ public class H5GamePayController extends H5Controller {
 	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
 	}
     }
+
+    @RequestMapping(value = "/order", method = RequestMethod.POST)
+    public H5CommonResponse createOrder(HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	FanbeiH5Context context = doH5Check(request, false);
+	try {
+	    String goodsId = request.getParameter("goodsId");
+	    if (StringUtils.isBlank(goodsId)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
+	    }
+	    String actualAmount = request.getParameter("actualAmount");
+	    if (StringUtils.isBlank(actualAmount)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
+	    }
+	    String couponId = request.getParameter("couponId");
+	    String acctType = request.getParameter("acctType");
+	    if (StringUtils.isBlank(acctType)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:acctType.");
+	    }
+	    String gameName = request.getParameter("gameName");
+	    if (StringUtils.isBlank(gameName)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:gameName.");
+	    }
+	    String userName = request.getParameter("userName");
+	    if (StringUtils.isBlank(userName)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:userName.");
+	    }
+	    String goodsNum = request.getParameter("goodsNum");
+	    if (StringUtils.isBlank(goodsNum)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
+	    }
+	    String gameType = request.getParameter("gameType");
+	    String gameAcct = request.getParameter("gameAcct");
+	    String gameArea = request.getParameter("gameArea");
+	    String gameSrv = request.getParameter("gameSrv");
+	    String userIp = request.getParameter("userIp");
+
+	    return H5CommonResponse.getNewInstance(true, "充值请求提交成功", "", data);
+	} catch (Exception e) {
+	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
+	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
+	}
+    }
 }
