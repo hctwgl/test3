@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711221634")
+    #set($version="201711241437")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>游戏充值</title>
@@ -13,51 +13,24 @@
     <div class="hotGame">
       <div class="title01">热门游戏</div>
       <ul class="hotGameList clearFix">
-          <li>
-              <p class="gameImg"></p>
-              <p class="gameName" style="-webkit-box-orient: vertical;">QQ黄钻会员QQ黄钻会员QQ黄钻会员</p>
-              <p class="fanMoney">返利2.8%</p>
-          </li>
-          <li>
-              <p class="gameImg"></p>
-              <p class="gameName" style="-webkit-box-orient: vertical;">QQ黄钻会员QQ黄钻会员QQ黄钻会员</p>
-              <p class="fanMoney">返利2.8%</p>
-          </li>
-          <li>
-              <p class="gameImg"></p>
-              <p class="gameName" style="-webkit-box-orient: vertical;">QQ黄钻会员QQ黄钻会员QQ黄钻会员</p>
-              <p class="fanMoney">返利2.8%</p>
+          <li v-for="item in content.hotList" @click="hotGameClick(item)">
+              <img class="gameImg" :src="item.image">
+              <p class="gameName" style="-webkit-box-orient: vertical;">{{item.name}}</p>
+              <p class="fanMoney">返利 {{fixNum((item.rebate)*100)}}%</p>
           </li>
       </ul>
   </div>
     <ul class="gameRankList">
-        <li>
-            <p class="rankTitle">A</p>
-            <div class="everyCont clearFix">
-                <p class="everyImg"></p>
-                <p class="everyName">APP Stare充值卡</p>
-                <p class="everyFan">返利 2.8%</p>
-            </div>
-            <div class="everyCont clearFix">
-                <p class="everyImg"></p>
-                <p class="everyName">APP Stare充值卡</p>
-                <p class="everyFan">返利 2.8%</p>
-            </div>
-        </li>
-        <li>
-            <p class="rankTitle">B</p>
-            <div class="everyCont clearFix">
-                <p class="everyImg"></p>
-                <p class="everyName">APP Stare充值卡</p>
-                <p class="everyFan">返利 2.8%</p>
-            </div>
-            <div class="everyCont clearFix">
-                <p class="everyImg"></p>
-                <p class="everyName">APP Stare充值卡</p>
-                <p class="everyFan">返利 2.8%</p>
+        <li v-for="items in content.groupList">
+            <p class="rankTitle">{{items.groupName}}</p>
+            <div class="everyCont clearFix" v-for="item in items.goodsList">
+                <img class="everyImg" :src="item.image">
+                <p class="everyName">{{item.name}}</p>
+                <p class="everyFan">返利 {{fixNum((item.rebate)*100)}}%</p>
             </div>
         </li>
     </ul>
+    <div class="kong"></div>
 </div>
 <script type="text/javascript" src="/dist/activity/11/gamePayIndex.js?version=$version"></script>
 </body>

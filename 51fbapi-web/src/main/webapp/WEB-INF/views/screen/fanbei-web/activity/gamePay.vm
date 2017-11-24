@@ -13,7 +13,8 @@
 <div id="gamePay" class="gamePay">
     <div class="gameName">
        <p>游戏名称</p>
-       <input type="text" placeholder="请输入游戏名称"/>
+        <span>请输入游戏名称</span>
+        <i> > </i>
    </div>
     <div class="gamePass gameName">
         <p>游戏通行证</p>
