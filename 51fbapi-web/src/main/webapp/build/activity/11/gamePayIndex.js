@@ -1,3 +1,4 @@
+let type=getUrl('type'); //获取类型 GAME 游戏/AMUSEMENT 娱乐
 //获取数据
 let vm = new Vue({
     el: '#gamePayIndex',
@@ -15,16 +16,28 @@ let vm = new Vue({
             $.ajax({
                 type: 'post',
                 url: "/game/pay/goods",
-                data:{'type':'GAME'},
+                data:{'type':type},
                 success: function (data) {
-                    console.log(data);
-                    //self.content=data.data.goodsList;
-                    //console.log(self.content)
+                    //console.log(data);
+                    self.content=data.data;
+                    console.log(self.content);
+
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
                 }
             });
+        },
+        //点击热门游戏
+        hotGameClick(item){
+            //console.log(item.id);
+            let goodsId=item.id;
+            window.location.href='gamePay?goodsId='+goodsId;
+        },
+        //小数点后一位
+        fixNum(num){
+            let numFix=num.toFixed(1);
+            return numFix;
         }
     }
 });

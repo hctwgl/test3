@@ -1,2 +1,2 @@
-"use strict";var vm=new Vue({el:"#gamePay",data:{content:{}},created:function(){this.logData()},methods:{logData:function(){}}});
+"use strict";var goodsId=getUrl("goodsId"),vm=new Vue({el:"#gamePay",data:{content:{},fixCont:{}},created:function(){this.logData()},methods:{logData:function(){var t=this;$.ajax({type:"post",url:"/game/pay/goodsInfo",data:{goodsId:goodsId},success:function(o){t.content=o.data.content,console.log(t.content)},error:function(){requestMsg("哎呀，出错了！")}})},fixStringToNum:function(t){return parseInt(t)}}});
 //# sourceMappingURL=../../_srcmap/activity/11/gamePay.js.map
