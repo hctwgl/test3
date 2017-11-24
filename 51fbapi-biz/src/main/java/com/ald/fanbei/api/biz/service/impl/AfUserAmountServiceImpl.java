@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAmountService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
@@ -22,6 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -58,6 +60,9 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
     @Resource
     TransactionTemplate transactionTemplate;
+
+    @Resource
+    RiskUtil riskUtil;
 
     @Override
     public void addUseAmountDetail(final AfRepaymentDo afRepaymentDo) {
@@ -205,6 +210,8 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         BigDecimal yuqilixi = map.get("yuqilixi");                  //逾期利息
         BigDecimal youhuijuan = map.get("coupon");
 
+
+        riskUtil.getOrderNo("vefy", String.valueOf( new Date().getTime()));
         AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
         afUserAmountDo.setAmount(map.get("repayment"));
         afUserAmountDo.setBizOrderNo("tkaaa");  //随机生成
