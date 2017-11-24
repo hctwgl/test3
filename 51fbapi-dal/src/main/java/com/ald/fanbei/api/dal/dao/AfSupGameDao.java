@@ -17,7 +17,8 @@ import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
  */
 public interface AfSupGameDao extends BaseDao<AfSupGameDo, Long> {
 
-    List<GameGoodsGroup> getGoodsList(@Param("type") String type);
+    List<GameGoodsGroup> getGameGoodsList();
+    List<GameGoodsGroup> getAmusementGoodsList();
 
     List<GameGoods> getHotGoodsList(@Param("type") String type);
 }

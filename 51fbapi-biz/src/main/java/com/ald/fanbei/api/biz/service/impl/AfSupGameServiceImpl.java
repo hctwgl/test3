@@ -9,11 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfSupGameService;
+import com.ald.fanbei.api.common.enums.GameGoodsType;
 import com.ald.fanbei.api.dal.dao.AfSupGameDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
 import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -39,7 +41,14 @@ public class AfSupGameServiceImpl extends ParentServiceImpl<AfSupGameDo, Long> i
     @Override
     public List<GameGoodsGroup> getGoodsList(String type) {
 
-	return afSupGameDao.getGoodsList(type);
+	if (type.equals(GameGoodsType.GAME.getCode()))
+	    return afSupGameDao.getGameGoodsList();
+	else if (type.equals(GameGoodsType.AMUSEMENT.getCode()))
+	    return afSupGameDao.getAmusementGoodsList();
+	else {
+	    logger.error("Game pay type is not support :" + type);
+	    return null;
+	}
     }
 
     @Override

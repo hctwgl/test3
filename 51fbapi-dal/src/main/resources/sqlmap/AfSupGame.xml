@@ -258,17 +258,18 @@
 		</collection> 
     </resultMap>
     
-    <select id="getGoodsList" resultMap="gameGoodsGroup">
+    <select id="getGameGoodsList" resultMap="gameGoodsGroup">
 	    SELECT 
-		    <if test="type == 'GAME'">
-		    	first_char as groupName,
-		    </if>
-		    <if test="type == 'AMUSEMENT'">
-		    	sec_type as groupName,
-		    </if>
-		    id,`name`,hot_image as image,offical_discount as discout, user_rebate as rebate
+		    	first_char as groupName,id,`name`,image,offical_discount as discout, user_rebate as rebate
 		FROM af_sup_game
-		where is_delete = 0 and type = #{type}
+		where is_delete = 0 and type = 'GAME'
+		order by groupName,`name`
+    </select>
+    <select id="getAmusementGoodsList" resultMap="gameGoodsGroup">
+	    SELECT 
+		    	sec_type as groupName,id,`name`,image,offical_discount as discout, user_rebate as rebate
+		FROM af_sup_game
+		where is_delete = 0 and type = 'AMUSEMENT'
 		order by groupName,`name`
     </select>
 </mapper>
