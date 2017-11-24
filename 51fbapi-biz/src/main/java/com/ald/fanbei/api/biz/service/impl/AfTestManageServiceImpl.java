@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfTestManageService;
 import com.ald.fanbei.api.dal.dao.AfTestManageDao;
+import com.ald.fanbei.api.dal.domain.AfTestManageDo;
 
 /**
  * @类描述：
@@ -20,6 +21,11 @@ public class AfTestManageServiceImpl  implements AfTestManageService {
 
 	@Resource
 	AfTestManageDao afTestManageDao;
+
+	@Override
+	public AfTestManageDo getTestInfoByTag(String tag) {
+		return afTestManageDao.getTestInfoByTag(tag);
+	}
 	
 	
 	

@@ -6,7 +6,7 @@
 	</sql>
 	
 	
-	<select id="getTestInfoByTag" resultType="AfBankDo">
+	<select id="getTestInfoByTag" resultType="AfTestManageDo">
 		SELECT 
 			<include refid="queryFields"/>
 		FROM af_test_manage WHERE is_delete = 0 AND tag = #{tag}

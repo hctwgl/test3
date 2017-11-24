@@ -1,10 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
-import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.AfTestManageDo;
 
 /**
  * @类描述：
@@ -13,6 +9,6 @@ import com.ald.fanbei.api.dal.domain.AfActivityDo;
  */
 public interface AfTestManageDao {
 
-	
+	AfTestManageDo getTestInfoByTag(String tag);
 
 }
