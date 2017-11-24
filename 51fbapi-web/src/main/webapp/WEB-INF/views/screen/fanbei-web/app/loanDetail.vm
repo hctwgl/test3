@@ -5,15 +5,13 @@
     #set($src="http://f.51fanbei.com/h5/app/activity/09")
     <meta charset="UTF-8">
     <title>贷款详情</title>
-##    <link rel="stylesheet" type="text/css" href="/dist/css/mui.min.css?version=$version">
-##    <link rel="stylesheet" type="text/css" href="/dist/css/mui.picker.min.css?version=$version">
     <link rel="stylesheet" type="text/css" href="/dist/css/app/loanDetail.css?version=$version">
 </head>
 <body>
 <div id="loanDetail"  class="loanDetail">
     <div class="header">
          <div class="top clearFix">
-             <p class="logo" :style="{backgroundImage:content.iconUrl}"></p>
+             <p class="logo" :style="{backgroundImage:'url('+content.iconUrl+')'}"></p>
              <p class="name">{{content.lsmName}}</p>
              <p class="peopleNum">{{content.marketPoint.replace(',','')}}</p>
              <p class="feature">
@@ -66,8 +64,6 @@
     </div>
     <p class="submit" @click="submit">{{btnTxt()}}</p>
 </div>
-##<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.min.js?version=$version"></script>
-##<script type="text/javascript" src="https://img.51fanbei.com/h5/static/mui.picker.min.js?version=$version"></script>
 <script type="text/javascript" src="/dist/js/app/loanDetail.js?version=$version"></script>
 </body>
 </html>
