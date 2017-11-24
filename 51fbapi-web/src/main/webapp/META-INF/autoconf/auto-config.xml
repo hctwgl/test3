@@ -94,7 +94,7 @@
 		<property name="fbapi.collection.url" defaultValue="http://192.168.101.92:8081" description="催收平台请求地址" />
 		
 		<!-- 宜信致诚阿福RC4秘钥 -->
-		<property name="yixin_afu_password" defaultValue="e4588f6b0a65fab9" description="宜信致诚阿福RC4秘钥"/>
+		<property name="fbapi.yixinafu.password" defaultValue="e4588f6b0a65fab9" description="宜信致诚阿福RC4秘钥"/>
 		
 		<!-- 菠萝觅 -->
 		<property name="fbapi.boluome.appkey" defaultValue="6aSsbSMMhKBe8+bH5wmhBw==" description="菠萝觅 key" />
