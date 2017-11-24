@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author 高继斌_temple
  * @version 1.0.0 初始化
- * @date 2017-11-24 16:09:31
+ * @date 2017-11-24 16:45:31
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfSupCallbackDo extends AbstractSerial {
@@ -56,6 +56,21 @@ import java.math.BigDecimal;
      * 结算总金额
      */
     private BigDecimal payoffpricetotal;
+
+    /**
+     * 回调参数签名
+     */
+    private String sign;
+
+    /**
+     * 程序验签计算产生的签名
+     */
+    private String signcheck;
+
+    /**
+     * 验签结果1 通过 0未通过
+     */
+    private Integer result;
 
 
     /**
@@ -201,6 +216,60 @@ import java.math.BigDecimal;
      */
     public void setPayoffpricetotal(BigDecimal payoffpricetotal){
       this.payoffpricetotal = payoffpricetotal;
+    }
+
+    /**
+     * 获取回调参数签名
+     *
+     * @return 回调参数签名
+     */
+    public String getSign(){
+      return sign;
+    }
+
+    /**
+     * 设置回调参数签名
+     * 
+     * @param sign 要设置的回调参数签名
+     */
+    public void setSign(String sign){
+      this.sign = sign;
+    }
+
+    /**
+     * 获取程序验签计算产生的签名
+     *
+     * @return 程序验签计算产生的签名
+     */
+    public String getSigncheck(){
+      return signcheck;
+    }
+
+    /**
+     * 设置程序验签计算产生的签名
+     * 
+     * @param signcheck 要设置的程序验签计算产生的签名
+     */
+    public void setSigncheck(String signcheck){
+      this.signcheck = signcheck;
+    }
+
+    /**
+     * 获取验签结果1 通过 0未通过
+     *
+     * @return 验签结果1 通过 0未通过
+     */
+    public Integer getResult(){
+      return result;
+    }
+
+    /**
+     * 设置验签结果1 通过 0未通过
+     * 
+     * @param result 要设置的验签结果1 通过 0未通过
+     */
+    public void setResult(Integer result){
+      this.result = result;
     }
 
 }

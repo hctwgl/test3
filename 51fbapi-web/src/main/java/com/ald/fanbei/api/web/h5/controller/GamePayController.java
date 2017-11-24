@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfSupGameService;
+import com.ald.fanbei.api.biz.service.AfSupOrderService;
 import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.MD5Helper;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
 import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 
@@ -36,6 +38,9 @@ public class GamePayController extends H5Controller {
 
     @Autowired
     private AfSupGameService afSupGameService;
+
+    @Autowired
+    private AfSupOrderService afSupOrderService;
 
     @RequestMapping(value = "/goods", method = RequestMethod.POST)
     public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
@@ -145,20 +150,10 @@ public class GamePayController extends H5Controller {
 	    String kminfo = request.getParameter("kminfo");
 	    String payoffPriceTotal = request.getParameter("payoffPriceTotal");
 	    String sign = request.getParameter("sign");
-	    // 验签
-	    String signCheck = MD5Helper.md5(businessId + userOrderId + status + "key");
-	    if (sign.equals(signCheck)) {
 
-		// 记录回调结果
-		// 更新订单状态
-
-		return "<receive>ok</receive>";
-	    } else {
-		return "<receive>sign error</receive>";
-	    }
+	    return afSupOrderService.processCallbackResult(userOrderId, status, mes, kminfo, payoffPriceTotal, sign);
 	} catch (Exception e) {
-
-	    logger.error("/game/pay/callback" + context + "error:", e);
+	    logger.error("/game/pay/callback error:", e);
 	    return "<receive>exception error</receive>";
 	}
     }
