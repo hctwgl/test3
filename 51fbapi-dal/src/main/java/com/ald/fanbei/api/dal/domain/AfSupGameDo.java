@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 新人专享实体
+ * 游戏充值实体
  * 
- * @author maqiaopan_temple
+ * @author 高继斌_temple
  * @version 1.0.0 初始化
- * @date 2017-11-22 14:15:51
+ * @date 2017-11-24 18:50:32
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfSupGameDo extends AbstractSerial {
@@ -51,6 +51,11 @@ import java.math.BigDecimal;
      * 游戏属性xml文件
      */
     private String xmlFile;
+
+    /**
+     * 
+     */
+    private String xmlType;
 
     /**
      * 游戏名称首字母
@@ -223,6 +228,24 @@ import java.math.BigDecimal;
      */
     public void setXmlFile(String xmlFile){
       this.xmlFile = xmlFile;
+    }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public String getXmlType(){
+      return xmlType;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param xmlType 要设置的
+     */
+    public void setXmlType(String xmlType){
+      this.xmlType = xmlType;
     }
 
     /**

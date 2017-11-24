@@ -78,6 +78,7 @@ public class GamePayController extends H5Controller {
 		AfSupGameDo afSupGameDo = afSupGameService.getById(Long.parseLong(goodsId));
 		if (afSupGameDo != null) {
 		    data.put("goodsId", goodsId);
+		    data.put("xmlType", afSupGameDo.getXmlType());
 		    data.put("content", afSupGameDo.getXmlFile());
 
 		    return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
