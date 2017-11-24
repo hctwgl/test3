@@ -30,5 +30,7 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 	AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId);
 
+	int getRebateCount(Long shopId, Long userId);
+
 
 }

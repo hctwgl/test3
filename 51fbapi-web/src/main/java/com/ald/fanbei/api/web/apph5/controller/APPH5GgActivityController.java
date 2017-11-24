@@ -133,7 +133,7 @@ public class APPH5GgActivityController extends BaseController {
 		try {
 			context = doWebCheck(request, false);
 			Long userId = convertUserNameToUserId(context.getUserName());
-			
+
 			List<userReturnBoluomeCouponVo> returnCouponList = new ArrayList<userReturnBoluomeCouponVo>();
 			AfBoluomeUserCouponVo vo = new AfBoluomeUserCouponVo();
 			// 未登录时初始化一些数据
@@ -152,69 +152,68 @@ public class APPH5GgActivityController extends BaseController {
 				return H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, vo).toString();
 			}
 
-			//从登录表取数据，遍历list.查询是否有订单，没有订单：未消费。有订单未完成：未完成。有订单且已完成：已消费
-		
-			long activityId = 1000L;
-			List<AfBoluomeActivityUserLoginDo>  afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService.getByRefUserIdAndActivityId(userId,activityId);
-			if(afBoluomeActivityUserLoginList.size() > 0){
-			    for(AfBoluomeActivityUserLoginDo uDo:afBoluomeActivityUserLoginList){
-				userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
-				returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
-				returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
-				returnCouponVo.setReward("0");
-				// 订单状态
-				AfOrderDo order = new AfOrderDo();
-				order.setUserId(uDo.getUserId());
-				int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
-				
-				if (queryCount <= 0) {
-					returnCouponVo.setStatus(H5GgActivity.NOCONSUME.getDescription());
-				}
-				if (queryCount > 0) {
-				    AfOrderDo orderStatus = new AfOrderDo();
-				    orderStatus.setUserId(uDo.getUserId());
-				    orderStatus.setOrderStatus("FINISHED");
-				    int orderCount = afOrderService.getOrderCountByStatusAndUserId(orderStatus);
-					if (orderCount <= 0) {
-						returnCouponVo.setStatus(H5GgActivity.NOFINISH.getDescription());
-					} else {
-						returnCouponVo.setStatus(H5GgActivity.ALREADYFINISH.getDescription());
-						//查询该优惠券金额
-						AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
-						queryUserCoupon.setUserId(uDo.getRefUserId());
-						queryUserCoupon.setRefId(uDo.getUserId());
-						queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
+			// 从登录表取数据，遍历list.查询是否有订单，没有订单：未消费。有订单未完成：未完成。有订单且已完成：已消费
 
-						AfBoluomeUserCouponDo userCoupon = afBoluomeUserCouponService
-								.getUserCouponByUerIdAndRefIdAndChannel(queryUserCoupon);
-						
-						
-						if(userCoupon != null){
-						long couponId = userCoupon.getCouponId();
-						AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
-//						if (rDo != null) {
-//							returnCouponVo.setReward(rDo.getName());
-//						}
-						// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
-						try {
-							AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
-							if (afResourceDo != null) {
-								BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
-								returnCouponVo.setReward(money+"元外卖券");
-								couponAmount = couponAmount.add(money);
-							}
-						} catch (Exception e) {
-							logger.error("get coluome activity inviteAmount error", e.getStackTrace());
-						}
-					   }
-						
+			long activityId = 1000L;
+			List<AfBoluomeActivityUserLoginDo> afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService
+					.getByRefUserIdAndActivityId(userId, activityId);
+			if (afBoluomeActivityUserLoginList.size() > 0) {
+				for (AfBoluomeActivityUserLoginDo uDo : afBoluomeActivityUserLoginList) {
+					userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
+					returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
+					returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
+					returnCouponVo.setReward("0");
+					// 订单状态
+					AfOrderDo order = new AfOrderDo();
+					order.setUserId(uDo.getUserId());
+					int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
+
+					if (queryCount <= 0) {
+						returnCouponVo.setStatus(H5GgActivity.NOCONSUME.getDescription());
 					}
-				}
-				returnCouponList.add(returnCouponVo);
-			    }//for
-			}//if
-			
-			
+					if (queryCount > 0) {
+						AfOrderDo orderStatus = new AfOrderDo();
+						orderStatus.setUserId(uDo.getUserId());
+						orderStatus.setOrderStatus("FINISHED");
+						int orderCount = afOrderService.getOrderCountByStatusAndUserId(orderStatus);
+						if (orderCount <= 0) {
+							returnCouponVo.setStatus(H5GgActivity.NOFINISH.getDescription());
+						} else {
+							returnCouponVo.setStatus(H5GgActivity.ALREADYFINISH.getDescription());
+							// 查询该优惠券金额
+							AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
+							queryUserCoupon.setUserId(uDo.getRefUserId());
+							queryUserCoupon.setRefId(uDo.getUserId());
+							queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
+
+							AfBoluomeUserCouponDo userCoupon = afBoluomeUserCouponService
+									.getUserCouponByUerIdAndRefIdAndChannel(queryUserCoupon);
+
+							if (userCoupon != null) {
+								long couponId = userCoupon.getCouponId();
+								AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
+								// if (rDo != null) {
+								// returnCouponVo.setReward(rDo.getName());
+								// }
+								// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
+								try {
+									AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
+									if (afResourceDo != null) {
+										BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
+										returnCouponVo.setReward(money + "元外卖券");
+										couponAmount = couponAmount.add(money);
+									}
+								} catch (Exception e) {
+									logger.error("get coluome activity inviteAmount error", e.getStackTrace());
+								}
+							}
+
+						}
+					}
+					returnCouponList.add(returnCouponVo);
+				} // for
+			} // if
+
 			// 好友借钱邀请者得到的奖励总和 inviteAmount af_recommend_money表
 			inviteAmount = new BigDecimal(afRecommendUserService.getSumPrizeMoney(userId));
 
@@ -438,7 +437,7 @@ public class APPH5GgActivityController extends BaseController {
 			Map<String, Object> data = new HashMap<>();
 			if (resourceDo != null) {
 				// if the user has not login
-				//String ruleDescript = resourceDo.getDescription();
+				// String ruleDescript = resourceDo.getDescription();
 				String image = resourceDo.getValue();
 				List<Object> resultList = new ArrayList<>();
 				Map<String, Object> map = new HashMap<>();
@@ -449,7 +448,7 @@ public class APPH5GgActivityController extends BaseController {
 				map1.put("name", resourceDo.getValue3());
 				map1.put("value", resourceDo.getValue4());
 				resultList.add(map1);
-				
+
 				// the dark list
 				List<AfCardDo> cardList = new ArrayList<>();
 				AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
@@ -460,7 +459,6 @@ public class APPH5GgActivityController extends BaseController {
 				if (itemsList != null && itemsList.size() > 0) {
 					cardList = convertItemsListToCardList(itemsList, false);
 
-					
 					// if the user has already login
 					if (userName != null) {
 						Long userId = convertUserNameToUserId(userName);
@@ -468,7 +466,7 @@ public class APPH5GgActivityController extends BaseController {
 							List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
 							rebateList = afBoluomeRebateService.getListByUserId(userId);
 							// the status of items
-							List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList);
+							List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
 							if (cardsList != null && cardsList.size() > 0) {
 								cardList = cardsList;
 							} else {
@@ -485,24 +483,22 @@ public class APPH5GgActivityController extends BaseController {
 					data.put("waiMaiShopId", shopId);
 					data.put("image", image);
 					data.put("resultList", resultList);
-//					data.put("ruleDescript", ruleDescript);
-//					data.put("popupDescript", popupDescript);
 					data.put("cardList", cardList);
-					
+
 					resultStr = H5CommonResponse.getNewInstance(true, "初始化成功", "", data);
-					log = log +  String.format("response: resultStr = %s", resultStr);
+					log = log + String.format("response: resultStr = %s", resultStr);
 					logger.info(log);
-					
+
 				}
 			}
-				   if(resourceInfo != null){
-				       String ruleDescript = resourceInfo.getValue2();
-				       String popupDescript = resourceInfo.getValue3();
-				       data.put("ruleDescript", ruleDescript);
-				       data.put("popupDescript", popupDescript);
-				   }
-			
-			     return resultStr.toString();
+			if (resourceInfo != null) {
+				String ruleDescript = resourceInfo.getValue2();
+				String popupDescript = resourceInfo.getValue3();
+				data.put("ruleDescript", ruleDescript);
+				data.put("popupDescript", popupDescript);
+			}
+
+			return resultStr.toString();
 		} catch (FanbeiException e) {
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
@@ -542,8 +538,8 @@ public class APPH5GgActivityController extends BaseController {
 	/**
 	 * 
 	 * @Title: boluomeCoupon @author qiao @date 2017年11月17日
-	 * 下午2:58:57 @Description: 优惠券展示接口 @param request @param
-	 * response @return @return String @throws
+	 *         下午2:58:57 @Description: 优惠券展示接口 @param request @param
+	 *         response @return @return String @throws
 	 */
 	@RequestMapping(value = "/boluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	public String boluomeCoupon(HttpServletRequest request, HttpServletResponse response) {
@@ -818,8 +814,9 @@ public class APPH5GgActivityController extends BaseController {
 	}
 
 	private List<AfCardDo> convertItemsListToCardList(List<AfBoluomeActivityItemsDo> itemsList, boolean isDark) {
-		
-		logger.info("convertItemsListToCardList params :　itemsList.size() = {} , isDark = {}" ,new Object[]{itemsList.size(),isDark});
+
+		logger.info("convertItemsListToCardList params :　itemsList.size() = {} , isDark = {}",
+				new Object[] { itemsList.size(), isDark });
 		List<AfCardDo> resultList = new ArrayList<>();
 		if (itemsList != null && itemsList.size() > 0) {
 			for (AfBoluomeActivityItemsDo itemsDo : itemsList) {
@@ -827,12 +824,14 @@ public class APPH5GgActivityController extends BaseController {
 				resultList.add(cardDo);
 			}
 		}
-		logger.info("convertItemsListToCardList params :　itemsList.size() = {} , isDark = {} result.size() = {} " ,new Object[]{itemsList.size(),isDark,resultList.size()});
+		logger.info("convertItemsListToCardList params :　itemsList.size() = {} , isDark = {} result.size() = {} ",
+				new Object[] { itemsList.size(), isDark, resultList.size() });
 		return resultList;
 	}
 
 	private AfCardDo changeFromItemsDo(AfBoluomeActivityItemsDo itemsDo, boolean isDark) {
-		logger.info("changeFromItemsDo params :　itemsDo = {} , isDark = {} " ,new Object[]{itemsDo.toString(),isDark});
+		logger.info("changeFromItemsDo params :　itemsDo = {} , isDark = {} ",
+				new Object[] { itemsDo.toString(), isDark });
 		AfCardDo cardDo = new AfCardDo();
 		cardDo.setActivityId(itemsDo.getBoluomeActivityId());
 
@@ -844,31 +843,29 @@ public class APPH5GgActivityController extends BaseController {
 		cardDo.setRid(itemsDo.getRid());
 		cardDo.setSort(itemsDo.getSort());
 		cardDo.setShopId(itemsDo.getRefId());
-		logger.info("changeFromItemsDo params :　itemsDo = {} , isDark = {} result cardDo = {} " ,new Object[]{itemsDo.toString(),isDark,cardDo.toString()});
+		logger.info("changeFromItemsDo params :　itemsDo = {} , isDark = {} result cardDo = {} ",
+				new Object[] { itemsDo.toString(), isDark, cardDo.toString() });
 		return cardDo;
 	}
 
 	private List<AfCardDo> convertItemsListToCardList(List<AfBoluomeRebateDo> rebateList,
-			List<AfBoluomeActivityItemsDo> itemsList) {
+			List<AfBoluomeActivityItemsDo> itemsList,Long userId) {
 		String log = String.format("convertItemsListToCardList params : rebateList.size() = %s , itemsList.size() = %s ", rebateList.size(),itemsList.size());
 		logger.info(log);
 		List<AfCardDo> resultList = new ArrayList<>();
-		if (rebateList != null && rebateList.size() > 0) {
-			for (AfBoluomeRebateDo rebateDo : rebateList) {
-				Long shopId = afBoluomeRebateService.getLightShopId(rebateDo.getOrderId());
-				// the shopId for light card
-				if (shopId != null) {
-					if (itemsList != null && itemsList.size() > 0) {
-						for (AfBoluomeActivityItemsDo itemsDo : itemsList) {
-							AfCardDo cardDo = new AfCardDo();
-							cardDo = changeFromItemsDo(itemsDo, true);
-							if (shopId.equals(itemsDo.getRefId())) {
-								cardDo = changeFromItemsDo(itemsDo, false);
-							}
-							resultList.add(cardDo);
-						}
-					}
+		if (itemsList != null && itemsList.size() > 0 ) {
+			for (AfBoluomeActivityItemsDo itemsDo : itemsList) {
+				Long shopId = itemsDo.getRefId();
+				int isHave = afBoluomeRebateService.getRebateCount(shopId,userId);
+				AfCardDo cardDo = new AfCardDo();
+				if (isHave != 0) {
+					//isDark = false
+					cardDo = changeFromItemsDo(itemsDo, false);
+				}else{
+					//isDark = true
+					cardDo = changeFromItemsDo(itemsDo, true);
 				}
+				resultList.add(cardDo);
 			}
 		}
 		log = log + String.format("resultList.size() = %s  ", resultList.size());
@@ -889,7 +886,7 @@ public class APPH5GgActivityController extends BaseController {
 				userId = user.getRid();
 			}
 		}
-		logger.info("convertUserNameToUserId params userName = {} , userId = {}", userName,userId);
+		logger.info("convertUserNameToUserId params userName = {} , userId = {}", userName, userId);
 		return userId;
 	}
 

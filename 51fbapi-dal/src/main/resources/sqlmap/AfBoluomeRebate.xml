@@ -251,5 +251,36 @@
 			is_delete = 0
 		AND order_id = #{orderId};
     </select>
+    <select id= "getRebateCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    	SELECT COUNT(1) FROM
+			(
+			SELECT
+				s.id AS shopId,
+				tt.user_id
+			FROM
+				af_shop s
+			INNER JOIN (
+				SELECT
+					br.rebate_amount AS surpriseRebate,
+					br.user_id,
+				IF (
+					o.sec_type = 'HUAFEI'
+					OR o.sec_type = 'LIULIANG',
+					'CHONGZHI',
+					o.sec_type
+				) AS type
+				FROM
+					af_boluome_rebate br
+				INNER JOIN af_order o ON o.id = br.order_id
+				AND o.is_delete = 0
+				AND br.is_delete = 0
+			) AS tt ON s.type = tt.type
+			AND s.is_delete = 0
+			GROUP BY s.`name` ,	tt.user_id
+			)t
+			WHERE t.shopId = #{shopId}
+			AND t.user_id = #{userId}
+			LIMIT 0,1;
+    </select>
     
 </mapper>
