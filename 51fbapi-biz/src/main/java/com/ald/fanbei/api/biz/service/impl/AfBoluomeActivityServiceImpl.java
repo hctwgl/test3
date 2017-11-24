@@ -689,7 +689,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 	    logger.info("sentNewUserBoluomeCouponForDineDash start afUserDo = {}", afUserDo);
 
 	         //活动期内该用户没有订单
-	    AfResourceDo resource =   afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),H5GgActivity.ACTIVITYTIME.getCode() );
+	    AfResourceDo resource =   afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),H5GgActivity.ACTIVITY_TIME.getCode() );
 	    if(resource != null){
 		SimpleDateFormat   formatter   =   new   SimpleDateFormat   ("yyyy-MM-dd HH:mm:ss");  
 		Date startTime = null;
@@ -711,8 +711,8 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 		      int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
 		      logger.info("sentNewUserBoluomeCouponForDineDash order queryCount = {}, userDo = {}", queryCount,afUserDo);
 		      if (queryCount <= 0) {
-        		  String  type = H5GgActivity.GGACTIVITY.getCode();
-        		  String  secType =  H5GgActivity.BOLUOMECOUPON.getCode();
+        		  String  type = H5GgActivity.GG_ACTIVITY.getCode();
+        		  String  secType =  H5GgActivity.BOLUOME_COUPON.getCode();
         		  AfResourceDo resourceDo =   afResourceService.getConfigByTypesAndSecType(type, secType);
         		  logger.info("sentNewUserBoluomeCouponForDineDash resourceDo = {}", resourceDo);
         		     if(resourceDo!= null){
@@ -744,7 +744,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
         				    boluomeUserCoupon.setUserId(afUserDo.getRid());
         				    afBoluomeUserCouponService.saveRecord(boluomeUserCoupon);
         				    //推送极光
-        				    jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GGACTIVITY.getCode(), H5GgActivity.GGSMSNEW.getCode());
+        				    jpushService.boluomeActivityMsg(afUserDo.getUserName(), H5GgActivity.GG_ACTIVITY.getCode(), H5GgActivity.GG_SMS_NEW.getCode());
 			    }
 			}
 		    }

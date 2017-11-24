@@ -85,7 +85,7 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 				afBoluomeUserCouponDo.setStatus(1);
 				afBoluomeUserCouponDo.setChannel("RECOMMEND");
 				
-				AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GGACTIVITY", "BOLUOMECOUPON");
+				AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
 				
 				log = log + String.format("AfBoluomeUserCouponDo = %s , AfResourceDo = %s ", afBoluomeUserCouponDo.toString(), resourceDo.toString());
 				logger.info(log);

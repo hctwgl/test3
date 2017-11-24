@@ -169,7 +169,7 @@ public class APPH5GgActivityController extends BaseController {
 					int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
 
 					if (queryCount <= 0) {
-						returnCouponVo.setStatus(H5GgActivity.NOCONSUME.getDescription());
+						returnCouponVo.setStatus(H5GgActivity.NO_CONSUME.getDescription());
 					}
 					if (queryCount > 0) {
 						AfOrderDo orderStatus = new AfOrderDo();
@@ -177,9 +177,9 @@ public class APPH5GgActivityController extends BaseController {
 						orderStatus.setOrderStatus("FINISHED");
 						int orderCount = afOrderService.getOrderCountByStatusAndUserId(orderStatus);
 						if (orderCount <= 0) {
-							returnCouponVo.setStatus(H5GgActivity.NOFINISH.getDescription());
+							returnCouponVo.setStatus(H5GgActivity.NO_FINISH.getDescription());
 						} else {
-							returnCouponVo.setStatus(H5GgActivity.ALREADYFINISH.getDescription());
+							returnCouponVo.setStatus(H5GgActivity.ALREADY_FINISH.getDescription());
 							// 查询该优惠券金额
 							AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
 							queryUserCoupon.setUserId(uDo.getRefUserId());
@@ -244,8 +244,8 @@ public class APPH5GgActivityController extends BaseController {
 			BoluomeActivityInviteFriendVo inviteFriendVo = new BoluomeActivityInviteFriendVo();
 			AfResourceDo resourceInfo = new AfResourceDo();
 
-			resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
-					H5GgActivity.DINEANDDASH.getCode());
+			resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
+					H5GgActivity.DINE_AND_DASH.getCode());
 			// 未登录时初始化一些数据
 			if (resourceInfo != null) {
 				inviteFriendVo.setImage(resourceInfo.getValue());
@@ -287,8 +287,8 @@ public class APPH5GgActivityController extends BaseController {
 			BoluomeActivityInviteCeremonyVo inviteCeremonyVo = new BoluomeActivityInviteCeremonyVo();
 			AfResourceDo resourceInfo = new AfResourceDo();
 
-			resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
-					H5GgActivity.INVITECERMONY.getCode());
+			resourceInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
+					H5GgActivity.INVITE_CERMONY.getCode());
 			// 未登录时初始化一些数据
 			if (resourceInfo != null) {
 				AfResourceDo resource = afResourceService
@@ -430,8 +430,8 @@ public class APPH5GgActivityController extends BaseController {
 
 			String log = String.format("/homePage userName = %s", userName);
 			logger.info(log);
-			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GGACTIVITY", "HOMEPAGEINFO");
-			AfResourceDo resourceInfo = afResourceService.getConfigByTypesAndSecType("GGACTIVITY", "HOMEPAGERULE");
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "HOME_PAGE_INFO");
+			AfResourceDo resourceInfo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "HOME_PAGE_RULE");
 			log = log + String.format("middle business params: resourceDo = %s", resourceDo.toString());
 			logger.info(log);
 			Map<String, Object> data = new HashMap<>();
@@ -549,7 +549,7 @@ public class APPH5GgActivityController extends BaseController {
 			context = doWebCheck(request, false);
 			List<BoluomeCouponResponseBo> boluomeCouponList = new ArrayList<>();
 
-			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GGACTIVITY", "BOLUOMECOUPON");
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
 			if (resourceDo != null) {
 				List<String> bList = new ArrayList<>();
 				bList.add(resourceDo.getValue2());
@@ -664,8 +664,8 @@ public class APPH5GgActivityController extends BaseController {
 			//忽略手动领券
 			Long newUser = null ;
 			Long inviter = null ;
-			AfResourceDo coupon = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
-				H5GgActivity.BOLUOMECOUPON.getCode());
+			AfResourceDo coupon = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
+				H5GgActivity.BOLUOME_COUPON.getCode());
 			try{
         			if(coupon !=null){
         			    newUser = Long.parseLong(coupon.getValue()) ;
@@ -693,8 +693,8 @@ public class APPH5GgActivityController extends BaseController {
 					poPupVo.setCouponAmount(couponInfo.getPic1());
 				}
 				// 设置图片
-				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
-						H5GgActivity.COUPONIMAGE.getCode());
+				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
+						H5GgActivity.COUPON_IMAGE.getCode());
 				if (imageInfo != null) {
 					logger.error("popUp coupon imageInfo = {}", imageInfo);
 					poPupVo.setCouponImage(imageInfo.getValue());
@@ -736,8 +736,8 @@ public class APPH5GgActivityController extends BaseController {
 				logger.error("popUp rebateAmount = {},userId = {}", rebateAmount, userId);
 				poPupVo.setRebateAmount(rebateAmount);
 				// 设置图片
-				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
-						H5GgActivity.REBATEIMAGE.getCode());
+				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
+						H5GgActivity.REBATE_IMAGE.getCode());
 				if (imageInfo != null) {
 					logger.error("popUp rebate imageInfo = {}", imageInfo);
 					poPupVo.setRebateImage(imageInfo.getValue());
