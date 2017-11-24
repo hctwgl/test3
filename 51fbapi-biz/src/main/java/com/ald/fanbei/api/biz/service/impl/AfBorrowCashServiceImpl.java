@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -75,7 +76,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	AfFundSideBorrowCashService afFundSideBorrowCashService;
 
 	@Resource
-	AfContractPdfCreateService afContractPdfCreateService;
+	ContractPdfThreadPool contractPdfThreadPool;
 	
 	@Override
 	public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
@@ -104,7 +105,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
 
-				
+
 				logger.info("borrowSuccess--end");
 				// fmf 借钱抽奖活动借款金额加入缓存
 				BigDecimal amount = (BigDecimal) bizCacheUtil.getObject("BorrowCash_Sum_Amount");
@@ -135,7 +136,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 			} catch (Exception e) {
 				logger.info("afRecommendUserService.updateRecommendByBorrow error，borrowCashId=" + afBorrowCashDo.getRid(),e);
 			}
-			
+
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.FUND_SIDE_BORROW_CASH.getCode(), AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
 			if (resourceDo != null && "1".equals(resourceDo.getValue())) {
 				//业务处理成功,和资金方关联处理添加
@@ -150,14 +151,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				//资金方开关关闭，跳过关联
 				logger.info("borrowSuccess ,rela fund site info is off,and jump it ,borrowCashId:"+afBorrowCashDo.getRid());
 			}
-			
-			/*try {
-				afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
-				logger.info("protocolCashLoan finish，borrowCashId=" + afBorrowCashDo.getRid());
-			} catch (Exception e) {
-				logger.info("protocolCashLoan error，borrowCashId=" + afBorrowCashDo.getRid(),e);
-			}*/
-			
+		}
+		if (resultValue == 1){
+			contractPdfThreadPool.protocolCashLoanPdf(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());// 生成凭据纸质帐单
 		}
 		return resultValue;
 	}
@@ -285,5 +281,25 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	@Override
 	public int updateAuAmountByRid(long rid,BigDecimal auAmount) {
 		return afBorrowCashDao.updateAuAmountByRid(rid,auAmount);
+	}
+
+	@Override
+	public int updateBorrowCashLock(Long borrowId) {
+		return afBorrowCashDao.updateBorrowCashLock(borrowId);
+	}
+
+	@Override
+	public int updateBorrowCashUnLock(Long borrowId) {
+		return afBorrowCashDao.updateBorrowCashUnLock(borrowId);
+	}
+
+	@Override
+	public AfBorrowCashDo getBorrowCashByStatus(Long userId) {
+		return afBorrowCashDao.getBorrowCashByStatus(userId);
+	}
+
+	@Override
+	public int updateAfBorrowCashPlanTime(Long userId) {
+		return afBorrowCashDao.updateAfBorrowCashPlanTime(userId);
 	}
 }

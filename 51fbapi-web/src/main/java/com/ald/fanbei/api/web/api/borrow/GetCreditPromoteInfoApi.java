@@ -107,6 +107,7 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 			zmModel.put("zmxyAuthUrl", authParamUrl);
 		}
 
+
 		locationModel.put("locationStatus", authDo.getLocationStatus());
 		locationModel.put("locationAddress", authDo.getLocationAddress());
 		contactorModel.put("contactorStatus", authDo.getContactorStatus());
@@ -163,7 +164,6 @@ public class GetCreditPromoteInfoApi implements ApiHandle {
 		} else {
 			data.put("isUploadImage", "N");
 		}
-		
 		if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.NO.getCode())) {
 			Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(authDo.getGmtRisk()), 10);
 			long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);

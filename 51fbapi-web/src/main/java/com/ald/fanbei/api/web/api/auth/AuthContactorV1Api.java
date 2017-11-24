@@ -78,6 +78,7 @@ public class AuthContactorV1Api implements ApiHandle {
 		authDo.setContactorMobile(contactorMobile);
 		authDo.setContactorType(contactorType);
 		authDo.setUserId(context.getUserId());
+
 		if (afUserAuthService.updateUserAuth(authDo) > 0) {
 			resp.addResponseData("allowConsume", afUserAuthService.getConsumeStatus(context.getUserId(), context.getAppVersion()));
 			return resp;
