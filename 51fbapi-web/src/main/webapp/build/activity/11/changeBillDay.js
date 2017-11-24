@@ -13,21 +13,10 @@
         isA:false
     },
     created:function(){
-        this.logData();
+        //this.logData();
     },
     mounted: function () {
-        /* this.$nextTick(()=>{
-            var mySwiper = new Swiper('.swiper-container', {
-                direction: 'vertical',
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-
-            });
-
-        }) */
-
+        this.logData();
     },
     methods:{
         logData(){
@@ -37,12 +26,13 @@
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                    self.otherDate= self.contentOne.data.outDayList.slice(0,1)[0];
+                    self.otherDate= self.contentOne.data.outDayList ? self.contentOne.data.outDayList.slice(0,1)[0]: [];
                     console.log( self.otherDate,' self.otherDate')
-                    if(self.contentOne.success==false) {
-                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
-                        
-                    }
+                    if(self.contentOne.msg==2){
+                         /* self.flag=true;
+                         self.isA=true; */
+                            //window.location.href='cdynamicBill';
+                    } 
                         
                 }
                     
@@ -63,7 +53,6 @@
             let self=this;
             let outDay=document.getElementById("outDay").innerHTML;//获取出账日
             let payDay=document.getElementById("payDay").innerHTML;//获取还款日
-            // console.log(outDay,'outDay')
             localStorage.setItem("outDay",outDay);//将手机号存储到本地
             localStorage.setItem("payDay",payDay);//将短信验证码存储到本地
             console.log(outDay,'peng2222');
@@ -77,12 +66,13 @@
                 success:function(data){
                     self.contentTwo = eval('(' + data + ')');
                     console.log(self.contentTwo,'self.contentTwo');
-                    window.location.href='changeSuccess';//点击提交跳转修改成功页面
-                     if(self.contentTwo.success==false){
-                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳登录
-                    } 
-                     
-                    
+                    console.log(self.contentTwo.msg,'console.log')
+                    //window.location.href='changeSuccess';//点击提交跳转修改成功页面
+                    //点击提交按钮显示隐藏的changeSuccess div页面
+                    $('#changeSuccess').show();
+                    $('#changbillDay').hide();
+                    vm2.logData()
+                       
                 }
                     
                 
@@ -108,9 +98,6 @@
         toPay(){
             window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_TOPAY";//跳转app还款页
         },
-       /*  toMove(){
-            window.location.href="http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_MOVE";//跳转app分期首页
-        }, */
         //点击隐藏mask
         maskHide(){
             $('.mask').hide();

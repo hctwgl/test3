@@ -30,4 +30,6 @@ public interface AfBankDao {
      * @return
      */
     List<AfBankDo> getBankList();
+
+    String getBankNameByCode(String bankCode);
 }

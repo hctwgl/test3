@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.crypto.URIDereferencer;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,14 +28,6 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfCounponStatus;
-import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
-import com.ald.fanbei.api.common.enums.AfGoodsSource;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.GoodsReservationWebFailStatus;
-import com.ald.fanbei.api.common.enums.H5OpenNativeType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -286,7 +279,25 @@ public class AppH5ActivityController extends BaseController {
 			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData).toString();
 		}
 	}
+	@ResponseBody
+	@RequestMapping(value = "/getHotBanksInfo", method = RequestMethod.GET, produces = "text/html;charset=UTF-8")
+	public String getHotBanksInfo(HttpServletRequest request, ModelMap model) throws IOException {
+		Map<String, Object> returnData = new HashMap<String, Object>();
 
+		try {
+			List<AfResourceDo> hotbannerInfoList = afResourceService.getResourceListByTypeOrderBy(ResourceType.HOT_BANK_BANNER.getCode());
+			List<AfResourceDo> creditbannerInfoList = afResourceService.getResourceListByTypeOrderBy(ResourceType.CREDIT_CARD_BANNER.getCode());
+			List<AfResourceDo> lunbannerInfoList = afResourceService.getResourceListByTypeOrderBy(ResourceType.HOT_CARD_BANNER.getCode());
+			returnData.put("lunbanner", lunbannerInfoList);
+			returnData.put("hotbanner", hotbannerInfoList);
+			returnData.put("creditbanner", creditbannerInfoList);
+			returnData.put("status", FanbeiExceptionCode.SUCCESS.getCode());
+			return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(), "", returnData).toString();
+		} catch (Exception e) {
+			returnData.put("status", FanbeiExceptionCode.FAILED.getCode());
+			return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getCode(), "", returnData).toString();
+		}
+	}
 	/**
 	 * 商品信息转换
 	 * 

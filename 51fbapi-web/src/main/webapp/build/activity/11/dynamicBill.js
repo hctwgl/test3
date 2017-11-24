@@ -19,14 +19,27 @@ let vm = new Vue({
                 success:function(data){
                     self.content = eval('(' + data + ')');
                     console.log(self.content);
-
                     if(self.content.success==false){
-                        window.location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
+                        location.href='http://yapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';
+                        
+                        function creadiv(l,r,t){ //l是距左的距离,r是距右的距离,t是要显示的文本内容
+                            var dd=document.createElement("div");
+                            dd.style.position="absolute";
+                            dd.style.left=111+"px";
+                            dd.style.right=0+"px"
+                            dd.innerText='您还未登录，请先进行登录';
+                            document.body.appendChild(dd);
+                        }
+                        creadiv();
+                        $('body').style('background-color','red');
+
+
+
+
                     }
                      
                     
-                }
-                    
+                }     
                 
             })
 
@@ -48,29 +61,25 @@ let vm = new Vue({
                 url:'/fanbei-web/changeOutDay/getOutDayList',
                 success:function(data){
                     self.contentOne = eval('(' + data + ')');
-                     window.location.href='changebillDay';//没有逾期账单跳修改账单日页面
+                     window.location.href='/fanbei-web/activity/changebillDay';//没有逾期账单跳修改账单日页面
                         if(self.contentOne.msg==1){
                             window.location.href='cunpaidBill';//有逾期账单返回1跳修账单为还清页面
                             }else if(self.contentOne.msg==2){
                             window.location.href='changeTimeOver';//有逾期账单返回2跳账修改次数用完页面
                         } 
-                     
-                    
                 }
                     
                 
             }) 
-            refundState()
-
-              //点击修改账单日加埋点
-               $.ajax({
+            //点击修改账单日加埋点
+            $.ajax({
                       url:'/fanbei-web/postMaidianInfo',
                       type:'post',
                       data:{maidianInfo:'/fanbei-web/activity/barginIndex?type=changOne'},
                       success:function (data) {
                       console.log(data)
                         }
-                    });
+            });
 
 
 
@@ -87,23 +96,3 @@ let vm = new Vue({
         }
     }
 })
-/* function refundState(){
-    var picker = new mui.PopPicker();
-    picker.setData([{
-        value: "REFUNDING",
-        text: "退款中",
-    }, {
-        value: "REFUND",
-        text: "已退款"
-    }, {
-        value: "REFUNDFAIL",
-        text: "退款失败"
-    }
-    ])
-    picker.pickers[0].setSelectedIndex(0, 2000);
-    picker.show(function(SelectedItem) {
-        stateStatus=SelectedItem[0].value;
-        $('.startTime').text(SelectedItem[0].text);
-        picker.dispose(); 
-    })
-} */

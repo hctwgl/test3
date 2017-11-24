@@ -132,6 +132,7 @@
 				<value>/category/getGoodsList</value>
 				<value>/category/getAllGoodsCategory</value>
 
+				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
 			</list>
 		</constructor-arg>
@@ -196,8 +197,7 @@
 				<entry key="/user/changeMobileCheckVerifyCode" value-ref="changeMobileCheckVerifyCodeApi"/>
 				<entry key="/user/changeMobileVerify" value-ref="changeMobileVerifyApi"/>
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
-
-				
+				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
 
 
@@ -280,6 +280,7 @@
 				<entry key="/auth/getYiTuInfo" value-ref="getYiTuInfoApi" />
 				<entry key="/auth/submitIdNumberInfo" value-ref="submitIdNumberInfoApi" />
 				<entry key="/auth/authStrongRisk" value-ref="authStrongRiskApi" />
+				<entry key="/auth/authStrongRiskV1" value-ref="authStrongRiskV1Api" />
 				<entry key="/auth/authContactorV1" value-ref="authContactorV1Api" />
 				<entry key="/auth/authContactsV1" value-ref="authContactsV1Api" />
 				<entry key="/auth/authCreditV1" value-ref="authCreditV1Api" />
@@ -290,7 +291,9 @@
 				<entry key="/auth/authCreditCard" value-ref="authCreditCardApi" />
 				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
 				<entry key="/auth/authAlipay" value-ref="authAlipayApi" />
-
+                <entry key="/auth/updateRealnameManual" value-ref="updateRealnameManualApi" />
+				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
+				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />
@@ -307,6 +310,8 @@
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
 				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
+				<entry key="/borrow/getCreditPromoteInfoV1" value-ref="getCreditPromoteInfoV1Api" />
+
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
@@ -355,8 +360,7 @@
 				<entry key="/agencyBuy/submitAgencyBuyOrder" value-ref="submitAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/getAgencyBuyOrderDetail" value-ref="GetAgencyBuyOrderDetailApi" />
 				<entry key="/agencyBuy/cancelAgencyBuyOrder" value-ref="cancelAgencyBuyOrderApi" />
-				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder"
-					value-ref="completedAgencyBuyOrderApi" />
+				<entry key="/agencyBuy/confirmationCompletedAgencyBuyOrder" value-ref="completedAgencyBuyOrderApi" />
 				<entry key="/agencyBuy/getAgencyNperInfo" value-ref="getAgencyNperInfoApi" />
 				<entry key="/agencyBuy/payAgencyOrder" value-ref="payAgencyOrderApi" />
 				<entry key="/agencyBuy/getAgencyCouponList" value-ref="getAgencyCouponListApi" />
@@ -419,6 +423,16 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+
+				<!-- 代扣开关 -->
+				<entry key="/Withhold/getWithholdInfo" value-ref="getWithholdInfoApi" />
+				<entry key="/Withhold/updateWithholdSwitch" value-ref="updateWithholdSwitchApi" />
+				<entry key="/Withhold/updateWithholdCard" value-ref="updateWithholdCardApi" />
+				<entry key="/Withhold/showUserBankCard" value-ref="showUserBankCardApi" />
+				<entry key="/Withhold/WithholdCheck" value-ref="getWithholdCheckApi" />
+
+				<!-- 首页滚动条 -->
+				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
 
 			</map>
 		</constructor-arg>

@@ -24,7 +24,7 @@
             <div class="fork"><!--<img src="$src/dynamicBill-01.png" alt="">!--></span>
             <div class="personIn">
                 <div class="unpaid over">您今年修改次数已用完</div>
-                <img :src="contentOne.data.avatar" alt="">
+                <img :src="contentOne.data.avatar || 'https://f.51fanbei.com/h5/app/activity/11/dynamicBill-04.png'" alt="">
                 <span class="personName">{{contentOne.data.nick}}</span>
                 <span class="personPhone">{{contentOne.data.userName}}</span>
             </div>
@@ -40,6 +40,5 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="/dist/activity/11/changeBillDay.js?version=$version"></script>
-<!--<script type="text/javascript" src="/dist/activity/11/dynamicBill.js?version=$version"></script>!-->
+<script type="text/javascript" src="/dist/activity/11/changeTimeOver.js?version=$version"></script>
 </html>

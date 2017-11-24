@@ -226,7 +226,7 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	int countNotPayOverdueBill(Long userId);
-	
+
 	/**
 	 * 新增用户账单日的方法
 	 * @author yuyue
@@ -246,4 +246,11 @@ public interface AfBorrowBillService {
 	 * @param payDay
 	 */
 	int updateUserOutDay(long userId, int outDay, int payDay);
+
+
+	String getBillIdsByUserId(Long userId);
+
+	int updateBorrowBillLockById(String billId);
+
+	int updateBorrowBillUnLockByIds(String billIds);
 }

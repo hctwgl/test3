@@ -24,7 +24,7 @@
             <div class="fork"><!--<img src="$src/dynamicBill-01.png" alt="">!--></span>
             <div class="personIn">
                 <div class="unpaid down">您有逾期账单未还清<br/>请还清账单后再来更改吧</div>
-                <img :src="contentOne.data.avatar" alt="">
+                <img :src="contentOne.data.avatar || 'https://f.51fanbei.com/h5/app/activity/11/dynamicBill-04.png'" alt="">
                 <span class="personName">{{contentOne.data.nick}}</span>
                 <span class="personPhone">{{contentOne.data.userName}}</span>
             </div>

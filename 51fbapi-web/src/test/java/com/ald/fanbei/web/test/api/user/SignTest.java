@@ -22,7 +22,7 @@ public class SignTest extends BaseTest {
     /**
      * 自测根据自己的业务修改下列属性 TODO
      */
-    String urlBase = "http://localhost:7070";
+    String urlBase = "http://localhost:8080";
     String userName = "13656640521";
 
     @Resource
@@ -39,14 +39,13 @@ public class SignTest extends BaseTest {
     public void  testGetRedRainRoundsApi() {
         String url = urlBase + "/user/getBorrowCashProtocol";
         Map<String,String> params = new HashMap<>();
-        params.put("userName", "15968109556");
+        params.put("userName", "97");
         params.put("borrowId", "531");
         params.put("type", "7");
         params.put("protocolCashType", "1");
         params.put("borrowAmount", "500");
         testApi(url, params, userName,true);
     }
-
     @Test
     public void  testGetRedRainRoundsApi2() {
         String url = urlBase + "/user/getBorrowCashProtocol";

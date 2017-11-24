@@ -47,10 +47,10 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	
 	@Resource
 	private AfUserOutDayDao afUserOutDayDao;
-	
+
 	@Resource
 	private AfUserBankcardDao bankcardDao;
-	
+
 	@Resource
     TransactionTemplate transactionTemplate;
 
@@ -387,7 +387,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
             public Object doInTransaction(TransactionStatus transactionStatus) {
                 if(afUserOutDayDao.insertUserOutDay(userId,outDay,payDay)>0){
                     returnValue[0] =afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
-                    updateBorrowBills(userId,outDay,10,outDay);
+                    updateBorrowBills(userId,outDay,10,payDay);
                 }
                 return null;
             }
@@ -410,4 +410,19 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
         });
         return returnValue[0];
     }
+
+	@Override
+	public String getBillIdsByUserId(Long userId) {
+		return  afBorrowBillDao.getBillIdsByUserId(userId);
+	}
+
+	@Override
+	public int updateBorrowBillLockById(String billId) {
+		return  afBorrowBillDao.updateBorrowBillLockById(billId);
+	}
+
+	@Override
+	public int updateBorrowBillUnLockByIds(String billIds) {
+		return  afBorrowBillDao.updateBorrowBillUnLockByIds(StringUtil.splitToList(billIds, ","));
+	}
 }
