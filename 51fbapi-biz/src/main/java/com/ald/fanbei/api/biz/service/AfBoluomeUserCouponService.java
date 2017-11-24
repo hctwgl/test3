@@ -23,8 +23,9 @@ public interface AfBoluomeUserCouponService extends ParentService<AfBoluomeUserC
     AfBoluomeUserCouponDo getByCouponIdAndUserIdAndChannel(AfBoluomeUserCouponDo userCoupon);
     boolean sendCoupon(Long userId);
     int isHasCouponInDb(Long userId, Long couponId);
-    AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId);
+   // AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId);
     AfBoluomeUserCouponDo getUserCouponByUerIdAndRefIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
+    AfBoluomeUserCouponDo getLastUserCouponByUserIdSentCouponId(Long userId, Long newUser, Long inviter);
 
 
 }

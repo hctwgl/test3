@@ -665,8 +665,21 @@ public class APPH5GgActivityController extends BaseController {
 				return H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
 			}
 			// 登录时返回数据
-
-			AfBoluomeUserCouponDo userCouponDo = afBoluomeUserCouponService.getLastUserCouponByUserId(userId);
+			//忽略手动领券
+			Long newUser = null ;
+			Long inviter = null ;
+			AfResourceDo coupon = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GGACTIVITY.getCode(),
+				H5GgActivity.BOLUOMECOUPON.getCode());
+			try{
+        			if(coupon !=null){
+        			    newUser = Long.parseLong(coupon.getValue()) ;
+        			    inviter =  Long.parseLong(coupon.getValue1());
+        			}
+			}catch(Exception e){
+			    logger.error("coupon get value error", e.getStackTrace());
+			}
+			AfBoluomeUserCouponDo userCouponDo = afBoluomeUserCouponService.getLastUserCouponByUserIdSentCouponId(userId,newUser,inviter);
+			//AfBoluomeUserCouponDo userCouponDo = afBoluomeUserCouponService.getLastUserCouponByUserId(userId);
 			// mqp:modify to the highest rebate that never popped up before
 			AfBoluomeRebateDo userRebateDo = afBoluomeRebateService.getHighestNeverPopedRebate(userId);
 			// AfBoluomeRebateDo userRebateDo =
