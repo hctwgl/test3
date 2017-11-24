@@ -48,7 +48,7 @@ public class HomePageAbTestController extends AbTestController {
 	@Override
 	protected void abTest(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		AfTestManageDo testManage = afTestManageService.getTestInfoByTag("HOME_PAGE");
-		String method = AbTestUrl.HOME_PAGE_V2 ;
+		String method = AbTestUrl.HOME_PAGE_V2;
 		String deviceId = (String) requestDataVo.getParams().get("deviceId");
 		try {
 			if (testManage != null && !StringUtils.isEmpty(deviceId)) {
@@ -56,7 +56,7 @@ public class HomePageAbTestController extends AbTestController {
 				String deviceIdTail = deviceId.substring(deviceId.length() - 1, deviceId.length());
 				String rule = testManage.getRule();
 				JSONArray testRule = JSON.parseArray(rule);
-				for (int i = 0 ; i < testRule.size() ; i++) {
+				for (int i = 0; i < testRule.size(); i++) {
 					JSONObject strategy = testRule.getJSONObject(i);
 					String strategyCode = strategy.getString("strategy_code");
 					String testDeviceId = strategy.getString("device_id");
@@ -68,7 +68,7 @@ public class HomePageAbTestController extends AbTestController {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("getHomeInfoFront error => {}" , e.getMessage());
+			logger.error("getHomeInfoFront error => {}", e.getMessage());
 		}
 		requestDataVo.setMethod(method);
 	}
