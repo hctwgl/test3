@@ -12,10 +12,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponDouble12Service;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
@@ -32,6 +34,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDouble12Do;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -75,6 +78,8 @@ public class H5Double12ActivityController extends BaseController{
 	AfGoodsService afGoodsService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfCouponCategoryService afCouponCategoryService;
 	
 	String opennative = "/fanbei-web/opennative?name=";
 	
@@ -93,34 +98,55 @@ public class H5Double12ActivityController extends BaseController{
 		try {
 			doWebCheck(request, false);
 			
-			List<AfCouponDouble12Do> couponList = afCouponDouble12Service.getCouponList();
-			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
+			// 获取活动优惠券组信息
+    		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
+    		if(groupId == null) {
+    			throw new FanbeiException("groupId can't be null or empty.");
+    		}
 			
-			if(couponList!=null){
-				for (AfCouponDouble12Do afCouponDouble12Do : couponList) {
-					AfCouponDo coupon = afCouponService.getCoupon(afCouponDouble12Do.getCouponid());
-					AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
-					afCouponDouble12Vo.setId(coupon.getRid());
-					afCouponDouble12Vo.setName(coupon.getName());
-					afCouponDouble12Vo.setThreshold(coupon.getUseRule());
-					afCouponDouble12Vo.setAmount(coupon.getAmount());
-					afCouponDouble12Vo.setIsGet("N");
-					if(new Date().before(afCouponDouble12Do.getStarttime())){	
+    		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
+    		String coupons = couponCategory.getCoupons();
+    		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+    		
+    		List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
+    		
+    		for (int i = 0; i < couponsArray.size(); i++) {
+    			String couponId = (String)couponsArray.getString(i);
+    			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+    			if(afCouponDo!=null){
+    				AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
+    				afCouponDouble12Vo.setId(afCouponDo.getRid());
+    				afCouponDouble12Vo.setName(afCouponDo.getName());
+    				afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
+    				afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
+    				afCouponDouble12Vo.setIsGet("N");
+    				
+    				Calendar c =Calendar.getInstance();
+    				c.setTime(new Date());
+    				int month = c.get(Calendar.MONTH)+1;
+    				int day = c.get(Calendar.DAY_OF_MONTH);
+    				int hour = c.get(Calendar.HOUR_OF_DAY);
+    				
+    				if(hour<10){
+    					afCouponDouble12Vo.setIsShow("N");//活动未开始
+    				}else {
+    					afCouponDouble12Vo.setIsShow("Y");//在活动时间内
+    				}
+    				if(month==12&&day>12){
+    					afCouponDouble12Vo.setIsShow("E");//活动已结束
+    				}
+    				if(month<=12||day<5){
 						afCouponDouble12Vo.setIsShow("N");//活动未开始
-					}else if(new Date().after(afCouponDouble12Do.getEndtime())){
-						afCouponDouble12Vo.setIsShow("E");//活动已结束
-					}else {
-						afCouponDouble12Vo.setIsShow("Y");//在活动时间内
 					}
-					if(afCouponDouble12Do.getCount() > 0){
-						afCouponDouble12Vo.setIshas("Y");//优惠券还有
-					}else {
-						afCouponDouble12Vo.setIshas("N");//优惠券已领完
-					}
-					
-					couponVoList.add(afCouponDouble12Vo);
-					
-				}
+    				
+    				if(afCouponDo.getQuota() > 0){
+    					afCouponDouble12Vo.setIshas("Y");//优惠券还有
+    				}else {
+    					afCouponDouble12Vo.setIshas("N");//优惠券已领完
+    				}
+    				
+    				couponVoList.add(afCouponDouble12Vo);
+    			}
 			}
 			
 			logger.info(JSON.toJSONString(couponVoList));
