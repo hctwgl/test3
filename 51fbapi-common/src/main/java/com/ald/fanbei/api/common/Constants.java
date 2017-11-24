@@ -414,5 +414,8 @@ public class Constants {
 	  
 	//代扣
 	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
+	  
+	  //宜信阿福RC4秘钥
+	  public static final String YIXIN_AFU_PASSWORD="yixin_afu_password";
 
 }

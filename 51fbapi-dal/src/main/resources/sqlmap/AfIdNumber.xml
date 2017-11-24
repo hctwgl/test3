@@ -97,4 +97,27 @@ id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,val
 		LIMIT 1
 	</select>
 	
+	<select id="findByIDNoAndName" resultType="java.lang.Long">
+		SELECT 
+			user_id 
+		FROM 
+			af_id_number 
+		WHERE 
+			citizen_id = #{idNo}
+		AND 
+			`name`= #{name}
+		AND
+			is_delete = 0
+		limit 1
+	</select>
+	
+	<select id="findUserNameByIdNo" resultType="java.lang.String">
+		SELECT 
+			name 
+		FROM 
+			af_id_number 
+		WHERE 
+			citizen_id = #{idNo}
+	</select>
+	
 </mapper>
