@@ -66,8 +66,23 @@ let vm = new Vue({
             });
 
         },
-        jump: function (data) {
-            location.href = data;
+        jump: function (url,data,type) {
+            this.maidian(type,data);
+            // console.log(url, data, type)
+            location.href = url;
+        },
+        maidian(type,bank) {
+            //数据统计 
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {
+                    maidianInfo: '/fanbei-web/activity/card?type=' + type + '&bank=' + bank
+                },
+                success: function (data) {
+                    console.log(data)
+                }
+            });
         }
     }
 })
