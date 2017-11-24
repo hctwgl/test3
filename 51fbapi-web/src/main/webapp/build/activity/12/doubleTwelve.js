@@ -14,7 +14,8 @@ let goodArr1 = Object.keys(Array.apply(null, {length: 8})).map(()=>{
     }
 })
 
-console.log(goodArr)
+var userName = getUrl('userName'); //获取用户id
+var spread = getUrl('spread'); //获取用户id
 
 
 let vm = new Vue({
@@ -70,6 +71,7 @@ let vm = new Vue({
     },
     created: function () {
         this.isAppFn();
+        this.maidian("enter=true");
     },
     watch: {
         nowkey(val) {
@@ -102,6 +104,7 @@ let vm = new Vue({
         isScroll() {
             return Math.abs(this.touchdefy) < 50
         }
+    
     },
     mounted() {
         var self = this
@@ -186,7 +189,16 @@ let vm = new Vue({
                             }
                         }
                     }
-                    // $(".loadingMask").fadeOut();
+                    self.$nextTick(() => {
+                        let allWidth = $("#dayBox").width();
+                        let w = $(".status-2").width();
+                        let shouldX = (allWidth-w)/2;
+                        let posX = $(".status-2").offset().left;
+                        if (posX > shouldX) {
+                            let moveX = posX - shouldX;
+                            $("#dayBox").scrollLeft(moveX)
+                        }
+                    })
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");
@@ -237,18 +249,18 @@ let vm = new Vue({
             let couponId = item.id;
             if (!self.isApp) {
                 // TODO: 跳转登录页
-                // location.href = "";
+                this.toRegister();
                 return false;
             }
             if (item.isGet == "Y") {
                 requestMsg("您已经领取过了，快去使用吧");
                 return false;
             }
-            if (item.isShow=='N') {
+            if (item.isShow == 'N') {
                 requestMsg("活动暂未开始");
                 return false;
             }
-            if (item.isShow=='E') {
+            if (item.isShow == 'E') {
                 requestMsg("活动已结束");
                 return false;
             }
@@ -263,16 +275,19 @@ let vm = new Vue({
                     console.log("returnData=>>", returnData)
                     let d = returnData.data;
                     if (returnData.success) {
-                        if (d.result=='Y') {
+                        if (d.result == 'Y') {
                             requestMsg("优惠劵领取成功");
                             self.$set(self.couponData[index], 'isGet', 'Y');
+                            self.maidian("couponSuccess=true");
                         } else if (d.result == 'N') {
                             requestMsg("您已经领取过了，快去使用吧");
+                            self.maidian("couponSuccess=got")
                         } else {
                             requestMsg("今日优惠券已领取完毕，明天再来领取吧");
+                            self.maidian("couponSuccess=end")
                         }
                     } else {
-                        if (d=='') {
+                        if (d == '') {
                             requestMsg("哎呀，出错了！");
                         } else {
                             location.href = d.loginUrl;
@@ -291,7 +306,7 @@ let vm = new Vue({
             if (this.isApp) {
                 // 跳转注册页
                 // TODO:
-                location.href = '';
+                this.toRegister();
             } else {
                 // 跳转原生app商品购买页
                 window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + id + '"}';
@@ -303,8 +318,7 @@ let vm = new Vue({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
                 data: {
-                    maidianInfo: '/fanbei-web/activity/barginIndex?userName=' + userName,
-                    spread: spread
+                    maidianInfo: '/fanbei-web/activity/doubleTwelve?userName=' + userName+"&" +data + "&spread="+ spread
                 },
                 success: function (data) {
                     console.log(data)
@@ -316,6 +330,9 @@ let vm = new Vue({
         },
         changeProduct: function (key) {
             this.currentData = this.goodsData[key];
-        }
+        },
+        toRegister: function () {
+            location.href = "doubleTwelveRegister?spread=" + spread;
+         }    
     }
 });

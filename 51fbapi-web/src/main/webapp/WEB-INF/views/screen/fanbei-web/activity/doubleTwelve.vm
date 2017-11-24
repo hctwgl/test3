@@ -43,8 +43,8 @@
                 <div class="line-right-1"></div>
             </div>
             <div class="super-txt">双十二秒get大牌</div>
-            <div class="day-box">
-                <ul class="day-ul flex fd-row">
+            <div class="day-box" id="dayBox">
+                <ul class="day-ul flex fd-row" id="dayUl">
                     <li class="day-li" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N', }"
                         @click="changeProduct(key)">12月{{key}}日
                         <p v-if="value.type=='E'">已结束</p>
