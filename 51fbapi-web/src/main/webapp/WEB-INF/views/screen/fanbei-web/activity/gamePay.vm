@@ -5,11 +5,12 @@
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>游戏充值</title>
+    <link rel="stylesheet" type="text/css" href="/dist/css/mui.min.css">
+    <link rel="stylesheet" type="text/css" href="/dist/css/mui.picker.min.css" />
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/gamePay.css?version=$version">
 </head>
 <body>
 <div id="gamePay" class="gamePay">
-    <div class="kong"></div>
     <div class="gameName">
        <p>游戏名称</p>
        <input type="text" placeholder="请输入游戏名称"/>
@@ -54,6 +55,8 @@
         <div class="sure">确认充值</div>
     </div>
 </div>
+<script type="text/javascript" src="/dist/js/mui.min.js?version=$version"></script>
+<script type="text/javascript" src="/dist/js/mui.picker.min.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/11/gamePay.js?version=$version"></script>
 </body>
 </html>
