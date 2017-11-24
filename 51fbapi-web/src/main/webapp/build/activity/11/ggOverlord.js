@@ -56,8 +56,8 @@ let vm = new Vue({
                     self.content=data.data;
                     //console.log(self.content);
                     self.couponLength=self.content.returnCouponList.length;
-                    self.content.inviteAmount=self.content.inviteAmount.toString();
-                    self.inviteSumMoney=self.content.inviteAmount.split('');
+                    self.content.couponAmount=self.content.couponAmount.toString();
+                    self.inviteSumMoney=self.content.couponAmount.split('');
                     self.$nextTick(function () {
                         /*图片预加载*/
                         $(".first").each(function() {
