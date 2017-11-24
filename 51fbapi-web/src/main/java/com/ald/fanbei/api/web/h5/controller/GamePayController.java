@@ -32,7 +32,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
  */
 @RestController
 @RequestMapping(value = "/game/pay", produces = "application/json;charset=UTF-8")
-public class H5GamePayController extends H5Controller {
+public class GamePayController extends H5Controller {
 
     @Autowired
     private AfSupGameService afSupGameService;

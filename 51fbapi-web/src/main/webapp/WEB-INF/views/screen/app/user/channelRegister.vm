@@ -44,14 +44,14 @@
     #end
     #if( $!{style}==6 )
         <div class="progress" id="progress">
-            <div class="text">￥500</div>
+            <div class="text">￥20000</div>
             <div class="progress_bg">
                 <div class="progress_bar"></div>
             </div>
             <div class="progress_btn" id="progress_btn"></div>
             <div class="moneyFlag">
-                <span class="lf" id="leftMoney">￥500</span>
-                <span class="fr" id="rightMoney">￥0.5</span>
+                <span class="lf" id="leftMoney">￥20000</span>
+                <span class="fr" id="rightMoney">￥20.00</span>
             </div>
         </div>
     #end
