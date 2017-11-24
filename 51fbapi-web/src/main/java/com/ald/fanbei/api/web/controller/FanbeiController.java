@@ -47,7 +47,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
-	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getHomeInfoV2","/goods/getHomeInfoFront",
+	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getHomeInfoV2",
 	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec",
             "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getHomeGoodsList","/goods/getThirdGoodsDetailInfo","/cashier/start","/cashier/pre" ,"/cashier/getNperList",
@@ -256,8 +256,6 @@ public class FanbeiController extends BaseController {
 
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-		// 灰度测试
-		abTest(requestDataVo,context, httpServletRequest);
 		
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         ApiHandleResponse handelResult;
@@ -275,14 +273,6 @@ public class FanbeiController extends BaseController {
             logger.error("sys exception",e);
             throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
         }
-	}
-
-	private void abTest(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-		// 首页AB测试
-		if(AbTestUrl.HOME_PAGE.equalsIgnoreCase(requestDataVo.getMethod())) {
-			requestDataVo.setMethod(AbTestUrl.HOME_PAGE_V2);
-		}
-		
 	}
 
 	@RequestMapping(value = { "re1fla5shLoc3alReesC8a1sh" }, method = RequestMethod.GET, produces = "application/json;charset=utf-8")

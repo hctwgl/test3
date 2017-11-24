@@ -20,6 +20,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.rebate" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
+	<context:component-scan base-package="com.ald.fanbei.api.abtest.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.listener" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.api" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
@@ -210,7 +211,6 @@
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 				<entry key="/goods/getHomeInfoV1" value-ref="getHomeInfoV1Api" />
 				<entry key="/goods/getHomeInfoV2" value-ref="getHomeInfoV2Api" />
-				<entry key="/goods/getHomeInfoFront" value-ref="getHomeInfoFrontApi" />
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
@@ -428,8 +428,17 @@
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
-
+				
 			</map>
+		</constructor-arg>
+	</bean>
+	
+	<!-- 灰度测试 URL-->
+	<bean id="abTestHandleList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>/goods/getHomeInfoFront</value>
+			</list>
 		</constructor-arg>
 	</bean>
 
