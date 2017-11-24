@@ -2,20 +2,27 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAmountService;
-import com.ald.fanbei.api.common.enums.AfUserAmountBizType;
-import com.ald.fanbei.api.common.enums.AfUserAmountDetailType;
-import com.ald.fanbei.api.common.enums.AfUserAmountProcessStatus;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
-import com.ald.fanbei.api.dal.dao.AfUserAmountDao;
-import com.ald.fanbei.api.dal.dao.AfUserAmountDetailDao;
-import com.ald.fanbei.api.dal.dao.AfUserAmountLogDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.sun.org.apache.bcel.internal.generic.RET;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -25,6 +32,7 @@ import java.util.List;
  */
 @Service("afUserAmountService")
 public class AfUserAmountServiceImpl implements AfUserAmountService {
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource
     AfUserAmountDao afUserAmountDao;
@@ -34,9 +42,41 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
     AfUserAmountDetailDao afUserAmountDetailDao;
     @Resource
     AfBorrowBillService afBorrowBillService;
+    @Resource
+    AfOrderService afOrderService;
+
+    @Resource
+    AfOrderRefundDao afOrderRefundDao;
+    @Resource
+    AfBorrowBillDao afBorrowBillDao;
+
+    @Resource
+    AfRepaymentDao afRepaymentDao;
+
+    @Resource
+    AfBorrowService afBorrowService;
+
+    @Resource
+    TransactionTemplate transactionTemplate;
 
     @Override
-    public void addUseAmountDetail(AfRepaymentDo afRepaymentDo) {
+    public void addUseAmountDetail(final AfRepaymentDo afRepaymentDo) {
+
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                try{
+                    _addUserAmountDetail(afRepaymentDo);
+                }
+                catch (Exception e){
+                    logger.error("add userAmount error",e);
+                    status.setRollbackOnly();
+                }
+            }
+        });
+    }
+
+    private void _addUserAmountDetail(AfRepaymentDo afRepaymentDo){
         BigDecimal total = afRepaymentDo.getRepaymentAmount();  //总金额
         List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(afRepaymentDo.getBillIds().split(","), new Converter<String, Long>() {
             @Override
@@ -74,26 +114,28 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         afUserAmountDao.addUserAmount(afUserAmountDo);
         addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
 
-        if(BigDecimal.ZERO.compareTo(principleAmount) !=0){
-            afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),principleAmount,1, AfUserAmountDetailType.BENJIN));
-        }
-        if(BigDecimal.ZERO.compareTo(poundageAmount) !=0){
-            afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),poundageAmount,1,AfUserAmountDetailType.FENQISHOUXUFEI));
-        }
-        if(BigDecimal.ZERO.compareTo(overdueInterestAmount) !=0){
-            afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),overdueInterestAmount,1,AfUserAmountDetailType.YUQILIXI));
-        }
+        //if(BigDecimal.ZERO.compareTo(principleAmount) !=0){
+        afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),principleAmount,1, AfUserAmountDetailType.BENJIN));
+        //}
+        //if(BigDecimal.ZERO.compareTo(poundageAmount) !=0){
+        afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),poundageAmount,1,AfUserAmountDetailType.FENQISHOUXUFEI));
+        //}
+        //if(BigDecimal.ZERO.compareTo(overdueInterestAmount) !=0){
+        afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),overdueInterestAmount,1,AfUserAmountDetailType.YUQILIXI));
+        //}
 
-        if(BigDecimal.ZERO.compareTo(yohuijuang) !=0){
-            afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),BigDecimal.ZERO.subtract( yohuijuang),1,AfUserAmountDetailType.YOUHUIJUANGDIKOU));
-        }
-        if(BigDecimal.ZERO.compareTo(yuer) !=0){
-            afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),BigDecimal.ZERO.subtract( yuer),1,AfUserAmountDetailType.ZHANGHUYUERDIKOU));
-        }
+        //if(BigDecimal.ZERO.compareTo(yohuijuang) !=0){
+        afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),BigDecimal.ZERO.subtract( yohuijuang),1,AfUserAmountDetailType.YOUHUIJUANGDIKOU));
+        //}
+        //if(BigDecimal.ZERO.compareTo(yuer) !=0){
+        afUserAmountDetailDao.addUserAmountDetail( buildAmountDetail(afUserAmountDo.getId(),BigDecimal.ZERO.subtract( yuer),1,AfUserAmountDetailType.ZHANGHUYUERDIKOU));
+        //}
         //if(BigDecimal.ZERO.compareTo(zifu) !=0){
         afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(),BigDecimal.ZERO.subtract( zifu),1,AfUserAmountDetailType.SHIJIZHIFU));
         //}
     }
+
+
 
     @Override
     public void addUserAmountLog(AfRepaymentDo afRepaymentDo, AfUserAmountProcessStatus afUserAmountProcessStatus) {
@@ -124,4 +166,173 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         afUserAmountDetailDo.setRemark("");
         return afUserAmountDetailDo;
     }
+
+
+
+    //订单退款生成记录
+    public int refundOrder(final long orderId) {
+        return  transactionTemplate.execute(new TransactionCallback<Integer>() {
+            @Override
+            public Integer doInTransaction(TransactionStatus status) {
+                return _refundOrder(orderId);
+            }
+        });
+    }
+
+    private int _refundOrder(long orderId){
+        AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
+        if (afOrderDo == null) {
+            return 0;
+        }
+        if (!(afOrderDo.getStatus().equals(OrderStatus.CLOSED.getCode()) || afOrderDo.getStatus().equals(OrderStatus.DEAL_REFUNDING.getCode()))) {
+            return 0;
+        }
+        AfOrderRefundDo afOrderRefundDo = afOrderRefundDao.getOrderRefundByOrderId(orderId);
+        if (afOrderRefundDo == null || !(afOrderRefundDo.getStatus().equals(OrderRefundStatus.FINISH.getCode()) || afOrderRefundDo.getStatus().equals(OrderRefundStatus.REFUNDING.getCode()))) {
+            return 0;
+        }
+
+        AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderId);
+        if (borrowInfo == null) {
+            return 0;
+        }
+        List<AfBorrowBillDo> repaymentedBillList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowInfo.getRid(),
+                BorrowBillStatus.YES.getCode());
+        HashMap<String, BigDecimal> map = calculateRepaymentAndCouponAmount(borrowInfo.getRid());
+        BigDecimal bankPay = afOrderDo.getBankAmount();                 //直接支付
+        BigDecimal backBenJin = map.get("benjin");                  //本金
+        BigDecimal fenqishouxufei = map.get("feiqishouxufei");    //分期手续费
+        BigDecimal yuqilixi = map.get("yuqilixi");                  //逾期利息
+        BigDecimal youhuijuan = map.get("coupon");
+
+        AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
+        afUserAmountDo.setAmount(map.get("repayment"));
+        afUserAmountDo.setBizOrderNo("tkaaa");  //随机生成
+        afUserAmountDo.setBizType(AfUserAmountBizType.REFUND.getCode());
+        afUserAmountDo.setSourceId(afOrderRefundDo.getRid());
+        afUserAmountDo.setUserId(afOrderRefundDo.getUserId());
+        afUserAmountDo.setStatus(AfUserAmountProcessStatus.SUCCESS.getCode());
+        afUserAmountDo.setRemark("");
+        afUserAmountDao.addUserAmount(afUserAmountDo);
+//        addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
+
+
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), backBenJin, repaymentedBillList.size(), AfUserAmountDetailType.BENJIN));
+
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), fenqishouxufei, repaymentedBillList.size(), AfUserAmountDetailType.FENQISHOUXUFEI));
+
+
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), yuqilixi, 1, AfUserAmountDetailType.YUQILIXI));
+
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), BigDecimal.ZERO.subtract(youhuijuan), 1, AfUserAmountDetailType.YOUHUIJUANGDIKOU));
+
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), BigDecimal.ZERO.subtract(bankPay), 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+
+        return 1;
+    }
+
+
+    private HashMap  calculateRepaymentAndCouponAmount(Long borrowId) {
+        List<AfBorrowBillDo> repaymentedBillList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowId,
+                BorrowBillStatus.YES.getCode());
+        BigDecimal totalAmount = BigDecimal.ZERO;       //总还款金额
+        BigDecimal couponAmount = BigDecimal.ZERO;      //优惠
+        BigDecimal benjin = BigDecimal.ZERO;            //本金
+        BigDecimal feiqishouxufei = BigDecimal.ZERO;    //分期手续费
+        BigDecimal yuqilixi = BigDecimal.ZERO;          //逾期利息
+
+        HashMap<String ,BigDecimal> ret = new HashMap<>();
+
+        if (CollectionUtils.isEmpty(repaymentedBillList)) {
+            // 没有还款记录
+
+        } else {
+            logger.info("billList = {}", repaymentedBillList);
+            List<Long> repaymentIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList,
+                    new Converter<AfBorrowBillDo, Long>() {
+                        @Override
+                        public Long convert(AfBorrowBillDo source) {
+                            return source.getRepaymentId();
+                        }
+                    });
+            logger.info("repaymentIds = {}", repaymentIds);
+            List<Long> billIds = CollectionConverterUtil.convertToListFromList(repaymentedBillList,
+                    new Converter<AfBorrowBillDo, Long>() {
+                        @Override
+                        public Long convert(AfBorrowBillDo source) {
+                            return source.getRid();
+                        }
+                    });
+
+            List<AfRepaymentDo> repaymentList = afRepaymentDao.getRepaymentListByIds(repaymentIds);
+            for (AfRepaymentDo repayment : repaymentList) {
+                List<Long> repaymentBillLists = CollectionConverterUtil
+                        .convertToListFromArray(repayment.getBillIds().split(","), new Converter<String, Long>() {
+                            @Override
+                            public Long convert(String source) {
+                                return Long.parseLong(source);
+                            }
+                        });
+                for (Long billId : billIds) {
+                    if (repaymentBillLists.contains(billId)) {
+                        AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
+                        if(billInfo == null) continue;
+
+                        totalAmount = BigDecimalUtil.add(totalAmount, billInfo.getBillAmount());
+                        benjin = BigDecimalUtil.add(benjin, billInfo.getPrincipleAmount());
+                        feiqishouxufei =BigDecimalUtil.add(feiqishouxufei, billInfo.getPoundageAmount().add(billInfo.getInterestAmount()));
+                        yuqilixi =BigDecimalUtil.add(yuqilixi, billInfo.getOverdueInterestAmount().add(billInfo.getOverduePoundageAmount()));
+                        if (repayment.getUserCouponId() == 0l) {
+                            // 没有优惠券,则按照账单金额来
+
+                            continue;
+                        } else {
+                            // 有优惠券
+
+                            couponAmount = BigDecimalUtil.add(couponAmount, calculateRepaymentCouponAmount(repayment, billInfo));
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ret.put("repayment",totalAmount);
+        ret.put("coupon",couponAmount);
+        ret.put("benjin",benjin);
+        ret.put("feiqishouxufei",feiqishouxufei);
+        ret.put("yuqilixi",yuqilixi);
+        return ret;
+    }
+
+
+    private AfBorrowBillDo getBillFromList(List<AfBorrowBillDo> billList, Long billId) {
+        if (CollectionUtils.isEmpty(billList)) {
+            return null;
+        }
+        for (AfBorrowBillDo billInfo : billList) {
+            if (billInfo.getRid().equals(billId)) {
+                return billInfo;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 计算该笔账单在还款中的实际还款金额
+     *
+     * @param repayment
+     * @param billInfo
+     * @return
+     */
+    private BigDecimal calculateRepaymentCouponAmount(AfRepaymentDo repayment, AfBorrowBillDo billInfo) {
+        logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
+        BigDecimal couponAmount = repayment.getCouponAmount();
+        BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
+        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+        logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
+        return result;
+    }
+
 }

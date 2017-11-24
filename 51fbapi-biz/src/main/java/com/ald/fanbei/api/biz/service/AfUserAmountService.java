@@ -12,4 +12,6 @@ public interface AfUserAmountService {
     void addUseAmountDetail(AfRepaymentDo afRepaymentDo);
     void addUserAmountLog(AfRepaymentDo afRepaymentDo,AfUserAmountProcessStatus afUserAmountProcessStatus);
     void updateUserAmount(AfUserAmountProcessStatus afUserAmountProcessStatus,AfRepaymentDo afRepaymentDo);
+
+    int refundOrder(long orderId);
 }

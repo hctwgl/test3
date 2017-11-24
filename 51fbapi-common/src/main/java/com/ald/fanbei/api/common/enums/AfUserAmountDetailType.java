@@ -12,7 +12,8 @@ public enum AfUserAmountDetailType {
     YUQILIXI( 2,"逾期利息"),
     ZHANGHUYUERDIKOU( 3,"账户余额抵扣"),
     YOUHUIJUANGDIKOU( 4,"优惠券抵扣"),
-    SHIJIZHIFU( 5,"自行支付");
+    SHIJIZHIFU( 5,"自行支付"),
+    ZHIJIEZHIFU( 6,"直接支付");
 
 
 

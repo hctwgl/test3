@@ -95,6 +95,9 @@ public class PayRoutController {
     @Resource
     RedisTemplate redisTemplate;
 
+    @Resource
+    private AfUserAmountService afUserAmountService;
+
 
     private static String TRADE_STATUE_SUCC = "00";
     private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -486,6 +489,22 @@ public class PayRoutController {
         }
 
     }
+
+
+    /**
+     * 生成退款详情
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value = {"/addRefundDetail"})
+    @ResponseBody
+    public int addRefundDetail(long orderId){
+        return afUserAmountService.refundOrder(orderId);
+    }
+
+
+
+
 
 
     /**
