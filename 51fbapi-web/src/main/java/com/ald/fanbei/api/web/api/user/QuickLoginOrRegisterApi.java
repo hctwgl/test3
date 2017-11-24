@@ -245,7 +245,11 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		
 		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+afUserDo.getRid();
 		bizCacheUtil.saveObject(loginWifiMacKey, wifiMac);
-		
+		if(afUserDo.getFailCount() == -1){
+			jo.put("flag","Y");
+		}else{
+			jo.put("flag","N");
+		}
 		//3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
 		Boolean isBorrowed =  bizCacheUtil.isRedisSetValue(Constants.HAVE_BORROWED, String.valueOf(afUserDo.getRid()));
 		if(Boolean.TRUE.equals(isBorrowed)){
