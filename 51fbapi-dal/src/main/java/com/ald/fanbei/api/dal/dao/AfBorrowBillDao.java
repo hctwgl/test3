@@ -389,4 +389,16 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	BigDecimal getOverdueInterestByBorrowId(@Param("userId")Long borrowId);
+
+	/**
+	 * 查询用户历史账单
+	 * @author yuyue
+	 * @Time 2017年11月24日 下午1:32:02
+	 * @param userId
+	 * @param begin
+	 * @param pageSize
+	 * @return
+	 */
+	List<AfBorrowBillDo> getUserAllMonthBill(@Param("userId")Long userId, @Param("begin")int begin, @Param("pageSize")int pageSize);
+
 }

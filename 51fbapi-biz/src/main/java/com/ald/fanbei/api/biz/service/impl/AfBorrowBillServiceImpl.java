@@ -290,4 +290,10 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		return afBorrowBillDao.getOverdueInterestByBorrowId(borrowId);
 	}
 
+	@Override
+	public List<AfBorrowBillDo> getUserAllMonthBill(Long userId, int page,int pageSize) {
+		int begin = (page - 1) * pageSize;
+		return afBorrowBillDao.getUserAllMonthBill(userId,begin,pageSize);
+	}
+
 }

@@ -17,7 +17,7 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 	
 	private String overdueStatus;
 	
-	private int isOut;
+	private Integer isOut;
 	
 	private String status;
 	
@@ -57,14 +57,6 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 		this.overdueStatus = overdueStatus;
 	}
 
-	public int getIsOut() {
-		return isOut;
-	}
-
-	public void setIsOut(int isOut) {
-		this.isOut = isOut;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -87,6 +79,14 @@ public class AfBorrowBillQuery extends Page<AfBorrowBillDo>{
 
 	public void setOutDayEnd(Date outDayEnd) {
 		this.outDayEnd = outDayEnd;
+	}
+
+	public Integer getIsOut() {
+		return isOut;
+	}
+
+	public void setIsOut(Integer isOut) {
+		this.isOut = isOut;
 	}
 	
 }
