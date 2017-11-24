@@ -13,10 +13,10 @@ let vm = new Vue({
     },
     created: function () {
         this.logData();
-        
+
     },
     mounted: function () {
- 
+
     },
     methods: {
         logData: function () { // get 初始化 信息
@@ -32,23 +32,25 @@ let vm = new Vue({
                         self.len = data.data.creditbanner.length;
                         self.topLen = data.data.lunbanner.length;
                         self.$nextTick(() => {
-                            var mySwiper2 = new Swiper('.bannerSwiper', {
-                                loop: true,
-                                autoplay: 5000,
-                                autoplayDisableOnInteraction: false,
-                                pagination: '.mypagination1', // 如果需要分页器
-                                observer: true,//修改swiper自己或子元素时，自动初始化swiper
-                                observeParents: true,//修改swiper的父元素时，自动初始化swiper,
-                            });
-                            mySwiper2.update();
+                            if (self.topLen > 1) {
+                                var mySwiper2 = new Swiper('.bannerSwiper', {
+                                    loop: true,
+                                    autoplay: 5000,
+                                    autoplayDisableOnInteraction: false,
+                                    pagination: '.mypagination1', // 如果需要分页器
+                                    observer: true, //修改swiper自己或子元素时，自动初始化swiper
+                                    observeParents: true, //修改swiper的父元素时，自动初始化swiper,
+                                });
+                                mySwiper2.update();
+                            }
 
 
                             var mySwiper = new Swiper('.bankSwiper', {
                                 // autoplay: 5000,
                                 // autoplayDisableOnInteraction: false,
                                 pagination: '.mypagination2', // 如果需要分页器
-                                observer: true,//修改swiper自己或子元素时，自动初始化swiper
-                                observeParents: true//修改swiper的父元素时，自动初始化swiper
+                                observer: true, //修改swiper自己或子元素时，自动初始化swiper
+                                observeParents: true //修改swiper的父元素时，自动初始化swiper
                             });
                             mySwiper.update();
 
@@ -65,7 +67,7 @@ let vm = new Vue({
 
         },
         jump: function (data) {
-            location.href= data;
+            location.href = data;
         }
     }
 })
