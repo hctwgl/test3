@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfSupGameService;
 import com.ald.fanbei.api.common.FanbeiH5Context;
+import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
 import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -59,4 +60,27 @@ public class H5GamePayController extends H5Controller {
 	}
     }
 
+    @RequestMapping(value = "/goodsInfo", method = RequestMethod.POST)
+    public H5CommonResponse getGoodsInfo(HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	FanbeiH5Context context = doH5Check(request, false);
+	try {
+	    String goodsId = request.getParameter("goodsId");
+
+	    if (StringUtils.isNotBlank(goodsId)) {
+
+		AfSupGameDo afSupGameDo = afSupGameService.getById(Long.parseLong(goodsId));
+		if (afSupGameDo != null) {
+		    data.put("goodsId", goodsId);
+		    data.put("content", afSupGameDo.getXmlFile());
+
+		    return H5CommonResponse.getNewInstance(true, "查询成功", "", data);
+		}
+	    }
+	    return H5CommonResponse.getNewInstance(false, "参数错误");
+	} catch (Exception e) {
+	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
+	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
+	}
+    }
 }
