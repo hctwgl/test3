@@ -91,7 +91,7 @@ public class GetPersonInfoController {
 				//根据姓名和身份证号查询借款人id
 				long userId = afIdNumberService.findByIdNoAndName(name,idNo);
 				if (userId == 0) {
-					map.put("errorCode", "0001");
+					map.put("errorCode", "4101");
 					map.put("message", "用户不存在!");
 					map.put("params", null);
 					jsonString = JsonUtil.toJSONString(map);
@@ -99,6 +99,14 @@ public class GetPersonInfoController {
 				}
 				//根据用户ID查询借款表
 				AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+				//判断用户是否存在借款
+				if (borrowCashDo == null) {
+					map.put("errorCode", "0001");
+					map.put("message", "用户没有借款信息!");
+					map.put("params", null);
+					jsonString = JsonUtil.toJSONString(map);
+					return jsonString;
+				}
 				//封装第一层数据
 				LoanRecord loanRecord = new LoanRecord();
 				loanRecord.setName(name);
