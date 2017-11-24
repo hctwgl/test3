@@ -192,9 +192,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 							return resp1;
 
 						}
-
-						BigDecimal decreasePrice = resultDo.getDecreasePrice();
-						priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
+						
+						//后端优化:商品详情页面展示的商品价格，各个规格的价格取后台商品的售价即可；（商品的售价会维护成商品折扣后的新人价）
+						//BigDecimal decreasePrice = resultDo.getDecreasePrice();
+						//priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
 						transactionTemplate
 								.execute(new TransactionCallback<Long>() {
 

@@ -1,28 +1,19 @@
-// var mySwiper = new Swiper('.swiper-container', {
-//     // autoplay: 5000,//可选选项，自动滑动
-//     pagination: '.swiper-pagination',
-//     paginationType: 'bullets'
-// })
+
+var userName = getUrl('userName'); //获取用户id
 
 let vm = new Vue({
     el: "#bankBox",
     data: {
         allData: [],
-        len: 0
+        len: 0,
+        topLen: 0
     },
     created: function () {
         this.logData();
-        
+        this.maidian("card", userName);
     },
     mounted: function () {
-        this.$nextTick(() => {
-            var mySwiper = new Swiper('.swiper-container', {
-                pagination: '.swiper-pagination', // 如果需要分页器
-                observer: true,//修改swiper自己或子元素时，自动初始化swiper
-                observeParents: true//修改swiper的父元素时，自动初始化swiper
-            });
-            mySwiper.update()
-        })
+
     },
     methods: {
         logData: function () { // get 初始化 信息
@@ -33,11 +24,35 @@ let vm = new Vue({
                 // dataType: 'json',
                 success: function (data) {
                     data = eval('(' + data + ')');
-                    console.log(data.success)
                     if (data.success) {
                         self.allData = data.data;
                         self.len = data.data.creditbanner.length;
-                        console.log(">>>>>>>>>>")
+                        self.topLen = data.data.lunbanner.length;
+                        self.$nextTick(() => {
+                            if (self.topLen > 1) {
+                                var mySwiper2 = new Swiper('.bannerSwiper', {
+                                    loop: true,
+                                    autoplay: 5000,
+                                    autoplayDisableOnInteraction: false,
+                                    pagination: '.mypagination1', // 如果需要分页器
+                                    observer: true, //修改swiper自己或子元素时，自动初始化swiper
+                                    observeParents: true, //修改swiper的父元素时，自动初始化swiper,
+                                });
+                                mySwiper2.update();
+                            }
+
+
+                            var mySwiper = new Swiper('.bankSwiper', {
+                                // autoplay: 5000,
+                                // autoplayDisableOnInteraction: false,
+                                pagination: '.mypagination2', // 如果需要分页器
+                                observer: true, //修改swiper自己或子元素时，自动初始化swiper
+                                observeParents: true //修改swiper的父元素时，自动初始化swiper
+                            });
+                            mySwiper.update();
+
+
+                        })
                     } else {
                         requestMsg("哎呀，出错了！");
                     }
@@ -48,8 +63,23 @@ let vm = new Vue({
             });
 
         },
-        jump: function (data) {
-            location.href= data;
+        jump: function (url,data,type) {
+            this.maidian(type,data);
+            // console.log(url, data, type)
+            location.href = url;
+        },
+        maidian(type,bank) {
+            //数据统计 
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {
+                    maidianInfo: '/fanbei-web/activity/card?type=' + type + '&bank=' + bank
+                },
+                success: function (data) {
+                    console.log(data)
+                }
+            });
         }
     }
 })

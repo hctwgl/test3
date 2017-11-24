@@ -25,18 +25,20 @@
         <p class="closeRule" @click="closeClick">X</p>
     </div>
     <div class="mask" v-show="ruleShow" @click="closeClick"></div>
-    <div class="shareBtn clearFix">
-        <p class="shareNow" @click="shareNowClick">立即分享</p>
-        <p class="inviteNow" @click="inviteNowClick">邀请赚钱</p>
-    </div>
-    <!--<p class="title"><img src="$src/newUser04.png"></p>!-->
-    <div class="goodList">
+    <div class="goodList goodListAll">
         <div class="good clearFix" @click="buyNowClick(item)" v-for="item in content">
             <img class="newPic" :src="item.goodsIcon" alt="">
         </div>
     </div>
+    <div class="alertApp">
+        <div class="alertContent">
+            <span class="only">只能在51返呗APP中购买</span>
+            <span class="cansole" @click="noDown">取消</span>
+            <span class="downLoad" @click="down">下载</span>
+        </div>
+    </div>
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
-<script type="text/javascript" src="/dist/activity/11/newSpecial.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/11/newSpecialShare.js?version=$version"></script>
 </body>
 </html>

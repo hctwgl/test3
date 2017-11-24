@@ -44,22 +44,35 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfFundSideInfoDo;
-import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfResourceLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.NperDo;
+import com.ald.fanbei.api.dal.dao.AfUserSealDao;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @类描述：
@@ -82,30 +95,31 @@ public class AppH5ProtocolController extends BaseController {
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
-	AfUserAccountService afUserAccountService;	
+	AfUserAccountService afUserAccountService;
 	@Resource
 	AfRescourceLogService afRescourceLogService;
-    @Resource
-    AfFundSideBorrowCashService afFundSideBorrowCashService;
+	@Resource
+	AfFundSideBorrowCashService afFundSideBorrowCashService;
 	@Resource
 	AfESdkService afESdkService;
 	@Resource
 	AfContractPdfDao afContractPdfDao;
-
+	@Resource
+	AfUserSealDao afUserSealDao;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
-
-	@RequestMapping(value = { "protocolFenqiService" }, method = RequestMethod.GET)
+	@RequestMapping(value = {"protocolFenqiService"}, method = RequestMethod.GET)
 	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(userName == null || !webContext.isLogin() ) {
+		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
+		if (userName == null || !webContext.isLogin()) {
 			throw new FanbeiException("非法用户");
 		}
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
 		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
-		
+
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
 		Long userId = afUserDo.getRid();
@@ -120,7 +134,6 @@ public class AppH5ProtocolController extends BaseController {
 		AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
 		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
 		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
-		GetSeal(model, afUserDo, accountDo);
 		model.put("lender", lenderDo.getValue());// 出借人
 		model.put("mobile", afUserDo.getMobile());// 联系电话
 		List<NperDo> list = JSONArray.parseArray(consumeDo.getValue(), NperDo.class);
@@ -131,18 +144,9 @@ public class AppH5ProtocolController extends BaseController {
 			model.put("lateFeeMin", new BigDecimal(amounts[0]));
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
-		if (null != lenderDo.getValue()){
-			if ("浙江名信信息科技有限公司".equals(lenderDo.getValue())){
-				AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
-				if (null != companyUserSealDo.getUserSeal()){
-					model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-				}
-			}else if ("浙江名恒投资管理有限公司".equals(lenderDo.getValue())){
-				AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
-				if (null != companyUserSealDo.getUserSeal()){
-					model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-				}
-			}
+		if (null != borrowId && 0 != borrowId) {
+			GetSeal(model, afUserDo, accountDo);
+			lender(model, null);
 		}
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
@@ -243,40 +247,43 @@ public class AppH5ProtocolController extends BaseController {
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
 		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 
-		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
-		BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
-		
-		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
-		if (poundageRateCash != null) {
-			poundage = new BigDecimal(poundageRateCash.toString());
-		}
-		
-		//fmf_得到逾期费率
-		AfResourceDo afResourceDo1 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_POUNDAGE);
-		AfResourceDo afResourceDo2 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_OVERDUE_POUNDAGE);
-		double borrowCashPoundage = Double.parseDouble(afResourceDo1.getValue().toString());
-		double borrowCashOvreduePoundage = Double.parseDouble(afResourceDo2.getValue().toString());
-		double sumOverdue=borrowCashPoundage+borrowCashOvreduePoundage;
-		model.put("overduePoundageRate", sumOverdue);//逾期手续费率
+        BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 
+        AfBorrowCashDo afBorrowCashDo = null;
+        if (borrowId > 0) {
+            afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+            poundage = afBorrowCashDo.getPoundageRate();
+        }
+        BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
+
+        Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+        if (poundageRateCash != null) {
+            poundage = new BigDecimal(poundageRateCash.toString());
+        }
+        //fmf_得到逾期费率
+        AfResourceDo afResourceDo1 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_POUNDAGE);
+        AfResourceDo afResourceDo2 = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_OVERDUE_POUNDAGE);
+        double borrowCashPoundage = Double.parseDouble(afResourceDo1.getValue().toString());
+        double borrowCashOvreduePoundage = Double.parseDouble(afResourceDo2.getValue().toString());
+        double sumOverdue = borrowCashPoundage + borrowCashOvreduePoundage;
+        model.put("overduePoundageRate", sumOverdue);//逾期手续费率
 
 
 		model.put("dayRate", bankService);//日利率
 		model.put("overdueRate", overdue);//逾期费率（日）
 		model.put("poundageRate", poundage);//手续费率
-		GetSeal(model, afUserDo, accountDo);
 
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 		if (borrowId > 0) {
-			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+            afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借人
 			AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
-			afContractPdfDo.setType((byte)3);
+			afContractPdfDo.setType((byte) 3);
 			afContractPdfDo.setTypeId(borrowId);
 			AfContractPdfDo afContractPdfDo1 = afContractPdfDao.selectByTypeId(afContractPdfDo);
-			if (null != afContractPdfDo1 && null != afContractPdfDo1.getContractPdfUrl()){
-				model.put("pdfUrl",afContractPdfDo1.getContractPdfUrl());
+			if (null != afContractPdfDo1 && null != afContractPdfDo1.getContractPdfUrl()) {
+				model.put("pdfUrl", afContractPdfDo1.getContractPdfUrl());
 			}
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
@@ -289,10 +296,11 @@ public class AppH5ProtocolController extends BaseController {
 					model.put("lenderIdNumber", rate.get("lenderIdNumber"));
 					model.put("lenderIdAmount", afBorrowCashDo.getAmount());
 					model.put("gmtPlanRepayment", afBorrowCashDo.getGmtPlanRepayment());
-					
+
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					lender(model,fundSideInfo);
+					GetSeal(model, afUserDo, accountDo);
+					lender(model, fundSideInfo);
 				}
 			}
 		}
@@ -301,37 +309,15 @@ public class AppH5ProtocolController extends BaseController {
 	}
 
 	private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
-		if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
-			if (null != fundSideInfo.getName()){
-				if ("浙江名信信息科技有限公司".equals(fundSideInfo.getName())){
-					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
-					if (null != companyUserSealDo.getUserSeal()){
-						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-					}
-				}else if ("浙江名恒投资管理有限公司".equals(fundSideInfo.getName())){
-					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
-					if (null != companyUserSealDo.getUserSeal()){
-						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-					}
-				}
-			}
+		if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
 			model.put("lender", fundSideInfo.getName());// 出借人
-		}else{
+		} else {
 			AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-			if (null != lenderDo.getValue()){
-				if ("浙江名信信息科技有限公司".equals(lenderDo.getValue())){
-					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-2l);
-					if (null != companyUserSealDo.getUserSeal()){
-						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-					}
-				}else if ("浙江名恒投资管理有限公司".equals(lenderDo.getValue())){
-					AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-3l);
-					if (null != companyUserSealDo.getUserSeal()){
-						model.put("secondSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
-					}
-				}
-			}
 			model.put("lender", lenderDo.getValue());// 出借人
+		}
+		AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
+		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+			model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 		}
 	}
 
@@ -384,11 +370,15 @@ public class AppH5ProtocolController extends BaseController {
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 		model.put("dayRate", bankService);
-		GetSeal(model,afUserDo, accountDo);
 		BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
 		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
 			poundage = new BigDecimal(poundageRateCash.toString());
+		}
+		AfBorrowCashDo afBorrowCashDo = null;
+		if (borrowId > 0) {
+			afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+			poundage = afBorrowCashDo.getPoundageRate();
 		}
 
 		//fmf_得到逾期费率
@@ -398,14 +388,10 @@ public class AppH5ProtocolController extends BaseController {
 		double borrowCashOvreduePoundage = Double.parseDouble(afResourceDo2.getValue().toString());
 		double sumOverdue=borrowCashPoundage+borrowCashOvreduePoundage;
 		model.put("overduePoundageRate", sumOverdue);//逾期手续费率
-
-
-		BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
 		model.put("poundageRate", poundage);//手续费率
-		//model.put("overduePoundageRate", overduePoundage);//逾期手续费率
 		
 		if (borrowId > 0) {
-			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+			 afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
@@ -418,7 +404,10 @@ public class AppH5ProtocolController extends BaseController {
 					model.put("amountLower", afBorrowCashDo.getAmount());
 					//查看有无和资金方关联，有的话，替换里面的借出人信息
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-					lender(model,fundSideInfo);
+                    if (renewalId > 0){
+                        lender(model, fundSideInfo);
+                        GetSeal(model, afUserDo, accountDo);
+                    }
 					/*if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
 						model.put("lender", fundSideInfo.getName());// 出借人
 					}else{
@@ -494,204 +483,204 @@ public class AppH5ProtocolController extends BaseController {
 		return str[num - 1];
 	}
 
-	public static String toCapital(double x) {
-		DecimalFormat format = new DecimalFormat("#.00");
-		String str = format.format(x);
-		System.out.println(str);
-		String s[] = str.split("\\.");
-		String temp = "";
-		int ling = 0;
-		int shu = 0;
-		int pos = 0;
-		for (int j = 0; j < s[0].length(); ++j) {
-			int num = s[0].charAt(j) - '0';
-			if (num == 0) {
-				ling++;
-				if (ling == s[0].length()) {
-					temp = "零";
-				} else if (s[0].length() - j - 1 == 4) {
-					if (shu == 1 && (s[0].length() - pos - 1) >= 5 && (s[0].length() - pos - 1) <= 7) {
-						temp += "万";
-					}
-				} else if (s[0].length() - j - 1 == 8) {
-					if (shu == 1 && (s[0].length() - pos - 1) >= 9 && (s[0].length() - pos - 1) <= 11) {
-						temp += "亿";
-					}
-				}
-			} else {
-				shu++;
-				int flag = 0;
-				if (shu == 1) {
-					ling = 0;
-					pos = j;
-				}
-				if (shu == 2) {
-					flag = 1;
-					if (ling > 0) {
-						temp += "零";
-					}
-					shu = 1;
-					pos = j;
-					ling = 0;
-				}
-				if (s[0].length() - j - 1 == 11) {
-					temp += ToBig(num) + "仟";
-				} else if (s[0].length() - j - 1 == 10) {
-					temp += ToBig(num) + "佰";
-				} else if (s[0].length() - j - 1 == 9) {
-					if (num == 1 && flag != 1)
-						temp += "拾";
-					else
-						temp += ToBig(num) + "拾";
-				} else if (s[0].length() - j - 1 == 8) {
-					temp += ToBig(num) + "亿";
-				} else if (s[0].length() - j - 1 == 7) {
-					temp += ToBig(num) + "仟";
-				} else if (s[0].length() - j - 1 == 6) {
-					temp += ToBig(num) + "佰";
-				} else if (s[0].length() - j - 1 == 5) {
-					if (num == 1 && flag != 1)
-						temp += "拾";
-					else
-						temp += ToBig(num) + "拾";
-				} else if (s[0].length() - j - 1 == 4) {
-					temp += ToBig(num) + "万";
-				} else if (s[0].length() - j - 1 == 3) {
-					temp += ToBig(num) + "仟";
-				} else if (s[0].length() - j - 1 == 2) {
-					temp += ToBig(num) + "佰";
-				} else if (s[0].length() - j - 1 == 1) {
-					if (num == 1 && flag != 1)
-						temp += "拾";
-					else
-						temp += ToBig(num) + "拾";
-				} else {
-					temp += ToBig(num);
-				}
-			}
-			// System.out.println(temp);
-		}
-		temp += "元";
-		for (int j = 0; j < s[1].length(); ++j) {
-			int num = s[1].charAt(j) - '0';
-			if (j == 0) {
-				if (num != 0)
-					temp += ToBig(num) + "角";
-				else if (num == 0 && 1 < s[1].length() && s[1].charAt(1) != '0') {
-					temp += "零";
-				}
-			} else if (j == 1) {
-				if (num != 0)
-					temp += ToBig(num) + "分";
-			}
-		}
-		System.out.println(temp);
-		return temp;
-	}
-
-	public Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> list, Long borrowId) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-
-		for (AfResourceDo afResourceDo : list) {
-			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
-				if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashRange.getCode())) {
-
-					data.put("maxAmount", afResourceDo.getValue());
-					data.put("minAmount", afResourceDo.getValue1());
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
-					data.put("bankDouble", afResourceDo.getValue());
-					if (afBorrowCashDo != null) {
-						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashBaseBankDouble.getCode(), afBorrowCashDo.getGmtCreate());
-						if (logDo != null) {
-							AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
-							data.put("bankDouble", borrow.getValue());
-						}
-					}
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashPoundage.getCode())) {
-					data.put("poundage", afResourceDo.getValue());
-
-					if (afBorrowCashDo != null) {
-						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashPoundage.getCode(), afBorrowCashDo.getGmtCreate());
-						if (logDo != null) {
-							AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
-							data.put("poundage", borrow.getValue());
-						}
-					}
-
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
-					data.put("overduePoundage", afResourceDo.getValue());
-					if (afBorrowCashDo != null) {
-						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashOverduePoundage.getCode(), afBorrowCashDo.getGmtCreate());
-						if (logDo != null) {
-							AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
-							data.put("overduePoundage", borrow.getValue());
-						}
-					}
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
-					data.put("bankRate", afResourceDo.getValue());
-					if (afBorrowCashDo != null) {
-						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BaseBankRate.getCode(), afBorrowCashDo.getGmtCreate());
-						if (logDo != null) {
-							AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
-							data.put("bankRate", borrow.getValue());
-						}
-					}
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLender.getCode())) {
-					data.put("lender", afResourceDo.getValue());
-					data.put("lenderIdNumber", afResourceDo.getValue1());
-					if (afBorrowCashDo != null) {
-						AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode(), afBorrowCashDo.getGmtCreate());
-						if (logDo != null) {
-							AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
-							data.put("lender", borrow.getValue());
-							data.put("lenderIdNumber", borrow.getValue1());
-
-						}
-					}
-				}
-			} else {
-				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
-					data.put("borrowCashDay", afResourceDo.getValue());
-
-				}
-			}
-		}
-
-		// rate.put("overduePoundage", data.get("overduePoundage"));
-		// rate.put("bankService", bankService);
-		// rate.put("poundage", data.get("poundage"));
-		// rate.put("maxAmount", data.get("maxAmount"));
-		// rate.put("minAmount", data.get("minAmount"));
-		// rate.put("borrowCashDay", data.get("borrowCashDay"));
-
-		return data;
-
-	}
-
-	@Override
-	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-    public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-    	  try {
-              RequestDataVo reqVo = new RequestDataVo();
-              
-              JSONObject jsonObj = JSON.parseObject(requestData);
-              reqVo.setId(jsonObj.getString("id"));
-              reqVo.setMethod(request.getRequestURI());
-              reqVo.setSystem(jsonObj);
-              return reqVo;
-          } catch (Exception e) {
-              throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-          }
+    public static String toCapital(double x) {
+        DecimalFormat format = new DecimalFormat("#.00");
+        String str = format.format(x);
+        System.out.println(str);
+        String s[] = str.split("\\.");
+        String temp = "";
+        int ling = 0;
+        int shu = 0;
+        int pos = 0;
+        for (int j = 0; j < s[0].length(); ++j) {
+            int num = s[0].charAt(j) - '0';
+            if (num == 0) {
+                ling++;
+                if (ling == s[0].length()) {
+                    temp = "零";
+                } else if (s[0].length() - j - 1 == 4) {
+                    if (shu == 1 && (s[0].length() - pos - 1) >= 5 && (s[0].length() - pos - 1) <= 7) {
+                        temp += "万";
+                    }
+                } else if (s[0].length() - j - 1 == 8) {
+                    if (shu == 1 && (s[0].length() - pos - 1) >= 9 && (s[0].length() - pos - 1) <= 11) {
+                        temp += "亿";
+                    }
+                }
+            } else {
+                shu++;
+                int flag = 0;
+                if (shu == 1) {
+                    ling = 0;
+                    pos = j;
+                }
+                if (shu == 2) {
+                    flag = 1;
+                    if (ling > 0) {
+                        temp += "零";
+                    }
+                    shu = 1;
+                    pos = j;
+                    ling = 0;
+                }
+                if (s[0].length() - j - 1 == 11) {
+                    temp += ToBig(num) + "仟";
+                } else if (s[0].length() - j - 1 == 10) {
+                    temp += ToBig(num) + "佰";
+                } else if (s[0].length() - j - 1 == 9) {
+                    if (num == 1 && flag != 1)
+                        temp += "拾";
+                    else
+                        temp += ToBig(num) + "拾";
+                } else if (s[0].length() - j - 1 == 8) {
+                    temp += ToBig(num) + "亿";
+                } else if (s[0].length() - j - 1 == 7) {
+                    temp += ToBig(num) + "仟";
+                } else if (s[0].length() - j - 1 == 6) {
+                    temp += ToBig(num) + "佰";
+                } else if (s[0].length() - j - 1 == 5) {
+                    if (num == 1 && flag != 1)
+                        temp += "拾";
+                    else
+                        temp += ToBig(num) + "拾";
+                } else if (s[0].length() - j - 1 == 4) {
+                    temp += ToBig(num) + "万";
+                } else if (s[0].length() - j - 1 == 3) {
+                    temp += ToBig(num) + "仟";
+                } else if (s[0].length() - j - 1 == 2) {
+                    temp += ToBig(num) + "佰";
+                } else if (s[0].length() - j - 1 == 1) {
+                    if (num == 1 && flag != 1)
+                        temp += "拾";
+                    else
+                        temp += ToBig(num) + "拾";
+                } else {
+                    temp += ToBig(num);
+                }
+            }
+            // System.out.println(temp);
+        }
+        temp += "元";
+        for (int j = 0; j < s[1].length(); ++j) {
+            int num = s[1].charAt(j) - '0';
+            if (j == 0) {
+                if (num != 0)
+                    temp += ToBig(num) + "角";
+                else if (num == 0 && 1 < s[1].length() && s[1].charAt(1) != '0') {
+                    temp += "零";
+                }
+            } else if (j == 1) {
+                if (num != 0)
+                    temp += ToBig(num) + "分";
+            }
+        }
+        System.out.println(temp);
+        return temp;
     }
-	
+
+    public Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> list, Long borrowId) {
+        Map<String, Object> data = new HashMap<String, Object>();
+        AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+
+        for (AfResourceDo afResourceDo : list) {
+            if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
+                if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashRange.getCode())) {
+
+                    data.put("maxAmount", afResourceDo.getValue());
+                    data.put("minAmount", afResourceDo.getValue1());
+
+                } else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
+                    data.put("bankDouble", afResourceDo.getValue());
+                    if (afBorrowCashDo != null) {
+                        AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashBaseBankDouble.getCode(), afBorrowCashDo.getGmtCreate());
+                        if (logDo != null) {
+                            AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+                            data.put("bankDouble", borrow.getValue());
+                        }
+                    }
+
+                } else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashPoundage.getCode())) {
+                    data.put("poundage", afResourceDo.getValue());
+
+                    if (afBorrowCashDo != null) {
+                        AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashPoundage.getCode(), afBorrowCashDo.getGmtCreate());
+                        if (logDo != null) {
+                            AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+                            data.put("poundage", borrow.getValue());
+                        }
+                    }
+
+                } else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
+                    data.put("overduePoundage", afResourceDo.getValue());
+                    if (afBorrowCashDo != null) {
+                        AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashOverduePoundage.getCode(), afBorrowCashDo.getGmtCreate());
+                        if (logDo != null) {
+                            AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+                            data.put("overduePoundage", borrow.getValue());
+                        }
+                    }
+                } else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
+                    data.put("bankRate", afResourceDo.getValue());
+                    if (afBorrowCashDo != null) {
+                        AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.BaseBankRate.getCode(), afBorrowCashDo.getGmtCreate());
+                        if (logDo != null) {
+                            AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+                            data.put("bankRate", borrow.getValue());
+                        }
+                    }
+                } else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLender.getCode())) {
+                    data.put("lender", afResourceDo.getValue());
+                    data.put("lenderIdNumber", afResourceDo.getValue1());
+                    if (afBorrowCashDo != null) {
+                        AfResourceLogDo logDo = afRescourceLogService.selectResourceLogTypeAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode(), afBorrowCashDo.getGmtCreate());
+                        if (logDo != null) {
+                            AfResourceDo borrow = JSON.parseObject(logDo.getOldJson(), AfResourceDo.class);
+                            data.put("lender", borrow.getValue());
+                            data.put("lenderIdNumber", borrow.getValue1());
+
+                        }
+                    }
+                }
+            } else {
+                if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
+                    data.put("borrowCashDay", afResourceDo.getValue());
+
+                }
+            }
+        }
+
+        // rate.put("overduePoundage", data.get("overduePoundage"));
+        // rate.put("bankService", bankService);
+        // rate.put("poundage", data.get("poundage"));
+        // rate.put("maxAmount", data.get("maxAmount"));
+        // rate.put("minAmount", data.get("minAmount"));
+        // rate.put("borrowCashDay", data.get("borrowCashDay"));
+
+        return data;
+
+    }
+
+    @Override
+    public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+	@Override
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+		try {
+			RequestDataVo reqVo = new RequestDataVo();
+
+			JSONObject jsonObj = JSON.parseObject(requestData);
+			reqVo.setId(jsonObj.getString("id"));
+			reqVo.setMethod(request.getRequestURI());
+			reqVo.setSystem(jsonObj);
+			return reqVo;
+		} catch (Exception e) {
+			throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+		}
+	}
+
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub

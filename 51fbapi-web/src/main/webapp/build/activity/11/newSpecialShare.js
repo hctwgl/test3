@@ -23,6 +23,7 @@ let vm = new Vue({
                      console.log(data);
                      /*self.content=eval('('+data.data+')');*/
                     self.content=data.data.goodsList;
+                     console.log(self.content,'self.content')
                      self.$nextTick(function () {
                         /*图片预加载*/
                         $(".first").each(function() {
@@ -72,57 +73,27 @@ let vm = new Vue({
             $('html').removeClass('overFlowClick');
             $('.alertRule').animate({'left':'140%'},600);
         },
-        //点击立即分享
-        shareNowClick(){
-            $.ajax({
-                type: 'post',
-                url: "/activity/freshmanShare/isNew",
-                success: function (data) {
-                    console.log(data);
-                    if(data.msg&&data.msg=='没有登录'){  //是否登录
-                        window.location.href=data.data.loginUrl;
-                    }else{ //已登录调用分享
-                        let dat='{"shareAppTitle":"20元话费、300M流量，3元超值购点击即领","shareAppContent":"51返呗超值新人礼：20元话费3元领，快来抢购吧~","shareAppImage":"https://f.51fanbei.com/h5/app/activity/11/newSpecial-02.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/newSpecialShare'+ '","isSubmit":"Y","sharePage":"newSpecialShare'+'"}';
-                        let base64 = BASE64.encoder(dat);
-                        window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
-                    }
-                },
-                error:function(){
-                    requestMsg('哎呀，出错了！')
-                }
-            });
-            //立即分享埋点
+        //点击立即下载跳到app下载页面
+        down(){
+            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
+            //埋点点击下载的次数
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=shareNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=down'},
                 success:function (data) {
                     console.log(data)
                 }
             });
+
         },
-        //点击邀请有礼---老用户
-        inviteNowClick(){
-            $.ajax({
-                type: 'post',
-                url: "/activity/freshmanShare/isNew",
-                success: function (data) {
-                    console.log(data);
-                    if(data.msg&&data.msg=='没有登录'){  //是否登录
-                        window.location.href=data.data.loginUrl;
-                    }else{ //已登录--到-邀请有礼页面
-                        window.location.href = 'https://app.51fanbei.com/fanbei-web/app/newinvite';
-                    }
-                },
-                error:function(){
-                    requestMsg('哎呀，出错了！')
-                }
-            });
-            //邀请有礼埋点
+        noDown(){
+            $('.alertApp').hide();
+            //埋点点击取消的次数
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=inviteNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=cansole'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -130,32 +101,13 @@ let vm = new Vue({
         },
         //点击立即抢购
         buyNowClick(item){
-            $.ajax({
-                type: 'post',
-                url: "/activity/freshmanShare/isNew",
-                success: function (data) {
-                    console.log(data);
-                    if(data.msg&&data.msg=='没有登录'){  //是否登录
-                        window.location.href=data.data.loginUrl;
-                    }else if(data.data.isNew=='Y'){ //新用户到--商品详情页
-                        if ( item.source=="SELFSUPPORT" ) {
-                            window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"'+item.numId+'"}';
-                        } else {
-                            window.location.href='/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"goodsId":"'+item.numId+'"}';
-                        }
-                    }else if(data.data.isNew=='N'){
-                        requestMsg('您已不是新用户，暂不能购买，可以去邀请朋友购买或参加邀请有礼活动');
-                    }
-                },
-                error:function(){
-                    requestMsg('哎呀，出错了！')
-                }
-            });
-            //立即抢购埋点
-            $.ajax({
+            //显示站外购买渠道弹窗
+            $('.alertApp').show();
+            //埋点点击弹窗的次数
+             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=buyNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=alertApp'},
                 success:function (data) {
                     console.log(data)
                 }

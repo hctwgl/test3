@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public class Constants {
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
+	public static final long SECOND_OF_ONE_MINITS = 60l;
 	public static final long SECOND_OF_THREE = 30l;//30秒
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
@@ -414,8 +415,6 @@ public class Constants {
 	  
 	//代扣
 	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
-	  
-	  //宜信阿福RC4秘钥
+	//宜信阿福RC4秘钥
 	  public static final String YIXIN_AFU_PASSWORD="yixin_afu_password";
-
 }

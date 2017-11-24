@@ -19,18 +19,22 @@ let addModel = function addModel(goodsList,dom,state) {
             var saleAmount = toDecimal2(goodsList[j].saleAmount);
 
             if(goodsList[j].goodsType==1){
-                let amount=` <span>¥${goodsList[j].nperMap.freeAmount}</span><span class="fs_22">起</span>`;
+                let amount=` <span>¥${goodsList[j].nperMap.freeAmount}</span>`;
                 if(goodsList[j].nperMap.isFree==0){
-                    amount=` <span>¥${goodsList[j].nperMap.amount}</span><span class="fs_22">起</span>`;
+                    amount=` <span>¥${goodsList[j].nperMap.amount}</span>`;
                 }
                 con=`<div class="goodsListModel_mainContent_rebate clearfix">
                         <span class="goodsListModel_rebate fl fs_22 fsc_f tac">月供</span>
                         <p class="fl fs_24">
                             ${amount}
+                            <span class="fs_22">起</span>
                         </p>                
                      </div>`;
             }
             let goodInfoUrl = notifyUrl + '&params={"goodsId":"'+goodsList[j].goodsId+'"}';
+            if(goodsList[j].source=='SELFSUPPORT'){
+                 goodInfoUrl = notifyUrl + '&params={"privateGoodsId":"'+goodsList[j].goodsId+'"}';
+            }
             html += `<li class="goodsListModel_item">
                     <a href='${goodInfoUrl}'>
                         <img src=" ${goodsList[j].goodsIcon}" class="mainContent_img">
