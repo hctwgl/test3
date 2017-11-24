@@ -2,27 +2,41 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfFeedBackService;
-import com.ald.fanbei.api.biz.service.JpushService;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory.RiskEventType;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -49,7 +63,8 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Resource
 	JpushService jpushService;
 
-
+	@Resource
+	RiskUtil riskUtil;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 
@@ -191,5 +206,47 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 		return afUserDao.getUserNameByUserId(users);
 	}
 
+	public void updateUserCoreInfo(final Long userId, final String newMobile, final String password) {
+		transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				AfUserDo userDo = afUserDao.getUserById(userId);
+				AfUserAccountDo userAccountDo = afUserAccountDao.getUserAndAccountByUserId(userId);
+				
+				userDo.setUserName(newMobile);
+				userDo.setMobile(newMobile);
+				userAccountDo.setUserName(newMobile);
+				
+				AfUserDo userDoForMod = new AfUserDo();
+				userDoForMod.setRid(userDo.getRid());
+				userDoForMod.setUserName(newMobile);
+				userDoForMod.setMobile(newMobile);
+				if(!StringUtils.isBlank(password)) {
+					String salt = UserUtil.getSalt();
+					userDoForMod.setSalt(salt);
+					userDoForMod.setPassword(UserUtil.getPassword(password, salt));
+				}
+				afUserDao.updateUser(userDoForMod);
+				
+				AfUserAccountDo userAccountDoForMod = new AfUserAccountDo();
+				userAccountDoForMod.setUserId(userDo.getRid());
+				userAccountDoForMod.setUserName(newMobile);
+				afUserAccountDao.updateUserAccount(userAccountDoForMod);
+				
+				AfUserAuthDo authDo = afUserAuthDao.getUserAuthInfoByUserId(userId);
+				if(authDo == null || RiskStatus.A.getCode().equals(authDo.getRiskStatus())) { // 用户还未风控初始化，跳过
+					logger.info("don't init risk,skip sync user");
+				}else {
+					// 更新用户信息 USER
+					RiskRespBo riskResp = riskUtil.registerStrongRisk(userId.toString(), RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "");
+					if (!riskResp.isSuccess()) {
+						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
+					}
+				}
+				
+				return 1;
+			}
+		});
+	}
 
 }

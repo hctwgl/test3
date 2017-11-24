@@ -314,5 +314,12 @@ public interface AfOrderService {
      * @return
      */
     int getOldUserOrderAmount(long userId);
+
+    /**
+     * 获取已完成的订单
+     * @param userId
+     * @return
+     */
+    List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
 	
 }
