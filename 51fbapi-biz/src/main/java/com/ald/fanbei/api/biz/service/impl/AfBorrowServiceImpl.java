@@ -1126,14 +1126,17 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					if (!StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
-						afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
-					}
-					// 直接打款
-					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId, borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
-					
-					// 新增借款日志
-					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
+//					if (!StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+//						afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
+//					}
+//					// 直接打款
+//					afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId, borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
+//
+//					// 新增借款日志
+//					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, amount, userId, borrow.getRid()));
+
+
+
 
 //					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
 //					if(!(orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
@@ -1150,6 +1153,22 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			}
 		});
 	}
+
+
+	public Long updateBorrowStatus(AfBorrowDo borrow,String userName,long userId){
+		//if (!StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+			afBorrowDao.updateBorrowStatus(borrow.getRid(), BorrowStatus.TRANSED.getCode());
+		//}
+		// 直接打款
+		afBorrowLogDao.addBorrowLog(buildBorrowLog(userName, userId, borrow.getRid(), BorrowLogStatus.TRANSED.getCode()));
+
+		// 新增借款日志
+		afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.CONSUME, borrow.getAmount(), userId, borrow.getRid()));
+		return  borrow.getRid();
+	}
+
+
+
 	
 	@Override
 	public Long dealAgentPayBorrowAndBill(final Long userId, final String userName, final BigDecimal amount,final String name,

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.sun.javaws.exceptions.BadVersionResponseException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -707,6 +708,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService{
 //							}
 //						}
 						break;
+						case PAID:
+							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
+							if(afBorrowDo !=null) {
+								List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+								if(borrowList == null || borrowList.size()==0 ){
+									List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+									afBorrowDao.addBorrowBill(billList);
+								}
+							}
+							orderDao.updateOrder(afOrder);
+							break;
 					default:
 						logger.info(" status is {} ",afOrder.getStatus());
 						orderDao.updateOrder(afOrder);

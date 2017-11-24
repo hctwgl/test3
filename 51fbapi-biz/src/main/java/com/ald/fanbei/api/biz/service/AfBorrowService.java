@@ -203,6 +203,8 @@ public interface AfBorrowService {
 	 */
 	Long dealAgentPayBorrowAndBill(AfBorrowDo borrow, Long userId, String userName, BigDecimal amount, String payType,String orderType);
 
+	Long updateBorrowStatus(AfBorrowDo borrow,String userName,long userId);
+
 	/**
 	 * 生成代付借款以及账单
 	 * 

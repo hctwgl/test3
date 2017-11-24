@@ -15,6 +15,8 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 
+import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
@@ -98,19 +100,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfAuthContactsDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
@@ -195,6 +184,9 @@ public class RiskUtil extends AbstractThird {
 	GeneratorClusterNo generatorClusterNo;
 	@Resource
 	AsyLoginService asyLoginService;
+
+	@Resource
+	AfBorrowExtendDao afBorrowExtendDao;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -723,22 +715,29 @@ public class RiskUtil extends AbstractThird {
 		
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);
+
+		AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+		afBorrowExtendDo.setId(borrow.getRid());
+		afBorrowExtendDo.setInBill(0);
+		afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+
 		// 在风控审批通过后额度不变生成账单
 
 		/**
 		 * modify by hongzhengpei
 		 */
 		if(orderInfo.getOrderType().equals(OrderType.TRADE.getCode())){
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
 			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),orderInfo.getOrderType());
 		}
 		else if(orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())){
-
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
 		}
 		else if(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())){
-
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
 		}
 		else if(orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())){
-
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
 		}
 
 		//afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),orderInfo.getOrderType());
@@ -862,7 +861,28 @@ public class RiskUtil extends AbstractThird {
 		// 新增借款信息
 		afBorrowDao.addBorrow(borrow);        //冻结状态
 		// 在风控审批通过后额度不变生成账单
-		//modify by hongzhengpei  不生成帐单
+		AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+		afBorrowExtendDo.setId(borrow.getRid());
+		afBorrowExtendDo.setInBill(0);
+		afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+
+		/**
+		 * modify by hongzhengpei
+		 */
+		if(orderInfo.getOrderType().equals(OrderType.TRADE.getCode())){
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
+			afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(),orderInfo.getOrderType());
+		}
+		else if(orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())){
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
+		}
+		else if(orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())){
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
+		}
+		else if(orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())){
+			afBorrowService.updateBorrowStatus(borrow,userAccountInfo.getUserName(),userAccountInfo.getUserId());
+		}
+
 
 		//afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(),userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(),orderInfo.getOrderType());
 		
