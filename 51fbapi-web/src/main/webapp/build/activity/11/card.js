@@ -1,8 +1,5 @@
-// var mySwiper = new Swiper('.swiper-container', {
-//     // autoplay: 5000,//可选选项，自动滑动
-//     pagination: '.swiper-pagination',
-//     paginationType: 'bullets'
-// })
+
+var userName = getUrl('userName'); //获取用户id
 
 let vm = new Vue({
     el: "#bankBox",
@@ -13,7 +10,7 @@ let vm = new Vue({
     },
     created: function () {
         this.logData();
-
+        this.maidian("card", userName);
     },
     mounted: function () {
 
