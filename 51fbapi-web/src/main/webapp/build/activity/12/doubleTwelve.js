@@ -1,12 +1,54 @@
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol + '//' + host;
+let goodArr = Object.keys(Array.apply(null, {length: 8})).map(()=>{
+    return {
+        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        link: 'http://baidu.com'
+    }
+})
+let goodArr1 = Object.keys(Array.apply(null, {length: 8})).map(()=>{
+    return {
+        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        link: 'http://baidu.com'
+    }
+})
+
+console.log(goodArr)
 
 
 let vm = new Vue({
     el: "#main",
     data: {
-        goodsData: {}, //所有商品数据
+        goodsData: [
+
+        ],
+        tabs: [
+            {
+                tab: "电子数码",
+                key: 0,
+            },
+            {
+                tab: "鞋服箱包",
+                key: 1
+            },
+            {
+                tab: "手表配饰",
+                key: 2
+            },
+            {
+                tab: "美妆护肤",
+                key: 3
+            },
+        ], 
+        goods: [
+            goodArr,
+            goodArr1,
+            goodArr,
+            goodArr1,
+        ],
+        pretab: 0,
+        nowkey: 0,
         couponData: [],
         currentData: [],
         redRainData: [],
@@ -17,20 +59,87 @@ let vm = new Vue({
             m: 0,
             s: 0
         }, // 倒计时时间
+        touchstartx: null,
+        touchendx: null,
+        touchdefx: null,
+        touchstarty: null,
+        touchendy: null,
+        touchdefy: null,
         isApp: true,
         couponUrl: "/activity/double12/couponHomePage",
     },
     created: function () {
         this.isAppFn();
     },
+    watch: {
+        nowkey(val) {
+            var width = -$('.rule').width()
+            this.$nextTick(()=>{
+                $('.goodpi').css({
+                    transform: "translateX("+ width*val +"px)",
+                })   
+            })
+        },
+        touchdefx(val) {
+            if(!this.isScroll) return 
+            if(val > 80) {
+                if(this.nowkey < this.goods.length -1 ) {
+                    this.nowkey ++
+                }
+            } else if(val< -80){
+                if(this.nowkey > 0) {
+                    this.nowkey--
+                }
+            }
+        }
+    },
     computed: {
         couponNum() {
             return this.firstGoods.couponList ? this.firstGoods.couponList.filter((a, b) => {
                 return a.state != 0
             }).length : 0
+        },
+        isScroll() {
+            return Math.abs(this.touchdefy) < 50
         }
     },
+    mounted() {
+        var self = this
+        this.$nextTick(()=>{
+            setTimeout(()=>{
+                $('.good_tab').pin({
+                    containerSelector: ".good_con"
+                })
+                $('.goodpi').css({
+                    width: $('.rule').width() * self.goods.length + 'px'
+                })
+                $('.goodeach').css({
+                    width: $('.rule').width() + 'px'
+                })
+
+                $(".goodpi").on('touchstart', function(e) {
+                    var _touch = e.originalEvent.targetTouches[0]
+                    self.touchstartx= _touch.pageX
+                    self.touchstarty= _touch.clientY
+                })
+                $(".goodpi").on('touchend', function(e) {
+                    var _touch = e.originalEvent.changedTouches[0]
+                    self.touchendx= _touch.pageX
+                    self.touchendy= _touch.clientY
+                    self.touchdefy = self.touchstarty -self.touchendy
+                    self.touchdefx = self.touchstartx -self.touchendx
+                })
+            }, 0) 
+        })
+    },
     methods: {
+        changetab(i) {
+            this.pretab = this.nowkey
+            this.nowkey = i
+        },
+        linkto(good) {
+            window.location.href=good.link
+        },
         isAppFn: function () {
             let isAppParam = getUrl('spread');
             if (isAppParam != '') {

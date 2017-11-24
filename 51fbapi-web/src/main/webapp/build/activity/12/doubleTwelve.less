@@ -501,3 +501,84 @@
         font-size: .2rem!important;
     }
 }
+
+.good_con {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.3rem;
+    .rule {
+        width: 100%;
+        height: 1px;
+    }
+    .good_tab {
+        width: 100%;
+        overflow: hidden;
+        z-index: 999;
+        -webkit-z-index: 999;
+        .tab {
+            width: 1.72rem;
+            height: 0.8rem;
+            line-height: 0.8rem;
+            text-align: center;
+            font-size: 0.28rem;
+            font-weight: 600;
+            float: left;
+            background: #f78e8e;
+            color: #fff;
+            position: relative;
+            &:last-child {
+                &::after {
+                    display: none;
+                }
+            }
+            &::after {
+                content: ' ';
+                display: block;
+                width: 1px;
+                height: 0.4rem;
+                background: #fcdede;
+                position: absolute;
+                top: 0.2rem;
+                right: 0px;
+            }
+            &.active {
+                background: #fcdede;
+                color: #f45e5e;
+                &::before {
+                    content: ' ';
+                    display: block;
+                    width: 1px;
+                    height: 0.8rem;
+                    background: #fcdede;
+                    position: absolute;
+                    top: 0rem;
+                    left: -1px;
+                }
+            }
+        }
+    }
+    .goods {
+        width: 100%;
+        overflow: hidden;
+        margin-top: 0.2rem;
+        .goodpi {
+            overflow: hidden;
+            transition: all .4s linear;
+        }
+        .goodeach {
+            float: left;
+            overflow: hidden;
+        }
+        .good {
+            width: 3.34rem;
+            float: left;
+            height: 4.55rem;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 0.2rem;
+            &:nth-child(odd) {
+                margin-right: 0.2rem;
+            }
+        }
+    }
+}

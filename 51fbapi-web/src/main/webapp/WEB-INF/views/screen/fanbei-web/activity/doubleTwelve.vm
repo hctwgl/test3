@@ -101,10 +101,30 @@
             </div>
             <div class="super-txt-2">双十二秒get大牌</div>
         </div>
+
+        <div class="good_con">
+            <div class="rule"></div>
+            <div class="good_tab">
+                <div v-for="(tab, i) in tabs" @click="changetab(i)" class="tab" :class="nowkey == i ? 'active' : ''">
+                    {{tab.tab}}
+                </div>
+            </div>
+            <div class="goods">
+                <div class="goodpi">
+                    <div v-for="(item, i) in goods" class="goodeach">
+                        <div v-for="good in item" @click="linkto(good)" class="good">
+                            <img :src="good.img"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/swiper-3.4.2.jquery.min.js"></script>
 <!-- <script type="text/javascript" src="https://img.51fanbei.com/h5/static/jquery-2.1.4.min.js"></script> -->
+<script type="text/javascript" src="/dist/js/jquery.pin.js"></script>
 <script type="text/javascript" src="/dist/activity/12/doubleTwelve.js?version=$version"></script>
+
 
 </html>
