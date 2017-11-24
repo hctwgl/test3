@@ -417,4 +417,6 @@ public class Constants {
 	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
 	//宜信阿福RC4秘钥
 	  public static final String YIXIN_AFU_PASSWORD="yixin_afu_password";
+	  //宜信阿福查询用户逾期信息redis中的key前缀
+	  public static final String YIXIN_AFU_SEARCH_KEY="yixinafu_search_";
 }

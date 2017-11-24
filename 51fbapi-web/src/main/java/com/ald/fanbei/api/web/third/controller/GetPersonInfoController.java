@@ -73,7 +73,7 @@ public class GetPersonInfoController {
 	    String decode = RC4_128_V2.decode(urlDecoder, rc4Key);
 	    JSONObject jsonObj = JSONObject.parseObject(decode);
 	    ParamsSon paramsSon = JSONObject.toJavaObject(jsonObj, ParamsSon.class);
-	    Map map = new HashMap<>();
+	    Map<String,String> map = new HashMap<String,String>();
 	    String jsonString = null;
 		//判断请求的业务类型编号是否为201
 		if (StringUtil.equals(paramsSon.getTx(), "201")) {
@@ -81,9 +81,8 @@ public class GetPersonInfoController {
 			String idNo = paramsSon.getData().getIdNo();
 			//借款人姓名
 			String name = paramsSon.getData().getName();
-			System.out.println(name+" "+idNo);
 			//查询缓存
-			jsonString = (String) bizCacheUtil.getObject("map");
+			jsonString = (String) bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo);
 			if (StringUtil.isNotBlank(jsonString)) {
 				//有缓存，直接返回
 				return jsonString;
@@ -176,7 +175,7 @@ public class GetPersonInfoController {
 					}				
 				}
 				//loanRecord数据的封装
-				List loanRecordList = new ArrayList<LoanRecord>();
+				List<LoanRecord> loanRecordList = new ArrayList<LoanRecord>();
 				loanRecordList.add(loanRecord);
 				
 				/** riskResult */
@@ -189,7 +188,7 @@ public class GetPersonInfoController {
 					riskResult.setRiskDetail("身份证虚假");
 					riskResult.setRiskTime(sdf.format(new Date()));
 				}
-				List riskResultList = new ArrayList<RiskResult>();
+				List<RiskResult> riskResultList = new ArrayList<RiskResult>();
 				riskResultList.add(riskResult);
 				
 				//将List转成json对象
@@ -218,7 +217,7 @@ public class GetPersonInfoController {
 				map.put("params", urlResp);
 				jsonString = JsonUtil.toJSONString(map);
 				//将数据存入缓存
-				bizCacheUtil.saveObject("map", jsonString, Constants.SECOND_OF_ONE_DAY);
+				bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_ONE_DAY);
 				
 				return jsonString;			
 			}
