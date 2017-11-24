@@ -297,17 +297,40 @@ public class HuichaoUtility implements ThirdInterface {
         }
 
         ret.put("type",afHuicaoOrderDo.getPayType());
+        String sendStatus = HuiCaoOrderStatus.PROCESSING.getCode();
         if(afHuicaoOrderDo.getStatus().intValue() == 0 || afHuicaoOrderDo.getStatus().intValue() == 3){
             Map<String, String> result  = getHuiCaoOrder(afHuicaoOrderDo.getThirdOrderNo());
+
             if(result.containsKey("code")){
+                afHuicaoOrderDao.updateHuicaoOrderStatusLock(5,afHuicaoOrderDo.getId(),afHuicaoOrderDo.getGmtModified());
                 return null;
             }
-            String _payResult = String .valueOf( result.get("payResult"));
+            else{
 
-            proessUpdate(afHuicaoOrderDo,_payResult,getBizType(afHuicaoOrderDo.getPayType()));
+                String _payResult = String .valueOf( result.get("payResult"));
+                if(_payResult.equals("0")){
+                    if(DateUtil.addMins( afHuicaoOrderDo.getGmtCreate(),10).compareTo(new Date())>0) {
+                        //处理中
+                    }else{
+                        sendStatus = HuiCaoOrderStatus.FAIL.getCode();
+                    }
+                }
+                else{
+                    sendStatus = HuiCaoOrderStatus.SUCCESS.getCode();
+                }
+
+                //要获取处理中状态
+                proessUpdate(afHuicaoOrderDo,sendStatus,getBizType(afHuicaoOrderDo.getPayType()));
+            }
 
 
-            if (_payResult.equals(HuiCaoOrderStatus.SUCCESS.getCode())){
+
+//            String _payResult = String .valueOf( result.get("payResult"));
+//
+//            proessUpdate(afHuicaoOrderDo,_payResult,getBizType(afHuicaoOrderDo.getPayType()));
+
+
+            if (sendStatus.equals(HuiCaoOrderStatus.SUCCESS.getCode())){
                 ret.put("status","Y");
                 return ret;
             }
