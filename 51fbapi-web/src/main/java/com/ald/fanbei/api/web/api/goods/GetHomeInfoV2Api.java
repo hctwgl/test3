@@ -67,10 +67,10 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
-	
+
 	@Resource
 	AfCategoryService afCategoryService;
-	
+
 	@Resource
 	AfGoodsService afGoodsService;
 
@@ -78,6 +78,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("homePageType", "NEW");
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
@@ -87,7 +88,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			String searchBoxBgImage = serchBoxInfo.getValue();
 			data.put("searchBoxBgImage", searchBoxBgImage);
 		}
-		
+
 		// 顶部导航信息
 		List<Object> topBannerList = new ArrayList<Object>();
 		String topBanner = AfResourceType.HomeBannerV401.getCode();
@@ -99,44 +100,55 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			topBannerList = getBannerInfoWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
 		}
-		//logger.info("home page top banner info => {}", JSONObject.toJSONString(topBannerList));
+		// logger.info("home page top banner info => {}",
+		// JSONObject.toJSONString(topBannerList));
 
 		// 快速导航信息
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
-		//logger.info("home page fast nav info => {}", JSONObject.toJSONString(topBannerList));
+		// logger.info("home page fast nav info => {}",
+		// JSONObject.toJSONString(topBannerList));
 
 		// 新增运营位1,快捷导航上方活动专场
 		List<Object> navigationUpOne = getNavigationUpOneResourceDoList(
 				afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOne.getCode()));
 
-		//logger.info("home page nav up ad position info => {}" + JSONObject.toJSONString(navigationUpOne));
+		// logger.info("home page nav up ad position info => {}" +
+		// JSONObject.toJSONString(navigationUpOne));
 
 		// 新增运营位2,快捷导航下方活动专场
 		List<Object> navigationDownOne = getNavigationDownTwoResourceDoList(
 				afResourceService.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwo.getCode()));
-		//logger.info("home page nav down ad position info => {}" + JSONObject.toJSONString(navigationUpOne));
+		// logger.info("home page nav down ad position info => {}" +
+		// JSONObject.toJSONString(navigationUpOne));
 
 		// 获取常驻运营位信息
 		List<Object> homeNomalPositionList = getHomeNomalPositonInfoResourceDoList(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeFourImageNomalPositon.getCode()));
-		//logger.info("home page nomal ad position info => {}" + JSONObject.toJSONString(homeNomalPositionList));
+		// logger.info("home page nomal ad position info => {}" +
+		// JSONObject.toJSONString(homeNomalPositionList));
 
 		// 获取逛逛信息
 		Map<String, Object> brandAreaInfo = getBrandAreaInfo();
-		//logger.info("home page brand area info => {}" + JSONObject.toJSONString(brandAreaInfo));
-		
+		// logger.info("home page brand area info => {}" +
+		// JSONObject.toJSONString(brandAreaInfo));
+
 		// 获取电商板块信息
-		Map<String,Object> ecommerceAreaInfo = getEcommerceAreaInfo();
-		//logger.info("home page ecommerce area info => {}" + JSONObject.toJSONString(ecommerceAreaInfo));
-		
-		//获取首页商品信息
-		List<Map<String,Object>> categoryGoodsInfo = getHomePageGoodsCategoryInfo();
-		//logger.info("home page category goods info => {}" + JSONObject.toJSONString(categoryGoodsInfo));
-		
+		Map<String, Object> ecommerceAreaInfo = getEcommerceAreaInfo();
+		// logger.info("home page ecommerce area info => {}" +
+		// JSONObject.toJSONString(ecommerceAreaInfo));
+
+		// 获取首页商品信息
+		List<Map<String, Object>> categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+		// logger.info("home page category goods info => {}" +
+		// JSONObject.toJSONString(categoryGoodsInfo));
+
 		// 背景图配置
 		List<AfResourceDo> backgroundList = afResourceService
 				.getBackGroundByType(ResourceType.HOMEPAGE_BACKGROUND.getCode());
+
+		// 获取金融服务入口
+		Map<String, Object> financialEntranceInfo = getFinancialEntranceInfo();
 
 		// 顶部轮播
 		data.put("topBannerList", topBannerList);
@@ -150,21 +162,35 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		data.put("nomalPositionList", homeNomalPositionList);
 		// 逛逛板块信息
 		data.put("brandAreaInfo", brandAreaInfo);
-		//电商板块信息
+		// 电商板块信息
 		data.put("ecommerceAreaInfo", ecommerceAreaInfo);
 		// 首页分类商品信息
 		data.put("categoryGoodsInfo", categoryGoodsInfo);
 		// 首页背景图
 		data.put("backgroundList", backgroundList);
+		// 金融服务入口
+		data.put("financialEntranceInfo", financialEntranceInfo);
 		resp.setResponseData(data);
 		return resp;
 	}
 
-	private List<Map<String,Object>> getHomePageGoodsCategoryInfo() {
+	private Map<String, Object> getFinancialEntranceInfo() {
+		Map<String, Object> financialEntranceInfo = Maps.newHashMap();
+		AfResourceDo rescDo = afResourceService.getConfigByTypesAndSecType(
+				ResourceType.HOME_ONE_IMAGE_FINANCIAL.getCode(), ImageType.MAIN_IMAGE.getCode());
+		if (rescDo != null) {
+			financialEntranceInfo.put("imageUrl", rescDo.getValue());
+			financialEntranceInfo.put("type", rescDo.getValue1());
+			financialEntranceInfo.put("content", rescDo.getValue2());
+		}
+		return financialEntranceInfo;
+	}
+
+	private List<Map<String, Object>> getHomePageGoodsCategoryInfo() {
 		List<AfCategoryDo> categoryList = afCategoryService.getHomePageCategoryInfo();
-		List<Map<String,Object>> categoryInfoList = Lists.newArrayList();
-		for(AfCategoryDo categoryDo : categoryList) {
-			Map<String,Object> categoryInfoMap = Maps.newHashMap();
+		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
+		for (AfCategoryDo categoryDo : categoryList) {
+			Map<String, Object> categoryInfoMap = Maps.newHashMap();
 			categoryInfoMap.put("categoryId", categoryDo.getRid());
 			categoryInfoMap.put("categoryName", categoryDo.getName());
 			categoryInfoList.add(categoryInfoMap);
@@ -185,15 +211,15 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
 		removeSecondNper(array);
-		
-		if(categoryInfoList != null && !categoryInfoList.isEmpty()) {
-			
-			Map<String,Object> infoMap = categoryInfoList.get(0);
+
+		if (categoryInfoList != null && !categoryInfoList.isEmpty()) {
+
+			Map<String, Object> infoMap = categoryInfoList.get(0);
 			Long categoryId = (Long) infoMap.get("categoryId");
 			// 第一个类目下查询商品
-			List <AfGoodsDo> goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
-			List<Map<String,Object>> goodsInfoList = Lists.newArrayList();
-			for(AfGoodsDo goodsDo :goodsDoList) {
+			List<AfGoodsDo> goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			for (AfGoodsDo goodsDo : goodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();
 				goodsInfo.put("goodName", goodsDo.getName());
 				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
@@ -239,13 +265,13 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				goodsInfoList.add(goodsInfo);
 				infoMap.put("goodsInfoList", goodsInfoList);
 			}
-			
+
 		}
 		return categoryInfoList;
 	}
 
 	private Map<String, Object> getEcommerceAreaInfo() {
-		Map<String,Object> ecommerceAreaInfoMap = Maps.newHashMap();
+		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
 		// 获取电商楼层图信息
 		AfResourceDo ecommerceFloorImgRes = afResourceService.getConfigByTypesAndSecType(
 				ResourceType.HOME_ONE_IMAGE_BRAND.getCode(), ImageType.MAIN_IMAGE.getCode());
@@ -258,14 +284,14 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		}
 		// 获取上方4个电商运营位,如果配置不全，则不显示
 		List<AfResourceDo> ecommercePosUpRescList = afResourceService.getEcommercePositionUpRescoure();
-		if(ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 4) {
-			List<Object> ecommercePositionUpInfoList  = getHomeObjectInfoWithResourceDolist(ecommercePosUpRescList);
+		if (ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 4) {
+			List<Object> ecommercePositionUpInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosUpRescList);
 			ecommerceAreaInfoMap.put("ecommercePosUpInfoList", ecommercePositionUpInfoList);
 		}
 		// 获取下方3个电商运营位置，如果不全，则不显示
 		List<AfResourceDo> ecommercePosDownRescList = afResourceService.getEcommercePositionDownRescoure();
-		if(ecommercePosDownRescList != null && ecommercePosDownRescList.size() == 3) {
-			List<Object> ecommercePositionDownInfoList  = getHomeObjectInfoWithResourceDolist(ecommercePosDownRescList);
+		if (ecommercePosDownRescList != null && ecommercePosDownRescList.size() == 3) {
+			List<Object> ecommercePositionDownInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosDownRescList);
 			ecommerceAreaInfoMap.put("ecommercePosDownInfoList", ecommercePositionDownInfoList);
 		}
 		// 获取电商轮播图片
@@ -300,7 +326,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 	private List<Object> getHomeBrandPositonInfoResourceDoList(List<AfResourceDo> brandPositionRescList) {
 		// 如果少于4个，则不展示
-		if(brandPositionRescList != null && brandPositionRescList.size() < 4) {
+		if (brandPositionRescList != null && brandPositionRescList.size() < 4) {
 			return new ArrayList<Object>();
 		}
 		return getHomeObjectInfoWithResourceDolist(brandPositionRescList);
@@ -309,22 +335,22 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	private List<Object> getHomeNomalPositonInfoResourceDoList(List<AfResourceDo> homeNomalPositonRescList) {
 		List<Object> homeNomalPositionList = new ArrayList<Object>();
 		int nomalPosCount = 0;
-		if(homeNomalPositonRescList != null) {
+		if (homeNomalPositonRescList != null) {
 			nomalPosCount = homeNomalPositonRescList.size();
 		}
 		// 如果配置小于两个，则不显示
-		if(nomalPosCount < 2) {
+		if (nomalPosCount < 2) {
 			return homeNomalPositionList;
 		}
 		// 如果配置少于4个，则只显示两个
-		if(2 <= nomalPosCount && nomalPosCount < 4) {
+		if (2 <= nomalPosCount && nomalPosCount < 4) {
 			nomalPosCount = 2;
 		}
 		// 如果配置多余4个，则只显示4个
-		if(nomalPosCount >=  4) {
+		if (nomalPosCount >= 4) {
 			nomalPosCount = 4;
 		}
-		
+
 		for (int i = 0; i < nomalPosCount; i++) {
 			AfResourceDo afResourceDo = homeNomalPositonRescList.get(i);
 			Map<String, Object> data = new HashMap<String, Object>();
