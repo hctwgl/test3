@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.abtest.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -48,8 +50,9 @@ public class LoginAbTestController extends AbTestController {
 
 	@Override
 	protected void abTest(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-		AfTestManageDo testManage = afTestManageService.getTestInfoByTag("HOME_PAGE");
-		String method = AbTestUrl.HOME_PAGE_V2;
+		AfTestManageDo testManage = afTestManageService.getTestInfoByTag("LOGIN_TYPE");
+		Map<String,Object> params = new HashMap();
+		params.put("loginType","old");
 		String deviceId = (String) requestDataVo.getParams().get("deviceId");
 		try {
 			if (testManage != null && !StringUtils.isEmpty(deviceId)) {
@@ -61,9 +64,9 @@ public class LoginAbTestController extends AbTestController {
 					JSONObject strategy = testRule.getJSONObject(i);
 					String strategyCode = strategy.getString("strategyCode");
 					String testDeviceId = strategy.getString("deviceId");
-					if (StringUtils.equalsIgnoreCase(strategyCode, "old")) {
+					if (StringUtils.equalsIgnoreCase(strategyCode, "new")) {
 						if (testDeviceId.contains(deviceIdTail)) {
-							method = AbTestUrl.HOME_PAGE_V1;
+							params.put("loginType","new");
 						}
 					}
 				}
@@ -71,7 +74,7 @@ public class LoginAbTestController extends AbTestController {
 		} catch (Exception e) {
 			logger.error("getHomeInfoFront error => {}", e.getMessage());
 		}
-		requestDataVo.setMethod(method);
+		requestDataVo.setParams(params);
 	}
 
 }
