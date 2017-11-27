@@ -6,15 +6,15 @@
   height:100%;
 }
 body{
-  background:#fdedcb;
   position:relative;
   padding-bottom: .44rem;
+  background: black;
 }
 .newUser .banner{
   width:100%;
   height:7.92rem;
-  background:url("@{url}/newUser01.png") no-repeat;
-  background-size: cover;
+  background:url("@{url}/newSpecial-01.png") no-repeat;
+  background-size: contain;
 }
 .activityDetail{
   width: .3rem;
@@ -33,27 +33,54 @@ body{
 }
 .shareBtn{
   width:90.2%;
-  margin:0 auto;
+  margin:-31% auto 0.64rem;
 }
 .shareBtn p{
-  width:46.3%;
-  height:1.18rem;
+  width: 3.05rem;
+  height: 0.87rem;
 }
 .shareNow{
   float:left;
+  width: 3.05rem;
+  height: 0.87rem;
+  border-radius: 0.16rem;
+  background-image: linear-gradient(150deg, #990000, #d12121 99%), linear-gradient(#990000, #990000);
+  color: white;
+  font-size: 0.36rem;
+  text-align: center;
+  line-height: 0.87rem;
 }
 .inviteNow{
   float:right;
+  width: 3.05rem;
+  height: 0.87rem;
+  border-radius: 0.16rem;
+  background-image: linear-gradient(150deg, #990000, #d12121 99%), linear-gradient(#990000, #990000);
+  color: white;
+  font-size: 0.36rem;
+  text-align: center;
+  line-height: 0.87rem;
 }
 .title{
   width:100%;
   height:1rem;
 }
+.goodListAll{
+  margin-top: -1.5rem;
+}
+.goodList{
+  padding-left: 7%;
+}
 .goodList .good{
-  width:100%;
-  height:3rem;
-  background:#fff;
   margin-bottom:.19rem;
+  width: 6.46rem;
+  height: 2.96rem;
+  background-color: white;
+  border-radius:0.16rem;
+
+}
+.newPic{
+  border-radius:0.16rem;
 }
 .good .goodImg{
   width:3rem;
@@ -168,16 +195,52 @@ body{
   font-size:.3rem;
   color:#efefef;
 }
+.alertApp{
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.5);
+  width: 100%;
+  height: 100%;
+  display:none;
+  .alertContent{
+    width: 5.4rem;
+    height: 2.64rem;
+    background-color: white;
+    position:absolute;
+    top:30%;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius: 0.24rem;
+    .only{
+      width:100%;
+      height:65%;
+      border-bottom:0.01rem solid #4d4d4d;
+      text-align: center;
+      line-height: 1.5rem;
+      font-size: 0.3rem;
 
-
-
-
-
-
-
-
-
-
+    }
+    .downLoad{
+      width:16%;
+      height: 0.9rem;
+      text-align: center;
+      line-height: 0.9rem;
+      font-size: 0.34rem;
+      color: #0076ff;
+      margin-left: 13%;
+    }
+    .cansole{
+      color: #b5bbc4;
+      font-size: 0.34rem;
+      width: 50%;
+      border-right: .01rem solid #4d4d4d;
+      height: 0.9rem;
+      text-align: center;
+      line-height: 0.9rem;
+    }
+  }
+}
 
 
 

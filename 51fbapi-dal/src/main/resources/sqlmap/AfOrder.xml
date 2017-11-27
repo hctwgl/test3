@@ -1032,6 +1032,14 @@
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
+	<select id="getOverOrderByUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM af_order
+		WHERE
+			user_id=#{userId}
+		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+	</select>
 	
 	<select id="getOrderByOrderNo" resultType="AfOrderDo">
 		SELECT

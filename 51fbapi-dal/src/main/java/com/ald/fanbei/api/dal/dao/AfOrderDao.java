@@ -179,6 +179,7 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
+<<<<<<< HEAD
 	
 	/**
 	 * 根据订单号，查询订单信息
@@ -188,4 +189,8 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	AfOrderDo getOrderByOrderNo(String orderNo);
+=======
+
+	List<AfOrderDo> getOverOrderByUserId(Long userId);
+>>>>>>> master
 }

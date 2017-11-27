@@ -2010,6 +2010,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.getOverOrderByGoodsIdAndUserId(goodsId,userId);
 	}
 
+<<<<<<< HEAD
     @Override
     public String getBoluomeOrderDetailUrl(AfOrderDo orderInfo) {
 	Map<String, String> buildParams = new HashMap<String, String>();
@@ -2039,4 +2040,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 	return orderDao.getOrderByOrderNo(orderNo);
     }
+=======
+	@Override
+	public List<AfOrderDo> getOverOrderByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return orderDao.getOverOrderByUserId(userId);
+	}
+
+>>>>>>> master
 }

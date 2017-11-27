@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.alibaba.fastjson.JSONArray;
 
 
 /**
@@ -330,6 +331,7 @@ public interface AfOrderService {
      * @return
      */
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
+<<<<<<< HEAD
     
     /**
      * 获取查询菠萝蜜订单详情地址
@@ -348,5 +350,9 @@ public interface AfOrderService {
 	 * @return
 	 */
 	AfOrderDo getOrderByOrderNo(String orderNo);
+=======
+
+	List<AfOrderDo> getOverOrderByUserId(Long userId);
+>>>>>>> master
 	
 }
