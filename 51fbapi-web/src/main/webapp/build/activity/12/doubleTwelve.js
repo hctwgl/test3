@@ -580,7 +580,7 @@ function alaShareData() {
         "type": "share", // 此页面的类型
         "shareAppTitle": "双12狂欢盛宴 畅想欢乐购 ",  // 分享的title
         'shareAppContent': "抢神券红包雨 1212元秒杀iPhone 6，双12任性到底，欢乐购不停~",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/gg31.png",  // 分享右边小图
+        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/12/double12_share.png",  // 分享右边小图
         "shareAppUrl": domainName + "/fanbei-web/activity/doubleTwelve?groupId=" + groupId + "&spread=2",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "doubleTwelve" // 分享的页面
