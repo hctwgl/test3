@@ -312,9 +312,18 @@ public class BuySelfGoodsApi implements ApiHandle {
 				if(null != afGoodsDouble12Do){
 					//这个商品是双十二秒杀商品
 					if (count != 1 || afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
-						//报错提示只能买一件商品  或  报错提示已秒杀过（已生成过秒杀订单）
+						//报错提示只能买一件商品  或  报错已秒杀过（已生成过秒杀订单）
 						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 					}
+					
+					//iphoneX特殊处理
+					if(goodsId==134882){
+						//更新 已被秒杀的商品数量（count+1）
+						afGoodsDouble12Service.updateCountById(goodsId);
+						//报错提示秒杀商品已售空
+						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+					}
+					
 					//根据goodsId查询商品信息
 					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 					int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12Do.getCount();//秒杀商品余量
@@ -322,11 +331,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 						//报错提示秒杀商品已售空
 						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 					}
-					// ---->update
-		            if(afGoodsDouble12Service.getByGoodsId(goodsId)!=null){
-		            	//更新 已被秒杀的商品数量（count+1）
-		            	afGoodsDouble12Service.updateCountById(goodsId);
-		            }
+					
+	            	//---->update 更新 已被秒杀的商品数量（count+1）
+	            	afGoodsDouble12Service.updateCountById(goodsId);
+		            
 				}
 			}
 		} catch (Exception e) {
