@@ -209,24 +209,30 @@ let vm = new Vue({
                         return false;
                     }
                     self.goodsData = data.data.goodsMap;
+                    let flag = false;
                     for (const key in self.goodsData) {
                         if (self.goodsData.hasOwnProperty(key)) {
                             const element = self.goodsData[key];
                             if (element.type == "O") {
                                 self.currentData = element;
+                                flag = true;
                             }
                         }
                     }
-                    self.$nextTick(() => {
-                        let allWidth = $("#dayBox").width();
-                        let w = $(".status-2").width();
-                        let shouldX = (allWidth - w) / 2;
-                        let posX = $(".status-2").offset().left;
-                        if (posX > shouldX) {
-                            let moveX = posX - shouldX;
-                            $("#dayBox").scrollLeft(moveX)
-                        }
-                    })
+                    if (!flag) {
+                        self.currentData = self.goodsData[5];
+                    }else {
+                        self.$nextTick(() => {
+                            let allWidth = $("#dayBox").width();
+                            let w = $(".status-2").width();
+                            let shouldX = (allWidth - w) / 2;
+                            let posX = $(".status-2").offset().left;
+                            if (posX > shouldX) {
+                                let moveX = posX - shouldX;
+                                $("#dayBox").scrollLeft(moveX);
+                            }
+                        })
+                    }
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");
@@ -269,7 +275,6 @@ let vm = new Vue({
                 self.downTime.m = m;
                 self.downTime.s = s;
                 self.redRainData.currentTime += 1000;
-                console.log(d)
             }, 1000);
         },
         /*点击优惠券*/

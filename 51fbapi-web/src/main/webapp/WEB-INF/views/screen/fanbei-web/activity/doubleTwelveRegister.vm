@@ -42,7 +42,7 @@
         <div class="loginbtn" onclick="maidianFn('registerBtn')">
             立即注册
         </div>
-        <div class="agree flex fd-row">
+        <div class="agree flex fd-row ai-c">
             <input type="checkbox" checked>
             <span>已阅读并同意</span>
             <a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a>
