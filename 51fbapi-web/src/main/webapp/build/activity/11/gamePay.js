@@ -4,12 +4,92 @@ let vm = new Vue({
     el: '#gamePay',
     data: {
         content: {},
-        fixCont:{}
+        fixCont:{},
+        dataType:'',
+        allData:[],
+        gameNameShow:''
     },
     created: function () {
         this.logData();
     },
     methods: {
+        //数据格式为A
+        rewritedata(xml) {
+            let _xml = xml;
+            let returnobj = Object.create(null);
+            let getattr = (parentMark, mark, attrName)=>{
+                if(attrName) {
+                    return $(parentMark).find(mark).attr(attrName)
+                } else {
+                    return $(parentMark).find(mark)
+                }
+            };
+            let getselfattr = (mark, attrName)=>{
+                return $(mark).attr(attrName)
+            };
+            //判断game 里attr('name')是否存在
+            if(getattr(_xml, 'game', 'name') || getselfattr(_xml, 'name')){  //存在时直接渲染  否则手动输入
+                returnobj.gameName = getattr(_xml,'game', 'name')|| getselfattr(_xml, 'name');
+            }
+            //游戏区服
+            if($(_xml).find('area') && $(_xml).find('area').attr('name')){
+                $('.gameArea').show();
+                let areas = getattr(_xml, 'areas');
+                let areaslen = areas.length; //areas 长度
+                if(areaslen && areaslen>=2) {
+                    returnobj.areasList = areas.map((index, item)=>{
+                        let areaname = getattr(item, 'area');
+                        let areaarr = [];
+                        if(areaname.length) {
+                            areaname.each((index, a)=>{
+                                areaarr.push(getselfattr(a, 'name'));
+                            })
+                        }
+                        return {
+                            text: getselfattr(item, 'name'),
+                            children: areaarr
+                        }
+                    });
+                    returnobj.areasList=Array.prototype.slice.call(returnobj.areasList);
+                    returnobj.areaslen=areaslen;
+                }
+                if(areaslen && areaslen==1) {
+                    let areaLength=$(_xml).find('area').length;
+                    let areasList=[];
+                    if(areaLength){
+                        $(_xml).find('area').each(function(){
+                            areasList.push($(this).attr('name'));
+                        });
+                    }
+                    returnobj.areasList=areasList;
+                    returnobj.areaslen=areaslen;
+                }
+            }
+            //判断充值类型
+            let typeName=getattr(_xml,'type', 'name') || getattr(_xml,'types', 'name');
+            let typeNameList=[];
+            if(typeName){
+                $(_xml).find('type').each(function(){
+                    typeNameList.push($(this).attr('name'));
+                });
+                returnobj.typeNameList=typeNameList;
+            }else{
+                $('.gameType').hide();
+            }
+            //面额
+            returnobj.quantityList=[]; //面额--点券--价格（点数*倍数）
+            returnobj.quantityList=$(_xml).find('type').children('quantity').text().split(",");
+            //点券--价格倍数
+            returnobj.priceTimes=$(_xml).find('type').children('quantity').attr('priceTimes');
+            //点券--点数
+            returnobj.chargeNumList=[];
+            returnobj.chargeNumList=$(_xml).find('type').children('chargeNum').text().split(",");
+            return returnobj;
+        },
+        //数据格式为B
+        fixDataB(xml){
+
+        },
         //获取页面初始化信息
         logData() {
             let self = this;
@@ -20,44 +100,106 @@ let vm = new Vue({
                 success: function (data) {
                     //console.log(data);
                     self.content=data.data.content;
+                    self.dataType=data.data.xmlType;//数据格式
                     console.log(self.content);
                     //需要先判断数据格式
-                    /*self.fixCont.gameName=$(self.content).find('game').attr('name');//游戏名称
-                    if($(self.content).find('gameItemInfo').children('acctTypeItem').text()){ //账号类型若存在则显示游戏通行证 此项
-                        self.fixCont.gamePass='Y';
-                    }
-                    if($(self.content).find('gameItemInfo').children('userNameItem').text()){ //充值账号若存在则显示 否则不显示此项
-                        self.fixCont.gameNum='Y';
-                    }
-                    if($(self.content).find('gameItemInfo').children('gameAreaItem').text()){ //游戏区服若存在则显示 否则不显示此项
-                        self.fixCont.gameArea='Y';
-                        self.fixCont.gameAreaList=[];
-                        $(self.content).find('area').each(function(){
-                            self.fixCont.gameAreaList.push($(this).attr('name'));
+                    if(self.dataType=='A'){
+                        $('.gamePass').hide(); //无通行证这列
+                        $(self.content).find('game').each((index, item)=>{
+                            self.allData.push(self.rewritedata(item));
+                            if(self.allData[index].gameName){
+                                self.gameNameShow='Y';
+                            }else{
+                                self.gameNameShow='N';
+                            }
                         });
+                        console.log(self.allData, 11111)
                     }
-                    if($(self.content).find('gameItemInfo').children('gameTypeItem').text()){ //充值类型若存在则显示 否则不显示此项
-                        self.fixCont.gameType='Y';
+                    if(self.dataType=='B'){
+                       alert('B')
                     }
-                    self.fixCont.quantityList=[]; //面额--点券--价格（点数*倍数）
-                    self.fixCont.quantityList=$(self.content).find('type').children('quantity').text().split(",");
-                    //面额--点券--价格倍数
-                    self.fixCont.priceTimes=$(self.content).find('type').children('quantity').attr('priceTimes');
-                    self.fixCont.chargeNumList=[]; //面额--点券--点数
-                    self.fixCont.chargeNumList=$(self.content).find('type').children('chargeNum').text().split(",");
-                    console.log(self.fixCont);*/
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
                 }
             });
         },
+        //点击游戏名称
+        gameNameClick(){
+            let self=this;
+            let allGameName=[];
+            for(let i=0;i<self.allData.length;i++){
+                if(self.allData[i].gameName){
+                    allGameName.push({value:i,text:self.allData[i].gameName});
+                }
+            }
+            //根据所选游戏名称 填充数据fixCont
+            let picker = new mui.PopPicker({
+                layer: 1
+            });
+            picker.setData(allGameName);
+            picker.pickers[0].setSelectedIndex(0);
+            picker.show(function(SelectedItem) {
+                let selectedData=SelectedItem[0].text;
+                //console.log(SelectedItem);
+                //console.log(selectedData);
+                $('.gameName:first-child span').html(selectedData);
+                $('.gameName:first-child span').css('color','#232323');
+                self.fixCont=self.allData[SelectedItem[0].value];
+                console.log(self.fixCont);
+                picker.dispose();
+            })
+        },
+        //点击游戏区服
+        gameAreaClick(){
+            let self=this;
+            if(self.fixCont.areaslen){
+                if(self.fixCont.areaslen==1){
+                    gameAreaOne(self.fixCont.areasList);
+                }
+                if(self.fixCont.areaslen>=2){
+                    gameAreaTwo(self.fixCont.areasList);
+                }
+            }
+        },
         //字符串转数字
-        fixStringToNum(str){
+        fixStrToNum(str){
             let num=parseInt(str);
             return num;
         }
     }
 });
 
-
+//游戏区服二级联动
+function gameAreaTwo(allCont){
+    let picker = new mui.PopPicker({
+                layer: 2
+         });
+    picker.setData(allCont);
+    picker.pickers[0].setSelectedIndex(0);
+    picker.pickers[1].setSelectedIndex(0);
+    picker.show(function(SelectedItem) {
+        let selectedData=SelectedItem[0].text+'&nbsp'+SelectedItem[1];
+        //console.log(SelectedItem);
+        //console.log(selectedData);
+        $('.gameArea span').html(selectedData);
+        $('.gameArea span').css('color','#232323');
+        picker.dispose();
+    })
+}
+//游戏区服一级联动
+function gameAreaOne(allCont){
+    let picker = new mui.PopPicker({
+        layer: 1
+    });
+    picker.setData(allCont);
+    picker.pickers[0].setSelectedIndex(0);
+    picker.show(function(SelectedItem) {
+        let selectedData=SelectedItem[0];
+        //console.log(SelectedItem);
+        //console.log(selectedData);
+        $('.gameArea span').html(selectedData);
+        $('.gameArea span').css('color','#232323');
+        picker.dispose();
+    })
+}
