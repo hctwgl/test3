@@ -1,6 +1,7 @@
 let protocol = window.location.protocol;
 let host = window.location.host;
 let urlHost = protocol + '//' + host;
+var domainName = protocol + '//' + host; //获取域名
 let groupId = getUrl('groupId');
 
 // 电子数码
@@ -296,6 +297,7 @@ let vm = new Vue({
             this.maidian("good=" +encodeURI(good.link));
             if (!this.isApp) {
                 this.toRegister();
+                return false;
             }
             window.location.href = good.link
         },
@@ -536,12 +538,12 @@ let vm = new Vue({
         },
         buy: function (id) {
             if (this.isApp) {
+                // 跳转原生app商品购买页
+                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + id + '"}';
+            } else {
                 // 跳转注册页
                 // TODO:
                 this.toRegister();
-            } else {
-                // 跳转原生app商品购买页
-                window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + id + '"}';
             }
         },
         maidian(data) {
@@ -568,3 +570,21 @@ let vm = new Vue({
         }
     }
 });
+
+
+
+// app调用web的方法
+function alaShareData() {
+    var dataObj = { // 分享内容
+        "appLogin": "N", // 是否需要登录，Y需要，N不需要
+        "type": "share", // 此页面的类型
+        "shareAppTitle": "双12狂欢盛宴 畅想欢乐购 ",  // 分享的title
+        'shareAppContent': "抢神券红包雨 1212元秒杀iPhone 6，双12任性到底，欢乐购不停~",  // 分享的内容
+        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/gg31.png",  // 分享右边小图
+        "shareAppUrl": domainName + "/fanbei-web/activity/doubleTwelve?groupId=" + groupId + "&spread=2",  // 分享后的链接
+        "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
+        "sharePage": "ggIndexShare" // 分享的页面
+    };
+    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
+    return dataStr;
+};
