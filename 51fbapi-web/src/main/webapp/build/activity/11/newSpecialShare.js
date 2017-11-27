@@ -51,7 +51,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=newUser_ini'},
+                data:{maidianInfo:'/fanbei-web/activity/newUserShare?type=newUserShare_ini'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -80,7 +80,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=down'},
+                data:{maidianInfo:'/fanbei-web/activity/newUserShare?type=down'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -93,7 +93,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=cansole'},
+                data:{maidianInfo:'/fanbei-web/activity/newUserShare?type=cansole'},
                 success:function (data) {
                     console.log(data)
                 }
