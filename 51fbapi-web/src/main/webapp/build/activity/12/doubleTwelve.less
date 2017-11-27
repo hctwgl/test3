@@ -42,11 +42,15 @@
 * {
     box-sizing: border-box;
     font-family: PingFangSC-Regular;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .main {
     padding-bottom: .4rem;
-    background-image: linear-gradient(-180deg, #ffffff 35%, #f55e5e 69%);
+    background-image: linear-gradient(-180deg, #ffffff 22%, #f55e5e 69%);
 }
 
 .banner {
@@ -197,8 +201,10 @@
     font-size: .28rem;
     text-align: center;
     span {
-        font-family: DINPro-Bold;
-        font-size: .8rem;
+        font-family: arial;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: -0.54px;
     }
 }
 
@@ -317,8 +323,13 @@
 
 .status-2 {
     position: relative;
-    background-image: linear-gradient(-180deg, #fd7631 0%, #fd1a2b 100%);
-    color: #fff;
+    height: 1.1rem;
+    color: #ffffff;
+    justify-content: flex-start;
+    padding-top: 0.1rem;
+    background: url('@{imageUrl}/double12_seckillCheck.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 
 .status-3 {
@@ -330,17 +341,16 @@
     }
 }
 
-.status-2::after {
-    position: absolute;
-    bottom: -.2rem;
-    content: '';
-    border-style: solid dashed dashed dashed;
-    border-width: .1rem;
-    border-color: #f00 transparent transparent transparent;
-    width: 0;
-    height: 0;
-}
-
+// .status-2::after {
+//     position: absolute;
+//     bottom: -.19rem;
+//     content: '';
+//     border-style: solid dashed dashed dashed;
+//     border-width: .1rem;
+//     border-color: #f00 transparent transparent transparent;
+//     width: 0;
+//     height: 0;
+// }
 // 秒杀商品
 .product-li {
     margin-bottom: .2rem;
@@ -369,9 +379,9 @@
 }
 
 .p-price {
-    margin-top: 0.35rem;
+    margin-top: 0.2rem;
     .p-price-1 {
-        font-family: PingFangSC-Medium;
+        font-family: PingFangSC-bold;
         font-size: .4rem;
         color: #fd1a2b;
     }
@@ -386,10 +396,10 @@
 }
 
 .p-button {
-    margin-top: 0.4rem;
+    margin-top: 0.3rem;
     .p-left {
         position: relative;
-        width: 1.6rem;
+        width: 1.58rem;
         height: .32rem;
         line-height: .3rem;
         font-size: .2rem;
@@ -481,21 +491,30 @@
 }
 
 .time-box {
-    margin-top: 2.25rem;
+    margin-top: 2.28rem;
     padding-left: .05rem;
     color: #fff;
-    font-family: DINCondensed-Bold;
-    font-size: .4rem;
+    font-family: arial;
+    font-size: .30rem;
+    font-weight: 700;
     .time {
-        margin-right: 0.31rem;
-        width: 0.48rem;
-        height: .48rem;
+        // margin-right: 0.31rem;
+        width: 0.5rem;
+        height: .5rem;
+        line-height: .5rem;
         text-align: center;
+    }
+    .space-1 {
+        width: 0.3rem;
+    }
+    .space-2 {
+        width: 0.27rem;
     }
 }
 
 @media screen and (max-width:360px) {
     .p-price-1 {
+        // font-weight: 700;
         font-size: .32rem!important;
     }
     .p-price-2 {
@@ -536,11 +555,12 @@
                 content: ' ';
                 display: block;
                 width: 1px;
-                height: 0.4rem;
-                background: #fcdede;
+                height: 0.24rem;
                 position: absolute;
-                top: 0.2rem;
+                top: 0.28rem;
                 right: 0px;
+                opacity: 0.6;
+                background: #ffffff;
             }
             &.active {
                 background: #fcdede;

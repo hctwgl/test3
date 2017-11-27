@@ -269,6 +269,7 @@ let vm = new Vue({
                 self.downTime.m = m;
                 self.downTime.s = s;
                 self.redRainData.currentTime += 1000;
+                console.log(d)
             }, 1000);
         },
         /*点击优惠券*/

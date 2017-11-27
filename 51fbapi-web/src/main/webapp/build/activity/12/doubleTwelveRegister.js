@@ -1,5 +1,4 @@
 var token = formatDateTime() + Math.random().toString(36).substr(2);
-var spread = getUrl('spread'); // 推广
 // 防止风控被拒
 function formatDateTime() {
     var date = new Date();
@@ -89,6 +88,7 @@ $(function () {
     function timeFunction() { // 60s倒计时
         timerS--;
         if (timerS <= 0) {
+            $(".checkbtn").removeAttr("disabled");
             $(".checkbtn").text("获取验证码");
             clearInterval(timerInterval);
             timerS = 60;
@@ -98,63 +98,10 @@ $(function () {
         }
     }
 
-
-    // 获取图形验证码
-    $(".checkbtn").click(function () {
-        var mobileNum = $(".mobile").val();
-        if (!isNaN(mobileNum) && (/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum))) { // 验证码不能为空、判断电话开头
-            $.ajax({
-                url: "/app/user/getImgCode",
-                type: "POST",
-                dataType: "JSON",
-                data: { mobile: mobileNum },
-                success: function (r) {
-                    console.log(r);
-                    // 显示弹窗
-                    $(".registerMask").removeClass("hide");
-                    $(".imgVftCodeWrap").removeClass("hide");
-                    $("#imgVftCodeWrapImg").attr("src", "data:image/png;base64," + r.data);
-                    $("#imgVftCodeClose").click(function () { // 关闭弹窗
-                        $(".registerMask").addClass("hide");
-                        $(".imgVftCodeWrap").addClass("hide");
-                    })
-                },
-                error: function () {
-                    requestMsg("请求失败")
-                }
-            });
-        } else {
-            requestMsg("请填写正确的手机号");
-        }
-    });
-
-    // 刷新重新获取图片验证
-    $("#imgVftCodeRefresh").click(function () {
-        var mobileNum = $(".mobile").val();
-        $.ajax({
-            url: "/app/user/getImgCode",
-            type: "POST",
-            dataType: "JSON",
-            data: { mobile: mobileNum },
-            success: function (r) {
-                console.log(r);
-                // 显示弹窗
-                $(".registerMask").removeClass("hide");
-                $(".imgVftCodeWrap").removeClass("hide");
-                $("#imgVftCodeWrapImg").attr("src", "data:image/png;base64," + r.data);
-                $("#imgVftCodeClose").click(function () { // 关闭弹窗
-                    $(".registerMask").addClass("hide");
-                    $(".imgVftCodeWrap").addClass("hide");
-                })
-            },
-            error: function () {
-                requestMsg("请求失败")
-            }
-        });
-    });
+    // ---------------------------start
 
     // 获取验证码
-    $("#imgVftCodeSbumit").click(function () {
+    function getCode() {
         var isState = $(".checkbtn").attr('isState'); //获取设置的状态码
         var mobileNum = $(".mobile").val(); //获取手机号
         var password = $('#password').val(); //获取密码
@@ -163,27 +110,25 @@ $(function () {
         if (isState == 0 || !isState) {
             var userck = (/^1[3|4|5|7|8][0-9]\d{4,8}$/.test(mobileNum));
             if (userck) {
+                $(".checkbtn").attr("disabled", true);
                 $.ajax({
-                    url: "/app/user/getRegisterSmsCode",
+                    url: "/app/user/getRegisterSmsCode4Geetest",
                     type: "POST",
                     dataType: "json",
                     data: {
                         "mobile": mobileNum, //将手机号码传给后台
-                        token: token,
-                        verifyImgCode: verifyImgCode
+                        token: token
                     },
                     success: function (returnData) {
                         if (returnData.success) {
-                            // 关闭弹窗
-                            $(".registerMask").addClass("hide");
-                            $(".imgVftCodeWrap").addClass("hide");
                             // 倒计时
                             $(".checkbtn").attr("isState", 1);
                             $(".checkbtn").text(timerS + " s");
-                            // $(".checkbtn").addClass("gray");
                             timerInterval = setInterval(timeFunction, 1000);
+                            requestMsg("验证码已发送");
                         } else {
                             requestMsg(returnData.msg);
+                            $(".checkbtn").removeAttr("disabled");
                         }
                     },
                     error: function () {
@@ -195,7 +140,79 @@ $(function () {
                 requestMsg("请填写正确的手机号");
             }
         }
+    }
+
+    //第三方图片验证
+    $.ajax({
+        url: "/fanbei-web/getGeetestCode",
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            initGeetest({
+                gt: data.gt,
+                challenge: data.challenge,
+                new_captcha: data.new_captcha, // 用于宕机时表示是新验证码的宕机
+                offline: !data.success, // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+                product: "bind", // 产品形式，包括：float，popup
+            }, function (captchaObj) {
+                document.getElementById('checkbtn').addEventListener('click', function () {
+                    var mobileNum = $("#mobile").val();
+                    if (!(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum))) { // 验证码不能为空、判断电话开头
+                        requestMsg('请输入手机号')
+                    } else {
+                        $.ajax({
+                            url: '/app/user/checkMobileRegistered',
+                            type: 'post',
+                            data: {
+                                mobile: mobileNum
+                            },
+                            success: function (data) {
+                                data = JSON.parse(data);
+                                if (data.data == 'N') {
+                                    captchaObj.verify(); //调起图片验证
+                                    maidianFn("getCodeSuccess");
+                                } else {
+                                    maidianFn("getCodeRegistered");
+                                    if (data.msg == "用户已存在") {
+                                        requestMsg("您已注册，请直接登录")
+                                    } else {
+                                        requestMsg(data.msg)
+                                    }
+                                }
+                            }
+                        })
+                    }
+                });
+                captchaObj.onSuccess(function () {
+                    var result = captchaObj.getValidate();
+                    $.ajax({
+                        url: '/fanbei-web/verifyGeetestCode',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            userId: data.userId,
+                            geetestChallenge: result.geetest_challenge,
+                            geetestValidate: result.geetest_validate,
+                            geetestSeccode: result.geetest_seccode
+                        },
+                        success: function (data) {
+                            if (data.data.status === 'success') {
+                                maidianFn("sendCodeSuccess");
+                                getCode();
+                            } else if (data.data.status === 'fail') {
+                                maidianFn("sendCodeFail");
+                                requestMsg(data.msg);
+                            }
+                        }
+                    })
+                });
+            });
+        }
     });
+
+    maidianFn('double12Register');
+
+    // ---------------------------end
 
     // 完成注册提交
     $(".loginbtn").click(function () {
@@ -229,22 +246,15 @@ $(function () {
                     var a = JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
+                        maidianFn("registerSuccess");
                         var urlName = param['urlName'];
                         requestMsg("注册成功");
-                        //数据统计
-                        $.ajax({
-                            url: '/fanbei-web/postMaidianInfo',
-                            type: 'post',
-                            data: { maidianInfo: '/fanbei-web/activity/barginRegister?type=registerSuccess&userName=' + userName, spread: spread },
-                            success: function (data) {
-                                console.log(data)
-                            }
-                        });
                         setTimeout(function () {
-                            window.location.href = "barginLogin?userName=" + userName + "&spread=" + spread;
+                            window.location.href = "http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                         }, 1500);
 
                     } else if (a.url == "Register") {
+                        maidianFn("registerFail");
                         requestMsg(a.msg);
                     }
                 },
@@ -252,15 +262,7 @@ $(function () {
                     requestMsg("绑定失败");
                 }
             })
-            //数据统计
-            $.ajax({
-                url: '/fanbei-web/postMaidianInfo',
-                type: 'post',
-                data: { maidianInfo: '/fanbei-web/activity/barginLogin?type=loginBtn&userName=' + userNamePhone, spread: spread },
-                success: function (data) {
-                    console.log(data)
-                }
-            });
+
         } else {
             if (!userck) { // if else if 只走一条线 通了不走其他
                 requestMsg("请填写正确的手机号");
@@ -287,6 +289,4 @@ function getUrlParam(url) {
     return param;
 }
 
-function toLogin() {
-    window.location.href = "barginLogin?spread=" + spread;
-}
+

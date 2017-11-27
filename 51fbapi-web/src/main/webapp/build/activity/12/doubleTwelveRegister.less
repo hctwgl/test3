@@ -9,48 +9,9 @@ body {
     background-color: white;
 }
 
-.flex {
-    display: flex;
-}
-
-.fd-row {
-    flex-direction: row;
-}
-
-.fd-column {
-    flex-direction: column;
-}
-
-.jc-c {
-    justify-content: center;
-}
-
-.jc-sb {
-    justify-content: space-between;
-}
-
-.jc-sa {
-    justify-content: space-around;
-}
-
-.ai-c {
-    align-items: center;
-}
-
-.fw-w {
-    flex-wrap: wrap;
-}
-
-.ml30 {
-    margin-left: .3rem;
-}
-
-.por {
-    position: relative;
-}
-
 .login {
     background-color: #e33b48;
+    height: 13.34rem;
 }
 
 .topdiv img {
@@ -90,14 +51,13 @@ body {
 }
 
 .code-icon {
-    width: 0.28rem;
-    height: 0.4rem;
+    margin-left: -.06rem;
+    width: 0.4rem;
+    height: 0.31rem;
     background: url('@{imageUrl}/double12_regCode.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
-
-
 
 .box {
     margin-left: 0.46rem;
@@ -106,41 +66,51 @@ body {
     border-bottom: solid 1px #d8d8d8;
 }
 
+.box-2 {
+    margin-left: 0.4rem;
+    width: 5.4rem;
+    height: 1rem;
+}
+
 .pinp {
     border: none;
     outline: none;
     width: 100%;
     height: 100%;
     font-family: PingFangSC-Regular;
-    font-size: 0.34rem;
+    font-size: 0.26rem;
     letter-spacing: -0.54px;
     text-align: left;
+}
+
+.code-input {
+    width: 1.5rem;
+    height: 1rem;
+    font-family: PingFangSC;
+    font-size: .26rem;
+    text-align: left;
+    color: #cccccc;
 }
 
 .pcheck {
-    margin-top: 0.28rem;
-    padding-right: 2.23rem;
+    // padding-right: 2.23rem;
 }
 
 .checkbtn {
-    background: #ffffff;
-    box-shadow: 0 0.01rem 0.07rem 0 rgba(186, 186, 186, 0.40);
-    width: 2.23rem;
-    height: 1.01rem;
-    position: absolute;
-    right: 0;
-    top: 0;
-    font-family: PingFangSC-Regular;
-    font-size: 0.32rem;
-    color: #fe963b;
-    letter-spacing: -0.54px;
-    text-align: left;
-    line-height: 1rem;
+    width: 1.5rem;
+    height: .56rem;
+    border-radius: .08rem;
+    border: solid 1px #469cff;
+    font-size: .22rem;
     text-align: center;
+    color: #469cff;
+    letter-spacing: -0.54px;
+    line-height: .54rem;
+    background: #fff;
 }
 
 .loginbtn {
-    margin-top: 0.9rem;
+    margin-top: 0.3rem;
     width: 6.9rem;
     height: 1rem;
     background: #fca534;
@@ -185,20 +155,6 @@ body {
     color: #afafaf;
     letter-spacing: -0.54px;
     text-align: left;
-}
-
-.botimg {
-    width: 100%;
-    margin-top: 33%;
-}
-
-
-/* .gray{
-    background-color:rgba(169,169,169);
-} */
-
-.password {
-    margin-top: .28rem;
 }
 
 .big-one {
@@ -342,4 +298,28 @@ body {
     color: #fff;
     font-size: 0.32rem;
     margin: 0.4rem 0.25rem 0;
+}
+
+.agree {
+    color: #949494;
+    font-size: 0.24rem;
+    margin-top: 0.3rem;
+    span {
+        margin-left: 0.1rem;
+        color: #fff;
+        font-size: .24rem;
+    }
+    a {
+        color: #949494;
+        display: inline-block;
+    }
+}
+
+.registered {
+    text-align: center;
+    font-size: 0.28rem;
+    text-decoration: underline;
+    a {
+        color: #949494;
+    }
 }
