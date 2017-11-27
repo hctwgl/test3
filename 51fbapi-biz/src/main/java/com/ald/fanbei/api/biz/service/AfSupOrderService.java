@@ -16,5 +16,8 @@ public interface AfSupOrderService extends ParentService<AfSupOrderDo, Long> {
 
     String processCallbackResult(String userOrderId, String status, String mes, String kminfo, String payoffPriceTotal, String signs);
 
-    Map<String, Object> addSupOrder(Long userId, Long goodsId, BigDecimal actualAmount, Long couponId, String acctType, String gameName, String userName, BigDecimal goodsNum, String gameType, String gameAcct, String gameArea, String gameSrv, String userIp);
+    Map<String, Object> addSupOrder(Long userId, Long goodsId, BigDecimal actualAmount, Long couponId, String acctType, String gameName, String userName, Integer goodsNum, String gameType, String gameAcct, String gameArea, String gameSrv, String userIp);
+
+    String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp);
+
 }
