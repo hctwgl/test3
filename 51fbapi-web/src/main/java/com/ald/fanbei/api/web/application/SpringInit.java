@@ -40,139 +40,144 @@ import java.util.Map;
  */
 public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
 
-	private static final Logger logger = LoggerFactory.getLogger(SpringInit.class);
-	private EsignsdkService SDK = EsignsdkServiceFactory.instance();
-	private AccountService SERVICE = AccountServiceFactory.instance();
-	@Resource
-	private AfResourceService afResourceService;
-	@Resource
-	private AfESdkService afESdkService;
-	@Resource
-	private EsignPublicInit esignPublicInit;
+    private static final Logger logger = LoggerFactory.getLogger(SpringInit.class);
+    private EsignsdkService SDK = EsignsdkServiceFactory.instance();
+    private AccountService SERVICE = AccountServiceFactory.instance();
+    private SealService SEAL = SealServiceFactory.instance();
+    @Resource
+    private AfResourceService afResourceService;
+    @Resource
+    private AfESdkService afESdkService;
+    @Resource
+    private EsignPublicInit esignPublicInit;
 
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        event.getSource();
+        String projectId = esignPublicInit.getProjectId();
+        String projectSecret = esignPublicInit.getProjectSecret();
+        String apisUrl = esignPublicInit.getApisUrl();
+        String proxyIp = esignPublicInit.getProxyIp();
+        String port = esignPublicInit.getProxyPort();
+        int proxyPort = 0;
+        if(null != port && !port.equals("")){
+            proxyPort = Integer.valueOf(port);
+        }
+        String httpType = esignPublicInit.getHttpType();
+        int retry = Integer.valueOf(esignPublicInit.getRetry());
+        String algorithm = esignPublicInit.getAlgorithm();
+        String esignPublicKey = esignPublicInit.getEsignPublicKey();
+        String privateKey = esignPublicInit.getPrivateKey();
+        ProjectConfig projectConfig = new ProjectConfig();
+        projectConfig.setItsmApiUrl(apisUrl);
+        projectConfig.setProjectId(projectId);
+        projectConfig.setProjectSecret(projectSecret);
+        HttpConnectionConfig httpConfig = new HttpConnectionConfig();
+        if(httpType.equalsIgnoreCase(HttpType.HTTP.type())){
+            httpConfig.setHttpType(HttpType.HTTP);
+        }
+        httpConfig.setProxyIp(proxyIp);
+        httpConfig.setProxyPort(proxyPort);
+        httpConfig.setRetry(retry);
+        SignatureConfig signConfig = new SignatureConfig();
+        if(algorithm.equalsIgnoreCase(AlgorithmType.RSA.type())){
+            signConfig.setAlgorithm(AlgorithmType.RSA);
+            signConfig.setPrivateKey(privateKey);
+            signConfig.setEsignPublicKey(esignPublicKey);
+        }
+            Result result = SDK.init(projectConfig, httpConfig, signConfig);
+            if ("成功".equals(result.getMsg()) && 0 == result.getErrCode()){
+                AfUserSealDo afUserSealDo = afESdkService.selectUserSealByUserId(-1l);//浙江阿拉丁电子商务股份有限公司
+                Map map1 = new HashMap();
+                map1.put("name","浙江阿拉丁电子商务股份有限公司");
+                map1.put("organCode","341932957");
+                map1.put("userId",-1l);
+                createCompanySeal(afUserSealDo,map1);
+                AfUserSealDo mxSeal = afESdkService.selectUserSealByUserId(-2l);//浙江名信信息科技有限公司
+                map1.put("name","浙江名信信息科技有限公司");
+                map1.put("organCode","MA27WPFA7");
+                map1.put("userId",-2l);
+                createCompanySeal(mxSeal,map1);
+                AfUserSealDo mhSeal = afESdkService.selectUserSealByUserId(-3l);//浙江名恒投资管理有限公司
+                map1.put("name","浙江名恒投资管理有限公司");
+                map1.put("organCode","095715972");
+                map1.put("userId",-3l);
+                createCompanySeal(mhSeal,map1);
+            }
+            logger.info("初始化执行完成...projectId =>{},projectSecret=>{}",projectId,projectSecret);
+    }
 
-		String projectId = esignPublicInit.getProjectId();
-		String projectSecret = esignPublicInit.getProjectSecret();
-		String apisUrl = esignPublicInit.getApisUrl();
-		String proxyIp = esignPublicInit.getProxyIp();
-		String port = esignPublicInit.getProxyPort();
-		int proxyPort = 0;
-		if (null != port && !port.equals("")) {
-			proxyPort = Integer.valueOf(port);
-		}
-		String httpType = esignPublicInit.getHttpType();
-		int retry = Integer.valueOf(esignPublicInit.getRetry());
-		String algorithm = esignPublicInit.getAlgorithm();
-		String esignPublicKey = esignPublicInit.getEsignPublicKey();
-		String privateKey = esignPublicInit.getPrivateKey();
-		ProjectConfig projectConfig = new ProjectConfig();
-		projectConfig.setItsmApiUrl(apisUrl);
-		projectConfig.setProjectId(projectId);
-		projectConfig.setProjectSecret(projectSecret);
-		HttpConnectionConfig httpConfig = new HttpConnectionConfig();
-		if (httpType.equalsIgnoreCase(HttpType.HTTP.type())) {
-			httpConfig.setHttpType(HttpType.HTTP);
-		}
-		httpConfig.setProxyIp(proxyIp);
-		httpConfig.setProxyPort(proxyPort);
-		httpConfig.setRetry(retry);
-		SignatureConfig signConfig = new SignatureConfig();
-		if (algorithm.equalsIgnoreCase(AlgorithmType.RSA.type())) {
-			signConfig.setAlgorithm(AlgorithmType.RSA);
-			signConfig.setPrivateKey(privateKey);
-			signConfig.setEsignPublicKey(esignPublicKey);
-		}
-		Result result = SDK.init(projectConfig, httpConfig, signConfig);
-		if ("成功".equals(result.getMsg()) && 0 == result.getErrCode()) {
-			AfUserSealDo afUserSealDo = afESdkService.selectUserSealByUserId(-1l);// 浙江阿拉丁电子商务股份有限公司
-			Map map1 = new HashMap();
-			map1.put("name", "浙江阿拉丁电子商务股份有限公司");
-			map1.put("organCode", "341932957");
-			map1.put("userId", -1l);
-			createCompanySeal(afUserSealDo, map1);
-			AfUserSealDo mxSeal = afESdkService.selectUserSealByUserId(-2l);// 浙江名信信息科技有限公司
-			map1.put("name", "浙江名信信息科技有限公司");
-			map1.put("organCode", "MA27WPFA7");
-			map1.put("userId", -2l);
-			createCompanySeal(mxSeal, map1);
-			AfUserSealDo mhSeal = afESdkService.selectUserSealByUserId(-3l);// 浙江名恒投资管理有限公司
-			map1.put("name", "浙江名恒投资管理有限公司");
-			map1.put("organCode", "095715972");
-			map1.put("userId", -3l);
-			createCompanySeal(mhSeal, map1);
-		}
-		logger.info("初始化执行完成...");
-	}
+    private void createCompanySeal(AfUserSealDo afUserSealDo,Map map) {
+        if (null == afUserSealDo || null == afUserSealDo.getUserAccountId()){// 账户标识
+            String accountId = addOrganize(map);
+            AddSealResult addSealResult = new AddSealResult();
+            if(null != accountId){
+                addSealResult = afESdkService.createSealOrganize(accountId,
+                        "STAR", "RED", "", "");
+            }else {
+                logger.error("e签宝创建公司账户失败:");
+                throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
+            }
+            AfUserSealDo afUserSealDo1 = new AfUserSealDo();
+            afUserSealDo1.setUserAccountId(accountId);
+            afUserSealDo1.setUserType("1");
+            afUserSealDo1.setUserId((Long)map.get("userId"));
+            if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()){
+                afUserSealDo1.setUserSeal(addSealResult.getSealData());
+            }else {
+                logger.error("e签宝创建个人账户失败",addSealResult.getMsg());
+                throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
+            }
+            afESdkService.insertUserSeal(afUserSealDo1);
+        }else if (null == afUserSealDo.getUserSeal() || "" == afUserSealDo.getUserSeal()){//公司的印章base64
+            AddSealResult addSealResult = afESdkService.createSealOrganize(afUserSealDo.getUserAccountId(),
+                    "STAR", "RED", "", "");
+            AfUserSealDo afUserSealDo1 = new AfUserSealDo();
+            afUserSealDo1.setId(afUserSealDo1.getId());
+            afUserSealDo1.setUserId((Long)map.get("userId"));
+            if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()){
+                afUserSealDo1.setUserSeal(addSealResult.getSealData());
+            }else {
+                logger.error("company seal error:",addSealResult.getMsg());
+                throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
+            }
+            afESdkService.updateUserSealByUserId(afUserSealDo1);
+        }
+    }
 
-	private void createCompanySeal(AfUserSealDo afUserSealDo, Map map) {
-		if (null == afUserSealDo || null == afUserSealDo.getUserAccountId()) {// 账户标识
-			String accountId = addOrganize(map);
-			AddSealResult addSealResult = new AddSealResult();
-			if (null != accountId) {
-				addSealResult = afESdkService.createSealOrganize(accountId, "STAR", "RED", "", "");
-			} else {
-				logger.error("e签宝创建公司账户失败:");
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
-			}
-			AfUserSealDo afUserSealDo1 = new AfUserSealDo();
-			afUserSealDo1.setUserAccountId(accountId);
-			afUserSealDo1.setUserType("1");
-			afUserSealDo1.setUserId((Long) map.get("userId"));
-			if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()) {
-				afUserSealDo1.setUserSeal(addSealResult.getSealData());
-			} else {
-				logger.error("e签宝创建个人账户失败", addSealResult.getMsg());
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
-			}
-			afESdkService.insertUserSeal(afUserSealDo1);
-		} else if (null == afUserSealDo.getUserSeal() || "" == afUserSealDo.getUserSeal()) {// 公司的印章base64
-			AddSealResult addSealResult = afESdkService.createSealOrganize(afUserSealDo.getUserAccountId(), "STAR",
-					"RED", "", "");
-			AfUserSealDo afUserSealDo1 = new AfUserSealDo();
-			afUserSealDo1.setId(afUserSealDo1.getId());
-			afUserSealDo1.setUserId((Long) map.get("userId"));
-			if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()) {
-				afUserSealDo1.setUserSeal(addSealResult.getSealData());
-			} else {
-				logger.error("company seal error:", addSealResult.getMsg());
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
-			}
-			afESdkService.updateUserSealByUserId(afUserSealDo1);
-		}
-	}
-
-	public String addOrganize(Map map) {
-		String name = map.get("name").toString();
-		int organType = 0;
-		String regType = "0";
-		String organCode = map.get("organCode").toString();
-		int userType = 0;
-		String agentName = "";
-		String agentIdNo = "";
-		String legalName = "";
-		String legalIdNo = "";
-		int legalArea = 0;
-		OrganRegType organRegType = null;
-		if ("0".equalsIgnoreCase(regType)) {
-			organRegType = OrganRegType.NORMAL;
-		} else if ("1".equalsIgnoreCase(regType)) {
-			organRegType = OrganRegType.MERGE;
-		} else if ("2".equalsIgnoreCase(regType)) {
-			organRegType = OrganRegType.REGCODE;
-		}
-		OrganizeBean org = new OrganizeBean();
-		org.setName(name).setOrganType(organType).setRegType(organRegType).setOrganCode(organCode).setUserType(userType)
-				.setAgentName(agentName).setAgentIdNo(agentIdNo).setLegalName(legalName).setLegalIdNo(legalIdNo)
-				.setLegalArea(legalArea);
-		AddAccountResult r = SERVICE.addAccount(org);
-		if (150016 == r.getErrCode() || r.getMsg().contains("账户已存在")) {
-			GetAccountProfileResult getAccountProfileResult = SERVICE.getAccountInfoByIdNo(legalIdNo, 11);
-			return getAccountProfileResult.getAccountInfo().getAccountUid();
-		}
-		// Tools.response(req, resp, r);
-		return r.getAccountId();
-	}
+    public String addOrganize(Map map) {
+        String name = map.get("name").toString();
+        int organType = 0;
+        String regType = "0";
+        String organCode = map.get("organCode").toString();
+        int userType = 0;
+        String agentName = "";
+        String agentIdNo = "";
+        String legalName = "";
+        String legalIdNo = "";
+        int legalArea = 0;
+        OrganRegType organRegType = null;
+        if ("0".equalsIgnoreCase(regType)) {
+            organRegType = OrganRegType.NORMAL;
+        } else if ("1".equalsIgnoreCase(regType)) {
+            organRegType = OrganRegType.MERGE;
+        } else if ("2".equalsIgnoreCase(regType)){
+            organRegType = OrganRegType.REGCODE;
+        }
+        OrganizeBean org = new OrganizeBean();
+        org.setName(name)
+                .setOrganType(organType).setRegType(organRegType)
+                .setOrganCode(organCode).setUserType(userType)
+                .setAgentName(agentName).setAgentIdNo(agentIdNo)
+                .setLegalName(legalName).setLegalIdNo(legalIdNo)
+                .setLegalArea(legalArea);
+        AddAccountResult r = SERVICE.addAccount(org);
+        if (150016 == r.getErrCode() || r.getMsg().contains("账户已存在")){
+            GetAccountProfileResult getAccountProfileResult = SERVICE.getAccountInfoByIdNo(legalIdNo,11);
+            return getAccountProfileResult.getAccountInfo().getAccountUid();
+        }
+//        Tools.response(req, resp, r);
+        return r.getAccountId();
+    }
 
 }

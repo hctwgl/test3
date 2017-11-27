@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public class Constants {
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
+	public static final long SECOND_OF_ONE_MINITS = 60l;
 	public static final long SECOND_OF_THREE = 30l;//30秒
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
@@ -24,7 +25,7 @@ public class Constants {
 
 	public static final int MINITS_OF_2HOURS = 120;
 	public static final int MINITS_OF_HALF_HOUR = 30;
-
+	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
 	//商品详情图片信息包含数据总计部分
 	public static final int GOODSDETAIL_PIC_PARTS = 3;
@@ -345,6 +346,8 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+	//实名认证修改姓名开关
+	public static final String SWITCH = "SWITCH";
 	
 	//H5用户以及token cookie
 	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
@@ -406,4 +409,12 @@ public class Constants {
 	 public static final String BORROW_RATE="BORROW_RATE";
 	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
 	 public static final String BORROW_CASH_OVERDUE_POUNDAGE="BORROW_CASH_OVERDUE_POUNDAGE";
+
+	//首页滚动条
+	  public static final String HOMEPAGE_TOP_SCROLLBAR="HOMEPAGE_TOP_SCROLLBAR";
+	  public static final String BORROW_TOP_SCROLLBAR="H5_URL";
+	  
+	//代扣
+	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
+
 }

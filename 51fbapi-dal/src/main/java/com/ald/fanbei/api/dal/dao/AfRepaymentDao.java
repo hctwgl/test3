@@ -54,4 +54,8 @@ public interface AfRepaymentDao {
     * @return
     */
    int dealRepaymentFail(@Param("tradeNo")String tradeNo);
+
+    int updateRepaymentName(Long refId);
+
+    int getCurrDayRepayErrorTimes(Long userId);
 }

@@ -5,7 +5,7 @@
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>新人专享好礼</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/newUser.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/newSpecial.css?version=$version">
 </head>
 <body>
 <div id="newUser" class="newUser">
@@ -32,19 +32,11 @@
     <!--<p class="title"><img src="$src/newUser04.png"></p>!-->
     <div class="goodList">
         <div class="good clearFix" @click="buyNowClick(item)" v-for="item in content">
-            <p class="goodImg"><img class="lazy" :data-original="item.goodsIcon"></p>
-            <div class="right clearFix">
-                <p class="goodName" style="-webkit-box-orient: vertical;">{{item.goodsName}}</p>
-                <p class="goodDes"><span>减</span>下单立减{{item.decreasePrice}}元，新会员专享</p>
-                <p class="goodPrice">￥<span>{{item.realAmount}}</span></p>
-                <p class="monthPrice" v-if="item.nperMap.isFree==='0'">月供：¥{{item.nperMap.amount}}起</p>
-                <p class="monthPrice" v-if="item.nperMap.isFree==='1' || item.nperMap.isFree==='2'">月供：¥{{item.nperMap.freeAmount}}起</p>
-                <p class="buyNow">立即抢购</p>
-            </div>
+            <img class="newPic" :src="item.goodsIcon" alt="">
         </div>
     </div>
 </div>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/base64.js"></script>
-<script type="text/javascript" src="/dist/activity/11/newUser.js?version=$version"></script>
+<script type="text/javascript" src="/dist/activity/11/newSpecial.js?version=$version"></script>
 </body>
 </html>

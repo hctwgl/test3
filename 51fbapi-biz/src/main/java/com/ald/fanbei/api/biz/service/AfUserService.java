@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.AfUserRegisterTypeDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -18,7 +19,12 @@ public interface AfUserService {
 	 * @return
 	 */
 	int addUser(AfUserDo afUserDo);
-
+	/**
+	 * 添加快速登录用户
+	 * @param afUserDo
+	 * @return
+	 */
+	int addUser(AfUserDo afUserDo,String type);
 	
 	/**
 	 * 根据用户id获取用户信息
@@ -38,7 +44,9 @@ public interface AfUserService {
 	 *@return
 	 */
 	AfUserDo getUserByUserName(String userName);
-	
+
+	AfUserDo getUserByMobile(String mobile);
+
 	
 	/**
 	 * 更新用户消息
@@ -58,7 +66,7 @@ public interface AfUserService {
 	 * @return
 	 * **/
 	List<String> getUserNameByUserId(List<String> users);
-	
+
 	/**
 	 * 修改用户核心信息-手机号，密码等
 	 * @param userId
@@ -66,4 +74,8 @@ public interface AfUserService {
 	 * @param password
 	 */
 	void updateUserCoreInfo(final Long userId, final String newMobile, final String password);
+
+	AfUserRegisterTypeDo isQuickRegisterUser(Long id);
+
+	int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo);
 }

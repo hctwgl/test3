@@ -20,6 +20,9 @@ public enum SmsType {
     SET_PAY_PWD("P", "设置支付"),
     BANK_CARD("B", "银行卡"),
     LOGIN("L", "登录"),
+    QUICK_LOGIN("Q", "快捷登录"),
+    QUICK_REGIST("QR", "快捷注册"),
+    QUICK_SET_PWD("QSP", "设置快捷登录密码"),
     COMMON("C","通用");
 
     private String code;

@@ -61,4 +61,24 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService{
 		return afUserBankcardDao.getUserBankInfo(bankId);
 	}
 
+	@Override
+	public List<AfUserBankcardDo> getAfUserBankcardDoList(long userId) {
+		return afUserBankcardDao.getAfUserBankcardDoList(userId);
+	}
+
+	@Override
+	public AfUserBankcardDo getUserBankcardIdByCardNumber(String cardNumber) {
+		return afUserBankcardDao.getUserBankcardIdByCardNumber(cardNumber);
+	}
+
+	@Override
+	public String getAfUserBankcardList(long userId) {
+		return afUserBankcardDao.getAfUserBankcardList(userId);
+	}
+
+	@Override
+	public AfUserBankcardDo getUserBankcardByIdAndStatus(Long cardId) {
+		return afUserBankcardDao.getUserBankcardByIdAndStatus(cardId);
+	}
+
 }

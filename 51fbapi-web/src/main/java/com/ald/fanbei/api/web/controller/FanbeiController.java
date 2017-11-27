@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.common.AbTestUrl;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -104,13 +102,13 @@ public class FanbeiController extends BaseController {
     }
 
     @RequestMapping(value = {
-    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/login","/user/resetPwd","/user/getUserInfo",
+    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/quickRegisterPwd","/user/login","/user/quickLoginOrRegister","/user/resetPwd","/user/setQuickFirstPwd","/user/getUserInfo",
     		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponCount","/user/getMineCouponList","/user/getCallCenterInfo",
     		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList",
     		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
     		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",
-    		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
-    		"/user/submitShareAction","/user/checkMobileRegistered","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
+    		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/setQuickLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
+    		"/user/submitShareAction","/user/checkMobileRegistered","/user/checkQuickRegisteredPwd","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
             "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl",
             "/user/accountAppealCheckSms","/user/accountAppealDo"
@@ -127,7 +125,7 @@ public class FanbeiController extends BaseController {
     		"/bill/getMyBillHomeInfo","/bill/getMyBillList","/bill/getBillDetailList","/bill/getBillDetailInfo","/repay/getRepaymentConfirmInfo",
             "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo","/borrow/getOtherPayWay"
             ,"/borrow/getRepaymentInfo","/borrow/submitRepaymentByYiBao","/bill/getRepayMentAmountByMonth","/repay/getRepaymentConfirmInfoV1"
-            ,"/bill/getBillListByStatus"
+            ,"/bill/getBillListByStatus","/borrow/getCreditPromoteInfoV1"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -146,8 +144,8 @@ public class FanbeiController extends BaseController {
      */
 	@RequestMapping(value = { "/auth/authRealname", "/auth/authContacts", "/auth/authCredit", "/auth/authZhima", "/auth/authBankcard", "/auth/checkBankcard", "/auth/getBankList",
 			"/auth/checkBankcardPay", "/auth/authFace", "/auth/authMobile", "/auth/authContactor","/auth/authChsi","/auth/authZhengxin", "/auth/authLocation", "/auth/authMobileBack", "/auth/getAllowConsume",
-			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi",
-			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk",
+			"/auth/getDailyRate", "/auth/saveIdNumber", "/auth/checkIdCardApi", "/auth/updateIdCardApi","/auth/bindingBankcard","/auth/checkMessages",
+			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk","/auth/authStrongRiskV1",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
 			"/auth/authSupplyCertify","/auth/authFund","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
 			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
@@ -256,7 +254,6 @@ public class FanbeiController extends BaseController {
 
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
-		
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         ApiHandleResponse handelResult;
         try {
@@ -269,7 +266,7 @@ public class FanbeiController extends BaseController {
         }catch(FanbeiException e){
         	logger.error("app exception",e);
         	throw e;
-        } catch (Exception e) {
+    } catch (Exception e) {
             logger.error("sys exception",e);
             throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
         }
@@ -285,5 +282,21 @@ public class FanbeiController extends BaseController {
             afResourceService.cleanLocalCache();
         }
 	}
+
+	   /**
+     * 代扣相关
+     * @param body
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/Withhold/updateWithholdSwitch","/Withhold/getWithholdInfo","/Withhold/updateWithholdCard","/Withhold/showUserBankCard","/homePage/homeScrollBar","/Withhold/WithholdCheck"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @ResponseBody
+    public String withHoldRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        return this.processRequest(body, request, false);
+    }
 
 }
