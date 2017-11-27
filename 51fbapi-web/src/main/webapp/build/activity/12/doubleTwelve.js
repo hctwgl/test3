@@ -3,22 +3,168 @@ let host = window.location.host;
 let urlHost = protocol + '//' + host;
 let groupId = getUrl('groupId');
 
-let goodArr = Object.keys(Array.apply(null, {
-    length: 8
-})).map(() => {
-    return {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
-        link: 'http://baidu.com'
+// 电子数码
+let goodArr = [
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/apple.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/huawei.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/huaweirongyao.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meizu.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/oppo.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/sansung.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/vivo.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/xiaomi.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     }
-})
-let goodArr1 = Object.keys(Array.apply(null, {
-    length: 8
-})).map(() => {
-    return {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
-        link: 'http://baidu.com'
+]
+// 鞋服箱包
+let goodArr1 = [
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/adidas.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/anta.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/efri.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meilv.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/newbalance.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/nike.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/peacebird.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/samsontie.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     }
-})
+]
+// 手表配饰
+let goodArr2 = [
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/amani.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/casio.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/DW.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/rossini.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tianwang.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tissot.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/swarovski.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/zhoudafu.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    }
+]
+// 美妆护肤
+let goodArr3 = [
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/Dior.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/esteelauder.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/gf.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/kans.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/lancome.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/laneige.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/loreal.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    },
+    {
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/shiseido.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+    }
+]
+
+
+// let goodArr = Object.keys(Array.apply(null, {
+//     length: 8
+// })).map(() => {
+//     return {
+//         img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+//         link: 'http://baidu.com'
+//     }
+// })
+// let goodArr1 = Object.keys(Array.apply(null, {
+//     length: 8
+// })).map(() => {
+//     return {
+//         img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+//         link: 'http://baidu.com'
+//     }
+// })
 
 var userName = getUrl('userName'); //获取用户id
 var spread = getUrl('spread'); //获取用户id
@@ -50,8 +196,8 @@ let vm = new Vue({
         goods: [
             goodArr,
             goodArr1,
-            goodArr,
-            goodArr1,
+            goodArr2,
+            goodArr3,
         ],
         pretab: 0,
         nowkey: 0,
@@ -59,6 +205,7 @@ let vm = new Vue({
         currentData: [],
         redRainData: [],
         couponFlag: true, // 显示优惠券flag
+        topFalg: 1,
         downTime: {
             d: 0,
             h: 0,
@@ -249,6 +396,7 @@ let vm = new Vue({
                     }
                     self.redRainData = data.data;
                     self.countDown();
+                    self.calTime();
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");
@@ -276,6 +424,19 @@ let vm = new Vue({
                 self.downTime.s = s;
                 self.redRainData.currentTime += 1000;
             }, 1000);
+        },
+        calTime: function () {
+            let self = this;
+            let t = self.redRainData.currentTime/1000;
+            let t1 = 1512403200; //12.05
+            let t2 = 1512835200; // 12.10
+            if (t<t1) {
+                self.topFalg = 1;
+            } else if (t>=t1 && t<t2) {
+                self.topFalg = 2;
+            } else {
+                self.topFalg = 3;
+            }
         },
         /*点击优惠券*/
         couponClick: function (item, index) {

@@ -14,7 +14,25 @@
 
 <body>
     <div class="main" id="main">
-        <div class="banner"></div>
+        <div class="banner">
+            <div class="top-box flex fd-row jc-c">
+                <div class="top flex fd-column ai-c" :class="{current:topFalg==1}">
+                    <div class="line"></div>
+                    <div class="txt1">双12欢乐购</div>
+                    <div class="txt2">12.01-12.04</div>
+                </div>
+                <div class="top flex fd-column ai-c" :class="{current:topFalg==2}">
+                    <div class="line"></div>
+                    <div class="txt1">秒大牌抢神券</div>
+                    <div class="txt2">12.05-12.09</div>
+                </div>
+                <div class="top flex fd-column ai-c" :class="{current:topFalg==3}">
+                    <div class="line"></div>
+                    <div class="txt1">疯狂红包雨</div>
+                    <div class="txt2">12.10-12.12</div>
+                </div>
+            </div>
+        </div>
         <div class="coupon-box flex fd-column ai-c">
             <div class="flex fd-row ai-c title-box">
                 <div class="line-left-1"></div>
