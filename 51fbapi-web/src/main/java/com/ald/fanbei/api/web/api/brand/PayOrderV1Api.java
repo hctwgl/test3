@@ -87,6 +87,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfShareUserGoodsService afShareUserGoodsService;
     @Resource
     AfShareGoodsService afShareGoodsService;
+    @Resource
+	AfGoodsDouble12Service afGoodsDouble12Service;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -161,6 +163,10 @@ public class PayOrderV1Api implements ApiHandle {
         
         // ----------------
 
+        // 双十二秒杀新增逻辑+++++++++++++>
+		double12GoodsCheck(userId, orderInfo.getGoodsId());
+		// +++++++++++++++++++++++++<
+        
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
@@ -345,6 +351,7 @@ public class PayOrderV1Api implements ApiHandle {
                         afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
+                    
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
                     ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
@@ -363,4 +370,29 @@ public class PayOrderV1Api implements ApiHandle {
         return resp;
     }
 
+    
+    /**
+	 * 
+	 * @Title: double12GoodsCheck
+	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
+	 * @return  void  
+	 * @author yanghailong
+	 * @data  2017年11月21日
+	 */
+	private void double12GoodsCheck(Long userId, Long goodsId){
+		
+		AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
+		if(null != afGoodsDouble12Do){
+			//这个商品是双十二秒杀商品
+			if(afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0){
+				//报错提示已秒杀过（已生成过秒杀订单）
+				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+			}
+			
+			if(afGoodsDouble12Do.getCount()<=0){
+				//报错提示秒杀商品已售空
+				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+			}
+		}
+	}
 }

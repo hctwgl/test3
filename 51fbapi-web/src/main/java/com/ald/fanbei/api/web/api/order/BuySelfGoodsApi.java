@@ -6,6 +6,7 @@ package com.ald.fanbei.api.web.api.order;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -39,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,6 +70,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	AfGoodsDouble12Service afGoodsDouble12Service;
 
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
@@ -79,6 +83,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfShareUserGoodsService afShareUserGoodsService;
 	@Resource
 	TransactionTemplate transactionTemplate;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 
 	@Override
@@ -175,6 +181,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 			//mqp_新人专享活动增加逻辑
 			if (userId != null) {
 
+				// 双十二秒杀新增逻辑+++++++++++++>
+				double12GoodsCheck(userId, goodsId,count);
+				// +++++++++++++++++++++++++<
+				
 				//查询用户订单数
 				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
 				if(oldUserOrderAmount==0){
@@ -285,6 +295,49 @@ public class BuySelfGoodsApi implements ApiHandle {
 		return resp;
 	}
 
+	/**
+	 * 
+	 * @Title: double12GoodsCheck
+	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
+	 * @return  void  
+	 * @author yanghailong
+	 * @data  2017年11月21日
+	 */
+	private void double12GoodsCheck(Long userId, Long goodsId, Integer count){
+		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
+		try {
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
+			if (isNotLock) {
+				AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
+				if(null != afGoodsDouble12Do){
+					//这个商品是双十二秒杀商品
+					if (count != 1 || afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
+						//报错提示只能买一件商品  或  报错提示已秒杀过（已生成过秒杀订单）
+						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+					if(afGoodsDouble12Do.getCount()<=0){
+						//报错提示秒杀商品已售空
+						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+					}
+					// ---->update
+		            if(afGoodsDouble12Service.getByGoodsId(goodsId)!=null){
+		            	//更新秒杀商品余量（count-1）
+		            	afGoodsDouble12Service.updateCountById(goodsId);
+		            }
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("double12 activity order error = {}", e.getStackTrace());
+			throw new FanbeiException(FanbeiExceptionCode.DOUBLE12ORDER_ERROR);
+		} finally{
+			bizCacheUtil.delCache(key);
+		}
+		
+	}
+	
+	
 	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo, int count) {
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setConsignee(addressDo.getConsignee());

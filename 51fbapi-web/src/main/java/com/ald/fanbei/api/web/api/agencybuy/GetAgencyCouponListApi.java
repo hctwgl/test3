@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfActivityModelService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
@@ -65,6 +66,8 @@ public class GetAgencyCouponListApi implements ApiHandle {
 	AfShareGoodsService afShareGoodsService;
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
+	@Resource
+	AfGoodsDouble12Service afGoodsDouble12Service;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -127,6 +130,17 @@ public class GetAgencyCouponListApi implements ApiHandle {
 		
 		//——————————————
 		
+		// 双十二秒杀新增逻辑+++++++++++++>
+		if(afGoodsDouble12Service.getByGoodsId(goodsId)!=null){
+			//是双十二秒杀活动商品，不使用优惠券
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("couponList", null);
+			data.put("pageNo", 1);
+			data.put("totalCount", 0);
+			resp.setResponseData(data);
+			return resp;
+		}
+		// +++++++++++++++++++++++++<
 		
 		List<AfUserCouponDto>  list = afUserCouponService.getUserAcgencyCouponByAmount(userId,actualAmount);
 		
