@@ -85,7 +85,10 @@
                             </span>
                         </div>
                         <div class="p-button flex fd-row ai-c">
-                            <div class="p-left" :class="[(currentData.type=='E' || item.count==0)?'p-status-1':'p-status-2']">
+                            <div class="p-left p-status-1" v-if="currentData.type=='E'">
+                                还剩0件
+                            </div>
+                            <div class="p-left" :class="[(currentData.type=='E' || item.count==0)?'p-status-1':'p-status-2']" v-else>
                                 还剩{{item.count}}件
                                 <i class="progress" :style="{width: 1.6*(item.count/item.stockCount)+'rem' }"></i>
                             </div>
