@@ -48,7 +48,7 @@ public abstract class AbTestController extends BaseController {
                   }
         	} else {
         		handelResult = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        		handelResult.setResponseData(requestDataVo);
+        		handelResult.setResponseData(requestDataVo.getParams());
         	}
         	return handelResult;
         }catch(FanbeiException e){
