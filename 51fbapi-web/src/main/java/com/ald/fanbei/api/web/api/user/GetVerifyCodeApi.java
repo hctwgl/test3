@@ -117,7 +117,6 @@ public class GetVerifyCodeApi implements ApiHandle {
 			if (context.getAppVersion() >= 340) {//快速注册
 				if (StringUtils.isBlank(blackBox)) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-
 				}
 				// todo 这里面放同盾代码,下面是示例
 				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
