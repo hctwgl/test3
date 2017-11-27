@@ -64,7 +64,6 @@ public class GetNperListApi implements ApiHandle {
         BigDecimal nperAmount = NumberUtil.objToBigDecimalDefault(params.get("nperAmount"), BigDecimal.ZERO);
         AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
 
-
         if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
             AfTradeOrderDo tradeOrderDo = afTradeOrderService.getById(orderInfo.getRid());
             AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(tradeOrderDo.getBusinessId());
@@ -102,9 +101,13 @@ public class GetNperListApi implements ApiHandle {
                     interestFreeArray = getInterestFreeArray(numId, orderType);
                 }
             }
-
             //获取借款分期配置信息
-            AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            //11.27加入用户专有利率
+            AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());
+            if(resource==null){
+                resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            }
+
             JSONArray array = JSON.parseArray(resource.getValue());
             //删除2分期
             if (array == null) {

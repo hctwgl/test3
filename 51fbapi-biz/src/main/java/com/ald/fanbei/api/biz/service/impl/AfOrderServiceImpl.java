@@ -790,7 +790,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
                                 bo = afResourceService.borrowRateWithResourceForTrade(nper);
                             } else {
-                                bo = afResourceService.borrowRateWithResource(nper);
+                                bo = afResourceService.borrowRateWithResource(nper,userAccountInfo.getUserName());
                             }
                         }
                         String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
@@ -857,7 +857,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
 
                         orderInfo.setNper(nper);
-                        BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+                        BorrowRateBo bo = afResourceService.borrowRateWithResource(nper,userAccountInfo.getUserName());
                         String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
                         orderInfo.setBorrowRate(boStr);
 
@@ -1011,7 +1011,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         if (orderType.equals(OrderType.TRADE.getCode())) {
             resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
         } else {
-            resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            //获取借款分期配置信息
+            //11.27加入用户专有利率
+            AfUserDo afUserDo= afUserService.getUserById(userId);
+            resource= afResourceService.getVipUserRate(afUserDo.getUserName());
+            if(resource==null){
+                resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            }
         }
         JSONArray array = JSON.parseArray(resource.getValue());
         //删除2分期

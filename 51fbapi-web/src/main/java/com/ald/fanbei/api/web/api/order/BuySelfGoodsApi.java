@@ -157,7 +157,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (!fromCashier) {
 			if (nper.intValue() > 0) {
 				// 保存手续费信息
-				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
+				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
 				afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 			}
 		}
