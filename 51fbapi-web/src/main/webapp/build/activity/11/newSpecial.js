@@ -50,7 +50,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=newUser_ini'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=newUser_ini'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -155,7 +155,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=buyNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=buyNow'},
                 success:function (data) {
                     console.log(data)
                 }
