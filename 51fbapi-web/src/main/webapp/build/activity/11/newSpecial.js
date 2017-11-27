@@ -95,7 +95,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=shareNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newUser?type=shareNow'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -122,7 +122,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=inviteNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newUser?type=inviteNow'},
                 success:function (data) {
                     console.log(data)
                 }
