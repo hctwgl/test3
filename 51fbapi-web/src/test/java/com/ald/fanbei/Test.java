@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -54,16 +55,11 @@ public class Test {
 //			end = eCalendar.getTime();
 //			System.out.println(DateUtil.formatDate(firstOfMonth, DateUtil.DATE_TIME_SHORT));
 //			System.out.println(DateUtil.formatDate(end, DateUtil.DATE_TIME_SHORT));
-			Calendar calendar = Calendar.getInstance();
-			calendar.set(Calendar.MONTH,0);
-			Date firstOfMonth = DateUtil.getFirstOfMonth(calendar.getTime());
-			firstOfMonth = DateUtil.addHoures(firstOfMonth, -12);
-			Date end = DateUtil.addMonths(firstOfMonth, 1);
-			calendar.setTime(end);
-			calendar.add(Calendar.SECOND, -1);
-			end = calendar.getTime();
-			System.out.println(DateUtil.formatDate(firstOfMonth, DateUtil.DATE_TIME_SHORT));
-			System.out.println(DateUtil.formatDate(end, DateUtil.DATE_TIME_SHORT));
+			BigDecimal a = new BigDecimal(100);
+			System.out.println(a);
+			BigDecimal b = new BigDecimal(0);
+			System.out.println(b);
+			System.out.println(a.compareTo(b));
 		} catch (Exception e) {
 			System.out.println(e);
 		}

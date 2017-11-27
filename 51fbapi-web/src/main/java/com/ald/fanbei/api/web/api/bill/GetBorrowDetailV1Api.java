@@ -72,6 +72,9 @@ public class GetBorrowDetailV1Api implements ApiHandle{
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 				return resp;
 			}
+			if (StringUtil.isEmpty(status)) {
+				status = "borrow";
+			}
 			Map<String, Object> map = new HashMap<String, Object>();
 			AfBorrowBillDo queryBillDo = afBorrowBillService.getBorrowBillById(billId);
 			if (queryBillDo == null || queryBillDo.getRid() == null) {
