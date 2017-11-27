@@ -583,7 +583,7 @@ function alaShareData() {
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/08/gg31.png",  // 分享右边小图
         "shareAppUrl": domainName + "/fanbei-web/activity/doubleTwelve?groupId=" + groupId + "&spread=2",  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
-        "sharePage": "ggIndexShare" // 分享的页面
+        "sharePage": "doubleTwelve" // 分享的页面
     };
     var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
     return dataStr;
