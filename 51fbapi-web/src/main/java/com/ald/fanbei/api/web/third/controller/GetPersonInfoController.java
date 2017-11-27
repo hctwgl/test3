@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -60,7 +61,7 @@ public class GetPersonInfoController {
 	private BizCacheUtil bizCacheUtil;
 	protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
-	@RequestMapping(value="/getPersonInfo",produces="text/html;charset=UTF-8")
+	@RequestMapping(value="/getPersonInfo", method = RequestMethod.POST,produces="text/html;charset=UTF-8")
 	@ResponseBody
 	public String findPersonInfoByCardNo(HttpServletRequest request,HttpServletResponse response) {
 		Map<String,String> map = new HashMap<String,String>();
@@ -71,6 +72,7 @@ public class GetPersonInfoController {
 		try {
 			//解析第一层params数据
 			JSONObject obj = JSON.parseObject(request.getParameter("params"));
+			System.out.println("-----未解密数据："+obj);
 			ParamsFather paramsFather = JSONObject.toJavaObject(obj, ParamsFather.class);
 			//解析第二层params数据
 			String params = paramsFather.getParams();
@@ -82,6 +84,7 @@ public class GetPersonInfoController {
 		    String decode = RC4_128_V2.decode(urlDecoder, rc4Key);
 		    JSONObject jsonObj = JSONObject.parseObject(decode);
 		    ParamsSon paramsSon = JSONObject.toJavaObject(jsonObj, ParamsSon.class);
+		    System.out.println("解密后paramsSons数据："+paramsSon);
 		    
 			//判断请求的业务类型编号是否为201
 			if (StringUtil.equals(paramsSon.getTx(), "201")) {
@@ -93,6 +96,7 @@ public class GetPersonInfoController {
 				jsonString = (String) bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo);
 				if (StringUtil.isNotBlank(jsonString)) {
 					//有缓存，直接返回
+					System.out.println("查询走缓存cache："+jsonString);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from redis,idNo = "+idNo+", name="+name+" time = " + new Date());
 					return jsonString;
 				}else{
@@ -208,21 +212,17 @@ public class GetPersonInfoController {
 					List<RiskResult> riskResultList = new ArrayList<RiskResult>();
 					riskResultList.add(riskResult);
 					
-					//将List转成json对象
-					String loanRecords = JsonUtil.toJSONString(loanRecordList);
-					String riskResults = JsonUtil.toJSONString(riskResultList);
 					Data data = new Data();
-					data.setLoanRecords(loanRecords);
-					data.setRiskResults(riskResults);
-					//data转为json
-					String dataJson = JsonUtil.toJSONString(data);
+					data.setLoanRecords(loanRecordList);
+					data.setRiskResults(riskResultList);
 					
 					Params paramsResp = new Params();
 					paramsResp.setTx("202");
-					paramsResp.setData(dataJson);
+					paramsResp.setData(data);
 					paramsResp.setVersion("V3");
 					//将paramsResp转为json
 					String paramsRespJson = JsonUtil.toJSONString(paramsResp);
+					System.out.println("paramsRespJson:"+paramsRespJson);
 					//对响应的数据加密
 					//String Rc4Resp = RC4_128_V2.encode(paramsRespJson, rc4Key);
 					String Rc4Resp = RC4_128_V2.encode(paramsRespJson, rc4Key);
@@ -236,6 +236,7 @@ public class GetPersonInfoController {
 					//将数据存入缓存
 					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_ONE_DAY);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from dataBase success,idNo = "+idNo+", name="+name+" time = " + new Date());
+					System.out.println("返回的加密数据："+jsonString);
 					return jsonString;			
 				}
 				

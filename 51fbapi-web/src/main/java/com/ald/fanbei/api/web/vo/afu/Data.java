@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.vo.afu;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @类描述：响应数据节点类
@@ -9,32 +10,37 @@ import java.io.Serializable;
  */
 public class Data implements Serializable {
 	
-	private String loanRecords;
+	private List loanRecords;
 	
-	private String riskResults;
+	private List riskResults;
 
-	public Data(String loanRecords, String riskResults) {
+	public Data(List loanRecords, List riskResults) {
 		super();
 		this.loanRecords = loanRecords;
 		this.riskResults = riskResults;
 	}
 
-	public Data() {}
+	public Data() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-	public String getLoanRecords() {
+	public List getLoanRecords() {
 		return loanRecords;
 	}
 
-	public void setLoanRecords(String loanRecords) {
+	public void setLoanRecords(List loanRecords) {
 		this.loanRecords = loanRecords;
 	}
 
-	public String getRiskResults() {
+	public List getRiskResults() {
 		return riskResults;
 	}
 
-	public void setRiskResults(String riskResults) {
+	public void setRiskResults(List riskResults) {
 		this.riskResults = riskResults;
-	}	
+	}
+
+		
 	
 }

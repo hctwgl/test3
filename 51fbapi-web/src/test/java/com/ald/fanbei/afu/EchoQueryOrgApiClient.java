@@ -33,8 +33,8 @@ public class EchoQueryOrgApiClient {
 			final String url = "http://localhost:8005/third/getPersonInfo";
 			final String rc4Key = "e4588f6b0a65fab9";
 			System.out.println("查询程序启动~~~~~~~~");
-			final String name = "俞毓民";
-			final String idNo = "330726199311151519";
+			final String name = "江杰";
+			final String idNo = "330824199208194230";
 			
 			final long startTime=System.currentTimeMillis();
 				data = echoQueryOrg(url, rc4Key, name, idNo);

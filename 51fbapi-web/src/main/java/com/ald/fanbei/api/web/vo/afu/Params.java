@@ -10,41 +10,39 @@ import java.io.Serializable;
 public class Params implements Serializable {
 	
 	private String tx;//事物代号
-	private String data;//内容节点
+	private Data data;//内容节点
 	private String version;//Api版本信息
 	
-	public Params() {}
-
-	public Params(String tx, String data, String version) {
+	public Params(String tx, Data data, String version) {
 		super();
 		this.tx = tx;
 		this.data = data;
 		this.version = version;
 	}
-
+	public Params() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public String getTx() {
 		return tx;
 	}
-
 	public void setTx(String tx) {
 		this.tx = tx;
 	}
-
-	public String getData() {
+	public Data getData() {
 		return data;
 	}
-
-	public void setData(String data) {
+	public void setData(Data data) {
 		this.data = data;
 	}
-
 	public String getVersion() {
 		return version;
 	}
-
 	public void setVersion(String version) {
 		this.version = version;
 	}
+	
+	
 	
 	
 	

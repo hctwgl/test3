@@ -118,6 +118,7 @@ id rid,gmt_create,gmt_modified,user_id,address,citizen_id,gender,nation,name,val
 			af_id_number 
 		WHERE 
 			citizen_id = #{idNo}
+			limit 1
 	</select>
 	
 </mapper>
