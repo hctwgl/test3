@@ -89,6 +89,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfShareGoodsService afShareGoodsService;
     @Resource
 	AfGoodsDouble12Service afGoodsDouble12Service;
+    @Resource
+    AfGoodsService afGoodsService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -388,7 +390,9 @@ public class PayOrderV1Api implements ApiHandle {
 				//报错提示已秒杀过（已生成过秒杀订单）
 				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 			}
-			
+			//根据goodsId查询商品信息
+			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+			int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12Do.getCount();//秒杀商品余量
 			if(afGoodsDouble12Do.getCount()<=0){
 				//报错提示秒杀商品已售空
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
