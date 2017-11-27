@@ -11,5 +11,5 @@ import com.ald.fanbei.api.dal.domain.AfSupCallbackDo;
  */
 public interface AfSupCallbackService extends ParentService<AfSupCallbackDo, Long> {
 
-    AfSupCallbackDo getByOrderNo(String orderNo);
+    AfSupCallbackDo getCompleteByOrderNo(String orderNo);
 }

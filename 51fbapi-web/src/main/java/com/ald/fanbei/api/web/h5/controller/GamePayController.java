@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfSupGameService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
-import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.MD5Helper;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
 import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 
@@ -97,15 +96,15 @@ public class GamePayController extends H5Controller {
 	FanbeiH5Context context = doH5Check(request, false);
 	try {
 	    // 验证参数
-	    String goodsId = request.getParameter("goodsId");
-	    if (StringUtils.isBlank(goodsId)) {
+	    Long goodsId = Long.parseLong(request.getParameter("goodsId"));
+	    if (goodsId != null && goodsId > 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
 	    }
-	    String actualAmount = request.getParameter("actualAmount");
-	    if (StringUtils.isBlank(actualAmount)) {
+	    Long actualAmount = Long.parseLong(request.getParameter("actualAmount"));
+	    if (actualAmount != null && actualAmount > 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
 	    }
-	    String couponId = request.getParameter("couponId");
+	    Long couponId = Long.parseLong(request.getParameter("couponId"));
 	    String acctType = request.getParameter("acctType");
 	    if (StringUtils.isBlank(acctType)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:acctType.");
@@ -118,8 +117,8 @@ public class GamePayController extends H5Controller {
 	    if (StringUtils.isBlank(userName)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:userName.");
 	    }
-	    String goodsNum = request.getParameter("goodsNum");
-	    if (StringUtils.isBlank(goodsNum)) {
+	    Long goodsNum = Long.parseLong(request.getParameter("goodsNum"));
+	    if (goodsNum != null && goodsNum > 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
 	    }
 	    String gameType = request.getParameter("gameType");
@@ -139,7 +138,6 @@ public class GamePayController extends H5Controller {
 
     @RequestMapping(value = "/callback", method = RequestMethod.GET)
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
-	Map<String, Object> data = new HashMap<String, Object>();
 	FanbeiH5Context context = doH5Check(request, false);
 	try {
 	    // 获取参数

@@ -11,6 +11,6 @@ import com.ald.fanbei.api.dal.domain.AfSupCallbackDo;
  */
 public interface AfSupCallbackDao extends BaseDao<AfSupCallbackDo, Long> {
 
-    AfSupCallbackDo getByOrderNo(String orderNo);
+    AfSupCallbackDo getCompleteByOrderNo(String orderNo);
 
 }

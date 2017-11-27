@@ -33,8 +33,8 @@ public class AfSupCallbackServiceImpl extends ParentServiceImpl<AfSupCallbackDo,
     }
 
     @Override
-    public AfSupCallbackDo getByOrderNo(String orderNo) {
+    public AfSupCallbackDo getCompleteByOrderNo(String orderNo) {
 
-	return afSupCallbackDao.getByOrderNo(orderNo);
+	return afSupCallbackDao.getCompleteByOrderNo(orderNo);
     }
 }

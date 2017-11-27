@@ -180,7 +180,7 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getByOrderNo" resultType="com.ald.fanbei.api.dal.domain.AfSupCallbackDo">
+    <select id="getCompleteByOrderNo" resultType="com.ald.fanbei.api.dal.domain.AfSupCallbackDo">
         SELECT
         <include refid="queryFields" />
         FROM af_sup_callback

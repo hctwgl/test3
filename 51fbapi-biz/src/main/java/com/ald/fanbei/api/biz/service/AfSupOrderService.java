@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+import java.util.Map;
+
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 
 /**
@@ -13,4 +16,5 @@ public interface AfSupOrderService extends ParentService<AfSupOrderDo, Long> {
 
     String processCallbackResult(String userOrderId, String status, String mes, String kminfo, String payoffPriceTotal, String signs);
 
+    Map<String, Object> addSupOrder(Long userId, Long goodsId, BigDecimal actualAmount, Long couponId, String acctType, String gameName, String userName, BigDecimal goodsNum, String gameType, String gameAcct, String gameArea, String gameSrv, String userIp);
 }
