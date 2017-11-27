@@ -12,12 +12,12 @@ public class Data implements Serializable {
 	
 	private List loanRecords;
 	
-	private List riskResults;
+//	private List riskResults;
 
-	public Data(List loanRecords, List riskResults) {
+	public Data(List loanRecords) {
 		super();
 		this.loanRecords = loanRecords;
-		this.riskResults = riskResults;
+//		this.riskResults = riskResults;
 	}
 
 	public Data() {
@@ -33,13 +33,13 @@ public class Data implements Serializable {
 		this.loanRecords = loanRecords;
 	}
 
-	public List getRiskResults() {
-		return riskResults;
-	}
+//	public List getRiskResults() {
+//		return riskResults;
+//	}
 
-	public void setRiskResults(List riskResults) {
-		this.riskResults = riskResults;
-	}
+//	public void setRiskResults(List riskResults) {
+//		this.riskResults = riskResults;
+//	}
 
 		
 	

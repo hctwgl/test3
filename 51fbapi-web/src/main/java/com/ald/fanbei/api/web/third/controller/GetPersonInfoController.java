@@ -78,13 +78,13 @@ public class GetPersonInfoController {
 			String params = paramsFather.getParams();
 			//对加密过的params数据进行解密
 			String urlDecoder = StringUtil.UrlDecoder(params);//1：urlDecode解码
-			//读取配置文件，获取rc4秘钥
+			//获取rc4秘钥
 			 String rc4Key = ConfigProperties.get(Constants.YIXIN_AFU_PASSWORD);
 		    //3:rc4解密
 		    String decode = RC4_128_V2.decode(urlDecoder, rc4Key);
 		    JSONObject jsonObj = JSONObject.parseObject(decode);
 		    ParamsSon paramsSon = JSONObject.toJavaObject(jsonObj, ParamsSon.class);
-		    System.out.println("解密后paramsSons数据："+paramsSon);
+		    System.out.println("解密后paramsSon数据："+paramsSon);
 		    
 			//判断请求的业务类型编号是否为201
 			if (StringUtil.equals(paramsSon.getTx(), "201")) {
@@ -163,7 +163,7 @@ public class GetPersonInfoController {
 					}
 					//借款类型码，默认是信用借款
 					loanRecord.setLoanTypeCode(LoanTypeCode.Credit.getCode());
-					if (borrowCashDo.getOverdueDay() > 0){
+					if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")){
 						int overdueTotal = borrowCashDo.getOverdueDay().intValue()/7;
 						if (borrowCashDo.getOverdueDay() % 7 != 0) {
 							overdueTotal += 1;
@@ -200,21 +200,21 @@ public class GetPersonInfoController {
 					loanRecordList.add(loanRecord);
 					
 					/** riskResult */
-					RiskResult riskResult = new RiskResult();
-					riskResult.setRiskItemTypeCode(RiskItemTypeCode.CardNum.getCode());
-					riskResult.setRiskItemValue(idNo);
+//					RiskResult riskResult = new RiskResult();
+//					riskResult.setRiskItemTypeCode(RiskItemTypeCode.CardNum.getCode());
+//					riskResult.setRiskItemValue(idNo);
 					//根据借款人身份证号查询用户名
-					String userName = afIdNumberService.findUserNameByIdNo(idNo);
-					if (!StringUtil.equals(userName, name)) {
-						riskResult.setRiskDetail("身份证虚假");
-						riskResult.setRiskTime(sdf.format(new Date()));
-					}
-					List<RiskResult> riskResultList = new ArrayList<RiskResult>();
-					riskResultList.add(riskResult);
+//					String userName = afIdNumberService.findUserNameByIdNo(idNo);
+//					if (!StringUtil.equals(userName, name)) {
+//						riskResult.setRiskDetail("身份证虚假");
+//						riskResult.setRiskTime(sdf.format(new Date()));
+//					}
+//					List<RiskResult> riskResultList = new ArrayList<RiskResult>();
+//					riskResultList.add(riskResult);
 					
 					Data data = new Data();
 					data.setLoanRecords(loanRecordList);
-					data.setRiskResults(riskResultList);
+//					data.setRiskResults(riskResultList);
 					
 					Params paramsResp = new Params();
 					paramsResp.setTx("202");
