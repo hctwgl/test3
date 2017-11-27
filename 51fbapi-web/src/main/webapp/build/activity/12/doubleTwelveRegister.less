@@ -1,3 +1,4 @@
+@imageUrl: "https://f.51fanbei.com/h5/app/activity/12";
 * {
     padding: 0;
     margin: 0;
@@ -8,34 +9,56 @@ body {
     background-color: white;
 }
 
-.login {
-    /* background:#ffffff; */
-    border-radius: 0.33rem;
-    /* width:6.8rem; */
-    /* height:1059px; */
-    padding: 0 0.6rem;
+.flex {
+    display: flex;
 }
 
-.topdiv {
-    width: 6.41rem;
-    height: 3.65rem;
+.fd-row {
+    flex-direction: row;
+}
+
+.fd-column {
+    flex-direction: column;
+}
+
+.jc-c {
+    justify-content: center;
+}
+
+.jc-sb {
+    justify-content: space-between;
+}
+
+.jc-sa {
+    justify-content: space-around;
+}
+
+.ai-c {
+    align-items: center;
+}
+
+.fw-w {
+    flex-wrap: wrap;
+}
+
+.ml30 {
+    margin-left: .3rem;
+}
+
+.por {
     position: relative;
 }
 
-.topimg {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    display: inline-block;
-    /* background:red; */
-    /* box-shadow:0 0 0.05rem 0 rgba(0,0,0,0.09); */
-    width: 1.62rem;
-    height: 1.8rem;
+.topdiv img {
+    width: 7.5rem;
+    height: 7.27rem;
 }
 
-.topimg img {
-    text-shadow: 0 0 0.05rem 0 rgba(0, 0, 0, 0.09);
+.content {
+    width: 6.9rem;
+    height: 3rem;
+    border-radius: .08rem;
+    background-color: #ffffff;
 }
 
 .phone {
@@ -104,17 +127,15 @@ body {
 
 .loginbtn {
     margin-top: 0.9rem;
-    width: 6.41rem;
-    height: 1.01rem;
-    background: #fe963b;
-    border-radius: 0.04rem;
-    line-height: 1.01rem;
+    width: 6.9rem;
+    height: 1rem;
+    background: #fca534;
+    border-radius: 0.08rem;
+    line-height: 1rem;
     text-align: center;
     font-family: PingFangSC-Regular;
-    font-size: 0.32rem;
+    font-size: 0.34rem;
     color: #ffffff;
-    /* letter-spacing:-0.54px; */
-    text-align: center;
 }
 
 .lspdiv {

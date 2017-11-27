@@ -184,7 +184,11 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     if (!data.success) {
-                        location.href = data.data.loginUrl;
+                        if (data.data!='') {
+                            location.href = data.data.loginUrl;
+                        }else {
+                            requestMsg("哎呀，获取优惠券出错了！");
+                        }
                         return false;
                     }
                     self.couponData = data.data.couponList;
