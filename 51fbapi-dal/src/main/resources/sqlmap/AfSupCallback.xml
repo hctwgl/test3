@@ -184,6 +184,6 @@
         SELECT
         <include refid="queryFields" />
         FROM af_sup_callback
-        WHERE is_delete = 0 AND order_no=#{order_no}
+        WHERE is_delete = 0 AND order_no=#{order_no} and `result` = 1
     </select>
 </mapper>
