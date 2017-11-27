@@ -32,12 +32,12 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-public class HomePageAbTestController extends AbTestController {
+public class LoginAbTestController extends AbTestController {
 
 	@Resource
 	AfTestManageService afTestManageService;
 
-	@RequestMapping(value = "/goods/getHomeInfoFront", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+	@RequestMapping(value = "/user/loginFront", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String getHomeInfoFront(@RequestBody String body, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
