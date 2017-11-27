@@ -234,7 +234,7 @@ public class GetPersonInfoController {
 					map.put("params", urlResp);
 					jsonString = JsonUtil.toJSONString(map);
 					//将数据存入缓存
-					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_ONE_DAY);
+					//bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_ONE_DAY);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from dataBase success,idNo = "+idNo+", name="+name+" time = " + new Date());
 					System.out.println("返回的加密数据："+jsonString);
 					return jsonString;			
