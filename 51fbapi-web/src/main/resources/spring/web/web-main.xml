@@ -109,6 +109,7 @@
 				<value>/goods/getHomeInfoV1</value>
 				<value>/goods/getHomeInfoV2</value>
 				<value>/goods/getHomeInfoFront</value>
+				<value>/user/loginFront</value>
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
 				<value>/goods/getThirdGoodsList</value>
@@ -462,6 +463,7 @@
 		<constructor-arg>
 			<list>
 				<value>/goods/getHomeInfoFront</value>
+				<value>/user/loginFront</value>
 			</list>
 		</constructor-arg>
 	</bean>
