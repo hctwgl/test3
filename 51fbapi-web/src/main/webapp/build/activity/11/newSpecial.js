@@ -155,7 +155,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=buyNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=buyNow'},
                 success:function (data) {
                     console.log(data)
                 }
