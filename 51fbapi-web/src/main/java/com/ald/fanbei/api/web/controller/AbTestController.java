@@ -40,12 +40,17 @@ public abstract class AbTestController extends BaseController {
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
         ApiHandleResponse handelResult;
         try {
-            handelResult = methodHandel.process(requestDataVo,context, httpServletRequest);
-            int resultCode = handelResult.getResult().getCode();
-            if(resultCode != 1000){
-                logger.info(requestDataVo.getId() + " err,Code=" + resultCode);
-            }
-            return handelResult;
+        	if(methodHandel != null) {
+        		  handelResult = methodHandel.process(requestDataVo,context, httpServletRequest);
+                  int resultCode = handelResult.getResult().getCode();
+                  if(resultCode != 1000){
+                      logger.info(requestDataVo.getId() + " err,Code=" + resultCode);
+                  }
+        	} else {
+        		handelResult = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+        		handelResult.setResponseData(requestDataVo);
+        	}
+        	return handelResult;
         }catch(FanbeiException e){
         	logger.error("app exception",e);
         	throw e;
