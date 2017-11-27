@@ -207,8 +207,6 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	Map<String, Object> data = new HashMap<String, Object>();
 	if (result == 1) {
 	    data.put("orderId", afOrder.getRid());
-	    data.put("isEnoughAmount", "Y");
-	    data.put("isNoneQuota", "N");
 	}
 	return data;
     }
