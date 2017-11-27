@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -108,14 +111,14 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     }
 
     @Override
-    public Map<String, Object> addSupOrder(Long userId, Long goodsId, BigDecimal actualAmount, Long couponId, String acctType, String gameName, String userName, Integer goodsNum, String gameType, String gameAcct, String gameArea, String gameSrv, String userIp) {
+    public Map<String, Object> addSupOrder(final Long userId, final Long goodsId, final BigDecimal actualAmount, final Long couponId, final String acctType, final String gameName, final String userName, final Integer goodsNum, final String gameType, final String gameAcct, final String gameArea, final String gameSrv, final String userIp) {
 	// 验证参数须大于零
 	if (actualAmount.compareTo(BigDecimal.ZERO) <= 0 || goodsNum <= 0) {
 	    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 	}
 
 	// 获取游戏产品信息
-	AfSupGameDo supGameDo = afSupGameService.getById(goodsId);
+	final AfSupGameDo supGameDo = afSupGameService.getById(goodsId);
 	if (supGameDo == null) {
 	    logger.error("sup game is not exist :" + goodsId);
 	    throw new FanbeiException(FanbeiExceptionCode.GAME_IS_NOT_EXIST);
@@ -131,9 +134,10 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	    }
 	    couponAmount = couponDo.getAmount();
 	}
+	final BigDecimal couponAmountFinal = couponAmount;
 	// 验证优惠卷
 	BigDecimal checkActualAmount = supGameDo.getBusinessDiscount().multiply(new BigDecimal(goodsNum));
-	BigDecimal rebateAmountScale = supGameDo.getOfficalDiscount().subtract(supGameDo.getBusinessDiscount());
+	final BigDecimal rebateAmountScale = supGameDo.getOfficalDiscount().subtract(supGameDo.getBusinessDiscount());
 	checkActualAmount = checkActualAmount.subtract(couponAmount);
 	if (checkActualAmount.compareTo(BigDecimal.ZERO) <= 0) {
 	    logger.error("checkActualAmount less than zero:couponId " + couponId + " ,goodsId:" + goodsId + " ,checkActualAmount:" + checkActualAmount);
@@ -145,39 +149,74 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 	}
 
-	if (couponAmount.compareTo(BigDecimal.ZERO) > 0) {
-	    afUserCouponService.updateUserCouponSatusUsedById(couponId);
-	}
+	// 通过事物添加订单信息
+	final AfOrderDo afOrder = new AfOrderDo();
+	Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+	    @Override
+	    public Integer doInTransaction(TransactionStatus status) {
+		try {
+		    if (couponAmountFinal.compareTo(BigDecimal.ZERO) > 0) {
+			afUserCouponService.updateUserCouponSatusUsedById(couponId);
+		    }
+		    // 添加订单信息
+		    afOrder.setUserId(userId);
+		    afOrder.setGoodsPriceId(goodsId);
+		    afOrder.setActualAmount(actualAmount);
+		    afOrder.setSaleAmount(actualAmount);
+		    afOrder.setRebateAmount(rebateAmountScale);
+		    afOrder.setGmtCreate(new Date());
+		    afOrder.setGmtPayEnd(DateUtil.addHoures(new Date(), Constants.ORDER_PAY_TIME_LIMIT));
+		    afOrder.setPriceAmount(actualAmount);
+		    afOrder.setGoodsIcon(supGameDo.getImage());
+		    afOrder.setGoodsName(supGameDo.getName());
+		    afOrder.setGoodsId(goodsId);
+		    afOrder.setOrderType(OrderType.BOLUOME.getCode());
+		    afOrder.setOrderNo(generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT));
+		    afOrder.setCount(goodsNum);
+		    afOrder.setUserCouponId(couponId);
+		    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
+		    afOrder.setAuAmount(userAccountInfo.getAuAmount());
+		    afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
+		    afOrder.setThirdDetailUrl("");
+		    afOrderService.createOrder(afOrder);
+		    // 添加订单相关游戏充值信息
+		    AfSupOrderDo supOrderDo = new AfSupOrderDo();
+		    supOrderDo.setAcctType(acctType);
+		    supOrderDo.setGameAcct(gameAcct);
+		    supOrderDo.setGameArea(gameArea);
+		    supOrderDo.setGameName(gameName);
+		    supOrderDo.setGameSrv(gameSrv);
+		    supOrderDo.setGameType(gameType);
+		    supOrderDo.setGoodsCode(supGameDo.getCode());
+		    supOrderDo.setGoodsId(goodsId);
+		    supOrderDo.setGoodsNum(goodsNum);
+		    supOrderDo.setOrderNo(afOrder.getOrderNo());
+		    supOrderDo.setUserIp(userIp);
+		    supOrderDo.setUserName(userName);
+		    afSupOrderDao.saveRecord(supOrderDo);
 
-	// 添加订单信息
-	AfOrderDo afOrder = new AfOrderDo();
-	afOrder.setUserId(userId);
-	afOrder.setGoodsPriceId(goodsId);
-	afOrder.setActualAmount(actualAmount);
-	afOrder.setSaleAmount(actualAmount);
-	afOrder.setRebateAmount(rebateAmountScale);
-	afOrder.setGmtCreate(new Date());
-	afOrder.setGmtPayEnd(DateUtil.addHoures(new Date(), Constants.ORDER_PAY_TIME_LIMIT));
-	afOrder.setPriceAmount(actualAmount);
-	afOrder.setGoodsIcon(supGameDo.getImage());
-	afOrder.setGoodsName(supGameDo.getName());
-	afOrder.setGoodsId(goodsId);
-	afOrder.setOrderType(OrderType.BOLUOME.getCode());
-	afOrder.setOrderNo(generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT));
-	afOrder.setCount(goodsNum);
-	afOrder.setUserCouponId(couponId);
-	AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-	afOrder.setAuAmount(userAccountInfo.getAuAmount());
-	afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
-	afOrder.setThirdDetailUrl("");
-	afOrderService.createOrder(afOrder);
+		    return 1;
+		} catch (Exception e) {
+		    status.setRollbackOnly();
+		    logger.info("dealMobileChargeOrder error:", e);
+		    return 0;
+		}
+	    }
+	});
 
 	Map<String, Object> data = new HashMap<String, Object>();
-	data.put("orderId", afOrder.getRid());
-	data.put("isEnoughAmount", "Y");
-	data.put("isNoneQuota", "N");
-
+	if (result == 1) {
+	    data.put("orderId", afOrder.getRid());
+	    data.put("isEnoughAmount", "Y");
+	    data.put("isNoneQuota", "N");
+	}
 	return data;
+    }
+
+    @Override
+    public String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp) {
+	// TODO Auto-generated method stub
+	return null;
     }
 
     @Resource
@@ -197,4 +236,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     private AfSupGameService afSupGameService;
     @Autowired
     private GeneratorClusterNo generatorClusterNo;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 }
