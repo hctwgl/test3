@@ -39,7 +39,7 @@ public class LoginAbTestController extends AbTestController {
 
 	@RequestMapping(value = "/user/loginFront", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
-	public String getHomeInfoFront(@RequestBody String body, HttpServletRequest request, HttpServletResponse response)
+	public String loginFront(@RequestBody String body, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
 		response.setContentType("application/json;charset=utf-8");
