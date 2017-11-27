@@ -70,20 +70,22 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		afSupCallbackService.saveRecord(afSupCallbackDo);
 
 		if (afSupCallbackDo.getResult() == 1) {
-
-		    AfOrderDo afOrderDo = afOrderService.getOrderByOrderNo(userOrderId);
-		    // 验签通过，处理订单信息
-		    if (afSupCallbackDo.getStatus().equals("01")) {// 充值成功
-			// 修改订单状态
-
-		    } else { // 充值失败
-
-			// 修改订单状态
-			// 退款
+		    //签名验证通过
+		    AfOrderDo orderInfo = afOrderService.getOrderByOrderNo(userOrderId);
+		    if (orderInfo != null) {
+			//订单信息存在
+			if (afSupCallbackDo.getStatus().equals("01")) {
+			    // 充值成功(更改订单状态、返利)
+			    afOrderService.callbackCompleteOrder(orderInfo);
+			} else { // 充值失败（更改订单状态、退款）
+			    afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo(), orderInfo.getOrderNo(), "SUP");
+			}
+			return "<receive>ok</receive>";
+		    } else {
+			return "<receive>orderNo error</receive>";
 		    }
-		    return "<receive>ok</receive>";
 		} else {
-		    return "<receive>sing error</receive>";
+		    return "<receive>sign error</receive>";
 		}
 	    } else {
 		return "<receive>ok</receive>";

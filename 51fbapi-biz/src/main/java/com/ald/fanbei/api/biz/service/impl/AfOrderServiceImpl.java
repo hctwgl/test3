@@ -676,58 +676,52 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
     @Override
     public int dealBoluomeOrder(final AfOrderDo afOrder) {
-        logger.info("dealBoluomeOrder begin , afOrder = {}" + afOrder);
-        return transactionTemplate.execute(new TransactionCallback<Integer>() {
-            @Override
-            public Integer doInTransaction(TransactionStatus status) {
-                try {
-                    OrderStatus orderStatus = OrderStatus.findRoleTypeByCode(afOrder.getStatus());
-                    switch (orderStatus) {
-                        case FINISHED:
-                            logger.info("status is finished");
-                            Long userId = afOrder.getUserId();
-                            afOrder.setStatus(OrderStatus.REBATED.getCode());
-                            afOrder.setGmtRebated(new Date());
-                            afOrder.setGmtFinished(new Date());
-                            AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
-                            accountInfo.setRebateAmount(BigDecimalUtil.add(accountInfo.getRebateAmount(), afOrder.getRebateAmount()));
-                            AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId, afOrder.getRid(), AccountLogType.REBATE);
-                            afUserAccountDao.updateOriginalUserAccount(accountInfo);
-                            afUserAccountLogDao.addUserAccountLog(accountLog);
-                            orderDao.updateOrder(afOrder);
-                            //逛逛点亮活动
-                            try {
-                                afBoluomeActivityService.ggLightActivity(afOrder);
-                            } catch (Exception e) {
-                                logger.info("ggLightActivity error:", e);
-                            }
-
-
-//                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-//						if(afBorrowDo !=null) {
-//							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-//							if(borrowList == null || borrowList.size()==0 ){
-//								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-//								afBorrowDao.addBorrowBill(billList);
-//							}
-//						}
-                            break;
-                        default:
-                            logger.info(" status is {} ", afOrder.getStatus());
-                            orderDao.updateOrder(afOrder);
-                            break;
-                    }
-                    logger.info("dealBoluomeOrder complete!");
-                    return 1;
-                } catch (Exception e) {
-                    status.setRollbackOnly();
-                    logger.info("dealBoluomeOrder error:", e);
-                    return 0;
-                }
-            }
-        });
+	try {
+	    OrderStatus orderStatus = OrderStatus.findRoleTypeByCode(afOrder.getStatus());
+	    switch (orderStatus) {
+	    case FINISHED:
+		callbackCompleteOrder(afOrder);
+		break;
+	    default:
+		logger.info(" status is {} ", afOrder.getStatus());
+		orderDao.updateOrder(afOrder);
+		break;
+	    }
+	    logger.info("dealBoluomeOrder complete!");
+	    return 1;
+	} catch (Exception e) {
+	    logger.info("dealBoluomeOrder error:", e);
+	    return 0;
+	}
     }
 
+    @Override
+    public int callbackCompleteOrder(final AfOrderDo afOrder) {
+	logger.info("callbackCompleteOrder begin , afOrder = {}" + afOrder);
+	return transactionTemplate.execute(new TransactionCallback<Integer>() {
+	    @Override
+	    public Integer doInTransaction(TransactionStatus status) {
+		try {
+		    Long userId = afOrder.getUserId();
+		    afOrder.setStatus(OrderStatus.REBATED.getCode());
+		    afOrder.setGmtRebated(new Date());
+		    afOrder.setGmtFinished(new Date());
+		    AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+		    accountInfo.setRebateAmount(BigDecimalUtil.add(accountInfo.getRebateAmount(), afOrder.getRebateAmount()));
+		    AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId, afOrder.getRid(), AccountLogType.REBATE);
+		    afUserAccountDao.updateOriginalUserAccount(accountInfo);
+		    afUserAccountLogDao.addUserAccountLog(accountLog);
+		    orderDao.updateOrder(afOrder);
+		    return 1;
+		} catch (Exception e) {
+		    status.setRollbackOnly();
+		    logger.info("callbackCompleteOrder error:", e);
+		    return 0;
+		}
+	    }
+	});
+    }
+    
     private AfUserAccountLogDo buildUserAccount(BigDecimal amount, Long userId, Long orderId, AccountLogType logType) {
         //增加account变更日志
         AfUserAccountLogDo accountLog = new AfUserAccountLogDo();

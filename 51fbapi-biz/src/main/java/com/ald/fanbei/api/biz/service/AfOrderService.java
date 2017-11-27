@@ -160,6 +160,15 @@ public interface AfOrderService {
 	int dealBoluomeOrder(AfOrderDo afOrder);
 	
 	/**
+	 * 处理回调完成的订单业务逻辑
+	 * @author gaojb
+	 * @Time 2017年11月27日 上午11:38:00
+	 * @param afOrder
+	 * @return
+	 */
+	int callbackCompleteOrder(AfOrderDo afOrder);
+	
+	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder
 	 * @return
