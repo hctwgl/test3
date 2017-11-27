@@ -94,7 +94,6 @@ public class GetNperListApi implements ApiHandle {
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, rebateModels, BigDecimal.ONE.intValue(),
                     nperAmount, resource.getValue1(), resource.getValue2());
             resp.addResponseData("nperList", nperList);
-            resp.addResponseData("oneFlag", oneNper);
             return resp;
         } else {
             JSONArray interestFreeArray = null;
@@ -126,7 +125,6 @@ public class GetNperListApi implements ApiHandle {
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                     nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
             resp.addResponseData("nperList", nperList);
-            resp.addResponseData("oneFlag", oneNper);
             return resp;
         }
 
@@ -176,7 +174,15 @@ public class GetNperListApi implements ApiHandle {
         }
 
     }
-    private String checkMoneyLimit(JSONArray array,String orderType,BigDecimal totalamount) {
+
+    /**
+     * 收银台分期金额校验
+     * @param array 可用分期数组
+     * @param orderType 订单类型
+     * @param totalamount 订单金额
+     * @return   是否可以信用支付1是0否
+     */
+    public String checkMoneyLimit(JSONArray array,String orderType,BigDecimal totalamount) {
         String oneNper = "1";
         try{
             String cType = "";
@@ -197,12 +203,12 @@ public class GetNperListApi implements ApiHandle {
                     Map<String,JSONObject> config = new HashMap<String,JSONObject>();
                     if (!StringUtils.isBlank(value)){
                         JSONArray arraytemp = JSON.parseArray(value);
-                        for (int i=0;i<array.size();i++){
-                            JSONObject obj = array.getJSONObject(i);
-                            config.put(obj.getString("stage").replace("s",""),obj);
-                            if(obj.getString("stage").equals("s1")){
-                                String up = obj.getString("stageUp");
-                                String down = obj.getString("stageDown");
+                        for (int i=0;i<arraytemp.size();i++){
+                            JSONObject obj = arraytemp.getJSONObject(i);
+                            config.put(obj.getString("nper").replace("s",""),obj);
+                            if(obj.getString("nper").equals("s1")){
+                                String up = obj.getString("max");
+                                String down = obj.getString("min");
                                 if("0".equals(up) && "0".equals(down)){
                                     continue;
                                 }
@@ -218,8 +224,8 @@ public class GetNperListApi implements ApiHandle {
                         String nper = json.getString(Constants.DEFAULT_NPER);
                         if(config.containsKey(nper)){
                             JSONObject objtemp = config.get(nper);
-                            String up = objtemp.getString("stageUp");
-                            String down = objtemp.getString("stageDown");
+                            String up = objtemp.getString("max");
+                            String down = objtemp.getString("min");
                             if("0".equals(up) && "0".equals(down)){
                                 continue;
                             }
