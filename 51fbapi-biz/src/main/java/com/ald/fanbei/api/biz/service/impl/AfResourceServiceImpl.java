@@ -541,4 +541,14 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getScrollbarListByType(type);
 	}
 
+	@Override
+	public List<AfResourceDo> getEcommercePositionUpRescoure() {
+		return afResourceDao.getEcommercePositionUpRescoure();
+	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionDownRescoure() {
+		return afResourceDao.getEcommercePositionDownRescoure();
+	}
+
 }
