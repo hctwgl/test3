@@ -106,7 +106,7 @@ public class AppH5Double12ActivityController extends BaseController{
 			context = doWebCheck(request, true);
 			
 			String userName = context.getUserName();
-			logger.info("/activity/double12/getCoupon params: userName ={}", userName);
+			logger.info("/activity/double12/couponHomePage params: userName ={}", userName);
 			Long userId = convertUserNameToUserId(userName);
 			
 			// 获取活动优惠券组信息
@@ -174,7 +174,7 @@ public class AppH5Double12ActivityController extends BaseController{
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-			logger.error("/activity/double12/getCoupon" + context + "login error ");
+			logger.error("/activity/double12/couponHomePage" + context + "login error ");
 			result = H5CommonResponse.getNewInstance(false, "没有登录", null, data).toString();
 			}
 		} catch (Exception e) {
