@@ -11,48 +11,49 @@
 </head>
 <body>
 <div id="gamePay" class="gamePay">
-    <div class="gameName" v-if="gameNameShow==='Y'" @click="gameNameClick()">
-       <p>游戏名称</p>
-        <span>请选择游戏名称</span>
-        <i> > </i>
-   </div>
-    <div class="gameName" v-if="gameNameShow==='N'">
+    <div class="gameName" v-if="allDataLen===1">
         <p>游戏名称</p>
-        <input type="text" placeholder="请输入游戏名称"/>
+        <span>{{initChooseFirst.gameName}}</span>
     </div>
-    <div class="gamePass gameName">
+    <div class="gameName" @click="gameNameClick()" v-else>
+       <p>游戏名称</p>
+        <span>{{initChooseFirst.gameName}}</span>
+        <i> > </i>
+    </div>
+    <div class="gamePass gameName" v-if="dataType==='B'">
         <p>游戏通行证</p>
         <input type="text" placeholder="请输入游戏通行证"/>
     </div>
     <div class="gameNum gameName">
         <p>充值账号</p>
-        #*<input type="text" placeholder="请输入充值账号"/>*#
-        <p>{{fixCont.accountType}}</p>
+        <p>{{initChooseFirst.accountType}}</p>
     </div>
     <div class="gameArea gameName clearFix" @click="gameAreaClick()">
         <p>游戏区服</p>
-        <span>请输入游戏区服</span>
+        <span>{{initChooseFirst.initArea}}</span>
         <i> > </i>
     </div>
     <div class="gameType">
         <p class="title">充值类型</p>
         <ul class="typeList clearFix">
-            <li v-for="item in fixCont.typeNameList"><p class="typeName">{{item}}</p></li>
+            <li v-for="(item,index) in initChooseFirst.typeNameList" @click="gameTypeClick(index)">
+                <p class="typeName">{{item}}</p>
+            </li>
         </ul>
     </div>
     <div class="gameMoney gameType">
         <p class="title">面额</p>
-        <ul class="typeList clearFix">
-            <li v-for="item in fixCont.priceTypeList">
-                <p class="typeName">{{item.chargeNum}}{{fixCont.chargeNumName}}</p>
-                <p class="typePrice">{{(item.quantity)*(fixCont.priceTimes)}}元</p>
+        <ul class="moneyList clearFix">
+            <li v-for="(item,index) in initChooseFirst.priceTypeList" @click="gameMoneyClick(index)">
+                <p class="typeName">{{item.chargeNum}}{{initChooseFirst.chargeNumName}}</p>
+                <p class="typePrice"><i>{{(item.quantity)*(initChooseFirst.priceTimes)*discout}}</i>元</p>
             </li>
         </ul>
     </div>
     <div class="footer clearFix">
         <div class="left">
-            <p class="payMoney">实付：<span>9.5元</span></p>
-            <p class="fanMoney">充值成功后再返<span>0.5元</span></p>
+            <p class="payMoney">实付：<span><i></i>元</span></p>
+            <p class="fanMoney">充值成功后再返<span><i></i>元</span></p>
         </div>
         <div class="sure">确认充值</div>
     </div>

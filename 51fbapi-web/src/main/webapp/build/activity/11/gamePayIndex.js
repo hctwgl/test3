@@ -32,7 +32,7 @@ let vm = new Vue({
         hotGameClick(item){
             //console.log(item.id);
             let goodsId=item.id;
-            window.location.href='gamePay?goodsId='+goodsId;
+            window.location.href='gamePay?goodsId='+goodsId+'&discout='+item.discout+'&rebate='+item.rebate;
         },
         //小数点后一位
         fixNum(num){

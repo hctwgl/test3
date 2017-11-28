@@ -23,7 +23,7 @@
     <ul class="gameRankList">
         <li v-for="items in content.groupList">
             <p class="rankTitle">{{items.groupName}}</p>
-            <div class="everyCont clearFix" v-for="item in items.goodsList">
+            <div class="everyCont clearFix" v-for="item in items.goodsList"  @click="hotGameClick(item)">
                 <img class="everyImg" :src="item.image">
                 <p class="everyName">{{item.name}}</p>
                 <p class="everyFan">返利 {{fixNum((item.rebate)*100)}}%</p>

@@ -1,4 +1,6 @@
 let goodsId=getUrl('goodsId'); //获取类型id
+let discout=getUrl('discout'); //折扣
+let rebate=getUrl('rebate'); //返利
 //获取数据
 let vm = new Vue({
     el: '#gamePay',
@@ -7,7 +9,10 @@ let vm = new Vue({
         fixCont:{},
         dataType:'',
         allData:[],
-        gameNameShow:''
+        initChooseFirst:'',
+        allDataLen:'',
+        discout:discout,
+        rebate:rebate
     },
     created: function () {
         this.logData();
@@ -127,16 +132,35 @@ let vm = new Vue({
                     console.log(self.content);
                     //需要先判断数据格式
                     if(self.dataType=='A'){
-                        $('.gamePass').hide(); //无通行证这列
                         $(self.content).find('game').each((index, item)=>{
                             self.allData.push(self.rewritedata(item));
-                            if(self.allData[index].gameName){
-                                self.gameNameShow='Y';
-                            }else{
-                                self.gameNameShow='N';
-                            }
                         });
-                        console.log(self.allData, 11111);
+                        console.log(self.allData, '全部数据');
+                        console.log(self.allData.length, '全部数据长度');
+                        self.initChooseFirst=self.allData[0];
+                        //默认显示的游戏区服
+                        if(self.initChooseFirst.areasList){
+                            for(let i=0;i<self.initChooseFirst.areasList.length;i++){
+                                if(self.initChooseFirst.areasList[0].text){
+                                    self.initChooseFirst.initArea=self.initChooseFirst.areasList[0].text+' '+self.initChooseFirst.areasList[0].children[0];
+                                }else{
+                                    self.initChooseFirst.initArea=self.initChooseFirst.areasList[0];
+                                }
+                            }
+                        }
+                        console.log(self.allData[0], '默认显示第一个数据');
+                        self.allDataLen=self.allData.length;
+                        if(self.allDataLen==1){
+                            self.fixCont=self.allData[0];
+                        }
+                        self.$nextTick(function(){
+                            $('.typeList li').eq(0).addClass('changeColor01');
+                            $('.typeList li').eq(0).find('p').addClass('changeColor02');
+                            $('.moneyList li').eq(0).addClass('changeColor01');
+                            $('.moneyList li').eq(0).find('p').addClass('changeColor02');
+                            $('.payMoney span').html($('.moneyList li').eq(0).find('.typePrice').html());
+                            $('.fanMoney span').html((($('.moneyList li').eq(0).find('i').html())*rebate).toFixed(2)+'元');
+                        })
                     }
                     if(self.dataType=='B'){
                        alert('B')
@@ -176,6 +200,7 @@ let vm = new Vue({
         //点击游戏区服
         gameAreaClick(){
             let self=this;
+            console.log(self.fixCont,222)
             if(self.fixCont.areaslen){
                 if(self.fixCont.areaslen==1){
                     gameAreaOne(self.fixCont.areasList);
@@ -184,6 +209,22 @@ let vm = new Vue({
                     gameAreaTwo(self.fixCont.areasList);
                 }
             }
+        },
+        //点击充值类型
+        gameTypeClick(index){
+            $('.typeList li').eq(index).addClass('changeColor01');
+            $('.typeList li').eq(index).find('p').addClass('changeColor02');
+            $('.typeList li').eq(index).siblings().removeClass('changeColor01');
+            $('.typeList li').eq(index).siblings().find('p').removeClass('changeColor02');
+        },
+        //点击面额
+        gameMoneyClick(index){
+            $('.moneyList li').eq(index).addClass('changeColor01');
+            $('.moneyList li').eq(index).find('p').addClass('changeColor02');
+            $('.moneyList li').eq(index).siblings().removeClass('changeColor01');
+            $('.moneyList li').eq(index).siblings().find('p').removeClass('changeColor02');
+            $('.payMoney span').html($('.moneyList li').eq(index).find('.typePrice').html());
+            $('.fanMoney span').html((($('.moneyList li').eq(index).find('i').html())*rebate).toFixed(2)+'元');
         },
         //字符串转数字
         fixStrToNum(str){
@@ -206,7 +247,6 @@ function gameAreaTwo(allCont){
         //console.log(SelectedItem);
         //console.log(selectedData);
         $('.gameArea span').html(selectedData);
-        $('.gameArea span').css('color','#232323');
         picker.dispose();
     })
 }
@@ -222,7 +262,6 @@ function gameAreaOne(allCont){
         //console.log(SelectedItem);
         //console.log(selectedData);
         $('.gameArea span').html(selectedData);
-        $('.gameArea span').css('color','#232323');
         picker.dispose();
     })
 }
