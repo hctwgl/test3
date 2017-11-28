@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
@@ -310,6 +311,8 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	List<AfBorrowBillDo> getUserAllMonthBill(Long userId, int page, int pageSize);
+
+	List<AllBarlyClearanceBo> getAllClear(Long userId);
 	
 	
 }
