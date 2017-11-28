@@ -54,6 +54,8 @@ public class GetFlashSaleGoodsApi implements ApiHandle {
     AfGoodsPriceService afGoodsPriceService;
     @Resource
     AfOrderService afOrderService;
+    @Resource
+    AfActivityGoodsService afActivityGoodsService;
     private FanbeiContext contextApp;
 
     @Override
@@ -62,6 +64,7 @@ public class GetFlashSaleGoodsApi implements ApiHandle {
         Map<String,Object> data = new HashMap<String,Object>();
         List<Object> topBannerList = new ArrayList<Object>();
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        int count = 0;
         //正式环境和预发布环境区分，banner轮播图展示
         if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
             //新版,旧版,banner图不一样
@@ -105,10 +108,16 @@ public class GetFlashSaleGoodsApi implements ApiHandle {
             goodsInfo.put("goodsType", "0");
             // 如果是分期免息商品，则计算分期
             Long goodsId = goodsDo.getRid();
+            AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsDo.getRid());
+            if(null != afActivityGoodsDo){
+                count = new Long(afActivityGoodsDo.getInitialCount()).intValue();
+            }else{
+                count = 0;
+            }
             Integer total = afGoodsPriceService.selectSumStock(goodsId);
-            goodsInfo.put("total",total);
+            goodsInfo.put("total",total+count);
             Integer volume = afOrderService.selectSumCountByGoodsId(goodsId);
-            goodsInfo.put("volume",volume);
+            goodsInfo.put("volume",volume+count);
             AfSchemeGoodsDo schemeGoodsDo = null;
             try {
                 schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);

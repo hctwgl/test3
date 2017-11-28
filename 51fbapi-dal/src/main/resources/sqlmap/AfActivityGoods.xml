@@ -204,4 +204,17 @@
 			m.is_delete = 0
 		ORDER BY m.gmt_create DESC
 	</select>
+
+	<select id="getActivityGoodsByGoodsIdAndType" resultType="AfActivityGoodsDo">
+		SELECT
+			<include refid="queryTotalFields"/>
+		FROM
+			af_activity_goods
+		WHERE
+			is_delete = 0
+		AND
+			type = 'LIMIT'
+		AND
+			goods_id = #{goodsId}
+	</select>
 </mapper>

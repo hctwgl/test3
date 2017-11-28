@@ -83,6 +83,7 @@ public class GetBookingRushGoodsApi implements ApiHandle {
             goodsInfo.put("goodsType", "0");
             //是否预约
             AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
+
             afUserGoodsSmsDo.setGoodsId(goodsDo.getRid());
             afUserGoodsSmsDo.setUserId(userId);
             AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);

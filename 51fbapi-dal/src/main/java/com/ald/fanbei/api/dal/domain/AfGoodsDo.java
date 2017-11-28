@@ -47,8 +47,7 @@ public class AfGoodsDo extends AbstractSerial{
 	private String goodsDetail;
 	private String remark;
 	private String tags;//免息活动标签
-	private Integer limitedPurchase;
-	
+
 	public Long getRid() {
 		return rid;
 	}
@@ -236,11 +235,4 @@ public class AfGoodsDo extends AbstractSerial{
 		this.tags = tags;
 	}
 
-	public Integer getLimitedPurchase() {
-		return limitedPurchase;
-	}
-
-	public void setLimitedPurchase(Integer limitedPurchase) {
-		this.limitedPurchase = limitedPurchase;
-	}
 }
