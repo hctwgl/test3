@@ -609,7 +609,8 @@
 			a.bill_amount billAmount,
 			a.bill_nper billNper,
 			a.nper nper,
-			c.gmt_pay payDate
+			c.gmt_pay payDate,
+			a.gmt_out_day gmtOutDay
 		FROM `af_borrow_bill` a
 		LEFT JOIN `af_borrow` b on a.`borrow_id`= b.`id`
 		LEFT JOIN `af_order` c on b.`order_id`= c.id
