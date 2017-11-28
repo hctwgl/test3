@@ -244,7 +244,7 @@
     
     <select id="getRebateNumByOrderId" parameterType="java.lang.Long" resultType="java.lang.Integer">
 	    SELECT
-			COMMIT (1)
+			 COUNT(1)
 		FROM
 			af_boluome_rebate
 		WHERE
