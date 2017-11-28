@@ -222,9 +222,11 @@ let vm = new Vue({
     watch: {
         nowkey(val) {
             var width = -$('.rule').width()
+            $('body').scrollTop($('.goodpi').offset().top - 50)
             this.$nextTick(() => {
                 $('.goodpi').css({
                     transform: "translateX(" + width * val + "px)",
+                    height: $($('.goodeach')[val]).height()
                 })
             })
         },
@@ -260,7 +262,8 @@ let vm = new Vue({
                     containerSelector: ".good_con"
                 })
                 $('.goodpi').css({
-                    width: $('.rule').width() * self.goods.length + 'px'
+                    width: $('.rule').width() * self.goods.length + 'px',
+                    height: $($('.goodeach')[this.nowkey]).height()
                 })
                 $('.goodeach').css({
                     width: $('.rule').width() + 'px'
