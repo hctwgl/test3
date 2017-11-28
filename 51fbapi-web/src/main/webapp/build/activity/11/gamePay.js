@@ -31,6 +31,13 @@ let vm = new Vue({
             if(getattr(_xml, 'game', 'name') || getselfattr(_xml, 'name')){  //存在时直接渲染  否则手动输入
                 returnobj.gameName = getattr(_xml,'game', 'name')|| getselfattr(_xml, 'name');
             }
+            //充值账号
+            let accountType=$(_xml).find('acctType').text();
+            if(accountType){
+                returnobj.accountType =accountType;
+            }else{
+                $('.gameNum').hide();
+            }
             //游戏区服
             if($(_xml).find('area') && $(_xml).find('area').attr('name')){
                 $('.gameArea').show();
@@ -66,10 +73,14 @@ let vm = new Vue({
                 }
             }
             //判断充值类型
-            let typeName=getattr(_xml,'type', 'name') || getattr(_xml,'types', 'name');
             let typeNameList=[];
-            if(typeName){
+            if(getattr(_xml,'type', 'name')){
                 $(_xml).find('type').each(function(){
+                    typeNameList.push($(this).attr('name'));
+                });
+                returnobj.typeNameList=typeNameList;
+            }else if(getattr(_xml,'types', 'name')){
+                $(_xml).find('types').each(function(){
                     typeNameList.push($(this).attr('name'));
                 });
                 returnobj.typeNameList=typeNameList;
@@ -77,13 +88,25 @@ let vm = new Vue({
                 $('.gameType').hide();
             }
             //面额
-            returnobj.quantityList=[]; //面额--点券--价格（点数*倍数）
-            returnobj.quantityList=$(_xml).find('type').children('quantity').text().split(",");
+            let priceTypeList=[];
+            let quantityList=[]; //面额--点券--价格（点数*倍数）
+            quantityList=$(_xml).find('type').children('quantity').text().split(",");
+            //点券--点数
+            let chargeNumList=[];
+            chargeNumList=$(_xml).find('type').children('chargeNum').text().split(",");
+            for(let i=0;i<quantityList.length;i++){
+                let obj={quantity:quantityList[i],chargeNum:chargeNumList[i]};
+                priceTypeList.push(obj);
+            }
+            returnobj.priceTypeList=priceTypeList;
             //点券--价格倍数
             returnobj.priceTimes=$(_xml).find('type').children('quantity').attr('priceTimes');
-            //点券--点数
-            returnobj.chargeNumList=[];
-            returnobj.chargeNumList=$(_xml).find('type').children('chargeNum').text().split(",");
+            //点券--名称
+            if($(_xml).find('type').children('chargeNum').attr('name')){
+                returnobj.chargeNumName=$(_xml).find('type').children('chargeNum').attr('name');
+            }else{
+                returnobj.chargeNumName='';
+            }
             return returnobj;
         },
         //数据格式为B
@@ -113,7 +136,7 @@ let vm = new Vue({
                                 self.gameNameShow='N';
                             }
                         });
-                        console.log(self.allData, 11111)
+                        console.log(self.allData, 11111);
                     }
                     if(self.dataType=='B'){
                        alert('B')
