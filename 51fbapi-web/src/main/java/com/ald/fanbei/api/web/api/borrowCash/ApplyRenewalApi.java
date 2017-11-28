@@ -105,10 +105,7 @@ public class ApplyRenewalApi implements ApiHandle {
 			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
 		}
 		*/
-		if (renewAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {   //判断续借金额是否大于100
-			throw new FanbeiException(
-					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED);
-		}
+
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
 		BigDecimal capital =BigDecimal.ZERO;
 		if(appVersion<397){
