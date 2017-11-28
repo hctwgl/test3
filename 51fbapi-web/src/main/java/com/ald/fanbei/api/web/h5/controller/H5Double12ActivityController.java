@@ -101,7 +101,7 @@ public class H5Double12ActivityController extends BaseController{
 			// 获取活动优惠券组信息
     		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
     		if(groupId == null) {
-    			throw new FanbeiException("groupId can't be null or empty.");
+    			return H5CommonResponse.getNewInstance(false, "groupId can't be null or empty.", null, "").toString();
     		}
 			
     		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);

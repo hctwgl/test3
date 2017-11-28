@@ -40,15 +40,18 @@
                 <div class="line-right-1"></div>
             </div>
             <div class="txt">12月05日开始</div>
-            <ul class="coupon-ul flex fw-w" :class="{couponHeight1:couponFlag}">
-                <li class="coupon-li" v-for="(item,index) in couponData" @click="couponClick(item,index)" :class="[(item.ishas=='Y'&&item.isGet=='N')?'coupon-active':'coupon-quiet']">
-                    <div class="coupon-price">￥<span>{{item.amount}}</span></div>
-                    <div class="coupon-tip">{{item.name}}</div>
-                    <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
-                    <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='N'">立即领取</div>
-                    <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
-                </li>
-            </ul>
+            <div class="couponHeight1" id="couponBox">
+                <ul class="coupon-ul flex fw-w" id="couponUl">
+                <!-- <ul class="coupon-ul flex fw-w" :class="{couponHeight1:couponFlag}" id="couponUl"> -->
+                    <li class="coupon-li" v-for="(item,index) in couponData" @click="couponClick(item,index)" :class="[(item.ishas=='Y'&&item.isGet=='N')?'coupon-active':'coupon-quiet']">
+                        <div class="coupon-price">￥<span>{{item.amount}}</span></div>
+                        <div class="coupon-tip">{{item.name}}</div>
+                        <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
+                        <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='N'">立即领取</div>
+                        <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
+                    </li>
+                </ul>
+            </div>
             <div class="more flex jc-c ai-c" @click="changeFlag()" v-show="couponFlag"><p>查看更多</p></div>
             <div class="more flex jc-c ai-c" @click="changeFlag()" v-show="!couponFlag"><p>点击收起</p></div>
         </div>
@@ -94,7 +97,7 @@
                                 <i class="progress" :style="{width: 1.6*(item.count/item.stockCount)+'rem' }"></i>
                             </div>
                             <div class="buy-btn buy-btn-2 flex jc-c ai-c" v-if="currentData.type=='E'"><p>已结束</p></div>
-                            <div class="buy-btn buy-btn-2 flex jc-c ai-c" v-if="currentData.type=='0' || item.count==0"><p>秒杀完</p></div>
+                            <div class="buy-btn buy-btn-2 flex jc-c ai-c" v-if="currentData.type=='O' && item.count==0"><p>秒杀完</p></div>
                             <div class="buy-btn buy-btn-1 flex jc-c ai-c" v-if="currentData.type=='O'" @click="buy(item.numId)"><p>去秒杀</p></div>
                             <div class="buy-btn buy-btn-3 flex jc-c ai-c" v-if="currentData.type=='N'">
                                 <p>即将开始</p>
