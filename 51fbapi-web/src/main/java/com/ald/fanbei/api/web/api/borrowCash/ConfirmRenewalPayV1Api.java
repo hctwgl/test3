@@ -145,6 +145,10 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
                 BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
                 capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
             }else{
+                if (renewalAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {   //判断续借金额是否大于100
+                    throw new FanbeiException(
+                            FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED);
+                }
                 capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewalAmount);
             }
             /*
