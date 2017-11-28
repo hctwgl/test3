@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,order_no,goods_id,goods_code,acct_type,game_name,user_name,goods_num,game_type,game_acct,game_area,game_srv,user_ip 
+        id rid,gmt_create,gmt_modified,order_no,goods_id,goods_code,acct_type,game_name,user_name,goods_num,game_type,game_acct,game_area,game_srv,user_ip ,msg
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -55,6 +55,9 @@
         </if>
         <if test="userIp != null and userIp != ''">
             AND user_ip = #{userIp,jdbcType=VARCHAR}
+        </if>
+        <if test="msg != null and msg != ''">
+            AND msg = #{msg,jdbcType=VARCHAR}
         </if>
     </sql>
 
@@ -108,6 +111,9 @@
 	        <if test="userIp != null">        
 	            user_ip,
 	        </if>
+	        <if test="msg != null">        
+	            msg,
+	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -152,6 +158,9 @@
 		    </if>
 		    <if test="userIp != null" >
 		       #{userIp,jdbcType=VARCHAR},
+		    </if>
+		    <if test="msg != null" >
+		       #{msg,jdbcType=VARCHAR},
 		    </if>
         </trim>
     </insert>
@@ -201,6 +210,9 @@
             <if test="userIp != null and userIp != '' ">        
                 user_ip = #{userIp,jdbcType=VARCHAR}                
             </if>
+             <if test="msg != null and msg != '' " >
+		       #{msg,jdbcType=VARCHAR},
+		    </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
@@ -228,5 +240,16 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByOrderNo" resultType="com.ald.fanbei.api.dal.domain.AfSupOrderDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sup_order
+        WHERE is_delete = 0 AND order_no = #{orderNo,jdbcType=VARCHAR}
+    </select>
     
+    <update id="updateMsgByOrder"  parameterType="com.ald.fanbei.api.dal.domain.AfSupOrderDo">
+        UPDATE af_sup_order 
+        set msg = #{msg,jdbcType=VARCHAR}   
+        WHERE order_no = #{orderNo ,jdbcType=VARCHAR}
+    </update>
 </mapper>

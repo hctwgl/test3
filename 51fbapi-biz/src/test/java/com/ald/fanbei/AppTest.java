@@ -31,8 +31,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.SAXReader;
 
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
@@ -51,29 +55,35 @@ public class AppTest extends TestCase {
 	super(testName);
 
 	try {
+	    // System.out.println(CommodityPrices.QueryCommodity("Num10428",
+	    // "2d477a24ec9c4d4ba65403f031cd5d9f", "wy001jk"));
 
-	    //System.out.println(CommodityPrices.QueryCommodity("Num10428", "2d477a24ec9c4d4ba65403f031cd5d9f", "wy001jk"));
-
-	    //System.out.println(CommOrderQry.QueryOrder("Num10428", "126", "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
+	    // System.out.println(CommOrderQry.QueryOrder("Num10428", "132",
+	    // "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
 
 	    OrderEntity orderEntity = new OrderEntity();
-	    orderEntity.setAcctType("世纪天成账号");
+	    orderEntity.setAcctType("网易通行证账号");
 	    orderEntity.setBusinessId("Num10428");
 	    orderEntity.setGameAcct("");
 	    orderEntity.setGameArea("");
-	    orderEntity.setGameName("世纪天成");
+	    orderEntity.setGameName("网易");
 	    orderEntity.setGameSrv("");
-	    orderEntity.setGameType("点");
-	    orderEntity.setGoodsId("sjtc001jk");
-	    orderEntity.setGoodsNum(1);
+	    orderEntity.setGameType("帐号直充");
+	    orderEntity.setGoodsId("wy001jk");
+	    orderEntity.setGoodsNum(10);
 	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
-	    String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
 	    orderEntity.setNoticeUrl("http://testapp.51fanbei.com/game/pay/callback");
 	    orderEntity.setOrderArea("");
 	    orderEntity.setOrderIp("");
 	    orderEntity.setUserName("00000000@e2p.com");
-	    orderEntity.setUserOrderId("129");
-	    System.out.println(OrderReceive.SendOrder(orderEntity));
+	    orderEntity.setUserOrderId("134");
+	    String result = OrderReceive.SendOrder(orderEntity);
+	    System.out.println(result);
+	    
+	    Document document = DocumentHelper.parseText(result);
+	    System.out.println(document.selectSingleNode("/root/result").getStringValue());
+	    System.out.println(document.selectSingleNode("/root/mes").getStringValue());
+	    
 	} catch (Exception e) { // TODO Auto-generated
 	    e.printStackTrace();
 	}

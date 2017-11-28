@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -97,6 +98,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 			    // 充值成功(更改订单状态、返利)
 			    afOrderService.callbackCompleteOrder(orderInfo);
 			} else { // 充值失败（更改订单状态、退款）
+			    afSupOrderDao.updateMsgByOrder(orderInfo.getOrderNo(), mes);
 			    afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo(), orderInfo.getOrderNo(), "SUP");
 			}
 			return "<receive>ok</receive>";
@@ -166,8 +168,10 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    // 添加订单信息
 		    afOrder.setUserId(userId);
 		    afOrder.setGoodsPriceId(goodsId);
+		    // 记录订单实际支付金额
 		    afOrder.setActualAmount(actualAmount);
-		    afOrder.setSaleAmount(actualAmount);
+		    // 记录订单原始金额
+		    afOrder.setSaleAmount(actualAmount.add(couponAmountFinal));
 		    afOrder.setRebateAmount(rebateAmountScale);
 		    afOrder.setGmtCreate(new Date());
 		    afOrder.setGmtPayEnd(DateUtil.addHoures(new Date(), Constants.ORDER_PAY_TIME_LIMIT));
@@ -223,7 +227,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     }
 
     @Override
-    public String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp) throws Exception {
+    public String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp) {
 	// 构造充值对象
 	OrderEntity orderEntity = new OrderEntity();
 	orderEntity.setAcctType(acctType);
@@ -241,7 +245,25 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	orderEntity.setUserName(userName);
 	orderEntity.setUserOrderId(orderNo);
 	// 提交充值信息
-	return OrderReceive.SendOrder(orderEntity);
+	try {
+	    return OrderReceive.SendOrder(orderEntity);
+	} catch (UnsupportedEncodingException e) {
+	    logger.error("sendOrderToSup UnsupportedEncodingException", e);
+
+	    return "";
+	}
+    }
+
+    @Override
+    public AfSupOrderDo getByOrderNo(String orderNo) {
+
+	return afSupOrderDao.getByOrderNo(orderNo);
+    }
+
+    @Override
+    public Integer updateMsgByOrder(String orderNo, String msg) {
+
+	return afSupOrderDao.updateMsgByOrder(orderNo, msg);
     }
 
     @Resource
