@@ -3,6 +3,9 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
 
@@ -179,6 +182,11 @@ public interface AfResourceService {
 	List<AfResourceDo> getNavigationDownTwoResourceDoList(String code);
 
 	AfResourceDo getAfResourceAppVesion();
+
+	ThirdPayBo getThirdPayBo(ThirdPayTypeEnum thirdPayTypeEnum);
+
+	boolean checkThirdPayByType(ThirdBizType thirdBizType,ThirdPayTypeEnum thirdPayTypeEnum);
+
 
 	List<AfResourceDo> getBackGroundByType(String code);
 
