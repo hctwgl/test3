@@ -96,7 +96,7 @@ public class BoluomeUtil extends AbstractThird{
 	private static String activityCouponListUrl = null;
 	private static Long SUCCESS_CODE = 1000L;
 
-	public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount){
+	public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo,PushStatus pushStatus, Long userId, BigDecimal amount,String secType){
 		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
 		reqBo.setOrderId(thirdOrderNo);
 		reqBo.setStatus(pushStatus.getCode());
