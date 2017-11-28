@@ -112,39 +112,31 @@ let goodArr2 = [
         link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     }
 ]
-// 美妆护肤
+// 家电类目
 let goodArr3 = [
     {
-        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/Dior.png',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/joyoung.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/esteelauder.png',
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/liven.png',
         link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     },
     
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/gf.png',
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/midea.png',
         link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/kans.png',
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/philips.png',
         link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/lancome.png',
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/sunsung2.png',
         link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/laneige.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
-    },
-    {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/loreal.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
-    },
-    {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/shiseido.png',
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/supor.png',
         link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
     }
 ]
@@ -190,7 +182,7 @@ let vm = new Vue({
                 key: 2
             },
             {
-                tab: "美妆护肤",
+                tab: "家电类目",
                 key: 3
             },
         ],
@@ -206,6 +198,7 @@ let vm = new Vue({
         currentData: [],
         redRainData: [],
         couponFlag: true, // 显示优惠券flag
+        triangleFlag: 0,
         topFalg: 1,
         downTime: {
             d: 0,
@@ -364,12 +357,14 @@ let vm = new Vue({
                             const element = self.goodsData[key];
                             if (element.type == "O") {
                                 self.currentData = element;
+                                self.triangleFlag = key;
                                 flag = true;
                             }
                         }
                     }
                     if (!flag) {
                         self.currentData = self.goodsData[5];
+                        self.triangleFlag = 5;
                     }else {
                         self.$nextTick(() => {
                             let allWidth = $("#dayBox").width();
@@ -461,7 +456,8 @@ let vm = new Vue({
                 requestMsg("活动已结束");
                 return false;
             }
-           /*  $.ajax({
+            /*  
+            $.ajax({
                 url: "/activity/double12/getCoupon",
                 type: "POST",
                 dataType: "JSON",
@@ -497,7 +493,8 @@ let vm = new Vue({
                 complete: function () {
                     self.ajaxFlag = true;
                 }
-            }); */
+            }); 
+            */
             $.ajax({
                 url: "/fanbei-web/pickCoupon",
                 type: "POST",
@@ -564,6 +561,7 @@ let vm = new Vue({
         },
         changeProduct: function (key) {
             this.currentData = this.goodsData[key];
+            this.triangleFlag = key;
         },
         toRegister: function () {
             location.href = "doubleTwelveRegister?spread=" + spread;

@@ -61,11 +61,12 @@
             <div class="super-txt">双十二秒get大牌</div>
             <div class="day-box" id="dayBox">
                 <ul class="day-ul flex fd-row" id="dayUl">
-                    <li class="day-li" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N', }"
+                    <li class="day-li por" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N'}"
                         @click="changeProduct(key)">12月{{key}}日
                         <p v-if="value.type=='E'">已结束</p>
                         <p v-if="value.type=='O'">秒杀中</p>
                         <p v-if="value.type=='N'">即将开始</p>
+                        <div class="triangle" :class="{'triangle-1':value.type=='E','triangle-2':value.type=='O','triangle-3':value.type=='N'}" v-show="key==triangleFlag"></div>
                     </li>
                 </ul>
             </div>
@@ -84,7 +85,7 @@
                                 <i>￥{{item.saleAmount}}</i>
                             </span>
                         </div>
-                        <div class="p-button flex fd-row ai-c">
+                        <div class="p-button flex fd-row agit i-c">
                             <div class="p-left p-status-1" v-if="currentData.type=='E'">
                                 还剩0件
                             </div>
