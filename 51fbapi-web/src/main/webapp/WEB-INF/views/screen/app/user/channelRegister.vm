@@ -3,6 +3,7 @@
 <head>
     #set($version="2017083020")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
+##    在用样式1-6,17
     <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
 </head>
@@ -44,14 +45,14 @@
     #end
     #if( $!{style}==6 )
         <div class="progress" id="progress">
-            <div class="text">￥500</div>
+            <div class="text">￥20000</div>
             <div class="progress_bg">
                 <div class="progress_bar"></div>
             </div>
             <div class="progress_btn" id="progress_btn"></div>
             <div class="moneyFlag">
-                <span class="lf" id="leftMoney">￥500</span>
-                <span class="fr" id="rightMoney">￥0.5</span>
+                <span class="lf" id="leftMoney">￥20000</span>
+                <span class="fr" id="rightMoney">￥20.00</span>
             </div>
         </div>
     #end
@@ -60,7 +61,7 @@
         <ul class="iform clearfix">
             <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="maidianFn('phone')"></li>
 
-            #if( $!{style}==17 ||$!{style}==1)
+            #if($!{style}==1)
                 <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
                 <li class="clearfix">
                     <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
@@ -76,6 +77,18 @@
                     <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
                     <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;" onclick="maidianFn('toLoginz')">直接登录</a>
                 </p>
+                #elseif( $!{style}==17)
+                    <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
+                    <li class="clearfix">
+                        <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
+                        <button id="register_codeBtn" onclick="maidianFn('codeBtn')">点击获取</button>
+                    </li>
+                    <li><button id="register_submitBtn"></button></li>
+                    <div class="clearfix register_checkbox">
+                        <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                        <label for="input_check"></label>
+                        <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《51返呗用户注册协议》</a></p>
+                    </div>
             #else
                 <li class="clearfix">
                     <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">

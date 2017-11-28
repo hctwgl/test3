@@ -1,8 +1,5 @@
-// var mySwiper = new Swiper('.swiper-container', {
-//     // autoplay: 5000,//可选选项，自动滑动
-//     pagination: '.swiper-pagination',
-//     paginationType: 'bullets'
-// })
+
+var userName = getUrl('userName'); //获取用户id
 
 let vm = new Vue({
     el: "#bankBox",
@@ -13,7 +10,7 @@ let vm = new Vue({
     },
     created: function () {
         this.logData();
-
+        this.maidian("card", userName);
     },
     mounted: function () {
 
@@ -66,8 +63,23 @@ let vm = new Vue({
             });
 
         },
-        jump: function (data) {
-            location.href = data;
+        jump: function (url,data,type) {
+            this.maidian(type,data);
+            // console.log(url, data, type)
+            location.href = url;
+        },
+        maidian(type,bank) {
+            //数据统计 
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {
+                    maidianInfo: '/fanbei-web/activity/card?type=' + type + '&bank=' + bank
+                },
+                success: function (data) {
+                    console.log(data)
+                }
+            });
         }
     }
 })
