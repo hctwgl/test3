@@ -66,7 +66,7 @@ let goodArr2 = [
         name:'宏碁(acer)'
     },
     {
-        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/samsung.png',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/sansung.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=210',
         name:'三星（SAMSUNG）'
     },
