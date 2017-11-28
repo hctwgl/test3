@@ -4,173 +4,168 @@ let urlHost = protocol + '//' + host;
 let groupId = getUrl('groupId');
 let goodArr1 = [
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/apple.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=197',
         name:'苹果'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/vivo.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=195',
         name:'vivo'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/oppo.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=193',
         name:'oppo'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/xiaomi.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=203',
         name:'小米'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/huawei.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=204',
         name:'华为'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/honer.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=205',
         name:'荣耀'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/meizu.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=213',
         name:'魅族'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/telephone/meitu.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=202',
         name:'美图'
     }
 ];
 let goodArr2 = [
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/sony.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=219',
         name:'SONY索尼专题'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/nikan.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=215',
         name:'Nikon尼康专题'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/canon.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=212',
         name:'Canon佳能专场'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/acer.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=211',
         name:'宏碁(acer)'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/samsung.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=210',
         name:'三星（SAMSUNG）'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/hp.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=209',
         name:'惠普(HP)'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
-        link: '',
-        name:''
-    },
-    {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/vsus.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=208',
         name:'华硕（ASUS）'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/lenove.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=207',
         name:'联想（Lenovo）'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/dell.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=206',
         name:'戴尔（DELL）'
     }
 ];
 let goodArr3 = [
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/DW.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=191',
         name:'DW品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/tiansuo.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=192',
         name:'天梭品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/CASIO.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=194',
         name:'卡西欧品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/armani.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=201',
         name:'阿玛尼品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/Rossini.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=200',
         name:'罗西尼品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/Longines.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=199',
         name:'浪琴品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/SWAROVSKI.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=190',
         name:'施华洛世奇品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/zhekun.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=189',
         name:'喆堃珠宝品牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/sports.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=196',
         name:'服饰运动潮牌专场'
     },
     {
-        img: 'https://img4.sycdn.imooc.com/szimg/59eeb21c00012eb205400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/watch/MK.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=198',
         name:'MK品牌专场'
     }
 ];
 let goodArr4 = [
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/household/supor.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=214',
         name:'家电-苏泊尔 '
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/household/liren.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=216',
         name:'家电-利仁'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/household/sansung.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=217',
         name:'家电-三星'
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/household/media.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=218',
         name:'家电-美的 '
     },
     {
-        img: 'https://img2.mukewang.com/szimg/59b8a486000107fb05400300.jpg',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/household/jiuyang.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=220',
         name:'家电-九阳'
     }

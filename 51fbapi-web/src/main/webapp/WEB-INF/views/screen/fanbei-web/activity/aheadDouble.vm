@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div class="main" id="main">
+    <div class="main" id="main" v-cloak>
         <div class="banner"></div>
         <div class="coupon-box flex fd-column ai-c">
             <div class="flex fd-row ai-c title-box">
