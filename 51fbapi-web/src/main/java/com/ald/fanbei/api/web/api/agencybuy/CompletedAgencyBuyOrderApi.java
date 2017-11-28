@@ -11,8 +11,10 @@ import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,6 +43,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	AfOrderService afOrderService;
 	@Resource
 	RebateContext rebateContext;
+	@Resource
+	AfBorrowExtendDao afBorrowExtendDao;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -110,6 +115,17 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 			//查询是否己产生
 			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
 			if(borrowList == null || borrowList.size()==0 ){
+				AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+				if(_aa ==null) {
+					AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+					afBorrowExtendDo.setId(afBorrowDo.getRid());
+					afBorrowExtendDo.setInBill(0);
+					afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+				}
+				else{
+					_aa.setInBill(1);
+					afBorrowExtendDao.updateBorrowExtend(_aa);
+				}
 				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
 				afBorrowService.addBorrowBill(billList);
 			}

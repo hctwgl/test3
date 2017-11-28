@@ -20,4 +20,6 @@ public interface AfBorrowExtendDao {
      * @return
      */
     int updateBorrowExtend(AfBorrowExtendDo afBorrowExtendDo);
+
+    AfBorrowExtendDo getAfBorrowExtendDoByBorrowId(Long borrowId);
 }
