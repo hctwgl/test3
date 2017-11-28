@@ -252,14 +252,9 @@ $(function(){
 
 
 // 拖动进度条相关代码
-// $(function () {
-    var tag = false, ox = 0, left = 0, bgleft = 0; 
-    // 移动端对应down,move,up事件分别是touchstart,touchmove,touchend
-    var startEvent = 'touchstart';
-    var moveEvent = 'touchmove';
-    var upEvent ='touchend';
+    var tag = false, ox = 0, left = 300 * document.documentElement.clientWidth /375, bgleft = 0;
     var totalLength = 300 * document.documentElement.clientWidth /375;
-    $('.progress_btn').on(startEvent, function (e) {
+    $('.progress_btn').on('touchstart', function (e) {
         var originalEvent = e.originalEvent;
         var touches = originalEvent.touches;
         var touch;
@@ -272,10 +267,10 @@ $(function(){
         ox = touch.pageX - left;
         tag = true;
     });
-    $(document).on(upEvent, function () {
+    $(document).on('touchend', function () {
         tag = false;
     });
-    $(document).on(moveEvent, function (e) {//鼠标移动
+    $(document).on('touchmove', function (e) {//鼠标移动
         var originalEvent = e.originalEvent; // 这里要判断移动端多点触控的问题，jquery扩展的event对象没有这个属性
         var touches = originalEvent.touches;// 获取源生event对象
         var touch;
@@ -298,4 +293,3 @@ $(function(){
             $("#rightMoney").html("￥" + (parseInt((left / totalLength * 19500 + 500)) * 0.001).toFixed(2));
         }
     });
-// })
