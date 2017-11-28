@@ -27,7 +27,7 @@
         </marquee>
     #end
     <img class="background" src="$commonUrl/channel$!{style}_01.jpg">
-    #if( $!{style}==17 )
+    #if( $!{style}==16 || $!{style}==17)
         <marquee behavior="scroll" direction="up" scrollamount="1" bgcolor="transparent" class="mar17">
             <p>用户131****8880 成功借款 8000元</p>
             <p>用户137****9767 成功借款 6000元</p>
