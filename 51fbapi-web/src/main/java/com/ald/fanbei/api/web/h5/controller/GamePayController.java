@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfSupGameService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiH5Context;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
 import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
@@ -93,15 +96,15 @@ public class GamePayController extends H5Controller {
     @RequestMapping(value = "/order", method = RequestMethod.POST)
     public H5CommonResponse createOrder(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
-	FanbeiH5Context context = doH5Check(request, false);
+	FanbeiH5Context context = doH5Check(request, true);
 	try {
 	    // 验证参数
 	    Long goodsId = Long.parseLong(request.getParameter("goodsId"));
 	    if (goodsId != null && goodsId > 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
 	    }
-	    Long actualAmount = Long.parseLong(request.getParameter("actualAmount"));
-	    if (actualAmount != null && actualAmount > 0) {
+	    BigDecimal actualAmount = new BigDecimal(request.getParameter("actualAmount"));
+	    if (actualAmount != null && actualAmount.doubleValue() <= 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
 	    }
 	    Long couponId = Long.parseLong(request.getParameter("couponId"));
@@ -110,15 +113,12 @@ public class GamePayController extends H5Controller {
 		return H5CommonResponse.getNewInstance(false, "参数错误:acctType.");
 	    }
 	    String gameName = request.getParameter("gameName");
-	    if (StringUtils.isBlank(gameName)) {
-		return H5CommonResponse.getNewInstance(false, "参数错误:gameName.");
-	    }
 	    String userName = request.getParameter("userName");
 	    if (StringUtils.isBlank(userName)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:userName.");
 	    }
-	    Long goodsNum = Long.parseLong(request.getParameter("goodsNum"));
-	    if (goodsNum != null && goodsNum > 0) {
+	    Integer goodsNum = Integer.parseInt(request.getParameter("goodsNum"));
+	    if (goodsNum != null && goodsNum <= 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
 	    }
 	    String gameType = request.getParameter("gameType");
@@ -128,20 +128,32 @@ public class GamePayController extends H5Controller {
 	    String userIp = request.getParameter("userIp");
 
 	    // 下单逻辑
-
-	    return H5CommonResponse.getNewInstance(true, "充值请求提交成功", "", data);
+	    afSupOrderService.addSupOrder(context.getUserId(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
+	    return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
 	} catch (Exception e) {
 	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
 	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
 	}
     }
 
+    @RequestMapping(value = "/order", method = RequestMethod.GET)
+    public H5CommonResponse getOrderInfo(HttpServletRequest request, HttpServletResponse response) {
+	Map<String, Object> data = new HashMap<String, Object>();
+	FanbeiH5Context context = doH5Check(request, true);
+	try {
+
+	    return H5CommonResponse.getNewInstance(true, "获取订单信息成功", "", data);
+	} catch (Exception e) {
+	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
+	    return H5CommonResponse.getNewInstance(false, "获取订单信息失败");
+	}
+    }
+
     @RequestMapping(value = "/callback", method = RequestMethod.GET)
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
-	FanbeiH5Context context = doH5Check(request, false);
+	doH5Check(request, false);
 	try {
-	    // 获取参数
-	    String businessId = request.getParameter("businessId");
+
 	    String userOrderId = request.getParameter("userOrderId");
 	    // 01成功 02失败
 	    String status = request.getParameter("status");
@@ -149,6 +161,14 @@ public class GamePayController extends H5Controller {
 	    String kminfo = request.getParameter("kminfo");
 	    String payoffPriceTotal = request.getParameter("payoffPriceTotal");
 	    String sign = request.getParameter("sign");
+	    // 获取参数
+	    String businessId = request.getParameter("businessId");
+
+	    // 验证businessId
+	    if (!ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID).equals(businessId)) {
+		logger.error("/game/pay/callback businessId error:businessId=" + businessId + " ,config key :" + ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID));
+		return "<receive>businessId error</receive>";
+	    }
 
 	    return afSupOrderService.processCallbackResult(userOrderId, status, mes, kminfo, payoffPriceTotal, sign);
 	} catch (Exception e) {
