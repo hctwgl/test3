@@ -97,7 +97,7 @@
                                 <i class="progress" :style="{width: 1.6*(item.count/item.stockCount)+'rem' }"></i>
                             </div>
                             <div class="buy-btn buy-btn-2 flex jc-c ai-c" v-if="currentData.type=='E'"><p>已结束</p></div>
-                            <div class="buy-btn buy-btn-2 flex jc-c ai-c" v-if="currentData.type=='0' || item.count==0"><p>秒杀完</p></div>
+                            <div class="buy-btn buy-btn-2 flex jc-c ai-c" v-if="currentData.type=='O' || item.count==0"><p>秒杀完</p></div>
                             <div class="buy-btn buy-btn-1 flex jc-c ai-c" v-if="currentData.type=='O'" @click="buy(item.numId)"><p>去秒杀</p></div>
                             <div class="buy-btn buy-btn-3 flex jc-c ai-c" v-if="currentData.type=='N'">
                                 <p>即将开始</p>
