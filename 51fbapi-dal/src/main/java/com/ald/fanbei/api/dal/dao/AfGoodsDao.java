@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.Date;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -78,4 +81,8 @@ public interface AfGoodsDao {
 	 * @return
 	 */
 	AfGoodsDo checkIsSelfBuild(String numId);
+
+	List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query);
+
+	List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query);
 }

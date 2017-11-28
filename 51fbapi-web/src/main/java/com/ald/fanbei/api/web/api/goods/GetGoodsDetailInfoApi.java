@@ -161,6 +161,14 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		//如果为自营商品，numId设置为goodsId
 		if(AfGoodsSource.SELFSUPPORT.getCode().equals(goods.getSource())){
 			vo.setNumId(goods.getRid()+"");
+			//是否限购
+			if(StringUtils.isEmpty(goods.getLimitedPurchase()+"") || (goods.getLimitedPurchase() == 0)){
+				vo.setLimitedPurchase(-1);
+			}else{
+				vo.setLimitedPurchase(goods.getLimitedPurchase());
+			}
+		}else{
+			vo.setLimitedPurchase(-1);
 		}
 		return vo;
 	}

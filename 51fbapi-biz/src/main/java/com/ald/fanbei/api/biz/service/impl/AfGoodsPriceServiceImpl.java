@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,13 +43,18 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 		int result = 0;
 		if (priceDo != null) {
 			if (isSold) {// 出售
-				priceDo.setStock(priceDo.getStock() - 1);
-				priceDo.setSaleCount(priceDo.getSaleCount() + 1);
+				try{
+					result = afGoodsPriceDao.updateSell(priceId);
+				}catch(Exception e){
+					throw new FanbeiException(FanbeiExceptionCode.SOLD_OUT);
+				}
 			}else{
-				priceDo.setStock(priceDo.getStock() + 1);
-				priceDo.setSaleCount(priceDo.getSaleCount() - 1);
+				try{
+					result = afGoodsPriceDao.updateReturnGoods(priceId);
+				}catch(Exception e){
+
+				}
 			}
-			result += afGoodsPriceDao.updateById(priceDo);
 		}
 		return result;
 	}
@@ -56,5 +63,14 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 	public List<AfGoodsPriceDo> getByGoodsId(Long goodsId) {
 		// TODO Auto-generated method stub
 		return afGoodsPriceDao.getByGoodsId(goodsId);
+	}
+
+	@Override
+	public Integer selectSumStock(Long goodsId){
+		return afGoodsPriceDao.selectSumStock(goodsId);
+	}
+
+	public Integer updateStockAndSaleCount(Long goodsId){
+		return afGoodsPriceDao.selectSumStock(goodsId);
 	}
 }

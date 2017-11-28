@@ -1040,5 +1040,9 @@
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
+
+	<select id="selectSumCountByGoodsId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		SELECT sum(count) from af_order where is_delete = 0 and gmt_create = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId}
+	</select>
 	
 </mapper>

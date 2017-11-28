@@ -16,6 +16,11 @@ public interface AfGoodsPriceDao extends BaseDao<AfGoodsPriceDo, Long> {
 
 	List<AfGoodsPriceDo> getByGoodsId(Long goodsId);
 
-    
+    Integer selectSumStock(Long goodsId);
+
+    int updateSell(Long priceId);
+
+    int updateReturnGoods(Long priceId);
+
 
 }

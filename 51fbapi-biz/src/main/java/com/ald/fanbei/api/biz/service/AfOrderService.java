@@ -324,5 +324,7 @@ public interface AfOrderService {
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
+
+	Integer selectSumCountByGoodsId(Long goodsId);
 	
 }

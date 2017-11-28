@@ -215,11 +215,13 @@
 				<entry key="/bill/getRepayMentAmountByMonth" value-ref="getRepayMentAmountByMonthApi"/>
 				<entry key="/repay/getRepaymentConfirmInfoV1" value-ref="getRepaymentConfirmInfoV1Api"/>
 				<entry key="/bill/getBillListByStatus" value-ref="getBillListByStatusApi"/>
+				<entry key="/bill/getBillListByStatus" value-ref="getBillListByStatusApi"/>
+				<entry key="/bill/getBillListByStatus" value-ref="getBillListByStatusApi"/>
 
 				<!-- 第三方商品自建 -->
 				<entry key ="/goods/getGoodsRateInfo" value-ref="getGoodsRateInfoApi"></entry>
-				<entry key ="/goods/getThirdGoodsAuction" value-ref="getThirdGoodsAuctionApi"></entry>
-				<entry key ="/goods/getThirdGoodsDetailInfo" value-ref="getThirdGoodsDetailInfoApi"></entry>
+				<entry key ="flashSale/getBookingRushGoods" value-ref="getBookingRushGoodsApi"></entry>
+				<entry key ="flashSale/getFlashSaleGoods" value-ref="getFlashSaleGoodsApi"></entry>
 
 
 				<!-- 订单Order -->
