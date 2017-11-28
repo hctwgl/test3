@@ -167,8 +167,8 @@ public class GetPersonInfoController {
 					//借款类型码，默认是信用借款
 					loanRecord.setLoanTypeCode(LoanTypeCode.Credit.getCode());
 					if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")){
-						int overdueTotal = borrowCashDo.getOverdueDay().intValue()/7;
-						if (borrowCashDo.getOverdueDay() % 7 != 0) {
+						int overdueTotal = borrowCashDo.getOverdueDay().intValue()/30;
+						if (borrowCashDo.getOverdueDay() % 30 != 0) {
 							overdueTotal += 1;
 						}
 						if (overdueTotal == 1) {
@@ -178,7 +178,7 @@ public class GetPersonInfoController {
 						}else if (overdueTotal == 3) {											
 							loanRecord.setOverdueStatus(OverdueStatus.Three.getCode());
 						}else if (overdueTotal == 4) {
-							if (borrowCashDo.getOverdueDay() % 7 == 0) {
+							if (borrowCashDo.getOverdueDay() % 30 == 0) {
 								loanRecord.setOverdueStatus(OverdueStatus.Four.getCode());
 							}else {
 								loanRecord.setOverdueStatus(OverdueStatus.ThreePlus.getCode());
