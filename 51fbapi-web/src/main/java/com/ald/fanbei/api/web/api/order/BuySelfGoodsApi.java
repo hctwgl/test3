@@ -337,6 +337,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		            
 				}
 			}
+		} catch(FanbeiException e){
+			logger.error("double12 activity order error = {}", e.getStackTrace());
+			throw e;
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error("double12 activity order error = {}", e.getStackTrace());

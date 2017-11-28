@@ -49,8 +49,8 @@
                     <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
                 </li>
             </ul>
-            <div class="more" @click="changeFlag()" v-show="couponFlag">查看更多</div>
-            <div class="more" @click="changeFlag()" v-show="!couponFlag">点击收起</div>
+            <div class="more flex jc-c ai-c" @click="changeFlag()" v-show="couponFlag"><p>查看更多</p></div>
+            <div class="more flex jc-c ai-c" @click="changeFlag()" v-show="!couponFlag"><p>点击收起</p></div>
         </div>
         <div class="seckill-box flex fd-column ai-c">
             <div class="flex fd-row ai-c title-box">
