@@ -115,7 +115,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         afUserAmountDo.setSourceId(afRepaymentDo.getRid());
         afUserAmountDo.setUserId(afRepaymentDo.getUserId());
         afUserAmountDo.setStatus(AfUserAmountProcessStatus.NEW.getCode());
-        afUserAmountDo.setRemark("");
+        afUserAmountDo.setRemark(afRepaymentDo.getName());
         afUserAmountDao.addUserAmount(afUserAmountDo);
         addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
 
@@ -219,7 +219,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         afUserAmountDo.setSourceId(afOrderRefundDo.getRid());
         afUserAmountDo.setUserId(afOrderRefundDo.getUserId());
         afUserAmountDo.setStatus(AfUserAmountProcessStatus.SUCCESS.getCode());
-        afUserAmountDo.setRemark("");
+        afUserAmountDo.setRemark(afOrderDo.getGoodsName());
         afUserAmountDao.addUserAmount(afUserAmountDo);
 //        addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
 
