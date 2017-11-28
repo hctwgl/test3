@@ -36,7 +36,7 @@ let vm = new Vue({
                 success: function (data) {
                     //console.log(data);
                     self.content=eval('('+data+')').data;
-                    console.log(self.content);
+                    console.log(self.content,'初始化数据');
                     /*外卖券+返利金*/
                     self.firstTitle=self.content.resultList[0].name;
                     self.firstValue=self.content.resultList[0].value;
@@ -53,7 +53,7 @@ let vm = new Vue({
                                 let pointIndex = self.myRebateMoney.indexOf(".");
                                 $('.fanMoneyStyle i').eq(pointIndex).addClass('pointSpecialStyle');
                                 $('.fanMoneyStyle i:gt('+pointIndex+')').addClass('decimalSpecialStyle');
-                                console.log(pointIndex);
+                                //console.log(pointIndex);
                             });
                         }
                     }
@@ -82,13 +82,13 @@ let vm = new Vue({
                 success: function (data) {
                     //console.log(data);
                     self.couponCont=eval('('+data+')').data;
-                    console.log(self.couponCont);
+                    console.log(self.couponCont,'优惠券初始化');
                     //判断优惠券初始化状态
                     self.$nextTick(function () {
                         for(var k=0;k<self.couponCont.boluomeCouponList.length;k++){
                             //console.log(self.couponCont.boluomeCouponList[k].isHas);
                             if(self.couponCont.boluomeCouponList[k].isHas=='Y'){
-                                $('.coupon').eq(k).addClass('changeGray');
+                                //$('.coupon').eq(k).addClass('changeGray');
                                 $('.coupon').eq(k).find('.getCoupon').html('已领取');
                             }
                         }
@@ -105,7 +105,7 @@ let vm = new Vue({
                 success: function (data) {
                     //console.log(data);
                     self.alertData=data.data;
-                    console.log(self.alertData);
+                    console.log(self.alertData,'弹窗初始化');
                     if((self.alertData.couponToPop && self.alertData.couponToPop=='Y') || (self.alertData.rebateToPop && self.alertData.rebateToPop=='Y')){
                         self.alertShow=true;
                     }
@@ -138,7 +138,7 @@ let vm = new Vue({
                     if(returnData.success){
                         if(self.couponCont.boluomeCouponList[index].isHas=='N'){
                             requestMsg(returnData.msg);
-                            $('.coupon').eq(index).addClass('changeGray');
+                            //$('.coupon').eq(index).addClass('changeGray');
                             $('.coupon').eq(index).find('.getCoupon').html('已领取');
                         }else{
                             requestMsg(returnData.msg);
