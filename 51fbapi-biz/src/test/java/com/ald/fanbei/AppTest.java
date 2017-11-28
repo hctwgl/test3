@@ -51,38 +51,33 @@ public class AppTest extends TestCase {
 	super(testName);
 
 	try {
-	    
+
 	    //System.out.println(CommodityPrices.QueryCommodity("Num10428", "2d477a24ec9c4d4ba65403f031cd5d9f", "wy001jk"));
-	    
-	    
-	    System.out.println(CommOrderQry.QueryOrder("Num10428", "125", "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
-	    
-	    OrderEntity orderEntity = new OrderEntity();
-	    orderEntity.setAcctType("网易通行证账号");
-	    orderEntity.setBusinessId("Num10428");
-	    orderEntity.setGameAcct("");
-	    orderEntity.setGameArea("");
-	    orderEntity.setGameName("网易梦幻西游2");
-	    orderEntity.setGameSrv("");
-	    orderEntity.setGameType("帐号直充");
-	    orderEntity.setGoodsId("wy001jk");
-	    orderEntity.setGoodsNum(10);
-	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
-	    String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
-	    orderEntity.setNoticeUrl("http://testapp.51fanbei.com/game/pay/callback");
-	    orderEntity.setOrderArea("");
-	    orderEntity.setOrderIp("");
-	    orderEntity.setUserName("00000000@e2p.com");
-	    orderEntity.setUserOrderId("125");
-	   System.out.println( OrderReceive.SendOrder(orderEntity));
+
+	    System.out.println(CommOrderQry.QueryOrder("Num10428", "126", "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
+
+//	    OrderEntity orderEntity = new OrderEntity();
+//	    orderEntity.setAcctType("世纪天成账号");
+//	    orderEntity.setBusinessId("Num10428");
+//	    orderEntity.setGameAcct("");
+//	    orderEntity.setGameArea("");
+//	    orderEntity.setGameName("世纪天成");
+//	    orderEntity.setGameSrv("");
+//	    orderEntity.setGameType("点");
+//	    orderEntity.setGoodsId("sjtc001jk");
+//	    orderEntity.setGoodsNum(1);
+//	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
+//	    String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+//	    orderEntity.setNoticeUrl("http://testapp.51fanbei.com/game/pay/callback");
+//	    orderEntity.setOrderArea("");
+//	    orderEntity.setOrderIp("");
+//	    orderEntity.setUserName("00000000@e2p.com");
+//	    orderEntity.setUserOrderId("126");
+//	    System.out.println(OrderReceive.SendOrder(orderEntity));
 	} catch (Exception e) { // TODO Auto-generated
 	    e.printStackTrace();
 	}
 
-	
-	
-	
-	
 	// System.out.println("Y");
 	// checkFaceImage("http://f.51fanbei.com/online/668fca35fba9c82f.png",
 	// "储震", "341024199606099713");
@@ -97,11 +92,16 @@ public class AppTest extends TestCase {
 	// checkFaceImage("http://f.51fanbei.com/online/8d5183ca501fe0d2.png",
 	// "赵磊", "61040219841209271X");
 
-//	checkFaceImage("http://f.51fanbei.com/online/1cc56d5e6e068fae.png", "黄前城", "330326199504197917");
-//	checkFaceImage("http://f.51fanbei.com/online/8deef08d73203171.png", "王健", "320324197612276213");
-//	checkFaceImage("http://f.51fanbei.com/online/aa6f92b43b493e31.png", "李玉宝", "532130198801261717");
-//	checkFaceImage("http://f.51fanbei.com/online/98f3de36a4a2641b.png", "李正军", "430426199203238710");
-//	checkFaceImage("http://f.51fanbei.com/online/6cb088ae186bd94a.png", "于博", "610502198207041230");
+	// checkFaceImage("http://f.51fanbei.com/online/1cc56d5e6e068fae.png",
+	// "黄前城", "330326199504197917");
+	// checkFaceImage("http://f.51fanbei.com/online/8deef08d73203171.png",
+	// "王健", "320324197612276213");
+	// checkFaceImage("http://f.51fanbei.com/online/aa6f92b43b493e31.png",
+	// "李玉宝", "532130198801261717");
+	// checkFaceImage("http://f.51fanbei.com/online/98f3de36a4a2641b.png",
+	// "李正军", "430426199203238710");
+	// checkFaceImage("http://f.51fanbei.com/online/6cb088ae186bd94a.png",
+	// "于博", "610502198207041230");
 
 	// checkFaceImage("http://f.51fanbei.com/online/ca569ba837f191a9.png",
 	// "祁少波", "441900197503060878");
@@ -109,6 +109,29 @@ public class AppTest extends TestCase {
 	// "巴桑", "542221197609100020");
 
 	// checkAirPlane("441424199202036957","441424199202036957");
+
+	// checkPhoneDuration("13228115477");
+	// checkPhoneDuration("13986507455");
+	// checkPhoneDuration("13323390953");
+	// checkPhoneDuration("13347965798");
+	// checkPhoneDuration("13625612730");
+	// checkPhoneDuration("13397888559");
+	// checkPhoneDuration("14785823205");
+	// checkPhoneDuration("13627298175");
+	// checkPhoneDuration("14785886131");
+	// checkPhoneDuration("15550515881");
+
+	// checkPhoneDuration("15641088521");
+	// checkPhoneDuration("13682592018");
+	// checkPhoneDuration("17636330654");
+	// checkPhoneDuration("17681546001");
+	// checkPhoneDuration("18579183626");
+	// checkPhoneDuration("18873635615");
+	// checkPhoneDuration("18975997303");
+	// checkPhoneDuration("18996286965");
+	// checkPhoneDuration("13811493733");
+	// checkPhoneDuration("15840117000");
+
     }
 
     private void checkFaceImage(String faceInamgeUrl, String name, String idcard) {
@@ -143,6 +166,34 @@ public class AppTest extends TestCase {
 
 	    // 设置登陆时要求的信息，用户名和密码
 	    NameValuePair[] data = { new NameValuePair("key", "610acc78fa244ed6c2c433146fa062ad"), new NameValuePair("cardno", cardno), new NameValuePair("keys", code) };
+	    HttpClient httpClient = new HttpClient();
+	    httpClient.getParams().setContentCharset("UTF-8");
+	    // 模拟登陆，按实际服务器端要求选用 Post 或 Get 请求方式
+	    PostMethod postMethod = new PostMethod(authUrl);
+	    postMethod.setRequestBody(data);
+	    System.out.println(httpClient.executeMethod(postMethod));
+
+	    // 打印出返回数据，检验一下是否成功
+	    String text = postMethod.getResponseBodyAsString();
+	    System.out.println(text);
+
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+
+    private void checkPhoneDuration(String mobile) {
+	try {
+	    System.out.println(mobile);
+	    // String authUrl =
+	    // "http://api.chinadatapay.com/communication/message/1913";
+	    String authUrl = "http://v.juhe.cn/mobileOnline/query";
+
+	    // 设置登陆时要求的信息，用户名和密码
+	    // NameValuePair[] data = { new NameValuePair("key",
+	    // "125dab531ddc6f1a41c682a142d0e42c"), new NameValuePair("mobile",
+	    // mobile) };
+	    NameValuePair[] data = { new NameValuePair("key", "941d4966c69e506c1adff2c9c6ef6148"), new NameValuePair("mobile", mobile) };
 	    HttpClient httpClient = new HttpClient();
 	    httpClient.getParams().setContentCharset("UTF-8");
 	    // 模拟登陆，按实际服务器端要求选用 Post 或 Get 请求方式
