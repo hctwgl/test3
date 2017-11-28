@@ -89,6 +89,11 @@ let goodArr2 = [
         img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/dell.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=206',
         name:'戴尔（DELL）'
+    },
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/brand/computer/huawei.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=221',
+        name:'huawei'
     }
 ];
 let goodArr3 = [
