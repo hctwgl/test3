@@ -40,15 +40,18 @@
                 <div class="line-right-1"></div>
             </div>
             <div class="txt">12月05日开始</div>
-            <ul class="coupon-ul flex fw-w" :class="{couponHeight1:couponFlag}">
-                <li class="coupon-li" v-for="(item,index) in couponData" @click="couponClick(item,index)" :class="[(item.ishas=='Y'&&item.isGet=='N')?'coupon-active':'coupon-quiet']">
-                    <div class="coupon-price">￥<span>{{item.amount}}</span></div>
-                    <div class="coupon-tip">{{item.name}}</div>
-                    <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
-                    <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='N'">立即领取</div>
-                    <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
-                </li>
-            </ul>
+            <div class="couponHeight1" id="couponBox">
+                <ul class="coupon-ul flex fw-w" id="couponUl">
+                <!-- <ul class="coupon-ul flex fw-w" :class="{couponHeight1:couponFlag}" id="couponUl"> -->
+                    <li class="coupon-li" v-for="(item,index) in couponData" @click="couponClick(item,index)" :class="[(item.ishas=='Y'&&item.isGet=='N')?'coupon-active':'coupon-quiet']">
+                        <div class="coupon-price">￥<span>{{item.amount}}</span></div>
+                        <div class="coupon-tip">{{item.name}}</div>
+                        <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
+                        <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='N'">立即领取</div>
+                        <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
+                    </li>
+                </ul>
+            </div>
             <div class="more flex jc-c ai-c" @click="changeFlag()" v-show="couponFlag"><p>查看更多</p></div>
             <div class="more flex jc-c ai-c" @click="changeFlag()" v-show="!couponFlag"><p>点击收起</p></div>
         </div>

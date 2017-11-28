@@ -347,7 +347,7 @@ let vm = new Vue({
                 success: function (data) {
                     console.log(data.data)
                     if (!data.success) {
-                        requestMsg("哎呀，获取优惠券出错了！");
+                        requestMsg("哎呀，获取商品信息出错了！");
                         return false;
                     }
                     self.goodsData = data.data.goodsMap;
@@ -558,6 +558,12 @@ let vm = new Vue({
         },
         changeFlag: function () {
             this.couponFlag = !this.couponFlag;
+            if (this.couponFlag) {
+                $("#couponBox").animate({ 'height': '3rem' }, 'normal', 'linear');
+            } else {
+                let h = $("#couponUl").height()*2/100 +.4;
+                $("#couponBox").animate({ height: h+'rem' }, 'normal', 'linear');
+            }
         },
         changeProduct: function (key) {
             this.currentData = this.goodsData[key];
