@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.afu.ApprovalStatusCode;
@@ -34,6 +34,7 @@ import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.RC4_128_V2;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.vo.afu.Data;
 import com.ald.fanbei.api.web.vo.afu.LoanRecord;
 import com.ald.fanbei.api.web.vo.afu.Params;
@@ -52,7 +53,7 @@ import com.alibaba.fastjson.JSONObject;
 public class GetPersonInfoController {
 	
 	@Resource
-	private AfIdNumberService afIdNumberService;
+	private AfUserAccountService afUserAccountService;
 	@Resource
 	private AfBorrowCashService afBorrowCashService;
 	@Resource
@@ -89,7 +90,7 @@ public class GetPersonInfoController {
 				//借款人姓名
 				name = paramsSon.getData().getName();
 				//查询缓存
-				jsonString = (String) bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo);
+				jsonString = StringUtil.null2Str(bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo));
 				if (StringUtil.isNotBlank(jsonString)) {
 					//有缓存，直接返回
 					thirdLog.info("yiXin zhiChengAfu search personInfo from redis,idNo = "+idNo+", name="+name+" time = " + new Date());
@@ -97,14 +98,16 @@ public class GetPersonInfoController {
 				}else{
 					//没有缓存，走查询
 					//根据姓名和身份证号查询借款人id
-					long userId = afIdNumberService.findByIdNoAndName(name,idNo);
-					if (userId == 0) {
+					AfUserAccountDo userAccount = afUserAccountService.findByIdNo(idNo);
+					
+					if (userAccount == null || !StringUtil.equals(userAccount.getRealName(), name)) {
 						map.put("errorCode", "4101");
 						map.put("message", "用户不存在!");
 						map.put("params", null);
 						jsonString = JsonUtil.toJSONString(map);
 						return jsonString;
 					}
+					long userId = userAccount.getUserId();
 					//根据用户ID查询借款表
 					AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 					//判断用户是否存在借款

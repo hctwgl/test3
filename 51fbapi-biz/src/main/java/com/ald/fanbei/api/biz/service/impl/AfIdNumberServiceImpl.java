@@ -38,17 +38,6 @@ public class AfIdNumberServiceImpl implements AfIdNumberService {
 		return afIdNumberDao.selectUserIdNumberByUserId(userId);
 	}
 
-
-	@Override
-	public Long findByIdNoAndName(String name, String idNo) {	
-		Long userId = afIdNumberDao.findByIDNoAndName(name,idNo);
-		if (userId != null) {
-			return userId;
-		}
-		return 0l;
-	}
-
-
 	@Override
 	public String findUserNameByIdNo(String idNo) {
 		return afIdNumberDao.findUserNameByIdNo(idNo);
