@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.repayment;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -160,11 +162,8 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
         }
 
-        if(cardId.longValue() ==-2 || cardId.longValue() ==-3){
-            if(! yiBaoUtility.checkCanNext(userId,2)){
-                return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING_ERROR);
-            }
-        }
+
+
         //遍历账单，加锁
         String[] billStr = billIds.split(",");
         String billIds1 = "";
@@ -199,6 +198,62 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
 //			resp.setResponseData(map);
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 
+            if(context.getAppVersion()<395){
+                throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
+            if(!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.WXPAY)){
+                throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+            }
+
+            //if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")) {
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, cardId,userId,billDo,"",afUserAccountDo);
+                map.put("userNo",afUserAccountDo.getUserName());
+                map.put("userType","USER_ID");
+                map.put("directPayType","WX");
+                resp.setResponseData(map);
+//            }
+//            else {
+//                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+//            }
+        }
+        else if(cardId.longValue() ==-3){
+            if(context.getAppVersion()<395){
+                throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
+            if(!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.ZFBPAY)){
+                throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+            }
+
+            //if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
+                map = afRepaymentService.createRepaymentYiBao(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, cardId,userId,billDo,"",afUserAccountDo);
+                map.put("userNo", afUserAccountDo.getUserName());
+                map.put("userType", "USER_ID");
+                map.put("directPayType", "ZFB");
+                resp.setResponseData(map);
+//            }
+//            else{
+//                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
+//            }
+        }
+        else if(cardId.longValue()>0){//银行卡支付
+            AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+            if(null == card){
+                throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+            }
+            map = afRepaymentService.createRepayment( jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds,
+                    cardId,userId,billDo,request.getRemoteAddr(),afUserAccountDo);
+            //代收
+            UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
+            if(!upsResult.isSuccess()){
+                throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+            }
+            Map<String,Object> newMap = new HashMap<String,Object>();
+            newMap.put("outTradeNo", upsResult.getOrderNo());
+            newMap.put("tradeNo", upsResult.getTradeNo());
+            newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
+            newMap.put("refId", map.get("refId"));
+            newMap.put("type", map.get("type"));
+            resp.setResponseData(newMap);
                 if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")) {
                     map = afRepaymentService.createRepaymentYiBao(jfbAmount,repaymentAmount, actualAmount,coupon, rebateAmount, billIds, cardId,userId,billDo,"",afUserAccountDo);
                     map.put("userNo",afUserAccountDo.getUserName());
