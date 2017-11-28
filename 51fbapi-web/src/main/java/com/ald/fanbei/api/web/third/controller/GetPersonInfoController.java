@@ -29,7 +29,6 @@ import com.ald.fanbei.api.common.enums.afu.ApprovalStatusCode;
 import com.ald.fanbei.api.common.enums.afu.LoanStatusCode;
 import com.ald.fanbei.api.common.enums.afu.LoanTypeCode;
 import com.ald.fanbei.api.common.enums.afu.OverdueStatus;
-import com.ald.fanbei.api.common.enums.afu.RiskItemTypeCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.RC4_128_V2;
@@ -40,7 +39,6 @@ import com.ald.fanbei.api.web.vo.afu.LoanRecord;
 import com.ald.fanbei.api.web.vo.afu.Params;
 import com.ald.fanbei.api.web.vo.afu.ParamsFather;
 import com.ald.fanbei.api.web.vo.afu.ParamsSon;
-import com.ald.fanbei.api.web.vo.afu.RiskResult;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -72,7 +70,6 @@ public class GetPersonInfoController {
 		try {
 			//解析第一层params数据
 			JSONObject obj = JSON.parseObject(request.getParameter("params"));
-			System.out.println("-----未解密数据："+obj);
 			ParamsFather paramsFather = JSONObject.toJavaObject(obj, ParamsFather.class);
 			//解析第二层params数据
 			String params = paramsFather.getParams();
@@ -84,7 +81,6 @@ public class GetPersonInfoController {
 		    String decode = RC4_128_V2.decode(urlDecoder, rc4Key);
 		    JSONObject jsonObj = JSONObject.parseObject(decode);
 		    ParamsSon paramsSon = JSONObject.toJavaObject(jsonObj, ParamsSon.class);
-		    System.out.println("解密后paramsSon数据："+paramsSon);
 		    
 			//判断请求的业务类型编号是否为201
 			if (StringUtil.equals(paramsSon.getTx(), "201")) {
@@ -96,7 +92,6 @@ public class GetPersonInfoController {
 				jsonString = (String) bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo);
 				if (StringUtil.isNotBlank(jsonString)) {
 					//有缓存，直接返回
-					System.out.println("查询走缓存cache："+jsonString);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from redis,idNo = "+idNo+", name="+name+" time = " + new Date());
 					return jsonString;
 				}else{
@@ -205,22 +200,9 @@ public class GetPersonInfoController {
 					List<LoanRecord> loanRecordList = new ArrayList<LoanRecord>();
 					loanRecordList.add(loanRecord);
 					
-					/** riskResult */
-//					RiskResult riskResult = new RiskResult();
-//					riskResult.setRiskItemTypeCode(RiskItemTypeCode.CardNum.getCode());
-//					riskResult.setRiskItemValue(idNo);
-					//根据借款人身份证号查询用户名
-//					String userName = afIdNumberService.findUserNameByIdNo(idNo);
-//					if (!StringUtil.equals(userName, name)) {
-//						riskResult.setRiskDetail("身份证虚假");
-//						riskResult.setRiskTime(sdf.format(new Date()));
-//					}
-//					List<RiskResult> riskResultList = new ArrayList<RiskResult>();
-//					riskResultList.add(riskResult);
 					
 					Data data = new Data();
 					data.setLoanRecords(loanRecordList);
-//					data.setRiskResults(riskResultList);
 					
 					Params paramsResp = new Params();
 					paramsResp.setTx("202");
@@ -228,9 +210,7 @@ public class GetPersonInfoController {
 					paramsResp.setVersion("V3");
 					//将paramsResp转为json
 					String paramsRespJson = JsonUtil.toJSONString(paramsResp);
-					System.out.println("paramsRespJson:"+paramsRespJson);
 					//对响应的数据加密
-					//String Rc4Resp = RC4_128_V2.encode(paramsRespJson, rc4Key);
 					String Rc4Resp = RC4_128_V2.encode(paramsRespJson, rc4Key);
 					String urlResp = StringUtil.UrlEncoder(Rc4Resp);
 					
@@ -240,9 +220,8 @@ public class GetPersonInfoController {
 					map.put("params", urlResp);
 					jsonString = JsonUtil.toJSONString(map);
 					//将数据存入缓存
-					//bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_ONE_DAY);
+					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_ONE_DAY);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from dataBase success,idNo = "+idNo+", name="+name+" time = " + new Date());
-					System.out.println("返回的加密数据："+jsonString);
 					return jsonString;			
 				}
 				
