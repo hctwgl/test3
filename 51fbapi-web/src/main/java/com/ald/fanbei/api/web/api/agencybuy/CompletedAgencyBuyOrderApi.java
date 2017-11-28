@@ -77,6 +77,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 				//自营确认收货走返利处理，由于返利在确认收货收货状态之后，所以直接修改为返利成功即可
 				rebateContext.rebate(orderInfo);
 //				addBorrowBill(orderInfo);
+				addBorrowBill_1(orderInfo);
 				return resp;
 			}else{
 				if(OrderStatus.DELIVERED.getCode().equals(orderInfo.getStatus())){
@@ -87,6 +88,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					afOrderDo.setLogisticsInfo("已签收");
 					if(afOrderService.updateOrder(afOrderDo) > 0){
 //						addBorrowBill(orderInfo);
+						addBorrowBill_1(orderInfo);
 						return resp;
 					}else{
 						logger.info("completedAgencyBuyOrder fail,update order fail.orderId="+orderId);
@@ -99,6 +101,23 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		}
 		return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);
 	}
+
+
+
+	private void addBorrowBill_1(AfOrderDo afOrderDo){
+		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+		if(afBorrowDo !=null){
+			//查询是否己产生
+			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+			if(borrowList == null || borrowList.size()==0 ){
+				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+				afBorrowService.addBorrowBill(billList);
+			}
+		}
+	}
+
+
+
 
 
 	/**
