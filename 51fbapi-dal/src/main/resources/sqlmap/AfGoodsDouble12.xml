@@ -162,5 +162,14 @@
         WHERE is_delete = 0 
         AND goodsId = #{goodsId}
     </update>
-    
+    <select id="getByGoodsId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do">
+    	SELECT
+			<include refid="queryFields" />
+		FROM
+			af_goods_double12
+		WHERE
+			is_delete = 0
+		AND
+			goodsId = #{goodsId}
+    </select>
 </mapper>
