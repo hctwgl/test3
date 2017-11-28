@@ -194,6 +194,9 @@ public class GetPersonInfoController {
 						if (StringUtil.equals(loanRecord.getOverdueStatus(), "M6+")) {
 							loanRecord.setOverdueM6(1);
 						}				
+					}else {
+						//账单结清或者没有逾期，默认返回空串
+						loanRecord.setOverdueStatus("");
 					}
 					//loanRecord数据的封装
 					List<LoanRecord> loanRecordList = new ArrayList<LoanRecord>();
