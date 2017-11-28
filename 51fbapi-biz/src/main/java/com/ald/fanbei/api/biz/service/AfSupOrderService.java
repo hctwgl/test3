@@ -18,6 +18,6 @@ public interface AfSupOrderService extends ParentService<AfSupOrderDo, Long> {
 
     Map<String, Object> addSupOrder(Long userId, Long goodsId, BigDecimal actualAmount, Long couponId, String acctType, String gameName, String userName, Integer goodsNum, String gameType, String gameAcct, String gameArea, String gameSrv, String userIp);
 
-    String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp);
+    String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp) throws Exception;
 
 }

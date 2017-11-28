@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -142,6 +141,8 @@ public class GamePayController extends H5Controller {
 	FanbeiH5Context context = doH5Check(request, true);
 	try {
 
+	    
+	    
 	    return H5CommonResponse.getNewInstance(true, "获取订单信息成功", "", data);
 	} catch (Exception e) {
 	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
@@ -151,7 +152,6 @@ public class GamePayController extends H5Controller {
 
     @RequestMapping(value = "/callback", method = RequestMethod.GET)
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
-	doH5Check(request, false);
 	try {
 
 	    String userOrderId = request.getParameter("userOrderId");

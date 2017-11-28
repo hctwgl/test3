@@ -24,6 +24,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.OrderUtils;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -600,7 +601,7 @@ public class TestController {
 	public BoluomePushPayResponseBo testOrderPay(HttpServletRequest request, HttpServletResponse response) {
 	  long orderId=198649;
 		AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
-		BoluomePushPayResponseBo b  = 	boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+		BoluomePushPayResponseBo b  = 	boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		
 		return b;
 	}

@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import jiazhiyi.web.com.OrderEntity;
+import jiazhiyi.web.com.OrderReceive;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +44,6 @@ import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -221,9 +223,25 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     }
 
     @Override
-    public String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp) {
-	// TODO Auto-generated method stub
-	return null;
+    public String sendOrderToSup(String orderNo, String goodsId, String userName, String gameName, String gameAcct, String gameArea, String gameType, String acctType, Integer goodsNum, String gameSrv, String orderIp) throws Exception {
+	// 构造充值对象
+	OrderEntity orderEntity = new OrderEntity();
+	orderEntity.setAcctType(acctType);
+	orderEntity.setBusinessId(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID));
+	orderEntity.setGameAcct(gameAcct);
+	orderEntity.setGameArea(gameArea);
+	orderEntity.setGameName(gameName);
+	orderEntity.setGameSrv(gameSrv);
+	orderEntity.setGameType(gameType);
+	orderEntity.setGoodsId(goodsId);
+	orderEntity.setGoodsNum(goodsNum);
+	orderEntity.setKey(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_KEY));
+	orderEntity.setNoticeUrl(ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + "/game/pay/callback");
+	orderEntity.setOrderIp(orderIp);
+	orderEntity.setUserName(userName);
+	orderEntity.setUserOrderId(orderNo);
+	// 提交充值信息
+	return OrderReceive.SendOrder(orderEntity);
     }
 
     @Resource

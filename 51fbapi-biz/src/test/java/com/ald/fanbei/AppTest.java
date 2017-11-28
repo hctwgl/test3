@@ -54,26 +54,26 @@ public class AppTest extends TestCase {
 
 	    //System.out.println(CommodityPrices.QueryCommodity("Num10428", "2d477a24ec9c4d4ba65403f031cd5d9f", "wy001jk"));
 
-	    System.out.println(CommOrderQry.QueryOrder("Num10428", "126", "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
+	    //System.out.println(CommOrderQry.QueryOrder("Num10428", "126", "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
 
-//	    OrderEntity orderEntity = new OrderEntity();
-//	    orderEntity.setAcctType("世纪天成账号");
-//	    orderEntity.setBusinessId("Num10428");
-//	    orderEntity.setGameAcct("");
-//	    orderEntity.setGameArea("");
-//	    orderEntity.setGameName("世纪天成");
-//	    orderEntity.setGameSrv("");
-//	    orderEntity.setGameType("点");
-//	    orderEntity.setGoodsId("sjtc001jk");
-//	    orderEntity.setGoodsNum(1);
-//	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
-//	    String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
-//	    orderEntity.setNoticeUrl("http://testapp.51fanbei.com/game/pay/callback");
-//	    orderEntity.setOrderArea("");
-//	    orderEntity.setOrderIp("");
-//	    orderEntity.setUserName("00000000@e2p.com");
-//	    orderEntity.setUserOrderId("126");
-//	    System.out.println(OrderReceive.SendOrder(orderEntity));
+	    OrderEntity orderEntity = new OrderEntity();
+	    orderEntity.setAcctType("世纪天成账号");
+	    orderEntity.setBusinessId("Num10428");
+	    orderEntity.setGameAcct("");
+	    orderEntity.setGameArea("");
+	    orderEntity.setGameName("世纪天成");
+	    orderEntity.setGameSrv("");
+	    orderEntity.setGameType("点");
+	    orderEntity.setGoodsId("sjtc001jk");
+	    orderEntity.setGoodsNum(1);
+	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
+	    String url = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+	    orderEntity.setNoticeUrl("http://testapp.51fanbei.com/game/pay/callback");
+	    orderEntity.setOrderArea("");
+	    orderEntity.setOrderIp("");
+	    orderEntity.setUserName("00000000@e2p.com");
+	    orderEntity.setUserOrderId("129");
+	    System.out.println(OrderReceive.SendOrder(orderEntity));
 	} catch (Exception e) { // TODO Auto-generated
 	    e.printStackTrace();
 	}
