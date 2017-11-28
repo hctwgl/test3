@@ -415,5 +415,11 @@ public class Constants {
 	  
 	//代扣
 	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
+	  
+
+	//	sup游戏充值
+	public static final String CONFKEY_SUP_BUSINESS_ID = "fbapi.sup.business.id";
+	public static final String CONFKEY_SUP_BUSINESS_KEY = "fbapi.sup.business.key";
+	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";	
 
 }

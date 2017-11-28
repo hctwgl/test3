@@ -27,9 +27,11 @@ import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.MD5Helper;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.OrderSecType;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfSupOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
@@ -39,6 +41,7 @@ import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -177,7 +180,8 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		    afOrder.setAuAmount(userAccountInfo.getAuAmount());
 		    afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
-		    afOrder.setThirdDetailUrl("");
+		    afOrder.setThirdDetailUrl(getOrderDetailsUrl());
+		    afOrder.setSecType(OrderSecType.SUP_GAME.getCode());
 		    afOrderService.createOrder(afOrder);
 		    // 添加订单相关游戏充值信息
 		    AfSupOrderDo supOrderDo = new AfSupOrderDo();
@@ -209,6 +213,11 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	    data.put("orderId", afOrder.getRid());
 	}
 	return data;
+    }
+
+    private String getOrderDetailsUrl() {
+	// 路径+参数信息
+	return ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + ConfigProperties.get(Constants.CONFKEY_SUP_ORDER_DETAILS);
     }
 
     @Override

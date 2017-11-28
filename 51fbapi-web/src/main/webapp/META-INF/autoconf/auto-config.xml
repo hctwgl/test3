@@ -127,6 +127,10 @@
 		<property name="fbapi.esign.retry" defaultValue="5"/>
 		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
 		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
+		
+		<!-- sup 游戏充值 -->
+		<property name="fbapi.sup.business.id" defaultValue="dyJWJi0P+WVLTsslHUgVlw=="  description="sup 游戏充值配置ID"/>
+		<property name="fbapi.sup.business.key" defaultValue="/C9w1LBJUPi3u26ULHnu+EtRQUOeJywL1jRGe/PuasXQroYLtEIaqFC8Jmft4E4B" description="sup 游戏充值配置KEY"/>
 	</group>
 
 	<script>
