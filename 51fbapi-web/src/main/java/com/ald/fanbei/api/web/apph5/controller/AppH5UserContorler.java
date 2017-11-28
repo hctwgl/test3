@@ -9,13 +9,14 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.util.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
@@ -34,12 +35,20 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.ImageUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.domain.AfPromotionChannelDo;
@@ -218,7 +227,6 @@ public class AppH5UserContorler extends BaseController {
             
             bizCacheUtil.delCache(Constants.CACHEKEY_CHANNEL_IMG_CODE_PREFIX + mobile);
 
-
             try {
                 tongdunUtil.getPromotionSmsResult(token, channelCode, pointCode, CommonUtil.getIpAddr(request), mobile, mobile, "");
             } catch (Exception e) {
@@ -236,6 +244,14 @@ public class AppH5UserContorler extends BaseController {
             resp = H5CommonResponse.getNewInstance(true, "成功", "", null);
             return resp.toString();
 
+        }catch (FanbeiException e) {
+            logger.error("发送验证码失败：", e);
+            if(e.getErrorCode()!=null && StringUtil.isNotBlank(e.getErrorCode().getDesc()) && e.getErrorCode().getDesc().equals(FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME.getDesc())){
+            	resp = H5CommonResponse.getNewInstance(false, e.getErrorCode().getDesc(), "", null);
+            }else{
+            	resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
+            }
+            return resp.toString();
         } catch (Exception e) {
             logger.error("发送验证码失败：", e);
             resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
@@ -283,6 +299,14 @@ public class AppH5UserContorler extends BaseController {
             resp = H5CommonResponse.getNewInstance(true, "成功", "", null);
             return resp.toString();
 
+        } catch (FanbeiException e) {
+            logger.error("发送验证码失败：", e);
+            if(e.getErrorCode()!=null && StringUtil.isNotBlank(e.getErrorCode().getDesc())&&e.getErrorCode().getDesc().equals(FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME.getDesc())){
+            	resp = H5CommonResponse.getNewInstance(false, e.getErrorCode().getDesc(), "", null);
+            }else{
+            	resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
+            }
+            return resp.toString();
         } catch (Exception e) {
             logger.error("发送验证码失败：", e);
             resp = H5CommonResponse.getNewInstance(false, "系统跑丢了，请稍后重试。", "", null);
@@ -392,7 +416,46 @@ public class AppH5UserContorler extends BaseController {
         }
 
     }
-
+    
+    @RequestMapping(value = "/checkMobileRegistered", method = {RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String checkMobileRegistered(HttpServletRequest request, ModelMap model) throws IOException {
+    	Calendar calStart = Calendar.getInstance();
+    	H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        try {
+        	String mobile = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+        	String exsitMobile = (String) bizCacheUtil.getObject("h5register"+mobile);
+        	if (StringUtils.isNotBlank(exsitMobile)) {
+        		resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_FREQUENTLY_ERROR.getDesc(), "", null);
+        		return resp.toString();
+			}
+        	if(StringUtils.isEmpty(mobile)){
+        		throw new FanbeiException("mobile can't be null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
+        	}
+            Pattern numPattern = Pattern.compile("^1[3|4|5|7|8][0-9]{9}$");
+            Matcher matcher = numPattern.matcher(mobile);
+     		if(!matcher.matches()) {
+     			throw new FanbeiException("mobile not allowed",FanbeiExceptionCode.REQUEST_PARAM_ILLEGAL);
+     		}
+     		String isRegistered="N";
+            AfUserDo UserDo = afUserService.getUserByUserName(mobile);
+            bizCacheUtil.saveObject("h5register"+mobile, mobile,Constants.SECOND_OF_ONE_MINITS);
+            if (UserDo != null) {
+            	isRegistered="Y";
+            	resp = H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "", isRegistered);
+            	return resp.toString();
+            }
+            resp = H5CommonResponse.getNewInstance(true, "成功", "", isRegistered);
+            return resp.toString();
+        } catch (Exception e) {
+            logger.error("checkMobileRegistered exception" + e.getMessage());
+            resp = H5CommonResponse.getNewInstance(false, "失败", "", null);
+            return resp.toString();
+        }  finally {
+            doLog(request, resp, "", Calendar.getInstance().getTimeInMillis() - calStart.getTimeInMillis(), request.getParameter("mobile"));
+        }
+    }
+    
     @Override
     public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
         return null;
