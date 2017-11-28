@@ -30,11 +30,11 @@ public class EchoQueryOrgApiClient {
 
 		try {
 			String data = null;
-			final String url = "http://localhost:8005/third/getPersonInfo";
+			final String url = "http://dtestapp.51fanbei.com/third/getPersonInfo";
 			final String rc4Key = "e4588f6b0a65fab9";
 			System.out.println("查询程序启动~~~~~~~~");
-			final String name = "江杰";
-			final String idNo = "330824199208194230";
+			final String name = "陈旋凯";
+			final String idNo = "333333333333333333";
 			
 			final long startTime=System.currentTimeMillis();
 				data = echoQueryOrg(url, rc4Key, name, idNo);
@@ -44,7 +44,7 @@ public class EchoQueryOrgApiClient {
 				// 解密解码返回结果
 				final String dataField = URLDecoder.decode(jsonObject.getString("params"), "utf-8");
 				final String decryptResult = RC4_128_V2.decode(dataField, rc4Key);
-				System.out.println(decryptResult);
+				System.out.println(decryptResult); 
 				jsonObject.put("params", JSONObject.parse(decryptResult));
 				
 			}

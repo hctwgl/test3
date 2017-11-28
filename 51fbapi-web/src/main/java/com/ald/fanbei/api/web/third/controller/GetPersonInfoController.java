@@ -131,6 +131,19 @@ public class GetPersonInfoController {
 						loanRecord.setLoanDate(sdf.format(gmtArrival));	
 						//通过审核的结果码
 						loanRecord.setApprovalStatusCode(ApprovalStatusCode.Approved.getCode());
+						if (StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
+							//账单已结清
+							loanRecord.setLoanStatusCode(LoanStatusCode.Finish.getCode());
+						}else if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")) {
+							//说明借款人逾期并且未还款
+							loanRecord.setLoanStatusCode(LoanStatusCode.Overdue.getCode());
+							//借款人逾期总金额
+							BigDecimal shouldRepay = borrowCashDo.getAmount().add(borrowCashDo.getRateAmount()).add(borrowCashDo.getOverdueAmount()).add(borrowCashDo.getSumRate()).add(borrowCashDo.getSumOverdue()).subtract(borrowCashDo.getRepayAmount());
+							loanRecord.setOverdueAmount(shouldRepay);
+						}else {
+							//账单正常
+							loanRecord.setLoanStatusCode(LoanStatusCode.Normal.getCode());
+						}
 					}else{
 						//取申请时间，并格式化日期类型
 						Date gmtCreate = borrowCashDo.getGmtCreate();
@@ -138,9 +151,11 @@ public class GetPersonInfoController {
 						if (StringUtil.equals(borrowCashDo.getReviewStatus(), "REFUSE") || StringUtil.equals(borrowCashDo.getReviewStatus(), "FBREFUSE")) {
 							//审核未通过的结果码,拒贷
 							loanRecord.setApprovalStatusCode(ApprovalStatusCode.UnApprove.getCode());
+							loanRecord.setLoanStatusCode("");
 						}else {
 							//审核中结果码
 							loanRecord.setApprovalStatusCode(ApprovalStatusCode.Approving.getCode());
+							loanRecord.setLoanStatusCode("");
 						}
 					}
 					//期数，默认写死为1
@@ -148,19 +163,7 @@ public class GetPersonInfoController {
 					//借款金额,
 					loanRecord.setLoanAmount(borrowCashDo.getAmount());
 					
-					if (borrowCashDo.getOverdueDay() > 0 && !StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
-						//说明借款人逾期并且未还款
-						loanRecord.setLoanStatusCode(LoanStatusCode.Overdue.getCode());
-						//借款人逾期总金额
-						BigDecimal shouldRepay = borrowCashDo.getAmount().add(borrowCashDo.getRateAmount()).add(borrowCashDo.getOverdueAmount()).add(borrowCashDo.getSumRate()).add(borrowCashDo.getSumOverdue()).subtract(borrowCashDo.getRepayAmount());
-						loanRecord.setOverdueAmount(shouldRepay);
-					}else if (StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
-						//账单已结清
-						loanRecord.setLoanStatusCode(LoanStatusCode.Finish.getCode());
-					}else {
-						//账单正常
-						loanRecord.setLoanStatusCode(LoanStatusCode.Normal.getCode());
-					}
+					
 					//借款类型码，默认是信用借款
 					loanRecord.setLoanTypeCode(LoanTypeCode.Credit.getCode());
 					if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")){
