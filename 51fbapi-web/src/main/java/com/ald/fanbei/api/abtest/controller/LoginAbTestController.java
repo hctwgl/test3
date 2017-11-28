@@ -64,7 +64,7 @@ public class LoginAbTestController extends AbTestController {
 					JSONObject strategy = testRule.getJSONObject(i);
 					String strategyCode = strategy.getString("strategyCode");
 					String testDeviceId = strategy.getString("deviceId");
-					if(testDeviceId.equals(deviceIdTail)){
+					if(testDeviceId.contains(deviceIdTail)){
 						params.put("loginType",strategyCode);
 					}
 				}
