@@ -60,7 +60,7 @@
         <ul class="iform clearfix">
             <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="toMaidian('phone')"></li>
 
-            #if($!{style}==1)
+            #if($!{style}==1||$!{style}==17)
                 <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
                 <li class="clearfix">
                     <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
@@ -76,7 +76,7 @@
                     <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
                     <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;" onclick="toMaidian('toLogin')">直接登录</a>
                 </p>
-            #elseif( $!{style}==17 ||$!{style}==7)
+            #elseif( $!{style}==16 ||$!{style}==7)
                 <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
                 <li class="clearfix">
                     <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
