@@ -28,9 +28,5 @@ public interface AfIdNumberService {
 	     * 根据userId获取省份证的信息
 	     */
 	    AfIdNumberDo selectUserIdNumberByUserId(Long userId);
-		/**
-		 * 根据身份证号查询用户姓名
-		 * */
-		String findUserNameByIdNo(String idNo);
-
+	
 }

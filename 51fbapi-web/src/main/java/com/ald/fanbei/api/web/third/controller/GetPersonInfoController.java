@@ -230,7 +230,6 @@ public class GetPersonInfoController {
 				
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 			thirdLog.info("yiXin zhiChengAfu search personInfo error, idNo ="+ idNo + ",name="+name+"exception : "+ e + ", time = " + new Date());
 		}		
