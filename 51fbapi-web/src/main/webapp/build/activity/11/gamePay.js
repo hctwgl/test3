@@ -1,6 +1,12 @@
 let goodsId=getUrl('goodsId'); //获取类型id
 let discout=getUrl('discout'); //折扣
 let rebate=getUrl('rebate'); //返利
+$(function(){
+    $('.footer').height('7%');
+    $('.gamePay').css('padding-top','3%');
+    let h=$(window).height()-$('.footer').height()-$(window).height()*0.015;
+    $('.allTop').height(h);
+});
 //获取数据
 let vm = new Vue({
     el: '#gamePay',
@@ -12,7 +18,8 @@ let vm = new Vue({
         initChooseFirst:'',
         allDataLen:'',
         discout:discout,
-        rebate:rebate
+        rebate:rebate,
+        needGameNumShow:''
     },
     created: function () {
         this.logData();
@@ -33,8 +40,12 @@ let vm = new Vue({
                 return $(mark).attr(attrName)
             };
             //判断game 里attr('name')是否存在
-            if(getattr(_xml, 'game', 'name') || getselfattr(_xml, 'name')){  //存在时直接渲染  否则手动输入
+            if(getattr(_xml, 'game', 'name') || getselfattr(_xml, 'name')){
                 returnobj.gameName = getattr(_xml,'game', 'name')|| getselfattr(_xml, 'name');
+            }
+            //数据格式---B---是否显示游戏账号
+            if(getattr(_xml, 'game', 'needGameAcct') || getselfattr(_xml, 'needGameAcct')){
+                returnobj.needGameAcct = getattr(_xml,'game', 'needGameAcct')|| getselfattr(_xml, 'needGameAcct');
             }
             //充值账号
             let accountType=$(_xml).find('acctType').text();
@@ -114,10 +125,6 @@ let vm = new Vue({
             }
             return returnobj;
         },
-        //数据格式为B
-        fixDataB(xml){
-
-        },
         //获取页面初始化信息
         logData() {
             let self = this;
@@ -131,7 +138,7 @@ let vm = new Vue({
                     self.dataType=data.data.xmlType;//数据格式
                     console.log(self.content);
                     //需要先判断数据格式
-                    if(self.dataType=='A'){
+                    //if(self.dataType=='A'){
                         $(self.content).find('game').each((index, item)=>{
                             self.allData.push(self.rewritedata(item));
                         });
@@ -160,11 +167,47 @@ let vm = new Vue({
                             $('.moneyList li').eq(0).find('p').addClass('changeColor02');
                             $('.payMoney span').html($('.moneyList li').eq(0).find('.typePrice').html());
                             $('.fanMoney span').html((($('.moneyList li').eq(0).find('i').html())*rebate).toFixed(2)+'元');
+                        });
+                        //判断游戏账号是否显示-----针对B
+                        if(self.initChooseFirst.needGameAcct=='1') {
+                            self.needGameNumShow = true;
+                        }
+                    //}
+                    /*if(self.dataType=='B'){
+                        $(self.content).find('game').each((index, item)=>{
+                            self.allData.push(self.rewritedata(item));
+                        });
+                        console.log(self.allData, '全部数据');
+                        console.log(self.allData.length, '全部数据长度');
+                        self.initChooseFirst=self.allData[0];
+                        console.log(self.allData[0], '默认显示第一个数据');
+                        //判断游戏账号是否显示
+                        if(self.initChooseFirst.needGameAcct=='1') {
+                            self.needGameNumShow = true;
+                        }
+                        //默认显示的游戏区服
+                        if(self.initChooseFirst.areasList){
+                            for(let i=0;i<self.initChooseFirst.areasList.length;i++){
+                                if(self.initChooseFirst.areasList[0].text){
+                                    self.initChooseFirst.initArea=self.initChooseFirst.areasList[0].text+' '+self.initChooseFirst.areasList[0].children[0];
+                                }else{
+                                    self.initChooseFirst.initArea=self.initChooseFirst.areasList[0];
+                                }
+                            }
+                        }
+                        self.allDataLen=self.allData.length;
+                        if(self.allDataLen==1){
+                            self.fixCont=self.allData[0];
+                        }
+                        self.$nextTick(function(){
+                            $('.typeList li').eq(0).addClass('changeColor01');
+                            $('.typeList li').eq(0).find('p').addClass('changeColor02');
+                            $('.moneyList li').eq(0).addClass('changeColor01');
+                            $('.moneyList li').eq(0).find('p').addClass('changeColor02');
+                            $('.payMoney span').html($('.moneyList li').eq(0).find('.typePrice').html());
+                            $('.fanMoney span').html((($('.moneyList li').eq(0).find('i').html())*rebate).toFixed(2)+'元');
                         })
-                    }
-                    if(self.dataType=='B'){
-                       alert('B')
-                    }
+                    }*/
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
@@ -194,6 +237,12 @@ let vm = new Vue({
                 $('.gameName:first-child span').css('color','#232323');
                 self.fixCont=self.allData[SelectedItem[0].value];
                 console.log(self.fixCont);
+                 //判断游戏账号是否显示
+                if(self.fixCont.needGameAcct=='1') {
+                    self.needGameNumShow = true;
+                }else{
+                    self.needGameNumShow = false;
+                }
                 picker.dispose();
             })
         },
@@ -230,6 +279,11 @@ let vm = new Vue({
         fixStrToNum(str){
             let num=parseInt(str);
             return num;
+        },
+        //保留小数点后两位
+        fixNum(n){
+            let number=n.toFixed(2);
+            return number;
         }
     }
 });

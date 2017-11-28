@@ -5,8 +5,10 @@
   width:100%;
   height:.2rem;
 }
+.allTop{
+  overflow: auto;
+}
 .gamePay{
-  padding-top:.2rem;
   .gameName{
     padding:0 5.6% 0 3.4%;
     height:.88rem;
@@ -66,10 +68,8 @@
     display: none;
   }
 }
-.gameType{
-  margin-top:.2rem;
-  /*width:97%;*/
-  padding:0 0 .3rem 3%;
+.gameType,.gameMoney{
+  padding:0 0 0 3%;
   background:#fff;
   .title{
     font-size: .24rem;
@@ -103,25 +103,22 @@
   }
 }
 .gameMoney{
-  margin:0;
-  .title{
-    padding:0;
-  }
+ padding-bottom: .3rem;
   .moneyList li .typeName{
     padding:.19rem 0 .06rem 0;
   }
 }
 /*changeColor*/
-.gameType .typeList li.changeColor01,.gameType .moneyList li.changeColor01{
+.gameType .typeList li.changeColor01,.gameMoney .moneyList li.changeColor01{
   border:1px solid rgb(255,136,51);
 }
-.gameType .typeList li .changeColor02,.gameType .moneyList li .changeColor02{
+.gameType .typeList li .changeColor02,.gameMoney .moneyList li .changeColor02{
   color:rgb(255,136,51);
 }
 
 .footer{
   width:100%;
-  height:1rem;
+  /*height:1rem;*/
   background:#fff;
   position:fixed;
   bottom: 0;
