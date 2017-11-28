@@ -156,7 +156,9 @@
     
     <update id="updateCountById"  parameterType="java.lang.Long">
         UPDATE af_goods_double12
-		SET count = count + 1    
+		SET 
+			gmt_modified = NOW(),
+			count = count + 1    
         WHERE is_delete = 0 
         AND goodsId = #{goodsId}
     </update>
