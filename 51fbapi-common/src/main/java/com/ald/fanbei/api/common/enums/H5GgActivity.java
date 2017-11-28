@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.common.enums;
 
 public enum H5GgActivity {
-    GGACTIVITY("GGACTIVITY","霸王餐活动配置信息一级类型"),
+    GG_ACTIVITY("GG_ACTIVITY","霸王餐活动配置信息一级类型"),
     REGISTER("REGISTER", "注册获得的优惠券"), PICK("PICK", "点击连接获取优惠券"), RECOMMEND("RECOMMEND", "推荐人获得优惠券"),
-    WAIMAI("WAIMAI", "外卖"),NOFINISH("NOFINISH", "未完成"),ALREADYFINISH("ALREADYFINISH","已完成"), NOCONSUME("NOCONSUME","未消费"),
-    INVITECERMONY("INVITECERMONY","霸王餐活动邀请有礼页二级类型"),DINEANDDASH("DINEANDDASH","霸王餐活动邀请好友页二级类型"),
-    BOLUOMECOUPON("BOLUOMECOUPON","菠萝觅优惠券"),
-    GGSMSINVITER("GGSMSINVITER","邀请者得到券时短信文案"),GGSMSNEW("GGSMSNEW","新用户注册送券短信文案"),
-    TOPOPUP("Y","弹窗"),COUPONIMAGE("COUPONIMAGE","优惠券弹窗图"),REBATEIMAGE("REBATEIMAGE","返利弹窗图"),
+    WAIMAI("WAIMAI", "外卖"),NO_FINISH("NO_FINISH", "未完成"),ALREADY_FINISH("ALREADY_FINISH","已完成"), NO_CONSUME("NO_CONSUME","未消费"),
+    INVITE_CERMONY("INVITE_CERMONY","霸王餐活动邀请有礼页二级类型"),DINE_AND_DASH("DINE_AND_DASH","霸王餐活动邀请好友页二级类型"),
+    BOLUOME_COUPON("BOLUOME_COUPON","菠萝觅优惠券"),ACTIVITY_TIME("ACTIVITY_TIME","活动时间"),
+    GG_SMS_INVITER("GGSMSINVITER","邀请者得到券时短信文案"),GG_SMS_NEW("GG_SMS_NEW","新用户注册送券短信文案"),
+    TOPOPUP("Y","弹窗"),COUPON_IMAGE("COUPONIMAGE","优惠券弹窗图"),REBATE_IMAGE("REBATE_IMAGE","返利弹窗图"),
     NOPOPUP("N","不弹窗");
     
     

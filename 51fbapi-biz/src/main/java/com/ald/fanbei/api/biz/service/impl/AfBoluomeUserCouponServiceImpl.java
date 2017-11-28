@@ -85,7 +85,7 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 				afBoluomeUserCouponDo.setStatus(1);
 				afBoluomeUserCouponDo.setChannel("RECOMMEND");
 				
-				AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GGACTIVITY", "BOLUOMECOUPON");
+				AfResourceDo resourceDo = afResourceDao.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
 				
 				log = log + String.format("AfBoluomeUserCouponDo = %s , AfResourceDo = %s ", afBoluomeUserCouponDo.toString(), resourceDo.toString());
 				logger.info(log);
@@ -145,11 +145,11 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 		return afBoluomeUserCouponDao.isHasCouponInDb(userId,couponId);
 
 	}
-	@Override
-	public AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId) {
-	    // TODO Auto-generated method stub
-	    return afBoluomeUserCouponDao.getLastUserCouponByUserId(userId);
-	}
+//	@Override
+//	public AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId) {
+//	    // TODO Auto-generated method stub
+//	    return afBoluomeUserCouponDao.getLastUserCouponByUserId(userId);
+//	}
 	
 	@Override
 	public AfBoluomeUserCouponDo getUserCouponByUerIdAndRefIdAndChannel(AfBoluomeUserCouponDo userCoupon) {
@@ -162,5 +162,13 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	    // TODO Auto-generated method stub
 	         return afBoluomeUserCouponDao.getByCouponIdAndUserIdAndChannel(userCoupon);
 	}
+
+	@Override
+	public AfBoluomeUserCouponDo getLastUserCouponByUserIdSentCouponId(Long userId, Long newUser, Long inviter) {
+	    // TODO Auto-generated method stub
+	         return afBoluomeUserCouponDao.getLastUserCouponByUserIdSentCouponId(userId,newUser,inviter);
+	}
+
+	
 
 }

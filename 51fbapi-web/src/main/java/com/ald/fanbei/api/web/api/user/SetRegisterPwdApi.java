@@ -10,6 +10,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -54,6 +55,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 	SmsUtil smsUtil;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfBoluomeActivityService afBoluomeActivityService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -170,7 +173,6 @@ public class SetRegisterPwdApi implements ApiHandle {
 
 		// 注册完成,给用户发送注册成功的短信
 		// smsUtil.sendRegisterSuccessSms(userDo.getUserName());
-
 		afUserDo = afUserService.getUserByUserName(userName);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String registerTime = sdf.format(new Date(System.currentTimeMillis()));
@@ -179,6 +181,14 @@ public class SetRegisterPwdApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
 		}
+		
+		//吃玩住行活动被邀请的新用户登录送券
+		try{
+			  afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
+			  logger.info("sentNewUserBoluomeCouponForDineDash success");
+		   }catch (Exception e){
+			  logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
+		   }
 		return resp;
 	}
 
