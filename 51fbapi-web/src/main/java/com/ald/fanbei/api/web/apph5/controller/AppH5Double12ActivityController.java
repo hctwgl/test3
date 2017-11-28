@@ -131,24 +131,41 @@ public class AppH5Double12ActivityController extends BaseController{
 					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
 					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
 					
-					Calendar c =Calendar.getInstance();
-					c.setTime(new Date());
-					int month = c.get(Calendar.MONTH)+1;
-					int day = c.get(Calendar.DAY_OF_MONTH);
-					int hour = c.get(Calendar.HOUR);
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					// 当前时间
+					Date currentTime = new Date();
+										
+					AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_RED_PAPER_TIME");
+					if(afResourceDo==null){
+						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
+					}
+					String[] times = afResourceDo.getValue().split(",");
 					
-					if(hour<10){
-    					afCouponDouble12Vo.setIsShow("N");//活动未开始
-    				}else {
-    					afCouponDouble12Vo.setIsShow("Y");//在活动时间内
-    				}
-    				if(month==12&&day>12){
-    					afCouponDouble12Vo.setIsShow("E");//活动已结束
-    				}
-    				if(month<=12||day<5){
+					if(currentTime.before(dateFormat.parse(times[0]))){
+						//2017-12-5 10:00号之前
 						afCouponDouble12Vo.setIsShow("N");//活动未开始
 					}
 					
+					if(afCouponDouble12Vo.getIsShow()==null){
+						for (int j = 0; j < times.length-1; j=j+2) {
+							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[j]))&&currentTime.before(dateFormat.parse(times[j+1]))){
+									afCouponDouble12Vo.setIsShow("Y");//在活动时间内
+								}
+								if(currentTime.after(dateFormat.parse(times[j+1]))&&currentTime.before(dateFormat.parse(times[j+2]))){
+									afCouponDouble12Vo.setIsShow("N");//活动未开始
+								}
+								if(currentTime.after(dateFormat.parse(times[times.length-1]))){
+									afCouponDouble12Vo.setIsShow("E");//活动已结束
+								}
+							}
+						}
+					}
+//					if(afCouponDouble12Vo.getIsShow()==null){
+//						afCouponDouble12Vo.setIsShow("E");//活动已结束
+//					}
+    				
+    				
 					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,afCouponDo.getRid()) != 0){
 						afCouponDouble12Vo.setIsGet("Y");//已领取
 					}else{
@@ -377,7 +394,6 @@ public class AppH5Double12ActivityController extends BaseController{
 				for (int i = 0; i < startTimeStrs.length-1; i++) {
 					if(currentTime.after(dateFormat.parse(startTimeStrs[i]))&&currentTime.before(dateFormat.parse(startTimeStrs[i+1]))){
 						startTime = dateFormat.parse(startTimeStrs[i+1]);
-						System.out.println(i+1);
 					}
 				}
 			}
