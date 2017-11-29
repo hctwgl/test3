@@ -16,11 +16,15 @@ import org.springframework.objenesis.instantiator.basic.NewInstanceInstantiator;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAmountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfUserAmountBizType;
+import com.ald.fanbei.api.common.enums.AfUserAmountDetailType;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -30,6 +34,8 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAmountDetailDo;
+import com.ald.fanbei.api.dal.domain.AfUserAmountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -38,17 +44,18 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfUserCouponVo;
+import com.sun.mail.handlers.image_gif;
 
 /**
  * 
-* @ClassName: GetMyRepaymentV1Api 
-* @Description: 用户还款页面
+* @ClassName: GetRepaymentDetailV1Api 
+* @Description: 退还款详情页面
 * @author yuyue
-* @date 2017年11月27日 下午3:04:05 
+* @date 2017年11月28日 下午4:24:58 
 *
  */
-@Component("getMyRepaymentV1Api")
-public class GetMyRepaymentV1Api implements ApiHandle{
+@Component("getRepaymentDetailV1Api")
+public class GetRepaymentDetailV1Api implements ApiHandle{
 
 	@Resource
 	AfUserService afUserService;
@@ -57,66 +64,65 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 	AfBorrowBillService afBorrowBillService;
 	
 	@Resource
-	AfUserAccountService afUserAccountService;
+	AfUserAmountService afUserAmountService;
 	
 	@Resource
-	AfUserCouponService afUserCouponService;
+	AfOrderService afOrderService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		try {
 			Long userId = context.getUserId();
+			Long amountId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("amountId"), 0L);
+			if (amountId.equals(0L)) {
+				logger.error("getRepaymentDetailV1Api amountId is null ,RequestDataVo id =" + requestDataVo.getId());
+				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+				return resp;
+			}
 			if (userId == null) {
-				logger.error("getMyRepaymentV1Api userId is null ,RequestDataVo id =" + requestDataVo.getId());
+				logger.error("getRepaymentDetailV1Api userId is null ,RequestDataVo id =" + requestDataVo.getId());
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 				return resp;
 			}
 			AfUserDo afUserDo = afUserService.getUserById(userId);
 			if (afUserDo == null || afUserDo.getRid() == null) {
-				logger.error("getMyRepaymentV1Api user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
+				logger.error("getRepaymentDetailV1Api user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 				return resp;
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
-			AfBorrowBillQuery query = new AfBorrowBillQuery();
-			// 获取所有逾期数据
-			query.setUserId(userId);
-			query.setIsOut(1);
-			query.setOverdueStatus("Y");
-			query.setStatus(BorrowBillStatus.NO.getCode());
-			BigDecimal overdueMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
-			map.put("overdueMoney", overdueMoney);
-			// 获取已出未逾期
-			query.setOverdueStatus("N");
-			BigDecimal outMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
-			if (outMoney.compareTo(new BigDecimal(0)) == 1) {
-				List<AfBorrowBillDto> billList = afBorrowBillService.getBillListByQuery(query);
-				AfBorrowBillDto billDto = billList.get(0);
-				String month = DateUtil.getMonth(billDto.getGmtOutDay());
-				map.put("month", month);
+			AfUserAmountDo userAmount = afUserAmountService.getUserAmountById(amountId);
+			if (userAmount == null) {
+				logger.error("getRepaymentDetailV1Api userAmount is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId + " ,amountId=" + amountId);
+				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AMOUNT_IS_NULL);
+				return resp;
 			}
-			// 获取下月未出账单
-			Date strOutDay = DateUtil.getFirstOfMonth(new Date());
-			strOutDay = DateUtil.addHoures(strOutDay, -12);
-			strOutDay = DateUtil.addMonths(strOutDay, 1);
-			Date endOutDay = DateUtil.addMonths(strOutDay, 1);
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(endOutDay);
-			calendar.add(Calendar.SECOND, -1);
-			endOutDay = calendar.getTime();
-			query.setIsOut(0);
-			query.setOutDayStr(strOutDay);
-			query.setOutDayEnd(endOutDay);
-			BigDecimal notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
-			map.put("notOutMoney", notOutMoney);
-			// 获取用户余额
-			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
-			map.put("rebateAmount", userAccountDo.getRebateAmount());
+			List<AfUserAmountDetailDo> detailList = afUserAmountService.getAmountDetailByAmountId(amountId);
+			BigDecimal amount = new BigDecimal(0);
+			String number;
+			String date;
+			if (userAmount.getBizType() == AfUserAmountBizType.REFUND.getCode()) {
+				// 退款详情
+				amount = afUserAmountService.getRenfundAmountByAmountId(amountId);
+				number = userAmount.getBizOrderNo();
+				date = DateUtil.formatDate(userAmount.getGmtCreate(), DateUtil.DATE_TIME_SHORT);
+//				afUserAmountService.getOrderByUserAmountId(amountId);
+			}
+			if (userAmount.getBizType() == AfUserAmountBizType.REPAYMENT.getCode()) {
+				// 还款详情
+				for (int i = 0; i < detailList.size(); i++) {
+					AfUserAmountDetailDo detailDo = detailList.get(i);
+					if (detailDo.getType() == AfUserAmountDetailType.SHIJIZHIFU.getCode()) {
+						amount = detailDo.getAmount();
+						break;
+					}
+				}
+			}
 			resp.setResponseData(map);
 			return resp;
 		} catch (Exception e) {
-			logger.error("getMyRepaymentV1Api error :" , e);
+			logger.error("getRepaymentDetailV1Api error :" , e);
 			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.CALCULATE_SHA_256_ERROR);
 			return resp;
 		}

@@ -57,6 +57,11 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 			Long userId = context.getUserId();
 			int page = NumberUtil.objToIntDefault(requestDataVo.getParams().get("page"), 0);
 			int pageSize = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageSize"), 0);
+			if (page == 0 || pageSize == 0){
+				logger.error("getMyHistoryBorrowV1Api page or pageSize is null ,RequestDataVo id =" + requestDataVo.getId());
+				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+				return resp;
+			}
 			if (userId == null) {
 				logger.error("getMyHistoryBorrowV1Api userId is null ,RequestDataVo id =" + requestDataVo.getId());
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);

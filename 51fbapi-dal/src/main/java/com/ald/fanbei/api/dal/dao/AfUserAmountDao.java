@@ -1,5 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.AfUserAmountDetailDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountDo;
 
 /**
@@ -16,4 +22,43 @@ public interface AfUserAmountDao {
     int addUserAmount(AfUserAmountDo afUserAmountDo);
 
     int updateUserAmountStatus(AfUserAmountDo afUserAmountDo);
+
+    /**
+     * 根据userId和type查询
+     * @author yuyue
+     * @Time 2017年11月28日 上午11:03:05
+     * @param userId
+     * @param type
+     * @param pageSize 
+     * @param begin 
+     * @return
+     */
+    List<AfUserAmountDo> getAmountByUserIdAndType(@Param("userId")Long userId, @Param("type")int type, @Param("begin")int begin, @Param("pageSize")int pageSize);
+
+    /**
+     * 根据amountId查询退还款明细
+     * @author yuyue
+     * @Time 2017年11月28日 下午5:36:59
+     * @param amountId
+     * @return
+     */
+	List<AfUserAmountDetailDo> getAmountDetailByAmountId(@Param("amountId")Long amountId);
+
+	/**
+	 * 根据amountId查询退还款明细
+	 * @author yuyue
+	 * @Time 2017年11月28日 下午7:50:46
+	 * @param amountId
+	 * @return
+	 */
+	BigDecimal getRenfundAmountByAmountId(@Param("amountId")Long amountId);
+
+	/**
+	 * 根据ID查询
+	 * @author yuyue
+	 * @Time 2017年11月28日 下午8:08:15
+	 * @param amountId
+	 * @return
+	 */
+	AfUserAmountDo getUserAmountById(@Param("id")Long amountId);
 }

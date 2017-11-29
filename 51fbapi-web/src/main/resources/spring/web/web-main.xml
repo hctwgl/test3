@@ -297,6 +297,16 @@
 				<entry key="/bill/getLimitDetailInfo" value-ref="getLimitDetailInfoApi" />
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
 				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
+				
+				<entry key="/borrow/getBillListByMonthAndYearApi" value-ref="getBillListByMonthAndYearApi" />
+				<entry key="/borrow/getBorrowDetailV1Api" value-ref="getBorrowDetailV1Api" />
+				<entry key="/borrow/getMyBorrowListV1Api" value-ref="getMyBorrowListV1Api" />
+				<entry key="/borrow/getMyBorrowV1Api" value-ref="getMyBorrowV1Api" />
+				<entry key="/borrow/getMyHistoryBorrowV1Api" value-ref="getMyHistoryBorrowV1Api" />
+				<entry key="/borrow/getMyRepaymentDetailV1Api" value-ref="getMyRepaymentDetailV1Api" />
+				<entry key="/borrow/getMyRepaymentHistoryV1Api" value-ref="getMyRepaymentHistoryV1Api" />
+				<entry key="/borrow/getMyRepaymentV1Api" value-ref="getMyRepaymentV1Api" />
+				<entry key="/borrow/getRepaymentDetailV1Api" value-ref="getRepaymentDetailV1Api" />
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />

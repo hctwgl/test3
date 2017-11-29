@@ -5,6 +5,10 @@
 	<sql id="activitySqlField">
 		id,biz_order_no,biz_type,user_id,source_id,gmt_create,gmt_modified,remark,amount,status
 	</sql>
+	
+	<sql id="detailSqlField">
+		id,user_amount_id,remark,title,title,amount,count,gmt_create,gmt_modified
+	</sql>
 
 	<insert id="addUserAmount" parameterType="AfUserAmountDo" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO af_user_amount(biz_order_no , biz_type , user_id , source_id , gmt_create , gmt_modified , remark , amount,status)
@@ -31,5 +35,35 @@
 
 	<select id="checkHasLog">
 		
+	</select>
+	
+	<select id="getAmountByUserIdAndType" resultType="AfUserAmountDo">
+		SELECT <include refid="activitySqlField"/> from 
+			af_user_amount
+		WHERE
+			user_id = #{userId}
+			and biz_type = #{biz_type}
+			and status != 0
+		ORDER BY
+			gmt_create desc
+		LIMIT #{begin},#{pageSize}
+	</select>
+	
+	<select id="getAmountDetailByAmountId" resultType="AfUserAmountDetailDo">
+		SELECT <include refid="detailSqlField"/> from 
+			af_user_amount_detail
+		WHERE
+			user_amount_id = #{amountId}
+	</select>
+	
+	<select id="getRenfundAmountByAmountId" resultType="java.math.BigDecimal">
+		SELECT COALESCE (SUM(amount * count), 0) from af_user_amount_detail where user_amount_id = #{amountId}
+	</select>
+	
+	<select id="getUserAmountById" resultType="AfUserAmountDo">
+		SELECT <include refid="activitySqlField"/> from 
+			af_user_amount
+		WHERE
+			id = #{id}
 	</select>
 </mapper>

@@ -299,7 +299,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     //租房使用
     TENEMENT_USER_INVALID("TENEMENT_USER_INVALID",7002,"tenement_user_invalid","对不起，该用户尚未进行注册/身份证认证"),
     //信息已审核
-    TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改");
+    TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改"),
+	//用户现金流不存在
+	AMOUNT_IS_NULL("AMOUNT_IS_NULL",7004,"amount_is_null","对不起，您查询的退还款详情不存在，请刷新后重试");
     /**
      * 错误码
      */
