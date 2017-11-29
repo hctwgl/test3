@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.api.barlyClearance;
 
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -9,9 +11,11 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author honghzengpei 2017/11/28 13:30
@@ -20,42 +24,24 @@ import java.util.HashMap;
  */
 @Component("getDataViewApi")
 public class GetDataViewApi implements ApiHandle {
+
+    @Resource
+    AfBorrowBillService afBorrowBillService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
 
-        Integer type = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("type")), 0);   //0 订单结清   1 全部结清
-        Long billId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("billId")), 0L);   //0 订单结清   1 全部结清
+//        Integer type = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("type")), 0);   //0 订单结清   1 全部结清
+        Long billId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("billId")), 0L);   //0 全部结清   其它订单结清
         HashMap resulitMap = new HashMap();
-        if(type.intValue() ==0){
-            resulitMap = getOrderClear(userId,billId);
-        } else{
-            resulitMap = getAllClear(userId);
-        }
+        List<AllBarlyClearanceBo> list = afBorrowBillService.getAllClear(userId,billId);
+
+        resulitMap.put("data",list);
+
         resp.setResponseData(resulitMap);
         return resp;
-    }
-
-    /**
-     * 全部结清
-     * @param userId
-     * @return
-     */
-    private HashMap getAllClear(Long userId){
-
-        return null;
-    }
-
-    /**
-     * 订单结清
-     * @param userId
-     * @param orderId
-     * @return
-     */
-    private HashMap getOrderClear(Long userId,Long billId){
-
-        return null;
     }
 
 }

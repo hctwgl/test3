@@ -312,7 +312,7 @@ public interface AfBorrowBillService {
 	 */
 	List<AfBorrowBillDo> getUserAllMonthBill(Long userId, int page, int pageSize);
 
-	List<AllBarlyClearanceBo> getAllClear(Long userId);
+	List<AllBarlyClearanceBo> getAllClear(Long userId,Long billId);
 	
 	
 }

@@ -836,7 +836,7 @@ public class TestController {
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
 
-		afBorrowBillService.getAllClear(18637961820l);
+		afBorrowBillService.getAllClear(18637961820l,306594l);
 
 		//afUserAmountService.refundOrder(276267l);
 //		Map aaa = yiBaoUtility.getYiBaoOrder("xj20170925150926247561","1001201709250000000018962175");

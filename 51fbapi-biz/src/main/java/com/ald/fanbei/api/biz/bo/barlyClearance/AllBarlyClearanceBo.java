@@ -16,7 +16,7 @@ public class AllBarlyClearanceBo {
     private int startNper=0;      //开始还的期数
     private int endNper=0;        //结止期数
     private int nper=0;            //总期数
-    private BigDecimal amount;   //总金额
+    private BigDecimal amount =BigDecimal.ZERO;   //总金额
 
     private List<AllBarlyClearanceDetailBo> detailList;  //详情
 
