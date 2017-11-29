@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    #set($version="2017112901")
     #set($src="https://f.51fanbei.com/h5/app/activity/12")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
@@ -9,7 +10,7 @@
     <title>双12欢乐购</title>
 
     <link rel="stylesheet" type="text/css" href="https://img.51fanbei.com/h5/static/swiper-3.4.2.min.css">
-    <link rel="stylesheet" type="text/css" href="/dist/activity/12/doubleTwelve.css">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/12/doubleTwelve.css?version=$version">
 </head>
 
 <body>

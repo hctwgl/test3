@@ -553,7 +553,7 @@ let vm = new Vue({
                 setTimeout(() => {
                     $(window).scrollTop(sessionStorage.getItem('scrollTop'));
                     sessionStorage.clear();
-                }, 0);
+                }, 100);
             }
         }
 
