@@ -8,6 +8,16 @@ let userName = "";//获取用户名
 if(getInfo().userName){
     userName=getInfo().userName;
 };
+let url=window.location.href;//获取完整URL
+//获取页面文件名
+function GetPageName(url){
+    let tmp= [];//临时变量，保存分割字符串
+    tmp=url.split("/");//按照"/"分割
+    let pp = tmp[tmp.length-1];//获取最后一部分，即文件名和参数
+    tmp=pp.split("?");//把参数和文件名分割开
+    return tmp[0];
+}
+let pageName=GetPageName(url);
 //获取数据
 let vm = new Vue({
     el: '#ggOverlord',
@@ -79,14 +89,14 @@ let vm = new Vue({
         },
         //点击有福同享--分享++埋点
         inviteButtonClick(){
-            let dat='{"shareAppTitle":"老铁~快来吃霸王餐啦~","shareAppContent":"节日剁手不吃土，来51返呗点餐立减15元，有福同享，你也快来>>>","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="'+userName+',"isSubmit":"Y","sharePage":"ggFixShare"}';
+            let dat='{"shareAppTitle":"老铁~快来吃霸王餐啦~","shareAppContent":"节日剁手不吃土，来51返呗点餐立减15元，有福同享，你也快来>>>","shareAppImage":"http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="'+userName+'&pageName='+pageName+',"isSubmit":"Y","sharePage":"ggFixShare"}';
             let base64 = BASE64.encoder(dat);
             window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
             //点击有福同享加埋点
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=callPeople'},
+                data:{maidianInfo:'/fanbei-web/activity/ggOverlord?typeFrom=callPeople'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -115,7 +125,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/ggFix?typeFrom=toUseCoupon'},
+                data:{maidianInfo:'/fanbei-web/activity/ggOverlord?typeFrom=toUseCoupon'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -150,7 +160,7 @@ function alaShareData(){
         "shareAppTitle": "老铁~快来吃霸王餐啦~",  // 分享的title
         'shareAppContent': "节日剁手不吃土，来51返呗点餐立减15元，有福同享，你也快来>>>",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName,  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName+"&pageName="+pageName,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggFixShare" // 分享的页面
     };

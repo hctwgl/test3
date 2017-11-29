@@ -7,6 +7,16 @@ if(getInfo().userName){
 };
 let returnNum = getBlatFrom();  // 判断1为Android，2为ios
 let typeFrom=getUrl('typeFrom');
+let url=window.location.href;//获取完整URL
+//获取页面文件名
+function GetPageName(url){
+    let tmp= [];//临时变量，保存分割字符串
+    tmp=url.split("/");//按照"/"分割
+    let pp = tmp[tmp.length-1];//获取最后一部分，即文件名和参数
+    tmp=pp.split("?");//把参数和文件名分割开
+    return tmp[0];
+}
+let pageName=GetPageName(url);
 //获取数据
 let vm = new Vue({
     el: '#ggFix',
@@ -290,7 +300,7 @@ function alaShareData(){
         "shareAppTitle": "有人@你~你有最高188元惊喜金待领取！",  // 分享的title
         'shareAppContent': "16元外卖1元购，下单即返20元现金（可提现）~",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName,  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName+"&pageName="+pageName,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggFixShare" // 分享的页面
     };
