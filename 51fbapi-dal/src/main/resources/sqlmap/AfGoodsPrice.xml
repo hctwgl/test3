@@ -229,11 +229,11 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
     </select>
 
     <update id="updateSell" parameterType="java.lang.Long">
-        UPDATE af_goods_price SET stock = stock - 1 , sale_count = sale_count + 1 where id = #{priceId}
+        UPDATE af_goods_price SET stock = stock - #{count} , sale_count = sale_count + #{count} where id = #{priceId}
     </update>
 
     <update id="updateReturnGoods" parameterType="java.lang.Long">
-        UPDATE af_goods_price SET stock = stock + 1 , sale_count = sale_count - 1 where id = #{priceId}
+        UPDATE af_goods_price SET stock = stock + #{count} , sale_count = sale_count - #{count} where id = #{priceId}
     </update>
 
 

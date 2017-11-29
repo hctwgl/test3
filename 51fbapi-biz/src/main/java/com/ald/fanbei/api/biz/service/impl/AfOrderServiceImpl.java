@@ -2025,4 +2025,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         return orderDao.selectSumCountByGoodsId(goodsId);
     }
 
+    @Override
+    public Integer selectSumCountByGoodsIdAndType(Long goodsId,Long userId){
+        return orderDao.selectSumCountByGoodsIdAndType(goodsId,userId);
+    }
+
 }

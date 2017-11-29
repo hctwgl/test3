@@ -18,4 +18,6 @@ public interface AfGoodsPriceService extends ParentService<AfGoodsPriceDo, Long>
 
 	Integer selectSumStock(Long goodsId);
 
+	int updateNewStockAndSaleByPriceId(Long priceId,Integer count, boolean isSold);
+
 }

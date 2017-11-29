@@ -80,6 +80,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	TransactionTemplate transactionTemplate;
 
+	@Resource
+	AfActivityGoodsService afActivityGoodsService;
+
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -232,8 +235,18 @@ public class BuySelfGoodsApi implements ApiHandle {
 				}
 			}
 			//-------------------------------
-			
-			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
+			//限时抢购增加逻辑
+			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsId);
+			if(null != afActivityGoodsDo){
+				Integer sum = afOrderService.selectSumCountByGoodsIdAndType(goodsId,userId);
+				Long limitCount = afActivityGoodsDo.getLimitCount();
+				if(limitCount.intValue() - sum < count){
+					throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
+				}
+			}
+			//-------------------------------
+
+			afGoodsPriceService.updateNewStockAndSaleByPriceId(goodsPriceId,count, true);
 			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
 			afOrder.setSaleAmount(priceDo.getActualAmount().multiply(new BigDecimal(count)));
 			afOrder.setPriceAmount(priceDo.getPriceAmount());

@@ -43,14 +43,32 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 		int result = 0;
 		if (priceDo != null) {
 			if (isSold) {// 出售
+				priceDo.setStock(priceDo.getStock() - 1);
+				priceDo.setSaleCount(priceDo.getSaleCount() + 1);
+			}else{
+				priceDo.setStock(priceDo.getStock() + 1);
+				priceDo.setSaleCount(priceDo.getSaleCount() - 1);
+			}
+			result += afGoodsPriceDao.updateById(priceDo);
+		}
+		return result;
+	}
+
+	@Override
+	public int updateNewStockAndSaleByPriceId(Long priceId,Integer count, boolean isSold) {
+		AfGoodsPriceDo priceDo = new AfGoodsPriceDo();
+		priceDo = afGoodsPriceDao.getById(priceId);
+		int result = 0;
+		if (priceDo != null) {
+			if (isSold) {// 出售
 				try{
-					result = afGoodsPriceDao.updateSell(priceId);
+					result = afGoodsPriceDao.updateSell(priceId,count.longValue());
 				}catch(Exception e){
 					throw new FanbeiException(FanbeiExceptionCode.SOLD_OUT);
 				}
 			}else{
 				try{
-					result = afGoodsPriceDao.updateReturnGoods(priceId);
+					result = afGoodsPriceDao.updateReturnGoods(priceId,count.longValue());
 				}catch(Exception e){
 
 				}
@@ -58,6 +76,7 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 		}
 		return result;
 	}
+
 
 	@Override
 	public List<AfGoodsPriceDo> getByGoodsId(Long goodsId) {
