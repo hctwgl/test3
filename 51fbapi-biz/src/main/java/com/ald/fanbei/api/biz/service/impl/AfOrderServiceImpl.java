@@ -50,6 +50,7 @@ import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderSecType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
@@ -2012,18 +2013,22 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
     @Override
     public String getBoluomeOrderDetailUrl(AfOrderDo orderInfo) {
-	Map<String, String> buildParams = new HashMap<String, String>();
+	if (!orderInfo.getSecType().equals(OrderSecType.SUP_GAME.getCode())) {
+	    Map<String, String> buildParams = new HashMap<String, String>();
 
-	buildParams.put(BoluomeCore.CUSTOMER_USER_ID, orderInfo.getUserId() + StringUtils.EMPTY);
-	buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, orderInfo.getMobile());
-	buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() / 1000 + StringUtils.EMPTY);
+	    buildParams.put(BoluomeCore.CUSTOMER_USER_ID, orderInfo.getUserId() + StringUtils.EMPTY);
+	    buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, orderInfo.getMobile());
+	    buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() / 1000 + StringUtils.EMPTY);
 
-	String sign = BoluomeCore.buildSignStr(buildParams);
-	buildParams.put(BoluomeCore.SIGN, sign);
+	    String sign = BoluomeCore.buildSignStr(buildParams);
+	    buildParams.put(BoluomeCore.SIGN, sign);
 
-	String paramsStr = BoluomeCore.createLinkString(buildParams);
+	    String paramsStr = BoluomeCore.createLinkString(buildParams);
 
-	return orderInfo.getThirdDetailUrl() + "?" + paramsStr;
+	    return orderInfo.getThirdDetailUrl() + "?" + paramsStr;
+	} else {
+	    return orderInfo.getThirdDetailUrl();
+	}
     }
     
     /**
