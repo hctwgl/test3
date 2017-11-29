@@ -24,4 +24,10 @@
 		WHERE id = #{id}
 	</update>
 
+
+	<select id="getAfBorrowExtendDoByBorrowId" resultType="AfBorrowCashDo">
+		select <include refid="queryFields" /> from af_borrow_extend
+		where id =#{borrowId}
+	</select>
+
 </mapper>

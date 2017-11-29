@@ -117,7 +117,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         afUserAmountDo.setSourceId(afRepaymentDo.getRid());
         afUserAmountDo.setUserId(afRepaymentDo.getUserId());
         afUserAmountDo.setStatus(AfUserAmountProcessStatus.NEW.getCode());
-        afUserAmountDo.setRemark("");
+        afUserAmountDo.setRemark(afRepaymentDo.getName());
         afUserAmountDao.addUserAmount(afUserAmountDo);
         addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
 
@@ -213,15 +213,15 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         BigDecimal youhuijuan = map.get("coupon");
 
 
-        riskUtil.getOrderNo("vefy", String.valueOf( new Date().getTime()));
+
         AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
         afUserAmountDo.setAmount(map.get("repayment"));
-        afUserAmountDo.setBizOrderNo("tkaaa");  //随机生成
+        afUserAmountDo.setBizOrderNo(afOrderRefundDo.getRefundNo());  //随机生成
         afUserAmountDo.setBizType(AfUserAmountBizType.REFUND.getCode());
         afUserAmountDo.setSourceId(afOrderRefundDo.getRid());
         afUserAmountDo.setUserId(afOrderRefundDo.getUserId());
         afUserAmountDo.setStatus(AfUserAmountProcessStatus.SUCCESS.getCode());
-        afUserAmountDo.setRemark("");
+        afUserAmountDo.setRemark(afOrderDo.getGoodsName());
         afUserAmountDao.addUserAmount(afUserAmountDo);
 //        addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
 
@@ -235,7 +235,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
         afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), BigDecimal.ZERO.subtract(youhuijuan), 1, AfUserAmountDetailType.YOUHUIJUANGDIKOU));
 
-        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), BigDecimal.ZERO.subtract(bankPay), 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), bankPay, 1, AfUserAmountDetailType.ZHIJIEZHIFU));
 
         return 1;
     }
