@@ -335,7 +335,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					}
 					
 					//iphoneX特殊处理
-					if(goodsId==134882){
+					if(goodsId==134882||goodsId==135405){
 						//更新 已被秒杀的商品数量（count+1）
 						afGoodsDouble12Service.updateCountById(goodsId);
 						//报错提示秒杀商品已售空
