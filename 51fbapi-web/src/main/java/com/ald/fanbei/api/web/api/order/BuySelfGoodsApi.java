@@ -319,7 +319,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					
 					List<AfOrderDo> overOrder = afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId);
 					//对于同一天已秒杀过得商品，提示只能买一件商品
-					if(overOrder!=null){
+					if(overOrder.size()!=0){
 						Calendar c =Calendar.getInstance();
 						int currDay = c.get(Calendar.DAY_OF_MONTH);
 						c.setTime(overOrder.get(0).getGmtCreate());
