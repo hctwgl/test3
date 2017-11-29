@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,34 +42,18 @@ import java.util.*;
 /**
  * @类描述：
  * 
- * @author :maqiaopan
+ * @author :chefeipeng
  * @version ：2017年6月13日 下午5:02:28
  * @注意：本内容仅限于杭州喜马拉雅家居有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-@RequestMapping("/flash")
+@RequestMapping("/fanbei-web/activity")
 public class AppFlashSaleController extends BaseController {
 
 	@Resource
 	AfUserService afUserService;
 	@Resource
-	AfSignInActivityService afSignInActivityService;
-	@Resource
-	AfUserCouponService afUserCouponService;
-	@Resource
 	AfCouponService afCouponService;
-	@Resource
-	AfSigninService afSigninService;
-	@Resource
-	JpushService jpushService;
-	@Resource
-	CouponSceneRuleEnginerUtil activeRuleEngineUtil;
-	@Resource
-	AfCouponSceneService afCouponSceneService;
-	@Resource
-	TransactionTemplate transactionTemplate;
-
-
 	@Resource
 	AfGoodsPriceService afGoodsPriceService;
 	@Resource
@@ -89,9 +74,8 @@ public class AppFlashSaleController extends BaseController {
 
 
 	@RequestMapping(value = "/getFlashSaleGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public ApiHandleResponse GetFlashSaleGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+	public String GetFlashSaleGoods(HttpServletRequest request, HttpServletResponse response) {
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Map<String,Object> data = new HashMap<String,Object>();
 		List<Object> topBannerList = new ArrayList<Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
@@ -110,7 +94,7 @@ public class AppFlashSaleController extends BaseController {
 		}
 		data.put("BannerList",topBannerList);
 		//商品展示
-		AfGoodsQuery query = getCheckParam(requestDataVo);
+		AfGoodsQuery query = getCheckParam(request);
 		List<AfEncoreGoodsDto> list = afGoodsService.selectFlashSaleGoods(query);
 		List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 		//获取借款分期配置信息
@@ -177,9 +161,10 @@ public class AppFlashSaleController extends BaseController {
 
 			goodsList.add(goodsInfo);
 		}
-		data.put("GoodsList",goodsList);
-		resp.setResponseData(data);
-		return resp;
+		data.put("goodsList",goodsList);
+		resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
+		return resp.toString();
+
 	}
 
 
@@ -199,8 +184,8 @@ public class AppFlashSaleController extends BaseController {
 		return bannerList;
 	}
 
-	private AfGoodsQuery getCheckParam(RequestDataVo requestDataVo){
-		Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
+	private AfGoodsQuery getCheckParam(HttpServletRequest request){
+		Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(request.getParameter("pageNo")), 1);
 		AfGoodsQuery query = new AfGoodsQuery();
 		query.setPageNo(pageNo);
 		return query;
@@ -208,13 +193,17 @@ public class AppFlashSaleController extends BaseController {
 
 
 	@RequestMapping(value = "/getBookingRushGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public ApiHandleResponse GetBookingRushGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+	public String GetBookingRushGoods(HttpServletRequest request, HttpServletResponse response) {
+		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Map<String,Object> data = new HashMap<String,Object>();
-		Long userId = context.getUserId();
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+		if(null == afUserDo){
+			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+		}
+		Long userId = afUserDo.getRid();
 		//商品展示
-		AfGoodsQuery query = getCheckParam(requestDataVo);
+		AfGoodsQuery query = getCheckParam(request);
 		List<AfEncoreGoodsDto> list = afGoodsService.selectBookingRushGoods(query);
 		List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 		//获取借款分期配置信息
@@ -283,31 +272,24 @@ public class AppFlashSaleController extends BaseController {
 			goodsList.add(goodsInfo);
 		}
 		data.put("GoodsList",goodsList);
-		resp.setResponseData(data);
-		return resp;
+		resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
+		return resp.toString();
 	}
 
 
-
-
 	@RequestMapping(value = "/checkGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public ApiHandleResponse CheckGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"),0l);
+	public String CheckGoods(HttpServletRequest request, HttpServletResponse response, Model model) {
+		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
 		Integer sumCount = afGoodsPriceService.selectSumStock(goodsId);
 		if(null == sumCount || sumCount == 0){
 			throw new FanbeiException(FanbeiExceptionCode.SOLD_OUT);
 		}
-		resp.setResponseData(goodsId);
-		return resp;
+		return  H5CommonResponse.getNewInstance(true, "成功", "", goodsId).toString();
 	}
 
 
 	@RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public ApiHandleResponse ReserveGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+	public String ReserveGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		Long userId = context.getUserId();
 		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"),0l);
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"), "").toString();
@@ -332,7 +314,7 @@ public class AppFlashSaleController extends BaseController {
 		}catch (Exception e){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
 		}
-		return resp;
+		return  H5CommonResponse.getNewInstance(true, "成功", "", goodsId).toString();
 	}
 
 	@Override
