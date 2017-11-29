@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,goodsid,starttime,endtime,sort,count 
+        id rid,gmt_create,gmt_modified,goods_id,start_time,end_time,sort,already_count 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -21,19 +21,19 @@
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
         <if test="goodsid != null and goodsid != ''">
-            AND goodsid = #{goodsid,jdbcType=INTEGER}
+            AND goods_id = #{goodsId,jdbcType=INTEGER}
         </if>
         <if test="starttime !=null">
-            AND starttime = #{starttime,jdbcType=TIMESTAMP}
+            AND start_time = #{startTime,jdbcType=TIMESTAMP}
         </if>
         <if test="endtime !=null">
-            AND endtime = #{endtime,jdbcType=TIMESTAMP}
+            AND end_time = #{endTime,jdbcType=TIMESTAMP}
         </if>
         <if test="sort != null and sort != ''">
             AND sort = #{sort,jdbcType=INTEGER}
         </if>
         <if test="count != null and sort != ''">
-            AND count = #{count,jdbcType=INTEGER}
+            AND already_count = #{alreadyCount,jdbcType=INTEGER}
         </if>
     </sql>
 
@@ -52,19 +52,19 @@
 	            gmt_modified,
 	        </if>
 	        <if test="goodsid != null">        
-	            goodsid,
+	            goods_id,
 	        </if>
 	        <if test="starttime != null">        
-	            starttime,
+	            start_time,
 	        </if>
 	        <if test="endtime != null">        
-	            endtime,
+	            end_time,
 	        </if>
 	        <if test="sort != null">        
 	            sort,
 	        </if>
 	        <if test="count != null">        
-	            count,
+	            already_count,
 	        </if>
         </trim>
         
@@ -76,19 +76,19 @@
 		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="goodsid != null" >
-		       #{goodsid,jdbcType=INTEGER},
+		       #{goodsId,jdbcType=INTEGER},
 		    </if>
 		    <if test="starttime != null" >
-		       #{starttime,jdbcType=TIMESTAMP},
+		       #{startTime,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="endtime != null" >
-		       #{endtime,jdbcType=TIMESTAMP},
+		       #{endTime,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="sort != null" >
 		       #{sort,jdbcType=INTEGER},
 		    </if>
 		    <if test="count != null" >
-		       #{count,jdbcType=INTEGER},
+		       #{alreadyCount,jdbcType=INTEGER},
 		    </if>
         </trim>
     </insert>
@@ -103,19 +103,19 @@
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
             <if test="goodsid != null and goodsid != '' ">        
-                goodsid = #{goodsid,jdbcType=INTEGER},                
+                goods_id = #{goodsId,jdbcType=INTEGER},                
             </if>
             <if test="starttime != null and starttime != '' ">        
-                starttime = #{starttime,jdbcType=TIMESTAMP},                
+                start_time = #{startTime,jdbcType=TIMESTAMP},                
             </if>
             <if test="endtime != null and endtime != '' ">        
-                endtime = #{endtime,jdbcType=TIMESTAMP},                
+                end_time = #{endTime,jdbcType=TIMESTAMP},                
             </if>
             <if test="sort != null and sort != '' ">        
                 sort = #{sort,jdbcType=INTEGER}                
             </if>
             <if test="count != null and sort != '' ">        
-                sort = #{count,jdbcType=INTEGER}                
+                already_count = #{alreadyCount,jdbcType=INTEGER}                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
@@ -158,9 +158,9 @@
         UPDATE af_goods_double12
 		SET 
 			gmt_modified = NOW(),
-			count = count + 1    
+			already_count = already_count + 1    
         WHERE is_delete = 0 
-        AND goodsId = #{goodsId}
+        AND goods_id = #{goodsId}
     </update>
     <select id="getByGoodsId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do">
     	SELECT
@@ -170,6 +170,6 @@
 		WHERE
 			is_delete = 0
 		AND
-			goodsId = #{goodsId}
+			goods_id = #{goodsId}
     </select>
 </mapper>

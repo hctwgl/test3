@@ -218,7 +218,7 @@ public class AppH5Double12ActivityController extends BaseController{
 				for (AfGoodsDouble12Do afGoodsDouble12Do : goodsList) {
 					//将秒杀开始时间具体日作为map的key
 					Calendar c =Calendar.getInstance();
-					c.setTime(afGoodsDouble12Do.getStarttime());
+					c.setTime(afGoodsDouble12Do.getStartTime());
 					String key = String.valueOf(c.get(Calendar.DAY_OF_MONTH));
 					//根据秒杀开始的时间，封装秒杀商品List到map
 					switch (key) {
@@ -435,12 +435,12 @@ public class AppH5Double12ActivityController extends BaseController{
 			List<AfDouble12GoodsVo> double12GoodsVoList = new ArrayList<AfDouble12GoodsVo>();
 			double12GoodsVoList.add(getAfDouble12GoodsVo(afGoodsDouble12Do));
 			
-			Date starttime = afGoodsDouble12Do.getStarttime();
+			Date starttime = afGoodsDouble12Do.getStartTime();
 			AfDouble12GoodsTimeTypeVo afDouble12TypeVo = new AfDouble12GoodsTimeTypeVo();
 			afDouble12TypeVo.setGoodsList(double12GoodsVoList);
-			if(new Date().before(afGoodsDouble12Do.getStarttime())){
+			if(new Date().before(afGoodsDouble12Do.getStartTime())){
 				afDouble12TypeVo.setType("N");//秒杀未开始
-			}else if(new Date().after(afGoodsDouble12Do.getEndtime())){
+			}else if(new Date().after(afGoodsDouble12Do.getEndTime())){
 				afDouble12TypeVo.setType("E");//秒杀已结束
 			}else {
 				afDouble12TypeVo.setType("O");//秒杀进行中
@@ -460,7 +460,7 @@ public class AppH5Double12ActivityController extends BaseController{
 	 */
 	private AfDouble12GoodsVo getAfDouble12GoodsVo(AfGoodsDouble12Do afGoodsDouble12Do){
 		//根据goodsId查询商品信息
-		AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(afGoodsDouble12Do.getGoodsid());
+		AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(afGoodsDouble12Do.getGoodsId());
 		AfDouble12GoodsVo afDouble12GoodsVo = new AfDouble12GoodsVo();
 		if(afGoodsDo!=null){
 			afDouble12GoodsVo.setNumId(String.valueOf(afGoodsDo.getRid()));
@@ -474,7 +474,7 @@ public class AppH5Double12ActivityController extends BaseController{
 			afDouble12GoodsVo.setOpenId(afGoodsDo.getOpenId());
 			afDouble12GoodsVo.setSource(afGoodsDo.getSource());
 			afDouble12GoodsVo.setStockCount(afGoodsDo.getStockCount());
-			Integer goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12Do.getCount();//秒杀商品余量
+			Integer goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12Do.getAlreadyCount();//秒杀商品余量
 			afDouble12GoodsVo.setCount(goodsDouble12Count.toString());
 		}
 		return afDouble12GoodsVo;
