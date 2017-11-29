@@ -35,17 +35,17 @@ import java.math.BigDecimal;
     /**
      * 商品Id
      */
-    private Long goodsid;
+    private Long goodsId;
 
     /**
      * 秒杀开始时间
      */
-    private Date starttime;
+    private Date startTime;
 
     /**
      * 秒杀结束时间
      */
-    private Date endtime;
+    private Date endTime;
 
     /**
      * 排序
@@ -53,17 +53,17 @@ import java.math.BigDecimal;
     private Integer sort;
     
     /**
-     * 秒杀商品余量
+     * 已秒杀商品数量
      */
-    private Integer count;
+    private Integer alreadyCount;
 
 
-    public Integer getCount() {
-		return count;
+    public Integer getAlreadyCount() {
+		return alreadyCount;
 	}
 
-	public void setCount(Integer count) {
-		this.count = count;
+	public void setAlreadyCount(Integer alreadyCount) {
+		this.alreadyCount = alreadyCount;
 	}
 
 	/**
@@ -126,8 +126,8 @@ import java.math.BigDecimal;
      *
      * @return 商品Id
      */
-    public Long getGoodsid(){
-      return goodsid;
+    public Long getGoodsId(){
+      return goodsId;
     }
 
     /**
@@ -135,8 +135,8 @@ import java.math.BigDecimal;
      * 
      * @param goodsid 要设置的商品Id
      */
-    public void setGoodsid(Long goodsid){
-      this.goodsid = goodsid;
+    public void setGoodsId(Long goodsId){
+      this.goodsId = goodsId;
     }
 
     /**
@@ -144,8 +144,8 @@ import java.math.BigDecimal;
      *
      * @return 秒杀开始时间
      */
-    public Date getStarttime(){
-      return starttime;
+    public Date getStartTime(){
+      return startTime;
     }
 
     /**
@@ -153,8 +153,8 @@ import java.math.BigDecimal;
      * 
      * @param starttime 要设置的秒杀开始时间
      */
-    public void setStarttime(Date starttime){
-      this.starttime = starttime;
+    public void setStartTime(Date startTime){
+      this.startTime = startTime;
     }
 
     /**
@@ -162,8 +162,8 @@ import java.math.BigDecimal;
      *
      * @return 秒杀结束时间
      */
-    public Date getEndtime(){
-      return endtime;
+    public Date getEndTime(){
+      return endTime;
     }
 
     /**
@@ -171,8 +171,8 @@ import java.math.BigDecimal;
      * 
      * @param endtime 要设置的秒杀结束时间
      */
-    public void setEndtime(Date endtime){
-      this.endtime = endtime;
+    public void setEndtime(Date endTime){
+      this.endTime = endTime;
     }
 
     /**
