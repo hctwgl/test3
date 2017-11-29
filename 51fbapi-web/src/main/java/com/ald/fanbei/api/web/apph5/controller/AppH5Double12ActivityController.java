@@ -135,7 +135,7 @@ public class AppH5Double12ActivityController extends BaseController{
 					// 当前时间
 					Date currentTime = new Date();
 										
-					AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_RED_PAPER_TIME");
+					AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_COUPON_TIME");
 					if(afResourceDo==null){
 						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
 					}
@@ -161,10 +161,6 @@ public class AppH5Double12ActivityController extends BaseController{
 							}
 						}
 					}
-//					if(afCouponDouble12Vo.getIsShow()==null){
-//						afCouponDouble12Vo.setIsShow("E");//活动已结束
-//					}
-    				
     				
 					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,afCouponDo.getRid()) != 0){
 						afCouponDouble12Vo.setIsGet("Y");//已领取
