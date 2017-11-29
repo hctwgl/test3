@@ -2,30 +2,25 @@ package com.ald.fanbei.api.common.enums;
 
 
 /**
- * @类描述：资产包状态枚举
+ * @类描述：资产方操作类型枚举
  * @author chengkang 2017年11月27日下午5:57:51
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum AfAssetPackageStatus {
-	
-	TOGENERATE("togenerate", "待匹配"), 
-	TOUPLOAD("toupload", "待上传"),
-	TOSEND("tosend", "待发送"),
-	SENDED("sended", "已发送"),
-	CANCELED("canceled", "已撤销"),
-	RETURNED("returned", "已回款");
+public enum AfAssetOperaLogChangeType {
+
+	GET_ASSET("getasset", "获取债权资产"), 
+	GIVE_BACK("giveback", "退回债权资产");
 
 	private String code;
-
 	private String description;
 
-	AfAssetPackageStatus(String code, String description) {
+	AfAssetOperaLogChangeType(String code, String description) {
 		this.code = code;
 		this.description = description;
 	}
 
-	public static AfAssetPackageStatus findEnumByCode(String code) {
-		for (AfAssetPackageStatus goodSource : AfAssetPackageStatus.values()) {
+	public static AfAssetOperaLogChangeType findEnumByCode(String code) {
+		for (AfAssetOperaLogChangeType goodSource : AfAssetOperaLogChangeType.values()) {
 			if (goodSource.getCode().equals(code)) {
 				return goodSource;
 			}

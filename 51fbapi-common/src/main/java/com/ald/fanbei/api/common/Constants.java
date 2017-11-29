@@ -53,6 +53,7 @@ public class Constants {
 	public static final String REQ_SYS_NODE_SIGN_FOR_QQ = "sign";
 	public static final String REQ_SYS_NODE_TIME_FOR_QQ = "time";
 	public static final String REQ_SYS_NODE_NETTYPE_FOR_QQ = "nettype";
+	
 
 	public static final String DEFAULT_ENCODE = "UTF-8";
 	public static final String SWITCH_ON = "1";
@@ -419,4 +420,6 @@ public class Constants {
 	  public static final String YIXIN_AFU_PASSWORD="fbapi.yixinafu.password";
 	  //宜信阿福查询用户逾期信息redis中的key前缀
 	  public static final String YIXIN_AFU_SEARCH_KEY="yixinafu_search_";
+	  //返呗与资产方对接时的平台标识
+	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
 }

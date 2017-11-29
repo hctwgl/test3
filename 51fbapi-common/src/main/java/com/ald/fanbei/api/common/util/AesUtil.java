@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,7 +14,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +140,7 @@ public class AesUtil {
     public static String encryptToBase64(String content, String password) {
         byte[] encryptResult = encrypt(content, password);
         try {
-			return new String(encryptResult,"UTF-8");
+			return new String(Base64.encodeBase64(encryptResult),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error("encryptToBase64",e);
 			e.printStackTrace();
@@ -160,21 +158,13 @@ public class AesUtil {
         return result;
     }
     
-    public static void main(String[] args) {
-    	String str = StringUtils.EMPTY;
-    	for (int i = 0 ; i < 10; i ++) {
-    		str = str + new Random().nextInt(10);
-    	}
-    	
-      /*  String encryptStr = new String(Base64.encodeBase64(encrypt("92e14df48e375e5f115b421d84305866", "testC1b6x@6aH$2dlw")));
-        System.out.println(encryptStr);*/
-//        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
-        String sec = decryptFromBase64("4r1JFuNNEHg2RU3jUAOr0IYC9KMPZSbw1S7bhCBACSw=", "testC1b6x@6aH$2dlw");
-        System.out.println(sec);
-   /*     String online = decryptFromBase64("vxVgjHkkSr/7aDMAdf/+H8yCEM0qlkFiyolnb01k57o=", "testC1b6x@6aH$2dlw");
-        System.out.println(online);*/
-//    	AesUtil.decryptFromBase64("", "testC1b6x");
- /*       System.out.println(new String(Base64.encodeBase64(encrypt("wpD1QcUHaXY0aydcRw4X", "testC1b6x@6aH$2dlw"))));*/
     
+    public static void main(String[] args) {
+        String encryptStr = new String(Base64.encodeBase64(encrypt("92e14df48e375e5f115b421d84305866", "testC1b6x@6aH$2dlw")));
+        String encryptStr2 = new String(encryptToBase64("92e14df48e375e5f115b421d84305866", "testC1b6x@6aH$2dlw"));
+        System.out.println(encryptStr);
+        System.out.println(encryptStr2);
+        String sec = decryptFromBase64(encryptStr, "testC1b6x@6aH$2dlw");
+        System.out.println(sec);
     }
 }

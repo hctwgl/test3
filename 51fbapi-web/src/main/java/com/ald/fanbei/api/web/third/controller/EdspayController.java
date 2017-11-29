@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
@@ -44,19 +45,7 @@ public class EdspayController {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Resource
-	CollectionSystemUtil collectionSystemUtil;
-	
-	@Resource
-	AfBorrowCashService borrowCashService;
-	
-	@Resource
-	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	
-	@Resource
-	AfBorrowBillService afBorrowBillService;
-	
-	@Resource
-	AfIdNumberService idNumberService;
+	AssetSideEdspayUtil assetSideEdspayUtil;
 	
 	/**
 	 * 资产方债权订单回传接口
@@ -68,10 +57,13 @@ public class EdspayController {
 	@ResponseBody
 	public CollectionOperatorNotifyRespBo giveBackCreditInfo(HttpServletRequest request, HttpServletResponse response) {
 		String data = ObjectUtils.toString(request.getParameter("data"));
-		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+		String sendTime = ObjectUtils.toString(request.getParameter("sendTime"));
 		String sign = ObjectUtils.toString(request.getParameter("sign"));
-		logger.info("deal offlineRepayment begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
-		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data, sign);
+		String appId = ObjectUtils.toString(request.getParameter("appId"));
+		logger.info("EdspayController giveBackCreditInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
+		
+		CollectionOperatorNotifyRespBo notifyRespBo = null;
+		//assetSideEdspayUtil.giveBackCreditInfo(sendTime, data, sign);
 		return notifyRespBo;
 	}
 	
@@ -81,6 +73,7 @@ public class EdspayController {
 	 * @param response
 	 * @return
 	 */
+	/*
 	@RequestMapping(value = { "/getBatchCreditInfo"}, method = RequestMethod.POST)
 	@ResponseBody
 	public CollectionUpdateResqBo getBatchCreditInfo(HttpServletRequest request, HttpServletResponse response){
@@ -140,6 +133,6 @@ public class EdspayController {
 			updteBo.setMsg(FanbeiThirdRespCode.SYSTEM_ERROR.getMsg());
 			return updteBo;
 		}
-	}
+	}*/
 	
 }
