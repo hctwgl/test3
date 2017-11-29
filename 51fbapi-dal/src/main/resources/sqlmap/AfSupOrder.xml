@@ -255,7 +255,7 @@
     
     <select id="getOrderInfoByOrderNo" resultType="com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto">
     	SELECT 
-			s.order_no as orderNo,UNIX_TIMESTAMP(s.gmt_create) as gmtCreate,UNIX_TIMESTAMP(o.gmt_rebated) as gmtRebated,
+			o.id as orderId, s.order_no as orderNo,UNIX_TIMESTAMP(s.gmt_create) as gmtCreate,UNIX_TIMESTAMP(o.gmt_rebated) as gmtRebated,
 			UNIX_TIMESTAMP(o.gmt_closed) as gmtClosed,UNIX_TIMESTAMP(o.gmt_pay) as gmtPay, 
 			o.`status` as orderStatus, g.type as orderType,g.image as goodsIcon,s.game_name as goodsName,
 			s.goods_num as goodsCount,s.acct_type as acctType,s.user_name as userName,s.game_type as gameType,

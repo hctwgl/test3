@@ -180,6 +180,15 @@ public class GameOrderInfoDto {
 	this.gmtPayEnd = gmtPayEnd;
     }
 
+    public Long getOrderId() {
+	return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+	this.orderId = orderId;
+    }
+
+    private Long orderId;
     private String orderNo;
     private String orderStatus;
     private String orderType;
@@ -206,7 +215,7 @@ public class GameOrderInfoDto {
 
     @Override
     public String toString() {
-	return "GameOrderInfoDto [orderNo=" + orderNo + ", orderStatus=" + orderStatus + ", orderType=" + orderType + ", goodsIcon=" + goodsIcon + ", goodsName=" + goodsName + ", goodsCount=" + goodsCount + ", acctType=" + acctType + ", userName=" + userName + ", gameType=" + gameType + ", gameAcct=" + gameAcct + ", gameArea=" + gameArea + ", gameSrv=" + gameSrv + ", orderAmount=" + orderAmount + ", rebateAmount=" + rebateAmount + ", couponAmount=" + couponAmount + ", actualAmount=" + actualAmount + ", gmtCreate=" + gmtCreate + ", gmtRebated=" + gmtRebated + ", gmtClosed=" + gmtClosed + ", gmtPay=" + gmtPay + ", gmtPayStart=" + gmtPayStart + ", gmtPayEnd=" + gmtPayEnd + "]";
+	return "GameOrderInfoDto [orderId=" + orderId + ", orderNo=" + orderNo + ", orderStatus=" + orderStatus + ", orderType=" + orderType + ", goodsIcon=" + goodsIcon + ", goodsName=" + goodsName + ", goodsCount=" + goodsCount + ", acctType=" + acctType + ", userName=" + userName + ", gameType=" + gameType + ", gameAcct=" + gameAcct + ", gameArea=" + gameArea + ", gameSrv=" + gameSrv + ", orderAmount=" + orderAmount + ", rebateAmount=" + rebateAmount + ", couponAmount=" + couponAmount + ", actualAmount=" + actualAmount + ", gmtCreate=" + gmtCreate + ", gmtRebated=" + gmtRebated + ", gmtClosed=" + gmtClosed + ", gmtPay=" + gmtPay + ", gmtPayStart=" + gmtPayStart + ", gmtPayEnd=" + gmtPayEnd + "]";
     }
 
 }
