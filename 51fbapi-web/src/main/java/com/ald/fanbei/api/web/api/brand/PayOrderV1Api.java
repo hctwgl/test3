@@ -387,7 +387,7 @@ public class PayOrderV1Api implements ApiHandle {
 		List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
 		if(afGoodsDouble12DoList.size()!=0){
 			//这个商品是双十二秒杀商品
-			List<AfOrderDo> overOrder = afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId);
+			List<AfOrderDo> overOrder = afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
 			//对于同一天已秒杀过得商品，提示只能买一件商品
 			if(overOrder.size()!=0){
 				Calendar c =Calendar.getInstance();

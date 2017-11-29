@@ -320,7 +320,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 					}
 					
-					List<AfOrderDo> overOrder = afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId);
+					List<AfOrderDo> overOrder = afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
 					//对于同一天已秒杀过得商品，提示只能买一件商品
 					if(overOrder.size()!=0){
 						Calendar c =Calendar.getInstance();
