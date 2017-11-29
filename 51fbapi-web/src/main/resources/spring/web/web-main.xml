@@ -298,15 +298,15 @@
 				<entry key="/borrow/getCreditPromoteInfo" value-ref="getCreditPromoteInfoApi" />
 				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
 				
-				<entry key="/borrow/getBillListByMonthAndYearApi" value-ref="getBillListByMonthAndYearApi" />
-				<entry key="/borrow/getBorrowDetailV1Api" value-ref="getBorrowDetailV1Api" />
-				<entry key="/borrow/getMyBorrowListV1Api" value-ref="getMyBorrowListV1Api" />
-				<entry key="/borrow/getMyBorrowV1Api" value-ref="getMyBorrowV1Api" />
-				<entry key="/borrow/getMyHistoryBorrowV1Api" value-ref="getMyHistoryBorrowV1Api" />
-				<entry key="/borrow/getMyRepaymentDetailV1Api" value-ref="getMyRepaymentDetailV1Api" />
-				<entry key="/borrow/getMyRepaymentHistoryV1Api" value-ref="getMyRepaymentHistoryV1Api" />
-				<entry key="/borrow/getMyRepaymentV1Api" value-ref="getMyRepaymentV1Api" />
-				<entry key="/borrow/getRepaymentDetailV1Api" value-ref="getRepaymentDetailV1Api" />
+				<entry key="/borrow/getBillListByMonthAndYear" value-ref="getBillListByMonthAndYearApi" />
+				<entry key="/borrow/getBorrowDetailV1" value-ref="getBorrowDetailV1Api" />
+				<entry key="/borrow/getMyBorrowListV1" value-ref="getMyBorrowListV1Api" />
+				<entry key="/borrow/getMyBorrowV1" value-ref="getMyBorrowV1Api" />
+				<entry key="/borrow/getMyHistoryBorrowV1" value-ref="getMyHistoryBorrowV1Api" />
+				<entry key="/borrow/getMyRepaymentDetailV1" value-ref="getMyRepaymentDetailV1Api" />
+				<entry key="/borrow/getMyRepaymentHistoryV1" value-ref="getMyRepaymentHistoryV1Api" />
+				<entry key="/borrow/getMyRepaymentV1" value-ref="getMyRepaymentV1Api" />
+				<entry key="/borrow/getRepaymentDetailV1" value-ref="getRepaymentDetailV1Api" />
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
