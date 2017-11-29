@@ -46,7 +46,7 @@ public class FanbeiController extends BaseController {
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
 	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/flashSale/getBookingRushGoods","/flashSale/getFlashSaleGoods",
-	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
+	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome","/flashSale/checkGoods","/flashSale/reserveGoods",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec",
             "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo","/cashier/start","/cashier/pre" ,"/cashier/getNperList",
 	"/category/getAllGoodsCategory","/category/getGoodsList", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
