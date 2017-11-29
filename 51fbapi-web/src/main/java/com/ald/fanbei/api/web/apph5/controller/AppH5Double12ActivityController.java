@@ -367,10 +367,10 @@ public class AppH5Double12ActivityController extends BaseController{
 			Map<String, Object> map = new HashMap<String, Object>();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			// 当前时间
-			//Date currentTime = new Date();
+			Date currentTime = new Date();
 			
-			String testTime = "2017-12-13 10:00:00";
-			Date currentTime = dateFormat.parse(testTime);
+//			String testTime = "2017-12-13 10:00:00";
+//			Date currentTime = dateFormat.parse(testTime);
 			
 			// 开始时间
 			Date startTime = null;
