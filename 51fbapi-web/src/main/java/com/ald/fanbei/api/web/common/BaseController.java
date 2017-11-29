@@ -861,7 +861,7 @@ public abstract class BaseController {
         }
     }
 
-    private static String getTestUser(String url) {
+    public static String getTestUser(String url) {
     	if(StringUtils.isBlank(url)) {
     		return null;
     	}
@@ -870,7 +870,7 @@ public abstract class BaseController {
             Map<String, List<String>> params = new HashMap<String, List<String>>();
             String[] urlParts = url.split("\\?");
             if (urlParts.length > 1) {
-                String query = urlParts[1];
+                String query = urlParts[urlParts.length-1];
                 for (String param : query.split("&")) {
                     String[] pair = param.split("=");
                     String key = URLDecoder.decode(pair[0], "UTF-8");
@@ -887,7 +887,7 @@ public abstract class BaseController {
                     values.add(value);
                 }
             }
-            List<String> _appInfo = params.get("testUser");
+            List<String> _appInfo = params.get("_appInfo");
             if (_appInfo != null && _appInfo.size() > 0) {
                 result = _appInfo.get(0);
             }
