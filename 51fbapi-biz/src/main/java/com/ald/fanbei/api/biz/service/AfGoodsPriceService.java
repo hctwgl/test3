@@ -17,4 +17,5 @@ public interface AfGoodsPriceService extends ParentService<AfGoodsPriceDo, Long>
 	List<AfGoodsPriceDo> getByGoodsId(Long goodsId);
 
 	Integer selectSumStock(Long goodsId);
+
 }

@@ -182,7 +182,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ORDER_NOFINISH_CANNOT_DELETE("ORDER_NOFINISH_CANNOT_DELETE",1603,"order not finish cannot delete","订单未完成，删除失败"),
     GOODS_HAVE_CANCEL("GOODS_HAVE_CANCEL",1604,"goods have cancel","商品已下架"),
     GOODS_HAVE_BEEN_RESERVED("GOODS_HAVE_BEEN_RESERVED",1605,"goods have been reserved","商品已预约"),
-    SOLD_OUT("SOLD_OUT",1607,"sold out","此商品已售罄"),
+    SOLD_OUT("SOLD_OUT",1607,"sold out","您来晚了，商品已抢光"),
 
     //borrow model 1700-1799 
     USER_ORDER_HAVE_CLOSED("USER_ORDER_HAVE_CLOSED",1606,"user order have closed","用户订单已关闭"),

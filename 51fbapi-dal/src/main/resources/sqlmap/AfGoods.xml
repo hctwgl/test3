@@ -178,6 +178,7 @@
 		LEFT JOIN af_goods g ON s.goods_id = g.id
 		WHERE
 			g.is_delete = 0
+		AND g.status = 'PUBLISH'
 		ORDER BY g.gmt_create desc
 	</select>
 
@@ -208,7 +209,8 @@
 		) s
 		LEFT JOIN af_goods g ON s.goods_id = g.id
 		WHERE
-		g.is_delete = 0
+			g.is_delete = 0
+		AND g.status = 'PUBLISH'
 		ORDER BY g.gmt_create desc
 	</select>
 

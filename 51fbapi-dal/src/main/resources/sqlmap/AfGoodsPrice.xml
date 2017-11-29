@@ -235,4 +235,6 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
     <update id="updateReturnGoods" parameterType="java.lang.Long">
         UPDATE af_goods_price SET stock = stock + 1 , sale_count = sale_count - 1 where id = #{priceId}
     </update>
+
+
 </mapper>
