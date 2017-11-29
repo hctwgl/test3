@@ -27,4 +27,8 @@ public interface AfIdNumberDao {
 	    int updateIdNumber(AfIdNumberDo afIdNumberDo);
 	    
 	    AfIdNumberDo selectUserIdNumberByUserId(@Param("userId")Long userId);
+	    
+		Long findByIDNoAndName(@Param("name")String name, @Param("idNo")String idNo);
+		
+		String findUserNameByIdNo(@Param("idNo")String idNo);
 }
