@@ -113,8 +113,7 @@
 				<value>/goods/getGoodsRateInfo</value>
 				<value>/goods/getThirdGoodsAuction</value>
 				<value>/goods/getThirdGoodsDetailInfo</value>
-				<value>/flashSale/getBookingRushGoods</value>
-				<value>/flashSale/getFlashSaleGoods</value>
+			
 
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
@@ -222,10 +221,7 @@
 
 				<!-- 第三方商品自建 -->
 				<entry key ="/goods/getGoodsRateInfo" value-ref="getGoodsRateInfoApi"></entry>
-				<entry key ="flashSale/getBookingRushGoods" value-ref="getBookingRushGoodsApi"></entry>
-				<entry key ="flashSale/getFlashSaleGoods" value-ref="getFlashSaleGoodsApi"></entry>
-				<entry key ="flashSale/checkGoods" value-ref="checkGoodsApi"></entry>
-				<entry key ="flashSale/reserveGoods" value-ref="reserveGoodsApi"></entry>
+
 
 				<!-- 订单Order -->
 				<entry key="/order/mobileCharge" value-ref="mobileChargeApi" />
