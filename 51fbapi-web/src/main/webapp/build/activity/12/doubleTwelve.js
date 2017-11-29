@@ -567,7 +567,7 @@ function alaShareData() {
     var dataObj = { // 分享内容
         "appLogin": "N", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
-        "shareAppTitle": "双12狂欢盛宴 畅想欢乐购 ", // 分享的title
+        "shareAppTitle": "双12狂欢盛宴 畅想欢乐购", // 分享的title
         'shareAppContent': "抢神券红包雨 1212元秒杀iPhone 6，双12任性到底，欢乐购不停~", // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/12/double12_share.png", // 分享右边小图
         "shareAppUrl": domainName + "/fanbei-web/activity/doubleTwelve?groupId=" + groupId + "&spread=2", // 分享后的链接
@@ -577,3 +577,21 @@ function alaShareData() {
     var dataStr = JSON.stringify(dataObj); // obj对象转换成json对象
     return dataStr;
 };
+
+// wx分享参数
+var shareInfo = {
+    title: "双12狂欢盛宴 畅想欢乐购",
+    desc: "抢神券红包雨 1212元秒杀iPhone 6，双12任性到底，欢乐购不停~",
+    link: domainName + "/fanbei-web/activity/doubleTwelve?groupId=" + groupId + "&spread=" + spread,
+    imgUrl: "http://f.51fanbei.com/h5/app/activity/12/double12_share.png",
+    success: function () {
+        alert("分享成功！");
+    },
+    error: function () {
+        alert("分享失败！");
+    },
+    cancel: function (res) {
+        // 用户取消分享后执行的回调函数
+        alert("取消分享！");
+    }
+}
