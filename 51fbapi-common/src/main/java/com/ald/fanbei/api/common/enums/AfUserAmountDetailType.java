@@ -7,12 +7,33 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfUserAmountDetailType {
     //分期
+	/**
+	 * 本金
+	 */
     BENJIN( 0,"本金"),
+    /**
+     * 分期手续费
+     */
     FENQISHOUXUFEI( 1,"分期手续费"),
+    /**
+     * 逾期利息
+     */
     YUQILIXI( 2,"逾期利息"),
+    /**
+     * 账户余额抵扣
+     */
     ZHANGHUYUERDIKOU( 3,"账户余额抵扣"),
+    /**
+     * 优惠券抵扣
+     */
     YOUHUIJUANGDIKOU( 4,"优惠券抵扣"),
+    /**
+     * 自行支付
+     */
     SHIJIZHIFU( 5,"自行支付"),
+    /**
+     * 直接支付
+     */
     ZHIJIEZHIFU( 6,"直接支付");
 
 

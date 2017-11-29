@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.sun.org.apache.bcel.internal.generic.RET;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -341,5 +343,26 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
         return result;
     }
+
+	@Override
+	public List<AfUserAmountDo> getAmountByUserIdAndType(Long userId, int type, int page, int pageSize) {
+		int begin = (page - 1) * pageSize;
+		return afUserAmountDao.getAmountByUserIdAndType(userId,type,begin,pageSize);
+	}
+
+	@Override
+	public List<AfUserAmountDetailDo> getAmountDetailByAmountId(Long amountId) {
+		return afUserAmountDao.getAmountDetailByAmountId(amountId);
+	}
+
+	@Override
+	public BigDecimal getRenfundAmountByAmountId(Long amountId) {
+		return afUserAmountDao.getRenfundAmountByAmountId(amountId);
+	}
+
+	@Override
+	public AfUserAmountDo getUserAmountById(Long amountId) {
+		return afUserAmountDao.getUserAmountById(amountId);
+	}
 
 }
