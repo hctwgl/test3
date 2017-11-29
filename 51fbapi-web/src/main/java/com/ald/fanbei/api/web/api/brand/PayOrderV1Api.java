@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -383,16 +384,25 @@ public class PayOrderV1Api implements ApiHandle {
 	 */
 	private void double12GoodsCheck(Long userId, Long goodsId){
 		
-		AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
-		if(null != afGoodsDouble12Do){
+		List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
+		if(null != afGoodsDouble12DoList){
 			//这个商品是双十二秒杀商品
-			if(afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0){
-				//报错提示已秒杀过（已生成过秒杀订单）
-				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+			List<AfOrderDo> overOrder = afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId);
+			//对于同一天已秒杀过得商品，提示只能买一件商品
+			if(overOrder!=null){
+				Calendar c =Calendar.getInstance();
+				int currDay = c.get(Calendar.DAY_OF_MONTH);
+				c.setTime(overOrder.get(0).getGmtCreate());
+				int oldOrderCreateDay = c.get(Calendar.DAY_OF_MONTH);
+				
+				if(overOrder.size()>0&&currDay==oldOrderCreateDay){
+					//报错提示只能买一件商品
+					throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+				}
 			}
 			//根据goodsId查询商品信息
 			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-			int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12Do.getCount();//秒杀商品余量
+			int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12DoList.get(0).getCount();//秒杀商品余量
 			if(goodsDouble12Count<0){
 				//报错提示秒杀商品已售空
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);

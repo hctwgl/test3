@@ -38,6 +38,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -308,12 +309,26 @@ public class BuySelfGoodsApi implements ApiHandle {
 		try {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
 			if (isNotLock) {
-				AfGoodsDouble12Do afGoodsDouble12Do = afGoodsDouble12Service.getByGoodsId(goodsId);
-				if(null != afGoodsDouble12Do){
+				List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
+				if(null != afGoodsDouble12DoList){
 					//这个商品是双十二秒杀商品
-					if (count != 1 || afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
-						//报错提示只能买一件商品  或  报错已秒杀过（已生成过秒杀订单）
+					if (count != 1) {
+						//报错提示只能买一件商品
 						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+					List<AfOrderDo> overOrder = afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId);
+					//对于同一天已秒杀过得商品，提示只能买一件商品
+					if(overOrder!=null){
+						Calendar c =Calendar.getInstance();
+						int currDay = c.get(Calendar.DAY_OF_MONTH);
+						c.setTime(overOrder.get(0).getGmtCreate());
+						int oldOrderCreateDay = c.get(Calendar.DAY_OF_MONTH);
+						
+						if(overOrder.size()>0&&currDay==oldOrderCreateDay){
+							//报错提示只能买一件商品
+							throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+						}
 					}
 					
 					//iphoneX特殊处理
@@ -326,7 +341,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					
 					//根据goodsId查询商品信息
 					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-					int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12Do.getCount();//秒杀商品余量
+					int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12DoList.get(0).getCount();//秒杀商品余量
 					if(goodsDouble12Count<=0){
 						//报错提示秒杀商品已售空
 						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
