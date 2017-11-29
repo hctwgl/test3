@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
@@ -98,6 +99,9 @@ public class PayRoutController {
     private YiBaoUtility yiBaoUtility;
     @Resource
     RedisTemplate redisTemplate;
+
+    @Resource
+    ThirdPayUtility thirdPayUtility;
 
     @Resource
     AfBankDao afBankDao;
@@ -534,7 +538,8 @@ public class PayRoutController {
             }
             //Map a = yiBaoUtility.getYiBaoOrder("hq2017091523034389983", "1001201709150000000017453099");
             thirdLog.info("YiBaoUpdate start ");
-            yiBaoUtility.updateYiBaoAllNotCheck();
+            //yiBaoUtility.updateYiBaoAllNotCheck();
+            thirdPayUtility.updateAllNotCheck();
             thirdLog.info("YiBaoUpdate end ");
             redisTemplate.delete(key);
             return "success";

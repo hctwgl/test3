@@ -121,4 +121,9 @@ public class ThirdPayUtility {
 
         return false;
     }
+
+    public void updateAllNotCheck(){
+        yiBaoUtility.updateYiBaoAllNotCheck();
+        huichaoUtility.updateAllNotCheck();
+    }
 }
