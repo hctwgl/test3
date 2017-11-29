@@ -716,12 +716,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             afUserAccountDao.updateOriginalUserAccount(accountInfo);
                             afUserAccountLogDao.addUserAccountLog(accountLog);
                             orderDao.updateOrder(afOrder);
-                            //逛逛点亮活动(下架)
-//                            try {
-//                                afBoluomeActivityService.ggLightActivity(afOrder);
-//                            } catch (Exception e) {
-//                                logger.info("ggLightActivity error:", e);
-//                            }
                             //qiao+2017-11-14 15:30:27:the second time to light the activity
                             try{
                             	logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",afOrder.getRid(),userId);
