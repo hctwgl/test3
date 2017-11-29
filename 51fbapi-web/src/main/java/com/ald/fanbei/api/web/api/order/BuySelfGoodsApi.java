@@ -310,7 +310,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
 			if (isNotLock) {
 				List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
-				if(null != afGoodsDouble12DoList){
+				if(afGoodsDouble12DoList.size()!=0){
 					//这个商品是双十二秒杀商品
 					if (count != 1) {
 						//报错提示只能买一件商品
