@@ -315,23 +315,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 				List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
 				if(afGoodsDouble12DoList.size()!=0){
 					//这个商品是双十二秒杀商品
-					if (count != 1) {
+					List<AfOrderDo> overOrder = afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId);
+					if (count != 1||overOrder.size()>0) {
 						//报错提示只能买一件商品
 						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
-					}
-					
-					List<AfOrderDo> overOrder = afOrderService.getOverOrderByGoodsIdAndUserId(goodsId, userId);
-					//对于同一天已秒杀过得商品，提示只能买一件商品
-					if(overOrder.size()!=0){
-						Calendar c =Calendar.getInstance();
-						int currDay = c.get(Calendar.DAY_OF_MONTH);
-						c.setTime(overOrder.get(0).getGmtCreate());
-						int oldOrderCreateDay = c.get(Calendar.DAY_OF_MONTH);
-						
-						if(overOrder.size()>0&&currDay==oldOrderCreateDay){
-							//报错提示只能买一件商品
-							throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
-						}
 					}
 					
 					//iphoneX特殊处理
