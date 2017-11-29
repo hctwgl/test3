@@ -22,6 +22,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
 import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
+import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 
 /**
@@ -127,7 +128,7 @@ public class GamePayController extends H5Controller {
 	    String userIp = request.getParameter("userIp");
 
 	    // 下单逻辑
-	    afSupOrderService.addSupOrder(context.getUserId(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
+	    data = afSupOrderService.addSupOrder(context.getUserId(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
 	    return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
 	} catch (Exception e) {
 	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
@@ -135,15 +136,18 @@ public class GamePayController extends H5Controller {
 	}
     }
 
-    @RequestMapping(value = "/order", method = RequestMethod.GET)
+    @RequestMapping(value = "/orderInfo", method = RequestMethod.POST)
     public H5CommonResponse getOrderInfo(HttpServletRequest request, HttpServletResponse response) {
-	Map<String, Object> data = new HashMap<String, Object>();
 	FanbeiH5Context context = doH5Check(request, true);
 	try {
-
-	    
-	    
-	    return H5CommonResponse.getNewInstance(true, "获取订单信息成功", "", data);
+	    String orderNo = request.getParameter("orderNo");
+	    if (StringUtils.isNotBlank(orderNo)) {
+		// 查询详情
+		GameOrderInfoDto orderInfo = afSupOrderService.getOrderInfoByOrderNo(orderNo);
+		return H5CommonResponse.getNewInstance(true, "获取订单信息成功", "", orderInfo);
+	    } else {
+		return H5CommonResponse.getNewInstance(false, "参数错误");
+	    }
 	} catch (Exception e) {
 	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
 	    return H5CommonResponse.getNewInstance(false, "获取订单信息失败");

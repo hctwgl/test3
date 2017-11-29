@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
 
 /**
  * 新人专享Dao
@@ -16,4 +17,6 @@ public interface AfSupOrderDao extends BaseDao<AfSupOrderDo, Long> {
     AfSupOrderDo getByOrderNo(String orderNo);
 
     Integer updateMsgByOrder(@Param("orderNo") String orderNo, @Param("msg") String msg);
+
+    GameOrderInfoDto getOrderInfoByOrderNo(String orderNo);
 }

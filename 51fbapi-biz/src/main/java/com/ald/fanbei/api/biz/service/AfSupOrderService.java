@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
 
 /**
  * 新人专享Service
@@ -23,4 +24,6 @@ public interface AfSupOrderService extends ParentService<AfSupOrderDo, Long> {
     AfSupOrderDo getByOrderNo(String orderNo);
 
     Integer updateMsgByOrder(String orderNo, String msg);
+
+    GameOrderInfoDto getOrderInfoByOrderNo(String orderNo);
 }

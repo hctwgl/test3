@@ -45,6 +45,8 @@ import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -172,6 +174,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    afOrder.setActualAmount(actualAmount);
 		    // 记录订单原始金额
 		    afOrder.setSaleAmount(actualAmount.add(couponAmountFinal));
+		    afOrder.setCouponAmount(couponAmountFinal);
 		    afOrder.setRebateAmount(rebateAmountScale);
 		    afOrder.setGmtCreate(new Date());
 		    afOrder.setGmtPayEnd(DateUtil.addHoures(new Date(), Constants.ORDER_PAY_TIME_LIMIT));
@@ -264,6 +267,12 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     public Integer updateMsgByOrder(String orderNo, String msg) {
 
 	return afSupOrderDao.updateMsgByOrder(orderNo, msg);
+    }
+
+    @Override
+    public GameOrderInfoDto getOrderInfoByOrderNo(String orderNo) {
+
+	return afSupOrderDao.getOrderInfoByOrderNo(orderNo);
     }
 
     @Resource
