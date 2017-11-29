@@ -337,6 +337,7 @@ let vm = new Vue({
                         return false;
                     }
                     self.couponData = data.data.couponList;
+                    $(".loadingMask").fadeOut();
                 },
                 error: function () {
                     requestMsg("哎呀，出错了！");

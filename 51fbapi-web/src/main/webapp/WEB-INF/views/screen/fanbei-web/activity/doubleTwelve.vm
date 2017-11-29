@@ -13,6 +13,9 @@
 </head>
 
 <body>
+    <div class="loadingMask">
+        <i class="loading"></i>
+    </div>
     <div class="main" id="main">
         <div class="banner">
             <div class="top-box flex fd-row jc-c">
@@ -46,9 +49,9 @@
                     <li class="coupon-li" v-for="(item,index) in couponData" @click="couponClick(item,index)" :class="[(item.ishas=='Y'&&item.isGet=='N')?'coupon-active':'coupon-quiet']">
                         <div class="coupon-price">￥<span>{{item.amount}}</span></div>
                         <div class="coupon-tip">{{item.name}}</div>
-                        <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
+                        <div class="coupon-get got" v-if="item.ishas=='Y'&&item.isGet=='Y'">已领取</div>
                         <div class="coupon-get" v-if="item.ishas=='Y'&&item.isGet=='N'">立即领取</div>
-                        <div class="coupon-get" v-if="item.ishas=='N'">本场已抢完</div>
+                        <div class="coupon-get got" v-if="item.ishas=='N'">本场已抢完</div>
                     </li>
                 </ul>
             </div>
