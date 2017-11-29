@@ -7,6 +7,8 @@ import com.ald.fanbei.api.common.enums.AfUserAmountProcessStatus;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountDetailDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAmountLogDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 
 /**
  * @author honghzengpei 2017/11/22 14:28
@@ -58,4 +60,23 @@ public interface AfUserAmountService {
 	 * @return
 	 */
 	AfUserAmountDo getUserAmountById(Long amountId);
+	
+	/**
+	 * 根据amountId查询borrow的拓展信息--退款详情
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午3:46:41
+	 * @param amountId
+	 * @return
+	 */
+	AfBorrowDto getBorrowDtoByAmountId(Long amountId);
+	
+	/**
+	 * 根据source_id查询amount_log
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午4:38:12
+	 * @param amountId
+	 * @return
+	 */
+	List<AfUserAmountLogDo> getAmountLogByAmountId(Long sourceId);
+	
 }

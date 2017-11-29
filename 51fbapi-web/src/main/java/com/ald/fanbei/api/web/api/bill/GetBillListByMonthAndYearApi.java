@@ -158,11 +158,14 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 				billList = afBorrowBillService.getBillListByQuery(query);
 				map.put("billList", billList);
 				// 获取未入账账单
-				// TODO: 方法未完成
 				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
 				// 未入账笔数
+				int notInCount = afBorrowService.getUserNotInBorrowCount(userId);
 				// 未入账金额
+				BigDecimal notInMoney = afBorrowService.getUserNotInBorrowMoney(userId);
 				map.put("borrowList", borrowList);
+				map.put("notInCount", notInCount);
+				map.put("notInMoney", notInMoney);
 				// 出账日
 				Date outDate = DateUtil.addDays(strOutDay, userOutDayDo.getOutDay() - 1);
 				map.put("outDay", DateUtil.formatAndMonthAndDay(outDate));
@@ -171,19 +174,22 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 			}else {
 				map.put("status", "noBill");
 				// 获取未入账账单
-				// TODO: 方法未完成
 				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
-				map.put("borrowList", borrowList);
 				// 未入账笔数
+				int notInCount = afBorrowService.getUserNotInBorrowCount(userId);
 				// 未入账金额
+				BigDecimal notInMoney = afBorrowService.getUserNotInBorrowMoney(userId);
+				map.put("borrowList", borrowList);
+				map.put("notInCount", notInCount);
+				map.put("notInMoney", notInMoney);
 				resp.setResponseData(map);
+				return resp;
 			}
 		} catch (Exception e) {
 			logger.error("getBillListByMonthAndYearApi error :" , e);
 			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.CALCULATE_SHA_256_ERROR);
 			return resp;
 		}
-		return resp;
 	}
 
 }

@@ -677,6 +677,7 @@
 		WHERE
 			is_delete = 0
 			AND is_out = 1
+			AND status = 'Y'
 			AND user_id = #{userId}
 		GROUP BY
 			DATE_FORMAT(gmt_out_day,'%Y-%c')

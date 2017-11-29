@@ -302,7 +302,7 @@ public interface AfBorrowBillService {
 	BigDecimal getOverdueInterestByBorrowId(Long borrowId);
 
 	/**
-	 * 查询用户历史账单
+	 * 查询用户历史账单(已还清)
 	 * @author yuyue
 	 * @Time 2017年11月24日 下午1:30:14
 	 * @param userId

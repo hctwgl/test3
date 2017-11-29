@@ -16,5 +16,14 @@
 		NOW()
 		)
 	</insert>
+	
+	<select id="getAmountLogByAmountId" resultType="AfUserAmountLogDo">
+		SELECT <include refid="activitySqlField"/> from 
+			af_user_amount_log
+		WHERE
+			source_id =  = #{sourceId}
+		ORDER BY
+			gmt_create
+	</select>
 
 </mapper>

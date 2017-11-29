@@ -288,4 +288,22 @@ public interface AfBorrowService {
 	 */
 	List<AfBorrowDto> getUserNotInBorrow(Long userId);
 
+	/**
+	 * 获取用户所有未入账账单数
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午6:06:41
+	 * @param userId
+	 * @return
+	 */
+	int getUserNotInBorrowCount(Long userId);
+
+	/**
+	 * 获取用户所有未入账账单金额
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午6:09:14
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserNotInBorrowMoney(Long userId);
+
 }

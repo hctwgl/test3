@@ -95,23 +95,11 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 		        calendar.add(Calendar.SECOND, -1);
 		        Date endDate = calendar.getTime();
 		        
+		        // 查询是否有逾期账单
 		        AfBorrowBillQuery query = new AfBorrowBillQuery();
 		        query.setUserId(userId);
-		        query.setIsOut(1);
 		        query.setOutDayStr(strDate);
 		        query.setOutDayEnd(endDate);
-		        // 查询是否有未结清的账单
-		        query.setStatus(BorrowBillStatus.NO.getCode());
-		        int noBillCount = afBorrowBillService.countBillByQuery(query);
-		        if (noBillCount > 0) {
-					// 有未还账单
-		        	bill.setStatus(BorrowBillStatus.NO.getCode());
-				}else {
-					// 所有账单已结清
-		        	bill.setStatus(BorrowBillStatus.YES.getCode());
-				}
-		        // 查询是否有逾期账单
-		        query.setStatus(null);
 		        query.setOverdueStatus("Y");
 		        int overdueBillCount = afBorrowBillService.countBillByQuery(query);
 		        // 设置逾期天数
