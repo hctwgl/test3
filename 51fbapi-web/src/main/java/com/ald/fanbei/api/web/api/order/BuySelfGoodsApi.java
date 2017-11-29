@@ -183,7 +183,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 			if (userId != null) {
 
 				// 双十二秒杀新增逻辑+++++++++++++>
-				double12GoodsCheck(userId, goodsId,count);
+				if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0){
+					//是双十二秒杀商品
+					double12GoodsCheck(userId, goodsId,count);
+				}
 				// +++++++++++++++++++++++++<
 				
 				//查询用户订单数
