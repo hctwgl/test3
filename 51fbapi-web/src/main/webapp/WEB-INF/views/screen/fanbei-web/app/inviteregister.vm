@@ -25,11 +25,11 @@
       <img class="bg" src="$commonUrl/reg2.jpg">
       <img class="bg" src="$commonUrl/reg3.jpg">
       <div class="inter">
-        <input type="tel" maxlength="11" placeholder="请输入手机号" id="user" />
-        <input type="password" maxlength="18" placeholder="请输入密码" id="pwd" />
+        <input type="tel" maxlength="11" onfocus="maidianFn('phone')" placeholder="请输入注册手机号" id="user" />
+        <input type="password" maxlength="18" onfocus="maidianFn('pwd')" placeholder="密码长度为6-20位数字和英文" id="pwd" />
         <div class="verify">
-          <input id="verify" type="text" maxlength="6" placeholder="输入验证码"/>
-          <div class="getcode">获取验证码</div>
+          <input onfocus="maidianFn('code')" id="verify" type="text" maxlength="6" placeholder="请输入验证码"/>
+          <button class="getcode" onclick="maidianFn('codeBtn')" id="checkbtn">获取验证码</button>
         </div>
         <div class="reg"></div>
         <div class="agree">
@@ -37,12 +37,12 @@
           <span>已阅读并同意</span><a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a>
         </div>
         <p class="registered clearfix">
-          <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www">已有账号登录</a>
+          <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" onclick="maidianFn('toLogin')">已有账号登录</a>
         </p>
       </div>
   </div>
 
-  <div class="registerMask hide"></div>
+  <!-- <div class="registerMask hide"></div>
   <div class="imgVftCodeWrap hide">
     <div class="imgVftCodeTitle"><p>请输入图形验证码</p><span id="imgVftCodeClose"><i></i></span></div>
     <div class="imgVftCodeInput clearfix">
@@ -51,9 +51,10 @@
       <span class="imgVftCodeRefresh"><i></i></span>
     </div>
     <button class="imgVftCodeSbumit">确定</button>
-  </div>
+  </div> -->
   <script type="text/javascript" src="/dist/js/core.js"></script>
   <script type="text/javascript" src="/dist/js/md5.js"></script>
+  <script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>
   <script type="text/javascript" src="/dist/js/app/inviteregister.js?version=$version"></script>
 </body>
 </html>

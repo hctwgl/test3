@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.alibaba.fastjson.JSONArray;
 
 
 /**
@@ -20,6 +21,11 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfOrderService {
+
+	/**
+	 * 查询用户未完成订单数
+	 */
+	int getNoFinishOrderCount(Long userId);
 
 	/**
 	 * 创建订单消息(下单未付款)
@@ -302,5 +308,21 @@ public interface AfOrderService {
 	 */
     void syncOrderInfo(String orderId, String plantform, AfOrderDo orderInfo);
     int getOrderCountByStatusAndUserId(AfOrderDo queryCount);
+    
+    /**
+     * 获取老用户订单数
+     * @param userId
+     * @return
+     */
+    int getOldUserOrderAmount(long userId);
+
+    /**
+     * 获取已完成的订单
+     * @param userId
+     * @return
+     */
+    List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
+
+	List<AfOrderDo> getOverOrderByUserId(Long userId);
 	
 }

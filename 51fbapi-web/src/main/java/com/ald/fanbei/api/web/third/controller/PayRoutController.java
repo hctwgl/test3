@@ -16,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
 import org.slf4j.Logger;
@@ -42,10 +45,6 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
-import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -90,6 +89,12 @@ public class PayRoutController {
     @Resource
     private AfYibaoOrderDao afYibaoOrderDao;
 
+
+	@Resource
+	private HuichaoUtility huichaoUtility;
+
+	@Resource
+	private AfHuicaoOrderDao afHuicaoOrderDao;
     @Resource
     private YiBaoUtility yiBaoUtility;
     @Resource
@@ -98,7 +103,11 @@ public class PayRoutController {
     @Resource
     private AfUserAmountService afUserAmountService;
 
+    @Resource
+    ThirdPayUtility thirdPayUtility;
 
+    @Resource
+    AfBankDao afBankDao;
     private static String TRADE_STATUE_SUCC = "00";
     private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
@@ -155,7 +164,7 @@ public class PayRoutController {
         String merPriv = request.getParameter("merPriv");
         String tradeState = request.getParameter("tradeState");
         long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
-        logger.info("delegatePay begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result, ",outTradeNo=" + outTradeNo);
+        logger.info("delegatePay begin merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result+ ",outTradeNo=" + outTradeNo);
         try {
             if (TRADE_STATUE_SUCC.equals(tradeState)) {//代付成功
                 if (UserAccountLogType.CASH.getCode().equals(merPriv)) {//现金借款
@@ -287,7 +296,7 @@ public class PayRoutController {
                 if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
                     afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId, false, "");
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-                    afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId);
+                    afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId,"");
                 } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                     afOrderService.dealBrandOrderFail(outTradeNo, transactionId, PayType.WECHAT.getCode());
                 }
@@ -320,34 +329,107 @@ public class PayRoutController {
                     afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
                 } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
                     afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+                    //回调成功发送短信
+                    try{
+                        String userNo = StringUtil.null2Str(request.getParameter("userNo"));
+                        afRepaymentService.sendSuccessMessage(Long.valueOf(userNo),outTradeNo,tradeNo);
+                    }catch (Exception e){
+                        logger.error("send borrowbill send message error for:" + e);
+                    }
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
                     afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
                 } else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
-                    afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    int result=afOrderService.dealAgentCpOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    if(result<=0){
+                        return "ERROR";
+                    }
                 } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                   int result= afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 } else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
                     afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
                     afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
                 }
             } else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
+                String errorWarnMsg = "";
                 if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-                    String errorWarnMsg = "";
                     if (StringUtil.isNotBlank(respDesc)) {
                         errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
                     } else {
                         errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
                     }
+                    //加上银行卡信息
+                    try{
+                        String addMsg = "";
+                        String bankCode = StringUtil.null2Str(request.getParameter("bankCode"));
+                        String cardNum = StringUtil.null2Str(request.getParameter("cardNo"));
+                        logger.info("发送短信增加银行卡信息,bankCode:"+bankCode+",cardNum:"+cardNum);
+                        if(StringUtil.isNotBlank(errorWarnMsg)&&StringUtil.isNotBlank(bankCode)&&StringUtil.isNotBlank(cardNum)){
+                            if(cardNum.length()>4){
+                                cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
+                                String bankName =afBankDao.getBankNameByCode(bankCode);
+                                if(StringUtil.isNotBlank(bankName)){
+                                    addMsg = "{"+ bankName + cardNum + "}";
+                                    errorWarnMsg = addMsg + errorWarnMsg;
+                                }
+                            }
+                        }
+                    }catch (Exception e){
+                        logger.error("get cardName error for:" + e);
+                    }
+
                     afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
-                    afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo);
+
+
+                    if (StringUtil.isNotBlank(respDesc)) {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+                    } else {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+                    }
+                    afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo,errorWarnMsg);
                 } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败	311
                     afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
+                    //加上银行卡信息，发送短信
+                    try{
+                        if (StringUtil.isNotBlank(respDesc)) {
+                            errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+                        } else {
+                            errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+                        }
+                        String addMsg = "";
+                        String bankCode = StringUtil.null2Str(request.getParameter("bankCode"));
+                        String cardNum = StringUtil.null2Str(request.getParameter("cardNo"));
+                        String userNo = StringUtil.null2Str(request.getParameter("userNo"));
+                        logger.info("发送短信增加银行卡信息,bankCode:"+bankCode+",cardNum:"+cardNum+",userNo"+userNo);
+                        if(StringUtil.isNotBlank(errorWarnMsg)&&StringUtil.isNotBlank(bankCode)&&StringUtil.isNotBlank(cardNum)&&StringUtil.isNotBlank(userNo)){
+                            if(cardNum.length()>4){
+                                cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
+                                String bankName =afBankDao.getBankNameByCode(bankCode);
+                                if(StringUtil.isNotBlank(bankName)){
+                                    addMsg = "{"+ bankName + cardNum + "}";
+                                    errorWarnMsg = addMsg + errorWarnMsg;
+                                    //还款失败短信通知
+                                    afRepaymentService.sendFailMessage(Long.valueOf(userNo), errorWarnMsg, outTradeNo, tradeNo);
+                                }
+                            }
+                        }
+                    }catch (Exception e){
+                        logger.error("get cardName error for:" + e);
+                    }
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+                    int result= afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 } else if (OrderType.BOLUOMECP.getCode().equals(merPriv) || OrderType.SELFSUPPORTCP.getCode().equals(merPriv) || OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
-                    afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    int result= afOrderService.dealBrandPayCpOrderFail(outTradeNo, tradeNo, PayType.COMBINATION_PAY.getCode());
+                    if (result <= 0) {
+                        return "ERROR";
+                    }
                 }
             }
             return "SUCCESS";
@@ -401,7 +483,7 @@ public class PayRoutController {
             if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
                 afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo, false, "");
             } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
-                afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo);
+                afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo,"");
             } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                 afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
             } else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
@@ -459,7 +541,8 @@ public class PayRoutController {
             }
             //Map a = yiBaoUtility.getYiBaoOrder("hq2017091523034389983", "1001201709150000000017453099");
             thirdLog.info("YiBaoUpdate start ");
-            yiBaoUtility.updateYiBaoAllNotCheck();
+            //yiBaoUtility.updateYiBaoAllNotCheck();
+            thirdPayUtility.updateAllNotCheck();
             thirdLog.info("YiBaoUpdate end ");
             redisTemplate.delete(key);
             return "success";
@@ -468,6 +551,62 @@ public class PayRoutController {
             return e.toString();
         }
     }
+	/**
+	 *汇潮支付回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/huicaoback" })
+	@ResponseBody
+	public String huicaoback(HttpServletRequest request, HttpServletResponse response){
+		//String siginString = huichaoUtility.getSign("merchantOutOrderNo=1509598766744&merid=100001&msg={\"payMoney\":\"1.00\"}&noncestr=test2&orderNo=0000015095987667441&payResult=1");
+		thirdLog.info("huicaoBack start");
+		String merchantOutOrderNo = request.getParameter("merchantOutOrderNo");
+		String merid = request.getParameter("merid");
+		String msg = request.getParameter("msg");
+		String noncestr = request.getParameter("noncestr");
+		String orderNo = request.getParameter("orderNo");
+		String payResult = request.getParameter("payResult");
+		String sign = request.getParameter("sign");
+
+		String stringA = "merchantOutOrderNo="+merchantOutOrderNo+"&merid="+merid+"&msg="+msg+"&noncestr="+noncestr+"&orderNo="+orderNo+"&payResult="+payResult;
+		String signA  = huichaoUtility.getSign(stringA);
+
+		thirdLog.info("huicaoback:{merchantOutOrderNo:"+merchantOutOrderNo+",merid:"+merid+",msg:"+msg+",noncestr:"+noncestr+",orderNo:"+orderNo+",payResult:"+payResult+",sign:"+sign+"}");
+		if(sign.equals(signA)){
+			if(payResult.equals("1")){
+				AfHuicaoOrderDo afHuicaoOrderDo= afHuicaoOrderDao.getHuicaoOrderByThirdOrderNo(merchantOutOrderNo);
+				if(afHuicaoOrderDo == null){
+					thirdLog.info("huicaoback orderNo error :{merchantOutOrderNo:"+merchantOutOrderNo+",merid:"+merid+",msg:"+msg+",noncestr:"+noncestr+",orderNo:"+orderNo+",payResult:"+payResult+",sign:"+sign+"}");
+					return "error";
+				}
+				String attach = afHuicaoOrderDo.getPayType();
+				if (PayOrderSource.ORDER.getCode().equals(attach)) {
+					afOrderService.dealMobileChargeOrder(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
+					afRepaymentService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+					//afOrderService.dealBrandOrderSucc(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo(), PayType.WECHAT.getCode());
+				} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+					afRepaymentBorrowCashService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+					afRenewalDetailService.dealRenewalSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				}
+			}
+			else{
+
+			}
+			return "success";
+		}
+		return "error";
+
+
+
+
+
+	}
+
 
 
     /**

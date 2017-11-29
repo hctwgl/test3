@@ -281,4 +281,14 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		return afUserAccountDao.updateBorrowCashActivity(money, userId);
 	}
 
+	@Override
+	public BigDecimal getAuAmountByUserId(long userId) {
+		return afUserAccountDao.getAuAmountByUserId(userId);
+	}
+
+	@Override
+	public int updateUserAccountByUserId(Long userId,int money) {
+		return afUserAccountDao.updateUserAccountByUserId(userId,money);
+	}
+
 }

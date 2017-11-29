@@ -94,6 +94,12 @@
 			,open_id=#{openId}
 		</if>
 		WHERE user_id = #{userId}
+		<if test="rebateAmount != null">
+			 and <![CDATA[  rebate_amount + #{rebateAmount} >=0 ]]>
+		</if>
+        <if test="jfbAmount != null">
+			and <![CDATA[  jfb_amount + #{jfbAmount} >=0 ]]>
+		</if>
 	</update>
 
 	<update id="updateOriginalUserAccount" parameterType="AfUserAccountDo">
@@ -222,7 +228,7 @@
 	</update>
 
 	<select id="getCountByIdNumer" resultType="java.lang.Integer">
-		select count(1) from af_user_account a left join af_user_auth b on a.user_id = b.user_id where a.id_number=#{citizenId} and a.user_id != #{userId} and b.bankcard_status='Y'
+		select count(1) from af_user_account a left join af_user_auth b on a.user_id = b.user_id where a.id_number=#{citizenId} and a.user_id != #{userId} and b.bankcard_status='Y' and a.is_delete = 0 and b.is_delete = 0
 	</select>
 
 	<select id="getUserAccountInfoByUserName" resultType="AfUserAccountDo">
@@ -264,5 +270,25 @@
 		<foreach collection="userId" item="item" index="index" open="(" separator="," close=")" >  
         #{item}  
    		</foreach>  
+	</update>
+
+	<select id="getAuAmountByUserId" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+			SELECT
+		au_amount
+		FROM
+		af_user_account
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+	</select>
+
+	<update id="updateUserAccountByUserId" >
+		UPDATE
+		`af_user_account`
+		SET
+		`gmt_modified` =now(),`used_amount` =`used_amount` +#{money}
+		WHERE
+		`user_id`=#{userId}
 	</update>
 </mapper>

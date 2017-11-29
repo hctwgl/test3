@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.enums.*;
@@ -121,6 +122,8 @@ public class TestController {
 	BoluomeUtil boluomeUtil;
 	@Resource
 	private TaobaoApiUtil taobaoApiUtil;
+
+
 
 	@Resource
 	RedisTemplate redisTemplate;
@@ -830,11 +833,17 @@ public class TestController {
 
 	@Resource
 	AfBorrowBillService afBorrowBillService;
+
+	@Resource
+	HuichaoUtility huichaoUtility;
 	/**
 	 *
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
+//		String appid =  AesUtil.decrypt("Ehw14/ML0cbFSiBoVFC1mu6iw/dWDLmwlSlJTCWC/veLZVdz4LtvQ7My3Rfnuzwq/du56FGZDN1TRs9yv/Zn+4N2RXBD1dBHtugwJDhi3Bs=","Cw5bM6x@6sH$2dlw^3JueH");
+//		String puk = AesUtil.decrypt("QRaDVWb2pC9by28Rxt8sMQ==","Cw5bM6x@6sH$2dlw^3JueH");
+//		String pik = AesUtil.decrypt("fnzwqgFMW/RyuzDKRkH9uP/XN6RgBH5QkvtGwHR2gVs=","Cw5bM6x@6sH$2dlw^3JueH");
 
 		afBorrowBillService.getAllClear(18637961820l,306594l);
 
@@ -845,48 +854,20 @@ public class TestController {
 //		Date repayDate = afBorrowService.getReyLimitDate("C",new Date());
 //		Map<String,Integer> map22 = afBorrowService.getCurrentTermYearAndMonth("C",new Date());
 //
-//
-//		List<AfBorrowBillDo> list = afBorrowService.getBorrowBillList("N",13989456104l);
-
-
-//
-//		HashMap map = new HashMap();
-//		map.put("billList",getListByStatus(list,1));
-//		map.put("billList",getListByStatus(list,2));
-//		map.put("billList",getListByStatus(list,3));
+//		AesUtil.encryptToBase64(appid,"Cw5bM6x@6sH$2dlw^3JueH");
 
 
 
+//		Map m = yiBaoUtility.createOrder(BigDecimal.TEN,"hk"+String.valueOf (new Date().getTime()/1000),20158l,PayOrderSource.BORROWCASH);
+//		String token =  m.get("token").toString();
+//		String d= yiBaoUtility.getCashier(token,20158l);
+//		String e="";
+		//huichaoUtility.getHuiCaoOrder("1509598766744");
 
-//		AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(10,1);
-//		AfRepaymentDetalDo afRepaymentDetalDo1 = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(12,1);
+		huichaoUtility.getOrderStatus("xj2017112411401400326");
 
-
-//		AfRepaymentDetalDo afRepaymentDetalDo = new AfRepaymentDetalDo();
-//		long refId = 10l;
-//		afRepaymentDetalDo.setRepaymentId(refId);
-//		afRepaymentDetalDo.setAmount(BigDecimal.ZERO);
-//		afRepaymentDetalDo.setTotalAmount(BigDecimal.ZERO);
-//		afRepaymentDetalDao.addRepaymentDetal(afRepaymentDetalDo);
-
-//		boolean a = isOut(2017,9);
-//		boolean b =isOut(2017,10);
-//		boolean c =isOut(2017,8);
-//		boolean d =isOut(2016,12);
-		//Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
-//		String e ="";
-
-//		AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-//		afYibaoOrderDo.setOrderNo("adfasdfadsf1dddddddddddddddddddddd1111");
-//		afYibaoOrderDo.setPayType(PayOrderSource.REPAYMENTCASH.getCode());
-//		afYibaoOrderDo.setStatus(0);
-//		afYibaoOrderDo.setYibaoNo("afaf");
-//		afYiBaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-//		AfYibaoOrderDo afYibaoOrderDo1 = afYiBaoOrderDao.getYiBaoOrderByOrderNo("adfasdfadsf1dddddddddddddddddddddd1111");
-
-		//afYiBaoOrderDao.updateYiBaoOrderStatusByOrderNo("adfasdfadsf11111",1);
-
-//		afRepaymentBorrowCashService.createRepaymentYiBao(BigDecimal.ZERO,BigDecimal.ONE,BigDecimal.TEN,null,null,null,null,null,null,null);
+		//HashMap srce =  huichaoUtility.createOrderZFB("zfaaaabcdef1","1",13989456178L, PayOrderSource.RENEWAL_PAY);
+		String e = "";
 	}
 
 

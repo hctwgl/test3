@@ -5,7 +5,7 @@
 
 		id
 		rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,
-		sec_type,value_1,value_2,value_3,value_4,sort
+		sec_type,value_1,value_2,value_3,value_4,sort,pic1,pic2
 	</sql>
 	<sql id="queryManyAllFields">
 
@@ -65,7 +65,8 @@
 		FROM
 		af_resource
 		WHERE
-		is_delete = 0 AND type = #{type} AND sec_type = #{secType}
+		is_delete = 0 AND type = #{type} AND sec_type =
+		#{secType}
 		LIMIT 1
 
 	</select>
@@ -78,6 +79,16 @@
 		is_delete = 0 AND id = #{rid}
 		LIMIT 1
 
+	</select>
+	<select id="getOpenBoluomeCouponById" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_resource
+		WHERE is_delete = 0
+		AND value_4 = 'O'
+		AND value_2 > NOW()
+		AND id = #{rid}
+		LIMIT 1
 	</select>
 
 
@@ -133,6 +144,36 @@
 		WHERE
 		type = #{type}
 		AND is_delete = 0
+		LIMIT 1
+	</select>
+	
+	<select id="getLaunchImageInfoByTypeAndVersion" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND is_delete = 0
+		AND value = 'PART'
+		AND   #{version} >= value_1
+		AND value_2 >= #{version}
+		AND value_4 = 'O'
+		order by gmt_create desc
+		LIMIT 1
+	</select>
+	
+	<select id="getLaunchImageInfoByType" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type}
+		AND is_delete = 0
+		AND value = 'ALL'
+		AND value_4 = 'O'
+		order by gmt_create desc
 		LIMIT 1
 	</select>
 
@@ -325,6 +366,43 @@
 	</select>
 	
 	<select id="getActivityRule" resultType="String">
-		SELECT value from af_resource where is_delete = 0 and type =#{type}
+		SELECT value from
+		af_resource where is_delete = 0 and type =#{type}
 	</select>
+
+	<select id="getEcommercePositionUpRescoure" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields"></include>
+		FROM
+		af_resource
+		WHERE
+		type = 'HOME_IMAGE_ECOMMERCE_POSITION'
+		AND
+		value_3
+		IN
+		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_UP','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_UP','HOME_IMAGE_ECOMMERCE_POSITION_MID_MID','HOME_IMAGE_ECOMMERCE_POSITION_LEFT_MID')
+	</select>
+
+	<select id="getEcommercePositionDownRescoure" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields"></include>
+		FROM
+		af_resource
+		WHERE
+		type = 'HOME_IMAGE_ECOMMERCE_POSITION'
+		AND
+		value_3
+		IN
+		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_MID_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_DOWN')
+	</select>
+
+	<select id="getScrollbarListByType" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type} AND is_delete = 0 and value_4 ='O'
+	</select>
+
 </mapper>

@@ -310,6 +310,35 @@ public interface AfBorrowBillDao {
 	List<AfOverdueBillDto> getAfOverdueBillDtoByConsumerNo(@Param("orderId")Long orderId);
 
 	/**
+	 * 根据用户ID查询未还逾期账单总数
+	 * @author yuyue
+	 * @Time 2017年11月6日 下午4:00:16
+	 * @param userId
+	 * @return
+	 */
+	int countNotPayOverdueBill(@Param("userId")Long userId);
+
+	List<AfBorrowBillDo> getNoPayBillByUserId(@Param("userId")Long userId,@Param("gmt_out_day") Date gmt_out_day);
+
+	/**
+	 * 更改出账日
+	 * @author yuyue
+	 * @Time 2017年11月7日 下午1:48:42
+	 * @param rid
+	 * @param date
+	 * @param date2
+	 * @param billYear
+	 * @param billMonth
+	 */
+	void updateBillOutDay(@Param("id")Long id,@Param("gmtOutDay")Date gmtOutDay,@Param("gmtPayTime") Date gmtPayTime,@Param("billYear") int billYear,@Param("billMonth") int billMonth);
+
+	String getBillIdsByUserId(@Param("userId")Long userId);
+
+	int updateBorrowBillLockById(@Param("billId")String billId);
+
+	int updateBorrowBillUnLockByIds(@Param("billIds") List<String> billIds);
+
+	/**
 	 * 获取用户未付款的逾期账单月数
 	 * @author yuyue
 	 * @Time 2017年11月10日 下午1:23:26
@@ -317,7 +346,7 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	int getOverduedMonthByUserId(@Param("userId")Long userId);
-	
+
 	/**
 	 * 获取未逾期用户最后还款日
 	 * @author yuyue

@@ -61,6 +61,7 @@ public class SmsUtil extends AbstractThird {
     private static String REGIST_TEMPLATE = "注册验证码为:&param1;您正在注册51返呗，请在30分钟内完成注册";
     private static String LOGIN_TEMPLATE = "验证码:&param1,您正在确认登录，30分钟内输入有效。";
     private static String FORGET_TEMPLATE = "验证码为:&param1;您正在找回51返呗的账户密码，请在30分钟内完成";
+    private static String SET_TEMPLATE = "验证码为:&param1;您正在设置51返呗的账户密码，请在30分钟内完成";
     private static String BIND_TEMPLATE = "验证码为:&param1;您正在51返呗绑定手机号，请在30分钟内完成";
     private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置51返呗支付密码，请在30分钟内完成";
     private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置51返呗更换绑定邮箱，请在30分钟内完成";
@@ -72,6 +73,8 @@ public class SmsUtil extends AbstractThird {
     private static String TRADE_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
     private static String TRADE_HOME_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
     private static String TEST_VERIFY_CODE = "888888";
+    private static String BorrowBillMessageSuccess = "您x月份分期账单已成功还款，请登录51返呗查看详情。";
+
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
@@ -111,6 +114,29 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
+     * 发送快捷注册短信验证码
+     *
+     * @param mobile
+     * @param content
+     */
+    public boolean sendQuickRegistVerifyCode(String mobile) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_LOGIN.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue()))
+                throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, 0l, smsResult);
+        return smsResult.isSucc();
+    }
+    /**
      * 发送登录验证码（可信登录）
      *
      * @param mobile
@@ -131,6 +157,30 @@ public class SmsUtil extends AbstractThird {
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = sendSmsToDhst(mobile, content);
         this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
+        return smsResult.isSucc();
+    }
+
+    /**
+     * 发送登录验证码（快捷登录）
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendQuickLoginVerifyCode(String mobile, Long userId) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue4())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_LOGIN.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue4()))
+                throw new FanbeiException("发送登录验证码超过每日限制次数", FanbeiExceptionCode.SMS_LOGIN_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
 
@@ -213,7 +263,7 @@ public class SmsUtil extends AbstractThird {
 			return false;
 		}
     }
-    
+
     /**
      * 借钱审核通过但是打款失败
      *
@@ -354,7 +404,30 @@ public class SmsUtil extends AbstractThird {
         this.addSmsRecord(SmsType.FORGET_PASS, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
+    /**
+     * 设置快捷登录初始密码发送短信验证码
+     *
+     * @param mobile 用户绑定的手机号（注意：不是userName）
+     * @param userId 用户id
+     * @return
+     */
+    public boolean sendSetQuickPwdVerifyCode(String mobile, Long userId) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
 
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue1())) {
+            int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_SET_PWD.getCode());
+            if (countForgetPwd >= Integer.valueOf(resourceDo.getValue1()))
+                throw new FanbeiException("发送设置密码验证码超过每日限制次数", FanbeiExceptionCode.SMS_FORGET_PASSWORD_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = SET_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        this.addSmsRecord(SmsType.QUICK_SET_PWD, mobile, verifyCode, 0l, smsResult);
+        return smsResult.isSucc();
+    }
 
     /**
      * 绑定手机发送短信验证码
@@ -456,6 +529,7 @@ public class SmsUtil extends AbstractThird {
             }
         }
         if (StringUtil.isNotBlank(content)) {
+            logger.error("sendRepaymentBorrowCashSuccess success,mobile:"+mobile+"content:"+content);
             SmsResult smsResult = sendSmsToDhst(mobile, content);
             return smsResult.isSucc();
         }
@@ -491,6 +565,7 @@ public class SmsUtil extends AbstractThird {
             	}
                 String content = StringUtil.null2Str(resourceDo.getValue());
                 content = content.replace("&errorMsg", errorMsg);
+                logger.error("sendRepaymentBorrowCashFail success,mobile:"+mobile+"content:"+content);
                 SmsResult smsResult = sendSmsToDhst(mobile, content);
                 return smsResult.isSucc();
             }else{
@@ -502,7 +577,38 @@ public class SmsUtil extends AbstractThird {
         return false;
     }
 
-    
+
+    /**
+	 * 用户续借失败发送短信提醒用户
+	 *
+	 * @param mobile
+	 */
+	public boolean sendRenewalFailWarnMsg(String mobile,String errorMsg,int errorTimes){
+
+	 AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
+	 try {
+	 	//发送短信的大开关
+	     if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+	     	//单日单个用户发送次数限制校验
+	     	int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
+	     	if(maxSendTimes<errorTimes){
+	     		logger.error("sendRenewalFailWarnMsg false,maxSendTimes:"+maxSendTimes+",errorTimes:"+errorTimes+",mobile:"+mobile);
+	     		return false;
+	     	}
+	         String content = StringUtil.null2Str(resourceDo.getValue());
+	         content = content.replace("&errorMsg", errorMsg);
+	         SmsResult smsResult = sendSmsToDhst(mobile, content);
+	         logger.info("ssendRenewalFailWarnMsg is succes ;content={}"+content);
+	         return smsResult.isSucc();
+	     }else{
+	     	logger.error("sendRenewalFailWarnMsg false,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+	     }
+	 } catch (Exception e) {
+			logger.error("sendRenewalFailWarnMsg exception,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+		}
+	 return false;
+	}
+
     /**
      * 对单个手机号发送普通短信
      *
@@ -619,7 +725,7 @@ public class SmsUtil extends AbstractThird {
         }
 
 
-        
+
         SimpleDateFormat backDateFormat = new SimpleDateFormat("YYYY-MM-"+String.valueOf(payDay));
         String payBackDateFormat = "";
         if (calendar.get(Calendar.DAY_OF_MONTH) <= outDay) {
@@ -788,6 +894,52 @@ public class SmsUtil extends AbstractThird {
        }else{
            thirdLog.error("union login sms error channel:"+channelCode+",phone:"+phone);
        }
+    }
+
+    public boolean sendRepaymentBorrowBillFail(String mobile, String errorMsg,int errorTimes) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+        try {
+            //发送短信的大开关
+            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+                //单日单个用户发送次数限制校验
+                //手动还款暂不发短信,所以不需要判断次数，代扣最多口两次
+                /*int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
+                if(maxSendTimes<errorTimes){
+                    logger.error("sendRepaymentBorrowBillFail false,maxSendTimes:"+maxSendTimes+",errorTimes:"+errorTimes+",mobile:"+mobile);
+                    return false;
+                }*/
+                String content = StringUtil.null2Str(resourceDo.getValue());
+                content = content.replace("&errorMsg", errorMsg);
+                SmsResult smsResult = sendSmsToDhst(mobile, content);
+                logger.error("sendRepaymentBorrowBillFail success,mobile:"+mobile+"content:"+content);
+                return smsResult.isSucc();
+            }else{
+                logger.error("sendRepaymentBorrowBillFail false,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+            }
+        } catch (Exception e) {
+            logger.error("sendRepaymentBorrowBillFail exception,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+        }
+        return false;
+    }
+
+    public boolean sendRepaymentBorrowBillSuccess(String mobile) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+        try {
+            //发送短信的大开关
+            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+                Date date = DateUtil.addMonths(new Date(), -1);
+                String month = DateUtil.getMonth(date);
+                String content = BorrowBillMessageSuccess.replace("x", month);
+                SmsResult smsResult = sendSmsToDhst(mobile, content);
+                logger.error("sendRepaymentBorrowBillsuccess success,mobile:"+mobile+"content:"+content);
+                return smsResult.isSucc();
+            }else{
+                logger.error("sendRepaymentBorrowBillsuccess false,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+            }
+        } catch (Exception e) {
+            logger.error("sendRepaymentBorrowBillsuccess exception,send onoff status:"+(resourceDo!=null?resourceDo.getValue1():"off")+",mobile:"+mobile);
+        }
+        return false;
     }
 }
 

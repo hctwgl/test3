@@ -64,4 +64,9 @@ public interface AfRepaymentService {
      * @return
      */
     int dealSelfSupportOrBoluomeFail(String outTradeNo,String tradeNo);
+
+    int updateRepaymentName(Long refId);
+	boolean sendFailMessage(Long userId, String content, String outTradeNo, String tradeNo);
+
+	boolean sendSuccessMessage(Long userId,String outTradeNo,String tradeNo);
 }

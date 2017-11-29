@@ -136,10 +136,8 @@ public class WithdrawCashApi implements ApiHandle {
 		afCashRecordDo.setStatus(status);
 
 		if (afCashRecordService.addCashRecord(afCashRecordDo,afUserBankcardDo) > 0) {
-			
 			return resp;
 		}
-
 		throw new FanbeiException(FanbeiExceptionCode.FAILED);
 	}
 

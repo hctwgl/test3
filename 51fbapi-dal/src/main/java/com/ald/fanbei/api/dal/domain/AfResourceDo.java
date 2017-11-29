@@ -30,8 +30,9 @@ public class AfResourceDo extends AbstractSerial {
 	private String value3;//扩展值3
 	private String value4;//扩展值4
 	private Long sort;//排序
+	private String pic1;
+	private String pic2;
 
-	
 	/**
 	 * @return the value4
 	 */
@@ -147,7 +148,19 @@ public class AfResourceDo extends AbstractSerial {
 	public void setValue3(String value3) {
 		this.value3 = value3;
 	}
-
+	public String getPic1() {
+		return pic1;
+	}
+	public void setPic1(String pic1) {
+		this.pic1 = pic1;
+	}
+	public String getPic2() {
+		return pic2;
+	}
+	public void setPic2(String pic2) {
+		this.pic2 = pic2;
+	}
+	
 
 
 }

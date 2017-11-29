@@ -17,4 +17,6 @@ public interface AfCategoryService {
 	 * @return
 	 */
 	List<AfCategoryDo> getCategoryList();
+
+	List<AfCategoryDo> getHomePageCategoryInfo();
 }

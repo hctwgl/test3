@@ -121,6 +121,12 @@
 	        <if test="goodsPriceName != null">
 	            goods_price_name,
 	        </if>
+			<if test="auAmount != null">
+	            au_amount,
+	        </if>
+	        <if test="usedAmount != null">
+	            used_amount,
+	        </if>
 			gmt_create ,
 			gmt_modified
 		)
@@ -226,6 +232,12 @@
 			<if test="goodsPriceName != null">
 	            #{goodsPriceName},
 	        </if>
+			<if test="auAmount != null">
+	            #{auAmount},
+		     </if>
+			<if test="usedAmount != null">
+	            #{usedAmount},
+	        </if>
 			NOW(),
 			NOW()
 		)
@@ -265,7 +277,13 @@
 			gmt_finished , 
 			rebate_amount , 
 			commission_amount ,
-			bank_id , 
+			bank_id,
+			<if test="auAmount != null">
+	            au_amount,
+	        </if>
+	        <if test="usedAmount != null">
+	            used_amount,
+	        </if>
 			gmt_pay_end
 			)
 		VALUES
@@ -304,6 +322,12 @@
     		#{item.rebateAmount},
     		#{item.commissionAmount},
     		#{item.bankId},
+    		<if test="auAmount != null">
+	            #{auAmount},
+		     </if>
+			<if test="usedAmount != null">
+	            #{usedAmount},
+	        </if>
     		#{item.gmtPayEnd}
 		)
 		</foreach>
@@ -588,6 +612,17 @@
 			af_order
 		WHERE
 			is_delete=0 AND pay_trade_no = #{payTradeNo}
+	</select>
+
+	<select id="getNoFinishOrderCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		SELECT
+			count(*)
+		FROM
+			af_order
+		WHERE
+			status = 'NEW'
+		AND is_delete=0
+		AND user_id = #{userId}
 	</select>
 	
 	<select id="getThirdOrderInfoByOrderTypeAndOrderNo" flushCache="true" resultType="AfOrderDo">
@@ -973,4 +1008,37 @@
 		SELECT
 		<include refid="queryFields"/> FROM af_order WHERE is_delete = 0 AND gmt_create &gt;=#{startTime} and gmt_create &lt;=#{endTime}
 	</select>
+	
+	<select id="getOldUserOrderAmount" resultType="java.lang.Integer">
+		SELECT
+			COUNT(0)
+		FROM af_order 
+		WHERE
+			user_id=#{userId}
+		AND 
+			status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING') 
+		AND 
+			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
+	</select>
+	
+	
+	<select id="getOverOrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM af_order
+		WHERE
+			goods_id=#{goodsId}
+		AND
+			user_id=#{userId}
+		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+	</select>
+	<select id="getOverOrderByUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM af_order
+		WHERE
+			user_id=#{userId}
+		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+	</select>
+	
 </mapper>
