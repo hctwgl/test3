@@ -158,11 +158,14 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 			vo.setNumId(goods.getRid()+"");
 			//是否限购
 			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goods.getRid());
-
-			if(StringUtils.isEmpty(afActivityGoodsDo.getLimitCount()+"") || (afActivityGoodsDo.getLimitCount() == 0)){
-				vo.setLimitedPurchase(-1);
+			if(null != afActivityGoodsDo){
+				if(StringUtils.isEmpty(afActivityGoodsDo.getLimitCount()+"") || (afActivityGoodsDo.getLimitCount() == 0)){
+					vo.setLimitedPurchase(-1);
+				}else{
+					vo.setLimitedPurchase(new Long(afActivityGoodsDo.getLimitCount()).intValue());
+				}
 			}else{
-				vo.setLimitedPurchase(new Long(afActivityGoodsDo.getLimitCount()).intValue());
+				vo.setLimitedPurchase(-1);
 			}
 		}else{
 			vo.setLimitedPurchase(-1);
