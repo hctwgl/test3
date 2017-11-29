@@ -11,7 +11,7 @@
 <input type="hidden" id="pointCode" name="pointCode" value="$!{pointCode}">
 <input type="hidden" id="style" value="$!{style}">
 <div class="wrap" id="theme$!{style}">
-    #if( $!{style}!=17 && $!{style}!=1)
+    #if( $!{style}>=2 && $!{style}<=7)
         <marquee behavior="scroll" direction="up" scrollamount="1" class="mar">
             <p>用户131****8880 成功借款 8000元</p>
             <p>用户137****9767 成功借款 6000元</p>
@@ -27,7 +27,7 @@
         </marquee>
     #end
     <img class="background" src="$commonUrl/channel$!{style}_01.jpg">
-    #if( $!{style}==17 )
+    #if( $!{style}==16 || $!{style}==17)
         <marquee behavior="scroll" direction="up" scrollamount="1" bgcolor="transparent" class="mar17">
             <p>用户131****8880 成功借款 8000元</p>
             <p>用户137****9767 成功借款 6000元</p>
@@ -44,27 +44,27 @@
     #end
     #if( $!{style}==6 )
         <div class="progress" id="progress">
-            <div class="text">￥20000</div>
+            <div class="text">￥500</div>
             <div class="progress_bg">
                 <div class="progress_bar"></div>
             </div>
             <div class="progress_btn" id="progress_btn"></div>
             <div class="moneyFlag">
-                <span class="lf" id="leftMoney">￥20000</span>
-                <span class="fr" id="rightMoney">￥20.00</span>
+                <span class="lf" id="leftMoney">￥500</span>
+                <span class="fr" id="rightMoney">￥0.5</span>
             </div>
         </div>
     #end
     <div class="form">
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
         <ul class="iform clearfix">
-            <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="maidianFn('phone')"></li>
+            <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="toMaidian('phone')"></li>
 
-            #if( $!{style}==17 ||$!{style}==1)
-                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
+            #if($!{style}==1||$!{style}==17)
+                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
                 <li class="clearfix">
-                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
-                    <button id="register_codeBtn" onclick="maidianFn('codeBtn')">点击获取</button>
+                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
+                    <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
                 </li>
                 <li><button id="register_submitBtn"></button></li>
                 <div class="clearfix register_checkbox">
@@ -74,14 +74,26 @@
                 </div>
                 <p class="clearfix" style="width: 3.0rem; margin: 0 auto; color: #fff; font-size: 0.28rem;">
                     <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
-                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;" onclick="maidianFn('toLoginz')">直接登录</a>
+                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;" onclick="toMaidian('toLogin')">直接登录</a>
                 </p>
+            #elseif( $!{style}==16 ||$!{style}==7)
+                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
+                <li class="clearfix">
+                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
+                    <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
+                </li>
+                <li><button id="register_submitBtn"></button></li>
+                <div class="clearfix register_checkbox">
+                    <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                    <label for="input_check"></label>
+                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《51返呗用户注册协议》</a></p>
+                </div>
             #else
                 <li class="clearfix">
-                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="maidianFn('code')">
-                    <button id="register_codeBtn" onclick="maidianFn('codeBtn')">点击获取</button>
+                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
+                    <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
                 </li>
-                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="maidianFn('pwd')"></li>
+                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
                 <li><button id="register_submitBtn"></button></li>
                 <div class="clearfix register_checkbox">
                     <input type="checkbox" class="input_check" id="input_check" checked="checked">
@@ -90,7 +102,7 @@
                 </div>
                 <p class="clearfix" style="width: 3.0rem; margin: .5rem auto 0; color: #fff; font-size: 0.26rem;">
                     <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册?</span>
-                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ff5b56" onclick="maidianFn('toLogin')">点我马上登录</a>
+                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;color:#ff5b56" onclick="toMaidian('toLogin')">点我马上登录</a>
                 </p>
             #end
 
