@@ -5,139 +5,135 @@ var domainName = protocol + '//' + host; //获取域名
 let groupId = getUrl('groupId');
 
 // 电子数码
-let goodArr = [
-    {
+let goodArr = [{
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/apple.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=197'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/huawei.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=204'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/huawei.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=204'
     },
-    
+
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/honer.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=205'
-    },
-    {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meizu.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=213'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/honer.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=205'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/oppo.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=193'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meizu.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=213'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meitu.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=202'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/oppo.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=193'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/vivo.png',
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meitu.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=202'
+    },
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/vivo.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=195'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/xiaomi.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=203'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/xiaomi.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=203'
     }
 ]
 // 鞋服箱包
-let goodArr1 = [
-    {
+let goodArr1 = [{
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/adidas.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=228'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/anta.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=229'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/anta.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=229'
     },
-    
+
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/efri.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=233'
-    },
-    {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meilv.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=232'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/efri.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=233'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/newbalance.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=230'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meilv.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=232'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/nike.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=227'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/newbalance.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=230'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/peacebird.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=234'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/nike.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=227'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/samsontie.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=231'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/peacebird.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=234'
+    },
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/samsontie.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=231'
     }
 ]
 // 手表配饰
-let goodArr2 = [
-    {
+let goodArr2 = [{
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/armani.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=201'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/casio.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=194'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/casio.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=194'
     },
-    
+
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/DW.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=191'
-    },
-    {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/rossini.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=200'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/DW.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=191'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tianwang.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=225'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/rossini.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=200'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tissot.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=192'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tianwang.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=225'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/swarovski.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=190'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tissot.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=192'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/zhoudafu.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=226'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/swarovski.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=190'
+    },
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/zhoudafu.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=226'
     }
 ]
 // 家电类目
-let goodArr3 = [
-    {
+let goodArr3 = [{
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/jiuyang.png',
         link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=220'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/liren.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=216'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/liren.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=216'
     },
-    
+
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/midea.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=218'
-    },
-    {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/philips.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=224'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/midea.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=218'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/sunsung2.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=217'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/philips.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=224'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/supor.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=214'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/sunsung2.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=217'
+    },
+    {
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/supor.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=214'
     }
 ]
 
@@ -281,7 +277,9 @@ let vm = new Vue({
                     self.touchdefy = self.touchstarty - self.touchendy
                     self.touchdefx = self.touchstartx - self.touchendx
                 })
+                self.initScroll();
             }, 0)
+
         })
     },
     methods: {
@@ -290,11 +288,12 @@ let vm = new Vue({
             this.nowkey = i
         },
         linkto(good) {
-            this.maidian("good=" +encodeURI(good.link));
+            this.maidian("good=" + encodeURI(good.link));
             if (!this.isApp) {
                 this.toRegister();
                 return false;
             }
+            this.setSession();
             window.location.href = good.link
         },
         isAppFn: function () {
@@ -329,9 +328,9 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     if (!data.success) {
-                        if (data.data!='') {
+                        if (data.data != '') {
                             location.href = data.data.loginUrl;
-                        }else {
+                        } else {
                             requestMsg("哎呀，获取优惠券出错了！");
                         }
                         return false;
@@ -369,7 +368,7 @@ let vm = new Vue({
                     if (!flag) {
                         self.currentData = self.goodsData[5];
                         self.triangleFlag = 5;
-                    }else {
+                    } else {
                         self.$nextTick(() => {
                             let allWidth = $("#dayBox").width();
                             let w = $(".status-2").width();
@@ -428,12 +427,12 @@ let vm = new Vue({
         },
         calTime: function () {
             let self = this;
-            let t = self.redRainData.currentTime/1000;
+            let t = self.redRainData.currentTime / 1000;
             let t1 = 1512403200; //12.05
             let t2 = 1512835200; // 12.10
-            if (t<t1) {
+            if (t < t1) {
                 self.topFalg = 1;
-            } else if (t>=t1 && t<t2) {
+            } else if (t >= t1 && t < t2) {
                 self.topFalg = 2;
             } else {
                 self.topFalg = 3;
@@ -460,45 +459,7 @@ let vm = new Vue({
                 requestMsg("活动已结束");
                 return false;
             }
-            /*  
-            $.ajax({
-                url: "/activity/double12/getCoupon",
-                type: "POST",
-                dataType: "JSON",
-                data: {
-                    couponId: couponId
-                },
-                success: function (returnData) {
-                    console.log("returnData=>>", returnData)
-                    let d = returnData.data;
-                    if (returnData.success) {
-                        if (d.result == 'Y') {
-                            requestMsg("优惠劵领取成功");
-                            self.$set(self.couponData[index], 'isGet', 'Y');
-                            self.maidian("couponSuccess=true");
-                        } else if (d.result == 'N') {
-                            requestMsg("您已经领取过了，快去使用吧");
-                            self.maidian("couponSuccess=got")
-                        } else {
-                            requestMsg("今日优惠券已领取完毕，明天再来领取吧");
-                            self.maidian("couponSuccess=end")
-                        }
-                    } else {
-                        if (d == '') {
-                            requestMsg("哎呀，出错了！");
-                        } else {
-                            location.href = d.loginUrl;
-                        }
-                    }
-                },
-                error: function () {
-                    requestMsg("哎呀，出错了！");
-                },
-                complete: function () {
-                    self.ajaxFlag = true;
-                }
-            }); 
-            */
+
             $.ajax({
                 url: "/fanbei-web/pickCoupon",
                 type: "POST",
@@ -553,7 +514,8 @@ let vm = new Vue({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
                 data: {
-                    maidianInfo: '/fanbei-web/activity/doubleTwelve?userName=' + userName + "&" + data + "&spread=" + spread
+                    maidianInfo: '/fanbei-web/activity/doubleTwelve?userName=' + userName + "&" + data,
+                    maidianInfo1: spread
                 },
                 success: function (data) {
                     console.log(data)
@@ -563,10 +525,14 @@ let vm = new Vue({
         changeFlag: function () {
             this.couponFlag = !this.couponFlag;
             if (this.couponFlag) {
-                $("#couponBox").animate({ 'height': '3rem' }, 'normal', 'linear');
+                $("#couponBox").animate({
+                    'height': '3rem'
+                }, 'normal', 'linear');
             } else {
-                let h = $("#couponUl").height()*2/100 +.4;
-                $("#couponBox").animate({ height: h+'rem' }, 'normal', 'linear');
+                let h = $("#couponUl").height() * 2 / 100 + .4;
+                $("#couponBox").animate({
+                    height: h + 'rem'
+                }, 'normal', 'linear');
             }
         },
         changeProduct: function (key) {
@@ -575,7 +541,22 @@ let vm = new Vue({
         },
         toRegister: function () {
             location.href = "doubleTwelveRegister?spread=" + spread;
+        },
+        setSession: function () {
+            sessionStorage.setItem('scrollTop', $('body').scrollTop());
+            sessionStorage.setItem('goodType', this.nowkey);
+        },
+        initScroll: function () {
+            let t = sessionStorage.getItem('goodType');
+            if (t != null) {
+                this.nowkey = t;
+                setTimeout(() => {
+                    $(window).scrollTop(sessionStorage.getItem('scrollTop'));
+                    sessionStorage.clear();
+                }, 0);
+            }
         }
+
     }
 });
 
@@ -586,13 +567,13 @@ function alaShareData() {
     var dataObj = { // 分享内容
         "appLogin": "N", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
-        "shareAppTitle": "双12狂欢盛宴 畅想欢乐购 ",  // 分享的title
-        'shareAppContent': "抢神券红包雨 1212元秒杀iPhone 6，双12任性到底，欢乐购不停~",  // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/12/double12_share.png",  // 分享右边小图
-        "shareAppUrl": domainName + "/fanbei-web/activity/doubleTwelve?groupId=" + groupId + "&spread=2",  // 分享后的链接
+        "shareAppTitle": "双12狂欢盛宴 畅想欢乐购 ", // 分享的title
+        'shareAppContent': "抢神券红包雨 1212元秒杀iPhone 6，双12任性到底，欢乐购不停~", // 分享的内容
+        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/12/double12_share.png", // 分享右边小图
+        "shareAppUrl": domainName + "/fanbei-web/activity/doubleTwelve?groupId=" + groupId + "&spread=2", // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "doubleTwelve" // 分享的页面
     };
-    var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
+    var dataStr = JSON.stringify(dataObj); // obj对象转换成json对象
     return dataStr;
 };
