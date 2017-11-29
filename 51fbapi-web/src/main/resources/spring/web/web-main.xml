@@ -113,6 +113,8 @@
 				<value>/goods/getGoodsRateInfo</value>
 				<value>/goods/getThirdGoodsAuction</value>
 				<value>/goods/getThirdGoodsDetailInfo</value>
+				<value>/flashSale/getBookingRushGoods</value>
+				<value>/flashSale/getFlashSaleGoods</value>
 
 				<value>/system/appUpgrade</value>
 				<value>/borrowCash/getBorrowCashHomeInfo</value>
