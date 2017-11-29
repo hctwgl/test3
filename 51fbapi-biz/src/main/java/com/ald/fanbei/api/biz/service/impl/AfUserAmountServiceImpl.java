@@ -211,10 +211,10 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         BigDecimal youhuijuan = map.get("coupon");
 
 
-        riskUtil.getOrderNo("vefy", String.valueOf( new Date().getTime()));
+
         AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
         afUserAmountDo.setAmount(map.get("repayment"));
-        afUserAmountDo.setBizOrderNo("tkaaa");  //随机生成
+        afUserAmountDo.setBizOrderNo(afOrderRefundDo.getRefundNo());  //随机生成
         afUserAmountDo.setBizType(AfUserAmountBizType.REFUND.getCode());
         afUserAmountDo.setSourceId(afOrderRefundDo.getRid());
         afUserAmountDo.setUserId(afOrderRefundDo.getUserId());
