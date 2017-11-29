@@ -260,8 +260,20 @@ public class APPH5GgActivityController extends BaseController {
 
 			// 登录时返回数据
 			AfUserDo uDo = afUserService.getUserById(userId);
-			if (uDo != null) {
-				inviteFriendVo.setInviteCode(uDo.getRecommendCode());
+			    if (uDo != null) {
+				  //用户的邀请码
+				        String invitationCode=uDo.getRecommendCode();
+				        if(invitationCode.equals("0")){
+				            //生成邀请码
+				            AfUserDo userDo = new AfUserDo();
+					    Long invteLong = Constants.INVITE_START_VALUE + userId;
+					    String inviteCode = Long.toString(invteLong, 36);
+					    userDo.setRecommendCode(inviteCode);
+					    userDo.setRid(userId);
+					    afUserService.updateUser(userDo);
+					    invitationCode = inviteCode;
+				        }
+					inviteFriendVo.setInviteCode(invitationCode);
 			}
 
 			resultStr = H5CommonResponse.getNewInstance(true, "获取邀请好友吃霸王餐页面信息成功", null, inviteFriendVo).toString();
@@ -306,10 +318,10 @@ public class APPH5GgActivityController extends BaseController {
 			}
 
 			// 登录时返回数据
-			AfUserDo uDo = afUserService.getUserById(userId);
-			if (uDo != null) {
-				inviteCeremonyVo.setInviteCode(uDo.getRecommendCode());
-			}
+//			AfUserDo uDo = afUserService.getUserById(userId);
+//			if (uDo != null) {
+//				inviteCeremonyVo.setInviteCode(uDo.getRecommendCode());
+//			}
 
 			resultStr = H5CommonResponse.getNewInstance(true, "获取邀请有礼页面信息成功", null, inviteCeremonyVo).toString();
 		} catch (Exception e) {
