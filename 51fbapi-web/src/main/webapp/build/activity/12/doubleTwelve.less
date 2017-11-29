@@ -181,11 +181,10 @@
     font-size: .28rem;
     text-align: center;
 }
+
 .got {
     color: #999;
-
 }
-
 
 .coupon-active {
     background: url('@{imageUrl}/double12_coupon.png');
@@ -320,7 +319,7 @@
 .product-li {
     margin-bottom: .2rem;
     width: 6.9rem; // height: 2.8rem;
-    height: 2.9rem;
+    height: 2.8rem;
     border-radius: .08rem;
     border: solid 1px #d8d8d8;
     overflow: hidden;
@@ -337,6 +336,8 @@
 
 .p-title {
     width: 3.58rem;
+    height: 0.48rem;
+    line-height: 0.48rem;
     font-size: .34rem;
     color: #222222;
     overflow: hidden; //超出一行文字自动隐藏
@@ -349,10 +350,14 @@
     .p-price-1 {
         font-family: PingFangSC-bold;
         font-size: .4rem;
+        height: 0.56rem;
+        line-height: 0.56rem;
         color: #fd1a2b;
     }
     .p-price-2 {
         margin-left: 0.4rem;
+        height: 0.56rem;
+        line-height: 0.56rem;
         font-size: .24rem;
         color: #999999;
         i {
@@ -372,6 +377,9 @@
         border-radius: .24rem;
         text-align: center;
         overflow: hidden;
+        p {
+            line-height: 0.33rem;
+        }
     } // 已结束状态
     .p-status-1 {
         border: solid 1px #999999;
@@ -387,7 +395,7 @@
         }
     } // 秒杀状态
     .p-status-2 {
-        border: solid 1px #fd1a2b;
+        border: solid 0.01rem #fd1a2b;
         color: #fd1a2b;
         .progress {
             position: absolute;

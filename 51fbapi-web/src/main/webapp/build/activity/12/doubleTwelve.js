@@ -8,136 +8,136 @@ let groupId = getUrl('groupId');
 let goodArr = [
     {
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/apple.png',
-        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=197'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/huawei.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=204'
     },
     
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/huaweirongyao.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/honer.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=205'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meizu.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=213'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/oppo.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=193'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/sansung.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meitu.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=202'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/vivo.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=195'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/xiaomi.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=203'
     }
 ]
 // 鞋服箱包
 let goodArr1 = [
     {
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/adidas.png',
-        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=228'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/anta.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=229'
     },
     
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/efri.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=233'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/meilv.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=232'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/newbalance.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=230'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/nike.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=227'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/peacebird.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=234'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/samsontie.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=231'
     }
 ]
 // 手表配饰
 let goodArr2 = [
     {
-        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/amani.png',
-        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/armani.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=201'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/casio.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=194'
     },
     
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/DW.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=191'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/rossini.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=200'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tianwang.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=225'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/tissot.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=192'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/swarovski.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=190'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/zhoudafu.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=226'
     }
 ]
 // 家电类目
 let goodArr3 = [
     {
-        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/joyoung.png',
-        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/jiuyang.png',
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=220'
     },
     {
-        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/liven.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/liren.png',
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=216'
     },
     
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/midea.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=218'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/philips.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=224'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/sunsung2.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=217'
     },
     {
         img:'https://f.51fanbei.com/h5/app/activity/12/double12_brand/supor.png',
-        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=187'
+        link:'https://app.51fanbei.com/app/goods/goodsListModel?modelId=214'
     }
 ]
 
