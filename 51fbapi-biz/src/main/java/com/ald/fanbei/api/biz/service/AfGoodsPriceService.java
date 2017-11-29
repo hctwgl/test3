@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 
 /**
@@ -11,4 +13,6 @@ import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
  */
 public interface AfGoodsPriceService extends ParentService<AfGoodsPriceDo, Long> {
 	int updateStockAndSaleByPriceId(Long priceId, boolean isSold);
+
+	List<AfGoodsPriceDo> getByGoodsId(Long goodsId);
 }

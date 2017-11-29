@@ -7,6 +7,10 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -250,6 +254,23 @@ public class AfResourceServiceImpl implements AfResourceService {
 		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
 		return borrowRate;
 	}
+	@Override
+	public BorrowRateBo borrowRateWithResourceCredit(Integer realTotalNper) {
+		BorrowRateBo borrowRate = new BorrowRateBo();
+		JSONObject borrowRateOverdueJson = getBorrowOverdueRateResource(realTotalNper);
+		borrowRate.setNper(1);
+		borrowRate.setRate(BigDecimal.ZERO);
+		borrowRate.setPoundageRate(BigDecimal.ZERO);
+		borrowRate.setRangeBegin(BigDecimal.ZERO);
+		borrowRate.setRangeEnd(BigDecimal.ZERO);
+
+		borrowRate.setOverdueRate(borrowRateOverdueJson.getBigDecimal("overdueRate"));
+		borrowRate.setOverduePoundageRate(borrowRateOverdueJson.getBigDecimal("overduePoundageRate"));
+		borrowRate.setOverdueRangeBegin(borrowRateOverdueJson.getBigDecimal("overdueRangeBegin"));
+		borrowRate.setOverdueRangeEnd(borrowRateOverdueJson.getBigDecimal("overdueRangeEnd"));
+		return borrowRate;
+	}
+
 
 	@Override
 	public JSONObject borrowRateWithResourceOld(Integer realTotalNper) {
@@ -484,6 +505,59 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDo;
 	}
 
+
+	/**
+	 * 获取第三方支付通道
+	 * @param thirdPayTypeEnum
+	 * @return
+	 */
+	public ThirdPayBo getThirdPayBo(ThirdPayTypeEnum thirdPayTypeEnum) {
+		List<AfResourceDo> list = afResourceDao.getResourceListByType("THIRD_PAY_SELECTED");
+		if(list == null || list.size() == 0){
+			return null;
+		}
+		List<ThirdPayBo> thirdPayList =JSON.parseArray(list.get(0).getValue(),ThirdPayBo.class);
+		ThirdPayBo _thirdPayBo = null;
+		for (ThirdPayBo thirdPayBo :thirdPayList){
+			if(thirdPayBo.getStatus() == ThirdPayStatusEnum.OPEN.getStatus() && thirdPayBo.getPayType().equals(thirdPayTypeEnum.getName())){
+				_thirdPayBo = thirdPayBo;
+				break;
+			}
+		}
+		return _thirdPayBo;
+	}
+
+	/**
+	 * 判断是否能支付
+	 * @param thirdPayTypeEnum
+	 * @return
+	 */
+	public boolean checkThirdPayByType(ThirdBizType thirdBizType,ThirdPayTypeEnum thirdPayTypeEnum) {
+		boolean ret = false;
+		List<AfResourceDo> list = afResourceDao.getResourceListByType("THIRD_PAY_CONTROL");
+		if(list == null || list.size() == 0){
+			return ret;
+		}
+
+		for (AfResourceDo bizControl :list){
+			if(bizControl.getSecType().equals(thirdBizType.name())){
+				if(thirdPayTypeEnum.getName().equals(ThirdPayTypeEnum.WXPAY.getName()) ){
+					if(bizControl.getValue().equals("1")){
+						ret =true;
+						break;
+					}
+				}
+				else{
+					if(bizControl.getValue1().equals("1")){
+						ret =true;
+						break;
+					}
+				}
+				break;
+			}
+		}
+		return ret;
+	}
 	@Override
 	public List<AfResourceDo> getBackGroundByType(String code) {
 		return afResourceDao.getBackGroundByType(code);
@@ -497,6 +571,41 @@ public class AfResourceServiceImpl implements AfResourceService {
 	@Override
 	public List<AfResourceDo> getNavigationDownTwoResourceDoList(String code) {
 		return afResourceDao.getNavigationUpOneResourceDoList(code);
+	}
+
+	@Override
+	public AfResourceDo getOpenBoluomeCouponById(long rid) {
+	    // TODO Auto-generated method stub
+	    AfResourceDo afResourceDo;
+			afResourceDo = afResourceDao.getOpenBoluomeCouponById(rid);
+
+		return afResourceDo;
+	}
+
+	@Override
+	public AfResourceDo getLaunchImageInfoByTypeAndVersion(String resourceType, String appVersion) {
+		return afResourceDao.getLaunchImageInfoByTypeAndVersion(resourceType,appVersion);
+	}
+
+	@Override
+	public AfResourceDo getLaunchImageInfoByType(String resourceType) {
+		// TODO Auto-generated method stub
+		return afResourceDao.getLaunchImageInfoByType(resourceType);
+	}
+
+	@Override
+	public List<AfResourceDo> getScrollbarListByType(String type) {
+		return afResourceDao.getScrollbarListByType(type);
+	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionUpRescoure() {
+		return afResourceDao.getEcommercePositionUpRescoure();
+	}
+
+	@Override
+	public List<AfResourceDo> getEcommercePositionDownRescoure() {
+		return afResourceDao.getEcommercePositionDownRescoure();
 	}
 
 }

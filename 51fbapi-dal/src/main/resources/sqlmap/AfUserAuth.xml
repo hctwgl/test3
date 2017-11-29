@@ -4,7 +4,8 @@
 	<sql id="queryField">
 		id rid,gmt_modified,user_id,zm_status,gmt_zm,zm_score,ivs_status,gmt_ivs,ivs_score,realname_status,gmt_realname,realname_score,faces_status,similar_degree,mobile_status,gmt_mobile,
 		bankcard_status,teldir_status,yd_status,contactor_status,contactor_name,contactor_mobile,location_status,location_address,contactor_type,risk_status,gmt_risk,
-		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit,alipay_status,gmt_alipay,thresholds,basic_status
+		fund_status,gmt_fund,jinpo_status,gmt_jinpo,credit_status,gmt_credit,alipay_status,gmt_alipay,thresholds,basic_status,gmt_chsi,chsi_status,gmt_zhengxin,zhengxin_status,gmt_basic
+
 	</sql>
  
 
@@ -140,6 +141,21 @@
 			</if>
 			<if test="basicStatus != null">
 				,basic_status=#{basicStatus}
+			</if>
+			<if test="gmtBasic != null">
+				,gmt_basic=#{gmtBasic}
+			</if>
+			<if test="gmtChsi != null">
+				,gmt_chsi=#{gmtChsi}
+			</if>
+			<if test="chsiStatus != null">
+				,chsi_status=#{chsiStatus}
+			</if>
+			<if test="gmtZhengxin != null">
+				,gmt_zhengxin=#{gmtZhengxin}
+			</if>
+			<if test="zhengxinStatus != null">
+				,zhengxin_status=#{zhengxinStatus}
 			</if>
 
 

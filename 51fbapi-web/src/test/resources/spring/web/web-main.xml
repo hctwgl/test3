@@ -92,13 +92,18 @@
 		<constructor-arg>
 			<list>
 				<value>/user/login</value>
+				<value>/user/quickLoginOrRegister</value>
 				<value>/user/getVerifyCode</value>
 				<value>/user/setRegisterPwd</value>
+				<value>/user/quickRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
 				<value>/user/checkLoginVerifyCode</value>
 				<value>/goods/getHomeInfo</value>
 				<value>/goods/getHomeInfoV1</value>
+				<value>/goods/getHomeInfoV2</value>
+				<value>/goods/getHomeInfoFront</value>
+				<value>/user/loginFront</value>
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
 				<value>/goods/getThirdGoodsList</value>
@@ -132,10 +137,13 @@
 
 				<!-- user -->
 				<entry key="/user/login" value-ref="loginApi" />
+				<entry key="/user/quickLoginOrRegister" value-ref="quickLoginOrRegisterApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
 				<entry key="/user/setRegisterPwd" value-ref="setRegisterPwdApi" />
+				<entry key="/user/quickRegisterPwd" value-ref="quickRegisterPwdApi" />
 				<entry key="/user/resetPwd" value-ref="resetPwdApi" />
+				<entry key="/user/setQuickFirstPwd" value-ref="setQuickFirstPwdApi" />
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
@@ -146,6 +154,7 @@
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
+				<entry key="/user/setQuickLoginPwd" value-ref="setQuickLoginPwdApi" />
 				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
 				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
 				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />
@@ -174,7 +183,7 @@
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
-
+				<entry key="/user/checkQuickRegisteredPwd" value-ref="checkQuickRegisteredPwdApi"/>
 
 				<entry key="/user/signin" value-ref="signinApi" />
 
@@ -184,6 +193,8 @@
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 				<entry key="/goods/getHomeInfoV1" value-ref="getHomeInfoV1Api" />
+				<entry key="/goods/getHomeInfoV2" value-ref="getHomeInfoV2Api" />
+				<entry key="/goods/getHomeInfoFront" value-ref="getHomeInfoFrontApi" />
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />

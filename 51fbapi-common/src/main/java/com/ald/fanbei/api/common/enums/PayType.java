@@ -13,8 +13,8 @@ import org.apache.commons.lang.StringUtils;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum PayType {
-	
-    ALIPAY("ALI", "支付宝"), WECHAT("WX", "微信"), AGENT_PAY("AP","代付"), BANK("BANK","银行卡"), COMBINATION_PAY("CP","组合支付"), OTHER("OTHER","其他支付");
+
+    CREDIT("CREDIT", "支付宝"), ALIPAY("ALI", "支付宝"), WECHAT("WX", "微信"), AGENT_PAY("AP","代付"), BANK("BANK","银行卡"), COMBINATION_PAY("CP","组合支付"), OTHER("OTHER","其他支付");
 
     private String    code;
 

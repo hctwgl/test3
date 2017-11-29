@@ -2,27 +2,33 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfFeedBackService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
-
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.RiskRespBo;
+import com.ald.fanbei.api.biz.bo.risk.RiskAuthFactory.RiskEventType;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.RiskStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserInvitationDto;
 
 /**
@@ -49,6 +55,10 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Resource
 	JpushService jpushService;
 
+	@Resource
+	RiskUtil riskUtil;
+	@Resource
+    AfUserRegisterTypeDao afUserRegisterTypeDao;
 
 	@Resource
 	BizCacheUtil bizCacheUtil;
@@ -89,6 +99,56 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 					//处理帐单日，还款日
 					addOutDay(afUserDo.getRid());
 
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.info("addUser error:", e,afUserDo);
+					return 0;
+				}
+			}
+		});
+
+	}
+
+	@Override
+	public int addUser(final AfUserDo afUserDo, final String type) {
+		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				try {
+					afUserDao.addUser(afUserDo);
+					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
+					afUserAuthDo.setUserId(afUserDo.getRid());
+					logger.info(StringUtil.appendStrs("yuyuegetaddUser",afUserDo.getRid()));
+					afUserAuthDao.addUserAuth(afUserAuthDo);
+
+					AfUserAccountDo account = new AfUserAccountDo();
+					account.setUserId(afUserDo.getRid());
+					account.setUserName(afUserDo.getUserName());
+					afUserAccountDao.addUserAccount(account);
+					couponSceneRuleEnginerUtil.regist(afUserDo.getRid(),afUserDo.getRecommendId(),afUserDo);
+
+
+					long recommendId = afUserDo.getRecommendId();
+
+					//#region add by hongzhengpei
+					if(recommendId !=0){
+						//新增推荐记录表
+						AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
+						afRecommendUserDo.setUser_id(afUserDo.getRid());
+						afRecommendUserDo.setParentId(recommendId);
+						afRecommendUserDao.addRecommendUser(afRecommendUserDo);
+					}
+					//#endregion
+
+					//处理帐单日，还款日
+					addOutDay(afUserDo.getRid());
+					if ("Q".equals(type)){
+						AfUserRegisterTypeDo afUserRegisterTypeDo = new AfUserRegisterTypeDo();
+						afUserRegisterTypeDo.setUserId(afUserDo.getRid());
+						afUserRegisterTypeDo.setType(1);
+						afUserRegisterTypeDao.insert(afUserRegisterTypeDo);
+					}
 					return 1;
 				} catch (Exception e) {
 					status.setRollbackOnly();
@@ -172,6 +232,11 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	}
 
 	@Override
+	public AfUserDo getUserByMobile(String mobile) {
+		return afUserDao.getUserByMobile(mobile);
+	}
+
+	@Override
 	public AfUserDo getUserByRecommendCode(String recommendCode) {
 		return afUserDao.getUserByRecommendCode(recommendCode);
 	}
@@ -189,6 +254,58 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Override
 	public List<String> getUserNameByUserId(List<String> users) {
 		return afUserDao.getUserNameByUserId(users);
+	}
+
+	public void updateUserCoreInfo(final Long userId, final String newMobile, final String password) {
+		transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus status) {
+				AfUserDo userDo = afUserDao.getUserById(userId);
+				AfUserAccountDo userAccountDo = afUserAccountDao.getUserAndAccountByUserId(userId);
+
+				userDo.setUserName(newMobile);
+				userDo.setMobile(newMobile);
+				userAccountDo.setUserName(newMobile);
+
+				AfUserDo userDoForMod = new AfUserDo();
+				userDoForMod.setRid(userDo.getRid());
+				userDoForMod.setUserName(newMobile);
+				userDoForMod.setMobile(newMobile);
+				if(!StringUtils.isBlank(password)) {
+					String salt = UserUtil.getSalt();
+					userDoForMod.setSalt(salt);
+					userDoForMod.setPassword(UserUtil.getPassword(password, salt));
+				}
+				afUserDao.updateUser(userDoForMod);
+
+				AfUserAccountDo userAccountDoForMod = new AfUserAccountDo();
+				userAccountDoForMod.setUserId(userDo.getRid());
+				userAccountDoForMod.setUserName(newMobile);
+				afUserAccountDao.updateUserAccount(userAccountDoForMod);
+
+				AfUserAuthDo authDo = afUserAuthDao.getUserAuthInfoByUserId(userId);
+				if(authDo == null || RiskStatus.A.getCode().equals(authDo.getRiskStatus())) { // 用户还未风控初始化，跳过
+					logger.info("don't init risk,skip sync user");
+				}else {
+					// 更新用户信息 USER
+					RiskRespBo riskResp = riskUtil.registerStrongRisk(userId.toString(), RiskEventType.USER.name(), userDo, null, "", "", (AfUserAccountDto)userAccountDo, "", "", "");
+					if (!riskResp.isSuccess()) {
+						throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
+					}
+				}
+
+				return 1;
+			}
+		});
+	}
+	@Override
+	public AfUserRegisterTypeDo isQuickRegisterUser(Long id) {
+		return afUserRegisterTypeDao.selectByUserId(id);
+	}
+
+	@Override
+	public int addQuickRegisterUser(AfUserRegisterTypeDo afUserRegisterTypeDo) {
+		return afUserRegisterTypeDao.insert(afUserRegisterTypeDo);
 	}
 
 

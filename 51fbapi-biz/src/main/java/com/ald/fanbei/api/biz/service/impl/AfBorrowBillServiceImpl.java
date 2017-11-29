@@ -2,6 +2,11 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -11,15 +16,23 @@ import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
@@ -38,10 +51,14 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	private AfBorrowBillDao afBorrowBillDao;
 	
 	@Resource
+	private AfUserOutDayDao afUserOutDayDao;
+
+	@Resource
 	private AfUserBankcardDao bankcardDao;
 
 	@Resource
-	AfUserOutDayDao afUserOutDayDao;
+    TransactionTemplate transactionTemplate;
+
 	@Override
 	public List<AfBorrowBillDo> getMonthBillList(AfBorrowBillQuery query) {
 		return afBorrowBillDao.getMonthBillList(query);
@@ -304,10 +321,19 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	/**
 	 * 全部结清
 	 * @param userId
+	 * @param billId  0 全部结清   期它 单个订单提前结清
 	 * @return
 	 */
-	public List<AllBarlyClearanceBo> getAllClear(Long userId){
-		List<AfBorrowBillDo> list = afBorrowBillDao.getBorrowBillList("N",userId);
+	public List<AllBarlyClearanceBo> getAllClear(Long userId,Long billId){
+		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
+		if(billId ==0) {
+			list = afBorrowBillDao.getBorrowBillList("N", userId);
+		}else{
+			AfBorrowBillDo afBorrowBillDo = afBorrowBillDao.getBorrowBillById(billId);
+			list = afBorrowBillDao.getBillListByBorrowIdAndStatus(afBorrowBillDo.getBorrowId(),"N");
+		}
+
+
 		List<HashMap> mapLsit = new ArrayList<HashMap>();
 		AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
 		int outDay = 10,payDay = 20;
@@ -323,6 +349,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		for(AfBorrowBillDo afBorrowBillDo :list) {
 			AllBarlyClearanceBo allBarlyClearanceBo = getAllBarlyBo(l, afBorrowBillDo.getBorrowId());
 			if (allBarlyClearanceBo == null) {
+				allBarlyClearanceBo = new AllBarlyClearanceBo();
 				allBarlyClearanceBo.setBorrowId(afBorrowBillDo.getBorrowId());
 				allBarlyClearanceBo.setNper(afBorrowBillDo.getNper());
 				allBarlyClearanceBo.setTitle(afBorrowBillDo.getName());
@@ -348,41 +375,39 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 			} else {
 				//未出
-				boolean needPlus = false;
-				if (m.containsKey(afBorrowBillDo.getBorrowId())) {
-					needPlus = true;
-				}
-				if (!needPlus) {
+				boolean needPlusFree = false;
+				if (!m.containsKey(afBorrowBillDo.getBorrowId())) {
 					if (afBorrowBillDo.getBillNper().intValue() == 1) {
-						needPlus = true;
+						needPlusFree = true;
 						m.put(afBorrowBillDo.getBorrowId(), true);
 					}
-				}
-				if (!needPlus) {
-					Calendar c = Calendar.getInstance();
-					c.set(Calendar.HOUR_OF_DAY, 0);
-					c.set(Calendar.MINUTE, 0);
-					c.set(Calendar.SECOND, 0);
-					if (pay_day.compareTo(c.getTime()) < 0) {
-						m.put(afBorrowBillDo.getBorrowId(), true);
-						needPlus = true;
+
+					if (!needPlusFree) {
+						Calendar c = Calendar.getInstance();
+						c.set(Calendar.HOUR_OF_DAY, 0);
+						c.set(Calendar.MINUTE, 0);
+						c.set(Calendar.SECOND, 0);
+						if (pay_day.compareTo(c.getTime()) < 0) {
+							m.put(afBorrowBillDo.getBorrowId(), true);
+							needPlusFree = true;
+						}
 					}
 				}
 
-				BigDecimal amount = needPlus? allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getBillAmount()):allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getPrincipleAmount());
+
+				BigDecimal amount = needPlusFree? allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getPrincipleAmount()):allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getBillAmount());
 				allBarlyClearanceBo.setAmount(amount);
 				allBarlyClearanceBo.setMinAdnMaxNper(afBorrowBillDo.getBillNper());
 				AllBarlyClearanceDetailBo allBarlyClearanceDetailBo = new AllBarlyClearanceDetailBo();
 				allBarlyClearanceDetailBo.setNper(afBorrowBillDo.getBillNper());
 				allBarlyClearanceDetailBo.setAmount(afBorrowBillDo.getBillAmount());
-				allBarlyClearanceDetailBo.setFree(needPlus ? false : true);
+				allBarlyClearanceDetailBo.setFree(needPlusFree ? true : false);
 				allBarlyClearanceDetailBo.setStatus(0);
 				allBarlyClearanceDetailBo.setOverdue(afBorrowBillDo.getOverdueStatus().equals("Y") ? 1 : 0);
 				allBarlyClearanceDetailBo.setPoundAmount(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));
 				allBarlyClearanceDetailBo.setInterest(afBorrowBillDo.getOverdueInterestAmount().add(afBorrowBillDo.getOverduePoundageAmount()));
 				List<AllBarlyClearanceDetailBo> detailList = allBarlyClearanceBo.getDetailList();
 				detailList.add(allBarlyClearanceDetailBo);
-
 			}
 		}
 		return  l;
@@ -410,6 +435,8 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public HashMap getOrderClear(Long user,Long billId){
 		HashMap map = new HashMap();
 		AfBorrowBillDo afBorrowBillDo = afBorrowBillDao.getBorrowBillById(billId);
+		List<AfBorrowBillDo> list = afBorrowBillDao.getBillListByBorrowIdAndStatus(afBorrowBillDo.getBorrowId(),"N");
+
 		return map;
 	}
 
@@ -420,5 +447,173 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 		out.set(Calendar.MINUTE,0);
 		out.set(Calendar.SECOND,0);
 		return out.getTime();
+	}
+
+
+
+
+	@Override
+	public int countNotPayOverdueBill(Long userId) {
+		return afBorrowBillDao.countNotPayOverdueBill(userId);
+	}
+
+	private void updateBorrowBills(long userId, int outDay, int oldOutDay,int payDay) {
+
+		List<AfBorrowBillDo> list =  afBorrowBillDao.getNoPayBillByUserId(userId,new Date());
+		if(list ==null || list.size() ==0)return;
+		AfBorrowBillDo lastOutBill = afBorrowBillDao.getLastOutBill(userId);
+		Date now = new Date();
+
+		Map<String, Object> map = getCurrentYearAndMonth(list.get(0).getGmtOutDay(),outDay,payDay);
+		int needPlus = 0;
+		Calendar c = Calendar.getInstance();
+		c.set(Calendar.DAY_OF_MONTH,outDay);
+		if(lastOutBill == null){
+			//正常修改
+
+		}
+		else{
+
+
+			//比较出帐日
+			int oldYearMonth = getYearMonth(lastOutBill.getGmtOutDay());
+			if(oldYearMonth >= (Integer) map.get("OUT")){
+				needPlus = needPlus +1;
+			}
+
+			if(needPlus == 0) {
+				//比较还款日
+				int oldYearMonth_pay = getYearMonth(lastOutBill.getGmtPayTime());
+				if (oldYearMonth_pay >=(Integer) map.get("PAY")) {
+					needPlus = needPlus + 1;
+				}
+			}
+		}
+		if(needPlus ==0){
+			if(new Date().compareTo((Date)map.get("OUT_TIME"))>=0){
+				needPlus = needPlus +1;
+			}
+		}
+
+		//修改;
+		for(AfBorrowBillDo afBorrowBillDo :list){
+			Date _now = afBorrowBillDo.getGmtOutDay();
+			if(needPlus != 0){
+				Calendar datetime = Calendar.getInstance();
+				datetime.setTime(_now);
+				datetime.add(Calendar.MONTH,1);
+				_now = datetime.getTime();
+			}
+			Map<String, Object> map1 = getCurrentYearAndMonth(_now,outDay,payDay);
+			int billYear = afBorrowBillDo.getBillYear();
+			int billMonth = afBorrowBillDo.getBillMonth();
+			if(needPlus >0){
+				billMonth = billMonth +1;
+				if(billMonth>12) {
+					billMonth =1;
+					billYear =billYear+1;
+				}
+			}
+			afBorrowBillDao.updateBillOutDay(afBorrowBillDo.getRid(),(Date) map1.get("OUT_TIME"),(Date)map1.get("PAY_TIME"),billYear,billMonth);
+		}
+
+	}
+
+	private Map<String, Object> getCurrentYearAndMonth(Date now,int outDay, int payDay) {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		// 账单日
+
+		int default_out_day = outDay;
+		int default_pay_day = payDay;
+
+
+
+		int billYear = 0, billMonth = 0;
+		String[] billDay = DateUtil.formatDate(now, DateUtil.MONTH_PATTERN).split("-");
+		if (billDay.length == 2) {
+			billYear = NumberUtil.objToIntDefault(billDay[0], 0);
+			billMonth = NumberUtil.objToIntDefault(billDay[1], 0);
+		}
+		map.put(Constants.DEFAULT_YEAR, billYear);
+		map.put(Constants.DEFAULT_MONTH, billMonth);
+
+		Calendar out_datetime = Calendar.getInstance();
+		out_datetime.setTime(now);
+		//out_datetime.add(Calendar.MONTH,1);
+		out_datetime.set(Calendar.DAY_OF_MONTH,default_out_day);
+		out_datetime.set(Calendar.HOUR_OF_DAY,0);
+		out_datetime.set(Calendar.MINUTE,0);
+		out_datetime.set(Calendar.SECOND,0);
+		out_datetime.set(Calendar.MILLISECOND,0);
+
+		Calendar pay_datetime = Calendar.getInstance();
+		pay_datetime.setTime(now);
+		if(default_pay_day < default_out_day) {
+			pay_datetime.add(Calendar.MONTH, 1);
+		}
+		pay_datetime.set(Calendar.DAY_OF_MONTH,default_pay_day);
+		pay_datetime.set(Calendar.HOUR_OF_DAY,23);
+		pay_datetime.set(Calendar.MINUTE,59);
+		pay_datetime.set(Calendar.SECOND,59);
+		//pay_datetime.set(Calendar.MILLISECOND,999);
+
+		map.put("OUT",getYearMonth(out_datetime.getTime()));
+		map.put("PAY",getYearMonth(pay_datetime.getTime()));
+		map.put("OUT_TIME",out_datetime.getTime());
+		map.put("PAY_TIME",pay_datetime.getTime());
+		return map;
+	}
+
+	private Integer getYearMonth(Date date) {
+		String[] billDay1 = DateUtil.formatDate(date, DateUtil.MONTH_PATTERN).split("-");
+		return Integer.parseInt(billDay1[0]+billDay1[1]);
+	}
+
+	@Override
+	public int addUserOutDay(final long userId, final int outDay, final int payDay) {
+        final int[] returnValue={0};
+        transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                if(afUserOutDayDao.insertUserOutDay(userId,outDay,payDay)>0){
+                    returnValue[0] =afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
+                    updateBorrowBills(userId,outDay,10,payDay);
+                }
+                return null;
+            }
+        });
+        return returnValue[0];
+    }
+
+	@Override
+	public int updateUserOutDay(final long userId, final int outDay, final int payDay) {
+        final int[] returnValue = {0};
+        transactionTemplate.execute(new TransactionCallback<Long>() {
+            @Override
+            public Long doInTransaction(TransactionStatus transactionStatus) {
+                if(afUserOutDayDao.updateUserOutDay(userId,outDay,payDay)>0){
+                    returnValue[0]  = afUserOutDayDao.insertUserOutDayLog(userId,outDay);//插入日志
+                    updateBorrowBills(userId,outDay,10,payDay);
+                }
+                return null;
+            }
+        });
+        return returnValue[0];
+    }
+
+	@Override
+	public String getBillIdsByUserId(Long userId) {
+		return  afBorrowBillDao.getBillIdsByUserId(userId);
+	}
+
+	@Override
+	public int updateBorrowBillLockById(String billId) {
+		return  afBorrowBillDao.updateBorrowBillLockById(billId);
+	}
+
+	@Override
+	public int updateBorrowBillUnLockByIds(String billIds) {
+		return  afBorrowBillDao.updateBorrowBillUnLockByIds(StringUtil.splitToList(billIds, ","));
 	}
 }

@@ -1,17 +1,9 @@
 package com.ald.fanbei.api.biz.third.util.yitu;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -98,6 +90,19 @@ public class FileHelper {
 		return result;
 	}
 
+	/***
+	 * 获取文件基本信息
+	 *
+	 * @param filePath
+	 * @return
+	 */
+	public static Map<String, String> getFileInfo(String filePath) {
+		Map<String, String> fileInfos = new LinkedHashMap<String, String>();
+		File file = new File(filePath);
+		fileInfos.put("FileName", file.getName());
+		fileInfos.put("FileLength", String.valueOf(file.length()));
+		return fileInfos;
+	}
 	/**
 	 * 按二进制保存文件
 	 * 
@@ -218,5 +223,35 @@ public class FileHelper {
 			e.printStackTrace();
 		}
 		return is;
+	}
+
+	/***
+	 * 获取文件的Bytes
+	 *
+	 * @param filePath
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] getBytes(String filePath) {
+		File file = new File(filePath);
+		FileInputStream fis = null;
+		byte[] buffer = null;
+		try {
+			fis = new FileInputStream(file);
+			buffer = new byte[(int) file.length()];
+			fis.read(buffer);
+			fis.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return buffer;
 	}
 }

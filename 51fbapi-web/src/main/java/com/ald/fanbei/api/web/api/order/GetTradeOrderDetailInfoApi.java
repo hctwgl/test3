@@ -7,10 +7,12 @@ import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderStatus;
+import com.ald.fanbei.api.common.enums.PayStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
@@ -61,7 +63,9 @@ public class GetTradeOrderDetailInfoApi implements ApiHandle {
         AfOrderVo vo = new AfOrderVo();
         vo.setGmtCreate(order.getGmtCreate());
         vo.setOrderNo(order.getOrderNo());
-        vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
+        if (StringUtil.equals(order.getPayStatus(), PayStatus.PAYED.getCode())) {
+            vo.setGmtPay(DateUtil.formatDateToYYYYMMddHHmmss(order.getGmtPay()));
+        }
         vo.setActualAmount(order.getActualAmount());
         vo.setMobile(context.getUserName());
         vo.setGmtPayStart(new Date());

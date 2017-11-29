@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.*;
@@ -124,6 +125,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	AfUserOutDayDao afUserOutDayDao;
 	@Resource
 	AfOrderDao afOrderDao;
+
+	@Resource
+	ContractPdfThreadPool contractPdfThreadPool;
 
 
 	@Override
@@ -1122,7 +1126,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 
 	@Override
 	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType,final String orderType) {
-		return transactionTemplate.execute(new TransactionCallback<Long>() {
+		Long resultValue = 0L;
+		resultValue =  transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
@@ -1143,6 +1148,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 						afBorrowDao.addBorrowBill(billList);
 //					}
+
 					return borrow.getRid();
 
 				} catch (Exception e) {
@@ -1152,6 +1158,19 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 				}
 			}
 		});
+
+		/*if(resultValue > 0L){
+			try {
+				afContractPdfCreateService.protocolInstalment(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
+				logger.info("protocolInstalment finish，borrowId=" + borrow.getRid());
+			} catch (Exception e) {
+				logger.error("protocolInstalment error，borrowId=" + borrow.getRid(),e);
+			}
+		}*/
+		if (0l !=resultValue){
+			contractPdfThreadPool.protocolInstalmentPdf(borrow.getUserId(),borrow.getNper(),borrow.getAmount(),borrow.getRid());
+		}
+        return resultValue;
 	}
 
 

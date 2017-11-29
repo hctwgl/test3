@@ -750,4 +750,109 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 	}
 
+	@Override
+	public void chsiRiskFail(String userName) {
+		try {
+			String msgContext = "您好，您本次学信网认证未通过。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("chsiRiskFail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "229");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("学信网认证未通过", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("chsiRiskFail error", e);
+		}	
+	}
+
+	@Override
+	public void chsiRiskFault(String userName) {
+		try {
+			String msgContext = "您好，您本次学信网认证失败，稍后请重新进行认证。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("chsiRiskFault,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "229");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("学信网认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("chsiRiskFault error", e);
+		}	
+	}
+
+	@Override
+	public void chsiRiskSuccess(String userName) {
+		try {
+			String msgContext = "恭喜，您已通过学信网认证！";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("chsiRiskSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "228");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("学信网认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("chsiRiskSuccess error", e);
+		}	
+	}
+
+	@Override
+	public void zhengxinRiskSuccess(String userName) {
+		try {
+			String msgContext = "恭喜，您已通过人行征信认证！";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("zhengxinRiskSuccess,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "228");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("人行征信认证成功", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("zhengxinRiskSuccess error", e);
+		}	
+		
+	}
+
+	@Override
+	public void zhengxinRiskFail(String userName) {
+		try {
+			String msgContext = "您好，您本次人行征信认证未通过。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("zhengxinRiskFail,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "229");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("人行征信认证未通过", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("zhengxinRiskFail error", e);
+		}	
+		
+	}
+
+	@Override
+	public void zhengxinRiskFault(String userName) {
+		try {
+			String msgContext = "您好，您本次人行征信认证失败，稍后请重新进行认证。";
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("zhengxinRiskFault,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "229");
+			extras.put(DATA, "");
+			jpushUtil.pushNotifyByAlias("人行征信认证失败", msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("zhengxinRiskFault error", e);
+		}	
+		
+	}
+
 }
