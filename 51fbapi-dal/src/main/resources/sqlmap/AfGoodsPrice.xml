@@ -224,7 +224,7 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
 		WHERE goods_id=#{goodsId}
     </select>
 
-    <select id="selectSumStock" parameterType="java.lang.Long">
+    <select id="selectSumStock" parameterType="java.lang.Long" >
         select SUM(stock) from af_goods_price where  is_delete = 0 and is_sale = 'Y' and goods_id = #{goodsId}
     </select>
 
