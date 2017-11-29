@@ -369,7 +369,7 @@ public class AppH5Double12ActivityController extends BaseController{
 			// 当前时间
 			//Date currentTime = new Date();
 			
-			String testTime = "2017-12-11 10:00:00";
+			String testTime = "2017-12-13 10:00:00";
 			Date currentTime = dateFormat.parse(testTime);
 			
 			// 开始时间
