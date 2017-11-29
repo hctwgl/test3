@@ -827,12 +827,18 @@ public class TestController {
 
 	@Resource
 	AfUserAmountService afUserAmountService;
+
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 	/**
 	 *
 	 */
 	@RequestMapping(value = { "/testYiBao" }, method = RequestMethod.GET)
 	public void testAddYiBao(){
-		afUserAmountService.refundOrder(276267l);
+
+		afBorrowBillService.getAllClear(18637961820l);
+
+		//afUserAmountService.refundOrder(276267l);
 //		Map aaa = yiBaoUtility.getYiBaoOrder("xj20170925150926247561","1001201709250000000018962175");
 //		String e = "";
 
