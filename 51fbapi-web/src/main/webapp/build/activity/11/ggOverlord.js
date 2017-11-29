@@ -151,7 +151,6 @@ function getUrlParam(url) {
     }
     return param;
 }
-
 // app调用web的分享方法
 function alaShareData(){
     var dataObj = { // 分享内容
