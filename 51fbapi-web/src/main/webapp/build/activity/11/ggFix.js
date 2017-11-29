@@ -83,16 +83,6 @@ let vm = new Vue({
                     //console.log(data);
                     self.couponCont=eval('('+data+')').data;
                     console.log(self.couponCont,'优惠券初始化');
-                    //判断优惠券初始化状态
-                    /*self.$nextTick(function () {
-                        for(var k=0;k<self.couponCont.boluomeCouponList.length;k++){
-                            //console.log(self.couponCont.boluomeCouponList[k].isHas);
-                            if(self.couponCont.boluomeCouponList[k].isHas=='Y'){
-                                //$('.coupon').eq(k).addClass('changeGray');
-                                $('.coupon').eq(k).find('.getCoupon').html('已领取');
-                            }
-                        }
-                    })*/
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
@@ -136,13 +126,8 @@ let vm = new Vue({
                 success: function(returnData){
                     console.log(returnData);
                     if(returnData.success){
-                        if(self.couponCont.boluomeCouponList[index].isHas=='N'){
-                            requestMsg(returnData.msg);
-                            //$('.coupon').eq(index).addClass('changeGray');
-                            $('.coupon').eq(index).find('.getCoupon').html('已领取');
-                        }else{
-                            requestMsg(returnData.msg);
-                        }
+                        requestMsg(returnData.msg);
+                        $('.coupon').eq(index).find('.getCoupon').html('已领取');
                     }else{
                         window.location.href=returnData.url;
                     }
