@@ -79,11 +79,11 @@ public class AppTest extends TestCase {
 	    orderEntity.setUserOrderId("134");
 	    String result = OrderReceive.SendOrder(orderEntity);
 	    System.out.println(result);
-	    
+
 	    Document document = DocumentHelper.parseText(result);
 	    System.out.println(document.selectSingleNode("/root/result").getStringValue());
 	    System.out.println(document.selectSingleNode("/root/mes").getStringValue());
-	    
+
 	} catch (Exception e) { // TODO Auto-generated
 	    e.printStackTrace();
 	}
@@ -120,18 +120,18 @@ public class AppTest extends TestCase {
 
 	// checkAirPlane("441424199202036957","441424199202036957");
 
-	// checkPhoneDuration("13228115477");
-	// checkPhoneDuration("13986507455");
-	// checkPhoneDuration("13323390953");
-	// checkPhoneDuration("13347965798");
-	// checkPhoneDuration("13625612730");
-	// checkPhoneDuration("13397888559");
-	// checkPhoneDuration("14785823205");
-	// checkPhoneDuration("13627298175");
-	// checkPhoneDuration("14785886131");
-	// checkPhoneDuration("15550515881");
+	// checkPhoneDuration("13588163648");
+	// checkPhoneDuration("18801738656");
+	// checkPhoneDuration("15157102876");
+	// checkPhoneDuration("18067922681");
+	// checkPhoneDuration("15967165359");
+	// checkPhoneDuration("15268106659");
+	// checkPhoneDuration("13867172134");
+	// checkPhoneDuration("15068724729");
+	// checkPhoneDuration("13505810747");
+	// checkPhoneDuration("18637961802");
+	// checkPhoneDuration("18801089151");
 
-	// checkPhoneDuration("15641088521");
 	// checkPhoneDuration("13682592018");
 	// checkPhoneDuration("17636330654");
 	// checkPhoneDuration("17681546001");
@@ -195,15 +195,14 @@ public class AppTest extends TestCase {
     private void checkPhoneDuration(String mobile) {
 	try {
 	    System.out.println(mobile);
-	    // String authUrl =
-	    // "http://api.chinadatapay.com/communication/message/1913";
-	    String authUrl = "http://v.juhe.cn/mobileOnline/query";
+	    String authUrl = "http://api.chinadatapay.com/communication/message/1913";
+	    // String authUrl = "http://v.juhe.cn/mobileOnline/query";
 
 	    // 设置登陆时要求的信息，用户名和密码
+	    NameValuePair[] data = { new NameValuePair("key", "125dab531ddc6f1a41c682a142d0e42c"), new NameValuePair("mobile", mobile) };
 	    // NameValuePair[] data = { new NameValuePair("key",
-	    // "125dab531ddc6f1a41c682a142d0e42c"), new NameValuePair("mobile",
+	    // "941d4966c69e506c1adff2c9c6ef6148"), new NameValuePair("mobile",
 	    // mobile) };
-	    NameValuePair[] data = { new NameValuePair("key", "941d4966c69e506c1adff2c9c6ef6148"), new NameValuePair("mobile", mobile) };
 	    HttpClient httpClient = new HttpClient();
 	    httpClient.getParams().setContentCharset("UTF-8");
 	    // 模拟登陆，按实际服务器端要求选用 Post 或 Get 请求方式
