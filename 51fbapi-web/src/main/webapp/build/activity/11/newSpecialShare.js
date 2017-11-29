@@ -1,6 +1,7 @@
 let protocol = window.location.protocol;//域名
 let host = window.location.host;
 let domainName = protocol+'//'+host;
+let type=getUrl('type');
 var shareInfo = {
     title: "20元话费、300M流量，3元超值购点击即领",
     desc: "51返呗超值新人礼：20元话费3元领，快来抢购吧",
@@ -104,7 +105,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=newUserShare_ini'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=newUserShare_ini&from='+type},
                 success:function (data) {
                     console.log(data)
                 }
@@ -133,7 +134,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=down'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=down&from='+type},
                 success:function (data) {
                     console.log(data)
                 }
@@ -146,7 +147,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=cansole'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=cansole&from='+type},
                 success:function (data) {
                     console.log(data)
                 }
@@ -160,7 +161,7 @@ let vm = new Vue({
              $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=alertApp'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecialShare?type=alertApp&from='+type},
                 success:function (data) {
                     console.log(data)
                 }
