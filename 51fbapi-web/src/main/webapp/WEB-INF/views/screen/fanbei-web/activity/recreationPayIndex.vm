@@ -13,7 +13,7 @@
     <div class="hotGame">
       <div class="title02"><p>热门推荐</p><p>免广告、看大片、全网最低</p></div>
       <ul class="hotGameList clearFix">
-          <li v-for="item in content.hotList">
+          <li v-for="item in content.hotList" @click="hotGameClick(item)">
               <img class="gameImg" :src="item.image">
               <p class="gameName" style="-webkit-box-orient: vertical;">{{item.name}}</p>
               <p class="fanMoney">返利 {{fixNum((item.rebate)*100)}}%</p>
@@ -23,7 +23,7 @@
     <ul class="gameRankList">
         <li v-for="items in content.groupList">
             <p class="rankTitle">{{items.groupName}}</p>
-            <div class="everyCont clearFix" v-for="item in items.goodsList">
+            <div class="everyCont clearFix" v-for="item in items.goodsList" @click="hotGameClick(item)">
                 <img class="everyImg" :src="item.image">
                 <p class="everyName">{{item.name}}</p>
                 <p class="everyFan">返利 {{fixNum((item.rebate)*100)}}%</p>

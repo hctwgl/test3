@@ -26,6 +26,12 @@ let vm = new Vue({
                 }
             });
         },
+        //点击热门游戏
+        hotGameClick(item){
+            //console.log(item.id);
+            let goodsId=item.id;
+            window.location.href='recreationPay?goodsId='+goodsId+'&discout='+item.discout+'&rebate='+item.rebate;
+        },
         //小数点后一位
         fixNum(num){
             let numFix=num.toFixed(1);
