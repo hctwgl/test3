@@ -452,7 +452,7 @@ let vm = new Vue({
                 return false;
             }
             if (item.isShow == 'N') {
-                requestMsg("活动暂未开始");
+                requestMsg("活动暂未开始,敬请期待");
                 return false;
             }
             if (item.isShow == 'E') {
