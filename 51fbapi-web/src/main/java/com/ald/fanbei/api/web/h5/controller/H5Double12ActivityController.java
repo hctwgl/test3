@@ -139,7 +139,7 @@ public class H5Double12ActivityController extends BaseController{
 						afCouponDouble12Vo.setIsShow("N");//活动未开始
 					}
     				
-    				if(afCouponDo.getQuota() > 0){
+    				if(afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
     					afCouponDouble12Vo.setIshas("Y");//优惠券还有
     				}else {
     					afCouponDouble12Vo.setIshas("N");//优惠券已领完
