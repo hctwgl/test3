@@ -209,83 +209,90 @@ public class AppH5FlashSaleController extends BaseController {
 	@RequestMapping(value = "/getBookingRushGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String GetBookingRushGoods(HttpServletRequest request,HttpServletResponse response) {
-		H5CommonResponse resp = H5CommonResponse.getNewInstance();
+
+	    H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Map<String,Object> data = new HashMap<String,Object>();
         FanbeiWebContext context = new FanbeiWebContext();
-        context = doWebCheck(request,false);
-        String userName = context.getUserName();
-        Long userId = convertUserNameToUserId(userName);
-		//商品展示
-		AfGoodsQuery query = getCheckParam(request);
-		List<AfEncoreGoodsDto> list = afGoodsService.selectBookingRushGoods(query);
-		List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-		//获取借款分期配置信息
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-		JSONArray array = JSON.parseArray(resource.getValue());
-		if (array == null) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-		}
-		Iterator<Object> it = array.iterator();
-		while (it.hasNext()) {
-			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-				it.remove();
-				break;
-			}
-		}
-		for(AfEncoreGoodsDto goodsDo : list) {
-			Map<String, Object> goodsInfo = new HashMap<String, Object>();
-			goodsInfo.put("goodName",goodsDo.getName());
-			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-			goodsInfo.put("goodsId", goodsDo.getRid());
-			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-			goodsInfo.put("goodsType", "0");
-			//是否预约
-			AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
+        try{
+            context = doWebCheck(request,true);
+            String userName = context.getUserName();
+            Long userId = convertUserNameToUserId(userName);
+            //商品展示
+            AfGoodsQuery query = getCheckParam(request);
+            List<AfEncoreGoodsDto> list = afGoodsService.selectBookingRushGoods(query);
+            List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+            //获取借款分期配置信息
+            AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            JSONArray array = JSON.parseArray(resource.getValue());
+            if (array == null) {
+                throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+            }
+            Iterator<Object> it = array.iterator();
+            while (it.hasNext()) {
+                JSONObject json = (JSONObject) it.next();
+                if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+                    it.remove();
+                    break;
+                }
+            }
+            for(AfEncoreGoodsDto goodsDo : list) {
+                Map<String, Object> goodsInfo = new HashMap<String, Object>();
+                goodsInfo.put("goodName",goodsDo.getName());
+                goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+                goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+                goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+                goodsInfo.put("goodsId", goodsDo.getRid());
+                goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+                goodsInfo.put("goodsType", "0");
+                //是否预约
+                AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
 
-			afUserGoodsSmsDo.setGoodsId(goodsDo.getRid());
-			afUserGoodsSmsDo.setUserId(userId);
-			AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
-			if(null != afUserGoodsSms){
-				goodsInfo.put("reserve","Y");
-			}else{
-				goodsInfo.put("reserve","N");
-			}
-			// 如果是分期免息商品，则计算分期
-			Long goodsId = goodsDo.getRid();
-			AfSchemeGoodsDo schemeGoodsDo = null;
-			try {
-				schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-			} catch(Exception e){
-				logger.error(e.toString());
-			}
-			JSONArray interestFreeArray = null;
-			if(schemeGoodsDo != null){
-				AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-				String interestFreeJson = interestFreeRulesDo.getRuleJson();
-				if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-					interestFreeArray = JSON.parseArray(interestFreeJson);
-				}
-			}
-			List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-					goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-			if(nperList!= null){
-				goodsInfo.put("goodsType", "1");
-				Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-				String isFree = (String)nperMap.get("isFree");
-				if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-					nperMap.put("freeAmount", nperMap.get("amount"));
-				}
-				goodsInfo.put("nperMap", nperMap);
-			}
+                afUserGoodsSmsDo.setGoodsId(goodsDo.getRid());
+                afUserGoodsSmsDo.setUserId(userId);
+                AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
+                if(null != afUserGoodsSms){
+                    goodsInfo.put("reserve","Y");
+                }else{
+                    goodsInfo.put("reserve","N");
+                }
+                // 如果是分期免息商品，则计算分期
+                Long goodsId = goodsDo.getRid();
+                AfSchemeGoodsDo schemeGoodsDo = null;
+                try {
+                    schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+                } catch(Exception e){
+                    logger.error(e.toString());
+                }
+                JSONArray interestFreeArray = null;
+                if(schemeGoodsDo != null){
+                    AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+                    String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                    if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                        interestFreeArray = JSON.parseArray(interestFreeJson);
+                    }
+                }
+                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                        goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+                if(nperList!= null){
+                    goodsInfo.put("goodsType", "1");
+                    Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+                    String isFree = (String)nperMap.get("isFree");
+                    if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+                        nperMap.put("freeAmount", nperMap.get("amount"));
+                    }
+                    goodsInfo.put("nperMap", nperMap);
+                }
 
-			goodsList.add(goodsInfo);
-		}
-		data.put("goodsList",goodsList);
-		resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
+                goodsList.add(goodsInfo);
+            }
+            data.put("goodsList",goodsList);
+            resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
+        }
+
 		return resp.toString();
 	}
 
@@ -305,34 +312,41 @@ public class AppH5FlashSaleController extends BaseController {
 	@RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String ReserveGoods(HttpServletRequest request,  HttpServletResponse response) {
-		FanbeiWebContext context = new FanbeiWebContext();
-		context = doWebCheck(request,false);
-        String userName = context.getUserName();
-        Long userId = convertUserNameToUserId(userName);
-		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
-		String goodsName = "商品名称";
-		AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
-		if(null != afGoodsDo){
-			goodsName = afGoodsDo.getName();
-		}
-		AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
-		afUserGoodsSmsDo.setGoodsId(goodsId);
-		afUserGoodsSmsDo.setUserId(userId);
-		afUserGoodsSmsDo.setIsDelete(0l);
-		afUserGoodsSmsDo.setGoodsName(goodsName);
-		AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
-		if(null != afUserGoodsSms){
-			throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_BEEN_RESERVED);
-		}
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+	    FanbeiWebContext context = new FanbeiWebContext();
 		try{
-			int flag = afUserGoodsSmsService.insertByGoodsIdAndUserId(afUserGoodsSmsDo);
-			if(flag <= 0){
-				throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
-			}
-		}catch (Exception e){
-			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
-		}
-		return  H5CommonResponse.getNewInstance(true, "成功", "", goodsId).toString();
+            context = doWebCheck(request,true);
+            String userName = context.getUserName();
+            Long userId = convertUserNameToUserId(userName);
+            Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
+            String goodsName = "商品名称";
+            AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+            if(null != afGoodsDo){
+                goodsName = afGoodsDo.getName();
+            }
+            AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
+            afUserGoodsSmsDo.setGoodsId(goodsId);
+            afUserGoodsSmsDo.setUserId(userId);
+            afUserGoodsSmsDo.setIsDelete(0l);
+            afUserGoodsSmsDo.setGoodsName(goodsName);
+            AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
+            if(null != afUserGoodsSms){
+                throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_BEEN_RESERVED);
+            }
+            try{
+                int flag = afUserGoodsSmsService.insertByGoodsIdAndUserId(afUserGoodsSmsDo);
+                if(flag <= 0){
+                    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+                }
+            }catch (Exception e){
+                throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+            }
+             resp = H5CommonResponse.getNewInstance(true, "成功", "", goodsId);
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
+        }
+        return resp.toString();
 	}
 
 	@Override
