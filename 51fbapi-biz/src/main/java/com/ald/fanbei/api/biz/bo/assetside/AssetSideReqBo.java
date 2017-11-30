@@ -7,10 +7,10 @@ import java.io.Serializable;
  *@author chengkang 2017年11月29日 14:29:12
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class AssetSideReqBo<T> implements Serializable{
+public class AssetSideReqBo implements Serializable{
 
 	private static final long serialVersionUID = 1923132956548193237L;
-	private T data;
+	private String data;
 	private Long sendTime;
 	private String sign;
 	private String appId;
@@ -20,7 +20,7 @@ public class AssetSideReqBo<T> implements Serializable{
 	}
 	
 	
-	public AssetSideReqBo(T data, Long sendTime, String sign, String appId) {
+	public AssetSideReqBo(String data, Long sendTime, String sign, String appId) {
 		super();
 		this.data = data;
 		this.sendTime = sendTime;
@@ -28,10 +28,10 @@ public class AssetSideReqBo<T> implements Serializable{
 		this.appId = appId;
 	}
 
-	public T getData() {
+	public String getData() {
 		return data;
 	}
-	public void setData(T data) {
+	public void setData(String data) {
 		this.data = data;
 	}
 	public Long getSendTime() {
@@ -52,9 +52,5 @@ public class AssetSideReqBo<T> implements Serializable{
 	public void setAppId(String appId) {
 		this.appId = appId;
 	}
-	
-	/*public boolean validSginInfo(){
-		
-	}*/
 	
 }

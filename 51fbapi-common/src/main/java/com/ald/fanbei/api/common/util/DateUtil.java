@@ -1204,4 +1204,17 @@ public class DateUtil {
 			return -2;
 		}
     }
+
+    /**
+     * 
+     * @param loanStartTime
+     * @return
+     */
+	public static Date getSpecDateBySecondDefault(Long timeSecondTimpstamp,Date specDate) {
+		if(timeSecondTimpstamp == null || timeSecondTimpstamp <= 0){
+			return specDate;
+		}else{
+			return new Date(timeSecondTimpstamp*1000);
+		}
+	}
 }

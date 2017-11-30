@@ -59,33 +59,4 @@ public class EdspayGetCreditReqBo implements Serializable {
 	public void setCreditDetails(EdspayCreditDetailInfo creditDetails) {
 		this.creditDetails = creditDetails;
 	}
-
-	class EdspayCreditDetailInfo {
-
-		/**
-		 * 七天借款期限的债权金额
-		 */
-		private BigDecimal SEVEN;
-		/**
-		 * 十四天借款期限的债权金额
-		 */
-		private BigDecimal FOURTEEN;
-
-		public BigDecimal getSEVEN() {
-			return SEVEN;
-		}
-
-		public void setSEVEN(BigDecimal sEVEN) {
-			SEVEN = sEVEN;
-		}
-
-		public BigDecimal getFOURTEEN() {
-			return FOURTEEN;
-		}
-
-		public void setFOURTEEN(BigDecimal fOURTEEN) {
-			FOURTEEN = fOURTEEN;
-		}
-
-	}
 }

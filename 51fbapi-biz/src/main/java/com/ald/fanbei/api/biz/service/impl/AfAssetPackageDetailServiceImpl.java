@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -12,6 +15,8 @@ import com.ald.fanbei.api.dal.dao.AfAssetSideOperaLogDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDetailDao;
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditReqBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 
 
@@ -44,6 +49,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * 批量债权包明细撤回操作
 	 * @param orderNos
 	 */
+	@Override
 	public void batchGiveBackCreditInfo(List<String> orderNos){
 		//校验
 		
@@ -55,5 +61,30 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		
 		//重新生成资产包上传oss  end
 		
+	}
+	
+	
+	
+	/**
+	 * 根据资产方要求,获取资产方对应的债权信息
+	 */
+	@Override
+	public List<EdspayGetCreditRespBo> getBatchCreditInfo(BigDecimal money,Date startTime,Date endTime,BigDecimal sevenMoney){
+		List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
+		//加锁Lock
+		
+		//校验现在金额是否满足
+		
+		
+		//分配债权资产包
+		
+		
+		//释放锁Lock
+		
+		
+		//异步线程生成包并上传oss
+		
+		
+		return creditInfos;
 	}
 }

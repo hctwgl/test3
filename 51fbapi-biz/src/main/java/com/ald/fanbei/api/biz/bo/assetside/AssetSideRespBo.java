@@ -15,6 +15,7 @@ public class AssetSideRespBo implements Serializable{
 	private static final long serialVersionUID = -7413851396139275642L;
 	private Integer code;
 	private String message;
+	private String data;
 	
 	public AssetSideRespBo() {
 		super();
@@ -22,16 +23,18 @@ public class AssetSideRespBo implements Serializable{
 		this.message = FanbeiAssetSideRespCode.SUCCESS.getMsg();
 	}
 	
-	public AssetSideRespBo(Integer code, String message) {
+	public AssetSideRespBo(Integer code, String message,String data) {
 		super();
 		this.code = code;
 		this.message = message;
+		this.data = data;
 	}
 
-	public AssetSideRespBo(FanbeiAssetSideRespCode respCode) {
+	public AssetSideRespBo(FanbeiAssetSideRespCode respCode,String data) {
 		super();
 		this.code = respCode.getCode();
 		this.message = respCode.getDesc();
+		this.data = data;
 	}
 	
 	public void resetRespInfo(FanbeiAssetSideRespCode respCode) {
@@ -50,6 +53,12 @@ public class AssetSideRespBo implements Serializable{
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	public String getData() {
+		return data;
+	}
+	public void setData(String data) {
+		this.data = data;
 	}
 	
 	

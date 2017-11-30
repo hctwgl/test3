@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.assetside.AssetSideReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 
 /**
@@ -63,7 +65,7 @@ public class EdspayController {
 		String appId = ObjectUtils.toString(request.getParameter("appId"));
 		logger.info("EdspayController giveBackCreditInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
 		
-		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.giveBackCreditInfo(sendTime, data, sign,appId);
+		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.getBatchCreditInfo(sendTime, data, sign,appId);
 		return notifyRespBo;
 	}
 }

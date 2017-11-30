@@ -1,7 +1,11 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditReqBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
 
 /**
@@ -19,5 +23,12 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	 * @param orderNos
 	 */
 	void batchGiveBackCreditInfo(List<String> orderNos);
+
+	/**
+	 * 根据资产方要求,获取资产方对应的债权信息
+	 * @param edspayGetCreditReqBo
+	 * @return
+	 */
+	List<EdspayGetCreditRespBo> getBatchCreditInfo(BigDecimal money,Date startTime,Date endTime,BigDecimal sevenMoney);
 
 }
