@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.h5.controller;
+package com.ald.fanbei.api.web.apph5.controller;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -17,13 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ald.fanbei.api.biz.service.AfSupGameService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
+import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.GameGoods;
 import com.ald.fanbei.api.dal.domain.dto.GameGoodsGroup;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
+import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * 
@@ -36,7 +44,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
  */
 @RestController
 @RequestMapping(value = "/game/pay", produces = "application/json;charset=UTF-8")
-public class GamePayController extends H5Controller {
+public class GamePayController extends BaseController {
 
     @Autowired
     private AfSupGameService afSupGameService;
@@ -44,10 +52,13 @@ public class GamePayController extends H5Controller {
     @Autowired
     private AfSupOrderService afSupOrderService;
 
+    @Autowired
+    private AfUserDao afUserDao;
+
     @RequestMapping(value = "/goods", method = RequestMethod.POST)
     public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
-	FanbeiH5Context context = doH5Check(request, false);
+	FanbeiWebContext context = doWebCheck(request, false);
 	try {
 	    String type = request.getParameter("type");
 	    // 查询列表
@@ -71,7 +82,7 @@ public class GamePayController extends H5Controller {
     @RequestMapping(value = "/goodsInfo", method = RequestMethod.POST)
     public H5CommonResponse getGoodsInfo(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
-	FanbeiH5Context context = doH5Check(request, false);
+	FanbeiWebContext context = doWebCheck(request, false);
 	try {
 	    String goodsId = request.getParameter("goodsId");
 
@@ -96,7 +107,7 @@ public class GamePayController extends H5Controller {
     @RequestMapping(value = "/order", method = RequestMethod.POST)
     public H5CommonResponse createOrder(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
-	FanbeiH5Context context = doH5Check(request, true);
+	FanbeiWebContext context = doWebCheck(request, true);
 	try {
 	    // 验证参数
 	    Long goodsId = Long.parseLong(request.getParameter("goodsId"));
@@ -128,7 +139,8 @@ public class GamePayController extends H5Controller {
 	    String userIp = request.getParameter("userIp");
 
 	    // 下单逻辑
-	    data = afSupOrderService.addSupOrder(context.getUserId(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
+	    AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+	    data = afSupOrderService.addSupOrder(afUserDo.getRid(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
 	    return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
 	} catch (Exception e) {
 	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
@@ -136,9 +148,9 @@ public class GamePayController extends H5Controller {
 	}
     }
 
-    @RequestMapping(value = "/orderInfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/orderInfo", method = RequestMethod.GET)
     public H5CommonResponse getOrderInfo(HttpServletRequest request, HttpServletResponse response) {
-	FanbeiH5Context context = doH5Check(request, true);
+	FanbeiWebContext context = doWebCheck(request, true);
 	try {
 	    String orderNo = request.getParameter("orderNo");
 	    if (StringUtils.isNotBlank(orderNo)) {
@@ -169,7 +181,8 @@ public class GamePayController extends H5Controller {
 	    String businessId = request.getParameter("businessId");
 
 	    // 验证businessId
-	    if (!ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID).equals(businessId)) {
+	    String configBusinessId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+	    if (!configBusinessId.equals(businessId)) {
 		logger.error("/game/pay/callback businessId error:businessId=" + businessId + " ,config key :" + ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID));
 		return "<receive>businessId error</receive>";
 	    }
@@ -179,5 +192,23 @@ public class GamePayController extends H5Controller {
 	    logger.error("/game/pay/callback error:", e);
 	    return "<receive>exception error</receive>";
 	}
+    }
+
+    @Override
+    public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	// TODO Auto-generated method stub
+	return null;
     }
 }
