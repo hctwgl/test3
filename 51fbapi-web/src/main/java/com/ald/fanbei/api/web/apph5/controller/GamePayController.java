@@ -125,7 +125,11 @@ public class GamePayController extends BaseController {
 	    if (actualAmount.doubleValue() <= 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
 	    }
-	    Long couponId = Long.parseLong(request.getParameter("couponId"));
+	    Long couponId = 0L;
+	    if (StringUtils.isNotBlank(request.getParameter("couponId"))) {
+		couponId = Long.parseLong(request.getParameter("couponId"));
+	    }
+
 	    String acctType = request.getParameter("acctType");
 	    if (StringUtils.isBlank(acctType)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:acctType.");
