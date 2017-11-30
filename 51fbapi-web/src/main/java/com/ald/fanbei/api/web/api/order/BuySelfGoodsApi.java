@@ -320,18 +320,18 @@ public class BuySelfGoodsApi implements ApiHandle {
 						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
 					}
 					
-					//iphoneX特殊处理
-					if(goodsId==134882||goodsId==135405){
-						//更新 已被秒杀的商品数量（count+1）
-						afGoodsDouble12Service.updateCountById(goodsId);
-						//报错提示秒杀商品已售空
-						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
-					}
-					
 					//根据goodsId查询商品信息
 					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 					int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12DoList.get(0).getAlreadyCount();//秒杀商品余量
 					if(goodsDouble12Count<=0){
+						//报错提示秒杀商品已售空
+						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+					//iphoneX特殊处理
+					if(goodsId==134882||goodsId==135405){
+						//更新 已被秒杀的商品数量（count+1）
+						afGoodsDouble12Service.updateCountById(goodsId);
 						//报错提示秒杀商品已售空
 						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 					}
