@@ -72,11 +72,11 @@ public class AppTest extends TestCase {
 	    orderEntity.setGoodsId("wy001jk");
 	    orderEntity.setGoodsNum(10);
 	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
-	    orderEntity.setNoticeUrl("http://testapp.51fanbei.com/game/pay/callback");
+	    orderEntity.setNoticeUrl("http://1it9109157.51mypc.cn:14348/game/pay/callback");
 	    orderEntity.setOrderArea("");
 	    orderEntity.setOrderIp("");
 	    orderEntity.setUserName("00000000@e2p.com");
-	    orderEntity.setUserOrderId("134");
+	    orderEntity.setUserOrderId("138");
 	    String result = OrderReceive.SendOrder(orderEntity);
 	    System.out.println(result);
 

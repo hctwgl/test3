@@ -35,6 +35,7 @@ import com.ald.fanbei.api.common.enums.OrderSecType;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfSupOrderDao;
@@ -189,7 +190,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		    afOrder.setAuAmount(userAccountInfo.getAuAmount());
 		    afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
-		    afOrder.setThirdDetailUrl(getOrderDetailsUrl());
+		    afOrder.setThirdDetailUrl(getOrderDetailsUrl(afOrder.getOrderNo()));
 		    afOrder.setSecType(OrderSecType.SUP_GAME.getCode());
 		    afOrderService.createOrder(afOrder);
 		    // 添加订单相关游戏充值信息
@@ -220,13 +221,14 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	Map<String, Object> data = new HashMap<String, Object>();
 	if (result == 1) {
 	    data.put("orderId", afOrder.getRid());
+	    data.put("orderNo", afOrder.getOrderNo());
 	}
 	return data;
     }
 
-    private String getOrderDetailsUrl() {
+    private String getOrderDetailsUrl(String orderNo) {
 	// 路径+参数信息
-	return ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + ConfigProperties.get(Constants.CONFKEY_SUP_ORDER_DETAILS);
+	return ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + "/fanbei-web/activity/gameOrderDetail?orderNo=" + orderNo;
     }
 
     @Override
@@ -242,7 +244,8 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	orderEntity.setGameType(gameType);
 	orderEntity.setGoodsId(goodsId);
 	orderEntity.setGoodsNum(goodsNum);
-	orderEntity.setKey(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_KEY));
+	String supKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));	    
+	orderEntity.setKey(supKey);
 	orderEntity.setNoticeUrl(ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + "/game/pay/callback");
 	orderEntity.setOrderIp(orderIp);
 	orderEntity.setUserName(userName);
