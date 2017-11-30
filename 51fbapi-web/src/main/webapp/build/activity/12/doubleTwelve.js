@@ -7,7 +7,7 @@ let groupId = getUrl('groupId');
 // 电子数码
 let goodArr = [{
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/apple.png',
-        link: 'http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=194'
+        link: 'https://app.51fanbei.com/app/goods/goodsListModel?modelId=197'
     },
     {
         img: 'https://f.51fanbei.com/h5/app/activity/12/double12_brand/huawei.png',
