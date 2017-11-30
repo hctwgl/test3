@@ -69,7 +69,10 @@
             <div class="day-box" id="dayBox">
                 <ul class="day-ul flex fd-row" id="dayUl">
                     <li class="day-li por" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N'}"
-                        @click="changeProduct(key)">12月{{key}}日
+                        @click="changeProduct(key)">
+                        <p class="date-box">
+                            12月{{key}}日
+                        </p>
                         <p v-if="value.type=='E'">已结束</p>
                         <p v-if="value.type=='O'">秒杀中</p>
                         <p v-if="value.type=='N'">即将开始</p>
@@ -127,7 +130,7 @@
             </div>
         </div>
         <div class="brand-box flex fd-column ai-c">
-            <div class="flex fd-row ai-c title-box">
+            <div class="flex fd-row ai-c title-box2">
                 <div class="line-left-2"></div>
                 <div class="line-title-2">品牌大咖 / 玩转潮流</div>
                 <div class="line-right-2"></div>
