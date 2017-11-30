@@ -15,6 +15,19 @@ public class AssetSideReqBo<T> implements Serializable{
 	private String sign;
 	private String appId;
 	
+	public AssetSideReqBo() {
+		super();
+	}
+	
+	
+	public AssetSideReqBo(T data, Long sendTime, String sign, String appId) {
+		super();
+		this.data = data;
+		this.sendTime = sendTime;
+		this.sign = sign;
+		this.appId = appId;
+	}
+
 	public T getData() {
 		return data;
 	}
@@ -40,5 +53,8 @@ public class AssetSideReqBo<T> implements Serializable{
 		this.appId = appId;
 	}
 	
+	/*public boolean validSginInfo(){
+		
+	}*/
 	
 }

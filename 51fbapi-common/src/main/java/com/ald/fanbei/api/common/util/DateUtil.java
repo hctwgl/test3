@@ -1190,7 +1190,7 @@ public class DateUtil {
      * error -2
      * @return
      */
-    public static int  getCurrSecondTimeStamp(long beginTimeStamp,long endTimeStamp,long maxSeconds) {
+    public static int  judgeDiffTimeStamp(long beginTimeStamp,long endTimeStamp,long maxSeconds) {
     	try {
 			long diffSeconds = endTimeStamp - beginTimeStamp;
 			if(diffSeconds > maxSeconds){

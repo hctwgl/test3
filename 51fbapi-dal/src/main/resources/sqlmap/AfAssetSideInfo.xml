@@ -236,4 +236,12 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByAssetSideFlag" resultType="com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_asset_side_info
+        WHERE is_delete = 0 AND asset_side_flag=#{assetSideFlag}
+        LIMIT 0,1
+    </select>
+    
 </mapper>

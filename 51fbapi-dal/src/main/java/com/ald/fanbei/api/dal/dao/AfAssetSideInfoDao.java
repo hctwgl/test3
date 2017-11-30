@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
 
 /**
@@ -12,6 +14,10 @@ import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
  */
 public interface AfAssetSideInfoDao extends BaseDao<AfAssetSideInfoDo, Long> {
 
-    
-
+	/**
+	 * 根据资产方标识获取资产方信息
+	 * @param assetSideFlag
+	 * @return
+	 */
+	AfAssetSideInfoDo getByAssetSideFlag(@Param("assetSideFlag")String assetSideFlag);
 }

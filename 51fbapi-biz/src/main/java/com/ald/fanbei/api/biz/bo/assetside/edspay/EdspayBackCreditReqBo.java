@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.bo.assetside.edspay;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.ald.fanbei.api.common.util.StringUtil;
 
 /**
  * @类现描述：钱包平台退回债权请求实体
@@ -23,5 +26,7 @@ public class EdspayBackCreditReqBo implements Serializable {
 		this.orderNos = orderNos;
 	}
 	
-	
+	public List<String> parseOrderNoLists(){
+		return StringUtil.splitToList(orderNos, ",");
+	}
 }
