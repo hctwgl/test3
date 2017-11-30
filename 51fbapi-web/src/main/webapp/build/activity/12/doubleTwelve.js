@@ -524,12 +524,13 @@ let vm = new Vue({
         },
         changeFlag: function () {
             this.couponFlag = !this.couponFlag;
+            // alert($("#couponUl").height() * 2 / 100 + .4)
             if (this.couponFlag) {
                 $("#couponBox").animate({
                     'height': '3rem'
                 }, 'normal', 'linear');
             } else {
-                let h = $("#couponUl").height() * 2 / 100 + .4;
+                let h = $("#couponUl").height() / (100 * (document.documentElement.clientWidth / 750)) + .4;
                 $("#couponBox").animate({
                     height: h + 'rem'
                 }, 'normal', 'linear');
