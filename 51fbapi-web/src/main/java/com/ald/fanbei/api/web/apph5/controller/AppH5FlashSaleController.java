@@ -293,7 +293,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 	@RequestMapping(value = "/checkGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String CheckGoods(HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String CheckGoods(HttpServletRequest request, HttpServletResponse response) {
 		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
 		Integer sumCount = afGoodsPriceService.selectSumStock(goodsId);
 		if(null == sumCount || sumCount == 0){
