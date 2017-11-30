@@ -55,7 +55,7 @@
             <p class="title">面额</p>
             <ul class="moneyList clearFix">
                 <li v-for="(item,index) in initChooseFirst.priceTypeList" @click="gameMoneyClick(index)">
-                    <p class="typeName"><i>{{item.chargeNum}}</i>{{initChooseFirst.chargeNumName}}</p>
+                    <p class="typeName"><i class="goodsNum">{{item.chargeNum}}</i>{{initChooseFirst.chargeNumName}}</p>
                     <p class="typePrice"><i class="pricePay">{{fixNum((item.quantity)*(initChooseFirst.priceTimes)*discout)}}</i>元</p>
                 </li>
             </ul>

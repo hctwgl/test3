@@ -1,12 +1,7 @@
 let goodsId=getUrl('goodsId'); //获取类型id
 let discout=getUrl('discout'); //折扣
 let rebate=getUrl('rebate'); //返利
-$(function(){
-    $('.footer').height('7%');
-    $('.gamePay').css('padding-top','3%');
-    let h=$(window).height()-$('.footer').height()-$(window).height()*0.015;
-    $('.allTop').height(h);
-});
+
 //获取数据
 let vm = new Vue({
     el: '#gamePay',
@@ -257,14 +252,14 @@ let vm = new Vue({
                 gameName=$('.gameName:first-child').find('span').html();
                 acctType=$('.gameNum p').html();
                 userName=$('.gameNum input').val();
-                goodsNum=$('.moneyList .changeColor02').find('i').html();
+                goodsNum=$('.changeColor01 .goodsNum').html();
                 actualAmount=$('.changeColor01 .pricePay').html();
             }
             if(self.dataType=='B'){
                 gameName=$('.gameName:first-child').find('span').html();
                 acctType=$('.nameDesc').html();
                 userName=$('.nameDesc01').val();
-                goodsNum=$('.moneyList .changeColor02').find('i').html();
+                goodsNum=$('.changeColor01 .goodsNum').html();
                 actualAmount=$('.changeColor01 .pricePay').html();
             }
             $.ajax({
@@ -275,6 +270,7 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     console.log(data,'确认充值');
+                    window.location.href='gameOrderDetail';
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！');
