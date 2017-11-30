@@ -65,7 +65,7 @@
                 <div class="line-title">超级秒杀 / 1212元秒iPhoneX</div>
                 <div class="line-right-1"></div>
             </div>
-            <div class="super-txt">双十二秒get大牌</div>
+            <div class="super-txt">每日10点开抢</div>
             <div class="day-box" id="dayBox">
                 <ul class="day-ul flex fd-row" id="dayUl">
                     <li class="day-li por" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N'}"
