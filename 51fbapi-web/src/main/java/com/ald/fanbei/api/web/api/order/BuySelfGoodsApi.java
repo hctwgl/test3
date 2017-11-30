@@ -238,10 +238,19 @@ public class BuySelfGoodsApi implements ApiHandle {
 			//限时抢购增加逻辑
 			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsId);
 			if(null != afActivityGoodsDo){
-				Integer sum = afOrderService.selectSumCountByGoodsIdAndType(goodsId,userId);
+				AfOrderDo afOrderDo = new AfOrderDo();
+				afOrderDo.setUserId(userId);
+				afOrderDo.setGoodsId(goodsId);
+				Integer sum = afOrderService.selectSumCountByGoodsIdAndType(afOrderDo);
 				Long limitCount = afActivityGoodsDo.getLimitCount();
-				if(limitCount.intValue() - sum < count){
-					throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
+				if(null != sum){
+					if(limitCount.intValue() - sum < count){
+						throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
+					}
+				}else{
+					if(limitCount.intValue()  < count){
+						throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
+					}
 				}
 			}
 			//-------------------------------

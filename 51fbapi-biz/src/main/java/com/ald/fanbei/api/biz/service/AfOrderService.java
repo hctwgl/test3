@@ -327,6 +327,6 @@ public interface AfOrderService {
 
 	Integer selectSumCountByGoodsId(Long goodsId);
 
-	Integer selectSumCountByGoodsIdAndType(Long goodsId,Long userId);
+	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 	
 }

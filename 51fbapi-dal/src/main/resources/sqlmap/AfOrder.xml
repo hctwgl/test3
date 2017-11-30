@@ -1045,7 +1045,7 @@
 		SELECT sum(count) from af_order where is_delete = 0 and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId}
 	</select>
 
-	<select id="selectSumCountByGoodsIdAndType" resultType="java.lang.Integer" parameterType="java.lang.Long">
+	<select id="selectSumCountByGoodsIdAndType" resultType="java.lang.Integer" parameterType="AfOrderDo">
 		SELECT sum(count) from af_order where is_delete = 0 and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId} AND user_id = #{userId}
 	</select>
 	

@@ -184,5 +184,5 @@ public interface AfOrderDao {
 
 	Integer selectSumCountByGoodsId(Long goodsId);
 
-	Integer selectSumCountByGoodsIdAndType(Long goodsId,Long userId);
+	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 }
