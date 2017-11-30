@@ -233,7 +233,7 @@ public class PayOrderV1Api implements ApiHandle {
                         orderInfo.setRebateAmount(rebateAmount);
                     }
                 } else {
-                    borrowRate = afResourceService.borrowRateWithResource(nper);
+                    borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
                     orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                 }
 
