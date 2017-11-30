@@ -76,7 +76,7 @@ public class AppTest extends TestCase {
 	    orderEntity.setOrderArea("");
 	    orderEntity.setOrderIp("");
 	    orderEntity.setUserName("00000000@e2p.com");
-	    orderEntity.setUserOrderId("138");
+	    orderEntity.setUserOrderId("140");
 	    String result = OrderReceive.SendOrder(orderEntity);
 	    System.out.println(result);
 
