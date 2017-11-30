@@ -4,14 +4,14 @@ import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -28,12 +28,16 @@ import java.util.HashMap;
  */
 @Component("fenqiCuishouUtil")
 public class FenqiCuishouUtil {
+
+    protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
     @Resource
     AfRepaymentService afRepaymentService;
     @Resource
     AfBorrowBillService afBorrowBillService;
     @Resource
     AfBorrowService afBorrowService;
+    @Resource
+    AfRepaymentDao afRepaymentDao;
 
     public static ThreadLocal<Boolean> checkChuiSou = new ThreadLocal<Boolean>();
 
@@ -68,10 +72,12 @@ public class FenqiCuishouUtil {
             mp.put("sign",sign);
             mp.put("data",mm);
             mp.put("timeStamp",String.valueOf( new Date().getTime()));
-            HttpUtil.post(url, mp);
+            thirdLog.info("cuishouhuankuan  postChuiSohiu {sign:"+sign+",data:"+mm+"}");
+            String e= HttpUtil.post(url, mp);
+            thirdLog.info("cuishouhuankuan  postChuiSohiu back"+e);
         }catch (Exception e){
             e.printStackTrace();
-
+            thirdLog.error("cuishouhuankuan  postChuiSohiu error",e);
         }
     }
 
@@ -80,38 +86,50 @@ public class FenqiCuishouUtil {
      * 还款摧给催收
      * @param repaymentId
      */
-    public void postReapymentMoney(Long repaymentId){
-        String  url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL)+"/api/getway/notify/nperRepay";
-        //String url = "http://192.168.117.103:8081/api/getway/notify/nperRepay";
-        //byte[] salt = DigestUtil.decodeHex("51fabbeicuoshou");
-        String salt = "51fabbeicuoshou";
-        AfRepaymentDo afRepaymentDo = afRepaymentService.getRepaymentById(repaymentId);
-        if(afRepaymentDo == null){
-            return;
-        }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("repay_no",afRepaymentDo.getRepayNo());
-        jsonObject.put("consumer_no",afRepaymentDo.getUserId());
-        jsonObject.put("repay_type","BANK");
-        jsonObject.put("repay_time",simpleDateFormat.format(afRepaymentDo.getGmtCreate()));
-        jsonObject.put("repay_amount",afRepaymentDo.getRepaymentAmount());
-        jsonObject.put("bill_id",afRepaymentDo.getBillIds());
-        jsonObject.put("trade_no",afRepaymentDo.getTradeNo());
-        jsonObject.put("is_balance","N");//todo hzp
-        String mm = JSON.toJSONString(jsonObject);
+    public void postReapymentMoney(Long repaymentId) {
         try {
+            if (FenqiCuishouUtil.getCheck() == true) {
+                return;
+            }
+
+            String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL) + "/api/getway/notify/nperRepay";
+            //String url = "http://192.168.117.103:8081/api/getway/notify/nperRepay";
+            //byte[] salt = DigestUtil.decodeHex("51fabbeicuoshou");
+            String salt = "51fabbeicuoshou";
+            AfRepaymentDo afRepaymentDo = afRepaymentService.getRepaymentById(repaymentId);
+            if (afRepaymentDo == null) {
+                return;
+            }
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("repay_no", afRepaymentDo.getRepayNo());
+            jsonObject.put("consumer_no", afRepaymentDo.getUserId());
+            jsonObject.put("repay_type", "BANK");
+            jsonObject.put("repay_time", simpleDateFormat.format(afRepaymentDo.getGmtCreate()));
+            jsonObject.put("repay_amount", afRepaymentDo.getRepaymentAmount());
+            jsonObject.put("bill_id", afRepaymentDo.getBillIds());
+            jsonObject.put("trade_no", afRepaymentDo.getTradeNo());
+            String is_balance = "N";
+            BigDecimal dd = BigDecimalUtil.add(afRepaymentDo.getActualAmount(), afRepaymentDo.getCouponAmount(), afRepaymentDo.getJfbAmount(), afRepaymentDo.getRebateAmount());
+            if (afRepaymentDo.getRepaymentAmount().compareTo(dd) == 0) {
+                is_balance = "Y";
+            }
+
+            jsonObject.put("is_balance", is_balance);
+            String mm = JSON.toJSONString(jsonObject);
+
             byte[] pd = DigestUtil.digestString(mm.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign = DigestUtil.encodeHex(pd);
-            HashMap<String,String> mp = new HashMap();
-            mp.put("sign",sign);
-            mp.put("data",mm);
-            mp.put("timeStamp",String.valueOf( new Date().getTime()));
-            String e=  HttpUtil.post(url, mp);
-            String f ="";
-        }catch (Exception e){
+            HashMap<String, String> mp = new HashMap();
+            mp.put("sign", sign);
+            mp.put("data", mm);
+            mp.put("timeStamp", String.valueOf(new Date().getTime()));
+            thirdLog.info("cuishouhuankuan  postReapymentMoney {sign:"+sign+",data:"+mm+"}");
+            String e = HttpUtil.post(url, mp);
+            thirdLog.info("cuishouhuankuan  postReapymentMoney back"+e);
+        } catch (Exception e) {
             e.printStackTrace();
-
+            thirdLog.error("cuishouhuankuan  postReapymentMoney error", e);
         }
     }
 
@@ -125,6 +143,8 @@ public class FenqiCuishouUtil {
     public boolean getRepayMentDo(String sign, final String timeStamp, final String data){
         try {
             FenqiCuishouUtil.setCheck(true);
+
+            thirdLog.info("cuishouhuankuan  getRepayMentDo {sign:"+sign+",data:"+data+"}");
             String salt = "51fabbeicuoshou";
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
@@ -160,7 +180,14 @@ public class FenqiCuishouUtil {
                     afRepaymentDo.setRebateAmount(BigDecimal.ZERO);
                     afRepaymentDo.setJfbAmount(BigDecimal.ZERO);
                     afRepaymentDo.setCouponAmount(BigDecimal.ZERO);
-
+                    afRepaymentDao.addRepayment(afRepaymentDo);
+                    long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(),afRepaymentDo.getTradeNo());
+                    if(i>0){
+                        postChuiSohiu(afRepaymentDo.getRepayNo(),"200","还款成功");
+                    }
+                    else{
+                        postChuiSohiu(afRepaymentDo.getRepayNo(),"500","还款失败");
+                    }
 
                     //String bill
                     //afBorrowBillService.getBorrowBillByIds()
