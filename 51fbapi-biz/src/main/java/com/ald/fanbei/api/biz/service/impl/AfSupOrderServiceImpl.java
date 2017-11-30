@@ -47,7 +47,6 @@ import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -75,7 +74,9 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	    AfSupCallbackDo afSupCallbackDoExist = afSupCallbackService.getCompleteByOrderNo(userOrderId);
 	    if (afSupCallbackDoExist == null) {
 		// 计算签名
-		String signCheck = MD5Helper.md5("businessId" + userOrderId + status + "key");
+		String businessId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String supKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+		String signCheck = MD5Helper.md5(businessId + userOrderId + status + supKey);
 		// 记录回调数据
 		AfSupCallbackDo afSupCallbackDo = new AfSupCallbackDo();
 		afSupCallbackDo.setKminfo(kminfo);
@@ -244,7 +245,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	orderEntity.setGameType(gameType);
 	orderEntity.setGoodsId(goodsId);
 	orderEntity.setGoodsNum(goodsNum);
-	String supKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));	    
+	String supKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_KEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 	orderEntity.setKey(supKey);
 	orderEntity.setNoticeUrl(ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + "/game/pay/callback");
 	orderEntity.setOrderIp(orderIp);
