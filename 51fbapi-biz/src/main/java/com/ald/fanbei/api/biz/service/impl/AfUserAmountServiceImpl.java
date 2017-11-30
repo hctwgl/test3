@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
 import com.sun.org.apache.bcel.internal.generic.RET;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -374,6 +375,11 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 	@Override
 	public List<AfUserAmountLogDo> getAmountLogByAmountId(Long sourceId) {
 		return afUserAmountLogDao.getAmountLogByAmountId(sourceId);
+	}
+
+	@Override
+	public List<AfUserAmountDo> getUserAmountByQuery(AfUserAmountQuery query) {
+		return afUserAmountLogDao.getUserAmountByQuery(query);
 	}
 
 }

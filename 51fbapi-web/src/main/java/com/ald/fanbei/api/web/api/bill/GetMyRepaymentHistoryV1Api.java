@@ -22,12 +22,14 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfUserAmountBizType;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -54,16 +56,18 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		try {
 			Long userId = context.getUserId();
-			int page = NumberUtil.objToIntDefault(requestDataVo.getParams().get("page"), 0);
-			int pageSize = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageSize"), 0);
+			int month = NumberUtil.objToIntDefault(requestDataVo.getParams().get("month"), 0);
+			int year = NumberUtil.objToIntDefault(requestDataVo.getParams().get("year"), 0);
 			String status = ObjectUtils.toString(request.getParameter("status"));
-			if (page == 0 || pageSize == 0){
-				logger.error("getMyHistoryBorrowV1Api page or pageSize is null ,RequestDataVo id =" + requestDataVo.getId());
-				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-				return resp;
+			// 记录上翻或者下翻
+			String operation = ObjectUtils.toString(request.getParameter("operation"));
+			Date nowDate = new Date();
+			if (month == 0 && year == 0){
+				month = NumberUtil.objToInteger(DateUtil.getMonth(nowDate));
+				year = NumberUtil.objToInteger(DateUtil.getYear(nowDate));
 			}
-			if (userId == null) {
-				logger.error("getMyRepaymentV1Api userId is null ,RequestDataVo id =" + requestDataVo.getId());
+			if (month == 0 || year == 0) {
+				logger.error("getMyHistoryBorrowV1Api month or year is null ,RequestDataVo id =" + requestDataVo.getId());
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 				return resp;
 			}
@@ -73,18 +77,16 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 				return resp;
 			}
+			AfUserAmountQuery query = new AfUserAmountQuery();
+			query.setUserId(userId);
 			if (StringUtil.isEmpty(status)) {
+				// 初始化页面
 				status = "repayment";
+				// 查询用户最后一条退还款记录
+				List<AfUserAmountDo> amountList = afUserAmountService.getUserAmountByQuery(query);
 			}
-			List<AfUserAmountDo> amountList = new ArrayList<AfUserAmountDo>();
-			if (StringUtil.equals("repayment", status)) {
-				// 还款记录
-				amountList = afUserAmountService.getAmountByUserIdAndType(userId,AfUserAmountBizType.REPAYMENT.getCode(),page,pageSize);
-			}else if(StringUtil.equals("renfund", status)){
-				// 退款记录
-				amountList = afUserAmountService.getAmountByUserIdAndType(userId,AfUserAmountBizType.REFUND.getCode(),page,pageSize);
-			}
-			resp.setResponseData(amountList);
+
+//			resp.setResponseData(amountList);
 			return resp;
 		} catch (Exception e) {
 			logger.error("getMyRepaymentV1Api error :" , e);

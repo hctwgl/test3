@@ -9,6 +9,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAmountDetailDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountLogDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
 
 /**
  * @author honghzengpei 2017/11/22 14:28
@@ -78,5 +79,14 @@ public interface AfUserAmountService {
 	 * @return
 	 */
 	List<AfUserAmountLogDo> getAmountLogByAmountId(Long sourceId);
+	
+	/**
+	 * 根据条件查询amount
+	 * @author yuyue
+	 * @Time 2017年11月30日 下午3:29:59
+	 * @param query
+	 * @return
+	 */
+	List<AfUserAmountDo> getUserAmountByQuery(AfUserAmountQuery query);
 	
 }

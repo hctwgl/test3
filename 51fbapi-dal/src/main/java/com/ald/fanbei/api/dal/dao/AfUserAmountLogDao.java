@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ald.fanbei.api.dal.domain.AfUserAmountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountLogDo;
+import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
 
 /**
  * @author honghzengpei 2017/11/21 15:05
@@ -27,4 +29,13 @@ public interface AfUserAmountLogDao {
 	 * @return
 	 */
 	List<AfUserAmountLogDo> getAmountLogByAmountId(@Param("sourceId")Long sourceId);
+
+	/**
+	 * 根据条件查询amount
+	 * @author yuyue
+	 * @Time 2017年11月30日 下午3:33:32
+	 * @param query
+	 * @return
+	 */
+	List<AfUserAmountDo> getUserAmountByQuery(AfUserAmountQuery query);
 }
