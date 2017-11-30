@@ -156,7 +156,11 @@ public class GamePayController extends BaseController {
 	// 下单逻辑
 	AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
 	data = afSupOrderService.addSupOrder(afUserDo.getRid(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
-	return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
+	if (data != null) {
+	    return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
+	} else {
+	    return H5CommonResponse.getNewInstance(false, "充值订单提交失败", "", null);
+	}
     }
 
     @RequestMapping(value = "/orderInfo", method = RequestMethod.GET)
