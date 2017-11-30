@@ -223,7 +223,7 @@ public class GetPersonInfoController {
 					map.put("params", urlResp);
 					jsonString = JsonUtil.toJSONString(map);
 					//将数据存入缓存
-					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_AN_HOUR_INT);
+					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+rc4Key+idNo, jsonString, Constants.SECOND_OF_AN_HOUR_INT);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from dataBase success,idNo = "+idNo+", name="+name+" time = " + new Date());
 					return jsonString;			
 				}
