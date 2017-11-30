@@ -207,15 +207,10 @@ public class AppH5FlashSaleController extends BaseController {
 
 	@RequestMapping(value = "/getBookingRushGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String GetBookingRushGoods(HttpServletRequest request, HttpServletResponse response) {
+	public String GetBookingRushGoods(HttpServletRequest request,FanbeiContext context,HttpServletResponse response) {
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Map<String,Object> data = new HashMap<String,Object>();
-		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-		if(null == afUserDo){
-			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
-		}
-		Long userId = afUserDo.getRid();
+		Long userId = context.getUserId();
 		//商品展示
 		AfGoodsQuery query = getCheckParam(request);
 		List<AfEncoreGoodsDto> list = afGoodsService.selectBookingRushGoods(query);
