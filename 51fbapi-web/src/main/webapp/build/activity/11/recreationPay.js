@@ -117,7 +117,7 @@ let vm = new Vue({
                         $('.moneyList li').eq(0).addClass('changeColor01');
                         $('.moneyList li').eq(0).find('p').addClass('changeColor02');
                         $('.payMoney span').html($('.moneyList li').eq(0).find('.typePrice').html());
-                        $('.fanMoney span').html((($('.moneyList li').eq(0).find('i').html())*rebate).toFixed(2)+'元');
+                        $('.fanMoney span').html((($('.moneyList li').eq(0).find('.pricePay').html())*rebate).toFixed(2)+'元');
                     });
                 },
                 error:function(){
@@ -163,8 +163,8 @@ let vm = new Vue({
             $('.moneyList li').eq(index).find('p').addClass('changeColor02');
             $('.moneyList li').eq(index).siblings().removeClass('changeColor01');
             $('.moneyList li').eq(index).siblings().find('p').removeClass('changeColor02');
-            $('.payMoney span').html($('.moneyList li').eq(index).find('.typePrice').html());
-            $('.fanMoney span').html((($('.moneyList li').eq(index).find('i').html())*rebate).toFixed(2)+'元');
+            $('.payMoney span').html($('.moneyList li').eq(index).find('.pricePay').html()+'元');
+            $('.fanMoney span').html((($('.moneyList li').eq(index).find('.pricePay').html())*rebate).toFixed(2)+'元');
         },
         //字符串转数字
         fixStrToNum(str){

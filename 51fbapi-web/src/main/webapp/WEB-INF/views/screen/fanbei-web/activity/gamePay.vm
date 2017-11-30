@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711270950")
+    #set($version="201711301012")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>游戏充值</title>
@@ -22,20 +22,20 @@
             <i> > </i>
         </div>
         <div class="gamePass gameName" v-if="dataType==='B'">
-            <p>游戏通行证</p>
-            <input type="text" placeholder="请输入游戏通行证"/>
+            <p class="nameDesc"></p>
+            <input type="text" class="nameDesc01" placeholder=""/>
         </div>
         <div class="gamePass gameName" v-if="dataType==='B'">
-            <p>确认游戏通行证</p>
-            <input type="text" placeholder="请确认游戏通行证"/>
+            <p class="nameconfirmDesc"></p>
+            <input type="text" class="nameconfirmDesc01" placeholder=""/>
         </div>
         <div class="needGameNum gameName" v-show="needGameNumShow">
             <p>游戏账号</p>
             <input type="text" placeholder="请输入游戏账号"/>
         </div>
         <div class="gameNum gameName">
-            <p>充值账号</p>
             <p>{{initChooseFirst.accountType}}</p>
+            <input type="text" placeholder=" "/>
         </div>
         <div class="gameArea gameName clearFix" @click="gameAreaClick()">
             <p>游戏区服</p>
@@ -55,8 +55,8 @@
             <p class="title">面额</p>
             <ul class="moneyList clearFix">
                 <li v-for="(item,index) in initChooseFirst.priceTypeList" @click="gameMoneyClick(index)">
-                    <p class="typeName">{{item.chargeNum}}{{initChooseFirst.chargeNumName}}</p>
-                    <p class="typePrice"><i>{{fixNum((item.quantity)*(initChooseFirst.priceTimes)*discout)}}</i>元</p>
+                    <p class="typeName"><i>{{item.chargeNum}}</i>{{initChooseFirst.chargeNumName}}</p>
+                    <p class="typePrice"><i class="pricePay">{{fixNum((item.quantity)*(initChooseFirst.priceTimes)*discout)}}</i>元</p>
                 </li>
             </ul>
         </div>
@@ -66,7 +66,7 @@
             <p class="payMoney">实付：<span><i></i>元</span></p>
             <p class="fanMoney">充值成功后再返<span><i></i>元</span></p>
         </div>
-        <div class="sure">确认充值</div>
+        <div class="sure" @click="sureClick()">确认充值</div>
     </div>
 </div>
 <script type="text/javascript" src="/common/mui.min.js?version=$version"></script>
