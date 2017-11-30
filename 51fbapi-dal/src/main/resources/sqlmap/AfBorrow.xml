@@ -198,9 +198,48 @@
 			<include refid="queryFields"/>
 		FROM af_borrow WHERE is_delete = 0 AND borrow_no = #{borrowNo} LIMIT 1
 	</select>
+	
+	<select id="getUserNotInBorrow" resultType="AfBorrowDto">
+		SELECT
+			a.id rid,
+			a.NAME name,
+			a.amount amount,
+			c.gmt_pay payDate
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND b.in_bill = 0
+	</select>
 
-
-
+	<select id="getUserNotInBorrowCount" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND b.in_bill = 0
+	</select>
+	
+	<select id="getUserNotInBorrowMoney" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (SUM(a.amount), 0)
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND b.in_bill = 0
+	</select>
 
 
 

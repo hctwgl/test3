@@ -32,12 +32,15 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAmountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountDetailDo;
 import com.ald.fanbei.api.dal.domain.AfUserAmountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAmountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -100,25 +103,33 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 			}
 			List<AfUserAmountDetailDo> detailList = afUserAmountService.getAmountDetailByAmountId(amountId);
 			BigDecimal amount = new BigDecimal(0);
-			String number;
-			String date;
+			String number = userAmount.getBizOrderNo();;
+			String date = DateUtil.formatDate(userAmount.getGmtCreate(), DateUtil.DATE_TIME_SHORT);
 			if (userAmount.getBizType() == AfUserAmountBizType.REFUND.getCode()) {
 				// 退款详情
 				amount = afUserAmountService.getRenfundAmountByAmountId(amountId);
-				number = userAmount.getBizOrderNo();
-				date = DateUtil.formatDate(userAmount.getGmtCreate(), DateUtil.DATE_TIME_SHORT);
-//				afUserAmountService.getOrderByUserAmountId(amountId);
+				AfBorrowDto borrow = afUserAmountService.getBorrowDtoByAmountId(amountId);
+				map.put("name", borrow.getName());
+				map.put("bankAmount", borrow.getBankAmount());
+				map.put("priceAmount", borrow.getPriceAmount());
+				map.put("nper", borrow.getNper());
+				map.put("nperAmount", borrow.getNperAmount());
+				map.put("nperRepayment", borrow.getNperRepayment());
 			}
 			if (userAmount.getBizType() == AfUserAmountBizType.REPAYMENT.getCode()) {
 				// 还款详情
-				for (int i = 0; i < detailList.size(); i++) {
-					AfUserAmountDetailDo detailDo = detailList.get(i);
+				for (AfUserAmountDetailDo detailDo : detailList) {
 					if (detailDo.getType() == AfUserAmountDetailType.SHIJIZHIFU.getCode()) {
 						amount = detailDo.getAmount();
 						break;
 					}
 				}
+				List<AfUserAmountLogDo> amountLogList = afUserAmountService.getAmountLogByAmountId(userAmount.getSourceId());
+				map.put("logList", amountLogList);
 			}
+			map.put("number", number);
+			map.put("date", date);
+			map.put("amount", amount);
 			resp.setResponseData(map);
 			return resp;
 		} catch (Exception e) {

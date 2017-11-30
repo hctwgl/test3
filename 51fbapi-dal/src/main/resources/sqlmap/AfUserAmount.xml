@@ -66,4 +66,22 @@
 		WHERE
 			id = #{id}
 	</select>
+	
+	<select id="getBorrowDtoByAmountId" resultType="AfBorrowDto">
+		SELECT 
+			c.price_amount priceAmount,
+			c.bank_amount bankAmount,
+			d.nper nper,
+			d.nper_amount nperAmount,
+			d.nper_repayment nperRepayment,
+			d.NAME name
+		from 
+			af_user_amount a LEFT JOIN af_order_refund b on a.source_id = b.id 
+		LEFT JOIN af_order c on c.id = b.order_id
+		LEFT JOIN af_borrow d on d.order_id = b.order_id
+		WHERE
+			a.id = #{amountId}
+		and b.is_delete = 0
+		and d.is_delete = 0
+	</select>
 </mapper>

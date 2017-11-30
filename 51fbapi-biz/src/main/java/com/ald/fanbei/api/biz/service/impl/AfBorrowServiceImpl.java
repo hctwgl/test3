@@ -1470,4 +1470,14 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	public List<AfBorrowDto> getUserNotInBorrow(Long userId) {
 		return afBorrowDao.getUserNotInBorrow(userId);
 	}
+
+	@Override
+	public int getUserNotInBorrowCount(Long userId) {
+		return afBorrowDao.getUserNotInBorrowCount(userId);
+	}
+
+	@Override
+	public BigDecimal getUserNotInBorrowMoney(Long userId) {
+		return afBorrowDao.getUserNotInBorrowMoney(userId);
+	}
 }
