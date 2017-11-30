@@ -280,7 +280,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 			goodsList.add(goodsInfo);
 		}
-		data.put("GoodsList",goodsList);
+		data.put("goodsList",goodsList);
 		resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
 		return resp.toString();
 	}

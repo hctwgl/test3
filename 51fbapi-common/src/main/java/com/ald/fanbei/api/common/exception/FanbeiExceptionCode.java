@@ -184,6 +184,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     GOODS_HAVE_BEEN_RESERVED("GOODS_HAVE_BEEN_RESERVED",1605,"goods have been reserved","商品已预约"),
     SOLD_OUT("SOLD_OUT",1607,"sold out","您来晚了，商品已抢光"),
     GOODS_ARE_NOT_IN_STOCK("GOODS_ARE_NOT_IN_STOCK",1608,"goods are not in stock","商品库存不足，请重新购买"),
+    EXCEED_THE_LIMIT_OF_PURCHASE("EXCEED_THE_LIMIT_OF_PURCHASE",1609,"exceed the limit of purchase","超过限购数量，请修改商品数量"),
 
     //borrow model 1700-1799 
     USER_ORDER_HAVE_CLOSED("USER_ORDER_HAVE_CLOSED",1606,"user order have closed","用户订单已关闭"),

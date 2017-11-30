@@ -245,11 +245,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 				Long limitCount = afActivityGoodsDo.getLimitCount();
 				if(null != sum){
 					if(limitCount.intValue() - sum < count){
-						throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
+						throw new FanbeiException(FanbeiExceptionCode.EXCEED_THE_LIMIT_OF_PURCHASE);
 					}
 				}else{
 					if(limitCount.intValue()  < count){
-						throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
+						throw new FanbeiException(FanbeiExceptionCode.EXCEED_THE_LIMIT_OF_PURCHASE);
 					}
 				}
 			}
