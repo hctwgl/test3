@@ -419,7 +419,8 @@ public class Constants {
 	//宜信阿福RC4秘钥
 	  public static final String YIXIN_AFU_PASSWORD="fbapi.yixinafu.password";
 	  //宜信阿福查询用户逾期信息redis中的key前缀
-	  public static final String YIXIN_AFU_SEARCH_KEY="yixinafu_search_";
+	  public static final String YIXIN_AFU_SEARCH_KEY="yxafu_";
 	  //返呗与资产方对接时的平台标识
 	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
+	  
 }
