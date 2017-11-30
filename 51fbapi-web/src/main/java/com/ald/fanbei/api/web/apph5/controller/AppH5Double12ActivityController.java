@@ -149,14 +149,18 @@ public class AppH5Double12ActivityController extends BaseController{
 					if(afCouponDouble12Vo.getIsShow()==null){
 						for (int j = 0; j < times.length-1; j=j+2) {
 							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[times.length-1]))){
+									afCouponDouble12Vo.setIsShow("E");//活动已结束
+								}
+							}
+							if(afCouponDouble12Vo.getIsShow()==null){
 								if(currentTime.after(dateFormat.parse(times[j]))&&currentTime.before(dateFormat.parse(times[j+1]))){
 									afCouponDouble12Vo.setIsShow("Y");//在活动时间内
 								}
+							}
+							if(afCouponDouble12Vo.getIsShow()==null){
 								if(currentTime.after(dateFormat.parse(times[j+1]))&&currentTime.before(dateFormat.parse(times[j+2]))){
 									afCouponDouble12Vo.setIsShow("N");//活动未开始
-								}
-								if(currentTime.after(dateFormat.parse(times[times.length-1]))){
-									afCouponDouble12Vo.setIsShow("E");//活动已结束
 								}
 							}
 						}
