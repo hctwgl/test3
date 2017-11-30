@@ -270,7 +270,7 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     console.log(data,'确认充值');
-                    window.location.href='gameOrderDetail';
+                    //window.location.href='gameOrderDetail';
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！');
