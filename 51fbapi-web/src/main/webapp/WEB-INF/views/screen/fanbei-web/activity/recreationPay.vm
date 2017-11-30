@@ -19,7 +19,7 @@
             <input type="text" placeholder=""/>
         </div>
         <div class="kong"></div>
-        <div class="gameType">
+        <div class="payType gameType">
             <p class="title">充值类型</p>
             <ul class="typeList clearFix">
                 <li v-for="(item,index) in initChooseFirst.typeNameList" @click="gameTypeClick(index)">

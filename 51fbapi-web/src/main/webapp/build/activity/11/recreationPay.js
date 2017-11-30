@@ -13,7 +13,8 @@ let vm = new Vue({
         initChooseFirst:'',
         allDataLen:'',
         discout:discout,
-        rebate:rebate
+        rebate:rebate,
+        liIndex:''
     },
     created: function () {
         this.logData();
@@ -101,6 +102,7 @@ let vm = new Vue({
                     console.log(self.allData.length, '全部数据长度');
                     self.initChooseFirst=self.allData[0];
                     console.log(self.allData[0], '默认显示第一个数据');
+                    self.liIndex=0;
                     self.allDataLen=self.allData.length;
                     if(self.allDataLen==1){
                         self.fixCont=self.allData[0];
@@ -154,17 +156,42 @@ let vm = new Vue({
         },
         //点击面额
         gameMoneyClick(index){
+            let self=this;
             $('.moneyList li').eq(index).addClass('changeColor01');
             $('.moneyList li').eq(index).find('p').addClass('changeColor02');
             $('.moneyList li').eq(index).siblings().removeClass('changeColor01');
             $('.moneyList li').eq(index).siblings().find('p').removeClass('changeColor02');
             $('.payMoney span').html($('.moneyList li').eq(index).find('.pricePay').html()+'元');
             $('.fanMoney span').html((($('.moneyList li').eq(index).find('.pricePay').html())*rebate).toFixed(2)+'元');
+            self.liIndex=index;
         },
         //确认充值
         sureClick(){
             let self = this;
-            let gameName,acctType,userName,goodsNum,actualAmount;
+            let quantityNum,times;
+            if(self.fixCont.priceTypeList){
+                quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
+                times=self.fixCont.priceTimes;
+            }else{ // goodsNum计算
+                quantityNum=self.initChooseFirst.priceTypeList[self.liIndex].quantity;
+                times=self.initChooseFirst.priceTimes;
+            }
+            let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType;
+            if($('.gameName').hasClass('needGameNum')){ //游戏账号
+                gameAcct=$('.needGameNum input').val();
+            }else{
+                gameAcct='';
+            }
+            if($('.gameName').hasClass('gameArea')){ //游戏区服
+                gameArea=$('.gameArea span').html();
+            }else{
+                gameArea='';
+            }
+            if($('.payType').hasClass('gameType')){ //充值类型
+                gameType=$('.typeList .changeColor02').html();
+            }else{
+                gameType='';
+            }
             if(self.dataType=='A'){
                 gameName=$('.gameName:first-child').find('span').html();
                 acctType=$('.gamePass p').html();
@@ -183,11 +210,14 @@ let vm = new Vue({
                 type: 'post',
                 url: "/game/pay/order",
                 data:{'goodsId':goodsId,'gameName':gameName,'acctType':acctType,
-                    'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount
+                    'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount,
+                    'gameAcct':gameAcct,'gameArea':gameArea,'gameType':gameType
                 },
                 success: function (data) {
                     console.log(data,'确认充值');
-                    window.location.href='gameOrderDetail';
+                    let orderNo=data.data.orderNo;
+                    let plantform=data.data.plantform;
+                    window.location.href='gameOrderDetail?orderNo='+orderNo+'&plantform='+plantform;
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！');
