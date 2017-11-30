@@ -163,6 +163,7 @@ public class Constants {
 	public static final String RES_THIRD_GOODS_REBATE_RATE = "THIRD_GOODS_REBATE_RATE";
 	public static final String RES_BORROW_CASH_RATE_DESC = "BORROW_CASH_RATE_DESC";
 	public static final String RES_BORROW_CONSUME = "BORROW_CONSUME";
+	public static final String RES_BORROW_CONSUME_VIP = "BORROW_CONSUME_VIP";
 	public static final String RES_BORROW_CONSUME_OVERDUE = "BORROW_CONSUME_OVERDUE";
 	public static final String RES_BORROW_CASH = "BORROW_CASH";
 	public static final String RES_BORROW_RATE = "BORROW_RATE";
