@@ -358,11 +358,12 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 				l.add(allBarlyClearanceBo);
 			}
 			if (afBorrowBillDo.getIsOut().intValue() == 1) {
-				//逾期
+				//己出
 				BigDecimal amount = allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getBillAmount());
 				allBarlyClearanceBo.setAmount(amount);
 				allBarlyClearanceBo.setMinAdnMaxNper(afBorrowBillDo.getBillNper());
 				AllBarlyClearanceDetailBo allBarlyClearanceDetailBo = new AllBarlyClearanceDetailBo();
+				allBarlyClearanceDetailBo.setBillId(afBorrowBillDo.getRid());
 				allBarlyClearanceDetailBo.setNper(afBorrowBillDo.getBillNper());
 				allBarlyClearanceDetailBo.setAmount(afBorrowBillDo.getBillAmount());
 				allBarlyClearanceDetailBo.setFree(false);
@@ -399,6 +400,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 				allBarlyClearanceBo.setAmount(amount);
 				allBarlyClearanceBo.setMinAdnMaxNper(afBorrowBillDo.getBillNper());
 				AllBarlyClearanceDetailBo allBarlyClearanceDetailBo = new AllBarlyClearanceDetailBo();
+				allBarlyClearanceDetailBo.setBillId(afBorrowBillDo.getRid());
 				allBarlyClearanceDetailBo.setNper(afBorrowBillDo.getBillNper());
 				allBarlyClearanceDetailBo.setAmount(afBorrowBillDo.getBillAmount());
 				allBarlyClearanceDetailBo.setFree(needPlusFree ? true : false);

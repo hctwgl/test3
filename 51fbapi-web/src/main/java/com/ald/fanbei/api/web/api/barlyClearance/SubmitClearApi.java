@@ -1,29 +1,37 @@
 package com.ald.fanbei.api.web.api.barlyClearance;
 
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author honghzengpei 2017/11/28 13:31
@@ -41,6 +49,19 @@ public class SubmitClearApi implements ApiHandle {
 
     @Resource
     AfUserAccountService afUserAccountService;
+
+    @Resource
+    AfRepaymentService afRepaymentService;
+
+    @Resource
+    AfUserWithholdService afUserWithholdService;
+
+    @Resource
+    AfResourceService afResourceService;
+
+    @Resource
+    AfUserBankcardService afUserBankcardService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -61,6 +82,8 @@ public class SubmitClearApi implements ApiHandle {
 
 
         List<AllBarlyClearanceBo> list = afBorrowBillService.getAllClear(userId,billId);
+        String billIds = getBillIds(list);
+
         if(!checkAmount(list,repayAmount)){
             throw new FanbeiException("borrow bill not exist error", FanbeiExceptionCode.AMOUNT_COMPARE_ERROR);
         }
@@ -92,15 +115,100 @@ public class SubmitClearApi implements ApiHandle {
             }
         }
 
-        
+        AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(billIds);
 
 
+        //遍历账单，加锁
+        String[] billStr = billIds.split(",");
+        String billIds1 = "";
+        Map<String, Object> map;
+        try {
+            if (afUserWithholdService.getCountByUserId(userId) > 0) {
+                for (int i = 0; i < billStr.length; i++) {
+                    String billId1 = billStr[i];
+                    if (afBorrowBillService.updateBorrowBillLockById(billId1) > 0) {
+                        if (billIds1.equals("")) {
+                            billIds1 = billId1;
+                        } else {
+                            billIds1 = billIds1 + "," + billId1;
+                        }
+                    } else {
+                        throw new FanbeiException(FanbeiExceptionCode.BORROW_BILL_IS_REPAYING);
+                    }
+                }
+            }
+            if (cardId.longValue() == -2) {//余额支付
+                //用户账户余额校验添加
+                if (afUserAccountDo.getRebateAmount().compareTo(showAmount) < 0) {
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
+                }
+                map = afRepaymentService.createRepayment(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
+                        cardId, userId, billDo, "", afUserAccountDo);
+                resp.addResponseData("refId", map.get("refId"));
+                resp.addResponseData("type", map.get("type"));
+            } else if (cardId.longValue() == -1) {//微信支付
+                if (context.getAppVersion() < 395) {
+                    throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+                }
+                if (!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.WXPAY)) {
+                    throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+                }
 
 
+                map = afRepaymentService.createRepaymentYiBao(BigDecimal.ZERO, rebateAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo);
+                map.put("userNo", afUserAccountDo.getUserName());
+                map.put("userType", "USER_ID");
+                map.put("directPayType", "WX");
+                resp.setResponseData(map);
 
+            } else if (cardId.longValue() == -3) {
+                if (context.getAppVersion() < 395) {
+                    throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+                }
+                if (!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.ZFBPAY)) {
+                    throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+                }
 
+                map = afRepaymentService.createRepaymentYiBao(BigDecimal.ZERO, rebateAmount, showAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo);
+                map.put("userNo", afUserAccountDo.getUserName());
+                map.put("userType", "USER_ID");
+                map.put("directPayType", "ZFB");
+                resp.setResponseData(map);
+            } else if (cardId.longValue() > 0) {//银行卡支付
+                AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
+                if (null == card) {
+                    throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+                }
+                map = afRepaymentService.createRepayment(BigDecimal.ZERO, repayAmount, showAmount, coupon, rebateAmount, billIds,
+                        cardId, userId, billDo, request.getRemoteAddr(), afUserAccountDo);
+                //代收
+                UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");
+                if (!upsResult.isSuccess()) {
+                    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+                }
+                Map<String, Object> newMap = new HashMap<String, Object>();
+                newMap.put("outTradeNo", upsResult.getOrderNo());
+                newMap.put("tradeNo", upsResult.getTradeNo());
+                newMap.put("cardNo", Base64.encodeString(upsResult.getCardNo()));
+                newMap.put("refId", map.get("refId"));
+                newMap.put("type", map.get("type"));
+                resp.setResponseData(newMap);
+            }
+        } catch (FanbeiException e) {
+            logger.error("borrowbill repayment fail" + e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("sys exception", e);
+            throw new FanbeiException("sys exception", FanbeiExceptionCode.SYSTEM_ERROR);
+        } finally {
+            //如果有其中一笔账单解锁
+            if (StringUtil.isNotEmpty(billIds1)) {
+                //分期账单解锁
+                afBorrowBillService.updateBorrowBillUnLockByIds(billIds1);
+            }
+        }
 
-        return null;
+        return resp;
     }
 
 
@@ -120,5 +228,18 @@ public class SubmitClearApi implements ApiHandle {
             ret = true;
         }
         return ret;
+    }
+
+    private String getBillIds(List<AllBarlyClearanceBo> list){
+        String billIds = "";
+        for(AllBarlyClearanceBo allBarlyClearanceBo: list){
+            for(AllBarlyClearanceDetailBo allBarlyClearanceDetailBo : allBarlyClearanceBo.getDetailList()){
+                if(!billIds.equals("")){
+                    billIds +=",";
+                }
+                billIds += allBarlyClearanceDetailBo.getBillId();
+            }
+        }
+        return billIds;
     }
 }
