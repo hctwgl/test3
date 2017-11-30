@@ -14,6 +14,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
@@ -207,10 +208,13 @@ public class AppH5FlashSaleController extends BaseController {
 
 	@RequestMapping(value = "/getBookingRushGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String GetBookingRushGoods(HttpServletRequest request,FanbeiContext context,HttpServletResponse response) {
+	public String GetBookingRushGoods(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Map<String,Object> data = new HashMap<String,Object>();
-		Long userId = context.getUserId();
+        FanbeiWebContext context = new FanbeiWebContext();
+        context = doWebCheck(request,false);
+        String userName = context.getUserName();
+        Long userId = convertUserNameToUserId(userName);
 		//商品展示
 		AfGoodsQuery query = getCheckParam(request);
 		List<AfEncoreGoodsDto> list = afGoodsService.selectBookingRushGoods(query);
@@ -300,9 +304,12 @@ public class AppH5FlashSaleController extends BaseController {
 
 	@RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String ReserveGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		Long userId = context.getUserId();
-		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"),0l);
+	public String ReserveGoods(HttpServletRequest request,  HttpServletResponse response) {
+		FanbeiWebContext context = new FanbeiWebContext();
+		context = doWebCheck(request,false);
+        String userName = context.getUserName();
+        Long userId = convertUserNameToUserId(userName);
+		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
 		String goodsName = "商品名称";
 		AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 		if(null != afGoodsDo){
@@ -355,5 +362,17 @@ public class AppH5FlashSaleController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    private Long convertUserNameToUserId(String userName) {
+        Long userId = null;
+        if (!StringUtil.isBlank(userName)) {
+            AfUserDo user = afUserService.getUserByUserName(userName);
+            if (user != null) {
+                userId = user.getRid();
+            }
+
+        }
+        return userId;
+    }
 
 }
