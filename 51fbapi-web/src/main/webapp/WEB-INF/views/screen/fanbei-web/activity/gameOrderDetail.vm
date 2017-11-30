@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711301349")
+    #set($version="201711301937")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>订单详情</title>
@@ -11,26 +11,45 @@
 <div id="gameOrderDetail" class="gameOrderDetail">
     <div class="allTop">
         <div class="banner">
-            <p class="orderStatus">订单关闭</p>
-            <p class="timeOut">还剩支付时间 <i>23:59:24</i></p>
+            <p class="orderStatus" v-if="content.orderStatus==='NEW'">新建/待付款</p>
+            <p class="orderStatus" v-if="content.orderStatus==='DEALING'">支付中</p>
+            <p class="orderStatus" v-if="content.orderStatus==='PAYFAIL'">支付失败</p>
+            <p class="orderStatus" v-if="content.orderStatus==='PAID'">已支付/待收货</p>
+            <p class="orderStatus" v-if="content.orderStatus==='REVIEW'">代买审核中</p>
+            <p class="orderStatus" v-if="content.orderStatus==='AGENCYCOMPLETED'">代买完成,等待确认完成</p>
+            <p class="orderStatus" v-if="content.orderStatus==='DELIVERED'">已发货</p>
+            <p class="orderStatus" v-if="content.orderStatus==='FINISHED'">已收货/订单完成</p>
+            <p class="orderStatus" v-if="content.orderStatus==='REBATED'">返利成功</p>
+            <p class="orderStatus" v-if="content.orderStatus==='CLOSED'">订单关闭(未付款或退款成功)</p>
+            <p class="orderStatus" v-if="content.orderStatus==='WAIT_REFUND'">等待退款</p>
+            <p class="orderStatus" v-if="content.orderStatus==='DEAL_REFUNDING'">退款中</p>
+            <p class="timeOut">还剩支付时间 <i>{{showTimerS(diff)}}</i></p>
         </div>
         <div class="firstCont">
-            <p class="serviceName">游戏充值</p>
-            <p class="cont">充值账号：1348579678798</p>
+            <p class="serviceName" v-if="content.orderType==='GAME'">游戏充值</p>
+            <p class="serviceName" v-if="content.orderType==='AMUSEMENT'">娱乐充值</p>
+            <p class="cont">
+                <span v-if="content.goodsName">游戏名称：{{content.goodsName}}；</span>
+                <span v-if="content.acctType">帐号类型：{{content.acctType}}；</span>
+                <span v-if="content.userName">充值用户名：{{content.userName}}；</span>
+                <span v-if="content.gameType">充值类型：{{content.gameType}}；</span>
+                <span v-if="content.gameAcct">游戏账号：{{content.gameAcct}}；</span>
+                <span v-if="content.gameArea">游戏区服：{{content.gameArea}}；</span>
+            </p>
         </div>
         <div class="secondCont">
             <div class="top clearFix">
-                <div class="img"></div>
-                <p class="gameName">腾讯Q币充值</p>
-                <p class="chargeNum">100Q币</p>
+                <div class="img"><img :src="content.goodsIcon"></div>
+                <p class="gameName">{{content.acctType}}充值</p>
+                <p class="chargeNum">{{content.goodsCount}} {{content.gameType}}</p>
             </div>
-            <p class="totalPrice clearFix"><span>订单总价</span><span>￥2997.00</span></p>
-            <p class="fanMoney clearFix"><span>返利金额</span><span>￥27.55</span></p>
+            <p class="totalPrice clearFix"><span>订单总价</span><span>￥{{content.actualAmount}}</span></p>
+            <p class="fanMoney clearFix"><span>返利金额</span><span>￥{{(content.rebateAmount)*(content.actualAmount)}}</span></p>
         </div>
         <div class="thirdCont">
-            <p class="orderNum">订单编号：<span>1348579678798</span></p>
-            <p class="createTime">创建时间：<span>2017-11-30 14:22:30</span></p>
-            <p class="payTime">付款时间：<span>2017-11-30 14:25:35</span></p>
+            <p class="orderNum">订单编号：<span>{{content.orderNo}}</span></p>
+            <p class="createTime">创建时间：<span>{{content.orderStartTime}}</span></p>
+            <p class="payTime">付款时间：<span>2017-11-30 14:25:35</span>需与后台确认</p>
         </div>
     </div>
     <div class="footer">
