@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * '第三方-上树请求记录Dao
@@ -18,9 +19,9 @@ public interface AfGoodsPriceDao extends BaseDao<AfGoodsPriceDo, Long> {
 
     Integer selectSumStock(Long goodsId);
 
-    int updateSell(Long priceId,Long count);
+    int updateSell(@Param("priceId") Long priceId,@Param("count") Long count);
 
-    int updateReturnGoods(Long priceId,Long count);
+    int updateReturnGoods(@Param("priceId")Long priceId,@Param("count")Long count);
 
 
 }

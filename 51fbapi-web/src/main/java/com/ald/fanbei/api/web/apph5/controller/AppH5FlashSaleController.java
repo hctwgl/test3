@@ -77,7 +77,7 @@ public class AppH5FlashSaleController extends BaseController {
 	public String GetFlashSaleGoods(HttpServletRequest request) {
 		H5CommonResponse resp = null;
 		Map<String,Object> data = new HashMap<String,Object>();
-		List<Object> topBannerList = new ArrayList<Object>();
+ 		List<Object> topBannerList = new ArrayList<Object>();
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		int count = 0;
 		//正式环境和预发布环境区分，banner轮播图展示
@@ -111,7 +111,7 @@ public class AppH5FlashSaleController extends BaseController {
 				break;
 			}
 		}
-		for(AfEncoreGoodsDto goodsDo : list) {
+ 		for(AfEncoreGoodsDto goodsDo : list) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			goodsInfo.put("goodName",goodsDo.getName());
 			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
@@ -125,14 +125,26 @@ public class AppH5FlashSaleController extends BaseController {
 			Long goodsId = goodsDo.getRid();
 			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsDo.getRid());
 			if(null != afActivityGoodsDo){
-				count = new Long(afActivityGoodsDo.getInitialCount()).intValue();
+				long initialCount = 0;
+				if(null != afActivityGoodsDo.getInitialCount()){
+					initialCount = afActivityGoodsDo.getInitialCount();
+				}
+				count = new Long(initialCount).intValue();
 			}else{
 				count = 0;
 			}
-			Integer total = afGoodsPriceService.selectSumStock(goodsId);
-			goodsInfo.put("total",total+count);
-			Integer volume = afOrderService.selectSumCountByGoodsId(goodsId);
-			goodsInfo.put("volume",volume+count);
+  			Integer total = afGoodsPriceService.selectSumStock(goodsId);
+			if(null == total){
+				goodsInfo.put("total",count);
+			}else{
+				goodsInfo.put("total",total+count);
+			}
+ 			Integer volume = afOrderService.selectSumCountByGoodsId(goodsId);
+			if(null == volume){
+				goodsInfo.put("volume",count);
+			}else{
+				goodsInfo.put("volume",volume+count);
+			}
 			AfSchemeGoodsDo schemeGoodsDo = null;
 			try {
 				schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
