@@ -156,7 +156,7 @@ let goodArr3 = [{
 // })
 
 var userName = getUrl('userName'); //获取用户id
-var spread = getUrl('spread'); //获取用户id
+var spread = getUrl('spread'); //获取页面推广类型
 
 
 let vm = new Vue({

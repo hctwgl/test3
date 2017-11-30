@@ -13,6 +13,12 @@ function formatDateTime() {
     return y + m + d + h + minute + second;
 };
 
+var spread = getUrl('spread'); //获取页面推广类型
+function maidianFun(data) {
+    maidianFnNew(data, spread);
+}
+
+
 // 同盾校验编号的sessionId
 var _fmOpt;
 (function () {
@@ -170,9 +176,9 @@ $(function () {
                                 data = JSON.parse(data);
                                 if (data.data == 'N') {
                                     captchaObj.verify(); //调起图片验证
-                                    maidianFn("getCodeSuccess");
+                                    maidianFun("getCodeSuccess");
                                 } else {
-                                    maidianFn("getCodeRegistered");
+                                    maidianFun("getCodeRegistered");
                                     if (data.msg == "用户已存在") {
                                         requestMsg("您已注册，请直接登录")
                                     } else {
@@ -197,10 +203,10 @@ $(function () {
                         },
                         success: function (data) {
                             if (data.data.status === 'success') {
-                                maidianFn("sendCodeSuccess");
+                                maidianFun("sendCodeSuccess");
                                 getCode();
                             } else if (data.data.status === 'fail') {
-                                maidianFn("sendCodeFail");
+                                maidianFun("sendCodeFail");
                                 requestMsg(data.msg);
                             }
                         }
@@ -210,8 +216,9 @@ $(function () {
         }
     });
 
-    maidianFn('double12Register');
+    maidianFun('double12Register');
 
+    
     // ---------------------------end
 
     // 完成注册提交
@@ -246,7 +253,7 @@ $(function () {
                     var a = JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        maidianFn("registerSuccess");
+                        maidianFun("registerSuccess");
                         var urlName = param['urlName'];
                         requestMsg("注册成功");
                         setTimeout(function () {
@@ -254,7 +261,7 @@ $(function () {
                         }, 1500);
 
                     } else if (a.url == "Register") {
-                        maidianFn("registerFail");
+                        maidianFun("registerFail");
                         requestMsg(a.msg);
                     }
                 },
