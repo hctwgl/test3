@@ -292,7 +292,7 @@ public class AppH5FlashSaleController extends BaseController {
 		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
 		Integer sumCount = afGoodsPriceService.selectSumStock(goodsId);
 		if(null == sumCount || sumCount == 0){
-			throw new FanbeiException(FanbeiExceptionCode.SOLD_OUT);
+			return  H5CommonResponse.getNewInstance(false, "商品库存不足，请重新购买~", "", goodsId).toString();
 		}
 		return  H5CommonResponse.getNewInstance(true, "成功", "", goodsId).toString();
 	}
