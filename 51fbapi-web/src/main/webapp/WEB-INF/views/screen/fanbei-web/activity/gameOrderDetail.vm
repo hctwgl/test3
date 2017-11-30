@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711301009")
+    #set($version="201711301349")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>订单详情</title>
@@ -9,10 +9,34 @@
 </head>
 <body>
 <div id="gameOrderDetail" class="gameOrderDetail">
-   <div class="banner">
-       <p class="bannerWord">订单关闭<br/><span>还剩支付时间 23:59:24</span></p>
-
-   </div>
+    <div class="allTop">
+        <div class="banner">
+            <p class="orderStatus">订单关闭</p>
+            <p class="timeOut">还剩支付时间 <i>23:59:24</i></p>
+        </div>
+        <div class="firstCont">
+            <p class="serviceName">游戏充值</p>
+            <p class="cont">充值账号：1348579678798</p>
+        </div>
+        <div class="secondCont">
+            <div class="top clearFix">
+                <div class="img"></div>
+                <p class="gameName">腾讯Q币充值</p>
+                <p class="chargeNum">100Q币</p>
+            </div>
+            <p class="totalPrice clearFix"><span>订单总价</span><span>￥2997.00</span></p>
+            <p class="fanMoney clearFix"><span>返利金额</span><span>￥27.55</span></p>
+        </div>
+        <div class="thirdCont">
+            <p class="orderNum">订单编号：<span>1348579678798</span></p>
+            <p class="createTime">创建时间：<span>2017-11-30 14:22:30</span></p>
+            <p class="payTime">付款时间：<span>2017-11-30 14:25:35</span></p>
+        </div>
+    </div>
+    <div class="footer">
+        <p class="deleteOrder">删除订单</p>
+        <p class="goPay">去支付</p>
+    </div>
 </div>
 <script type="text/javascript" src="/dist/activity/11/gameOrderDetail.js?version=$version"></script>
 </body>
