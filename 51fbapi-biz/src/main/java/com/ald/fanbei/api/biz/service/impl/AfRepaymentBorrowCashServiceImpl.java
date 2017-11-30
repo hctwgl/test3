@@ -415,7 +415,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         interest = afBorrowCashDo.getRateAmount();
                         tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getRateAmount());
                     } else {
-                        bcashDo.setSumRate(BigDecimalUtil.add(bcashDo.getSumRate(), tempRepayAmount));
+                        bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), tempRepayAmount));
                         bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
                         interest = tempRepayAmount;
                         tempRepayAmount = BigDecimal.ZERO;
@@ -434,7 +434,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         overdueAmount = afBorrowCashDo.getOverdueAmount();
                         tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
                     } else {
-                        bcashDo.setSumOverdue(BigDecimalUtil.add(bcashDo.getSumOverdue(), tempRepayAmount));
+                        bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), tempRepayAmount));
                         bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
                         overdueAmount = tempRepayAmount;
                         tempRepayAmount = BigDecimal.ZERO;

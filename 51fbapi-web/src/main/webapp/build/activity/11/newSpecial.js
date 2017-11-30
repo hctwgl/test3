@@ -7,7 +7,7 @@ let vm = new Vue({
     el: '#newUser',
     data: {
         content: {},
-        ruleShow:false
+        ruleShow:false,
     },
     created: function () {
         this.logData();
@@ -23,7 +23,6 @@ let vm = new Vue({
                      console.log(data);
                      /*self.content=eval('('+data.data+')');*/
                     self.content=data.data.goodsList;
-                     console.log(self.content)
                      self.$nextTick(function () {
                         /*图片预加载*/
                         $(".first").each(function() {
@@ -51,7 +50,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=newUser_ini'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=newUser_ini'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -83,7 +82,7 @@ let vm = new Vue({
                     if(data.msg&&data.msg=='没有登录'){  //是否登录
                         window.location.href=data.data.loginUrl;
                     }else{ //已登录调用分享
-                        let dat='{"shareAppTitle":"20元话费、300M流量，3元超值购点击即领","shareAppContent":"51返呗超值新人礼：20元话费3元领，快来抢购吧~","shareAppImage":"https://f.51fanbei.com/h5/app/activity/11/newUser06.jpg","shareAppUrl":"' + domainName + '/fanbei-web/activity/newUserShare'+ '","isSubmit":"Y","sharePage":"newUserShare'+'"}';
+                        let dat='{"shareAppTitle":"20元话费、300M流量，3元超值购点击即领","shareAppContent":"51返呗超值新人礼：20元话费3元领，快来抢购吧~","shareAppImage":"https://f.51fanbei.com/h5/app/activity/11/newSpecial-02.png","shareAppUrl":"' + domainName + '/fanbei-web/activity/newSpecialShare'+ '","isSubmit":"Y","sharePage":"newSpecialShare'+'"}';
                         let base64 = BASE64.encoder(dat);
                         window.location.href = '/fanbei-web/opennative?name=APP_SHARE&params='+base64;
                     }
@@ -96,7 +95,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=shareNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=shareNow'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -123,7 +122,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=inviteNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=inviteNow'},
                 success:function (data) {
                     console.log(data)
                 }
@@ -156,7 +155,7 @@ let vm = new Vue({
             $.ajax({
                 url:'/fanbei-web/postMaidianInfo',
                 type:'post',
-                data:{maidianInfo:'/fanbei-web/activity/newUser?type=buyNow'},
+                data:{maidianInfo:'/fanbei-web/activity/newSpecial?type=buyNow'},
                 success:function (data) {
                     console.log(data)
                 }
