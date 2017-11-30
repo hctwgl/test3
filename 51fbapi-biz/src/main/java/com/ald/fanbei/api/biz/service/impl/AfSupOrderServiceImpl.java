@@ -186,6 +186,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    afOrder.setGoodsId(goodsId);
 		    afOrder.setOrderType(OrderType.BOLUOME.getCode());
 		    afOrder.setOrderNo(generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT));
+		    afOrder.setThirdOrderNo(afOrder.getOrderNo());
 		    afOrder.setCount(goodsNum);
 		    afOrder.setUserCouponId(couponId);
 		    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
@@ -223,6 +224,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	if (result == 1) {
 	    data.put("orderId", afOrder.getRid());
 	    data.put("orderNo", afOrder.getOrderNo());
+	    data.put("plantform", OrderType.BOLUOME.getCode());
 	}
 	return data;
     }
