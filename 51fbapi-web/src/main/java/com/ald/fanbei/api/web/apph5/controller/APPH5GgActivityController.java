@@ -125,9 +125,7 @@ public class APPH5GgActivityController extends BaseController {
 	@RequestMapping(value = "/returnCoupon", method = RequestMethod.POST)
 	public String returnCoupon(HttpServletRequest request, HttpServletResponse response, ModelMap model)
 			throws IOException {
-		// String userName =
-		// ObjectUtils.toString(request.getParameter("userName"),
-		// "").toString();
+		
 		FanbeiWebContext context = new FanbeiWebContext();
 		String resultStr = "";
 		try {
