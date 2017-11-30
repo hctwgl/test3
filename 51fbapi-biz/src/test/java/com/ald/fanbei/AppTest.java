@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,28 +62,34 @@ public class AppTest extends TestCase {
 	    // System.out.println(CommOrderQry.QueryOrder("Num10428", "132",
 	    // "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
 
-	    OrderEntity orderEntity = new OrderEntity();
-	    orderEntity.setAcctType("网易通行证账号");
-	    orderEntity.setBusinessId("Num10428");
-	    orderEntity.setGameAcct("");
-	    orderEntity.setGameArea("");
-	    orderEntity.setGameName("网易");
-	    orderEntity.setGameSrv("");
-	    orderEntity.setGameType("帐号直充");
-	    orderEntity.setGoodsId("wy001jk");
-	    orderEntity.setGoodsNum(10);
-	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
-	    orderEntity.setNoticeUrl("http://1it9109157.51mypc.cn:14348/game/pay/callback");
-	    orderEntity.setOrderArea("");
-	    orderEntity.setOrderIp("");
-	    orderEntity.setUserName("00000000@e2p.com");
-	    orderEntity.setUserOrderId("140");
-	    String result = OrderReceive.SendOrder(orderEntity);
-	    System.out.println(result);
-
-	    Document document = DocumentHelper.parseText(result);
-	    System.out.println(document.selectSingleNode("/root/result").getStringValue());
-	    System.out.println(document.selectSingleNode("/root/mes").getStringValue());
+	    System.out.println(URLEncoder.encode("QQ%E5%8F%B7", "utf-8"));
+	    System.out.println(URLDecoder.decode("QQ%E5%8F%B7", "utf-8"));
+	    System.out.println(URLDecoder.decode("QQ%E5%8F%B7", "ISO-8859-1"));
+	    System.out.println(URLDecoder.decode("QQ号", "utf-8"));
+	    System.out.println(URLDecoder.decode("QQ号", "ascii"));
+	    
+//	    OrderEntity orderEntity = new OrderEntity();
+//	    orderEntity.setAcctType("网易通行证账号");
+//	    orderEntity.setBusinessId("Num10428");
+//	    orderEntity.setGameAcct("");
+//	    orderEntity.setGameArea("");
+//	    orderEntity.setGameName("网易");
+//	    orderEntity.setGameSrv("");
+//	    orderEntity.setGameType("帐号直充");
+//	    orderEntity.setGoodsId("wy001jk");
+//	    orderEntity.setGoodsNum(10);
+//	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
+//	    orderEntity.setNoticeUrl("http://1it9109157.51mypc.cn:14348/game/pay/callback");
+//	    orderEntity.setOrderArea("");
+//	    orderEntity.setOrderIp("");
+//	    orderEntity.setUserName("00000000@e2p.com");
+//	    orderEntity.setUserOrderId("140");
+//	    String result = OrderReceive.SendOrder(orderEntity);
+//	    System.out.println(result);
+//
+//	    Document document = DocumentHelper.parseText(result);
+//	    System.out.println(document.selectSingleNode("/root/result").getStringValue());
+//	    System.out.println(document.selectSingleNode("/root/mes").getStringValue());
 
 	} catch (Exception e) { // TODO Auto-generated
 	    e.printStackTrace();
