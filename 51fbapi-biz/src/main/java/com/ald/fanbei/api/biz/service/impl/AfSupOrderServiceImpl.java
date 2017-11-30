@@ -147,7 +147,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	}
 	final BigDecimal couponAmountFinal = couponAmount;
 	// 验证优惠卷
-	BigDecimal checkActualAmount = supGameDo.getBusinessDiscount().multiply(new BigDecimal(goodsNum));
+	BigDecimal checkActualAmount = supGameDo.getOfficalDiscount().multiply(new BigDecimal(goodsNum));
 	final BigDecimal rebateAmountScale = supGameDo.getOfficalDiscount().subtract(supGameDo.getBusinessDiscount());
 	checkActualAmount = checkActualAmount.subtract(couponAmount);
 	if (checkActualAmount.compareTo(BigDecimal.ZERO) <= 0) {
