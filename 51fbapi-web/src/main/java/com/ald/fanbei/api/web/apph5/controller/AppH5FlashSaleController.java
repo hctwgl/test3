@@ -74,6 +74,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 
 	@RequestMapping(value = "/getFlashSaleGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String GetFlashSaleGoods(HttpServletRequest request) {
 		H5CommonResponse resp = null;
 		Map<String,Object> data = new HashMap<String,Object>();
@@ -174,7 +175,7 @@ public class AppH5FlashSaleController extends BaseController {
 			goodsList.add(goodsInfo);
 		}
 		data.put("goodsList",goodsList);
-		resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
+		resp = H5CommonResponse.getNewInstance(true, "成功","",data);
 		return resp.toString();
 
 	}
@@ -205,6 +206,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 
 	@RequestMapping(value = "/getBookingRushGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String GetBookingRushGoods(HttpServletRequest request, HttpServletResponse response) {
 		H5CommonResponse resp = H5CommonResponse.getNewInstance();
 		Map<String,Object> data = new HashMap<String,Object>();
@@ -290,6 +292,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 
 	@RequestMapping(value = "/checkGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String CheckGoods(HttpServletRequest request, HttpServletResponse response, Model model) {
 		Long goodsId = NumberUtil.objToLongDefault(request.getParameter("goodsId"),0l);
 		Integer sumCount = afGoodsPriceService.selectSumStock(goodsId);
@@ -301,6 +304,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 
 	@RequestMapping(value = "/reserveGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String ReserveGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		Long userId = context.getUserId();
 		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"),0l);
