@@ -3,6 +3,9 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -32,7 +35,8 @@ public class AuthAlipayApi implements ApiHandle {
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfUserAccountService afUserAccountService;
-	
+	@Resource
+	AfResourceService afResourceService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -40,9 +44,13 @@ public class AuthAlipayApi implements ApiHandle {
 //		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
 		
 		Long userId = context.getUserId();
-		if(true){
+		AfResourceDo afResource= afResourceService.getSingleResourceBytype("ali_auth_close");
+		if(afResource==null||afResource.getValue().equals(YesNoStatus.YES.getCode())){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
 		}
+//		if(true){
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
+//		}
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if (afUserAuthDo != null && afUserAuthDo.getAlipayStatus().equals(SupplyCertifyStatus.WAIT.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
