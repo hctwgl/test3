@@ -92,7 +92,8 @@ import com.ald.fanbei.api.common.AbstractSerial;
      */
     private String userIp;
 
-
+private String msg;
+    
     /**
      * 获取主键Id
      *
@@ -112,7 +113,15 @@ import com.ald.fanbei.api.common.AbstractSerial;
     }
     
 
-    /**
+    public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	/**
      * 获取创建时间
      *
      * @return 创建时间
