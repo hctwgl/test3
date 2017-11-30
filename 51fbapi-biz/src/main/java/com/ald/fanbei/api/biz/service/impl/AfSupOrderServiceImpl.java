@@ -47,6 +47,7 @@ import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -222,11 +223,12 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 
 	Map<String, Object> data = new HashMap<String, Object>();
 	if (result == 1) {
-	    data.put("orderId", afOrder.getRid());
 	    data.put("orderNo", afOrder.getOrderNo());
 	    data.put("plantform", OrderType.BOLUOME.getCode());
+	    return data;
+	} else {
+	    return null;
 	}
-	return data;
     }
 
     private String getOrderDetailsUrl(String orderNo) {
