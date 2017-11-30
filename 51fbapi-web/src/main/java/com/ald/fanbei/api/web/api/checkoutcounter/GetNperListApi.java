@@ -117,7 +117,7 @@ public class GetNperListApi implements ApiHandle {
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
             }
-            removeSecondNper(array);
+            //removeSecondNper(array);
 
             //分期金额限制
             String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
