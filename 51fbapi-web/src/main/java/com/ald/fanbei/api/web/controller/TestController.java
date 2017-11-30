@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
@@ -836,6 +837,8 @@ public class TestController {
 
 	@Resource
 	HuichaoUtility huichaoUtility;
+	@Resource
+	FenqiCuishouUtil fenqiCuishouUtil;
 	/**
 	 *
 	 */
@@ -845,7 +848,11 @@ public class TestController {
 //		String puk = AesUtil.decrypt("QRaDVWb2pC9by28Rxt8sMQ==","Cw5bM6x@6sH$2dlw^3JueH");
 //		String pik = AesUtil.decrypt("fnzwqgFMW/RyuzDKRkH9uP/XN6RgBH5QkvtGwHR2gVs=","Cw5bM6x@6sH$2dlw^3JueH");
 
-		afBorrowBillService.getAllClear(18637961820l,306594l);
+		//fenqiCuishouUtil.postReapymentMoney(95140l);
+		fenqiCuishouUtil.postChuiSohiu("fk_adfadbfa","200","");
+
+
+		//afBorrowBillService.getAllClear(18637961820l,306594l);
 
 		//afUserAmountService.refundOrder(276267l);
 //		Map aaa = yiBaoUtility.getYiBaoOrder("xj20170925150926247561","1001201709250000000018962175");
