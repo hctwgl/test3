@@ -254,9 +254,9 @@ let vm = new Vue({
         var self = this
         this.$nextTick(() => {
             setTimeout(() => {
-                $('.good_tab').pin({
-                    containerSelector: ".good_con"
-                })
+                // $('.good_tab').pin({
+                //     containerSelector: ".good_con"
+                // })
                 $('.goodpi').css({
                     width: $('.rule').width() * self.goods.length + 'px',
                     height: $($('.goodeach')[this.nowkey]).height()
