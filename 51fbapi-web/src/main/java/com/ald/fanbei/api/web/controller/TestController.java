@@ -127,6 +127,13 @@ public class TestController {
         RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
         List<RiskTrackerDo> riskTrackerDoList = riskTrackerService.getListByCommonCondition(riskTrackerDo);
         for (RiskTrackerDo item : riskTrackerDoList) {
+            HashMap reqBo1 = JSON.parseObject(item.getParams(), HashMap.class);
+            String data1 = getUrlParamsByMap(reqBo1);
+            String reqResult1 = HttpUtil.post(item.getUrl(), reqBo1);
+            if (StringUtil.isBlank(reqResult1)) {
+                throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+            }
+            RiskVerifyRespBo riskResp1 = JSONObject.parseObject(reqResult1, RiskVerifyRespBo.class);
             if (item.getUrl().indexOf("raiseQuota") != -1 && item.getTrackId().indexOf("success_") == -1) {//未处理过得提额
                 try {
                     HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
@@ -201,12 +208,11 @@ public class TestController {
                 collectionDataBo.setTimestamp(timestamp);
                 //APP还款类型写3 , 线下还款写4
                 collectionDataBo.setChannel(AfRepayCollectionType.APP.getCode());
-                riskTrackerService.test11();
-                //String data = getUrlParamsByMap(collectionDataBo);
-              //  String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
-//                if (StringUtil.isBlank(reqResult)) {
-//                    throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
-//                }
+                String data = getUrlParamsByMap(collectionDataBo);
+                String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
+                if (StringUtil.isBlank(reqResult)) {
+                    throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+                }
 
             } catch (Exception e) {
                 logger.error("raiseQuota compensate exception:", e);
