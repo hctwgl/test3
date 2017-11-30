@@ -71,6 +71,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     APPLY_CASHED_AMOUNT_TOO_SMALL_JFB("APPLY_CASHED_AMOUNT_TOO_SMALL_JFB",1127,"apply cash amount jfb to small","至少提现2000集分宝"),
     RENEWAL_ORDER_NOT_EXIST_ERROR("RENEWAL_ORDER_NOT_EXIST_ERROR",1128,"nothing order can renewal","无可续期的订单"),
     HAVE_A_REPAYMENT_PROCESSING_ERROR("HAVE_A_REPAYMENT_PROCESSING_ERROR",1129,"There is a repayment is processing","有一笔还款正在处理中"),
+    BACK_MONEY_CHECK("BACK_MONEY_CHECK",11290,"There is a repayment is processing","还款金额要大于1块钱"),
 
     USER_LOGIN_UNTRUST_ERROW("USER_LOGIN_UNTRUST_ERROW",1130,"user login untrust error ","请返回登录页面重新登录"),
     USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1131,"user password error first","密码输入有误,剩余次数(5)"),
