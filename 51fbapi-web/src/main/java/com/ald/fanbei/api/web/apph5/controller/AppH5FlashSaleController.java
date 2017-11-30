@@ -303,7 +303,7 @@ public class AppH5FlashSaleController extends BaseController {
 	public String ReserveGoods(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		Long userId = context.getUserId();
 		Long goodsId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("goodsId"),0l);
-		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"), "").toString();
+		String goodsName = "商品名称";
 		AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 		if(null != afGoodsDo){
 			goodsName = afGoodsDo.getName();
