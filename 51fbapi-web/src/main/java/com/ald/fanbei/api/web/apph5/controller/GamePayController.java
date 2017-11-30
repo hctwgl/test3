@@ -110,12 +110,19 @@ public class GamePayController extends BaseController {
 	FanbeiWebContext context = doWebCheck(request, true);
 	try {
 	    // 验证参数
-	    Long goodsId = Long.parseLong(request.getParameter("goodsId"));
-	    if (goodsId != null && goodsId > 0) {
+	    if (StringUtils.isBlank(request.getParameter("goodsId"))) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
 	    }
+	    Long goodsId = Long.parseLong(request.getParameter("goodsId"));
+	    if (goodsId <= 0) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
+	    }
+
+	    if (StringUtils.isBlank(request.getParameter("actualAmount"))) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
+	    }
 	    BigDecimal actualAmount = new BigDecimal(request.getParameter("actualAmount"));
-	    if (actualAmount != null && actualAmount.doubleValue() <= 0) {
+	    if (actualAmount.doubleValue() <= 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
 	    }
 	    Long couponId = Long.parseLong(request.getParameter("couponId"));
@@ -128,8 +135,12 @@ public class GamePayController extends BaseController {
 	    if (StringUtils.isBlank(userName)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:userName.");
 	    }
+
+	    if (StringUtils.isBlank(request.getParameter("goodsNum"))) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
+	    }
 	    Integer goodsNum = Integer.parseInt(request.getParameter("goodsNum"));
-	    if (goodsNum != null && goodsNum <= 0) {
+	    if (goodsNum <= 0) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
 	    }
 	    String gameType = request.getParameter("gameType");
