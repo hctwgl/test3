@@ -14,6 +14,7 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
 import com.sun.org.apache.bcel.internal.generic.RET;
+import com.timevale.tgtext.awt.geom.q;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -379,7 +380,12 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
 	@Override
 	public List<AfUserAmountDo> getUserAmountByQuery(AfUserAmountQuery query) {
-		return afUserAmountLogDao.getUserAmountByQuery(query);
+		return afUserAmountDao.getUserAmountByQuery(query);
+	}
+
+	@Override
+	public List<String> getMonthInYearByQuery(AfUserAmountQuery query) {
+		return afUserAmountDao.getMonthInYearByQuery(query);
 	}
 
 }

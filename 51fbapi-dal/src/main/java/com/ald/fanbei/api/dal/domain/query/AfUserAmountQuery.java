@@ -16,7 +16,9 @@ public class AfUserAmountQuery extends Page<AfUserAmountDo>{
 	private Long userId;
 	
 	private Integer bizType;
-
+	
+	private String year;
+	
 	public Date getStrDate() {
 		return strDate;
 	}
@@ -48,5 +50,13 @@ public class AfUserAmountQuery extends Page<AfUserAmountDo>{
 	public void setBizType(Integer bizType) {
 		this.bizType = bizType;
 	}
-	
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
 }

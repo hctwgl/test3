@@ -89,4 +89,13 @@ public interface AfUserAmountService {
 	 */
 	List<AfUserAmountDo> getUserAmountByQuery(AfUserAmountQuery query);
 	
+	/**
+	 * 查询有记录的月数
+	 * @author yuyue
+	 * @Time 2017年12月1日 下午1:40:36
+	 * @param query
+	 * @return
+	 */
+	List<String> getMonthInYearByQuery(AfUserAmountQuery query);
+	
 }

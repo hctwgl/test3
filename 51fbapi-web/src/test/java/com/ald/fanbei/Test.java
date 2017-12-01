@@ -55,11 +55,10 @@ public class Test {
 //			end = eCalendar.getTime();
 //			System.out.println(DateUtil.formatDate(firstOfMonth, DateUtil.DATE_TIME_SHORT));
 //			System.out.println(DateUtil.formatDate(end, DateUtil.DATE_TIME_SHORT));
-			BigDecimal a = new BigDecimal(100);
-			System.out.println(a);
-			BigDecimal b = new BigDecimal(0);
-			System.out.println(b);
-			System.out.println(a.compareTo(b));
+			Date parseDate = DateUtil.parseDate("2010-10-10");
+			System.out.println(DateUtil.formatDate(parseDate));
+			Date parseDate2 = DateUtil.parseDate(2010+""+10+"", DateUtil.MONTH_SHOT_PATTERN);
+			System.out.println(DateUtil.formatDate(parseDate2));
 		} catch (Exception e) {
 			System.out.println(e);
 		}

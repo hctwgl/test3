@@ -30,12 +30,4 @@ public interface AfUserAmountLogDao {
 	 */
 	List<AfUserAmountLogDo> getAmountLogByAmountId(@Param("sourceId")Long sourceId);
 
-	/**
-	 * 根据条件查询amount
-	 * @author yuyue
-	 * @Time 2017年11月30日 下午3:33:32
-	 * @param query
-	 * @return
-	 */
-	List<AfUserAmountDo> getUserAmountByQuery(AfUserAmountQuery query);
 }

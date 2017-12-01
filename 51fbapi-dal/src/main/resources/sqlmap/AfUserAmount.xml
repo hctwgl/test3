@@ -84,4 +84,37 @@
 		and b.is_delete = 0
 		and d.is_delete = 0
 	</select>
+	
+	<select id="getUserAmountByQuery" resultType="AfUserAmountDo">
+		SELECT
+			<include refid="activitySqlField"/>
+		FROM
+			af_user_amount
+		WHERE
+			user_id = #{userId}
+		and status != 0
+		<if test="bizType != null">	
+			AND biz_type = #{bizType}
+		</if>
+		<if test="strDate != null and endDate != null">	
+			AND gmt_create BETWEEN #{strDate} and #{endDate}
+		</if>
+			order by gmt_create desc
+	</select>
+	
+	<select id="getMonthInYearByQuery" resultType="java.lang.String">
+		SELECT
+			DATE_FORMAT(gmt_create,'%c')
+		FROM
+			af_user_amount
+		WHERE
+			user_id = #{userId}
+		<if test="bizType != null">	
+			AND biz_type = #{bizType}
+		</if>
+		<if test="year != null and year != null">	
+			AND DATE_FORMAT(gmt_create,'%Y') = #{year}
+		</if>
+			order by gmt_create
+	</select>
 </mapper>
