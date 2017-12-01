@@ -60,8 +60,8 @@ public class GamePayController extends BaseController {
     @RequestMapping(value = "/goods", method = RequestMethod.POST)
     public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
-	FanbeiWebContext context = doWebCheck(request, false);
 	try {
+	    FanbeiWebContext context = doWebCheck(request, false);
 	    String type = request.getParameter("type");
 	    // 查询列表
 	    if (StringUtils.isNotBlank(type)) {
@@ -76,16 +76,16 @@ public class GamePayController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, "参数错误");
 	    }
 	} catch (Exception e) {
-	    logger.error("/game/pay/goods" + context + "error:", e);
-	    return H5CommonResponse.getNewInstance(false, "获取游戏列表失败");
+	    logger.error("/game/pay/goods error:", e);
+	    return H5CommonResponse.getNewInstance(false, e.getMessage());
 	}
     }
 
     @RequestMapping(value = "/goodsInfo", method = RequestMethod.POST)
     public H5CommonResponse getGoodsInfo(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
-	FanbeiWebContext context = doWebCheck(request, false);
 	try {
+	    FanbeiWebContext context = doWebCheck(request, false);
 	    String goodsId = request.getParameter("goodsId");
 
 	    if (StringUtils.isNotBlank(goodsId)) {
@@ -101,8 +101,8 @@ public class GamePayController extends BaseController {
 	    }
 	    return H5CommonResponse.getNewInstance(false, "参数错误");
 	} catch (Exception e) {
-	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
-	    return H5CommonResponse.getNewInstance(false, "获取游戏信息失败");
+	    logger.error("/game/pay/goodsInfo error:", e);
+	    return H5CommonResponse.getNewInstance(false, e.getMessage());
 	}
     }
 
@@ -187,8 +187,8 @@ public class GamePayController extends BaseController {
 
     @RequestMapping(value = "/orderInfo", method = RequestMethod.GET)
     public H5CommonResponse getOrderInfo(HttpServletRequest request, HttpServletResponse response) {
-	FanbeiWebContext context = doWebCheck(request, true);
 	try {
+	    FanbeiWebContext context = doWebCheck(request, true);
 	    String orderNo = request.getParameter("orderNo");
 	    if (StringUtils.isNotBlank(orderNo)) {
 		// 查询详情
@@ -198,8 +198,8 @@ public class GamePayController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, "参数错误");
 	    }
 	} catch (Exception e) {
-	    logger.error("/game/pay/goodsInfo" + context + "error:", e);
-	    return H5CommonResponse.getNewInstance(false, "获取订单信息失败");
+	    logger.error("/game/pay/goodsInfo error:", e);
+	    return H5CommonResponse.getNewInstance(false, e.getMessage());
 	}
     }
 
