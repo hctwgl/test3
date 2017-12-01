@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -31,4 +33,43 @@ public interface AfViewAssetBorrowCashDao {
 	 */
 	List<AfViewAssetBorrowCashDo> getListByQueryCondition(AfViewAssetBorrowCashQuery afViewAssetBorrowCashQuery);
 
+	/**
+	 * 获取指定时间内的债权总金额
+	 * @param gmtCreateStart
+	 * @param gmtCreateEnd
+	 * @return
+	 */
+	BigDecimal getSumAmount(@Param("gmtCreateStart")Date gmtCreateStart,@Param("gmtCreateEnd") Date gmtCreateEnd);
+	
+	/**
+	 * 获取指定时间内的7天债权总金额
+	 * @param gmtCreateStart
+	 * @param gmtCreateEnd
+	 * @return
+	 */
+	BigDecimal getSumSevenAmount(@Param("gmtCreateStart")Date gmtCreateStart,@Param("gmtCreateEnd") Date gmtCreateEnd);
+
+	/**
+	 * 获取指定时间内的14天债权总金额
+	 * @param gmtCreateStart
+	 * @param gmtCreateEnd
+	 * @return
+	 */
+	BigDecimal getSumFourteenAmount(@Param("gmtCreateStart")Date gmtCreateStart,@Param("gmtCreateEnd") Date gmtCreateEnd);
+
+
+	/**
+	 * 根据条件获取一条视图明细记录
+	 * @param afViewAssetBorrowCashQuery
+	 * @return
+	 */
+	AfViewAssetBorrowCashDo getByQueryCondition(AfViewAssetBorrowCashQuery query);
+
+
+	/**
+	 * 
+	 * @param afViewAssetBorrowCashQuery
+	 * @return
+	 */
+	BigDecimal checkAmount(AfViewAssetBorrowCashQuery query);
 }

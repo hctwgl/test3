@@ -60,6 +60,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
 				return notifyRespBo;
 			}
+			//资产方及启用状态校验
+			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
+			if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
+				return notifyRespBo;
+			}
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
@@ -90,7 +96,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			
 			//TODO 待完善实现
-			afAssetPackageDetailService.batchGiveBackCreditInfo(orderNos);
+			afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos);
 			
 		} catch (Exception e) {
 			//系统异常
@@ -118,6 +124,13 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
 				return notifyRespBo;
 			}
+			//资产方及启用状态校验
+			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
+			if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
+				return notifyRespBo;
+			}
+			
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
@@ -161,9 +174,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			
 			//TODO 待完善实现
-			List<EdspayGetCreditRespBo> creditInfoList = afAssetPackageDetailService.getBatchCreditInfo(edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
+			List<EdspayGetCreditRespBo> creditInfoList = afAssetPackageDetailService.getBatchCreditInfo(afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
 			if(creditInfoList!=null && creditInfoList.size()>0){
 				notifyRespBo.setData(AesUtil.encryptToBase64(JSON.toJSONString(creditInfoList), assideResourceInfo.getValue2()));;
+			}else{
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_AMOUNT_NOTENOUGH);
+				return notifyRespBo;
 			}
 		} catch (Exception e) {
 			//系统异常
@@ -180,11 +196,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	 * @return
 	 */
 	private AfResourceDo getAssetSideConfigInfo(String appId){
-		//资产方及启用状态校验
-		AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
-		if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
-			return null;
-		}
 		//资产方对应配置信息校验
 		AfResourceDo assideResourceInfo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), appId);
 		if(assideResourceInfo==null || !AfCounponStatus.O.getCode().equals(assideResourceInfo.getValue4()) ){

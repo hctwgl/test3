@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -39,5 +41,31 @@ public class AfViewAssetBorrowCashServiceImpl  implements AfViewAssetBorrowCashS
     @Override
 	public List<AfViewAssetBorrowCashDo> getListByQueryCondition(AfViewAssetBorrowCashQuery afViewAssetBorrowCashQuery){
 		return afViewAssetBorrowCashDao.getListByQueryCondition(afViewAssetBorrowCashQuery);
+	}
+    
+    @Override
+	public BigDecimal getSumAmount(Date gmtCreateStart, Date gmtCreateEnd) {
+		return afViewAssetBorrowCashDao.getSumAmount(gmtCreateStart,gmtCreateEnd);
+	}
+
+	@Override
+	public BigDecimal getSumSevenAmount(Date gmtCreateStart, Date gmtCreateEnd) {
+		return afViewAssetBorrowCashDao.getSumSevenAmount(gmtCreateStart, gmtCreateEnd);
+	}
+
+	@Override
+	public BigDecimal getSumFourteenAmount(Date gmtCreateStart,
+			Date gmtCreateEnd) {
+		return afViewAssetBorrowCashDao.getSumFourteenAmount(gmtCreateStart, gmtCreateEnd);
+	}
+
+	@Override
+	public AfViewAssetBorrowCashDo getByQueryCondition(AfViewAssetBorrowCashQuery query) {
+		return afViewAssetBorrowCashDao.getByQueryCondition(query);
+	}
+
+	@Override
+	public BigDecimal checkAmount(AfViewAssetBorrowCashQuery query) {
+		return afViewAssetBorrowCashDao.checkAmount(query);
 	}
 }
