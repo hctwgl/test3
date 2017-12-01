@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711241437")
+    #set($version="201712011705")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>游戏充值</title>
@@ -12,13 +12,15 @@
     <div class="kong"></div>
     <div class="hotGame">
       <div class="title01">热门游戏</div>
-      <ul class="hotGameList clearFix">
-          <li v-for="item in content.hotList" @click="hotGameClick(item)">
-              <img class="gameImg" :src="item.image">
-              <p class="gameName" style="-webkit-box-orient: vertical;">{{item.name}}</p>
-              <p class="fanMoney">返利{{fixNum((item.rebate)*100)}}%</p>
-          </li>
-      </ul>
+        <div class="hotCont">
+            <ul class="hotGameList clearFix">
+                <li v-for="item in content.hotList" @click="hotGameClick(item)">
+                    <img class="gameImg" :src="item.image">
+                    <p class="gameName" style="-webkit-box-orient: vertical;">{{item.name}}</p>
+                    <p class="fanMoney">返利{{fixNum((item.rebate)*100)}}%</p>
+                </li>
+            </ul>
+        </div>
   </div>
     <ul class="gameRankList">
         <li v-for="items in content.groupList">

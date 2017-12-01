@@ -44,7 +44,7 @@
                 <p class="chargeNum">{{content.goodsCount}} {{content.gameType}}</p>
             </div>
             <p class="totalPrice clearFix"><span>订单总价</span><span>￥{{content.actualAmount}}</span></p>
-            <p class="fanMoney clearFix"><span>返利金额</span><span>￥{{(content.rebateAmount)*(content.actualAmount)}}</span></p>
+            <p class="fanMoney clearFix"><span>返利金额</span><span>￥{{content.rebateAmount}}</span></p>
         </div>
         <div class="thirdCont">
             <p class="orderNum">订单编号：<span>{{content.orderNo}}</span></p>

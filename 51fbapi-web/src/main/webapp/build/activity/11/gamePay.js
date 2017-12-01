@@ -307,7 +307,7 @@ let vm = new Vue({
                     }
                 });
             }else{
-                requestMsg('充值用户名不能为空！');
+                requestMsg('')
             }
 
         },
