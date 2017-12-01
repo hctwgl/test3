@@ -8,6 +8,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +17,9 @@ import com.ald.fanbei.api.biz.bo.assetside.AssetSideReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @类现描述：和资产方平台对接入口
@@ -37,13 +41,14 @@ public class EdspayController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value = { "/giveBackCreditInfo" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = { "/giveBackCreditInfo" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public AssetSideRespBo giveBackCreditInfo(HttpServletRequest request, HttpServletResponse response) {
-		String sendTime = ObjectUtils.toString(request.getParameter("sendTime"));
-		String data = ObjectUtils.toString(request.getParameter("data"));
-		String sign = ObjectUtils.toString(request.getParameter("sign"));
-		String appId = ObjectUtils.toString(request.getParameter("appId"));
+	public AssetSideRespBo giveBackCreditInfo(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
+		JSONObject jsonObj = JSON.parseObject(requestData);
+		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
+		String data = StringUtil.null2Str(jsonObj.get("data"));
+		String sign = StringUtil.null2Str(jsonObj.get("sign"));
+		String appId = StringUtil.null2Str(jsonObj.get("appId"));
 		logger.info("EdspayController giveBackCreditInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
 		
 		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.giveBackCreditInfo(sendTime, data, sign,appId);
@@ -56,13 +61,14 @@ public class EdspayController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value = { "/getBatchCreditInfo" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = { "/getBatchCreditInfo" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public AssetSideRespBo getBatchCreditInfo(HttpServletRequest request, HttpServletResponse response) {
-		String sendTime = ObjectUtils.toString(request.getParameter("sendTime"));
-		String data = ObjectUtils.toString(request.getParameter("data"));
-		String sign = ObjectUtils.toString(request.getParameter("sign"));
-		String appId = ObjectUtils.toString(request.getParameter("appId"));
+	public AssetSideRespBo getBatchCreditInfo(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
+		JSONObject jsonObj = JSON.parseObject(requestData);
+		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
+		String data = StringUtil.null2Str(jsonObj.get("data"));
+		String sign = StringUtil.null2Str(jsonObj.get("sign"));
+		String appId = StringUtil.null2Str(jsonObj.get("appId"));
 		logger.info("EdspayController giveBackCreditInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
 		
 		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.getBatchCreditInfo(sendTime, data, sign,appId);
