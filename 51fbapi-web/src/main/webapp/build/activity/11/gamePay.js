@@ -350,3 +350,4 @@ function gameAreaOne(allCont){
         picker.dispose();
     })
 }
+
