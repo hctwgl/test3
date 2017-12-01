@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.third.util.fenqicuishou;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.util.AlgorithmHelper;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 @Component("fenqiCuishouUtil")
 public class FenqiCuishouUtil {
 
+    private static Logger logger = LoggerFactory.getLogger(FenqiCuishouUtil.class);
     protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
     @Resource
     AfRepaymentService afRepaymentService;
@@ -58,6 +60,9 @@ public class FenqiCuishouUtil {
      */
     public void postChuiSohiu(String repay_no, String code,String msg){
         String  url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL)+"/api/getway/callback/nperRepay";
+
+        thirdLog.info("cuishouhuankuan postChuiSohiu postUrl:"+url);
+
         //String url = "http://192.168.117.103:8081/api/getway/callback/nperRepay";
         String salt = "51fabbeicuoshou";
         JSONObject jsonObject = new JSONObject();
@@ -73,10 +78,17 @@ public class FenqiCuishouUtil {
             mp.put("data",mm);
             mp.put("timeStamp",String.valueOf( new Date().getTime()));
             thirdLog.info("cuishouhuankuan  postChuiSohiu {sign:"+sign+",data:"+mm+"}");
-            String e= HttpUtil.post(url, mp);
-            thirdLog.info("cuishouhuankuan  postChuiSohiu back"+e);
+            String e1="";
+            if (url.toLowerCase().startsWith("https")) {
+                HttpUtil.doHttpsPost(url,mp,"utf-8");
+            }
+            else{
+                e1 = HttpUtil.post(url, mp);
+            }
+            thirdLog.info("cuishouhuankuan  postChuiSohiu back"+e1);
         }catch (Exception e){
             e.printStackTrace();
+            logger.error("cuishouhuankuan  postChuiSohiu error",e);
             thirdLog.error("cuishouhuankuan  postChuiSohiu error",e);
         }
     }
@@ -93,6 +105,9 @@ public class FenqiCuishouUtil {
             }
 
             String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL) + "/api/getway/notify/nperRepay";
+
+            thirdLog.info("cuishouhuankuan postReapymentMoney postUrl:"+url);
+
             //String url = "http://192.168.117.103:8081/api/getway/notify/nperRepay";
             //byte[] salt = DigestUtil.decodeHex("51fabbeicuoshou");
             String salt = "51fabbeicuoshou";
@@ -125,10 +140,17 @@ public class FenqiCuishouUtil {
             mp.put("data", mm);
             mp.put("timeStamp", String.valueOf(new Date().getTime()));
             thirdLog.info("cuishouhuankuan  postReapymentMoney {sign:"+sign+",data:"+mm+"}");
-            String e = HttpUtil.post(url, mp);
-            thirdLog.info("cuishouhuankuan  postReapymentMoney back"+e);
+            String e1="";
+            if (url.toLowerCase().startsWith("https")) {
+                HttpUtil.doHttpsPost(url,mp,"utf-8");
+            }
+            else{
+                e1 = HttpUtil.post(url, mp);
+            }
+            thirdLog.info("cuishouhuankuan  postReapymentMoney back"+e1);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("cuishouhuankuan  postReapymentMoney error",e);
             thirdLog.error("cuishouhuankuan  postReapymentMoney error", e);
         }
     }
@@ -199,6 +221,7 @@ public class FenqiCuishouUtil {
         }
         catch (Exception e){
             e.printStackTrace();
+            logger.error("cuishouhuankuan  getRepayMentDo error",e);
             return false;
         }
     }
