@@ -24,7 +24,10 @@ let vm = new Vue({
                         self.content=data.data;
                         console.log(self.content);
                         self.content.orderStartTime=format((self.content.gmtCreate)*1000);//订单创建时间
-                        self.content.payTime=format((self.content.gmtCreate)*1000);//订单付款时间
+                        //订单付款时间
+                        if(self.content.gmtPay){
+                            self.content.payTime=format((self.content.gmtPay)*1000);
+                        }
                         //订单付款倒计时
                         self.diff=(self.content.gmtPayEnd)-(self.content.gmtPayStart);
                         console.log(self.diff);

@@ -169,60 +169,65 @@ let vm = new Vue({
         sureClick(){
             let self = this;
             let quantityNum,times;
-            if(self.fixCont.priceTypeList){
-                quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
-                times=self.fixCont.priceTimes;
-            }else{ // goodsNum计算
-                quantityNum=self.initChooseFirst.priceTypeList[self.liIndex].quantity;
-                times=self.initChooseFirst.priceTimes;
-            }
             let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType;
-            if($('.gameName').hasClass('needGameNum')){ //游戏账号
-                gameAcct=$('.needGameNum input').val();
-            }else{
-                gameAcct='';
-            }
-            if($('.gameName').hasClass('gameArea')){ //游戏区服
-                gameArea=$('.gameArea span').html();
-            }else{
-                gameArea='';
-            }
-            if($('.payType').hasClass('gameType')){ //充值类型
-                gameType=$('.typeList .changeColor02').html();
-            }else{
-                gameType='';
-            }
-            if(self.dataType=='A'){
-                gameName=$('.gameName:first-child').find('span').html();
-                acctType=$('.gamePass p').html();
-                userName=$('.gamePass input').val();
-                goodsNum=$('.changeColor01 .goodsNum').html();
-                actualAmount=$('.changeColor01 .pricePay').html();
-            }
-            if(self.dataType=='B'){
-                gameName=$('.gameName:first-child').find('span').html();
-                acctType=$('.gamePass p').html();
-                userName=$('.gamePass input').val();
-                goodsNum=$('.changeColor01 .goodsNum').html();
-                actualAmount=$('.changeColor01 .pricePay').html();
-            }
-            $.ajax({
-                type: 'post',
-                url: "/game/pay/order",
-                data:{'goodsId':goodsId,'gameName':gameName,'acctType':acctType,
-                    'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount,
-                    'gameAcct':gameAcct,'gameArea':gameArea,'gameType':gameType
-                },
-                success: function (data) {
-                    console.log(data,'确认充值');
-                    let orderNo=data.data.orderNo;
-                    let plantform=data.data.plantform;
-                    window.location.href='gameOrderDetail?orderNo='+orderNo+'&plantform='+plantform;
-                },
-                error:function(){
-                    requestMsg('哎呀，出错了！');
+            if($('.gamePass input').val()){
+                if(self.fixCont.priceTypeList){
+                    quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
+                    times=self.fixCont.priceTimes;
+                }else{ // goodsNum计算
+                    quantityNum=self.initChooseFirst.priceTypeList[self.liIndex].quantity;
+                    times=self.initChooseFirst.priceTimes;
                 }
-            });
+                if($('.gameName').hasClass('needGameNum')){ //游戏账号
+                    gameAcct=$('.needGameNum input').val();
+                }else{
+                    gameAcct='';
+                }
+                if($('.gameName').hasClass('gameArea')){ //游戏区服
+                    gameArea=$('.gameArea span').html();
+                }else{
+                    gameArea='';
+                }
+                if($('.payType').hasClass('gameType')){ //充值类型
+                    gameType=$('.typeList .changeColor02').html();
+                }else{
+                    gameType='';
+                }
+                if(self.dataType=='A'){
+                    gameName=$('.gameName:first-child').find('span').html();
+                    acctType=$('.gamePass p').html();
+                    userName=$('.gamePass input').val();
+                    goodsNum=$('.changeColor01 .goodsNum').html();
+                    actualAmount=$('.changeColor01 .pricePay').html();
+                }
+                if(self.dataType=='B'){
+                    gameName=$('.gameName:first-child').find('span').html();
+                    acctType=$('.gamePass p').html();
+                    userName=$('.gamePass input').val();
+                    goodsNum=$('.changeColor01 .goodsNum').html();
+                    actualAmount=$('.changeColor01 .pricePay').html();
+                }
+                $.ajax({
+                    type: 'post',
+                    url: "/game/pay/order",
+                    data:{'goodsId':goodsId,'gameName':gameName,'acctType':acctType,
+                        'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount,
+                        'gameAcct':gameAcct,'gameArea':gameArea,'gameType':gameType
+                    },
+                    success: function (data) {
+                        console.log(data,'确认充值');
+                        let orderNo=data.data.orderNo;
+                        let plantform=data.data.plantform;
+                        window.location.href='gameOrderDetail?orderNo='+orderNo+'&plantform='+plantform;
+                    },
+                    error:function(){
+                        requestMsg('哎呀，出错了！');
+                    }
+                });
+            }else{
+                requestMsg('充值用户名不能为空！');
+            }
+
         },
         //字符串转数字
         fixStrToNum(str){

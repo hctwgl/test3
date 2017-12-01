@@ -49,7 +49,7 @@
         <div class="thirdCont">
             <p class="orderNum">订单编号：<span>{{content.orderNo}}</span></p>
             <p class="createTime">创建时间：<span>{{content.orderStartTime}}</span></p>
-            <p class="payTime">付款时间：<span>2017-11-30 14:25:35</span>需与后台确认</p>
+            <p class="payTime" v-if="content.gmtPay">付款时间：<span>{{content.payTime}}</span></p>
         </div>
     </div>
     <div class="footer">
