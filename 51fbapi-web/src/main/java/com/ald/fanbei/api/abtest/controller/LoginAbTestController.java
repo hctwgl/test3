@@ -67,6 +67,7 @@ public class LoginAbTestController extends AbTestController {
 					String testDeviceId = strategy.getString("deviceId");
 					if(testDeviceId.contains(deviceIdTail)){
 						params.put("loginType",strategyCode);
+						break;
 					}
 				}
 			}
