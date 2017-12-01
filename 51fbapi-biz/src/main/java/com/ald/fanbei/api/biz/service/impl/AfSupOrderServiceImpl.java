@@ -181,7 +181,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    // 记录订单原始金额
 		    afOrder.setSaleAmount(actualAmount.add(couponAmountFinal));
 		    afOrder.setCouponAmount(couponAmountFinal);
-		    afOrder.setRebateAmount(rebateAmountScale);
+		    afOrder.setRebateAmount(rebateAmountScale.multiply(actualAmount));
 		    afOrder.setGmtCreate(new Date());
 		    afOrder.setGmtPayEnd(DateUtil.addHoures(new Date(), Constants.ORDER_PAY_TIME_LIMIT));
 		    afOrder.setPriceAmount(actualAmount);
