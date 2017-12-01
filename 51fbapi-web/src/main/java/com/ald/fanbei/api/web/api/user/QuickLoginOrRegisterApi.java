@@ -190,14 +190,12 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 		
 		boolean isNeedRisk = true;//是否为手机号未验证注册的用户
-		/*if("1".equals(loginType)){//注册登录
-			Date gmtCreateDate = afUserDo.getGmtCreate();
-			Date date = new Date();
-			long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
-			if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口
-				isNeedRisk = false;
-			}
-		}*/
+		Date gmtCreateDate = afUserDo.getGmtCreate();
+		Date date = new Date();
+		long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
+		if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口
+			isNeedRisk = false;
+		}
 		//调用风控可信接口
 		if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
 				
