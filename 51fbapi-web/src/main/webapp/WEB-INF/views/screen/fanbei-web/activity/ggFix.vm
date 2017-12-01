@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711291642")
+    #set($version="201712011000")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -70,7 +70,7 @@
             <p class="rebateTitle"><span>消费场景</span><span>消费时间</span><span>返利(元)</span><span>惊喜返利金(元)</span></p>
             <ul class="rebateCont" v-if="content.rebateList && content.rebateList!=''">
                 <li v-for="item in content.rebateList">
-                    <span>{{item.consumeScene}}</span>
+                    <span>{{item.consumeScene}}<br/>(首次)</span>
                     <span>{{item.consumeTime}}</span>
                     <span>{{item.sceneRebate}}</span>
                     <span>{{item.surpriseRebate}}</span>

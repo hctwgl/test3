@@ -724,6 +724,7 @@ public class APPH5GgActivityController extends BaseController {
 						afBoluomeActivityMsgIndexDo.setCouponIndex(userCouponDo.getRid());
 						afBoluomeActivityMsgIndexDo.setUserId(userId);
 						afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+						afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
 						afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
 					} else if (msgIndexDo.getCouponIndex() != null) {
 						if (msgIndexDo.getCouponIndex() < userCouponDo.getRid()) {
@@ -731,6 +732,7 @@ public class APPH5GgActivityController extends BaseController {
 							afBoluomeActivityMsgIndexDo.setCouponIndex(userCouponDo.getRid());
 							afBoluomeActivityMsgIndexDo.setUserId(userId);
 							afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+							afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
 							afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
 						}
 					}
@@ -773,9 +775,9 @@ public class APPH5GgActivityController extends BaseController {
 					if (msgIndexDo.getRebateIndex() == null) {
 						poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
 						afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());
-						;
 						afBoluomeActivityMsgIndexDo.setUserId(userId);
 						afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+						afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
 						afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
 					} else if (msgIndexDo.getRebateIndex() != null) {
 						// if rebateIndex > rebate_index :do update
@@ -783,9 +785,10 @@ public class APPH5GgActivityController extends BaseController {
 							// 设置弹窗，更新db记录
 							poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
 							afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());
-							;
+							afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
 							afBoluomeActivityMsgIndexDo.setUserId(userId);
 							afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+							afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
 							afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
 						}
 					}
