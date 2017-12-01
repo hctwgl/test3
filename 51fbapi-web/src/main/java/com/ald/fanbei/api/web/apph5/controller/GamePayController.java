@@ -133,12 +133,12 @@ public class GamePayController extends BaseController {
 		couponId = Long.parseLong(request.getParameter("couponId"));
 	    }
 
-	    String acctType = request.getParameter("acctType");
+	    String acctType = URLDecoder.decode(request.getParameter("acctType"), "utf-8");
 	    if (StringUtils.isBlank(acctType)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:acctType.");
 	    }
-	    String gameName = request.getParameter("gameName");
-	    String userName = request.getParameter("userName");
+	    String gameName = URLDecoder.decode(request.getParameter("gameName"), "utf-8");
+	    String userName = URLDecoder.decode(request.getParameter("userName"), "utf-8");
 	    if (StringUtils.isBlank(userName)) {
 		return H5CommonResponse.getNewInstance(false, "参数错误:userName.");
 	    }
@@ -153,23 +153,23 @@ public class GamePayController extends BaseController {
 
 	    String gameType = "";
 	    if (StringUtils.isNotBlank(request.getParameter("gameType")))
-		gameType = request.getParameter("gameType");
+		gameType = URLDecoder.decode(request.getParameter("gameType"), "utf-8");
 
 	    String gameAcct = "";
 	    if (StringUtils.isNotBlank(request.getParameter("gameAcct")))
-		gameAcct = request.getParameter("gameAcct");
+		gameAcct = URLDecoder.decode(request.getParameter("gameAcct"), "utf-8");
 
 	    String gameArea = "";
 	    if (StringUtils.isNotBlank(request.getParameter("gameArea")))
-		gameArea = request.getParameter("gameArea");
+		gameArea = URLDecoder.decode(request.getParameter("gameArea"), "utf-8");
 
 	    String gameSrv = "";
 	    if (StringUtils.isNotBlank(request.getParameter("gameSrv")))
-		gameSrv = request.getParameter("gameSrv");
+		gameSrv = URLDecoder.decode(request.getParameter("gameSrv"), "utf-8");
 
 	    String userIp = "";
 	    if (StringUtils.isNotBlank(request.getParameter("userIp")))
-		userIp = request.getParameter("userIp");
+		userIp = URLDecoder.decode(request.getParameter("userIp"), "utf-8");
 
 	    // 下单逻辑
 	    AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
