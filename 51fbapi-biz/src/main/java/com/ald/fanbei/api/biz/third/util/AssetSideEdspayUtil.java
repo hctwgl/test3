@@ -81,7 +81,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			
-			String currSign = DigestUtil.MD5(realDataJson+timestamp+appId);
+			String currSign = DigestUtil.MD5(realDataJson);
 			if (!StringUtil.equals(currSign, sign)) {// 验签成功
 				//验证签名失败
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
@@ -146,7 +146,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			
-			String currSign = DigestUtil.MD5(realDataJson+timestamp+appId);
+			String currSign = DigestUtil.MD5(realDataJson);
 			if (!StringUtil.equals(currSign, sign)) {// 验签成功
 				//验证签名失败
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
