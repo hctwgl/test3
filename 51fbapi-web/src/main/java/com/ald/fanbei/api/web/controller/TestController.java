@@ -127,6 +127,13 @@ public class TestController {
         RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
         List<RiskTrackerDo> riskTrackerDoList = riskTrackerService.getListByCommonCondition(riskTrackerDo);
         for (RiskTrackerDo item : riskTrackerDoList) {
+            HashMap reqBo1 = JSON.parseObject(item.getParams(), HashMap.class);
+            String data1 = getUrlParamsByMap(reqBo1);
+            String reqResult1 = HttpUtil.post(item.getUrl(), reqBo1);
+            if (StringUtil.isBlank(reqResult1)) {
+                throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+            }
+            RiskVerifyRespBo riskResp1 = JSONObject.parseObject(reqResult1, RiskVerifyRespBo.class);
             if (item.getUrl().indexOf("raiseQuota") != -1 && item.getTrackId().indexOf("success_") == -1) {//未处理过得提额
                 try {
                     HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
@@ -185,13 +192,66 @@ public class TestController {
 
     }
 
+    @RequestMapping("/cuishou")
+    @ResponseBody
+    public String cuishou() {
+
+        RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
+        List<RiskTrackerDo> riskTrackerDoList = riskTrackerService.getListByCommonCondition(riskTrackerDo);
+        for (RiskTrackerDo item : riskTrackerDoList) {
+            try {
+                HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
+                CollectionDataBo collectionDataBo = new CollectionDataBo();
+                collectionDataBo.setData(item.getParams());
+                collectionDataBo.setSign(DigestUtil.MD5(item.getParams()));
+                String timestamp = DateUtil.getDateTimeFullAll(new Date());
+                collectionDataBo.setTimestamp(timestamp);
+                //APP还款类型写3 , 线下还款写4
+                collectionDataBo.setChannel(AfRepayCollectionType.APP.getCode());
+                String data = getUrlParamsByMap(collectionDataBo);
+                String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
+                if (StringUtil.isBlank(reqResult)) {
+                    throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+                }
+
+            } catch (Exception e) {
+                logger.error("raiseQuota compensate exception:", e);
+            }
+
+        }
+        return "调用处理中^";
+
+    }
+
     /**
      * 将map转换成url
      *
      * @param map
      * @return
      */
-    public String getUrlParamsByMap(Map<String, Object> map) {
+    public String getUrlParamsByMap(Map<String, String> map) {
+        if (map == null) {
+            return "";
+        }
+        StringBuffer sb = new StringBuffer();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            sb.append(entry.getKey() + "=" + entry.getValue());
+            sb.append("&");
+        }
+        String s = sb.toString();
+        if (s.endsWith("&")) {
+            s = org.apache.commons.lang.StringUtils.substringBeforeLast(s, "&");
+        }
+        return s;
+    }
+
+    /**
+     * 将map转换成url
+     *
+     * @param map
+     * @return
+     */
+    public String getUrlParamsByHashMap(HashMap<String, Object> map) {
         if (map == null) {
             return "";
         }
