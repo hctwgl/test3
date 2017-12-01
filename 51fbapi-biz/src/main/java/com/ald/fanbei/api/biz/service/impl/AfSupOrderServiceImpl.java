@@ -12,6 +12,9 @@ import jiazhiyi.web.com.OrderEntity;
 import jiazhiyi.web.com.OrderReceive;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -281,6 +284,24 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     public GameOrderInfoDto getOrderInfoByOrderNo(String orderNo) {
 
 	return afSupOrderDao.getOrderInfoByOrderNo(orderNo);
+    }
+
+    @Override
+    public boolean getFieldNecessoryProperty(String fieldName, String xmlProperty, String xmlType) {
+	try {
+	    Document document = DocumentHelper.parseText(xmlProperty);
+	    if ("A".equals(xmlType)) {
+
+	    } else if ("B".endsWith(xmlType)) {
+
+	    }
+
+	    return true;
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error("getFieldNecessoryProperty error:", e);
+	    return false;
+	}
     }
 
     @Resource

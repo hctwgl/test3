@@ -26,4 +26,6 @@ public interface AfSupOrderService extends ParentService<AfSupOrderDo, Long> {
     Integer updateMsgByOrder(String orderNo, String msg);
 
     GameOrderInfoDto getOrderInfoByOrderNo(String orderNo);
+
+    boolean getFieldNecessoryProperty(String fieldName,String xmlProperty, String xmlType);
 }
