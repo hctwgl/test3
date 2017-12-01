@@ -543,7 +543,12 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     //add by chengkang 待添加还款成功短信 start
                     try {
                         AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
-                        smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
+                        if(repayment.getName().equals("代扣付款")){
+                            String content= "代扣还款"+nowRepayAmountStr+"元，该笔借款已结清。";
+                            smsUtil.sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), content);
+                        }else{
+                            smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
+                        }
                     } catch (Exception e) {
                         logger.error("还款成功发送短信异常,userId:" + afBorrowCashDo.getUserId() + ",nowRepayAmount:" + nowRepayAmountStr + ",notRepayMoney" + notRepayMoneyStr, e);
                     }
