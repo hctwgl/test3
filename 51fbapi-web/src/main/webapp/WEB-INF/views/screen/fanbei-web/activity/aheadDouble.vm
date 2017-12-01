@@ -16,17 +16,17 @@
     <div class="main" id="main" v-cloak>
         <div class="banner"></div>
         <div class="coupon-box flex fd-column ai-c">
-            <div class="flex fd-row ai-c title-box">
-                <div class="line"></div>
-                <div class="chunk"></div>
-                <div class="line-title">福利专区</div>
-                <div class="chunk"></div>
-                <div class="line"></div>
-            </div>
+##            <div class="flex fd-row ai-c title-box">
+##                <div class="line"></div>
+##                <div class="chunk"></div>
+##                <div class="line-title">福利专区</div>
+##                <div class="chunk"></div>
+##                <div class="line"></div>
+##            </div>
             <ul class="coupon-ul flex fw-w">
                 <li class="coupon-li" v-for="(item,index) in couponData" @click="couponClick(item,index)" :class="[(item.drawStatus=='N')?'coupon-active':'coupon-quiet']">
                     <div class="coupon-price">￥<span>{{item.amount}}</span></div>
-                    <div class="coupon-tip">{{item.name}}</div>
+                    <div class="coupon-tip">满{{item.limitAmount}}全场通用</div>
                     <div class="coupon-get">{{item.drawStatus=='Y'?'已领取':'立即领取'}}</div>
                 </li>
             </ul>
