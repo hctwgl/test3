@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
 
 /**
@@ -12,6 +14,10 @@ import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
  */
 public interface AfAssetPackageDetailDao extends BaseDao<AfAssetPackageDetailDo, Long> {
 
-    
+	AfAssetPackageDetailDo getByBorrowNo(@Param("borrowNo")String borrowNo);
+	
+	int updateByPackageId(AfAssetPackageDetailDo afAssetPackageDetailDo);
+	
+	int updateByBorrowNo(AfAssetPackageDetailDo afAssetPackageDetailDo);
 
 }

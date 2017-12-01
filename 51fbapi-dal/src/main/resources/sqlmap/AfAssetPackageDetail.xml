@@ -140,11 +140,38 @@
         WHERE  asset_package_id = #{assetPackageId ,jdbcType=BIGINT}
     </update>
     
+    <update id="updateByBorrowNo"  parameterType="com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo">
+        UPDATE af_asset_package_detail
+          <set>
+            <if test="isDelete != null and isDelete != '' ">        
+                is_delete = #{isDelete,jdbcType=INTEGER},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="remark != null and remark != '' ">        
+                remark = #{remark,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE  borrow_no=#{borrowNo}
+    </update>
+    
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo">
         SELECT
         <include refid="queryFields" />
         FROM af_asset_package_detail
         WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+    
+	<select id="getByBorrowNo" resultType="com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_asset_package_detail
+        WHERE is_delete = 0 AND borrow_no=#{borrowNo}
         LIMIT 0,1
     </select>
 

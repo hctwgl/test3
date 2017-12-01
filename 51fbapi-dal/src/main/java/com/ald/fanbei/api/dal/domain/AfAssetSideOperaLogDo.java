@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+
 import java.util.Date;
 import java.math.BigDecimal;
 
@@ -56,8 +57,24 @@ import java.math.BigDecimal;
      */
     private String remarks;
 
+    public AfAssetSideOperaLogDo() {
+		super();
+	}
+    
+	public AfAssetSideOperaLogDo(Long assetSideId, Date gmtCreate,
+			String changeType, BigDecimal amount, String refPackageId,
+			String refDetailIds, String remarks) {
+		super();
+		this.assetSideId = assetSideId;
+		this.gmtCreate = gmtCreate;
+		this.changeType = changeType;
+		this.amount = amount;
+		this.refPackageId = refPackageId;
+		this.refDetailIds = refDetailIds;
+		this.remarks = remarks;
+	}
 
-    /**
+	/**
      * 获取主键Id
      *
      * @return rid
