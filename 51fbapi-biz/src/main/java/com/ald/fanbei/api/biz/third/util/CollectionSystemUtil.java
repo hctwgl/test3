@@ -109,22 +109,47 @@ public class CollectionSystemUtil extends AbstractThird {
 		//APP还款类型写3 , 线下还款写4
 		data.setChannel(AfRepayCollectionType.APP.getCode());
 		try {
-			String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/repaymentAchieve", data);
+			logger.info("repaymentAchieve request :",JSON.toJSONString(data));
+			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(data));
+			logger.info("repaymentAchieve response :",reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("consumerRepayment fail , reqResult is null");
 			} else {
 				logger.info("consumerRepayment req success,reqResult" + reqResult);
 			}
+
 			CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
 			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
 				return respInfo;
 			} else {
-				throw new FanbeiException("renewalNotify fail , respInfo info is " + JSONObject.toJSONString(respInfo));
+				throw new FanbeiException("consumerRepayment fail , respInfo info is " + JSONObject.toJSONString(respInfo));
 			}
 		} catch (Exception e) {
+			logger.error("consumerRepayment error:",e);
 			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json, getUrl() + "/api/getway/repayment/repaymentAchieve");
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
+	}
+	/**
+	 * 将map转换成url
+	 *
+	 * @param map
+	 * @return
+	 */
+	public String getUrlParamsByMap(Map<String, String> map) {
+		if (map == null) {
+			return "";
+		}
+		StringBuffer sb = new StringBuffer();
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			sb.append(entry.getKey() + "=" + entry.getValue());
+			sb.append("&");
+		}
+		String s = sb.toString();
+		if (s.endsWith("&")) {
+			s = org.apache.commons.lang.StringUtils.substringBeforeLast(s, "&");
+		}
+		return s;
 	}
 
 	/**
@@ -154,7 +179,9 @@ public class CollectionSystemUtil extends AbstractThird {
 		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
 		try {
-			String reqResult = HttpUtil.post(getUrl() + "/api/getway/repayment/renewalAchieve", data);
+			logger.info("renewalNotify request :",data);
+			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getUrl() + "/api/getway/repayment/renewalAchieve",  getUrlParamsByMap(data));
+			logger.info("renewalNotify response :",reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("renewalNotify fail , reqResult is null");
 			} else {

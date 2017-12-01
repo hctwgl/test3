@@ -3,12 +3,12 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfUserCouponDao">
 	<sql id="queryAllFields">
 		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.coupon_id,u.gmt_start,u.gmt_end,
-		u.status,u.gmt_use,u.source_type,c.amount,c.limit_amount,c.name,c.use_rule,c.type,c.valid_days,c.use_range,c.shop_url
+		u.status,u.gmt_use,u.source_type,u.source_ref,c.amount,c.limit_amount,c.name,c.use_rule,c.type,c.valid_days,c.use_range,c.shop_url
 	</sql>
 	
 	<sql id="queryAllUserCouponFields">
 		u.id rid,u.gmt_create,u.gmt_modified,u.user_id,u.coupon_id,u.gmt_start,u.gmt_end,
-		u.status,u.gmt_use,u.source_type
+		u.status,u.gmt_use,u.source_type,u.source_ref
 	</sql>
 	<insert id="addUserCoupon" parameterType="AfUserCouponDo" keyProperty="rid" useGeneratedKeys="true">
 		INSERT INTO af_user_coupon
@@ -20,7 +20,8 @@
 			gmt_start,
 			gmt_end,
 			status,
-			source_type
+			source_type,
+			source_ref
 		)
 		VALUES
 		(
@@ -31,7 +32,8 @@
 			#{gmtStart},
 			#{gmtEnd},
 			#{status},
-			#{sourceType}
+			#{sourceType},
+			#{sourceRef}
 		)
 	</insert>
 	
@@ -321,7 +323,8 @@
 			gmt_start,
 			gmt_end,
 			status,
-			source_type
+			source_type,
+			source_ref
 		)
    		values 
     	<foreach collection="userCouponList" item="item" index="index" separator="," > 
@@ -333,7 +336,8 @@
 			#{item.gmtStart},
 			#{item.gmtEnd},
 			#{item.status},
-			#{item.sourceType}
+			#{item.sourceType},
+			#{item.sourceRef}
 		)
     	</foreach> 	
 	</insert>
