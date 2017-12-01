@@ -80,6 +80,7 @@ public class FenqiCuishouUtil {
             thirdLog.info("cuishouhuankuan  postChuiSohiu {sign:"+sign+",data:"+mm+"}");
             String e1="";
             if (url.toLowerCase().startsWith("https")) {
+                logger.info("cuishouhuankuan  postChuiSohiu https");
                 HttpUtil.doHttpsPost(url,mp,"utf-8");
             }
             else{
@@ -142,6 +143,7 @@ public class FenqiCuishouUtil {
             thirdLog.info("cuishouhuankuan  postReapymentMoney {sign:"+sign+",data:"+mm+"}");
             String e1="";
             if (url.toLowerCase().startsWith("https")) {
+                logger.info("cuishouhuankuan  postReapymentMoney https");
                 HttpUtil.doHttpsPost(url,mp,"utf-8");
             }
             else{
