@@ -161,7 +161,7 @@
 			LIMIT 0,1;
     </select>
     <select id="getRebateList" parameterType="java.lang.Long"  resultType="com.ald.fanbei.api.dal.domain.AfRebateDo">
-	   		SELECT s.name as consumeScene, tt.surpriseRebate,tt.consumeTime,tt.sceneRebate
+ SELECT s.name as consumeScene, tt.surpriseRebate,date_format(tt.consumeTime, '%Y-%m-%d %H:%i') as consumeTime,tt.sceneRebate
 			FROM af_shop s 
 			INNER JOIN 
 			(

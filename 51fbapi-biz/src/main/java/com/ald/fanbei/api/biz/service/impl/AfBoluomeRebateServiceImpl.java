@@ -94,11 +94,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				logger.info(log);
 				if (orderTimes == 0) {
 					rebateDo.setFirstOrder(1);
-					// mqp:2017-11-23 19:18:22modify : right now just the first
-					// time order should have the condition to send red packet
-					/*
-					 * } else { rebateDo.setFirstOrder(0); }
-					 */
+					
 					// check if the order times for red packet
 					int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
 					log = log + String.format("redOrderTimes = %s ", redOrderTimes);
