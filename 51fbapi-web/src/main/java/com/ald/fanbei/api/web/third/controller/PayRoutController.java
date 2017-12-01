@@ -17,9 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
+import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -697,6 +699,33 @@ public class PayRoutController {
                 afBorrowService.addBorrowBill(billList);
             }
         }
+    }
+
+    @Resource
+    FenqiCuishouUtil fenqiCuishouUtil;
+    /**
+     *
+     * @param sign
+     * @param timeStamp
+     * @param data
+     * @return
+     */
+    @RequestMapping(value = {"/feiqihaungkuang"})
+    @ResponseBody
+    public String feiqihaungkuang(String sign,String timeStamp,String data){
+        Boolean r = fenqiCuishouUtil.getRepayMentDo(sign,timeStamp,data);
+        JSONObject jsonObject = new JSONObject();
+        if(r){
+            jsonObject.put("timeStamp",String.valueOf(new Date().getTime()));
+            jsonObject.put("code","200");
+            jsonObject.put("msg","接收成功");
+        }
+        else{
+            jsonObject.put("timeStamp",String.valueOf(new Date().getTime()));
+            jsonObject.put("code","201");
+            jsonObject.put("msg","验签错误");
+        }
+        return JSON.toJSONString(jsonObject);
     }
 
 }

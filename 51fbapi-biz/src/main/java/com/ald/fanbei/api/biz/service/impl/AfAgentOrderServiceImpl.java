@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -230,9 +231,10 @@ public class AfAgentOrderServiceImpl extends BaseService implements AfAgentOrder
 		orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 		orderInfo.setStatus(OrderStatus.NEW.getCode());
 //		Long userId = orderInfo.getUserId();
+		AfUserAccountDo afUserAccountDo= afUserAccountService.getUserAndAccountByUserId(orderInfo.getUserId());
 
 		
-		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper());
+		BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(orderInfo.getNper(),afUserAccountDo.getUserName());
 		orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 		afOrderDao.updateOrder(orderInfo);
 		AfAgentOrderDo agentOrderDo = new AfAgentOrderDo();

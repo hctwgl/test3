@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
@@ -126,6 +127,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	AfBorrowBillDao afBorrowBillDao;
 	@Resource
 	SmsUtil smsUtil;
+	@Resource
+	FenqiCuishouUtil fenqiCuishouUtil;
 
 	public Map<String,Object> createRepaymentYiBao(final BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
@@ -498,6 +501,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //						afUserAccountDao.updateRebateAmount(afUserAccountDo);
 //						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT_OUT, afRepaymentDetalDo.getAmount(), repayment.getUserId(), repayment.getRid()));
 //					}
+					fenqiCuishouUtil.postReapymentMoney(repayment.getRid());
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();
