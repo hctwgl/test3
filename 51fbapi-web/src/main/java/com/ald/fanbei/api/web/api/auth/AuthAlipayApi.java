@@ -45,8 +45,13 @@ public class AuthAlipayApi implements ApiHandle {
 		
 		Long userId = context.getUserId();
 		AfResourceDo afResource= afResourceService.getSingleResourceBytype("ali_auth_close");
+
 		if(afResource==null||afResource.getValue().equals(YesNoStatus.YES.getCode())){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
+		}else{
+			if(afResource.getValue1().equals(YesNoStatus.YES.getCode())&&request.getRequestURL().indexOf("//app")!=-1){//线上关闭
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
+			}
 		}
 //		if(true){
 //			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
