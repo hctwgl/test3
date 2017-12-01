@@ -9,7 +9,11 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.RiskTrackerDao;
 import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
 import com.ald.fanbei.api.biz.service.RiskTrackerService;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.Map;
 
 
 /**
@@ -25,12 +29,30 @@ import com.ald.fanbei.api.biz.service.RiskTrackerService;
 public class RiskTrackerServiceImpl extends ParentServiceImpl<RiskTrackerDo, Long> implements RiskTrackerService {
 	
     private static final Logger logger = LoggerFactory.getLogger(RiskTrackerServiceImpl.class);
-   
+	@Resource
+    TransactionTemplate transactionTemplate;
     @Resource
     private RiskTrackerDao riskTrackerDao;
 
 		@Override
 	public BaseDao<RiskTrackerDo, Long> getDao() {
 		return riskTrackerDao;
+	}
+
+	@Override
+	public int test11() {
+		final  RiskTrackerDo riskTrackerDo1=  riskTrackerDao.getById(2l);
+		transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+			@Override
+			public Map<String, Object> doInTransaction(TransactionStatus transactionStatus) {
+				RiskTrackerDo riskTrackerDo=  riskTrackerDao.getById(2l);
+				riskTrackerDo.setResult("123");
+				riskTrackerDo1.setTrackId("1112");
+				riskTrackerDao.updateById(riskTrackerDo);
+				return null;
+			}
+		});
+		logger.error("----"+riskTrackerDo1.getTrackId());
+		return 1;
 	}
 }

@@ -90,7 +90,7 @@ public class GetPersonInfoController {
 				//借款人姓名
 				name = paramsSon.getData().getName();
 				//查询缓存
-				jsonString = StringUtil.null2Str(bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo));
+				jsonString = StringUtil.null2Str(bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+rc4Key+idNo));
 				if (StringUtil.isNotBlank(jsonString)) {
 					//有缓存，直接返回
 					thirdLog.info("yiXin zhiChengAfu search personInfo from redis,idNo = "+idNo+", name="+name+" time = " + new Date());
@@ -223,7 +223,7 @@ public class GetPersonInfoController {
 					map.put("params", urlResp);
 					jsonString = JsonUtil.toJSONString(map);
 					//将数据存入缓存
-					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+idNo, jsonString, Constants.SECOND_OF_ONE_DAY);
+					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+rc4Key+idNo, jsonString, Constants.SECOND_OF_AN_HOUR_INT);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from dataBase success,idNo = "+idNo+", name="+name+" time = " + new Date());
 					return jsonString;			
 				}
