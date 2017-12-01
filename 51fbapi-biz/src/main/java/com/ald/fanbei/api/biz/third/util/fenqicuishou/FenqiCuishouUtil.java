@@ -81,7 +81,7 @@ public class FenqiCuishouUtil {
             String e1="";
             if (url.toLowerCase().startsWith("https")) {
                 logger.info("cuishouhuankuan  postChuiSohiu https");
-                HttpUtil.doHttpsPost(url,mp,"utf-8");
+                e1 =HttpUtil.doHttpsPost(url,mp,"utf-8");
             }
             else{
                 e1 = HttpUtil.post(url, mp);
@@ -144,7 +144,7 @@ public class FenqiCuishouUtil {
             String e1="";
             if (url.toLowerCase().startsWith("https")) {
                 logger.info("cuishouhuankuan  postReapymentMoney https");
-                HttpUtil.doHttpsPost(url,mp,"utf-8");
+                e1= HttpUtil.doHttpsPost(url,mp,"utf-8");
             }
             else{
                 e1 = HttpUtil.post(url, mp);
