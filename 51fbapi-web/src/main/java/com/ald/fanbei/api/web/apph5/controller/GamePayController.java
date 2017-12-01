@@ -109,74 +109,79 @@ public class GamePayController extends BaseController {
     @RequestMapping(value = "/order", method = RequestMethod.POST)
     public H5CommonResponse createOrder(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
 	Map<String, Object> data = new HashMap<String, Object>();
-	FanbeiWebContext context = doWebCheck(request, true);
+	try {
+	    FanbeiWebContext context = doWebCheck(request, true);
 
-	// 验证参数
-	if (StringUtils.isBlank(request.getParameter("goodsId"))) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
-	}
-	Long goodsId = Long.parseLong(request.getParameter("goodsId"));
-	if (goodsId <= 0) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
-	}
+	    // 验证参数
+	    if (StringUtils.isBlank(request.getParameter("goodsId"))) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
+	    }
+	    Long goodsId = Long.parseLong(request.getParameter("goodsId"));
+	    if (goodsId <= 0) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsId.");
+	    }
 
-	if (StringUtils.isBlank(request.getParameter("actualAmount"))) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
-	}
-	BigDecimal actualAmount = new BigDecimal(request.getParameter("actualAmount"));
-	if (actualAmount.doubleValue() <= 0) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
-	}
-	Long couponId = 0L;
-	if (StringUtils.isNotBlank(request.getParameter("couponId"))) {
-	    couponId = Long.parseLong(request.getParameter("couponId"));
-	}
+	    if (StringUtils.isBlank(request.getParameter("actualAmount"))) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
+	    }
+	    BigDecimal actualAmount = new BigDecimal(request.getParameter("actualAmount"));
+	    if (actualAmount.doubleValue() <= 0) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:actualAmount.");
+	    }
+	    Long couponId = 0L;
+	    if (StringUtils.isNotBlank(request.getParameter("couponId"))) {
+		couponId = Long.parseLong(request.getParameter("couponId"));
+	    }
 
-	String acctType = URLDecoder.decode(request.getParameter("acctType"), "utf-8");
-	if (StringUtils.isBlank(acctType)) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:acctType.");
-	}
-	String gameName = URLDecoder.decode(request.getParameter("gameName"), "utf-8");
-	String userName = URLDecoder.decode(request.getParameter("userName"), "utf-8");
-	if (StringUtils.isBlank(userName)) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:userName.");
-	}
+	    String acctType = request.getParameter("acctType");
+	    if (StringUtils.isBlank(acctType)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:acctType.");
+	    }
+	    String gameName = request.getParameter("gameName");
+	    String userName = request.getParameter("userName");
+	    if (StringUtils.isBlank(userName)) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:userName.");
+	    }
 
-	if (StringUtils.isBlank(request.getParameter("goodsNum"))) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
-	}
-	Integer goodsNum = Integer.parseInt(request.getParameter("goodsNum"));
-	if (goodsNum <= 0) {
-	    return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
-	}
+	    if (StringUtils.isBlank(request.getParameter("goodsNum"))) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
+	    }
+	    Integer goodsNum = Integer.parseInt(request.getParameter("goodsNum"));
+	    if (goodsNum <= 0) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
+	    }
 
-	String gameType = "";
-	if (StringUtils.isNotBlank(request.getParameter("gameType")))
-	    gameType = URLDecoder.decode(request.getParameter("gameType"), "utf-8");
+	    String gameType = "";
+	    if (StringUtils.isNotBlank(request.getParameter("gameType")))
+		gameType = request.getParameter("gameType");
 
-	String gameAcct = "";
-	if (StringUtils.isNotBlank(request.getParameter("gameAcct")))
-	    gameAcct = URLDecoder.decode(request.getParameter("gameAcct"), "utf-8");
+	    String gameAcct = "";
+	    if (StringUtils.isNotBlank(request.getParameter("gameAcct")))
+		gameAcct = request.getParameter("gameAcct");
 
-	String gameArea = "";
-	if (StringUtils.isNotBlank(request.getParameter("gameArea")))
-	    gameArea = URLDecoder.decode(request.getParameter("gameArea"), "utf-8");
+	    String gameArea = "";
+	    if (StringUtils.isNotBlank(request.getParameter("gameArea")))
+		gameArea = request.getParameter("gameArea");
 
-	String gameSrv = "";
-	if (StringUtils.isNotBlank(request.getParameter("gameSrv")))
-	    gameSrv = URLDecoder.decode(request.getParameter("gameSrv"), "utf-8");
+	    String gameSrv = "";
+	    if (StringUtils.isNotBlank(request.getParameter("gameSrv")))
+		gameSrv = request.getParameter("gameSrv");
 
-	String userIp = "";
-	if (StringUtils.isNotBlank(request.getParameter("userIp")))
-	    userIp = URLDecoder.decode(request.getParameter("userIp"), "utf-8");
+	    String userIp = "";
+	    if (StringUtils.isNotBlank(request.getParameter("userIp")))
+		userIp = request.getParameter("userIp");
 
-	// 下单逻辑
-	AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
-	data = afSupOrderService.addSupOrder(afUserDo.getRid(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
-	if (data != null) {
-	    return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
-	} else {
-	    return H5CommonResponse.getNewInstance(false, "充值订单提交失败", "", null);
+	    // 下单逻辑
+	    AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
+	    data = afSupOrderService.addSupOrder(afUserDo.getRid(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
+	    if (data != null) {
+		return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
+	    } else {
+		return H5CommonResponse.getNewInstance(false, "充值订单提交失败", "", null);
+	    }
+	} catch (Exception e) {
+	    logger.error("/game/pay/order error:", e);
+	    return H5CommonResponse.getNewInstance(false, e.getMessage());
 	}
     }
 
