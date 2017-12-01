@@ -150,14 +150,14 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 						return creditInfos;
 					}
 					BigDecimal sumFourteenAmount = afViewAssetBorrowCashService.getSumFourteenAmount(gmtCreateStart,gmtCreateEnd);
-					BigDecimal FourteenMoney = BigDecimalUtil.subtract(totalMoney,sevenMoney);
-					if (FourteenMoney.compareTo(sumFourteenAmount) > 0){
+					BigDecimal fourteenMoney = BigDecimalUtil.subtract(totalMoney,sevenMoney);
+					if (fourteenMoney.compareTo(sumFourteenAmount) > 0){
 						logger.error("getBatchCreditInfo  error该时间段内14天资产金额不足，共"+sumFourteenAmount+"元");
 						bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
 						return creditInfos;
 					}
 					sevenDebtList = matchingDebt(sevenMoney,gmtCreateStart, gmtCreateEnd,AfBorrowCashType.SEVEN.getCode());
-					fourteenDebtList = matchingDebt(FourteenMoney,gmtCreateStart, gmtCreateEnd,AfBorrowCashType.FOURTEEN.getCode());
+					fourteenDebtList = matchingDebt(fourteenMoney,gmtCreateStart, gmtCreateEnd,AfBorrowCashType.FOURTEEN.getCode());
 				}else{
 					//总的校验
 					BigDecimal sumAmount = afViewAssetBorrowCashService.getSumAmount(gmtCreateStart,gmtCreateEnd);

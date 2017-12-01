@@ -129,7 +129,7 @@
     
     <select id="getSumAmount" resultType="java.math.BigDecimal">
     	SELECT
-			SUM(amount)
+			IFNULL(SUM(amount),0)
 		FROM
 			af_view_asset_borrow_cash
 		WHERE
@@ -138,7 +138,7 @@
     
     <select id="getSumSevenAmount" resultType="java.math.BigDecimal">
     	SELECT
-			SUM(amount)
+			IFNULL(SUM(amount),0)
 		FROM
 			af_view_asset_borrow_cash
 		WHERE
@@ -149,7 +149,7 @@
     
     <select id="getSumFourteenAmount" resultType="java.math.BigDecimal">
     	SELECT
-			SUM(amount)
+			IFNULL(SUM(amount),0)
 		FROM
 			af_view_asset_borrow_cash
 		WHERE
@@ -183,7 +183,7 @@
     
     <select id="checkAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery">
         SELECT
-        	SUM(amount)
+        	IFNULL(SUM(amount),0)
         FROM 
        		af_view_asset_borrow_cash
         WHERE 
