@@ -199,7 +199,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			}
 		}*/
 		//调用风控可信接口
-		/*if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
+		if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
 				
 			boolean riskSucc = false;
 			try {
@@ -225,7 +225,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 				return resp;
 			}
 			loginType = "2"; //可信登录验证通过，变可信
-		}*/
+		}
 		
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
