@@ -120,7 +120,7 @@ public class FenqiCuishouUtil {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("repay_no", afRepaymentDo.getRepayNo());
             jsonObject.put("consumer_no", afRepaymentDo.getUserId());
-            jsonObject.put("repay_type", "BANK");
+            jsonObject.put("repay_type", getPayType(afRepaymentDo.getCardName()));
             jsonObject.put("repay_time", simpleDateFormat.format(afRepaymentDo.getGmtCreate()));
             jsonObject.put("repay_amount", afRepaymentDo.getRepaymentAmount());
             jsonObject.put("bill_id", afRepaymentDo.getBillIds());
@@ -196,7 +196,7 @@ public class FenqiCuishouUtil {
                     afRepaymentDo.setTradeNo(jsonObject.get("trade_no").toString());
                     afRepaymentDo.setUserCouponId(0l);
 
-                    afRepaymentDo.setCardName("");
+                    afRepaymentDo.setCardName(getCardName(jsonObject.get("repay_type").toString()));
                     afRepaymentDo.setPayTradeNo(jsonObject.get("trade_no").toString());
                     afRepaymentDo.setCardNumber("");
 
@@ -226,5 +226,33 @@ public class FenqiCuishouUtil {
             logger.error("cuishouhuankuan  getRepayMentDo error",e);
             return false;
         }
+    }
+
+
+    private String getPayType(String cardName){
+        //WECHAT/ALIPAY/BANK/APP
+        if(cardName.equals("支付宝")){
+            return "ALIPAY";
+        }
+        if(cardName.equals("微信")){
+            return "WECHAT";
+        }
+        if(cardName.equals("账户余额")){
+            return "APP";
+        }
+        return "BANK";
+    }
+
+    private String getCardName(String type){
+        if(type.equals("ALIPAY")){
+            return "支付宝";
+        }
+        if(type.equals("WECHAT")){
+            return "微信";
+        }
+        if(type.equals("APP")){
+            return "账户余额";
+        }
+        return "银行";
     }
 }
