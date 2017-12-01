@@ -930,10 +930,10 @@ public abstract class BaseController {
         }
     }
 
-    private static String getTestUser(String url) {
-        if (StringUtils.isBlank(url)) {
-            return null;
-        }
+    public static String getTestUser(String url) {
+    	if(StringUtils.isBlank(url)) {
+    		return null;
+    	}
         String result = "";
         try {
             Map<String, List<String>> params = new HashMap<String, List<String>>();
