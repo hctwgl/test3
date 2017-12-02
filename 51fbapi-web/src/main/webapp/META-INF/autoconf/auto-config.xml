@@ -130,6 +130,8 @@
 		<property name="fbapi.esign.retry" defaultValue="5"/>
 		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
 		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
+		
+		<property name="fbapi.redrain.host.ip" defaultValue="192.168.106.162"/>
 	</group>
 
 	<script>
