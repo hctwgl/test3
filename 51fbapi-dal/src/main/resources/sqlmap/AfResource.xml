@@ -381,6 +381,8 @@
 		value_3
 		IN
 		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_UP','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_UP','HOME_IMAGE_ECOMMERCE_POSITION_MID_MID','HOME_IMAGE_ECOMMERCE_POSITION_LEFT_MID')
+		AND
+		is_delete = 0
 	</select>
 
 	<select id="getEcommercePositionDownRescoure" resultType="AfResourceDo">
@@ -394,6 +396,8 @@
 		value_3
 		IN
 		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_MID_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_DOWN')
+		AND
+		is_delete = 0
 	</select>
 
 	<select id="getScrollbarListByType" resultType="AfResourceDo">
