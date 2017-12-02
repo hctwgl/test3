@@ -273,8 +273,8 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	private Map<String, Object> getEcommerceAreaInfo() {
 		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
 		// 获取电商楼层图信息
-		AfResourceDo ecommerceFloorImgRes = afResourceService.getConfigByTypesAndSecType(
-				ResourceType.HOME_ONE_IMAGE_ECOMMERCE.getCode(), ImageType.MAIN_IMAGE.getCode());
+		AfResourceDo ecommerceFloorImgRes = afResourceService.getEcommerceFloorImgRes();
+		
 		if (ecommerceFloorImgRes != null) {
 			Map<String, Object> ecommerceFloorInfo = Maps.newHashMap();
 			ecommerceFloorInfo.put("imageUrl", ecommerceFloorImgRes.getValue());
@@ -304,8 +304,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	private Map<String, Object> getBrandAreaInfo() {
 		Map<String, Object> brandAreaInfoMap = Maps.newHashMap();
 		// 获取逛逛楼层图信息
-		AfResourceDo brandFloorImgRes = afResourceService.getConfigByTypesAndSecType(
-				ResourceType.HOME_ONE_IMAGE_BRAND.getCode(), ImageType.MAIN_IMAGE.getCode());
+		AfResourceDo brandFloorImgRes = afResourceService.getBrandFloorImgRes();
 		if (brandFloorImgRes != null) {
 			Map<String, Object> brandFloorInfo = Maps.newHashMap();
 			brandFloorInfo.put("imageUrl", brandFloorImgRes.getValue());

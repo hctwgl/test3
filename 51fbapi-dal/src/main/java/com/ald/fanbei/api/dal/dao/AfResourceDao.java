@@ -171,4 +171,8 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getEcommercePositionDownRescoure();
 
+	AfResourceDo getEcommerceFloorImgRes();
+
+	AfResourceDo getBrandFloorImgRes();
+
 }

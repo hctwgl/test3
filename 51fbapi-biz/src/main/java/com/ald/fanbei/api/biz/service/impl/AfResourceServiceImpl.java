@@ -625,5 +625,15 @@ public class AfResourceServiceImpl implements AfResourceService {
         return null;
     }
 
+	@Override
+	public AfResourceDo getEcommerceFloorImgRes() {
+		return afResourceDao.getEcommerceFloorImgRes();
+	}
+
+	@Override
+	public AfResourceDo getBrandFloorImgRes() {
+		return afResourceDao.getBrandFloorImgRes();
+	}
+
 
 }
