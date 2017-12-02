@@ -17,7 +17,7 @@
         SELECT 
             <include refid="queryFields"/>
         FROM af_red_rain_round WHERE is_delete = 0
-          AND status = 'OVER'
+          AND status != 'OVER'
           AND gmt_start BETWEEN #{gmtMin} AND #{gmtMax} ORDER BY gmt_start 
     </select>
 	
