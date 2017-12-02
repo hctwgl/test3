@@ -27,10 +27,8 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.IPUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserCouponSource;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfRedRainPoolDao;
 import com.ald.fanbei.api.dal.dao.AfRedRainRoundDao;
@@ -50,7 +48,6 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	private static final int INTERVAL_SCAN = 60;	//扫描af_red_rain_round间隔, 60s
 	private static final int INTERVAL_CLEAR_COUNTER = 24*60*60;//清空用户红包计数器间隔, 24*60*60s
 	private static final int DELAY_OF_ACTIVATE_CLEAR = 300;//激活清空红包池任务的延时, 300s
-	private final String localhost = IPUtil.getLocalIP();
 	
 	private ScheduledExecutorService scheduler ;
 	
@@ -74,13 +71,6 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 	
 	@PostConstruct
 	public void init() {
-		String configHostIp = ConfigProperties.get(Constants.CONFKEY_REDRAIN_HOST_IP);
-		logger.info("redRainService.init,configHostIp="+configHostIp+",curHostIp="+localhost);
-		if( !localhost.equalsIgnoreCase(configHostIp) ) {
-			return;
-		}
-		
-		logger.info("redRainService.init success,running");
 		this.scheduler = Executors.newSingleThreadScheduledExecutor();
 		
 		//每5分钟启动扫描

@@ -330,9 +330,6 @@ public class Constants {
     public static final String CONFKEY_FACE_PLUS_APPKEY = "fbapi.face.plus.appkey";
     public static final String CONFKEY_FACE_PLUS_SECRET = "fbapi.face.plus.secret";
     
-    //红包雨
-    public static final String CONFKEY_REDRAIN_HOST_IP = "fbapi.redrain.host.ip";
-    
     
 	// 三方接口调用限制
 	public static final String API_CALL_LIMIT = "API_CALL_LIMIT";
