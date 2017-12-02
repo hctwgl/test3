@@ -175,7 +175,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			try {
 				//扫描
 				AfRedRainRoundDo paramRound = new AfRedRainRoundDo();
-				Date gmtStart = DateUtil.addMins(new Date(), 4);
+				Date gmtStart = DateUtil.addMins(new Date(), 5);
 				paramRound.setGmtStart(gmtStart);
 				paramRound.setStatus(AfRedRainRoundStatusEnum.PREPARE.name());
 				final AfRedRainRoundDo round = afRedRainRoundDao.fetch(paramRound);
