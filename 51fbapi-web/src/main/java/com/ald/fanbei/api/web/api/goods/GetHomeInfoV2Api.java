@@ -274,7 +274,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
 		// 获取电商楼层图信息
 		AfResourceDo ecommerceFloorImgRes = afResourceService.getConfigByTypesAndSecType(
-				ResourceType.HOME_ONE_IMAGE_BRAND.getCode(), ImageType.MAIN_IMAGE.getCode());
+				ResourceType.HOME_ONE_IMAGE_ECOMMERCE.getCode(), ImageType.MAIN_IMAGE.getCode());
 		if (ecommerceFloorImgRes != null) {
 			Map<String, Object> ecommerceFloorInfo = Maps.newHashMap();
 			ecommerceFloorInfo.put("imageUrl", ecommerceFloorImgRes.getValue());
