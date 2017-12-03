@@ -143,12 +143,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
 				return notifyRespBo;
 			}
-			//校验当日限额
-			BigDecimal currDayHaveGetTotalAmount = afAssetPackageDao.getCurrDayHaveGetTotalAmount(afAssetSideInfoDo.getRid());
-			if(NumberUtil.objToBigDecimalDefault(assideResourceInfo.getValue3(), BigDecimal.ZERO).compareTo(currDayHaveGetTotalAmount)<=0){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_AMOUNT_OVERRUN);
-				return notifyRespBo;
-			}
+			
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
@@ -184,6 +179,14 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
+			
+			//校验当日限额
+			BigDecimal currDayHaveGetTotalAmount = afAssetPackageDao.getCurrDayHaveGetTotalAmount(afAssetSideInfoDo.getRid());
+			if(NumberUtil.objToBigDecimalDefault(assideResourceInfo.getValue3(), BigDecimal.ZERO).compareTo(currDayHaveGetTotalAmount.add(edspayGetCreditReqBo.getMoney()))<=0){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_AMOUNT_OVERRUN);
+				return notifyRespBo;
+			}
+			
 			Date nowDate = new Date();
 			Date startTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanStartTime(),DateUtil.getStartOfDate(nowDate));
 			Date endTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanEndTime(),DateUtil.getEndOfDate(nowDate));
