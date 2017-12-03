@@ -162,7 +162,7 @@
     <update id="invalidPackageDetail"  parameterType="java.lang.Long">
         UPDATE af_asset_package_detail set
                 gmt_modified = now(),                
-                status = 'N',                
+                status = 'N'               
         WHERE  id = #{rid ,jdbcType=BIGINT} and status ='Y'
     </update>
     

@@ -95,7 +95,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		//不存在的记录
 		List<String> invalidBorrowNos = new ArrayList<String>();
 		//成功的总金额
-		final BigDecimal totalMoney = BigDecimal.ZERO;
+		final List<BigDecimal> totalMoneyList = new ArrayList<BigDecimal>();
 		//校验
 		final Date currDate = new Date();
 		for (String tempBorrowNo : orderNos) {
@@ -133,7 +133,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			    		int effectNums = afAssetPackageDetailDao.invalidPackageDetail(afAssetPackageDetail.getRid());
 			    		
 			    		if(effectNums>0){
-			    			totalMoney.add(borrowCash.getAmount());
+			    			totalMoneyList.add(borrowCash.getAmount());
 			    			AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
 			    			modifyPackageDo.setRid(packageDo.getRid());
 			    			modifyPackageDo.setGmtModified(currDate);
@@ -159,7 +159,10 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 				failPackageDetailIds.add(""+afAssetPackageDetail.getRid());
 			}
 		}
-		
+		BigDecimal totalMoney = BigDecimal.ZERO;
+		for (BigDecimal tempMoney : totalMoneyList) {
+			totalMoney.add(tempMoney);
+		}
 		String refPackageId = StringUtil.joinListToString(successPackageIds, ",")+";"+StringUtil.joinListToString(failPackageIds, ",");
 		String refDetailIds = StringUtil.joinListToString(successPackageDetailIds, ",")+";"+StringUtil.joinListToString(failPackageDetailIds, ",")+";"+StringUtil.joinListToString(invalidBorrowNos, ",");
 		//资产方操作日志添加

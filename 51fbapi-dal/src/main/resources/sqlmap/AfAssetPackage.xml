@@ -300,7 +300,7 @@
 	<update id="updateRealTotalMoneyById"  parameterType="com.ald.fanbei.api.dal.domain.AfAssetPackageDo">
         UPDATE af_asset_package set 
                 gmt_modified = now(),                
-                real_total_money = real_total_money + #{realTotalMoney,jdbcType=DECIMAL},                
+                real_total_money = real_total_money + #{realTotalMoney,jdbcType=DECIMAL}                
         WHERE is_delete = 0 and id = #{rid ,jdbcType=BIGINT} and <![CDATA[  real_total_money + #{realTotalMoney,jdbcType=DECIMAL} >=0 ]]>
     </update>
     
