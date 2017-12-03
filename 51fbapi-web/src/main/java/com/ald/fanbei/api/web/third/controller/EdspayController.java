@@ -52,6 +52,7 @@ public class EdspayController {
 		logger.info("EdspayController giveBackCreditInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
 		
 		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.giveBackCreditInfo(sendTime, data, sign,appId);
+		logger.info("EdspayController giveBackCreditInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
 	
@@ -69,9 +70,10 @@ public class EdspayController {
 		String data = StringUtil.null2Str(jsonObj.get("data"));
 		String sign = StringUtil.null2Str(jsonObj.get("sign"));
 		String appId = StringUtil.null2Str(jsonObj.get("appId"));
-		logger.info("EdspayController giveBackCreditInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
+		logger.info("EdspayController getBatchCreditInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
 		
 		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.getBatchCreditInfo(sendTime, data, sign,appId);
+		logger.info("EdspayController getBatchCreditInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
 }

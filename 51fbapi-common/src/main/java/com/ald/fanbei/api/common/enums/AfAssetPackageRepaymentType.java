@@ -7,21 +7,22 @@ package com.ald.fanbei.api.common.enums;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public enum AfAssetPackageRepaymentType {
-	ONE_TIME_REPAY(0, "一次性还本付息");
+	ONE_TIME_REPAY(0,2, "一次性还本付息");
 
 	private Integer code;
-
+	private Integer edsCode;
 	private String description;
 
-	AfAssetPackageRepaymentType(Integer code, String description) {
+	AfAssetPackageRepaymentType(Integer code,Integer edsCode, String description) {
 		this.code = code;
+		this.edsCode = edsCode;
 		this.description = description;
 	}
 
 	public static AfAssetPackageRepaymentType findEnumByCode(Integer code) {
-		for (AfAssetPackageRepaymentType goodSource : AfAssetPackageRepaymentType.values()) {
-			if (goodSource.getCode().equals(code)) {
-				return goodSource;
+		for (AfAssetPackageRepaymentType repayType : AfAssetPackageRepaymentType.values()) {
+			if (repayType.getCode().equals(code)) {
+				return repayType;
 			}
 		}
 		return null;
@@ -42,4 +43,13 @@ public enum AfAssetPackageRepaymentType {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public Integer getEdsCode() {
+		return edsCode;
+	}
+
+	public void setEdsCode(Integer edsCode) {
+		this.edsCode = edsCode;
+	}
+	
 }

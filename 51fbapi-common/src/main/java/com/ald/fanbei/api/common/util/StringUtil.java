@@ -162,6 +162,21 @@ public class StringUtil extends StringUtils {
         }
         return result;
     }
+    
+    public static String joinListToString(List<String> sourceList, String sep) {
+    	StringBuffer sb = new StringBuffer();
+    	if(sourceList==null || sourceList.size()==0){
+    		return "";
+    	}
+    	for (int i =0;i<sourceList.size();i++) {
+    		if(i==sourceList.size()-1){
+    			sb.append(sourceList.get(i));
+    		}else{
+    			sb.append(sourceList.get(i)).append(sep);
+    		}
+		}
+    	return sb.toString();
+    }
 
     /**
      * @方法描述：将字符串中的emoji符号转换为*
@@ -321,6 +336,10 @@ public class StringUtil extends StringUtils {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(judgeClientDeviceFlag("i_EF97D566-0A4A-4492-9AEB-38C3A44AD40B_1510372484991_www"));
+		List<String> strList = new ArrayList<String>();
+		strList.add("1");
+		strList.add("2");
+		strList.add("3");
+		System.out.println(joinListToString(strList,","));
 	}
 }

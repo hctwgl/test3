@@ -14,7 +14,7 @@ public class EdspayGetCreditRespBo implements Serializable {
 
 	private String packageNo;//资产包编号
 	private String orderNo;//借款订单号
-	private Integer userId;//借款人Id
+	private Long userId;//借款人Id
 	private String name;//借款人姓名
 	private String cardId;//借款人身份证号
 	private String mobile;//借款人手机号码
@@ -23,7 +23,7 @@ public class EdspayGetCreditRespBo implements Serializable {
 	private BigDecimal money;//借款金额
 	private BigDecimal apr;//借款年化利率
 	private Integer timeLimit;//借款期限（单位：天）
-	private Integer loanStartTime;//借款开始时间戳（单位：秒）
+	private Long loanStartTime;//借款开始时间戳（单位：秒）
 	private Integer purpose;//借款用途
 	private Integer repaymentStatus;//还款状态（0：未还，1：已还）
 	private Integer repaymentType;//还款方式（具体说明）
@@ -41,9 +41,9 @@ public class EdspayGetCreditRespBo implements Serializable {
 	
 	
 	public EdspayGetCreditRespBo(String packageNo, String orderNo,
-			Integer userId, String name, String cardId, String mobile,
+			Long userId, String name, String cardId, String mobile,
 			String bankNo, String acctName, BigDecimal money, BigDecimal apr,
-			Integer timeLimit, Integer loanStartTime, Integer purpose,
+			Integer timeLimit, Long loanStartTime, Integer purpose,
 			Integer repaymentStatus, Integer repaymentType, String repayName,
 			String repayAcct, String repayAcctBankNo, Integer repayAcctType,
 			Integer isRepayAcctOtherBank, BigDecimal manageFee) {
@@ -84,10 +84,10 @@ public class EdspayGetCreditRespBo implements Serializable {
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 	public String getName() {
@@ -138,10 +138,10 @@ public class EdspayGetCreditRespBo implements Serializable {
 	public void setTimeLimit(Integer timeLimit) {
 		this.timeLimit = timeLimit;
 	}
-	public Integer getLoanStartTime() {
+	public Long getLoanStartTime() {
 		return loanStartTime;
 	}
-	public void setLoanStartTime(Integer loanStartTime) {
+	public void setLoanStartTime(Long loanStartTime) {
 		this.loanStartTime = loanStartTime;
 	}
 	public Integer getPurpose() {

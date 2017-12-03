@@ -1183,6 +1183,18 @@ public class DateUtil {
     }
     
     /**
+     * 获取指定时间的时间戳，精确到秒
+     * @return
+     */
+    public static long  getSpecSecondTimeStamp(Date specDates) {
+    	if(specDates==null){
+    		return 0l;
+    	}
+    	long secs = specDates.getTime() / 1000;
+    	return secs;
+    }
+    
+    /**
      * 获取传入的时间戳之差对应的秒数,与传入的限制对比
      * endTimeStamp-beginTimeStamp > maxSeconds return 1  
      * endTimeStamp-beginTimeStamp = maxSeconds 0  

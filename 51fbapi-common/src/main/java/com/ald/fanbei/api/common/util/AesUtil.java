@@ -164,7 +164,7 @@ public class AesUtil {
         System.out.println(encryptStr2);
         String encryptStr3 = decryptFromBase64(encryptStr2, "testC1b6x@6aH$2dlw");
         System.out.println(encryptStr3);
-        String sec = decryptFromBase64("8cb8699b12c8fb3c740a0ac3f85c9633cc6b32fb63881dbbee5c853b9ff0928b", "2KA4WGA857FFCC65");
+        String sec = decryptFromBase64("OKRrvH8gbfbQ3VUG2Ro8VXv5+Kqp2qmvZVMEa6IKlNQ=", "2KA4WGA857FFCC65");
         System.out.println(sec);
     }
 }

@@ -74,8 +74,16 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//签名验证相关值处理
-			String realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-			EdspayBackCreditReqBo ddspayBackCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
+			String realDataJson = "";
+			EdspayBackCreditReqBo ddspayBackCreditReqBo  = null;
+			try {
+				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
+				ddspayBackCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
+			} catch (Exception e) {
+				logger.error("EdspayController giveBackCreditInfo parseJosn error", e);
+			}finally{
+				logger.info("EdspayController giveBackCreditInfo,appId="+appId+ ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
+			}
 			if(ddspayBackCreditReqBo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
@@ -89,18 +97,21 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			
 			//签名成功,业务处理
-			List<String> orderNos = ddspayBackCreditReqBo.parseOrderNoLists();
+			List<String> orderNos = ddspayBackCreditReqBo.getOrderNos();
 			if(orderNos==null || orderNos.size()==0 || orderNos.size()>100){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
 			
-			//TODO 待完善实现
-			afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos);
-			
+			//具体撤回操作
+			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos);
+			if(resultValue !=1){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+				return notifyRespBo;
+			}
 		} catch (Exception e) {
 			//系统异常
-			logger.error("giveBackCreditInfo error", e);
+			logger.error("EdspayController giveBackCreditInfo error,appId="+appId+ ",sendTime=" + timestamp, e);
 			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
 		}
 		return notifyRespBo;
@@ -139,8 +150,16 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//签名验证相关值处理
-			String realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-			EdspayGetCreditReqBo edspayGetCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayGetCreditReqBo.class);
+			String realDataJson = "";
+			EdspayGetCreditReqBo edspayGetCreditReqBo = null;
+			try {
+				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
+				edspayGetCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayGetCreditReqBo.class);
+			} catch (Exception e) {
+				logger.error("EdspayController getBatchCreditInfo parseJosn error,appId="+appId+ ",sendTime=" + timestamp, e);
+			}finally{
+				logger.info("EdspayController getBatchCreditInfo,appId="+appId+ ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
+			}
 			if(edspayGetCreditReqBo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
@@ -160,7 +179,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			Date nowDate = new Date();
 			Date startTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanStartTime(),DateUtil.getStartOfDate(nowDate));
-			Date endTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanEndTime(),DateUtil.getStartOfDate(nowDate));
+			Date endTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanEndTime(),DateUtil.getEndOfDate(nowDate));
 			BigDecimal sevenMoney = null;
 			BigDecimal fourteenMoney = null;
 			EdspayCreditDetailInfo detailInfo = edspayGetCreditReqBo.getCreditDetails();
@@ -173,17 +192,25 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			
-			//TODO 待完善实现
-			List<EdspayGetCreditRespBo> creditInfoList = afAssetPackageDetailService.getBatchCreditInfo(afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
+			//获取开户行信息
+			FanbeiBorrowBankInfoBo bankInfo = getAssetSideBankInfo(getAssetSideBankInfo());
+			if(bankInfo==null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
+				return notifyRespBo;
+			}
+			//具体获取债权明细
+			List<EdspayGetCreditRespBo> creditInfoList = afAssetPackageDetailService.getBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
 			if(creditInfoList!=null && creditInfoList.size()>0){
-				notifyRespBo.setData(AesUtil.encryptToBase64(JSON.toJSONString(creditInfoList), assideResourceInfo.getValue2()));;
+				String sourceJsonStr = JSON.toJSONString(creditInfoList);
+				logger.info("EdspayController getBatchCreditInfo,appId="+appId+ ",returnJsonData=" + sourceJsonStr + ",sendTime=" + timestamp);
+				notifyRespBo.setData(AesUtil.encryptToBase64(sourceJsonStr, assideResourceInfo.getValue2()));;
 			}else{
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_AMOUNT_NOTENOUGH);
 				return notifyRespBo;
 			}
 		} catch (Exception e) {
 			//系统异常
-			logger.error("giveBackCreditInfo error", e);
+			logger.error("EdspayController getBatchCreditInfo error,appId="+appId+ ",sendTime=" + timestamp, e);
 			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
 		}
 		return notifyRespBo;
@@ -209,7 +236,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	 * @param assetSideFlag
 	 * @return
 	 */
-	public List<FanbeiBorrowBankInfoBo> getAssetSideBankInfo(String assetSideFlag) {
+	public List<FanbeiBorrowBankInfoBo> getAssetSideBankInfo() {
 		List<FanbeiBorrowBankInfoBo> bankInfoList = new ArrayList<FanbeiBorrowBankInfoBo>();
 		try {
 			List<AfResourceDo> bankInfoLists = afResourceService.getConfigsByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), AfResourceSecType.ASSET_SIDE_CONFIG_BANK_INFOS.getCode());
