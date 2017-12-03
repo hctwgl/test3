@@ -297,6 +297,13 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
+	<update id="updateRealTotalMoneyById"  parameterType="com.ald.fanbei.api.dal.domain.AfAssetPackageDo">
+        UPDATE af_asset_package set 
+                gmt_modified = now(),                
+                real_total_money = real_total_money + #{realTotalMoney,jdbcType=DECIMAL},                
+        WHERE is_delete = 0 and id = #{rid ,jdbcType=BIGINT} and <![CDATA[  real_total_money + #{realTotalMoney,jdbcType=DECIMAL} >=0 ]]>
+    </update>
+    
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfAssetPackageDo">
         SELECT
         <include refid="queryFields" />

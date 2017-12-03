@@ -12,6 +12,11 @@ import com.ald.fanbei.api.dal.domain.AfAssetPackageDo;
  */
 public interface AfAssetPackageDao extends BaseDao<AfAssetPackageDo, Long> {
 
-    
-
+	/**
+	 * 更新实际借款信息
+	 * @param afAssetPackageDo
+	 * @return
+	 */
+	int updateRealTotalMoneyById(AfAssetPackageDo afAssetPackageDo);
+	
 }

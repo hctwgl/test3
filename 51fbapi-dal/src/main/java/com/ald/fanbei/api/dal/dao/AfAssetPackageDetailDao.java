@@ -20,4 +20,7 @@ public interface AfAssetPackageDetailDao extends BaseDao<AfAssetPackageDetailDo,
 	
 	int updateByBorrowNo(AfAssetPackageDetailDo afAssetPackageDetailDo);
 
+	int updateReDisTri(@Param("borrowCashId")Long borrowCashId);
+
+	int invalidPackageDetail(@Param("rid")Long rid);
 }

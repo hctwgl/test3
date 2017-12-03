@@ -159,6 +159,18 @@
         WHERE  borrow_no=#{borrowNo}
     </update>
     
+    <update id="invalidPackageDetail"  parameterType="java.lang.Long">
+        UPDATE af_asset_package_detail set
+                gmt_modified = now(),                
+                status = 'N',                
+        WHERE  id = #{rid ,jdbcType=BIGINT} and status ='Y'
+    </update>
+    
+    <update id="updateReDisTri" parameterType="java.lang.Long">
+		  UPDATE af_asset_package_detail set status='R',gmt_modified=now() 
+			where status = 'Y' and is_delete=1 and borrow_cash_id=#{borrowCashId}
+	</update>
+	
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo">
         SELECT
         <include refid="queryFields" />

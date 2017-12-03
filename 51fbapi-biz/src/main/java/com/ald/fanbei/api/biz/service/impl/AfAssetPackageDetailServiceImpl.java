@@ -31,6 +31,7 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetPackageDetailDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideOperaLogDao;
@@ -84,51 +85,92 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * @param orderNos
 	 */
 	@Override
-	public int batchGiveBackCreditInfo(AfAssetSideInfoDo afAssetSideInfoDo,List<String> orderNos){
+	public int batchGiveBackCreditInfo(final AfAssetSideInfoDo afAssetSideInfoDo,final List<String> orderNos){
+		//更新成功的信息
+		List<String> successPackageIds = new ArrayList<String>();
+		List<String> successPackageDetailIds = new ArrayList<String>();
+		//更新失败的信息
+		List<String> failPackageIds = new ArrayList<String>();
+		List<String> failPackageDetailIds = new ArrayList<String>();
+		//不存在的记录
+		List<String> invalidBorrowNos = new ArrayList<String>();
+		//成功的总金额
+		final BigDecimal totalMoney = BigDecimal.ZERO;
 		//校验
-		Date currDate = new Date();
-		String borrowNo = orderNos.get(0);
-		AfAssetPackageDetailDo afAssetPackageDetail = afAssetPackageDetailDao.getByBorrowNo(borrowNo);
-		if(afAssetPackageDetail==null){
-			logger.error("batchGiveBackCreditInfo error ,orderNo not exists,borrowNo="+borrowNo);
-			return 0;
-		}
-		if(!AfAssetPackageDetailStatus.VALID.getCode().equals(afAssetPackageDetail.getStatus())){
-			logger.error("batchGiveBackCreditInfo error ,afAssetPackageDetail is invalid,borrowNo="+borrowNo);
-			return 0;
+		final Date currDate = new Date();
+		for (String tempBorrowNo : orderNos) {
+			final String borrowNo = tempBorrowNo;
+			final AfAssetPackageDetailDo afAssetPackageDetail = afAssetPackageDetailDao.getByBorrowNo(borrowNo);
+    		if(afAssetPackageDetail==null){
+    			logger.error("batchGiveBackCreditInfo error ,orderNo not exists,borrowNo="+borrowNo);
+    			invalidBorrowNos.add(borrowNo);
+    			continue;
+    		}
+    		final AfAssetPackageDo packageDo = afAssetPackageDao.getById(afAssetPackageDetail.getAssetPackageId());
+    		if(packageDo==null){
+    			logger.error("batchGiveBackCreditInfo error ,packageDo not exists,id="+afAssetPackageDetail.getAssetPackageId());
+    			invalidBorrowNos.add(borrowNo);
+    			continue;
+    		}
+			//begin事务,记录变更
+			int result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+		        @Override
+	            public Integer doInTransaction(TransactionStatus status) {
+		        	try {
+		        		if(!AfAssetPackageDetailStatus.VALID.getCode().equals(afAssetPackageDetail.getStatus())){
+		        			logger.error("batchGiveBackCreditInfo error ,afAssetPackageDetail is invalid,borrowNo="+borrowNo);
+		        			return 0;
+		        		}
+		        		
+			    		//获取borrowCash
+			    		AfBorrowCashDo borrowCash = afBorrowCashDao.getBorrowCashByrid(afAssetPackageDetail.getBorrowCashId());
+			    		if(borrowCash==null){
+			    			logger.error("batchGiveBackCreditInfo error ,borrowCash not exists,id="+afAssetPackageDetail.getBorrowCashId());
+			    			return 0;
+			    		}
+			    		
+			    		//更新此债权相关明细
+			    		int effectNums = afAssetPackageDetailDao.invalidPackageDetail(afAssetPackageDetail.getRid());
+			    		
+			    		if(effectNums>0){
+			    			totalMoney.add(borrowCash.getAmount());
+			    			AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
+			    			modifyPackageDo.setRid(packageDo.getRid());
+			    			modifyPackageDo.setGmtModified(currDate);
+			    			modifyPackageDo.setRealTotalMoney(borrowCash.getAmount().negate());
+			    			afAssetPackageDao.updateRealTotalMoneyById(modifyPackageDo);
+			    			return 1;
+			    		}else{
+			    			logger.error("batchGiveBackCreditInfo update AfAssetPackageDetailDo fail ,id="+afAssetPackageDetail.getBorrowCashId());
+			    			return 0;
+			    		}
+					} catch (Exception e) {
+						status.setRollbackOnly();
+						logger.error("batchGiveBackCreditInfo exe exception ,borrowNo="+borrowNo,e);
+						return 0;
+					}
+		        }
+			});
+			if(result==1){
+				successPackageIds.add(""+packageDo.getRid());
+				successPackageDetailIds.add(""+afAssetPackageDetail.getRid());
+			}else{
+				failPackageIds.add(""+packageDo.getRid());
+				failPackageDetailIds.add(""+afAssetPackageDetail.getRid());
+			}
 		}
 		
-		//begin事务,记录变更
-		AfAssetPackageDo packageDo = afAssetPackageDao.getById(afAssetPackageDetail.getAssetPackageId());
-		if(packageDo==null){
-			logger.error("batchGiveBackCreditInfo error ,packageDo not exists,id="+afAssetPackageDetail.getAssetPackageId());
-			return 0;
-		}
-		//获取borrowCash
-		AfBorrowCashDo borrowCash = afBorrowCashDao.getBorrowCashByrid(afAssetPackageDetail.getBorrowCashId());
-		if(borrowCash==null){
-			logger.error("batchGiveBackCreditInfo error ,borrowCash not exists,id="+afAssetPackageDetail.getBorrowCashId());
-			return 0;
-		}
-		
-		//更新此债权相关明细
-		AfAssetPackageDetailDo packageDetailCondition = new AfAssetPackageDetailDo();
-		packageDetailCondition.setBorrowNo(borrowNo);
-		packageDetailCondition.setStatus(YesNoStatus.NO.getCode());
-		packageDetailCondition.setGmtModified(currDate);
-		afAssetPackageDetailDao.updateByBorrowNo(packageDetailCondition);
-		
-		AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
-		modifyPackageDo.setRid(packageDo.getRid());
-		modifyPackageDo.setGmtModified(currDate);
-		modifyPackageDo.setRealTotalMoney(packageDo.getRealTotalMoney().subtract(borrowCash.getAmount()));
-		afAssetPackageDao.updateById(modifyPackageDo);
-		
+		String refPackageId = StringUtil.joinListToString(successPackageIds, ",")+";"+StringUtil.joinListToString(failPackageIds, ",");
+		String refDetailIds = StringUtil.joinListToString(successPackageDetailIds, ",")+";"+StringUtil.joinListToString(failPackageDetailIds, ",")+";"+StringUtil.joinListToString(invalidBorrowNos, ",");
 		//资产方操作日志添加
-		AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), borrowCash.getAmount(), packageDo.getRid()+"",afAssetPackageDetail.getRid()+"", "退回债权金额："+borrowCash.getAmount());
+		AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), totalMoney, refPackageId,refDetailIds, "成功退回债权金额："+totalMoney+"元");
 		afAssetSideOperaLogDao.saveRecord(operaLogDo);
 		//end事务
-		return 1;
+		if(failPackageIds!=null && failPackageIds.size()>0){
+			return 0;
+		}else{
+			return 1;
+		}
 	}
 	
 	/**
@@ -136,50 +178,64 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 * @param orderNo
 	 */
 	@Override
-	public int giveBackCreditInfo(AfAssetSideInfoDo afAssetSideInfoDo,String borrowNo){
+	public int giveBackCreditInfo(final AfAssetSideInfoDo afAssetSideInfoDo,final String borrowNo){
 		//校验,临时调试阶段,简单处理,按单笔处理
-		Date currDate = new Date();
-		AfAssetPackageDetailDo afAssetPackageDetail = afAssetPackageDetailDao.getByBorrowNo(borrowNo);
+		final AfAssetPackageDetailDo afAssetPackageDetail = afAssetPackageDetailDao.getByBorrowNo(borrowNo);
 		if(afAssetPackageDetail==null){
-			logger.error("batchGiveBackCreditInfo error ,orderNo not exists,borrowNo="+borrowNo);
+			logger.error("giveBackCreditInfo error ,orderNo not exists,borrowNo="+borrowNo);
 			return 0;
 		}
 		if(!AfAssetPackageDetailStatus.VALID.getCode().equals(afAssetPackageDetail.getStatus())){
-			logger.error("batchGiveBackCreditInfo error ,afAssetPackageDetail is invalid,borrowNo="+borrowNo);
+			logger.error("giveBackCreditInfo error ,afAssetPackageDetail is invalid,borrowNo="+borrowNo);
 			return 0;
 		}
 		
-		//begin事务,记录变更
-		AfAssetPackageDo packageDo = afAssetPackageDao.getById(afAssetPackageDetail.getAssetPackageId());
+		final AfAssetPackageDo packageDo = afAssetPackageDao.getById(afAssetPackageDetail.getAssetPackageId());
 		if(packageDo==null){
-			logger.error("batchGiveBackCreditInfo error ,packageDo not exists,id="+afAssetPackageDetail.getAssetPackageId());
+			logger.error("giveBackCreditInfo error ,packageDo not exists,id="+afAssetPackageDetail.getAssetPackageId());
 			return 0;
 		}
 		//获取borrowCash
-		AfBorrowCashDo borrowCash = afBorrowCashDao.getBorrowCashByrid(afAssetPackageDetail.getBorrowCashId());
+		final AfBorrowCashDo borrowCash = afBorrowCashDao.getBorrowCashByrid(afAssetPackageDetail.getBorrowCashId());
 		if(borrowCash==null){
-			logger.error("batchGiveBackCreditInfo error ,borrowCash not exists,id="+afAssetPackageDetail.getBorrowCashId());
+			logger.error("giveBackCreditInfo error ,borrowCash not exists,id="+afAssetPackageDetail.getBorrowCashId());
 			return 0;
 		}
-		
-		//更新此债权相关明细
-		AfAssetPackageDetailDo packageDetailCondition = new AfAssetPackageDetailDo();
-		packageDetailCondition.setBorrowNo(borrowNo);
-		packageDetailCondition.setStatus(YesNoStatus.NO.getCode());
-		packageDetailCondition.setGmtModified(currDate);
-		afAssetPackageDetailDao.updateByBorrowNo(packageDetailCondition);
-		
-		AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
-		modifyPackageDo.setRid(packageDo.getRid());
-		modifyPackageDo.setGmtModified(currDate);
-		modifyPackageDo.setRealTotalMoney(packageDo.getRealTotalMoney().subtract(borrowCash.getAmount()));
-		afAssetPackageDao.updateById(modifyPackageDo);
-		
-		//资产方操作日志添加
-		AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), borrowCash.getAmount(), packageDo.getRid()+"",afAssetPackageDetail.getRid()+"", "退回债权金额："+borrowCash.getAmount());
-		afAssetSideOperaLogDao.saveRecord(operaLogDo);
+		//begin事务,记录变更
+		int result = transactionTemplate.execute(new TransactionCallback<Integer>() {
+	        @Override
+            public Integer doInTransaction(TransactionStatus status) {
+	        	try {
+	        		Date currDate = new Date();
+		        	//资产方操作日志添加
+	    			AfAssetSideOperaLogDo operaLogDo = null;
+		        	//更新此债权相关明细
+		    		int effectNums = afAssetPackageDetailDao.invalidPackageDetail(afAssetPackageDetail.getRid());
+		    		
+		    		if(effectNums>0){
+		    			AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
+		    			modifyPackageDo.setRid(packageDo.getRid());
+		    			modifyPackageDo.setGmtModified(currDate);
+		    			modifyPackageDo.setRealTotalMoney(borrowCash.getAmount().negate());
+		    			afAssetPackageDao.updateRealTotalMoneyById(modifyPackageDo);
+		    			operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), borrowCash.getAmount(), packageDo.getRid()+";",afAssetPackageDetail.getRid()+";", "成功退回债权金额："+borrowCash.getAmount()+"元");
+		    			afAssetSideOperaLogDao.saveRecord(operaLogDo);
+		    			return 1;
+		    		}else{
+		    			operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), borrowCash.getAmount(), ";"+packageDo.getRid(),";"+afAssetPackageDetail.getRid(), "成功退回债权金额：0元");
+		    			afAssetSideOperaLogDao.saveRecord(operaLogDo);
+		    			logger.error("giveBackCreditInfo update AfAssetPackageDetailDo fail ,id="+afAssetPackageDetail.getBorrowCashId());
+		    			return 0;
+		    		}
+	        	} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("giveBackCreditInfo exe exception ,borrowNo="+borrowNo,e);
+					return 0;
+				}
+	        }
+		});
 		//end事务
-		return 1;
+		return result;
 	}
 	
 	
@@ -190,7 +246,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	public List<EdspayGetCreditRespBo> getBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart,final Date gmtCreateEnd,final BigDecimal sevenMoney){
 		final List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
 		transactionTemplate.execute(new TransactionCallback<Long>() {
-	            @Override
+	        @Override
             public Long doInTransaction(TransactionStatus status) {
             	BigDecimal sevenMoneyNew = sevenMoney;
             	List<AfViewAssetBorrowCashDo> sevenDebtList= new ArrayList<AfViewAssetBorrowCashDo>();
@@ -247,7 +303,13 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				afAssetPackageDo.setGmtCreate(currDate);
         				afAssetPackageDo.setGmtModified(currDate);
         				afAssetPackageDo.setStatus(AfAssetPackageStatus.SENDED.getCode());
-        				afAssetPackageDo.setAssetName(afAssetSideInfoDo.getName()+totalMoney.intValue()/10000+"万资产包"+DateUtil.formatDate(new Date()));
+        				String packageName = "";
+        				if(totalMoney.intValue()/10000>0){
+        					packageName = afAssetSideInfoDo.getName()+totalMoney.intValue()/10000+"万资产包"+DateUtil.formatDate(new Date());
+        				}else{
+        					packageName = afAssetSideInfoDo.getName()+totalMoney+"元资产包"+DateUtil.formatDate(new Date());
+        				}
+        				afAssetPackageDo.setAssetName(packageName);
         				afAssetPackageDo.setAssetNo("zcb"+System.currentTimeMillis());
         				afAssetPackageDo.setAssetSideId(afAssetSideInfoDo.getRid());
         				afAssetPackageDo.setBeginTime(gmtCreateStart);
@@ -278,6 +340,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setAssetPackageId(afAssetPackageDo.getRid());
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
+        					//标记重新分配记录
+        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowCashId());
         				}
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : fourteenDebtList) {
         					realFourteenAmount = realFourteenAmount.add(afViewAssetBorrowCashDo.getAmount());
@@ -290,6 +354,8 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setAssetPackageId(afAssetPackageDo.getRid());
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
+        					//标记重新分配记录
+        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowCashId());
         				}
         				
         				//更新实际金额
