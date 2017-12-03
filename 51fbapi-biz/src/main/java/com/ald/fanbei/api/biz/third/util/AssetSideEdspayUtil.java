@@ -29,6 +29,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfAssetPackageDao;
 import com.ald.fanbei.api.dal.dao.AfAssetSideInfoDao;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -47,6 +48,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
     AfResourceService afResourceService;
 	@Resource
 	AfAssetSideInfoDao afAssetSideInfoDao;
+	@Resource
+	AfAssetPackageDao afAssetPackageDao;
 	@Resource
 	AfAssetPackageDetailService afAssetPackageDetailService;
 	
@@ -140,7 +143,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
 				return notifyRespBo;
 			}
-			
+			//校验当日限额
+			BigDecimal currDayHaveGetTotalAmount = afAssetPackageDao.getCurrDayHaveGetTotalAmount(afAssetSideInfoDo.getRid());
+			if(NumberUtil.objToBigDecimalDefault(assideResourceInfo.getValue3(), BigDecimal.ZERO).compareTo(currDayHaveGetTotalAmount)<=0){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_AMOUNT_OVERRUN);
+				return notifyRespBo;
+			}
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);

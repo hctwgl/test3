@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDo;
 
 /**
@@ -18,5 +22,12 @@ public interface AfAssetPackageDao extends BaseDao<AfAssetPackageDo, Long> {
 	 * @return
 	 */
 	int updateRealTotalMoneyById(AfAssetPackageDo afAssetPackageDo);
+
+	/**
+	 * 获取资产方当日已获取额度
+	 * @param rid
+	 * @return
+	 */
+	BigDecimal getCurrDayHaveGetTotalAmount(@Param("assetSideId")Long assetSideId);
 	
 }
