@@ -106,8 +106,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			//具体撤回操作
 			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos);
 			if(resultValue !=1){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
-				return notifyRespBo;
+				logger.error("EdspayController giveBackCreditInfo exist error records,appId="+appId+ ",sendTime=" + timestamp);
 			}
 		} catch (Exception e) {
 			//系统异常

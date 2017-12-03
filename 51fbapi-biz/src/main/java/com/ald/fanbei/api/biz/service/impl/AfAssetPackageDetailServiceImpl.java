@@ -166,8 +166,14 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		String refPackageId = StringUtil.joinListToString(successPackageIds, ",")+";"+StringUtil.joinListToString(failPackageIds, ",");
 		String refDetailIds = StringUtil.joinListToString(successPackageDetailIds, ",")+";"+StringUtil.joinListToString(failPackageDetailIds, ",")+";"+StringUtil.joinListToString(invalidBorrowNos, ",");
 		//资产方操作日志添加
-		AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), totalMoney, refPackageId,refDetailIds, "成功退回债权金额："+totalMoney+"元");
-		afAssetSideOperaLogDao.saveRecord(operaLogDo);
+		if(totalMoney.compareTo(BigDecimal.ZERO)>0){
+			AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), totalMoney, refPackageId,refDetailIds, "成功退回债权金额："+totalMoney+"元");
+			afAssetSideOperaLogDao.saveRecord(operaLogDo);
+		}else{
+			logger.error("batchGiveBackCreditInfo affect money is 0 ,refPackageId="+refPackageId+",refDetailIds="+refDetailIds);
+			return 0;
+		}
+		
 		//end事务
 		if(failPackageIds!=null && failPackageIds.size()>0){
 			return 0;
@@ -210,8 +216,6 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
             public Integer doInTransaction(TransactionStatus status) {
 	        	try {
 	        		Date currDate = new Date();
-		        	//资产方操作日志添加
-	    			AfAssetSideOperaLogDo operaLogDo = null;
 		        	//更新此债权相关明细
 		    		int effectNums = afAssetPackageDetailDao.invalidPackageDetail(afAssetPackageDetail.getRid());
 		    		
@@ -221,13 +225,12 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		    			modifyPackageDo.setGmtModified(currDate);
 		    			modifyPackageDo.setRealTotalMoney(borrowCash.getAmount().negate());
 		    			afAssetPackageDao.updateRealTotalMoneyById(modifyPackageDo);
-		    			operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), borrowCash.getAmount(), packageDo.getRid()+";",afAssetPackageDetail.getRid()+";", "成功退回债权金额："+borrowCash.getAmount()+"元");
+		    			//资产方操作日志添加
+		    			AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), borrowCash.getAmount(), packageDo.getRid()+";",afAssetPackageDetail.getRid()+";", "成功退回债权金额："+borrowCash.getAmount()+"元");
 		    			afAssetSideOperaLogDao.saveRecord(operaLogDo);
 		    			return 1;
 		    		}else{
-		    			operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GIVE_BACK.getCode(), borrowCash.getAmount(), ";"+packageDo.getRid(),";"+afAssetPackageDetail.getRid(), "成功退回债权金额：0元");
-		    			afAssetSideOperaLogDao.saveRecord(operaLogDo);
-		    			logger.error("giveBackCreditInfo update AfAssetPackageDetailDo fail ,id="+afAssetPackageDetail.getBorrowCashId());
+		    			logger.error("giveBackCreditInfo update AfAssetPackageDetailDo fail ,borrowNo="+borrowNo+",id="+afAssetPackageDetail.getBorrowCashId());
 		    			return 0;
 		    		}
 	        	} catch (Exception e) {
