@@ -161,7 +161,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		}
 		BigDecimal totalMoney = BigDecimal.ZERO;
 		for (BigDecimal tempMoney : totalMoneyList) {
-			totalMoney.add(tempMoney);
+			totalMoney = totalMoney.add(tempMoney);
 		}
 		String refPackageId = StringUtil.joinListToString(successPackageIds, ",")+";"+StringUtil.joinListToString(failPackageIds, ",");
 		String refDetailIds = StringUtil.joinListToString(successPackageDetailIds, ",")+";"+StringUtil.joinListToString(failPackageDetailIds, ",")+";"+StringUtil.joinListToString(invalidBorrowNos, ",");
