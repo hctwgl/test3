@@ -306,17 +306,17 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	}
 	// 验证充值类型
 	if (checkNodeNameAttrinbute(document, nodePath + "/types/type") && StringUtils.isBlank(gameType)) {
-	    throw new FanbeiException("充值类型", FanbeiExceptionCode.PARAM_ERROR);
+	    throw new FanbeiException("未传充值类型参数", FanbeiExceptionCode.PARAM_ERROR);
 	}
 
 	// 验证充值服
 	if (checkNodeNameAttrinbute(document, nodePath + "/areas") && StringUtils.isBlank(gameSrv)) {
-	    throw new FanbeiException("游戏服", FanbeiExceptionCode.PARAM_ERROR);
+	    throw new FanbeiException("未传游戏服参数", FanbeiExceptionCode.PARAM_ERROR);
 	}
 
 	// 验证充值区
 	if (checkNodeNameAttrinbute(document, nodePath + "/areas/area") && StringUtils.isBlank(gameArea)) {
-	    throw new FanbeiException("游戏区", FanbeiExceptionCode.PARAM_ERROR);
+	    throw new FanbeiException("未传游戏区参数", FanbeiExceptionCode.PARAM_ERROR);
 	}
     }
 
@@ -331,12 +331,14 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
      */
     private boolean checkNodeNameAttrinbute(Document document, String nodePath) {
 	Element firstNode = (Element) document.selectSingleNode(nodePath);
-	Attribute nameAttibute = firstNode.attribute("name");
-	if (nameAttibute != null && !"".equals(nameAttibute.getValue())) {
-	    return true;
-	} else {
-	    return false;
+	if (firstNode != null) {
+	    Attribute nameAttibute = firstNode.attribute("name");
+	    if (nameAttibute != null && !"".equals(nameAttibute.getValue())) {
+		return true;
+	    }
 	}
+
+	return false;
     }
 
     @Resource
