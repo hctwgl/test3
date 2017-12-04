@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712041107")
+    #set($version="201712041653")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>游戏充值</title>
-    <link rel="stylesheet" type="text/css" href=/common/mui.min.css?version=$version">
-    <link rel="stylesheet" type="text/css" href="/common/mui.picker.min.css?version=$version" />
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/gamePay.css?version=$version">
 </head>
 <body>
@@ -38,8 +36,13 @@
             <input type="text" placeholder=" "/>
         </div>
         <div class="gameArea gameName clearFix" @click="gameAreaClick()">
-            <p>游戏区服</p>
+            <p>游戏分区</p>
             <span>{{fixCont.initArea}}</span>
+            <i> > </i>
+        </div>
+        <div class="gameService gameName clearFix">
+            <p>服务器</p>
+            <span>{{fixCont.initService}}</span>
             <i> > </i>
         </div>
         <div class="kong"></div>
@@ -68,9 +71,38 @@
         </div>
         <div class="sure" @click="sureClick()">确认充值</div>
     </div>
+    <div class="mask" v-show="maskShow" @click="maskClick()"></div>
+    <div class="nameCont">
+        <div class="chooseAreaTitle">
+            <p class="back" @click="maskClick"> < </p>
+            <p>选择游戏名称</p>
+        </div>
+        <ul class="nameList">
+            <li v-for="(item,index) in allData" @click="chooseName(index)">{{item.gameName}}</li>
+        </ul>
+    </div>
+    <div class="areaCont">
+        <div class="chooseAreaTitle">
+            <p class="back" @click="maskClick"> < </p>
+            <p>选择游戏分区</p>
+        </div>
+        <ul class="areaList" v-if="fixCont.areaslen==1">
+            <li v-for="(item,index) in fixCont.areasList" @click="chooseArea(index)">{{item}}</li>
+        </ul>
+        <ul class="areaList" v-else>
+            <li v-for="(item,index) in fixCont.areasList" @click="chooseArea(index)">{{item.text}}</li>
+        </ul>
+    </div>
+    <div class="serviceCont">
+        <div class="chooseAreaTitle">
+            <p class="back" @click="maskClick01()"> < </p>
+            <p>选择服务器</p>
+        </div>
+        <ul class="serviceList">
+            <li v-for="(item,index) in serviceList" @click="chooseService(index)">{{item}}</li>
+        </ul>
+    </div>
 </div>
-<script type="text/javascript" src="/common/mui.min.js?version=$version"></script>
-<script type="text/javascript" src="/common/mui.picker.min.js?version=$version"></script>
 <script type="text/javascript" src="/dist/activity/11/gamePay.js?version=$version"></script>
 </body>
 </html>

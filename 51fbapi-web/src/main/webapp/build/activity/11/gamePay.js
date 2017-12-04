@@ -1,7 +1,9 @@
 let goodsId=getUrl('goodsId'); //获取类型id
 let discout=getUrl('discout'); //折扣
 let rebate=getUrl('rebate'); //返利
-
+$(function(){
+    $('#gamePay').height($(window).height())
+})
 //获取数据
 let vm = new Vue({
     el: '#gamePay',
@@ -15,7 +17,11 @@ let vm = new Vue({
         discout:discout,
         rebate:rebate,
         needGameNumShow:'',
-        liIndex:''
+        liIndex:'',  //所选游戏名称index
+        areaIndex:'', //所选游戏选区index
+        maskShow:'', //蒙版显示与隐藏
+        serviceList:[], //选择选区--服务器,
+        allGameName:[] //所有游戏名称
     },
     created: function () {
         this.logData();
@@ -155,8 +161,10 @@ let vm = new Vue({
                     //默认显示的游戏区服
                     if(self.fixCont.areasList){
                         for(let i=0;i<self.fixCont.areasList.length;i++){
-                            if(self.fixCont.areasList[0].text){
-                                self.fixCont.initArea=self.fixCont.areasList[0].text+' '+self.fixCont.areasList[0].children[0];
+                            if(self.fixCont.areasList[0].children){
+                                $('.gameService').show();
+                                self.fixCont.initArea=self.fixCont.areasList[0].text;
+                                self.fixCont.initService=self.fixCont.areasList[0].children[0];
                             }else{
                                 self.fixCont.initArea=self.fixCont.areasList[0];
                             }
@@ -185,60 +193,71 @@ let vm = new Vue({
                 }
             });
         },
-        //点击游戏名称
+        //点击显示所有游戏名称
         gameNameClick(){
             let self=this;
-            let allGameName=[];
-            for(let i=0;i<self.allData.length;i++){
-                if(self.allData[i].gameName){
-                    allGameName.push({value:i,text:self.allData[i].gameName});
-                }
+            self.maskShow=true;
+            $('.nameCont').animate({'bottom':0},400);
+        },
+        //选择游戏名称
+        chooseName(index){
+            let self=this;
+            self.fixCont=self.allData[index];
+            console.log(self.fixCont);
+            $('.gameName:first-child').find('span').html(self.allGameName[index]);
+            self.maskShow=false;
+            $('.nameCont').animate({'bottom':'-8.62rem'},0);
+            //判断游戏账号是否显示
+            if(self.fixCont.needGameAcct=='1') {
+                self.needGameNumShow = true;
+            }else{
+                self.needGameNumShow = false;
             }
-            //根据所选游戏名称 填充数据fixCont
-            let picker = new mui.PopPicker({
-                layer: 1
-            });
-            picker.setData(allGameName);
-            picker.pickers[0].setSelectedIndex(0);
-            picker.show(function(SelectedItem) {
-                let selectedData=SelectedItem[0].text;
-                //console.log(SelectedItem);
-                //console.log(selectedData);
-                $('.gameName:first-child span').html(selectedData);
-                $('.gameName:first-child span').css('color','#232323');
-                self.fixCont=self.allData[SelectedItem[0].value];
-                console.log(self.fixCont);
-                 //判断游戏账号是否显示
-                if(self.fixCont.needGameAcct=='1') {
-                    self.needGameNumShow = true;
-                }else{
-                    self.needGameNumShow = false;
-                }
-                //默认显示的游戏区服
-                if(self.fixCont.areasList){
-                    for(let i=0;i<self.fixCont.areasList.length;i++){
-                        if(self.fixCont.areasList[0].text){
-                            self.fixCont.initArea=self.fixCont.areasList[0].text+' '+self.fixCont.areasList[0].children[0];
-                        }else{
-                            self.fixCont.initArea=self.fixCont.areasList[0];
-                        }
+            //默认显示的游戏区服
+            if(self.fixCont.areasList){
+                for(let i=0;i<self.fixCont.areasList.length;i++){
+                    if(self.fixCont.areasList[0].children){
+                        $('.gameService').show();
+                        self.fixCont.initArea=self.fixCont.areasList[0].text;
+                        self.fixCont.initService=self.fixCont.areasList[0].children[0];
+                    }else{
+                        self.fixCont.initArea=self.fixCont.areasList[0];
                     }
                 }
-                picker.dispose();
-            })
+            }
         },
-        //点击游戏区服
+        //点击游戏选区
         gameAreaClick(){
             let self=this;
-            console.log(self.fixCont,222)
             if(self.fixCont.areaslen){
-                if(self.fixCont.areaslen==1){
-                    gameAreaOne(self.fixCont.areasList);
-                }
-                if(self.fixCont.areaslen>=2){
-                    gameAreaTwo(self.fixCont.areasList);
-                }
+                self.maskShow=true;
+                $('.areaCont').animate({'bottom':0},400);
             }
+        },
+        //选择选区
+        chooseArea(index){
+            let self=this;
+            self.areaIndex=index;
+            if(self.fixCont.areasList[self.areaIndex].children){
+                self.serviceList=self.fixCont.areasList[self.areaIndex].children;
+                $('.serviceCont').animate({'bottom':0},400);
+            }
+            if(self.fixCont.areaslen==1){
+                $('.gameArea span').html(self.fixCont.areasList[self.areaIndex]);
+                self.maskShow=false;
+                $('.areaCont').animate({'bottom':'-8.62rem'},0);
+            }
+            if(self.fixCont.areaslen>=2){
+                $('.gameArea span').html(self.fixCont.areasList[self.areaIndex].text);
+            }
+        },
+        //选择服务器
+        chooseService(index){
+            let self=this;
+            $('.gameService span').html(self.serviceList[index]);
+            self.maskShow=false;
+            $('.areaCont').animate({'bottom':'-8.62rem'},0);
+            $('.serviceCont').animate({'bottom':'-8.62rem'},0);
         },
         //点击充值类型
         gameTypeClick(index){
@@ -261,7 +280,7 @@ let vm = new Vue({
         sureClick(){
             let self = this;
             let quantityNum,times;
-            let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType;
+            let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType,gameSrv;
             if($('.gameNum input').val() || $('.nameDesc01').val()){
                 if(self.fixCont.priceTypeList){
                     quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
@@ -275,10 +294,15 @@ let vm = new Vue({
                 }else{
                     gameAcct='';
                 }
-                if($('.gameName').hasClass('gameArea')){ //游戏区服
+                if($('.gameName').hasClass('gameArea')){ //游戏区
                     gameArea=$('.gameArea span').html();
                 }else{
                     gameArea='';
+                }
+                if($('.gameName').hasClass('gameService')){ //游戏服务器
+                    gameSrv=$('.gameService span').html();
+                }else{
+                    gameSrv='';
                 }
                 if($('.payType').hasClass('gameType')){ //充值类型
                     gameType=$('.typeList .changeColor02').html();
@@ -304,7 +328,7 @@ let vm = new Vue({
                     url: "/game/pay/order",
                     data:{'goodsId':goodsId,'gameName':gameName,'acctType':acctType,
                         'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount,
-                        'gameAcct':gameAcct,'gameArea':gameArea,'gameType':gameType
+                        'gameAcct':gameAcct,'gameArea':gameArea,'gameSrv':gameSrv,'gameType':gameType
                     },
                     success: function (data) {
                         console.log(data,'确认充值');
@@ -330,39 +354,18 @@ let vm = new Vue({
         fixNum(n){
             let number=n.toFixed(2);
             return number;
+        },
+        maskClick(){
+            let self=this;
+            self.maskShow=false;
+            $('.nameCont').animate({'bottom':'-8.62rem'},0);
+            $('.areaCont').animate({'bottom':'-8.62rem'},0);
+            $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+        },
+        maskClick01(){  //选择服务器里的返回
+            $('.serviceCont').animate({'bottom':'-8.62rem'},0);
         }
     }
 });
 
-//游戏区服二级联动
-function gameAreaTwo(allCont){
-    let picker = new mui.PopPicker({
-                layer: 2
-         });
-    picker.setData(allCont);
-    picker.pickers[0].setSelectedIndex(0);
-    picker.pickers[1].setSelectedIndex(0);
-    picker.show(function(SelectedItem) {
-        let selectedData=SelectedItem[0].text+'&nbsp'+SelectedItem[1];
-        //console.log(SelectedItem);
-        //console.log(selectedData);
-        $('.gameArea span').html(selectedData);
-        picker.dispose();
-    })
-}
-//游戏区服一级联动
-function gameAreaOne(allCont){
-    let picker = new mui.PopPicker({
-        layer: 1
-    });
-    picker.setData(allCont);
-    picker.pickers[0].setSelectedIndex(0);
-    picker.show(function(SelectedItem) {
-        let selectedData=SelectedItem[0];
-        //console.log(SelectedItem);
-        //console.log(selectedData);
-        $('.gameArea span').html(selectedData);
-        picker.dispose();
-    })
-}
 
