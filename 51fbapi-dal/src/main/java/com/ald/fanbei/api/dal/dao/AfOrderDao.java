@@ -180,6 +180,7 @@ public interface AfOrderDao {
 	 */
 	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 	/**
+	 * @param userId 
 	 * judge the first_order during the second time to light the activity 
 	* @Title: findFirstOrder
 	* @Description: 
@@ -188,6 +189,6 @@ public interface AfOrderDao {
 	* @return int   
 	* @throws
 	 */
-	int findFirstOrder(@Param("orderId")Long orderId);
+	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId);
 
 }

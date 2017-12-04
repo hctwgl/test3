@@ -89,7 +89,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				rebateDo.setOrderId(orderId);
 				rebateDo.setUserId(userId);
 				// check if its the first time for one specific channel
-				int orderTimes = afOrderDao.findFirstOrder(orderId);
+				int orderTimes = afOrderDao.findFirstOrder(orderId,userId);
 				log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 				logger.info(log);
 				if (orderTimes == 0) {

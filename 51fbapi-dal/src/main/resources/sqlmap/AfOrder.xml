@@ -1035,7 +1035,7 @@
 			count(1)
 		FROM
 			af_order ao
-		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id
+		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id AND ao.user_id = #{userId} 
 		INNER JOIN (
 			SELECT
 				o.order_type,
@@ -1046,7 +1046,6 @@
 				o.id = #{orderId}
 		) t ON t.order_type = ao.order_type
 		AND t.sec_type = ao.sec_type
-		AND br.order_id = #{orderId}
 		AND br.is_delete = 0
 		AND ao.is_delete = 0;
 	</select>
