@@ -313,8 +313,8 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			brandAreaInfoMap.put("brandFloorInfo", brandFloorInfo);
 		}
 		// 逛逛运营位置
-		List<Object> brandPositionInfoList = getHomeBrandPositonInfoResourceDoList(afResourceService
-				.getResourceHomeListByTypeOrderBy(ResourceType.HOME_FOUR_IMAGE_BRAND_POSITION.getCode()));
+		List<Object> brandPositionInfoList = getHomeBrandPositonInfoResourceDoList(
+				afResourceService.getHomeBrandPositonInfoList());
 		brandAreaInfoMap.put("brandPositionInfoList", brandPositionInfoList);
 		// 逛逛轮播图
 		List<Object> brandBannerList = getBannerInfoWithResourceDolist(

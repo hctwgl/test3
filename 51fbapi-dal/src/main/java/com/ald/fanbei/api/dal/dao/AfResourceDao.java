@@ -177,4 +177,6 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getHomeNomalPositionList();
 
+	List<AfResourceDo> getHomeBrandPositonInfoList();
+
 }

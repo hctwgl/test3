@@ -219,4 +219,6 @@ public interface AfResourceService {
 	AfResourceDo getBrandFloorImgRes();
 
 	List<AfResourceDo> getHomeNomalPositionList();
+
+	List<AfResourceDo> getHomeBrandPositonInfoList();
 }
