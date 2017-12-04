@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Resource;
 
@@ -28,6 +29,7 @@ import com.ald.fanbei.api.dal.domain.AfRebateDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.timevale.esign.sdk.tech.impl.model.GetAccountInfoModel;
+import com.timevale.esign.sdk.tech.service.impl.i;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.JpushService;
 
@@ -174,7 +176,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 			List<Long> redpacketIdList = relationDao.getRedpacketIdListByThreshold(thresholdId);
 			if (redpacketIdList != null && redpacketIdList.size() > 0) {
 				int length = redpacketIdList.size();
-				int index = (int) Math.random() * (length - 1);
+				int index = new Random().nextInt(length)%(length-1+1) + 1;
 				redpacketId = redpacketIdList.get(index);
 			}
 

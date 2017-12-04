@@ -161,7 +161,7 @@
 			LIMIT 0,1;
     </select>
     <select id="getRebateList" parameterType="java.lang.Long"  resultType="com.ald.fanbei.api.dal.domain.AfRebateDo">
- SELECT s.name as consumeScene, tt.surpriseRebate,date_format(tt.consumeTime, '%Y-%m-%d %H:%i') as consumeTime,tt.sceneRebate
+ 		SELECT s.name as consumeScene, tt.surpriseRebate,date_format(tt.consumeTime, '%Y-%m-%d %H:%i') as consumeTime,tt.sceneRebate
 			FROM af_shop s 
 			INNER JOIN 
 			(
@@ -178,7 +178,8 @@
 			WHERE
 				br.user_id = #{userId}
 			) as tt 
-			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O';
+			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
+		ORDER BY consumeTime;
     </select>
      <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
         SELECT
