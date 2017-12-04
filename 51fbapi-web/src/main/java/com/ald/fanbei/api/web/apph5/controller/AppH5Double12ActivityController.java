@@ -479,7 +479,11 @@ public class AppH5Double12ActivityController extends BaseController{
 			afDouble12GoodsVo.setSource(afGoodsDo.getSource());
 			afDouble12GoodsVo.setStockCount(afGoodsDo.getStockCount());
 			Integer goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12Do.getAlreadyCount();//秒杀商品余量
-			afDouble12GoodsVo.setCount(goodsDouble12Count.toString());
+			if(goodsDouble12Count<0){
+				afDouble12GoodsVo.setCount("0");
+			}else{
+				afDouble12GoodsVo.setCount(goodsDouble12Count.toString());
+			}
 		}
 		return afDouble12GoodsVo;
 	}
