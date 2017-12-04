@@ -25,7 +25,6 @@ public class AfCouponDouble12Vo extends AbstractSerial {
 	private String ishas;//优惠券是否有--Y:有；N:无
 	private BigDecimal limitAmount;
 	
-	
 	public BigDecimal getLimitAmount() {
 		return limitAmount;
 	}
