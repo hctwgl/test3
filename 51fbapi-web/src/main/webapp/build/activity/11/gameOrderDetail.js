@@ -54,7 +54,7 @@ let vm = new Vue({
             if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
                 window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
             }else{
-                window.location.href='/fanbei-web/opennative?name=APP_CASHIER&orderId='+self.orderId+'&orderType='+plantform;
+                window.location.href='/fanbei-web/opennative?name=BRAND_ORDER_CONFIRM&params={"orderId":"'+self.orderId+'","plantform":"'+plantform+'"}';
             }
         }
     }
