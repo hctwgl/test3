@@ -190,7 +190,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 		
 		boolean isNeedRisk = true;//是否为手机号未验证注册的用户
-		Date gmtCreateDate = afUserDo.getGmtCreate();
+		/*Date gmtCreateDate = afUserDo.getGmtCreate();
 		Date date = new Date();
 		long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
 		if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口
@@ -223,7 +223,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 				return resp;
 			}
 			loginType = "2"; //可信登录验证通过，变可信
-		}
+		}*/
 		
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
