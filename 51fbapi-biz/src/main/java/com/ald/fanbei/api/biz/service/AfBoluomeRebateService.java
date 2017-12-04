@@ -3,8 +3,6 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
-
-
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
 
 
@@ -28,9 +26,12 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 	
 	AfBoluomeRebateDo getLastUserRebateByUserId(Long userId);
 
-	AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId);
+//	AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId);
 
 	int getRebateCount(Long shopId, Long userId);
+
+	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(Long startId, Long endId, Long userId);
+
 
 
 }

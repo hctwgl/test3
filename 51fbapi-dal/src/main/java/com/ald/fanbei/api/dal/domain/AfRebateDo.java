@@ -7,7 +7,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 import com.alibaba.fastjson.serializer.JSONSerializer;
-import com.sun.jdi.PrimitiveType;
 
 /**  
  * @Title: AfRebateDo.java

@@ -5,9 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
-
 import com.ald.fanbei.api.dal.domain.AfShopDo;
-
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
 
 
@@ -40,6 +38,8 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 	int getRebateNumByOrderId(@Param("orderId")Long orderId);
 
 	int getRebateCount(@Param("shopId")Long shopId, @Param("userId")Long userId);
+
+	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(@Param("startId")Long startId,@Param("endId") Long endId,@Param("userId") Long userId);
 
 
     

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -227,16 +228,23 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		return afBoluomeRebateDao.getLastUserRebateByUserId(userId);
 	}
 
-	@Override
-	public AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId) {
-
-		return afBoluomeRebateDao.getHighestNeverPopedRebate(userId);
-	}
+//	@Override
+//	public AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId) {
+//
+//		return afBoluomeRebateDao.getHighestNeverPopedRebate(userId);
+//	}
 
 	@Override
 	public int getRebateCount(Long shopId,Long userId) {
 		return afBoluomeRebateDao.getRebateCount(shopId,userId);
 		
 	}
+
+	@Override
+	public AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(Long startId, Long endId, Long userId) {
+	    // TODO Auto-generated method stub
+	    	return afBoluomeRebateDao.getMaxUserRebateByStartIdAndEndIdAndUserId(startId,endId,userId);
+	}
+
 
 }
