@@ -20,7 +20,7 @@
         })(window);
     </script>
     <!--转化代码-->
-    #set($version="201711221445")
+    #set($version="201712011025")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -85,6 +85,8 @@
         </div>
         <button class="imgVftCodeSbumit" id="imgVftCodeSbumit">确定</button>
     </div>
+    <p class="companyWord01">版权所有：浙江阿拉丁电子商务股份有限公司<br/>联系电话：0571-86802133</p>
+    <p class="companyWord02">版权所有：浙江楚橡信息科技股份有限公司<br/>联系电话：0571-86802133</p>
 </div>
 <script type="text/javascript" src="/dist/js/core.js"></script>
 <script type="text/javascript" src="/dist/js/md5.js"></script>
