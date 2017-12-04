@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711201338")
+    #set($version="201712041141")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>充值服务</title>
@@ -12,27 +12,27 @@
     <div class="allTop">
         <div class="gameName">
             <p>服务名称</p>
-            <span>{{initChooseFirst.gameName}}</span>
+            <span>{{fixCont.gameName}}</span>
         </div>
         <div class="gamePass gameName">
-            <p>{{initChooseFirst.accountType}}</p>
+            <p>{{fixCont.accountType}}</p>
             <input type="text" placeholder=""/>
         </div>
         <div class="kong"></div>
         <div class="payType gameType">
-            <p class="title">充值类型</p>
+            <p class="title01">充值类型</p>
             <ul class="typeList clearFix">
-                <li v-for="(item,index) in initChooseFirst.typeNameList" @click="gameTypeClick(index)">
+                <li v-for="(item,index) in fixCont.typeNameList" @click="gameTypeClick(index)">
                     <p class="typeName">{{item}}</p>
                 </li>
             </ul>
         </div>
         <div class="gameMoney">
-            <p class="title">面额</p>
+            <p class="title01">面额</p>
             <ul class="moneyList clearFix">
-                <li v-for="(item,index) in initChooseFirst.priceTypeList" @click="gameMoneyClick(index)">
-                    <p class="typeName"><i class="goodsNum">{{item.chargeNum}}</i>{{initChooseFirst.chargeNumName}}</p>
-                    <p class="typePrice"><i class="pricePay">{{fixNum((item.quantity)*(initChooseFirst.priceTimes)*discout)}}</i>元</p>
+                <li v-for="(item,index) in fixCont.priceTypeList" @click="gameMoneyClick(index)">
+                    <p class="typeName"><i class="goodsNum">{{item.chargeNum}}</i>{{fixCont.chargeNumName}}</p>
+                    <p class="typePrice"><i class="pricePay">{{fixNum((item.quantity)*(fixCont.priceTimes)*discout)}}</i>元</p>
                 </li>
             </ul>
         </div>

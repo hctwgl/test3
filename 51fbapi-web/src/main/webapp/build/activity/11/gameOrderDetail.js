@@ -1,11 +1,13 @@
 let orderNo=getUrl('orderNo');
 let plantform=getUrl('plantform');
+let returnNum = getBlatFrom();  // 判断1为Android，2为ios
 //获取数据
 let vm = new Vue({
     el: '#gameOrderDetail',
     data: {
         content: {},
-        diff:''
+        diff:'',
+        orderId:''
     },
     created: function () {
         this.logData();
@@ -23,6 +25,7 @@ let vm = new Vue({
                     if(data.success){
                         self.content=data.data;
                         console.log(self.content);
+                        self.orderId=self.content.orderId;
                         self.content.orderStartTime=format((self.content.gmtCreate)*1000);//订单创建时间
                         //订单付款时间
                         if(self.content.gmtPay){
@@ -44,6 +47,15 @@ let vm = new Vue({
                 }
             })
 
+        },
+        //去支付
+        goPay(){
+            let self = this;
+            if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
+                window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
+            }else{
+                window.location.href='/fanbei-web/opennative?name=APP_CASHIER&orderId='+self.orderId+'&orderType='+plantform;
+            }
         }
     }
 });

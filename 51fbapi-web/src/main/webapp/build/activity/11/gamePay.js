@@ -149,19 +149,19 @@ let vm = new Vue({
                     });
                     console.log(self.allData, '全部数据');
                     console.log(self.allData.length, '全部数据长度');
-                    self.initChooseFirst=self.allData[0];
+                    self.fixCont=self.allData[0];
+                    console.log(self.allData[0], '默认显示第一个数据');
                     self.liIndex=0;
                     //默认显示的游戏区服
-                    if(self.initChooseFirst.areasList){
-                        for(let i=0;i<self.initChooseFirst.areasList.length;i++){
-                            if(self.initChooseFirst.areasList[0].text){
-                                self.initChooseFirst.initArea=self.initChooseFirst.areasList[0].text+' '+self.initChooseFirst.areasList[0].children[0];
+                    if(self.fixCont.areasList){
+                        for(let i=0;i<self.fixCont.areasList.length;i++){
+                            if(self.fixCont.areasList[0].text){
+                                self.fixCont.initArea=self.fixCont.areasList[0].text+' '+self.fixCont.areasList[0].children[0];
                             }else{
-                                self.initChooseFirst.initArea=self.initChooseFirst.areasList[0];
+                                self.fixCont.initArea=self.fixCont.areasList[0];
                             }
                         }
                     }
-                    console.log(self.allData[0], '默认显示第一个数据');
                     self.allDataLen=self.allData.length;
                     if(self.allDataLen==1){
                         self.fixCont=self.allData[0];
@@ -173,10 +173,10 @@ let vm = new Vue({
                         $('.moneyList li').eq(0).find('p').addClass('changeColor02');
                         $('.payMoney span').html($('.moneyList li').eq(0).find('.typePrice').html());
                         $('.fanMoney span').html((($('.moneyList li').eq(0).find('.pricePay').html())*rebate).toFixed(2)+'元');
-                        $('.gameNum input').attr('placeholder','请输入'+self.initChooseFirst.accountType);
+                        $('.gameNum input').attr('placeholder','请输入'+self.fixCont.accountType);
                     });
                     //判断游戏账号是否显示-----针对B
-                    if(self.initChooseFirst.needGameAcct=='1') {
+                    if(self.fixCont.needGameAcct=='1') {
                         self.needGameNumShow = true;
                     }
                 },
@@ -213,6 +213,16 @@ let vm = new Vue({
                     self.needGameNumShow = true;
                 }else{
                     self.needGameNumShow = false;
+                }
+                //默认显示的游戏区服
+                if(self.fixCont.areasList){
+                    for(let i=0;i<self.fixCont.areasList.length;i++){
+                        if(self.fixCont.areasList[0].text){
+                            self.fixCont.initArea=self.fixCont.areasList[0].text+' '+self.fixCont.areasList[0].children[0];
+                        }else{
+                            self.fixCont.initArea=self.fixCont.areasList[0];
+                        }
+                    }
                 }
                 picker.dispose();
             })
@@ -257,8 +267,8 @@ let vm = new Vue({
                     quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
                     times=self.fixCont.priceTimes;
                 }else{ // goodsNum计算
-                    quantityNum=self.initChooseFirst.priceTypeList[self.liIndex].quantity;
-                    times=self.initChooseFirst.priceTimes;
+                    quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
+                    times=self.fixCont.priceTimes;
                 }
                 if(self.needGameNumShow){ //游戏账号
                     gameAcct=$('.needGameNum input').val();

@@ -100,7 +100,7 @@ let vm = new Vue({
                     });
                     console.log(self.allData, '全部数据');
                     console.log(self.allData.length, '全部数据长度');
-                    self.initChooseFirst=self.allData[0];
+                    self.fixCont=self.allData[0];
                     console.log(self.allData[0], '默认显示第一个数据');
                     self.liIndex=0;
                     self.allDataLen=self.allData.length;
@@ -108,7 +108,7 @@ let vm = new Vue({
                         self.fixCont=self.allData[0];
                     }
                     self.$nextTick(function(){
-                        $('.gamePass input').attr('placeholder','请输入'+self.initChooseFirst.accountType);
+                        $('.gamePass input').attr('placeholder','请输入'+self.fixCont.accountType);
                         $('.typeList li').eq(0).addClass('changeColor01');
                         $('.typeList li').eq(0).find('p').addClass('changeColor02');
                         $('.moneyList li').eq(0).addClass('changeColor01');
@@ -175,8 +175,8 @@ let vm = new Vue({
                     quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
                     times=self.fixCont.priceTimes;
                 }else{ // goodsNum计算
-                    quantityNum=self.initChooseFirst.priceTypeList[self.liIndex].quantity;
-                    times=self.initChooseFirst.priceTimes;
+                    quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
+                    times=self.fixCont.priceTimes;
                 }
                 if($('.gameName').hasClass('needGameNum')){ //游戏账号
                     gameAcct=$('.needGameNum input').val();

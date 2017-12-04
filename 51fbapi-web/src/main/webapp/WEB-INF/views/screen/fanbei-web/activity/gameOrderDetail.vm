@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711301937")
+    #set($version="201712041126")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>订单详情</title>
@@ -54,7 +54,7 @@
     </div>
     <div class="footer">
         <p class="deleteOrder">删除订单</p>
-        <p class="goPay">去支付</p>
+        <p class="goPay" @click="goPay()">去支付</p>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/11/gameOrderDetail.js?version=$version"></script>
