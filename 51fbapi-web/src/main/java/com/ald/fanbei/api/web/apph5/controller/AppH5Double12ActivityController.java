@@ -130,6 +130,7 @@ public class AppH5Double12ActivityController extends BaseController{
 					afCouponDouble12Vo.setName(afCouponDo.getName());
 					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
 					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
+					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
 					
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					// 当前时间

@@ -23,8 +23,15 @@ public class AfCouponDouble12Vo extends AbstractSerial {
 	private String isShow;// Y:在活动期间；N:不在活动期间
 	private String isGet;//用户是否领过
 	private String ishas;//优惠券是否有--Y:有；N:无
+	private BigDecimal limitAmount;
 	
 	
+	public BigDecimal getLimitAmount() {
+		return limitAmount;
+	}
+	public void setLimitAmount(BigDecimal limitAmount) {
+		this.limitAmount = limitAmount;
+	}
 	public String getIshas() {
 		return ishas;
 	}

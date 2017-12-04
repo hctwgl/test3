@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfCouponDouble12Service;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsDouble12Service;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -39,6 +40,7 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDouble12Do;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDouble12Do;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -80,6 +82,8 @@ public class H5Double12ActivityController extends BaseController{
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfCouponCategoryService afCouponCategoryService;
+	@Resource
+	AfResourceService afResourceService;
 	
 	String opennative = "/fanbei-web/opennative?name=";
 	
@@ -119,24 +123,42 @@ public class H5Double12ActivityController extends BaseController{
     				afCouponDouble12Vo.setName(afCouponDo.getName());
     				afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
     				afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
+    				afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
     				afCouponDouble12Vo.setIsGet("N");
     				
-    				Calendar c =Calendar.getInstance();
-    				c.setTime(new Date());
-    				int month = c.get(Calendar.MONTH)+1;
-    				int day = c.get(Calendar.DAY_OF_MONTH);
-    				int hour = c.get(Calendar.HOUR_OF_DAY);
-    				
-    				if(hour<10){
-    					afCouponDouble12Vo.setIsShow("N");//活动未开始
-    				}else {
-    					afCouponDouble12Vo.setIsShow("Y");//在活动时间内
-    				}
-    				if(month==12&&day>12){
-    					afCouponDouble12Vo.setIsShow("E");//活动已结束
-    				}
-    				if(month<=12||day<5){
+    				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					// 当前时间
+					Date currentTime = new Date();
+										
+					AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_COUPON_TIME");
+					if(afResourceDo==null){
+						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
+					}
+					String[] times = afResourceDo.getValue().split(",");
+					
+					if(currentTime.before(dateFormat.parse(times[0]))){
+						//2017-12-5 10:00号之前
 						afCouponDouble12Vo.setIsShow("N");//活动未开始
+					}
+					
+					if(afCouponDouble12Vo.getIsShow()==null){
+						for (int j = 0; j < times.length-1; j=j+2) {
+							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[times.length-1]))){
+									afCouponDouble12Vo.setIsShow("E");//活动已结束
+								}
+							}
+							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[j]))&&currentTime.before(dateFormat.parse(times[j+1]))){
+									afCouponDouble12Vo.setIsShow("Y");//在活动时间内
+								}
+							}
+							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[j+1]))&&currentTime.before(dateFormat.parse(times[j+2]))){
+									afCouponDouble12Vo.setIsShow("N");//活动未开始
+								}
+							}
+						}
 					}
     				
     				if(afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
