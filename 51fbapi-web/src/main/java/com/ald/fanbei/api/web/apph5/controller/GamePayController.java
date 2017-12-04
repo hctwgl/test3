@@ -22,6 +22,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
@@ -34,6 +36,8 @@ import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -61,7 +65,7 @@ public class GamePayController extends BaseController {
     public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
 	try {
-	    FanbeiWebContext context = doWebCheck(request, false);
+	    //FanbeiWebContext context = doWebCheck(request, false);
 	    String type = request.getParameter("type");
 	    // 查询列表
 	    if (StringUtils.isNotBlank(type)) {
@@ -85,7 +89,7 @@ public class GamePayController extends BaseController {
     public H5CommonResponse getGoodsInfo(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
 	try {
-	    FanbeiWebContext context = doWebCheck(request, false);
+	    //FanbeiWebContext context = doWebCheck(request, false);
 	    String goodsId = request.getParameter("goodsId");
 
 	    if (StringUtils.isNotBlank(goodsId)) {
@@ -239,8 +243,17 @@ public class GamePayController extends BaseController {
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-	// TODO Auto-generated method stub
-	return null;
+	try {
+            RequestDataVo reqVo = new RequestDataVo();
+
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
     }
 
     @Override
