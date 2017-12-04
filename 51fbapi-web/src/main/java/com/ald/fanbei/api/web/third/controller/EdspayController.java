@@ -4,7 +4,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -13,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.assetside.AssetSideReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
-import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -74,6 +71,27 @@ public class EdspayController {
 		
 		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.getBatchCreditInfo(sendTime, data, sign,appId);
 		logger.info("EdspayController getBatchCreditInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
+		return notifyRespBo;
+	}
+	
+	/**
+	 * 资产方获取债权对应的用户信息接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/getPlatUserInfo" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public AssetSideRespBo getPlatUserInfo(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
+		JSONObject jsonObj = JSON.parseObject(requestData);
+		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
+		String data = StringUtil.null2Str(jsonObj.get("data"));
+		String sign = StringUtil.null2Str(jsonObj.get("sign"));
+		String appId = StringUtil.null2Str(jsonObj.get("appId"));
+		logger.info("EdspayController getPlatUserInfo,appId="+appId+",sign=" + sign + ",data=" + data + ",sendTime=" + sendTime);
+		
+		AssetSideRespBo notifyRespBo = assetSideEdspayUtil.getPlatUserInfo(sendTime, data, sign,appId);
+		logger.info("EdspayController getPlatUserInfo,appId="+appId+ ",sendTime=" + sendTime+",returnMsg="+notifyRespBo.toString());
 		return notifyRespBo;
 	}
 }

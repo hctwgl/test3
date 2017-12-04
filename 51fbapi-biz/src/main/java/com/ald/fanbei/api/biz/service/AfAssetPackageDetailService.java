@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo;
 import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
@@ -38,5 +39,13 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	 * @return
 	 */
 	List<EdspayGetCreditRespBo> getBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo,BigDecimal money,Date startTime,Date endTime,BigDecimal sevenMoney);
+
+	/**
+	 * 根据资产方对应债权订单号,获取对应用户信息
+	 * @param afAssetSideInfoDo
+	 * @param orderNos
+	 * @return
+	 */
+	List<EdspayGetPlatUserInfoRespBo> getBatchPlatUserInfo(AfAssetSideInfoDo afAssetSideInfoDo, List<String> orderNos);
 
 }

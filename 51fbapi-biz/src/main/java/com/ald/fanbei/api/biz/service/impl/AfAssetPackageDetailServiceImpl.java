@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfViewAssetBorrowCashService;
@@ -26,6 +27,7 @@ import com.ald.fanbei.api.common.enums.AfAssetPackageRepaymentType;
 import com.ald.fanbei.api.common.enums.AfAssetPackageSendMode;
 import com.ald.fanbei.api.common.enums.AfAssetPackageStatus;
 import com.ald.fanbei.api.common.enums.AfAssetPackageType;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -43,7 +45,9 @@ import com.ald.fanbei.api.dal.domain.AfAssetSideInfoDo;
 import com.ald.fanbei.api.dal.domain.AfAssetSideOperaLogDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfViewAssetBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery;
+import com.alibaba.fastjson.JSON;
 
 
 
@@ -440,5 +444,74 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 				0, repayTypeEnum!=null?repayTypeEnum.getEdsCode():afAssetPackageDo.getRepaymentMethod(), bankInfo.getRepayName(), bankInfo.getRepayAcct(), bankInfo.getRepayAcctBankNo(), bankInfo.getRepayAcctType(), 
 				bankInfo.getIsRepayAcctOtherBank(), afAssetPackageDo.getAnnualRate());
 		return creditRespBo;
+	}
+	
+	/**
+	 * 根据资产方对应债权订单号,获取对应用户信息
+	 * @param afAssetSideInfoDo
+	 * @param orderNos
+	 * @return
+	 */
+	@Override
+	public List<EdspayGetPlatUserInfoRespBo> getBatchPlatUserInfo(AfAssetSideInfoDo afAssetSideInfoDo, List<String> orderNos){
+		List<EdspayGetPlatUserInfoRespBo> platUserInfos = new ArrayList<EdspayGetPlatUserInfoRespBo>();
+		for (String borrowNo : orderNos) {
+			try {
+				EdspayGetPlatUserInfoRespBo userInfoRespBo = null;
+				//从缓存中获取，如果命中，直接返回，如果没有从库里面实时查询并放入缓存
+				String tempJsonSting = "";
+				String cacheKey = Constants.ASSET_SIDE_SEARCH_USER_KEY+afAssetSideInfoDo.getAssetSideFlag()+borrowNo;
+				tempJsonSting = StringUtil.null2Str(bizCacheUtil.getObject(cacheKey));
+				if(StringUtil.isNotBlank(tempJsonSting)){
+					//缓存中取
+					try {
+						userInfoRespBo = JSON.toJavaObject(JSON.parseObject(tempJsonSting), EdspayGetPlatUserInfoRespBo.class);
+						logger.info("getBatchPlatUserInfo from redis success,afAssetSideFlag="+afAssetSideInfoDo.getAssetSideFlag()+",tempJsonSting"+tempJsonSting);
+					} catch (Exception e) {
+						//清除缓存
+						bizCacheUtil.delCache(cacheKey);
+						logger.error("getBatchPlatUserInfo from redis convert error,afAssetSideFlag="+afAssetSideInfoDo.getAssetSideFlag()+",tempJsonSting"+tempJsonSting,e);
+					}
+				}
+				
+				//缓存中不存在或者json解析失败，从库里面查
+				if(userInfoRespBo == null){
+					//用户债权对应借款及逾期信息获取
+					AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getBorrowCashInfoByBorrowNo(borrowNo);
+					if(afBorrowCashDo==null){
+						logger.error("getBatchPlatUserInfo afBorrowCashDo not exist,afAssetSideFlag="+afAssetSideInfoDo.getAssetSideFlag()+",borrowNo="+borrowNo);
+						continue;
+					}
+					
+					AfUserBorrowCashOverdueInfoDto currOverdueInfo = afBorrowCashDao.getOverdueInfoByUserId(afBorrowCashDo.getUserId());
+					if(currOverdueInfo==null){
+						logger.error("getBatchPlatUserInfo currOverdueInfo not exist,afAssetSideFlag="+afAssetSideInfoDo.getAssetSideFlag()+",borrowNo="+borrowNo+",userId="+afBorrowCashDo.getUserId());
+						continue;
+					}
+					
+					Integer repaymentStatus = 0;
+					Long repaymentTime = null;
+					Integer isOverdue = 0;
+					if(AfBorrowCashStatus.finsh.getCode().equals(afBorrowCashDo.getStatus())){
+						repaymentStatus = 1;
+						repaymentTime = DateUtil.getSpecSecondTimeStamp(afBorrowCashDo.getGmtModified());
+					}
+					if(afBorrowCashDo.getOverdueDay()>0){
+						isOverdue = 1;
+					}
+					userInfoRespBo = new EdspayGetPlatUserInfoRespBo(afBorrowCashDo.getUserId(), borrowNo, 0, currOverdueInfo.getOverdueNums(),
+							currOverdueInfo.getOverdueAmount(), afBorrowCashDo.getRepayAmount(), repaymentStatus,
+							repaymentTime, isOverdue);
+					platUserInfos.add(userInfoRespBo);
+					
+					//放入缓存
+					tempJsonSting = JSON.toJSONString(userInfoRespBo);
+					bizCacheUtil.saveObject(cacheKey, tempJsonSting, Constants.SECOND_OF_HALF_DAY);
+				}
+			} catch (Exception e) {
+				logger.error("getBatchPlatUserInfo exception"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid(),e);
+			}
+		}
+		return platUserInfos;
 	}
 }

@@ -17,6 +17,7 @@ public class Constants {
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
 	public static final long SECOND_OF_ONE_DAY = 24 * 60 * 60l;
+	public static final long SECOND_OF_HALF_DAY = 12 * 60 * 60l;
 	
 	public static final int SECOND_OF_HALF_HOUR_INT = 30 * 60;
 	public static final int SECOND_OF_AN_HOUR_INT = 60 * 60;
@@ -429,6 +430,8 @@ public class Constants {
 	  public static final String YIXIN_AFU_SEARCH_KEY="yxafu_";
 	  //返呗与资产方对接时的平台标识
 	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
+	  //资产方查询用户借款及逾期信息redis中的key前缀
+	  public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
 	//资产包
     public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
     public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";

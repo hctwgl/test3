@@ -15,6 +15,8 @@ import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayBackCreditReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayCreditDetailInfo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoReqBo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.service.AfAssetPackageDetailService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -227,6 +229,85 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	}
 	
 	/**
+	 * 获取债权对应的用户信息接口
+	 * @param sendTime
+	 * @param data
+	 * @param sign
+	 * @param appId
+	 * @return
+	 */
+	public AssetSideRespBo getPlatUserInfo(String timestamp, String data,
+			String sign, String appId) {
+		// 响应数据,默认成功
+		AssetSideRespBo notifyRespBo = new AssetSideRespBo();
+		try {
+			//获取对应资产方配置信息
+			AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
+			if(assideResourceInfo == null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
+				return notifyRespBo;
+			}
+			//资产方及启用状态校验
+			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
+			if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
+				return notifyRespBo;
+			}
+			
+			//请求时间校验
+			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
+			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
+			if(result>0){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
+				return notifyRespBo;
+			}
+			//签名验证相关值处理
+			String realDataJson = "";
+			EdspayGetPlatUserInfoReqBo edspayGetPlatUserInfoReqBo = null;
+			try {
+				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
+				edspayGetPlatUserInfoReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayGetPlatUserInfoReqBo.class);
+			} catch (Exception e) {
+				logger.error("EdspayController getPlatUserInfo parseJosn error,appId="+appId+ ",sendTime=" + timestamp, e);
+			}finally{
+				logger.info("EdspayController getPlatUserInfo,appId="+appId+ ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
+			}
+			if(edspayGetPlatUserInfoReqBo==null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
+				return notifyRespBo;
+			}
+			
+			String currSign = DigestUtil.MD5(realDataJson);
+			if (!StringUtil.equals(currSign, sign)) {// 验签成功
+				//验证签名失败
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
+				return notifyRespBo;
+			}
+			
+			//签名成功,业务处理
+			if(edspayGetPlatUserInfoReqBo.getOrderNos()==null || edspayGetPlatUserInfoReqBo.getOrderNos().size()==0){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+				return notifyRespBo;
+			}
+			//具体获取用户相关信息
+			List<EdspayGetPlatUserInfoRespBo> userInfoList = afAssetPackageDetailService.getBatchPlatUserInfo(afAssetSideInfoDo,edspayGetPlatUserInfoReqBo.getOrderNos());
+			if(userInfoList!=null && userInfoList.size()>0){
+				String sourceJsonStr = JSON.toJSONString(userInfoList);
+				logger.info("EdspayController getPlatUserInfo,appId="+appId+ ",returnJsonData=" + sourceJsonStr + ",sendTime=" + timestamp);
+				notifyRespBo.setData(AesUtil.encryptToBase64(sourceJsonStr, assideResourceInfo.getValue2()));;
+			}else{
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.GEN_RETURN_MSG_ERROR);
+				return notifyRespBo;
+			}
+		} catch (Exception e) {
+			//系统异常
+			logger.error("EdspayController getPlatUserInfo error,appId="+appId+ ",sendTime=" + timestamp, e);
+			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
+		}
+		return notifyRespBo;
+	}
+	
+	/**
 	 * 获取资产方配置信息
 	 * 如果资产方未启用或者配置未开启，则返回null，否则返回正常配置信息
 	 * @param appId
@@ -274,4 +355,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		Collections.shuffle(bankInfoList);
 		return bankInfoList.get(0);
 	}
+
+	
 }
