@@ -3,7 +3,10 @@ let discout=getUrl('discout'); //折扣
 let rebate=getUrl('rebate'); //返利
 $(function(){
     $('#recreationPay').height($(window).height())
-})
+    $('.footer').height($(window).height()*0.07);
+    $('.allTop').height($(window).height()*0.93);
+});
+
 //获取数据
 let vm = new Vue({
     el: '#recreationPay',
