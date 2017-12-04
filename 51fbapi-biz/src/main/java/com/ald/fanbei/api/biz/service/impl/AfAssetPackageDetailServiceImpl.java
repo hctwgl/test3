@@ -466,6 +466,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 					//缓存中取
 					try {
 						userInfoRespBo = JSON.toJavaObject(JSON.parseObject(tempJsonSting), EdspayGetPlatUserInfoRespBo.class);
+						platUserInfos.add(userInfoRespBo);
 						logger.info("getBatchPlatUserInfo from redis success,afAssetSideFlag="+afAssetSideInfoDo.getAssetSideFlag()+",tempJsonSting"+tempJsonSting);
 					} catch (Exception e) {
 						//清除缓存
