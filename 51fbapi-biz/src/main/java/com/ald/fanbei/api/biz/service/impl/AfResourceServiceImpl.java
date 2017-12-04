@@ -645,5 +645,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getHomeBrandPositonInfoList();
 	}
 
+	@Override
+	public AfResourceDo getFinancialEntranceInfo() {
+		return afResourceDao.getFinancialEntranceInfo();
+	}
+
 
 }

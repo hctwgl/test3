@@ -179,4 +179,6 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getHomeBrandPositonInfoList();
 
+	AfResourceDo getFinancialEntranceInfo();
+
 }

@@ -176,8 +176,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 	private Map<String, Object> getFinancialEntranceInfo() {
 		Map<String, Object> financialEntranceInfo = Maps.newHashMap();
-		AfResourceDo rescDo = afResourceService.getConfigByTypesAndSecType(
-				ResourceType.HOME_ONE_IMAGE_FINANCIAL.getCode(), ImageType.MAIN_IMAGE.getCode());
+		AfResourceDo rescDo = afResourceService.getFinancialEntranceInfo();
 		if (rescDo != null) {
 			financialEntranceInfo.put("imageUrl", rescDo.getValue());
 			financialEntranceInfo.put("type", rescDo.getValue1());

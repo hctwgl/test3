@@ -221,4 +221,6 @@ public interface AfResourceService {
 	List<AfResourceDo> getHomeNomalPositionList();
 
 	List<AfResourceDo> getHomeBrandPositonInfoList();
+
+	AfResourceDo getFinancialEntranceInfo();
 }
