@@ -65,7 +65,8 @@ public class GetHomeGoodsListApi implements ApiHandle {
 		AfGoodsQuery query = new AfGoodsQuery();
 		query.setCategoryId(categoryId);
 		query.setPageNo(pageNo);
-		List<AfGoodsDo> goodsDoList = afGoodsService.getCateGoodsList(query);
+		query.setPageSize(50);
+		List<AfGoodsDo> goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
 
 		List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
 		// 获取借款分期配置信息

@@ -79,6 +79,24 @@
 		order by g.gmt_modified desc
 	</select>
 	
+	
+	
+	<select id="getHomeCategoryGoodsList" resultType="AfGoodsDo" parameterType="AfGoodsQuery">
+		SELECT
+			<include refid="queryWithFields"/>
+		FROM
+			af_goods g
+		WHERE
+			g.is_delete=0  and g.status = 'PUBLISH'
+			<if test="categoryId != null and categoryId !=0">
+				and g.category_id=#{categoryId}
+			</if>
+			<if test="categoryId == null or categoryId ==0">
+				and exists(select 1 from af_category c where c.is_delete=0 and c.level=1 and g.primary_category_id=c.id) 
+			</if>
+		order by g.gmt_modified desc
+	</select>
+	
 	<update id="updateSubscribeStatus">
 		UPDATE
 			af_goods

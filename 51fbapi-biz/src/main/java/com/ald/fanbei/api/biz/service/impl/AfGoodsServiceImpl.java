@@ -105,5 +105,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfGoodsDo> getGoodsByCategoryId(Long categoryId) {
 		return afGoodsDao.getGoodsByCategoryId(categoryId);
 	}
+	@Override
+	public List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query) {
+		return afGoodsDao.getHomeCategoryGoodsList(query);
+	}
 
 }

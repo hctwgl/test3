@@ -80,4 +80,6 @@ public interface AfGoodsDao {
 	AfGoodsDo checkIsSelfBuild(String numId);
 
 	List<AfGoodsDo> getGoodsByCategoryId(@Param("categoryId")Long categoryId);
+
+	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
 }
