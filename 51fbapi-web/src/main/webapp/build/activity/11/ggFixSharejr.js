@@ -38,6 +38,13 @@ var timerS = 60;
 var userName=param['userName'];
 var typeFrom=param['typeFrom'];//渠道类型
 var typeFromNum=param['typeFromNum'];//渠道类型数
+$(function(){
+    if(typeFrom=='Jrtt'||typeFrom=='Jmtt'){
+        $('.companyWord02').show();
+    }else{
+        $('.companyWord01').show();
+    }
+});
 $(function () {
     // 密碼叉叉點擊清楚所有文字
     $('.clearValOne').click(function(){

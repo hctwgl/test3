@@ -162,6 +162,8 @@
         and  user_id  =  #{userId}
         and  channel =  #{channel}
         and  ref_id = #{refId}
+          ORDER BY id DESC
+         LIMIT 0,1
     </select> 
     
      <select id="getByCouponIdAndUserIdAndChannel" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo">
