@@ -440,6 +440,21 @@
 		AND r2.value_4 = 'O'
 		LIMIT 1
 	</select>
+	
+	<select id="getHomeNomalPositionList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_FOUR_IMAGE_NOMAL_POSITION'
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
+	
 
 	<select id="getScrollbarListByType" resultType="AfResourceDo">
 		SELECT

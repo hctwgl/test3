@@ -124,7 +124,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 		// 获取常驻运营位信息
 		List<Object> homeNomalPositionList = getHomeNomalPositonInfoResourceDoList(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeFourImageNomalPositon.getCode()));
+				afResourceService.getHomeNomalPositionList());
 		// logger.info("home page nomal ad position info => {}" +
 		// JSONObject.toJSONString(homeNomalPositionList));
 
@@ -274,7 +274,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
 		// 获取电商楼层图信息
 		AfResourceDo ecommerceFloorImgRes = afResourceService.getEcommerceFloorImgRes();
-		
+
 		if (ecommerceFloorImgRes != null) {
 			Map<String, Object> ecommerceFloorInfo = Maps.newHashMap();
 			ecommerceFloorInfo.put("imageUrl", ecommerceFloorImgRes.getValue());

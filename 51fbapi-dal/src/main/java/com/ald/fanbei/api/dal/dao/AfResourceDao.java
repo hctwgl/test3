@@ -175,4 +175,6 @@ public interface AfResourceDao {
 
 	AfResourceDo getBrandFloorImgRes();
 
+	List<AfResourceDo> getHomeNomalPositionList();
+
 }

@@ -635,5 +635,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getBrandFloorImgRes();
 	}
 
+	@Override
+	public List<AfResourceDo> getHomeNomalPositionList() {
+		return afResourceDao.getHomeNomalPositionList();
+	}
+
 
 }

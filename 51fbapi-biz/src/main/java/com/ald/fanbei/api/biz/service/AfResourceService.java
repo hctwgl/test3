@@ -217,4 +217,6 @@ public interface AfResourceService {
 	AfResourceDo getEcommerceFloorImgRes();
 
 	AfResourceDo getBrandFloorImgRes();
+
+	List<AfResourceDo> getHomeNomalPositionList();
 }
