@@ -159,5 +159,6 @@
 			is_delete = 0
 		AND
 			category_id = #{categoryId}
+		LIMIT 50
 	</select>
 </mapper>
