@@ -12,9 +12,10 @@ import jiazhiyi.web.com.OrderEntity;
 import jiazhiyi.web.com.OrderReceive;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,6 @@ import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -126,7 +126,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     }
 
     @Override
-    public Map<String, Object> addSupOrder(final Long userId, final Long goodsId, final BigDecimal actualAmount, final Long couponId, final String acctType, final String gameName, final String userName, final Integer goodsNum, final String gameType, final String gameAcct, final String gameArea, final String gameSrv, final String userIp) {
+    public Map<String, Object> addSupOrder(final Long userId, final Long goodsId, final BigDecimal actualAmount, final Long couponId, final String acctType, final String gameName, final String userName, final Integer goodsNum, final String gameType, final String gameAcct, final String gameArea, final String gameSrv, final String userIp) throws Exception {
 	// 验证参数须大于零
 	if (actualAmount.compareTo(BigDecimal.ZERO) <= 0 || goodsNum <= 0) {
 	    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
@@ -138,6 +138,8 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	    logger.error("sup game is not exist :" + goodsId);
 	    throw new FanbeiException(FanbeiExceptionCode.GAME_IS_NOT_EXIST);
 	}
+	// 验证传递参数信息
+	checkFieldNecessoryProperty(gameName, gameType, gameAcct, gameSrv, gameArea, supGameDo.getXmlFile());
 
 	// 获取优惠卷信息
 	BigDecimal couponAmount = new BigDecimal(0);
@@ -287,19 +289,52 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     }
 
     @Override
-    public boolean getFieldNecessoryProperty(String fieldName, String xmlProperty, String xmlType) {
-	try {
-	    Document document = DocumentHelper.parseText(xmlProperty);
-	    if ("A".equals(xmlType)) {
-
-	    } else if ("B".endsWith(xmlType)) {
-
+    public void checkFieldNecessoryProperty(String gameName, String gameType, String gameAcct, String gameSrv, String gameArea, String xmlProperty) throws Exception {
+	Document document = DocumentHelper.parseText(xmlProperty);
+	String nodePath = String.format("/root/deposititem/games/game[@name='%s']", gameName);
+	// 验证游戏信息
+	Element game = (Element) document.selectSingleNode(nodePath);
+	if (game != null) {
+	    Attribute needGameAcct = game.attribute("needGameAcct");
+	    if (needGameAcct != null) {
+		if ("1".equals(needGameAcct.getValue()) && StringUtils.isBlank(gameAcct)) {
+		    throw new FanbeiException("游戏账号不可为空", FanbeiExceptionCode.PARAM_ERROR);
+		}
 	    }
+	} else {
+	    throw new FanbeiException("游戏名称错误", FanbeiExceptionCode.GAME_IS_ILLEGAL);
+	}
+	// 验证充值类型
+	if (checkNodeNameAttrinbute(document, nodePath + "/types/type") && StringUtils.isBlank(gameType)) {
+	    throw new FanbeiException("充值类型", FanbeiExceptionCode.PARAM_ERROR);
+	}
 
+	// 验证充值服
+	if (checkNodeNameAttrinbute(document, nodePath + "/areas") && StringUtils.isBlank(gameSrv)) {
+	    throw new FanbeiException("游戏服", FanbeiExceptionCode.PARAM_ERROR);
+	}
+
+	// 验证充值区
+	if (checkNodeNameAttrinbute(document, nodePath + "/areas/area") && StringUtils.isBlank(gameArea)) {
+	    throw new FanbeiException("游戏区", FanbeiExceptionCode.PARAM_ERROR);
+	}
+    }
+
+    /**
+     * 验证游戏充值业务参数传递状态
+     * 
+     * @author gaojb
+     * @Time 2017年12月4日 上午10:57:02
+     * @param document
+     * @param nodePath
+     * @return
+     */
+    private boolean checkNodeNameAttrinbute(Document document, String nodePath) {
+	Element firstNode = (Element) document.selectSingleNode(nodePath);
+	Attribute nameAttibute = firstNode.attribute("name");
+	if (nameAttibute != null && !"".equals(nameAttibute.getValue())) {
 	    return true;
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error("getFieldNecessoryProperty error:", e);
+	} else {
 	    return false;
 	}
     }
