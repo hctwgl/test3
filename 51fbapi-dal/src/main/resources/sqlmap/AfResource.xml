@@ -385,6 +385,7 @@
 		IN
 		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_UP','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_UP','HOME_IMAGE_ECOMMERCE_POSITION_MID_MID','HOME_IMAGE_ECOMMERCE_POSITION_LEFT_MID')
 		AND r1.is_delete = 0
+		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
 	</select>
 
@@ -402,6 +403,7 @@
 		IN
 		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_MID_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_DOWN')
 		AND r1.is_delete = 0
+		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
 	</select>
 
@@ -417,6 +419,7 @@
 		AND
 		r1.value_3 = 'ONE_IMAGE_ECOMMERCE_ONE'
 		AND r1.is_delete = 0
+		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
 		LIMIT 1
 	</select>
@@ -433,6 +436,7 @@
 		AND
 		r1.value_3 = 'ONE_IMAGE_BRAND_ONE'
 		AND r1.is_delete = 0
+		AND r2.is_delete = 0
 		AND r2.value_4 = 'O'
 		LIMIT 1
 	</select>
