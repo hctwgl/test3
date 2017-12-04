@@ -12,16 +12,14 @@ let vm = new Vue({
         fixCont:{},
         dataType:'',
         allData:[],
-        initChooseFirst:'',
         allDataLen:'',
         discout:discout,
         rebate:rebate,
-        needGameNumShow:'',
+        needGameNumShow:'', //是否显示游戏账号
         liIndex:'',  //所选游戏名称index
         areaIndex:'', //所选游戏选区index
         maskShow:'', //蒙版显示与隐藏
-        serviceList:[], //选择选区--服务器,
-        allGameName:[] //所有游戏名称
+        serviceList:[], //选择选区--服务器
     },
     created: function () {
         this.logData();
@@ -200,11 +198,11 @@ let vm = new Vue({
             $('.nameCont').animate({'bottom':0},400);
         },
         //选择游戏名称
-        chooseName(index){
+        chooseName(index,item){
             let self=this;
             self.fixCont=self.allData[index];
             console.log(self.fixCont);
-            $('.gameName:first-child').find('span').html(self.allGameName[index]);
+            $('.gameName:first-child').find('span').html(item.gameName);
             self.maskShow=false;
             $('.nameCont').animate({'bottom':'-8.62rem'},0);
             //判断游戏账号是否显示
@@ -281,48 +279,48 @@ let vm = new Vue({
             let self = this;
             let quantityNum,times;
             let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType,gameSrv;
-            if($('.gameNum input').val() || $('.nameDesc01').val()){
-                if(self.fixCont.priceTypeList){
-                    quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
-                    times=self.fixCont.priceTimes;
-                }else{ // goodsNum计算
-                    quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
-                    times=self.fixCont.priceTimes;
-                }
-                if(self.needGameNumShow){ //游戏账号
-                    gameAcct=$('.needGameNum input').val();
-                }else{
-                    gameAcct='';
-                }
-                if($('.gameName').hasClass('gameArea')){ //游戏区
-                    gameArea=$('.gameArea span').html();
-                }else{
-                    gameArea='';
-                }
-                if($('.gameName').hasClass('gameService')){ //游戏服务器
-                    gameSrv=$('.gameService span').html();
-                }else{
-                    gameSrv='';
-                }
-                if($('.payType').hasClass('gameType')){ //充值类型
-                    gameType=$('.typeList .changeColor02').html();
-                }else{
-                    gameType='';
-                }
-                if(self.dataType=='A'){
+            if(self.fixCont.priceTypeList){
+                quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
+                times=self.fixCont.priceTimes;
+            }else{ // goodsNum计算
+                quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
+                times=self.fixCont.priceTimes;
+            }
+            if(self.needGameNumShow){ //游戏账号
+                gameAcct=$('.needGameNum input').val();
+            }else{
+                gameAcct='';
+            }
+            if($('.gameName').hasClass('gameArea')){ //游戏区
+                gameArea=$('.gameArea span').html();
+            }else{
+                gameArea='';
+            }
+            if($('.gameName').hasClass('gameService')){ //游戏服务器
+                gameSrv=$('.gameService span').html();
+            }else{
+                gameSrv='';
+            }
+            if($('.payType').hasClass('gameType')){ //充值类型
+                gameType=$('.typeList .changeColor02').html();
+            }else{
+                gameType='';
+            }
+            if(self.dataType=='A'){
                     gameName=$('.gameName:first-child').find('span').html();
                     acctType=$('.gameNum p').html();
                     userName=$('.gameNum input').val();
                     goodsNum=times*quantityNum;
                     actualAmount=$('.changeColor01 .pricePay').html();
                 }
-                if(self.dataType=='B'){
-                    gameName=$('.gameName:first-child').find('span').html();
-                    acctType=$('.nameDesc').html();
-                    userName=$('.nameDesc01').val();
-                    goodsNum=times*quantityNum;
-                    actualAmount=$('.changeColor01 .pricePay').html();
-                }
+            if(self.dataType=='B'){
+                gameName=$('.gameName:first-child').find('span').html();
+                acctType=$('.nameDesc').html();
+                userName=$('.nameDesc01').val();
+                goodsNum=times*quantityNum;
+                actualAmount=$('.changeColor01 .pricePay').html();
+            }
+            if($('.gameNum input').val() || (userName && ($('.nameconfirmDesc01').val()==userName) && !self.needGameNumShow) || (userName && ($('.nameconfirmDesc01').val()==userName) && gameAcct)){
                 $.ajax({
                     type: 'post',
                     url: "/game/pay/order",
@@ -341,7 +339,11 @@ let vm = new Vue({
                     }
                 });
             }else{
-                requestMsg('')
+                if(self.dataType=='B' && ($('.nameDesc01').val() != $('.nameconfirmDesc01').val())){
+                    requestMsg($('.nameDesc').html()+'填写不一致！');
+                }else{
+                    requestMsg('信息填写不完整！');
+                }
             }
 
         },

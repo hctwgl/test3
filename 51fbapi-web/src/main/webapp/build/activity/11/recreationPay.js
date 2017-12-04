@@ -1,7 +1,9 @@
 let goodsId=getUrl('goodsId'); //获取类型id
 let discout=getUrl('discout'); //折扣
 let rebate=getUrl('rebate'); //返利
-
+$(function(){
+    $('#recreationPay').height($(window).height())
+})
 //获取数据
 let vm = new Vue({
     el: '#recreationPay',
@@ -14,7 +16,8 @@ let vm = new Vue({
         allDataLen:'',
         discout:discout,
         rebate:rebate,
-        liIndex:''
+        liIndex:'',
+        maskShow:''
     },
     created: function () {
         this.logData();
@@ -122,30 +125,20 @@ let vm = new Vue({
                 }
             });
         },
-        //点击游戏名称
+        //点击服务名称
         gameNameClick(){
             let self=this;
-            let allGameName=[];
-            for(let i=0;i<self.allData.length;i++){
-                if(self.allData[i].gameName){
-                    allGameName.push({value:i,text:self.allData[i].gameName});
-                }
-            }
-            //根据所选游戏名称 填充数据fixCont
-            let picker = new mui.PopPicker({
-                layer: 1
-            });
-            picker.setData(allGameName);
-            picker.pickers[0].setSelectedIndex(0);
-            picker.show(function(SelectedItem) {
-                let selectedData=SelectedItem[0].text;
-                //console.log(SelectedItem);
-                //console.log(selectedData);
-                $('.gameName:first-child span').html(selectedData);
-                self.fixCont=self.allData[SelectedItem[0].value];
-                console.log(self.fixCont);
-                picker.dispose();
-            })
+            self.maskShow=true;
+            $('.nameCont').animate({'bottom':0},400);
+        },
+        //选择服务名称
+        chooseName(index,item){
+            let self=this;
+            self.fixCont=self.allData[index];
+            console.log(self.fixCont);
+            $('.gameName:first-child').find('span').html(item.gameName);
+            self.maskShow=false;
+            $('.nameCont').animate({'bottom':'-8.62rem'},0);
         },
         //点击充值类型
         gameTypeClick(index){
@@ -169,7 +162,7 @@ let vm = new Vue({
         sureClick(){
             let self = this;
             let quantityNum,times;
-            let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType;
+            let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType,gameSrv;
             if($('.gamePass input').val()){
                 if(self.fixCont.priceTypeList){
                     quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
@@ -183,10 +176,15 @@ let vm = new Vue({
                 }else{
                     gameAcct='';
                 }
-                if($('.gameName').hasClass('gameArea')){ //游戏区服
+                if($('.gameName').hasClass('gameArea')){ //游戏选区
                     gameArea=$('.gameArea span').html();
                 }else{
                     gameArea='';
+                }
+                if($('.gameName').hasClass('gameService')){ //游戏服务器
+                    gameSrv=$('.gameService span').html();
+                }else{
+                    gameSrv='';
                 }
                 if($('.payType').hasClass('gameType')){ //充值类型
                     gameType=$('.typeList .changeColor02').html();
@@ -212,7 +210,7 @@ let vm = new Vue({
                     url: "/game/pay/order",
                     data:{'goodsId':goodsId,'gameName':gameName,'acctType':acctType,
                         'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount,
-                        'gameAcct':gameAcct,'gameArea':gameArea,'gameType':gameType
+                        'gameAcct':gameAcct,'gameArea':gameArea,'gameSrv':gameSrv,'gameType':gameType
                     },
                     success: function (data) {
                         console.log(data,'确认充值');
@@ -225,7 +223,7 @@ let vm = new Vue({
                     }
                 });
             }else{
-                requestMsg('充值用户名不能为空！');
+                requestMsg('信息填写不完整！');
             }
 
         },
@@ -238,6 +236,11 @@ let vm = new Vue({
         fixNum(n){
             let number=n.toFixed(2);
             return number;
-        }
+        },
+        maskClick(){
+            let self=this;
+            self.maskShow=false;
+            $('.nameCont').animate({'bottom':'-8.62rem'},0);
+        },
     }
 });

@@ -10,9 +10,19 @@
 <body>
 <div id="recreationPay" class="gamePay">
     <div class="allTop">
-        <div class="gameName">
+        #*<div class="gameName" @click="gameNameClick()">
             <p>服务名称</p>
             <span>{{fixCont.gameName}}</span>
+            <i> > </i>
+        </div>*#
+        <div class="gameName" v-if="allDataLen===1">
+            <p>服务名称</p>
+            <span>{{fixCont.gameName}}</span>
+        </div>
+        <div class="gameName" @click="gameNameClick()" v-else>
+            <p>服务名称</p>
+            <span>{{fixCont.gameName}}</span>
+            <i> > </i>
         </div>
         <div class="gamePass gameName">
             <p>{{fixCont.accountType}}</p>
@@ -43,6 +53,16 @@
             <p class="fanMoney">充值成功后再返<span>0.5元</span></p>
         </div>
         <div class="sure" @click="sureClick()">确认充值</div>
+    </div>
+    <div class="mask" v-show="maskShow" @click="maskClick()"></div>
+    <div class="nameCont sameCont">
+        <div class="chooseAreaTitle">
+            <p class="back" @click="maskClick"> < </p>
+            <p>选择服务名称</p>
+        </div>
+        <ul class="nameList sameList">
+            <li v-for="(item,index) in allData" @click="chooseName(index,item)">{{item.gameName}}</li>
+        </ul>
     </div>
 </div>
 <script type="text/javascript" src="/dist/activity/11/recreationPay.js?version=$version"></script>

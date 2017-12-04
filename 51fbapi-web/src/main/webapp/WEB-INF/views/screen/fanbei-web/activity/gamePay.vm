@@ -72,33 +72,33 @@
         <div class="sure" @click="sureClick()">确认充值</div>
     </div>
     <div class="mask" v-show="maskShow" @click="maskClick()"></div>
-    <div class="nameCont">
+    <div class="nameCont sameCont">
         <div class="chooseAreaTitle">
             <p class="back" @click="maskClick"> < </p>
             <p>选择游戏名称</p>
         </div>
-        <ul class="nameList">
-            <li v-for="(item,index) in allData" @click="chooseName(index)">{{item.gameName}}</li>
+        <ul class="nameList sameList">
+            <li v-for="(item,index) in allData" @click="chooseName(index,item)">{{item.gameName}}</li>
         </ul>
     </div>
-    <div class="areaCont">
+    <div class="areaCont sameCont">
         <div class="chooseAreaTitle">
             <p class="back" @click="maskClick"> < </p>
             <p>选择游戏分区</p>
         </div>
-        <ul class="areaList" v-if="fixCont.areaslen==1">
+        <ul class="areaList sameList" v-if="fixCont.areaslen==1">
             <li v-for="(item,index) in fixCont.areasList" @click="chooseArea(index)">{{item}}</li>
         </ul>
-        <ul class="areaList" v-else>
+        <ul class="areaList sameList" v-else>
             <li v-for="(item,index) in fixCont.areasList" @click="chooseArea(index)">{{item.text}}</li>
         </ul>
     </div>
-    <div class="serviceCont">
+    <div class="serviceCont sameCont">
         <div class="chooseAreaTitle">
             <p class="back" @click="maskClick01()"> < </p>
             <p>选择服务器</p>
         </div>
-        <ul class="serviceList">
+        <ul class="serviceList sameList">
             <li v-for="(item,index) in serviceList" @click="chooseService(index)">{{item}}</li>
         </ul>
     </div>
