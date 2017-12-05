@@ -179,7 +179,7 @@
 				br.user_id = #{userId}
 			) as tt 
 			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
-		ORDER BY consumeTime;
+		ORDER BY consumeTime desc;
     </select>
      <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
         SELECT
