@@ -206,7 +206,7 @@ let vm = new Vue({
             console.log(self.fixCont);
             $('.gameName:first-child').find('span').html(item.gameName);
             self.maskShow=false;
-            $('.nameCont').animate({'bottom':'-8.62rem'},0);
+            $('.nameCont').animate({'bottom':'-8.7rem'},0);
             //判断游戏账号是否显示
             if(self.fixCont.needGameAcct=='1') {
                 self.needGameNumShow = true;
@@ -245,7 +245,7 @@ let vm = new Vue({
             if(self.fixCont.areaslen==1){
                 $('.gameArea span').html(self.fixCont.areasList[self.areaIndex]);
                 self.maskShow=false;
-                $('.areaCont').animate({'bottom':'-8.62rem'},0);
+                $('.areaCont').animate({'bottom':'-8.7rem'},0);
             }
             if(self.fixCont.areaslen>=2){
                 $('.gameArea span').html(self.fixCont.areasList[self.areaIndex].text);
@@ -263,8 +263,8 @@ let vm = new Vue({
             let self=this;
             $('.gameService span').html(self.serviceList[index]);
             self.maskShow=false;
-            $('.areaCont').animate({'bottom':'-8.62rem'},0);
-            $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+            $('.areaCont').animate({'bottom':'-8.7rem'},0);
+            $('.serviceCont').animate({'bottom':'-8.7rem'},0);
         },
         //点击充值类型
         gameTypeClick(index){
@@ -368,17 +368,17 @@ let vm = new Vue({
         maskClick(){
             let self=this;
             self.maskShow=false;
-            $('.nameCont').animate({'bottom':'-8.62rem'},0);
-            $('.areaCont').animate({'bottom':'-8.62rem'},0);
-            $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+            $('.nameCont').animate({'bottom':'-8.7rem'},0);
+            $('.areaCont').animate({'bottom':'-8.7rem'},0);
+            $('.serviceCont').animate({'bottom':'-8.7rem'},0);
         },
         maskClick01(){  //选择服务器里的返回
             let self=this;
             if($('.sameCont').hasClass('areaCont') && $('.areaCont').css('bottom')=='0px'){
-                $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+                $('.serviceCont').animate({'bottom':'-8.7rem'},0);
             }else{
                 self.maskShow=false;
-                $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+                $('.serviceCont').animate({'bottom':'-8.7rem'},0);
             }
 
         }
