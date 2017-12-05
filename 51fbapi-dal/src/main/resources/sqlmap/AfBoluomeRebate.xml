@@ -183,14 +183,29 @@
     </select>
      <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
         SELECT
-        <include refid="queryFields" />
+       <include refid="queryFields" />
         FROM af_boluome_rebate
         where  is_delete = 0
 	    and user_id = #{userId}
-	   	and order by  id desc 
-	   	limit 0,1
+	    order by id desc
+	    limit 0,1
     </select>
-    <select id="getHighestNeverPopedRebate" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
+    <select id="getMaxUserRebateByStartIdAndEndIdAndUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
+        SELECT
+  		 userRebate.id rid,userRebate.gmt_create gmt_create,userRebate.gmt_modified gmt_modified,userRebate.user_id user_id,userRebate.first_order first_order,userRebate.order_id order_id,userRebate.rebate_amount rebate_amount
+		 FROM 	
+		(	
+		SELECT * 	
+			FROM af_boluome_rebate
+		        WHERE  is_delete = 0
+			    AND user_id = #{userId}
+			    AND id <![CDATA[>]]>  #{startId} AND id <![CDATA[<=]]>  #{endId}	
+		)userRebate
+		ORDER BY userRebate.rebate_amount DESC
+		LIMIT 0,1
+    </select>
+    
+    <!-- <select id="getHighestNeverPopedRebate" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
 		<![CDATA[SELECT
 			id rid,gmt_create,gmt_modified,user_id,first_order,order_id, MAX(rebate_amount) as rebate_amount
 		FROM
@@ -211,7 +226,9 @@
 		)) LIMIT 0,1
 		;]]>
     
-    </select>
+    </select> -->
+    
+    
     <select id="getScence" parameterType="java.lang.Long" resultType="java.lang.String">
     	
 	 SELECT name 

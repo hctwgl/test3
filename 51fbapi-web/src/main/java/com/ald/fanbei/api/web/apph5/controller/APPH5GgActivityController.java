@@ -687,7 +687,8 @@ public class APPH5GgActivityController extends BaseController {
 			AfBoluomeUserCouponDo userCouponDo = afBoluomeUserCouponService.getLastUserCouponByUserIdSentCouponId(userId,newUser,inviter);
 			//AfBoluomeUserCouponDo userCouponDo = afBoluomeUserCouponService.getLastUserCouponByUserId(userId);
 			// mqp:modify to the highest rebate that never popped up before
-			AfBoluomeRebateDo userRebateDo = afBoluomeRebateService.getHighestNeverPopedRebate(userId);
+			//AfBoluomeRebateDo userRebateDo = afBoluomeRebateService.getHighestNeverPopedRebate(userId);
+			AfBoluomeRebateDo lastUserRebateDo = afBoluomeRebateService.getLastUserRebateByUserId(userId);
 			// AfBoluomeRebateDo userRebateDo =
 			// afBoluomeRebateService.getLastUserRebateByUserId(userId);
 
@@ -742,12 +743,31 @@ public class APPH5GgActivityController extends BaseController {
 
 			// ---------------------------------------返利-----------------------------------------------------
 			// 该用户获得最后返利是否有记录
-			if (userRebateDo != null) {
-				// 设置金额
-				String rebateAmount = userRebateDo.getRebateAmount().toString();
-				logger.error("popUp rebateAmount = {},userId = {}", rebateAmount, userId);
-				poPupVo.setRebateAmount(rebateAmount);
-				// 设置图片
+			if (lastUserRebateDo != null) {
+			    //获取弹窗的返利记录。如果是空设置为0
+			    AfBoluomeActivityMsgIndexDo msgIndexDo = afBoluomeActivityMsgIndexService.getByUserId(userId);
+			    long  rebateIndex =0;
+			    if(msgIndexDo != null){
+				if(msgIndexDo.getRebateIndex() != null){
+				    rebateIndex = msgIndexDo.getRebateIndex();
+				    if(lastUserRebateDo.getRid() <= rebateIndex){
+					//不弹窗
+					return resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+				    }
+				    
+				}
+			    }
+			    //否则弹窗，设置弹窗信息并保存记录
+			    //范围内最大的记录
+			    AfBoluomeRebateDo maxUserRebateDo = afBoluomeRebateService.getMaxUserRebateByStartIdAndEndIdAndUserId(rebateIndex,lastUserRebateDo.getRid(),userId);
+			    
+			      // 设置金额
+			        if(maxUserRebateDo !=null ){
+        				String rebateAmount = maxUserRebateDo.getRebateAmount().toString();
+        				logger.error("popUp rebateAmount = {},userId = {}", rebateAmount, userId);
+        				poPupVo.setRebateAmount(rebateAmount);
+        				// 设置图片
+			        }
 				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
 						H5GgActivity.REBATE_IMAGE.getCode());
 				if (imageInfo != null) {
@@ -755,49 +775,28 @@ public class APPH5GgActivityController extends BaseController {
 					poPupVo.setRebateImage(imageInfo.getValue());
 				}
 				// 设置场景名
-				long orderId = userRebateDo.getOrderId();
+				long orderId = maxUserRebateDo.getOrderId();
 				AfBoluomeActivityItemsDo itemsInfo = afBoluomeActivityItemsService.getItemsInfoByOrderId(orderId);
 				if (itemsInfo != null) {
 					poPupVo.setSceneName(itemsInfo.getName());
 				}
-				// 是否有弹窗记录
-				AfBoluomeActivityMsgIndexDo msgIndexDo = afBoluomeActivityMsgIndexService.getByUserId(userId);
-				if (msgIndexDo == null) {
-					// 没有记录，设置弹窗并添加记录到db
-					poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
-					afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());
-					afBoluomeActivityMsgIndexDo.setUserId(userId);
-					afBoluomeActivityMsgIndexService.saveRecord(afBoluomeActivityMsgIndexDo);
-				} else if (msgIndexDo != null) {
-					// 有记录。couponId = coupon_index ?
-
-					// 如果插入coupon_index = null insert coupon_index
-					if (msgIndexDo.getRebateIndex() == null) {
-						poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
-						afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());
-						afBoluomeActivityMsgIndexDo.setUserId(userId);
-						afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
-						afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
-						afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
-					} else if (msgIndexDo.getRebateIndex() != null) {
-						// if rebateIndex > rebate_index :do update
-						if (msgIndexDo.getRebateIndex() < userRebateDo.getRid()) {
-							// 设置弹窗，更新db记录
-							poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
-							afBoluomeActivityMsgIndexDo.setRebateIndex(userRebateDo.getRid());
-							afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
-							afBoluomeActivityMsgIndexDo.setUserId(userId);
-							afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
-							afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
-							afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
-						}
-					}
+				afBoluomeActivityMsgIndexDo.setRebateIndex(lastUserRebateDo.getRid());
+				afBoluomeActivityMsgIndexDo.setUserId(userId);
+				if(msgIndexDo == null){
+				    afBoluomeActivityMsgIndexService.saveRecord(afBoluomeActivityMsgIndexDo);
+				}else{
+				    afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
+				    afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+				    afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
 				}
-
+				//弹窗
+				poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
+				resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+			}else{
+			    return resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
 			}
-			// rebate end
 
-			resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+			
 		} catch (Exception e) {
 			logger.error("/h5GgActivity/popUp" + context + "error = {}", e.getStackTrace());
 			resultStr = H5CommonResponse.getNewInstance(false, "获取弹窗信息失败").toString();
