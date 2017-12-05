@@ -247,7 +247,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	// 构造充值对象
 	OrderEntity orderEntity = new OrderEntity();
 	orderEntity.setAcctType(acctType);
-	orderEntity.setBusinessId(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID));
+	orderEntity.setBusinessId(AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID), ConfigProperties.get(Constants.CONFKEY_AES_KEY)));
 	orderEntity.setGameAcct(gameAcct);
 	orderEntity.setGameArea(gameArea);
 	orderEntity.setGameName(gameName);
@@ -263,8 +263,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	orderEntity.setUserOrderId(orderNo);
 	// 提交充值信息
 	try {
-	    logger.info(String.format("sendOrderToSup :acctType %s,businessId %s,gameAcct %s,gameName %s,gameSrv %s,gameType %s,goodsId %s,goodsNum %s,supKey %s, callback %s, userName %s,orderNo %s", 
-		    acctType, orderEntity.getBusinessId(), gameAcct, gameName, gameSrv, gameType, goodsId, goodsNum, supKey, orderEntity.getNoticeUrl(), userName, orderNo));
+	    logger.info(String.format("sendOrderToSup :acctType %s,businessId %s,gameAcct %s,gameName %s,gameSrv %s,gameType %s,goodsId %s,goodsNum %s,supKey %s, callback %s, userName %s,orderNo %s", acctType, orderEntity.getBusinessId(), gameAcct, gameName, gameSrv, gameType, goodsId, goodsNum, supKey, orderEntity.getNoticeUrl(), userName, orderNo));
 	    return OrderReceive.SendOrder(orderEntity);
 	} catch (UnsupportedEncodingException e) {
 	    logger.error("sendOrderToSup UnsupportedEncodingException", e);
