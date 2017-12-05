@@ -152,25 +152,49 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Map<String, Object> financialEntranceInfo = getFinancialEntranceInfo();
 
 		// 顶部轮播
-		data.put("topBannerList", topBannerList);
+		if(!topBannerList.isEmpty()) {
+			data.put("topBannerList", topBannerList);
+		}
 		// 快速导航
-		data.put("navigationInfo", navigationInfo);
+		if(!navigationInfo.isEmpty()) {
+			data.put("navigationInfo", navigationInfo);
+		}
 		// 新增运营位1,快捷导航上方活动专场
-		data.put("navigationUpOne", navigationUpOne);
+		if(!navigationUpOne.isEmpty()) {
+			data.put("navigationUpOne", navigationUpOne);
+		}
+		
 		// 新增运营位2,快捷导航下方活动专场
-		data.put("navigationDownOne", navigationDownOne);
+		if(!navigationDownOne.isEmpty()) {
+			data.put("navigationDownOne", navigationDownOne);
+		}
+		
 		// 常驻运营位
-		data.put("nomalPositionList", homeNomalPositionList);
+		if(!homeNomalPositionList.isEmpty()) {
+			data.put("nomalPositionList", homeNomalPositionList);
+		}
 		// 逛逛板块信息
-		data.put("brandAreaInfo", brandAreaInfo);
+		if(!brandAreaInfo.isEmpty()) {
+			data.put("brandAreaInfo", brandAreaInfo);
+		}
 		// 电商板块信息
-		data.put("ecommerceAreaInfo", ecommerceAreaInfo);
+		if(!ecommerceAreaInfo.isEmpty()) {
+			data.put("ecommerceAreaInfo", ecommerceAreaInfo);
+		}
+		
 		// 首页分类商品信息
-		data.put("categoryGoodsInfo", categoryGoodsInfo);
+		if(!categoryGoodsInfo.isEmpty()) {
+			data.put("categoryGoodsInfo", categoryGoodsInfo);
+		}
 		// 首页背景图
-		data.put("backgroundList", backgroundList);
+		if(!backgroundList.isEmpty()) {
+			data.put("backgroundList", backgroundList);
+		}
+		
 		// 金融服务入口
-		data.put("financialEntranceInfo", financialEntranceInfo);
+		if(!financialEntranceInfo.isEmpty()) {
+			data.put("financialEntranceInfo", financialEntranceInfo);
+		}
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -265,7 +289,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				goodsInfoList.add(goodsInfo);
 				infoMap.put("goodsInfoList", goodsInfoList);
 			}
-
 		}
 		return categoryInfoList;
 	}
@@ -286,18 +309,24 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		List<AfResourceDo> ecommercePosUpRescList = afResourceService.getEcommercePositionUpRescoure();
 		if (ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 4) {
 			List<Object> ecommercePositionUpInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosUpRescList);
-			ecommerceAreaInfoMap.put("ecommercePosUpInfoList", ecommercePositionUpInfoList);
+			if(!ecommercePositionUpInfoList.isEmpty()) {
+				ecommerceAreaInfoMap.put("ecommercePosUpInfoList", ecommercePositionUpInfoList);
+			}
 		}
 		// 获取下方3个电商运营位置，如果不全，则不显示
 		List<AfResourceDo> ecommercePosDownRescList = afResourceService.getEcommercePositionDownRescoure();
 		if (ecommercePosDownRescList != null && ecommercePosDownRescList.size() == 3) {
 			List<Object> ecommercePositionDownInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosDownRescList);
-			ecommerceAreaInfoMap.put("ecommercePosDownInfoList", ecommercePositionDownInfoList);
+			if(!ecommercePositionDownInfoList.isEmpty()) {
+				ecommerceAreaInfoMap.put("ecommercePosDownInfoList", ecommercePositionDownInfoList);
+			}
 		}
 		// 获取电商轮播图片
 		List<Object> ecommerceBannerList = getBannerInfoWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerEcommerce.getCode()));
-		ecommerceAreaInfoMap.put("ecommerceBannerList", ecommerceBannerList);
+		if(!ecommerceBannerList.isEmpty()) {
+			ecommerceAreaInfoMap.put("ecommerceBannerList", ecommerceBannerList);
+		}
 		return ecommerceAreaInfoMap;
 	}
 
@@ -315,11 +344,15 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// 逛逛运营位置
 		List<Object> brandPositionInfoList = getHomeBrandPositonInfoResourceDoList(
 				afResourceService.getHomeBrandPositonInfoList());
-		brandAreaInfoMap.put("brandPositionInfoList", brandPositionInfoList);
+		if(!brandPositionInfoList.isEmpty()) {
+			brandAreaInfoMap.put("brandPositionInfoList", brandPositionInfoList);
+		}
 		// 逛逛轮播图
 		List<Object> brandBannerList = getBannerInfoWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerBrand.getCode()));
-		brandAreaInfoMap.put("brandBannerList", brandBannerList);
+		if(!brandBannerList.isEmpty()) {
+			brandAreaInfoMap.put("brandBannerList", brandBannerList);
+		}
 		return brandAreaInfoMap;
 	}
 
