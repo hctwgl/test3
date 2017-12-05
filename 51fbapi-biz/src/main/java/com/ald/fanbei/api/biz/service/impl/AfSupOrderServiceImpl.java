@@ -263,6 +263,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	orderEntity.setUserOrderId(orderNo);
 	// 提交充值信息
 	try {
+	    logger.info("sendOrderToSup :" + orderEntity.toString());
 	    return OrderReceive.SendOrder(orderEntity);
 	} catch (UnsupportedEncodingException e) {
 	    logger.error("sendOrderToSup UnsupportedEncodingException", e);
