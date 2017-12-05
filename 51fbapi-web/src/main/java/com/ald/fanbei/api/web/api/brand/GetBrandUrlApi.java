@@ -51,7 +51,6 @@ public class GetBrandUrlApi implements ApiHandle {
 	ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
 	Map<String, Object> params = requestDataVo.getParams();
-	Map<String, String> buildParams = new HashMap<String, String>();
 
 	Long shopId = NumberUtil.objToLongDefault(params.get("shopId"), null);
 
@@ -61,45 +60,20 @@ public class GetBrandUrlApi implements ApiHandle {
 	}
 
 	AfShopDo shopInfo = afShopService.getShopById(shopId);
+	if (shopInfo == null) {
+	    logger.error("shopId is invalid");
+	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+	}
 
 	/* fma_临时关闭掉话费充值功能 */
 	if (StringUtil.equals(shopInfo.getType(), "HUAFEI")) {
 	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
 	}
 
-	if (shopInfo == null) {
-	    logger.error("shopId is invalid");
-	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-	}
+	String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), context.getUserId(), context.getMobile());
 
-	String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType());
-
-	buildParams.put(BoluomeCore.CUSTOMER_USER_ID, context.getUserId() + StringUtils.EMPTY);
-	buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, context.getMobile());
-	buildParams.put(BoluomeCore.TIME_STAMP, requestDataVo.getSystem().get(Constants.REQ_SYS_NODE_TIME) + StringUtils.EMPTY);
-
-	String sign = BoluomeCore.buildSignStr(buildParams);
-	buildParams.put(BoluomeCore.SIGN, sign);
-	String paramsStr = BoluomeCore.createLinkString(buildParams);
-
-	resp.addResponseData("shopUrl", shopUrl + paramsStr);
+	resp.addResponseData("shopUrl", shopUrl);
 	return resp;
-    }
-
-    // 根据测试，线上环境区别地址
-    private String parseBoluomeUrl(String shopUrl, String platform, String secType) {
-	logger.info("parseBoluomeUrl :" + shopUrl + " " + platform + " " + secType);
-//	if (platform.equals("BOLUOME")) {
-//	    if (!OrderSecType.SUP_GAME.getCode().equals(secType)) {
-//		String type = shopUrl.substring(shopUrl.lastIndexOf("/") + 1, shopUrl.length());
-//		if ("didi".equals(type)) {
-//		    type = "yongche/" + type;
-//		}
-//		return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/" + type + "?";
-//	    }
-//	}
-
-	return shopUrl + "&";
     }
 
 }
