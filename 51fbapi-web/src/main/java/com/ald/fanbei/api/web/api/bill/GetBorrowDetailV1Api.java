@@ -60,8 +60,7 @@ public class GetBorrowDetailV1Api implements ApiHandle{
 		try {
 			Long userId = context.getUserId();
 			AfUserDo afUserDo = afUserService.getUserById(userId);
-			Long billId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("briilId"), 0L);
-			String status = ObjectUtils.toString(request.getParameter("status"));
+			Long billId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("billId"), 0L);
 			if (billId == null || billId.equals(0L)) {
 				logger.info("getBorrowDetailV1Api billId is null ,RequestDataVo id =" + requestDataVo.getId());
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
@@ -71,9 +70,6 @@ public class GetBorrowDetailV1Api implements ApiHandle{
 				logger.info("getBorrowDetailV1Api user is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId);
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 				return resp;
-			}
-			if (StringUtil.isEmpty(status)) {
-				status = "borrow";
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
 			AfBorrowBillDo queryBillDo = afBorrowBillService.getBorrowBillById(billId);
@@ -94,19 +90,9 @@ public class GetBorrowDetailV1Api implements ApiHandle{
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.ORDER_NOT_EXIST);
 				return resp;
 			}
-			if (StringUtil.equals("borrow", status)) {
-				// 获取bill
-				List<AfBorrowBillDo> billList = afBorrowBillService.getAllBorrowBillByBorrowId(queryBorrowDo.getRid());
-				map.put("billList", billList);
-				map.put("status", status);
-			}else if (StringUtil.equals("order", status)){
-				map.put("orderDetail", queryOrderDo);
-				map.put("status", status);
-			}else {
-				logger.info("getBorrowDetailV1Api status error ,RequestDataVo id =" + requestDataVo.getId() + " ,status=" + status);
-				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
-				return resp;
-			}
+			List<AfBorrowBillDo> billList = afBorrowBillService.getAllBorrowBillByBorrowId(queryBorrowDo.getRid());
+			map.put("billList", billList);
+			map.put("orderDetail", queryOrderDo);
 			map.put("amount", queryBorrowDo.getAmount());
 			// 手续费
 			BigDecimal interest = afBorrowBillService.getInterestByBorrowId(queryBorrowDo.getRid());
