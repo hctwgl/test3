@@ -141,7 +141,7 @@ let vm = new Vue({
             console.log(self.fixCont);
             $('.gameName:first-child').find('span').html(item.gameName);
             self.maskShow=false;
-            $('.nameCont').animate({'bottom':'-8.62rem'},0);
+            $('.nameCont').animate({'bottom':'-8.7rem'},0);
         },
         //点击充值类型
         gameTypeClick(index){
@@ -242,7 +242,7 @@ let vm = new Vue({
         maskClick(){
             let self=this;
             self.maskShow=false;
-            $('.nameCont').animate({'bottom':'-8.62rem'},0);
+            $('.nameCont').animate({'bottom':'-8.7rem'},0);
         },
     }
 });
