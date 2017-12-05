@@ -263,7 +263,8 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	orderEntity.setUserOrderId(orderNo);
 	// 提交充值信息
 	try {
-	    logger.info("sendOrderToSup :" + orderEntity.toString());
+	    logger.info(String.format("sendOrderToSup :acctType %s,businessId %s,gameAcct %s,gameName %s,gameSrv %s,gameType %s,goodsId %s,goodsNum %s,supKey %s, callback %s, userName %s,orderNo %s" )
+	    ,acctType,orderEntity.getBusinessId(),gameAcct,gameName,gameSrv,gameType,goodsId,goodsNum,supKey,orderEntity.getNoticeUrl(),userName,orderNo );
 	    return OrderReceive.SendOrder(orderEntity);
 	} catch (UnsupportedEncodingException e) {
 	    logger.error("sendOrderToSup UnsupportedEncodingException", e);
