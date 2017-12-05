@@ -51,6 +51,7 @@ import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 新人专享ServiceImpl
@@ -284,8 +285,9 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 
     @Override
     public GameOrderInfoDto getOrderInfoByOrderNo(String orderNo) {
-
-	return afSupOrderDao.getOrderInfoByOrderNo(orderNo);
+	GameOrderInfoDto orderInfoDto = afSupOrderDao.getOrderInfoByOrderNo(orderNo);
+	orderInfoDto.setPlantform(OrderType.BOLUOME.getCode());
+	return orderInfoDto;
     }
 
     @Override

@@ -188,6 +188,14 @@ public class GameOrderInfoDto {
 	this.orderId = orderId;
     }
 
+    public String getPlantform() {
+	return plantform;
+    }
+
+    public void setPlantform(String plantform) {
+	this.plantform = plantform;
+    }
+
     private Long orderId;
     private String orderNo;
     private String orderStatus;
@@ -213,9 +221,10 @@ public class GameOrderInfoDto {
     private Long gmtPayStart = System.currentTimeMillis() / 1000;
     private Long gmtPayEnd;
 
+    private String plantform;
+
     @Override
     public String toString() {
-	return "GameOrderInfoDto [orderId=" + orderId + ", orderNo=" + orderNo + ", orderStatus=" + orderStatus + ", orderType=" + orderType + ", goodsIcon=" + goodsIcon + ", goodsName=" + goodsName + ", goodsCount=" + goodsCount + ", acctType=" + acctType + ", userName=" + userName + ", gameType=" + gameType + ", gameAcct=" + gameAcct + ", gameArea=" + gameArea + ", gameSrv=" + gameSrv + ", orderAmount=" + orderAmount + ", rebateAmount=" + rebateAmount + ", couponAmount=" + couponAmount + ", actualAmount=" + actualAmount + ", gmtCreate=" + gmtCreate + ", gmtRebated=" + gmtRebated + ", gmtClosed=" + gmtClosed + ", gmtPay=" + gmtPay + ", gmtPayStart=" + gmtPayStart + ", gmtPayEnd=" + gmtPayEnd + "]";
+	return "GameOrderInfoDto [orderId=" + orderId + ", orderNo=" + orderNo + ", orderStatus=" + orderStatus + ", orderType=" + orderType + ", goodsIcon=" + goodsIcon + ", goodsName=" + goodsName + ", goodsCount=" + goodsCount + ", acctType=" + acctType + ", userName=" + userName + ", gameType=" + gameType + ", gameAcct=" + gameAcct + ", gameArea=" + gameArea + ", gameSrv=" + gameSrv + ", orderAmount=" + orderAmount + ", rebateAmount=" + rebateAmount + ", couponAmount=" + couponAmount + ", actualAmount=" + actualAmount + ", gmtCreate=" + gmtCreate + ", gmtRebated=" + gmtRebated + ", gmtClosed=" + gmtClosed + ", gmtPay=" + gmtPay + ", gmtPayStart=" + gmtPayStart + ", gmtPayEnd=" + gmtPayEnd + ", plantform=" + plantform + "]";
     }
-
 }
