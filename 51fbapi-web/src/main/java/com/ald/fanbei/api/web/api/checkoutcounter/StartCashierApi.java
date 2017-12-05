@@ -260,7 +260,7 @@ public class StartCashierApi implements ApiHandle {
         if (status.equals(YesNoStatus.YES.getCode())) {
             AfResourceDo consumeMinResource = afResourceService.getSingleResourceBytype("CONSUME_MIN_AMOUNT");
             BigDecimal minAmount = consumeMinResource == null ? BigDecimal.ZERO : new BigDecimal(consumeMinResource.getValue());
-            if (orderInfo.getActualAmount().compareTo(minAmount) <= 0) {
+            if (orderInfo.getActualAmount().compareTo(minAmount) < 0) {
                 return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
             }
             //额度判断
