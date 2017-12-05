@@ -241,6 +241,8 @@ public class GamePayController extends BaseController {
 	    // 获取参数
 	    String businessId = request.getParameter("businessId");
 
+	    logger.info(String.format("game pay callback:userOrderId %s,status %s, mes %s,kminfo %s,payoffPriceTotal %s,sign %s,businessId %s", userOrderId, status, mes, kminfo, payoffPriceTotal, sign, businessId));
+
 	    // 验证businessId
 	    String configBusinessId = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_SUP_BUSINESS_ID), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 	    if (!configBusinessId.equals(businessId)) {
