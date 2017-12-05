@@ -165,7 +165,7 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 			try {
 				//扫描
 				AfRedRainRoundDo paramRound = new AfRedRainRoundDo();
-				Date gmtStart = DateUtil.addMins(new Date(), 4);
+				Date gmtStart = DateUtil.addMins(new Date(), 5);
 				paramRound.setGmtStart(gmtStart);
 				paramRound.setStatus(AfRedRainRoundStatusEnum.PREPARE.name());
 				final AfRedRainRoundDo round = afRedRainRoundDao.fetch(paramRound);
@@ -189,12 +189,14 @@ public class AfRedRainServiceImpl implements AfRedRainService{
 				round.setStatus(AfRedRainRoundStatusEnum.INJECTED.name());
 				afRedRainRoundDao.update(round);
 				
+				long delay = DateUtil.getIntervalFromNowInSec(round.getGmtStart())+DELAY_OF_ACTIVATE_CLEAR;
 				//场次开始时间5分钟后清场
 				scheduler.schedule(new Runnable() {
 					public void run() {
 						clearAndStatisic(round.getId());
 					}
-				}, DateUtil.getIntervalFromNowInSec(round.getGmtStart())+DELAY_OF_ACTIVATE_CLEAR, TimeUnit.SECONDS);
+				}, delay, TimeUnit.SECONDS);
+				logger.info("redRainService.clearAndStatisic will execute after "+delay+" s");
 			}catch (Exception e) {
 				logger.error(e.getMessage(),e);
 				redPacketRedisPoolService.emptyPacket();
