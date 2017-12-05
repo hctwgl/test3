@@ -106,6 +106,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// 快速导航信息
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
+		
 		// logger.info("home page fast nav info => {}",
 		// JSONObject.toJSONString(topBannerList));
 

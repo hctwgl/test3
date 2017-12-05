@@ -1,20 +1,14 @@
 package com.ald.fanbei.api.web.api.user;
 
 import java.security.MessageDigest;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
-
-import jodd.util.StringUtil;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +16,14 @@ import org.eclipse.jetty.util.security.Credential.MD5;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.service.AfAbTestDeviceService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserLoginLogService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserToutiaoService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -34,15 +36,20 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfAbTestDeviceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserToutiaoDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfUserVo;
 import com.alibaba.fastjson.JSONObject;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 /**
  *
@@ -66,12 +73,12 @@ public class LoginApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserAuthService afUserAuthService;
-//	@Resource
-//	AfGameChanceService afGameChanceService;
+	// @Resource
+	// AfGameChanceService afGameChanceService;
 	@Resource
 	TongdunUtil tongdunUtil;
-//	@Resource
-//	JpushService jpushService;
+	// @Resource
+	// JpushService jpushService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Resource
@@ -80,17 +87,20 @@ public class LoginApi implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	AfUserToutiaoService afUserToutiaoService;
-
+	@Resource
+	AfAbTestDeviceService afAbTestDeviceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		
+
 		String SUCC = "1";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		final String userName = context.getUserName();
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
-		//滴滴风控相关信息
+		// 滴滴风控相关信息
 		String wifiMac = ObjectUtils.toString(requestDataVo.getParams().get("wifi_mac"));
 		String ip = CommonUtil.getIpAddr(request);
 
@@ -105,11 +115,10 @@ public class LoginApi implements ApiHandle {
 		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
-
-
 		if (afUserDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
+		Long userId = afUserDo.getRid();
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
@@ -122,7 +131,7 @@ public class LoginApi implements ApiHandle {
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
 		loginDo.setUuid(uuid);
-		ToutiaoAdActive(requestDataVo,context,afUserDo);
+		ToutiaoAdActive(requestDataVo, context, afUserDo);
 		// check login failed count,if count greater than 5,lock specify hours
 		AfResourceDo lockHourResource = afResourceService
 				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
@@ -160,12 +169,13 @@ public class LoginApi implements ApiHandle {
 			FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
 			return new ApiHandleResponse(requestDataVo.getId(), errorCode);
 		}
-//		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
-//			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
-//			//向推荐人推送消息
-//			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
-//			jpushService.gameShareSuccess(user.getUserName());
-//		}
+		// if(afUserDo.getRecommendId() > 0l &&
+		// afUserLoginLogService.getCountByUserName(userName) == 0){
+		// afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
+		// //向推荐人推送消息
+		// AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
+		// jpushService.gameShareSuccess(user.getUserName());
+		// }
 		// reset fail count to 0 and record login ip phone msg
 
 		AfUserDo temp = new AfUserDo();
@@ -178,41 +188,41 @@ public class LoginApi implements ApiHandle {
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 
 		boolean isNeedRisk = true;
-		if("1".equals(loginType)){
+		if ("1".equals(loginType)) {
 			Date gmtCreateDate = afUserDo.getGmtCreate();
 			Date date = new Date();
-			long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
-			if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口
+			long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate, date);
+			if (hours <= 2) { // 防止部分非新注册用户直接登录绕过风控可信接口
 				isNeedRisk = false;
 			}
 		}
-		//调用风控可信接口
-		if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
+		// 调用风控可信接口
+		if (context.getAppVersion() >= 381 && isNeedRisk && !isInWhiteList(userName)) {
 
 			boolean riskSucc = false;
 			try {
-				riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
-						loginType,loginTime,ip,phoneType,networkType,osType);
+				riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox,
+						uuid, loginType, loginTime, ip, phoneType, networkType, osType);
 			} catch (Exception e) {
-				 if(e instanceof FanbeiException){
-					 logger.error("用户登录调风控可信验证失败",e);
-					 throw e;
-				 }else{
-					 logger.error("用户登录调风控可信验证发生预期外异常userName:"+userName,e);
-					 riskSucc = false;
-				 }
+				if (e instanceof FanbeiException) {
+					logger.error("用户登录调风控可信验证失败", e);
+					throw e;
+				} else {
+					logger.error("用户登录调风控可信验证发生预期外异常userName:" + userName, e);
+					riskSucc = false;
+				}
 			}
 
-			if(!riskSucc){
+			if (!riskSucc) {
 				loginDo.setResult("false:需要验证登录短信");
 				afUserLoginLogService.addUserLoginLog(loginDo);
 				JSONObject jo = new JSONObject();
-				jo.put("needVerify","Y");
+				jo.put("needVerify", "Y");
 				resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
-				resp.setResponseData(jo); //失败了返回需要短信验证
+				resp.setResponseData(jo); // 失败了返回需要短信验证
 				return resp;
 			}
-			loginType = "2"; //可信登录验证通过，变可信
+			loginType = "2"; // 可信登录验证通过，变可信
 		}
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
@@ -228,20 +238,20 @@ public class LoginApi implements ApiHandle {
 		JSONObject jo = new JSONObject();
 		jo.put("user", userVo);
 		jo.put("token", token);
-		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(),context.getAppVersion()));
-		if(failCount == -1){
-			jo.put("flag","Y");
-		}else{
-			jo.put("flag","N");
+		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(), context.getAppVersion()));
+		if (failCount == -1) {
+			jo.put("flag", "Y");
+		} else {
+			jo.put("flag", "N");
 		}
-		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+afUserDo.getRid();
+		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC + afUserDo.getRid();
 		bizCacheUtil.saveObject(loginWifiMacKey, wifiMac);
 
-		//3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
-		Boolean isBorrowed =  bizCacheUtil.isRedisSetValue(Constants.HAVE_BORROWED, String.valueOf(afUserDo.getRid()));
-		if(Boolean.TRUE.equals(isBorrowed)){
+		// 3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
+		Boolean isBorrowed = bizCacheUtil.isRedisSetValue(Constants.HAVE_BORROWED, String.valueOf(afUserDo.getRid()));
+		if (Boolean.TRUE.equals(isBorrowed)) {
 			jo.put("borrowed", "Y");
-		}else{
+		} else {
 			jo.put("borrowed", "N");
 		}
 
@@ -254,19 +264,34 @@ public class LoginApi implements ApiHandle {
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
 		}
 		if (context.getAppVersion() >= 381) {
-			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
-					phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
+			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,
+					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY);
 		}
 
 		resp.setResponseData(jo);
 
-		if(failCount == -1){
-			new	Timer().schedule(new TimerTask(){
-				public void run(){
-					jpushService.jPushCoupon("COUPON_POPUPS",userName);
+		if (failCount == -1) {
+			new Timer().schedule(new TimerTask() {
+				public void run() {
+					jpushService.jPushCoupon("COUPON_POPUPS", userName);
 					this.cancel();
 				}
-			},1000 * 5);//一分钟
+			}, 1000 * 5);// 一分钟
+		}
+		
+		// 记录用户设备信息
+		try {
+			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+			if (StringUtils.isNotEmpty(deviceId)) {
+				String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbTestDeviceDo abTestDeviceDo = new AfAbTestDeviceDo();
+				abTestDeviceDo.setUserId(userId);
+				abTestDeviceDo.setDeviceNum(deviceIdTail);
+				// 通过唯一组合索引控制数据不重复
+				afAbTestDeviceService.addUserDeviceInfo(abTestDeviceDo);
+			}
+		}  catch (Exception e) {
+			// ignore error.
 		}
 		return resp;
 	}
@@ -276,39 +301,41 @@ public class LoginApi implements ApiHandle {
 			String imei = ObjectUtils.toString(requestDataVo.getParams().get("IMEI"), null);
 			String androidId = ObjectUtils.toString(requestDataVo.getParams().get("AndroidID"), null);
 			String idfa = ObjectUtils.toString(requestDataVo.getParams().get("IDFA"), null);
-			String imeiMd5="";
-			logger.error("toutiaoactive para:"+imei+","+androidId+","+idfa);
-			if(StringUtils.isNotBlank(imei)){
-				imeiMd5=getMd5(imei);
+			String imeiMd5 = "";
+			logger.error("toutiaoactive para:" + imei + "," + androidId + "," + idfa);
+			if (StringUtils.isNotBlank(imei)) {
+				imeiMd5 = getMd5(imei);
 			}
-			if(StringUtils.isNotBlank(imei)||StringUtils.isNotBlank(androidId)||StringUtils.isNotBlank(idfa)){
-				AfUserToutiaoDo tdo = afUserToutiaoService.getUserActive(imeiMd5,androidId,idfa);
-				if(tdo!=null){
+			if (StringUtils.isNotBlank(imei) || StringUtils.isNotBlank(androidId) || StringUtils.isNotBlank(idfa)) {
+				AfUserToutiaoDo tdo = afUserToutiaoService.getUserActive(imeiMd5, androidId, idfa);
+				if (tdo != null) {
 					Date tdate = tdo.getGmtModified();
 					Date udate = afUserDo.getGmtCreate();
-					if(tdate.getTime()<udate.getTime()){
+					if (tdate.getTime() < udate.getTime()) {
 						String callbackUrl = tdo.getCallbackUrl();
-						if(callbackUrl.indexOf("&event_type")==-1){
-							callbackUrl+="&event_type=1";
+						if (callbackUrl.indexOf("&event_type") == -1) {
+							callbackUrl += "&event_type=1";
 						}
-						String result= HttpUtil.doGet(callbackUrl,20);
-						if(result.indexOf("success")>-1){
+						String result = HttpUtil.doGet(callbackUrl, 20);
+						if (result.indexOf("success") > -1) {
 							Long rid = tdo.getRid();
-							Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
-							String userNameToutiao = context.getUserName()==null?"":context.getUserName();
-							afUserToutiaoService.uptUserActive(rid,userIdToutiao,userNameToutiao);
+							Long userIdToutiao = context.getUserId() == null ? -1l : context.getUserId();
+							String userNameToutiao = context.getUserName() == null ? "" : context.getUserName();
+							afUserToutiaoService.uptUserActive(rid, userIdToutiao, userNameToutiao);
 						}
-						logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
+						logger.error("toutiaoactive:update success,active=1,callbacr_url=" + callbackUrl + ",result="
+								+ result);
 					}
 				}
 			}
-		}catch (Exception e){
-			logger.error("toutiaoactive:catch error",e.getMessage());
+		} catch (Exception e) {
+			logger.error("toutiaoactive:catch error", e.getMessage());
 		}
 	}
 
 	/**
 	 * 用于获取一个String的md5值
+	 * 
 	 * @param string
 	 * @return
 	 */
@@ -317,8 +344,8 @@ public class LoginApi implements ApiHandle {
 
 		byte[] bs = md5.digest(str.getBytes());
 		StringBuilder sb = new StringBuilder(40);
-		for(byte x:bs) {
-			if((x & 0xff)>>4 == 0) {
+		for (byte x : bs) {
+			if ((x & 0xff) >> 4 == 0) {
 				sb.append("0").append(Integer.toHexString(x & 0xff));
 			} else {
 				sb.append(Integer.toHexString(x & 0xff));
@@ -326,6 +353,7 @@ public class LoginApi implements ApiHandle {
 		}
 		return sb.toString();
 	}
+
 	private AfUserVo parseUserVo(AfUserDo afUserDo) {
 		AfUserVo vo = new AfUserVo();
 		vo.setUserId(afUserDo.getRid());
@@ -339,25 +367,27 @@ public class LoginApi implements ApiHandle {
 
 	/**
 	 * 是否是白名单
+	 * 
 	 * @param userName
 	 * @return
 	 */
-	private boolean isInWhiteList(String userName){
+	private boolean isInWhiteList(String userName) {
 		AfResourceDo resDo = afResourceService.getSingleResourceBytype(AfResourceType.LOGIN_WHITE_LIST.getCode());
-		if(resDo==null){
+		if (resDo == null) {
 			return false;
 		}
-		if(StringUtils.isNotBlank(resDo.getValue3())){
-			String orignStr = resDo.getValue3().replace("，",","); // ，改为,
+		if (StringUtils.isNotBlank(resDo.getValue3())) {
+			String orignStr = resDo.getValue3().replace("，", ","); // ，改为,
 			String whites[] = orignStr.split(",");
-			for(int i = 0;i<whites.length;i++){
-				if(userName.equals(whites[i])){
+			for (int i = 0; i < whites.length; i++) {
+				if (userName.equals(whites[i])) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
+
 	public FanbeiExceptionCode getErrorCountCode(Integer errorCount) {
 		if (errorCount == 0) {
 			return FanbeiExceptionCode.USER_PASSWORD_ERROR_ZERO;
@@ -378,7 +408,7 @@ public class LoginApi implements ApiHandle {
 		}
 	}
 
-    public static void main(String[] args) {
-        System.out.println(UserUtil.getPassword(MD5.digest("123456"), "d229b3462c0b8a94"));
-    }
+	public static void main(String[] args) {
+		System.out.println(UserUtil.getPassword(MD5.digest("123456"), "d229b3462c0b8a94"));
+	}
 }
