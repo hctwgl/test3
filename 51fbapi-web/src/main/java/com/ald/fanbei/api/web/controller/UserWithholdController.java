@@ -98,10 +98,8 @@ public class UserWithholdController extends BaseController {
         }
         // 判断是否存在续期处理中的记录,防止续期和还款交叉,导致最后记录更新失败
         AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService
-                .getRenewalDetailByBorrowId(borrowId);
-        if (lastAfRenewalDetailDo != null
-                && AfRenewalDetailStatus.PROCESS.getCode().equals(
-                lastAfRenewalDetailDo.getStatus())) {
+                .getRenewalDetailHoursByBorrowId(borrowId);
+        if (lastAfRenewalDetailDo != null) {
             logger.info("withhold for borrowcash fail for HAVE_A_PROCESS_RENEWAL_DETAIL,userId:"+userId + ",borrowId:"+borrowId);
             JSONObject returnjson = new JSONObject();
             returnjson.put("success",false);

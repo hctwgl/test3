@@ -378,7 +378,6 @@ public class AppH5FanBeiWebController extends BaseController {
 		
 			if (context.isLogin()) {
 				String userName = context.getUserName();
-				Map<String, String> buildParams = new HashMap<String, String>();
 				if (shopId == null) {
 					logger.error("shopId is empty");
 					return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null).toString();
@@ -396,17 +395,10 @@ public class AppH5FanBeiWebController extends BaseController {
 							.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
 							.toString();
 				}
-				String shopUrl = parseBoluomeUrl(shopInfo.getShopUrl().trim());
 				
-				buildParams.put(BoluomeCore.CUSTOMER_USER_ID, afUserDo.getRid() + StringUtil.EMPTY);
-				buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, afUserDo.getMobile());
-				buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() + StringUtil.EMPTY);
-				
-				String sign =  BoluomeCore.buildSignStr(buildParams);
-				buildParams.put(BoluomeCore.SIGN, sign);
-				String paramsStr = BoluomeCore.createLinkString(buildParams);
-				logger.info("getBrandUrlV1"+shopUrl+paramsStr);
-				return H5CommonResponse.getNewInstance(true, "成功", shopUrl + paramsStr, null).toString();
+				String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), afUserDo.getRid(), afUserDo.getMobile());
+				logger.info("getBrandUrlV1"+shopUrl);
+				return H5CommonResponse.getNewInstance(true, "成功", shopUrl , null).toString();
 			} else {
 				String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.AppLogin.getCode();
 				return H5CommonResponse
@@ -424,14 +416,6 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 
 	}
-	  //根据测试，线上环境区别地址
-	  private String parseBoluomeUrl(String baseUrl) {
-	    String type = baseUrl.substring(baseUrl.lastIndexOf("/") + 1, baseUrl.length());
-	     if ("didi".equals(type)) {
-	      type = "yongche/" + type;
-	     }
-	    return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_URL) + "/"+ type + "?";
-	  }
 
 	@ResponseBody
 	@RequestMapping(value = "/pickBoluomeCoupon", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
