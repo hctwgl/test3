@@ -218,8 +218,7 @@ let vm = new Vue({
                     success: function (data) {
                         console.log(data,'确认充值');
                         let orderNo=data.data.orderNo;
-                        let plantform=data.data.plantform;
-                        window.location.href='gameOrderDetail?orderNo='+orderNo+'&plantform='+plantform;
+                        window.location.href='gameOrderDetail?orderNo='+orderNo;
                     },
                     error:function(){
                         requestMsg('哎呀，出错了！');

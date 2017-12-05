@@ -1,13 +1,11 @@
-let orderNo=getUrl('orderNo');
-let plantform=getUrl('plantform');
+let orderNo=getUrl('orderNo'); // 获取订单编号
 let returnNum = getBlatFrom();  // 判断1为Android，2为ios
 //获取数据
 let vm = new Vue({
     el: '#gameOrderDetail',
     data: {
         content: {},
-        diff:'',
-        orderId:''
+        diff:''
     },
     created: function () {
         this.logData();
@@ -25,7 +23,6 @@ let vm = new Vue({
                     if(data.success){
                         self.content=data.data;
                         console.log(self.content);
-                        self.orderId=self.content.orderId;
                         self.content.orderStartTime=format((self.content.gmtCreate)*1000);//订单创建时间
                         //订单付款时间
                         if(self.content.gmtPay){
@@ -50,17 +47,23 @@ let vm = new Vue({
         },
         //去支付
         goPay(){
-            window.location.href='/fanbei-web/opennative?name=BRAND_ORDER_CONFIRM&params={"orderId":"'+orderNo+'","plantform":"'+plantform+'"}';
+            let self=this;
+            window.location.href='/fanbei-web/opennative?name=BRAND_ORDER_CONFIRM&params={"orderId":"'+orderNo+'","plantform":"'+self.content.plantform+'"}';
         },
         //删除订单
         deleteOrder(){
             let self=this;
             $.ajax({
                 type: 'post',
-                url: "/order/deleteOrderInfo",
-                data:{'orderId':self.orderId},
+                url: "/game/pay/order/delete",
+                data:{'orderId':self.content.orderId},
                 success: function (data) {
                     console.log(data,'删除订单');
+                    if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
+                        window.location.href='/fanbei-web/opennative?name=com.alfl.www.user.ui.OrderListActivity';
+                    }else{
+                        window.location.href='/fanbei-web/opennative?name=GG_ALAFifthAllOrdersController';
+                    }
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
