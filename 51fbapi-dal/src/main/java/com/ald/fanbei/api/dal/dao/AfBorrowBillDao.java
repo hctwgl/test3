@@ -430,4 +430,15 @@ public interface AfBorrowBillDao {
 	 */
 	List<AfBorrowBillDo> getUserAllMonthBill(@Param("userId")Long userId, @Param("begin")int begin, @Param("pageSize")int pageSize);
 
+	/**
+	 * 获取用户还款日
+	 * @author yuyue
+	 * @Time 2017年12月4日 下午3:22:27
+	 * @param userId
+	 * @param billYear
+	 * @param billMonth
+	 * @return
+	 */
+	Date getPayDayByYearAndMonth(@Param("userId")Long userId,@Param("billYear")int billYear, @Param("billMonth")int billMonth);
+
 }

@@ -2,11 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -14,6 +9,7 @@ import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -617,5 +613,10 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public int updateBorrowBillUnLockByIds(String billIds) {
 		return  afBorrowBillDao.updateBorrowBillUnLockByIds(StringUtil.splitToList(billIds, ","));
+	}
+
+	@Override
+	public Date getPayDayByYearAndMonth(Long userId, int billYear, int billMonth) {
+		return afBorrowBillDao.getPayDayByYearAndMonth(userId,billYear,billMonth);
 	}
 }

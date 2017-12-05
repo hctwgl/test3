@@ -109,8 +109,14 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 			query.setUserId(userId);
 			query.setOutDayStr(strOutDay);
 			query.setOutDayEnd(endOutDay);
-			query.setStatus(BorrowBillStatus.NO.getCode());
+			int billCount = afBorrowBillService.countBillByQuery(query);
+			if (billCount < 1) {
+				map.put("status", "noBill");
+				resp.setResponseData(map);
+				return resp;
+			}
 			query.setIsOut(1);
+			query.setStatus(BorrowBillStatus.NO.getCode());
 			int outBillCount = afBorrowBillService.countBillByQuery(query);
 			if (outBillCount > 0) {
 				// 计算账期
@@ -142,7 +148,7 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 					map.put("status", "out");
 					// 最后还款日期
 					Date lastPayDay = afBorrowBillService.getLastPayDayByUserId(userId);
-					map.put("lastPayDay", lastPayDay);
+					map.put("lastPayDay", DateUtil.formatAndMonthAndDay(lastPayDay));
 				}
 				resp.setResponseData(map);
 				return resp;
@@ -172,18 +178,24 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 				resp.setResponseData(map);
 				return resp;
 			}else {
-				map.put("status", "noBill");
+				map.put("status", "noInBill");
 				// 获取未入账账单
 				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
 				// 未入账笔数
 				int notInCount = afBorrowService.getUserNotInBorrowCount(userId);
 				// 未入账金额
-				BigDecimal notInMoney = afBorrowService.getUserNotInBorrowMoney(userId);
-				map.put("borrowList", borrowList);
-				map.put("notInCount", notInCount);
-				map.put("notInMoney", notInMoney);
-				resp.setResponseData(map);
-				return resp;
+				if (notInCount > 0) {
+					BigDecimal notInMoney = afBorrowService.getUserNotInBorrowMoney(userId);
+					map.put("borrowList", borrowList);
+					map.put("notInCount", notInCount);
+					map.put("notInMoney", notInMoney);
+					resp.setResponseData(map);
+					return resp;
+				}else {
+					map.put("status", "finsh");
+					resp.setResponseData(map);
+					return resp;
+				}
 			}
 		} catch (Exception e) {
 			logger.error("getBillListByMonthAndYearApi error :" , e);

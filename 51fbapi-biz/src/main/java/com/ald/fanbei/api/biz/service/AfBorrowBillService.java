@@ -351,4 +351,16 @@ public interface AfBorrowBillService {
 	int updateBorrowBillLockById(String billId);
 
 	int updateBorrowBillUnLockByIds(String billIds);
+
+	/**
+	 * 获取用户还款日
+	 * @author yuyue
+	 * @Time 2017年12月4日 下午3:18:58
+	 * @param userId
+	 * @param billYear
+	 * @param billMonth
+	 * @return
+	 */
+	Date getPayDayByYearAndMonth(Long userId, int billYear, int billMonth);
+
 }

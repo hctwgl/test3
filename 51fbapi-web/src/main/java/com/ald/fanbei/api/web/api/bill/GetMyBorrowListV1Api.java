@@ -86,6 +86,9 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 			AfBorrowBillQuery query = new AfBorrowBillQuery();
 			query.setUserId(userId);
 			query.setStatus(BorrowBillStatus.NO.getCode());
+			if (StringUtil.isEmpty(status)) {
+				status = "outBill";
+			}
 			if (StringUtil.equals("nowBill", status)) {
 				// 本月已出
 				query.setIsOut(1);
@@ -116,13 +119,21 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 			List<AfBorrowBillDo> billList = afBorrowBillService.getUserBillListByQuery(query);
 			if (billList != null && billList.size() > 0) {
 				for (AfBorrowBillDo afBorrowBillDo : billList) {
-					if (afBorrowBillDo.getOverdueDays() > 0) {
-						afBorrowBillDo.setOverdueStatus("Y");
-					}
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(afBorrowBillDo.getGmtOutDay());
 					afBorrowBillDo.setBillMonth(calendar.get(Calendar.MONTH) + 1);
 					afBorrowBillDo.setBillYear(calendar.get(Calendar.YEAR));
+					if (StringUtil.equals("notOutBill", status)) {
+						afBorrowBillDo.setIsOut(0);
+						continue;
+					}
+					afBorrowBillDo.setIsOut(1);
+					if (new BigDecimal(0).compareTo(afBorrowBillDo.getOverdueInterestAmount()) != 0) {
+						afBorrowBillDo.setOverdueStatus("Y");
+					}else {
+						afBorrowBillDo.setOverdueStatus("N");
+						afBorrowBillDo.setGmtPayTime(afBorrowBillService.getPayDayByYearAndMonth(userId,afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth()));
+					}
 				}
 			}
 			map.put("money", money);
