@@ -177,7 +177,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 			if (redpacketIdList != null && redpacketIdList.size() > 0) {
 				int length = redpacketIdList.size();
 				int index = new Random().nextInt(length)%(length-1+1) + 1;
-				redpacketId = redpacketIdList.get(index);
+				redpacketId = redpacketIdList.get(index-1);
 			}
 
 			if (redpacketId != 0L) {
