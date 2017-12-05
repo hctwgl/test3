@@ -56,17 +56,21 @@ public class AppTest extends TestCase {
 	super(testName);
 
 	try {
+	    System.out.println(String.format("sendOrderToSup :acctType %s,businessId %s,gameAcct %s,gameName %s,gameSrv %s,gameType %s,goodsId %s,goodsNum %s,supKey %s, callback %s, userName %s,orderNo %s", 
+		    "1", "2", "3", "4", "5", "6", "7", "8", "9","10", "11", "12"));
+	    
+	    
 	    // System.out.println(CommodityPrices.QueryCommodity("Num10428",
 	    // "2d477a24ec9c4d4ba65403f031cd5d9f", "wy001jk"));
 
 	    // System.out.println(CommOrderQry.QueryOrder("Num10428", "132",
 	    // "2d477a24ec9c4d4ba65403f031cd5d9f", "9.8"));
 
-	    System.out.println(URLEncoder.encode("QQ%E5%8F%B7", "utf-8"));
-	    System.out.println(URLDecoder.decode("QQ%E5%8F%B7", "utf-8"));
-	    System.out.println(URLDecoder.decode("QQ%E5%8F%B7", "ISO-8859-1"));
-	    System.out.println(URLDecoder.decode("QQ号", "utf-8"));
-	    System.out.println(URLDecoder.decode("QQ号", "ascii"));
+//	    System.out.println(URLEncoder.encode("QQ%E5%8F%B7", "utf-8"));
+//	    System.out.println(URLDecoder.decode("QQ%E5%8F%B7", "utf-8"));
+//	    System.out.println(URLDecoder.decode("QQ%E5%8F%B7", "ISO-8859-1"));
+//	    System.out.println(URLDecoder.decode("QQ号", "utf-8"));
+//	    System.out.println(URLDecoder.decode("QQ号", "ascii"));
 	    
 //	    OrderEntity orderEntity = new OrderEntity();
 //	    orderEntity.setAcctType("网易通行证账号");
