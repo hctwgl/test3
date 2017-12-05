@@ -410,6 +410,9 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		query.setType(type);
 		query.setLimitNums(limitNums == 0 ? 1 : limitNums);
 		List<AfViewAssetBorrowCashDo> debtList = afViewAssetBorrowCashService.getListByQueryCondition(query);
+		if(debtList==null || debtList.size()==0){
+			return new ArrayList<AfViewAssetBorrowCashDo>();
+		}
 		query.setMinBorrowCashId(debtList.get(debtList.size()-1).getBorrowCashId());
 		BigDecimal checkAmount=afViewAssetBorrowCashService.checkAmount(query);
 		if (checkAmount.compareTo(amount) < 0) {
