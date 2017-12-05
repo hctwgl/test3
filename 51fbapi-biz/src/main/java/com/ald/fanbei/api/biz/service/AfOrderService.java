@@ -352,4 +352,11 @@ public interface AfOrderService {
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
 	
+	/**
+     * 获取已生成的秒杀订单
+     * @param userId
+     * @return
+     */
+	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,Long userId);
+	
 }

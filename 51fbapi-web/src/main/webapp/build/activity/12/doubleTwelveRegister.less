@@ -1,114 +1,129 @@
+@imageUrl: "https://f.51fanbei.com/h5/app/activity/12";
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
-html,body,.login {
-    height: 13.34rem;
+
+body {
+    background-color: white;
+}
+
+input {
+    color: #191919;
 }
 
 .login {
-    padding: 0 1rem;
-    position: relative;
-    background: url('https://f.51fanbei.com/h5/app/activity/11/image/barginRegister.png');
+    background-color: #e33b48;
+    height: 13.34rem;
+}
+
+.topdiv img {
+    width: 7.5rem;
+    height: 7.27rem;
+}
+
+.content {
+    padding-left: 0.44rem;
+    padding-right: 0.3rem;
+    width: 6.9rem;
+    height: 3rem;
+    border-radius: .08rem;
+    background-color: #ffffff;
+}
+
+.phone {
     width: 100%;
+    height: 1rem;
+    position: relative;
+}
+
+.phone-icon {
+    width: 0.28rem;
+    height: 0.4rem;
+    background: url('@{imageUrl}/double12_regPhone.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
 
-.topdiv {
-    width: 6.41rem;
-    height: 5.2rem;
-    position: relative;
+.pwd-icon {
+    width: 0.28rem;
+    height: 0.4rem;
+    background: url('@{imageUrl}/double12_regPwd.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
 }
 
-.topimg {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    display: inline-block;
-    /* background:red; */
-    /* box-shadow:0 0 0.05rem 0 red; */
-    width: 1.62rem;
-    height: 1.8rem;
+.code-icon {
+    margin-left: -.06rem;
+    width: 0.4rem;
+    height: 0.31rem;
+    background: url('@{imageUrl}/double12_regCode.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
 }
 
-.topimg img {
-    text-shadow: 0 0 0.05rem 0 rgba(0, 0, 0, 0.09);
+.box {
+    margin-left: 0.46rem;
+    width: 5.4rem;
+    height: 1rem;
+    border-bottom: solid 1px #d8d8d8;
 }
 
-.phone {
-    width: 5.7rem;
-    height: .8rem;
-    position: relative;
+.box-2 {
+    margin-left: 0.4rem;
+    width: 5.4rem;
+    height: 1rem;
 }
 
 .pinp {
     border: none;
     outline: none;
-    width: 3.2rem;
+    width: 100%;
     height: 100%;
     font-family: PingFangSC-Regular;
-    font-size: 0.28rem;
-    color: #666;
+    font-size: 0.26rem;
     letter-spacing: -0.54px;
     text-align: left;
 }
 
-.xxicon {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    /* background:#c0c0c0; */
-    width: 0.24rem;
-    height: 0.25rem;
-    right: 0.17rem;
-}
-
-.bicon {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 0.55rem;
-    background: #d8d8d8;
-    width: 0.18rem;
-    height: 0.18rem;
-    border-radius: 100%;
+.code-input {
+    width: 2rem;
+    height: 1rem;
+    font-family: PingFangSC;
+    font-size: .26rem;
+    text-align: left;
+    // color: #cccccc;
 }
 
 .pcheck {
-    margin-top: 0.305rem;
-    padding-right: 2.23rem;
+    // padding-right: 2.23rem;
 }
 
 .checkbtn {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 2rem;
-    height:.8rem;
-    line-height: .8rem;
-    font-family: PingFangSC-Regular;
-    font-size: 0.32rem;
-    color: #731717;
-    letter-spacing: -0.54px;
+    width: 1.5rem;
+    height: .56rem;
+    border-radius: .08rem;
+    border: solid 1px #469cff;
+    font-size: .22rem;
     text-align: center;
+    color: #469cff;
+    letter-spacing: -0.54px;
+    line-height: .54rem;
+    background: #fff;
 }
 
 .loginbtn {
-    margin-top: 0.8rem;
-    margin-left: -.3rem;
-    width: 6.1rem;
-    height: .9rem;
-    border-radius: 0.04rem;
-    line-height: .9rem;
+    margin-top: 0.3rem;
+    width: 6.9rem;
+    height: 1rem;
+    background: #fca534;
+    border-radius: 0.08rem;
+    line-height: 1rem;
     text-align: center;
     font-family: PingFangSC-Regular;
-    font-size: 0.32rem;
-    color: #731717;
-    /* letter-spacing:-0.54px; */
-    text-align: center;
+    font-size: 0.34rem;
+    color: #ffffff;
 }
 
 .lspdiv {
@@ -144,20 +159,6 @@ html,body,.login {
     color: #afafaf;
     letter-spacing: -0.54px;
     text-align: left;
-}
-
-.botimg {
-    width: 100%;
-    margin-top: 33%;
-}
-
-
-/* .gray{
-    background-color:rgba(169,169,169);
-} */
-
-.password {
-    margin-top: .31rem;
 }
 
 .big-one {
@@ -303,27 +304,27 @@ html,body,.login {
     margin: 0.4rem 0.25rem 0;
 }
 
-.protocol-box {
-    display: flex;
-    flex-direction: row;
-    margin-top: .3rem;
-    color: #fff;
-    letter-spacing: 0.54px;
+.agree {
+    color: #949494;
+    font-size: 0.24rem;
+    margin-top: 0.3rem;
+    span {
+        margin-left: 0.1rem;
+        color: #fff;
+        font-size: .24rem;
+    }
+    a {
+        color: #fdb638;
+        display: inline-block;
+    }
 }
 
-.myprotocol {
-    text-decoration: underline;
-    color: #fff;
-}
-
-.tolog {
-    margin-top: .6rem;
-    width: 100%;
+.registered {
+    margin-top: 0.1rem;
     text-align: center;
-}
-.tologin {
+    font-size: 0.28rem;
     text-decoration: underline;
-    color: #f8b725;
-    font-size: .24rem;
-    letter-spacing: 0.54px;
+    a {
+        color: #fff;
+    }
 }

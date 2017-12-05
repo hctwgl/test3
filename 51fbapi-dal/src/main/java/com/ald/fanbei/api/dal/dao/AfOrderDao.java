@@ -190,4 +190,6 @@ public interface AfOrderDao {
 	AfOrderDo getOrderByOrderNo(String orderNo);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
+	
+	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 }
