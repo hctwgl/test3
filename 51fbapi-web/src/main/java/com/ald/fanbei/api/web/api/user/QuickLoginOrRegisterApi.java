@@ -57,12 +57,12 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserAuthService afUserAuthService;
-//	@Resource
-//	AfGameChanceService afGameChanceService;
+	// @Resource
+	// AfGameChanceService afGameChanceService;
 	@Resource
 	TongdunUtil tongdunUtil;
-//	@Resource
-//	JpushService jpushService;
+	// @Resource
+	// JpushService jpushService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
 	@Resource
@@ -77,6 +77,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	SmsUtil smsUtil;
 	@Resource
 	AfPromotionChannelPointService afPromotionChannelPointService;
+	@Resource
+	AfAbTestDeviceService afAbTestDeviceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -86,45 +88,53 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
-		//滴滴风控相关信息
+		// 滴滴风控相关信息
 		String wifiMac = ObjectUtils.toString(requestDataVo.getParams().get("wifi_mac"));
 		String ip = CommonUtil.getIpAddr(request);
 
-//		String inputPassSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
+		// String inputPassSrc =
+		// ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String networkType = ObjectUtils.toString(requestDataVo.getParams().get("networkType"));
 		String loginType = ObjectUtils.toString(requestDataVo.getParams().get("loginType"));
-		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));//验证码
-		/*if (StringUtils.isBlank(inputPassSrc)) {
-			logger.error("inputPassSrc can't be empty");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}*/
+		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));// 验证码
+		/*
+		 * if (StringUtils.isBlank(inputPassSrc)) {
+		 * logger.error("inputPassSrc can't be empty"); return new
+		 * ApiHandleResponse(requestDataVo.getId(),
+		 * FanbeiExceptionCode.PARAM_ERROR); }
+		 */
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-
-		smsUtil.checkSmsByMobileAndType(context.getUserName(),verifyCode, SmsType.QUICK_LOGIN);//短信验证码判断
+		
+		smsUtil.checkSmsByMobileAndType(context.getUserName(), verifyCode, SmsType.QUICK_LOGIN);// 短信验证码判断
 		if (afUserDo == null) {
-			afUserDo = quickRegister(requestDataVo,context,request);
-//			return resp;
-//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			afUserDo = quickRegister(requestDataVo, context, request);
+			// return resp;
+			// return new ApiHandleResponse(requestDataVo.getId(),
+			// FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
+		Long userId = afUserDo.getRid();
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
-		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.QUICK_LOGIN.getCode());
+		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(),
+				SmsType.QUICK_LOGIN.getCode());
 		if (smsDo == null) {
 			logger.error("sms record is empty");
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		// 判断验证码是否一致并且验证码是否已经做过验证
-		/*String realCode = smsDo.getVerifyCode();
-		if (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() == 0) {
-			logger.error("verifyCode is invalid");
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-		}
-		// 判断验证码是否过期
-		if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE);
-		}*/
+		/*
+		 * String realCode = smsDo.getVerifyCode(); if
+		 * (!StringUtils.equals(verifyCode, realCode) || smsDo.getIsCheck() ==
+		 * 0) { logger.error("verifyCode is invalid"); return new
+		 * ApiHandleResponse(requestDataVo.getId(),
+		 * FanbeiExceptionCode.PARAM_ERROR); } // 判断验证码是否过期 if
+		 * (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(),
+		 * Constants.MINITS_OF_HALF_HOUR))) { return new
+		 * ApiHandleResponse(requestDataVo.getId(),
+		 * FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE); }
+		 */
 		Integer failCount = afUserDo.getFailCount();
 		// add user login record
 		AfUserLoginLogDo loginDo = new AfUserLoginLogDo();
@@ -134,7 +144,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
 		loginDo.setUuid(uuid);
-		ToutiaoAdActive(requestDataVo,context,afUserDo);
+		ToutiaoAdActive(requestDataVo, context, afUserDo);
 		// check login failed count,if count greater than 5,lock specify hours
 		AfResourceDo lockHourResource = afResourceService
 				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
@@ -158,28 +168,28 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		}
 
 		// check password
-//		String inputPassword = UserUtil.getPassword(inputPassSrc, afUserDo.getSalt());
-		/*if (!StringUtils.equals(inputPassword, afUserDo.getPassword())) {
-			// fail count add 1
-			AfUserDo temp = new AfUserDo();
-			Integer errorCount = afUserDo.getFailCount();
-			temp.setRid(afUserDo.getRid());
-			temp.setFailCount(errorCount + 1);
-			temp.setUserName(userName);
-			afUserService.updateUser(temp);
-			loginDo.setResult("false:password error");
-			afUserLoginLogService.addUserLoginLog(loginDo);
-			FanbeiExceptionCode errorCode = getErrorCountCode(errorCount + 1);
-			return new ApiHandleResponse(requestDataVo.getId(), errorCode);
-		}*/
-//		if(afUserDo.getRecommendId() > 0l && afUserLoginLogService.getCountByUserName(userName) == 0){
-//			afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
-//			//向推荐人推送消息
-//			AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
-//			jpushService.gameShareSuccess(user.getUserName());
-//		}
+		// String inputPassword = UserUtil.getPassword(inputPassSrc,
+		// afUserDo.getSalt());
+		/*
+		 * if (!StringUtils.equals(inputPassword, afUserDo.getPassword())) { //
+		 * fail count add 1 AfUserDo temp = new AfUserDo(); Integer errorCount =
+		 * afUserDo.getFailCount(); temp.setRid(afUserDo.getRid());
+		 * temp.setFailCount(errorCount + 1); temp.setUserName(userName);
+		 * afUserService.updateUser(temp);
+		 * loginDo.setResult("false:password error");
+		 * afUserLoginLogService.addUserLoginLog(loginDo); FanbeiExceptionCode
+		 * errorCode = getErrorCountCode(errorCount + 1); return new
+		 * ApiHandleResponse(requestDataVo.getId(), errorCode); }
+		 */
+		// if(afUserDo.getRecommendId() > 0l &&
+		// afUserLoginLogService.getCountByUserName(userName) == 0){
+		// afGameChanceService.updateInviteChance(afUserDo.getRecommendId());
+		// //向推荐人推送消息
+		// AfUserDo user = afUserService.getUserById(afUserDo.getRecommendId());
+		// jpushService.gameShareSuccess(user.getUserName());
+		// }
 		// reset fail count to 0 and record login ip phone msg
-		
+
 		AfUserDo temp = new AfUserDo();
 		temp.setFailCount(0);
 		temp.setRid(afUserDo.getRid());
@@ -188,43 +198,33 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
-		
-		boolean isNeedRisk = true;//是否为手机号未验证注册的用户
-		/*Date gmtCreateDate = afUserDo.getGmtCreate();
-		Date date = new Date();
-		long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
-		if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口
-			isNeedRisk = false;
-		}
-		//调用风控可信接口
-		if (context.getAppVersion() >= 381 &&isNeedRisk &&!isInWhiteList(userName)) {
-				
-			boolean riskSucc = false;
-			try {
-				riskSucc = riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(), ""),userName,blackBox,uuid,
-						loginType,loginTime,ip,phoneType,networkType,osType);
-			} catch (Exception e) {
-				 if(e instanceof FanbeiException){
-					 logger.error("用户登录调风控可信验证失败",e);
-					 throw e;
-				 }else{
-					 logger.error("用户登录调风控可信验证发生预期外异常userName:"+userName,e);
-					 riskSucc = false;
-				 }
-			}
-			
-			if(!riskSucc){
-				loginDo.setResult("false:需要验证登录短信");
-				afUserLoginLogService.addUserLoginLog(loginDo);
-				JSONObject jo = new JSONObject();
-				jo.put("needVerify","Y");
-				resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
-				resp.setResponseData(jo); //失败了返回需要短信验证
-				return resp;
-			}
-			loginType = "2"; //可信登录验证通过，变可信
-		}*/
-		
+
+		boolean isNeedRisk = true;// 是否为手机号未验证注册的用户
+		/*
+		 * Date gmtCreateDate = afUserDo.getGmtCreate(); Date date = new Date();
+		 * long hours = DateUtil.getNumberOfHoursBetween(gmtCreateDate,date);
+		 * if(hours<=2){ //防止部分非新注册用户直接登录绕过风控可信接口 isNeedRisk = false; }
+		 * //调用风控可信接口 if (context.getAppVersion() >= 381 &&isNeedRisk
+		 * &&!isInWhiteList(userName)) {
+		 * 
+		 * boolean riskSucc = false; try { riskSucc =
+		 * riskUtil.verifySynLogin(ObjectUtils.toString(afUserDo.getRid(),
+		 * ""),userName,blackBox,uuid,
+		 * loginType,loginTime,ip,phoneType,networkType,osType); } catch
+		 * (Exception e) { if(e instanceof FanbeiException){
+		 * logger.error("用户登录调风控可信验证失败",e); throw e; }else{
+		 * logger.error("用户登录调风控可信验证发生预期外异常userName:"+userName,e); riskSucc =
+		 * false; } }
+		 * 
+		 * if(!riskSucc){ loginDo.setResult("false:需要验证登录短信");
+		 * afUserLoginLogService.addUserLoginLog(loginDo); JSONObject jo = new
+		 * JSONObject(); jo.put("needVerify","Y"); resp = new
+		 * ApiHandleResponse(requestDataVo.getId(),
+		 * FanbeiExceptionCode.USER_LOGIN_UNTRUST_ERROW);
+		 * resp.setResponseData(jo); //失败了返回需要短信验证 return resp; } loginType =
+		 * "2"; //可信登录验证通过，变可信 }
+		 */
+
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
@@ -239,23 +239,23 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		JSONObject jo = new JSONObject();
 		jo.put("user", userVo);
 		jo.put("token", token);
-		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(),context.getAppVersion()));
-		
-		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+afUserDo.getRid();
+		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(), context.getAppVersion()));
+
+		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC + afUserDo.getRid();
 		bizCacheUtil.saveObject(loginWifiMacKey, wifiMac);
-		if(afUserDo.getFailCount() == -1){
-			jo.put("flag","Y");
-		}else{
-			jo.put("flag","N");
+		if (afUserDo.getFailCount() == -1) {
+			jo.put("flag", "Y");
+		} else {
+			jo.put("flag", "N");
 		}
-		//3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
-		Boolean isBorrowed =  bizCacheUtil.isRedisSetValue(Constants.HAVE_BORROWED, String.valueOf(afUserDo.getRid()));
-		if(Boolean.TRUE.equals(isBorrowed)){
+		// 3.7.6 对于未结款的用户在登录后，结款按钮高亮显示
+		Boolean isBorrowed = bizCacheUtil.isRedisSetValue(Constants.HAVE_BORROWED, String.valueOf(afUserDo.getRid()));
+		if (Boolean.TRUE.equals(isBorrowed)) {
 			jo.put("borrowed", "Y");
-		}else{
+		} else {
 			jo.put("borrowed", "N");
 		}
-		
+
 		// jo.put("firstLogin", afUserDo.getFailCount() == -1?1:0);
 		if (context.getAppVersion() >= 340) {
 			if (StringUtils.isBlank(blackBox)) {
@@ -265,24 +265,39 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			tongdunUtil.getLoginResult(requestDataVo.getId(), blackBox, ip, userName, userName, "1", "");
 		}
 		if (context.getAppVersion() >= 381) {
-			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType, loginTime, ip,
-					phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
+			riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, loginType,
+					loginTime, ip, phoneType, networkType, osType, SUCC, Constants.EVENT_LOGIN_ASY);
 		}
 
 		resp.setResponseData(jo);
-		
-		if(failCount == -1){
-			new	Timer().schedule(new TimerTask(){
-				public void run(){
-					jpushService.jPushCoupon("COUPON_POPUPS",userName);
+
+		if (failCount == -1) {
+			new Timer().schedule(new TimerTask() {
+				public void run() {
+					jpushService.jPushCoupon("COUPON_POPUPS", userName);
 					this.cancel();
 				}
-			},1000 * 5);//一分钟
+			}, 1000 * 5);// 一分钟
+		}
+
+		// 记录用户设备信息
+		try {
+			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+			if (StringUtils.isNotEmpty(deviceId)) {
+				String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbTestDeviceDo abTestDeviceDo = new AfAbTestDeviceDo();
+				abTestDeviceDo.setUserId(userId);
+				abTestDeviceDo.setDeviceNum(deviceIdTail);
+				// 通过唯一组合索引控制数据不重复
+				afAbTestDeviceService.addUserDeviceInfo(abTestDeviceDo);
+			}
+		} catch (Exception e) {
+			// ignore error.
 		}
 		return resp;
 	}
 
-	private AfUserDo quickRegister(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request){
+	private AfUserDo quickRegister(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		String requestId = requestDataVo.getId();
 		String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), "");
 		ClientTypeEnum clientType = StringUtil.judgeClientType(requestDataVo.getId());
@@ -298,39 +313,45 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		AfUserDo userDo = new AfUserDo();
 		String salt = UserUtil.getSalt();
-//		String password = UserUtil.getPassword(passwordSrc, salt);
+		// String password = UserUtil.getPassword(passwordSrc, salt);
 		userDo.setSalt(salt);
 		userDo.setUserName(userName);
 		userDo.setMobile(userName);
 		userDo.setNick(nick);
-//		userDo.setPassword(password);
-//		 userDo.setRegisterChannelId(registerChannelId);
+		// userDo.setPassword(password);
+		// userDo.setRegisterChannelId(registerChannelId);
 		if (registerChannelPointId != null) {
-			AfPromotionChannelPointDo channelPointDo = afPromotionChannelPointService.getPoint("Andriod", registerChannelPointId);
-			AfPromotionChannelPointDo channelPointDoIOS = afPromotionChannelPointService.getPoint("IOS", registerChannelPointId);
-			//根据设备来源区分处理
+			AfPromotionChannelPointDo channelPointDo = afPromotionChannelPointService.getPoint("Andriod",
+					registerChannelPointId);
+			AfPromotionChannelPointDo channelPointDoIOS = afPromotionChannelPointService.getPoint("IOS",
+					registerChannelPointId);
+			// 根据设备来源区分处理
 
-			String clientTypeCode = clientType!=null?clientType.getCode():"";
-			if(ClientTypeEnum.ANDROID.getCode().equals(clientTypeCode)){
+			String clientTypeCode = clientType != null ? clientType.getCode() : "";
+			if (ClientTypeEnum.ANDROID.getCode().equals(clientTypeCode)) {
 				if (channelPointDo != null) {
 					userDo.setRegisterChannelPointId(channelPointDo.getId());
 					userDo.setRegisterChannelId(channelPointDo.getChannelId());
 				} else if (channelPointDoIOS != null) {
 					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
 					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
-					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is android,set into ios.registerChannelPointId="+registerChannelPointId);
+					logger.warn(
+							"setRegisterPwdApi setRegisterChannelId type not match,source is android,set into ios.registerChannelPointId="
+									+ registerChannelPointId);
 				}
-			}else if(ClientTypeEnum.IOS.getCode().equals(clientTypeCode)){
+			} else if (ClientTypeEnum.IOS.getCode().equals(clientTypeCode)) {
 				if (channelPointDoIOS != null) {
 					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
 					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
-				} else if ( channelPointDo!= null) {
+				} else if (channelPointDo != null) {
 					userDo.setRegisterChannelPointId(channelPointDo.getId());
 					userDo.setRegisterChannelId(channelPointDo.getChannelId());
-					logger.warn("setRegisterPwdApi setRegisterChannelId type not match,source is ios,set into android.registerChannelPointId="+registerChannelPointId);
+					logger.warn(
+							"setRegisterPwdApi setRegisterChannelId type not match,source is ios,set into android.registerChannelPointId="
+									+ registerChannelPointId);
 				}
-			}else{
-				//走默认之前的处理
+			} else {
+				// 走默认之前的处理
 				if (channelPointDo != null) {
 					userDo.setRegisterChannelPointId(channelPointDo.getId());
 					userDo.setRegisterChannelId(channelPointDo.getChannelId());
@@ -338,7 +359,9 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 					userDo.setRegisterChannelPointId(channelPointDoIOS.getId());
 					userDo.setRegisterChannelId(channelPointDoIOS.getChannelId());
 				}
-				logger.warn("setRegisterPwdApi setRegisterChannelId source is not found,set into default.registerChannelPointId="+registerChannelPointId);
+				logger.warn(
+						"setRegisterPwdApi setRegisterChannelId source is not found,set into default.registerChannelPointId="
+								+ registerChannelPointId);
 			}
 		}
 		userDo.setRecommendId(0l);
@@ -356,7 +379,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		userDo.setFailCount(-1);
 		userDo.setRecommendCode("");
 		userDo.setStatus("NORMAL");
-		afUserService.addUser(userDo,"Q");
+		afUserService.addUser(userDo, "Q");
 
 		Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 		String inviteCode = Long.toString(invteLong, 36);
@@ -369,10 +392,10 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String registerTime = sdf.format(new Date(System.currentTimeMillis()));
-		//风控可信异步通知
+		// 风控可信异步通知
 		if (context.getAppVersion() >= 381) {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
-					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
+					registerTime, ip, phoneType, networkType, osType, Constants.EVENT_RIGISTER_ASY);
 		}
 		return afUserDo;
 	}
@@ -382,39 +405,41 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 			String imei = ObjectUtils.toString(requestDataVo.getParams().get("IMEI"), null);
 			String androidId = ObjectUtils.toString(requestDataVo.getParams().get("AndroidID"), null);
 			String idfa = ObjectUtils.toString(requestDataVo.getParams().get("IDFA"), null);
-			String imeiMd5="";
-			logger.error("toutiaoactive para:"+imei+","+androidId+","+idfa);
-			if(StringUtils.isNotBlank(imei)){
-				imeiMd5=getMd5(imei);
+			String imeiMd5 = "";
+			logger.error("toutiaoactive para:" + imei + "," + androidId + "," + idfa);
+			if (StringUtils.isNotBlank(imei)) {
+				imeiMd5 = getMd5(imei);
 			}
-			if(StringUtils.isNotBlank(imei)||StringUtils.isNotBlank(androidId)||StringUtils.isNotBlank(idfa)){
-				AfUserToutiaoDo tdo = afUserToutiaoService.getUserActive(imeiMd5,androidId,idfa);
-				if(tdo!=null){
+			if (StringUtils.isNotBlank(imei) || StringUtils.isNotBlank(androidId) || StringUtils.isNotBlank(idfa)) {
+				AfUserToutiaoDo tdo = afUserToutiaoService.getUserActive(imeiMd5, androidId, idfa);
+				if (tdo != null) {
 					Date tdate = tdo.getGmtModified();
 					Date udate = afUserDo.getGmtCreate();
-					if(tdate.getTime()<udate.getTime()){
+					if (tdate.getTime() < udate.getTime()) {
 						String callbackUrl = tdo.getCallbackUrl();
-						if(callbackUrl.indexOf("&event_type")==-1){
-							callbackUrl+="&event_type=1";
+						if (callbackUrl.indexOf("&event_type") == -1) {
+							callbackUrl += "&event_type=1";
 						}
-						String result= HttpUtil.doGet(callbackUrl,20);
-						if(result.indexOf("success")>-1){
+						String result = HttpUtil.doGet(callbackUrl, 20);
+						if (result.indexOf("success") > -1) {
 							Long rid = tdo.getRid();
-							Long userIdToutiao = context.getUserId()==null?-1l:context.getUserId();
-							String userNameToutiao = context.getUserName()==null?"":context.getUserName();
-							afUserToutiaoService.uptUserActive(rid,userIdToutiao,userNameToutiao);
+							Long userIdToutiao = context.getUserId() == null ? -1l : context.getUserId();
+							String userNameToutiao = context.getUserName() == null ? "" : context.getUserName();
+							afUserToutiaoService.uptUserActive(rid, userIdToutiao, userNameToutiao);
 						}
-						logger.error("toutiaoactive:update success,active=1,callbacr_url="+callbackUrl+",result="+result);
+						logger.error("toutiaoactive:update success,active=1,callbacr_url=" + callbackUrl + ",result="
+								+ result);
 					}
 				}
 			}
-		}catch (Exception e){
-			logger.error("toutiaoactive:catch error",e.getMessage());
+		} catch (Exception e) {
+			logger.error("toutiaoactive:catch error", e.getMessage());
 		}
 	}
 
 	/**
 	 * 用于获取一个String的md5值
+	 * 
 	 * @param string
 	 * @return
 	 */
@@ -423,8 +448,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 		byte[] bs = md5.digest(str.getBytes());
 		StringBuilder sb = new StringBuilder(40);
-		for(byte x:bs) {
-			if((x & 0xff)>>4 == 0) {
+		for (byte x : bs) {
+			if ((x & 0xff) >> 4 == 0) {
 				sb.append("0").append(Integer.toHexString(x & 0xff));
 			} else {
 				sb.append(Integer.toHexString(x & 0xff));
@@ -432,6 +457,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		}
 		return sb.toString();
 	}
+
 	private AfUserVo parseUserVo(AfUserDo afUserDo) {
 		AfUserVo vo = new AfUserVo();
 		vo.setUserId(afUserDo.getRid());
@@ -445,25 +471,27 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 	/**
 	 * 是否是白名单
+	 * 
 	 * @param userName
 	 * @return
 	 */
-	private boolean isInWhiteList(String userName){
+	private boolean isInWhiteList(String userName) {
 		AfResourceDo resDo = afResourceService.getSingleResourceBytype(AfResourceType.LOGIN_WHITE_LIST.getCode());
-		if(resDo==null){
+		if (resDo == null) {
 			return false;
 		}
-		if(StringUtils.isNotBlank(resDo.getValue3())){
-			String orignStr = resDo.getValue3().replace("，",","); // ，改为,
+		if (StringUtils.isNotBlank(resDo.getValue3())) {
+			String orignStr = resDo.getValue3().replace("，", ","); // ，改为,
 			String whites[] = orignStr.split(",");
-			for(int i = 0;i<whites.length;i++){
-				if(userName.equals(whites[i])){
+			for (int i = 0; i < whites.length; i++) {
+				if (userName.equals(whites[i])) {
 					return true;
 				}
 			}
 		}
 		return false;
 	}
+
 	public FanbeiExceptionCode getErrorCountCode(Integer errorCount) {
 		if (errorCount == 0) {
 			return FanbeiExceptionCode.USER_PASSWORD_ERROR_ZERO;
