@@ -108,9 +108,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
-		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
-			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
-		}
+//		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
+//			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+//		}
 		final AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
 		if (appversion >= 371) {

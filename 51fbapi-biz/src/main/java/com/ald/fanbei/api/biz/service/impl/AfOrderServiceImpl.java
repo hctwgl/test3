@@ -927,34 +927,42 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         }
                     } else {
                         orderInfo.setPayType(PayType.BANK.getCode());
-                        orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-                        orderInfo.setStatus(OrderStatus.DEALING.getCode());
-
-                        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-
-                        AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
-
-                        resultMap = new HashMap<String, Object>();
-
-                        if (null == cardInfo) {
-                            throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-                        }
-                        logger.info("payBrandOrder orderInfo = {}", orderInfo);
-                        orderDao.updateOrder(orderInfo);
-                        // 银行卡支付 代收
-                        UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
-                        if (!respBo.isSuccess()) {
-                            throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                        }
                         Map<String, Object> newMap = new HashMap<String, Object>();
-                        newMap.put("outTradeNo", respBo.getOrderNo());
-                        newMap.put("tradeNo", respBo.getTradeNo());
-                        newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
-                        resultMap.put("resp", newMap);
-                        resultMap.put("status", PayStatus.DEALING.getCode());
-                        resultMap.put("success", true);
-                        //活动返利
+                        if(saleAmount.compareTo(BigDecimal.ZERO)<=0){
+                            orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+                            orderInfo.setStatus(OrderStatus.PAID.getCode());
+                            logger.info("payBrandOrder orderInfo = {}", orderInfo);
+                            orderDao.updateOrder(orderInfo);
+                            resultMap.put("resp", newMap);
+                            resultMap.put("status", PayStatus.PAYED.getCode());
+                            resultMap.put("success", true);
+                        }else{
+                            orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+                            orderInfo.setStatus(OrderStatus.DEALING.getCode());
+                            AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
+                            AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+
+                            resultMap = new HashMap<String, Object>();
+
+                            if (null == cardInfo) {
+                                throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+                            }
+                            logger.info("payBrandOrder orderInfo = {}", orderInfo);
+                            orderDao.updateOrder(orderInfo);
+                            // 银行卡支付 代收
+                            UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
+                            if (!respBo.isSuccess()) {
+                                throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+                            }
+                            newMap.put("outTradeNo", respBo.getOrderNo());
+                            newMap.put("tradeNo", respBo.getTradeNo());
+                            newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+                            resultMap.put("resp", newMap);
+                            resultMap.put("status", PayStatus.DEALING.getCode());
+                            resultMap.put("success", true);
+                        }
+                        //活动返利
                     }
                     return resultMap;
                 } catch (FanbeiException exception) {
