@@ -15,7 +15,7 @@ let vm = new Vue({
         logData() {
             let self = this;
             $.ajax({
-                type: 'get',
+                type: 'post',
                 url: "/game/pay/orderInfo",
                 data:{'orderNo':orderNo},
                 success: function (data) {
