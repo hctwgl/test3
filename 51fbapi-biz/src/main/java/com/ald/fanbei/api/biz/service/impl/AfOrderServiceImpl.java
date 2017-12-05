@@ -2049,6 +2049,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
     @Override
     public String getBoluomeOrderDetailUrl(AfOrderDo orderInfo) {
+	logger.info("getBoluomeOrderDetailUrl :" + orderInfo.toString());
 	if (!orderInfo.getSecType().equals(OrderSecType.SUP_GAME.getCode())) {
 	    Map<String, String> buildParams = new HashMap<String, String>();
 
