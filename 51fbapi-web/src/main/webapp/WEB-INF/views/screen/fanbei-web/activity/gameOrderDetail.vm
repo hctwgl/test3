@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712041126")
+    #set($version="201712051043")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>订单详情</title>
@@ -40,7 +40,7 @@
         <div class="secondCont">
             <div class="top clearFix">
                 <div class="img"><img :src="content.goodsIcon"></div>
-                <p class="gameName">{{content.acctType}}充值</p>
+                <p class="gameName">{{content.goodsName}}充值</p>
                 <p class="chargeNum">{{content.goodsCount}} {{content.gameType}}</p>
             </div>
             <p class="totalPrice clearFix"><span>订单总价</span><span>￥{{content.actualAmount}}</span></p>
@@ -53,7 +53,7 @@
         </div>
     </div>
     <div class="footer">
-        <p class="deleteOrder">删除订单</p>
+        <p class="deleteOrder" @click="deleteOrder()">删除订单</p>
         <p class="goPay" @click="goPay()">去支付</p>
     </div>
 </div>

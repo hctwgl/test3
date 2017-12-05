@@ -50,12 +50,22 @@ let vm = new Vue({
         },
         //去支付
         goPay(){
-            let self = this;
-            if(returnNum==1){ //returnNum==1--安卓；returnNum==2--ios
-                window.location.href='/fanbei-web/opennative?name=GG_com.alfl.www.business.ui.CashLoanActivity';
-            }else{
-                window.location.href='/fanbei-web/opennative?name=BRAND_ORDER_CONFIRM&params={"orderId":"'+self.orderId+'","plantform":"'+plantform+'"}';
-            }
+            window.location.href='/fanbei-web/opennative?name=BRAND_ORDER_CONFIRM&params={"orderId":"'+orderNo+'","plantform":"'+plantform+'"}';
+        },
+        //删除订单
+        deleteOrder(){
+            let self=this;
+            $.ajax({
+                type: 'post',
+                url: "/order/deleteOrderInfo",
+                data:{'orderId':self.orderId},
+                success: function (data) {
+                    console.log(data,'删除订单');
+                },
+                error:function(){
+                    requestMsg('哎呀，出错了！')
+                }
+            })
         }
     }
 });
