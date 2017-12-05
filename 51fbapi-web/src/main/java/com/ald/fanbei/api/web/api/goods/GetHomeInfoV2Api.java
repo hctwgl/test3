@@ -146,7 +146,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 		// 背景图配置
 		List<AfResourceDo> backgroundList = afResourceService
-				.getBackGroundByType(ResourceType.HOMEPAGE_BACKGROUND.getCode());
+				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
 
 		// 获取金融服务入口
 		Map<String, Object> financialEntranceInfo = getFinancialEntranceInfo();
