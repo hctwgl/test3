@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfSupGameService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
 import com.ald.fanbei.api.common.Constants;
@@ -61,11 +62,14 @@ public class GamePayController extends BaseController {
     @Autowired
     private AfUserDao afUserDao;
 
+    @Autowired
+    private AfOrderService afOrderService;
+
     @RequestMapping(value = "/goods", method = RequestMethod.POST)
     public H5CommonResponse getGoodsList(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
 	try {
-	    //FanbeiWebContext context = doWebCheck(request, false);
+	    // FanbeiWebContext context = doWebCheck(request, false);
 	    String type = request.getParameter("type");
 	    // 查询列表
 	    if (StringUtils.isNotBlank(type)) {
@@ -89,7 +93,7 @@ public class GamePayController extends BaseController {
     public H5CommonResponse getGoodsInfo(HttpServletRequest request, HttpServletResponse response) {
 	Map<String, Object> data = new HashMap<String, Object>();
 	try {
-	    //FanbeiWebContext context = doWebCheck(request, false);
+	    // FanbeiWebContext context = doWebCheck(request, false);
 	    String goodsId = request.getParameter("goodsId");
 
 	    if (StringUtils.isNotBlank(goodsId)) {
@@ -189,6 +193,23 @@ public class GamePayController extends BaseController {
 	}
     }
 
+    @RequestMapping(value = "/order/delete", method = RequestMethod.POST)
+    public H5CommonResponse deleteOrder(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+	try {
+	    FanbeiWebContext context = doWebCheck(request, true);
+	    Long orderId = Long.parseLong(request.getParameter("orderId"));
+	    AfUserDo userDo = afUserDao.getUserByUserName(context.getUserName());
+	    if (userDo == null)
+		throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+
+	    afOrderService.deleteOrder(userDo.getRid(), orderId);
+	    return H5CommonResponse.getNewInstance(true, "订单删除成功", "", "");
+	} catch (Exception e) {
+	    logger.error("/game/pay/order error:", e);
+	    return H5CommonResponse.getNewInstance(false, e.getMessage());
+	}
+    }
+
     @RequestMapping(value = "/orderInfo", method = RequestMethod.GET)
     public H5CommonResponse getOrderInfo(HttpServletRequest request, HttpServletResponse response) {
 	try {
@@ -244,16 +265,16 @@ public class GamePayController extends BaseController {
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
 	try {
-            RequestDataVo reqVo = new RequestDataVo();
+	    RequestDataVo reqVo = new RequestDataVo();
 
-            JSONObject jsonObj = JSON.parseObject(requestData);
-            reqVo.setId(jsonObj.getString("id"));
-            reqVo.setMethod(request.getRequestURI());
-            reqVo.setSystem(jsonObj);
-            return reqVo;
-        } catch (Exception e) {
-            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
-        }
+	    JSONObject jsonObj = JSON.parseObject(requestData);
+	    reqVo.setId(jsonObj.getString("id"));
+	    reqVo.setMethod(request.getRequestURI());
+	    reqVo.setSystem(jsonObj);
+	    return reqVo;
+	} catch (Exception e) {
+	    throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+	}
     }
 
     @Override

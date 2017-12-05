@@ -111,7 +111,7 @@ public interface AfOrderService {
 	 * @param id
 	 * @return
 	 */
-	int deleteOrder(Long id);
+	void deleteOrder(Long userId, Long orderId);
 	/**
 	 * 获取订单列表
 	 * @param pageNo

@@ -739,8 +739,38 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     }
 
     @Override
-    public int deleteOrder(Long id) {
-        return orderDao.deleteOrder(id);
+    public void deleteOrder(Long userId,Long orderId) {
+
+	// 参数基本检查
+	if (orderId == null) {
+	    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+	}
+
+	// 用户订单检查
+	AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId, userId);
+	if (null == orderInfo) {
+	    throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
+	}
+
+	// 校验订单状态是否满足删除条件
+	List<String> canDelStatus = new ArrayList<String>();
+	canDelStatus.add(OrderStatus.NEW.getCode());
+	canDelStatus.add(OrderStatus.FINISHED.getCode());
+	canDelStatus.add(OrderStatus.REBATED.getCode());
+	canDelStatus.add(OrderStatus.CLOSED.getCode());
+	if (canDelStatus.contains(orderInfo.getStatus())) {
+	    // 订单状态改为删除
+	    int nums = orderDao.deleteOrder(orderId);
+	    if (nums <= 0) {
+		throw new FanbeiException(FanbeiExceptionCode.FAILED);
+	    }
+	    // 如果为待支付定单，在删除时减少商品销量
+	    if (OrderStatus.NEW.getCode().equals(orderInfo.getStatus())) {
+		afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
+	    }
+	} else {
+	    throw new FanbeiException(FanbeiExceptionCode.ORDER_NOFINISH_CANNOT_DELETE);
+	}
     }
 
     @Override
