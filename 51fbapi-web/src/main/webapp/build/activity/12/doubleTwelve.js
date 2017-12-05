@@ -472,7 +472,7 @@ let vm = new Vue({
                     if (returnData.success) {
                         requestMsg("优惠劵领取成功");
                         self.$set(self.couponData[index], 'isGet', 'Y');
-                        self.maidian("couponSuccess=true");
+                        self.maidian("couponSuccess=true&couponId="+couponId);
                     } else {
                         var status = returnData.data["status"];
                         if (status == "USER_NOT_EXIST") { // 用户不存在
@@ -481,15 +481,15 @@ let vm = new Vue({
                         if (status == "OVER") { // 优惠券个数超过最大领券个数
                             // requestMsg(returnData.msg);
                             requestMsg("您已经领取过了，快去使用吧");
-                            self.maidian("couponSuccess=got")
+                            self.maidian("couponSuccess=got&couponId=" + couponId)
                         }
                         if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
                             requestMsg(returnData.msg);
-                            self.maidian("couponSuccess=noCoupon")
+                            self.maidian("couponSuccess=noCoupon&couponId=" + couponId)
                         }
                         if (status == "MORE_THAN") { // 优惠券已领取完
                             requestMsg(returnData.msg);
-                            self.maidian("couponSuccess=end")
+                            self.maidian("couponSuccess=end&couponId=" + couponId)
                         }
                     }
                 },
@@ -499,12 +499,12 @@ let vm = new Vue({
             });
         },
         buy: function (id) {
+            this.maidian("productId="+id);
             if (this.isApp) {
                 // 跳转原生app商品购买页
                 window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + id + '"}';
             } else {
                 // 跳转注册页
-                // TODO:
                 this.toRegister();
             }
         },

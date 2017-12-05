@@ -68,15 +68,17 @@
             <div class="super-txt">每日10点开抢</div>
             <div class="day-box" id="dayBox">
                 <ul class="day-ul flex fd-row" id="dayUl">
-                    <li class="day-li por" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N'}"
+                    <li class="day-li por" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':key==triangleFlag,'status-3':value.type=='N'||value.type=='O'}"
                         @click="changeProduct(key)">
+                    <!-- <li class="day-li por" v-for="(value,key) in goodsData" :class="{'status-1':value.type=='E','status-2':value.type=='O','status-3':value.type=='N'}"
+                        @click="changeProduct(key)"> -->
                         <p class="date-box">
                             12月{{key}}日
                         </p>
                         <p v-if="value.type=='E'">已结束</p>
                         <p v-if="value.type=='O'">秒杀中</p>
                         <p v-if="value.type=='N'">即将开始</p>
-                        <div class="triangle" :class="{'triangle-1':value.type=='E','triangle-2':value.type=='O','triangle-3':value.type=='N'}" v-show="key==triangleFlag"></div>
+                        <div class="triangle triangle-2" v-show="key==triangleFlag"></div>
                     </li>
                 </ul>
             </div>
