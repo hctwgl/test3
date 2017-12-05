@@ -21,7 +21,7 @@ public class AfRebateDo{
 
 	private String consumeScene;
 	private String consumeTime;
-	private BigDecimal sceneRebate;
+	private BigDecimal sceneRebate ;
 	private BigDecimal surpriseRebate;
 	
 	
@@ -40,17 +40,17 @@ public class AfRebateDo{
 	}
 	
 	public BigDecimal getSceneRebate() {
-		return sceneRebate;
+		return sceneRebate == null ? BigDecimal.ZERO : sceneRebate;
 	}
 	
 	public void setSceneRebate(BigDecimal sceneRebate) {
-		this.sceneRebate = sceneRebate;
+		this.sceneRebate = sceneRebate == null ? BigDecimal.ZERO : sceneRebate;
 	}
 	public BigDecimal getSurpriseRebate() {
-		return surpriseRebate;
+		return surpriseRebate == null ? BigDecimal.ZERO : surpriseRebate;
 	}
 	public void setSurpriseRebate(BigDecimal surpriseRebate) {
-		this.surpriseRebate = surpriseRebate;
+		this.surpriseRebate = surpriseRebate == null ? BigDecimal.ZERO : surpriseRebate;
 	}
 	@Override
 	public String toString() {
