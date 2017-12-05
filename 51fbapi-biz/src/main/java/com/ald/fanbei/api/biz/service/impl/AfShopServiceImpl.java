@@ -88,7 +88,7 @@ public class AfShopServiceImpl extends BaseService implements AfShopService {
 	    }
 	}
 
-	return shopUrl + "&";
+	return shopUrl;
     }
 
 }
