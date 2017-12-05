@@ -1051,4 +1051,17 @@
 		AND
 			order_no=#{orderNo}
 	</select>
+	
+	<select id="getDouble12OrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryFields"/>
+		FROM af_order
+		WHERE
+			is_delete = 0
+ 	 	AND
+			goods_id=#{goodsId}
+		AND
+			user_id=#{userId}
+	</select>
+	
 </mapper>
