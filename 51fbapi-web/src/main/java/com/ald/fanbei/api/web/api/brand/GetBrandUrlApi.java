@@ -88,6 +88,7 @@ public class GetBrandUrlApi implements ApiHandle {
 
     // 根据测试，线上环境区别地址
     private String parseBoluomeUrl(String shopUrl, String platform, String secType) {
+	logger.info("parseBoluomeUrl :" + shopUrl + " " + platform + " " + secType);
 	if (platform.equals("BOLUOME")) {
 	    if (!OrderSecType.SUP_GAME.getCode().equals(secType)) {
 		String type = shopUrl.substring(shopUrl.lastIndexOf("/") + 1, shopUrl.length());
