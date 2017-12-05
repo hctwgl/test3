@@ -19,7 +19,7 @@ let vm = new Vue({
         rebate:rebate,
         needGameNumShow:'', //是否显示游戏账号
         liIndex:'',  //所选游戏名称index
-        areaIndex:'', //所选游戏选区index
+        areaIndex:0, //所选游戏选区index
         maskShow:'', //蒙版显示与隐藏
         serviceList:[], //选择选区--服务器
     },
@@ -251,6 +251,13 @@ let vm = new Vue({
                 $('.gameArea span').html(self.fixCont.areasList[self.areaIndex].text);
             }
         },
+        //点击服务器
+        gameServiceClick(){
+            let self=this;
+            self.serviceList=self.fixCont.areasList[self.areaIndex].children;
+            self.maskShow=true;
+            $('.serviceCont').animate({'bottom':0},400);
+        },
         //选择服务器
         chooseService(index){
             let self=this;
@@ -366,7 +373,14 @@ let vm = new Vue({
             $('.serviceCont').animate({'bottom':'-8.62rem'},0);
         },
         maskClick01(){  //选择服务器里的返回
-            $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+            let self=this;
+            if($('.sameCont').hasClass('areaCont') && $('.areaCont').css('bottom')=='0px'){
+                $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+            }else{
+                self.maskShow=false;
+                $('.serviceCont').animate({'bottom':'-8.62rem'},0);
+            }
+
         }
     }
 });

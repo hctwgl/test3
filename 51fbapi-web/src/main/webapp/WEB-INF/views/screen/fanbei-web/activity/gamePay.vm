@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712041653")
+    #set($version="201712051436")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>游戏充值</title>
@@ -40,7 +40,7 @@
             <span>{{fixCont.initArea}}</span>
             <i> > </i>
         </div>
-        <div class="gameService gameName clearFix">
+        <div class="gameService gameName clearFix" @click="gameServiceClick()">
             <p>服务器</p>
             <span>{{fixCont.initService}}</span>
             <i> > </i>
