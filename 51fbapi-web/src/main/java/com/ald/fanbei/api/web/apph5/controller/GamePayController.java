@@ -209,7 +209,7 @@ public class GamePayController extends BaseController {
 	}
     }
 
-    @RequestMapping(value = "/orderInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/orderInfo", method = RequestMethod.POST)
     public H5CommonResponse getOrderInfo(HttpServletRequest request, HttpServletResponse response) {
 	try {
 	    FanbeiWebContext context = doWebCheck(request, true);
