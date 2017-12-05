@@ -222,7 +222,7 @@ public class GamePayController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, "参数错误");
 	    }
 	} catch (Exception e) {
-	    logger.error("/game/pay/goodsInfo error:", e);
+	    logger.error("/game/pay/orderInfo error:", e);
 	    return H5CommonResponse.getNewInstance(false, e.getMessage());
 	}
     }
