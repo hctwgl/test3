@@ -2,7 +2,7 @@ let goodsId=getUrl('goodsId'); //获取类型id
 let discout=getUrl('discout'); //折扣
 let rebate=getUrl('rebate'); //返利
 $(function(){
-    $('#recreationPay').height($(window).height())
+    $('#recreationPay').height($(window).height());
     $('.footer').height($(window).height()*0.07);
     $('.allTop').height($(window).height()*0.93);
 });
