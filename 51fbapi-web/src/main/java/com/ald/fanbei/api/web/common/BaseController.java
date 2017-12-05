@@ -408,7 +408,7 @@ public abstract class BaseController {
         FanbeiWebContext webContext = new FanbeiWebContext();
         String appInfo = getAppInfo(request.getHeader("Referer"));
         //如果是测试环境
-        logger.info("doWebCheck appInfo = %s,%s",appInfo,request.getHeaderNames().toString());
+        logger.info("doWebCheck appInfo = %s",appInfo);
         if (Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) && StringUtil.isBlank(appInfo)) {
             String testUser = getTestUser(request.getHeader("Referer"));
             if (testUser != null && !"".equals(testUser)) {
