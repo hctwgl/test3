@@ -750,17 +750,24 @@ public class APPH5GgActivityController extends BaseController {
 			    if(msgIndexDo != null){
 				if(msgIndexDo.getRebateIndex() != null){
 				    rebateIndex = msgIndexDo.getRebateIndex();
+				    if(lastUserRebateDo.getRid() <= rebateIndex){
+					//不弹窗
+					return resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+				    }
+				    
 				}
 			    }
+			    //否则弹窗，设置弹窗信息并保存记录
 			    //范围内最大的记录
 			    AfBoluomeRebateDo maxUserRebateDo = afBoluomeRebateService.getMaxUserRebateByStartIdAndEndIdAndUserId(rebateIndex,lastUserRebateDo.getRid(),userId);
 			    
 			      // 设置金额
 			        if(maxUserRebateDo !=null ){
-				String rebateAmount = maxUserRebateDo.getRebateAmount().toString();
-				logger.error("popUp rebateAmount = {},userId = {}", rebateAmount, userId);
-				poPupVo.setRebateAmount(rebateAmount);
-				// 设置图片
+        				String rebateAmount = maxUserRebateDo.getRebateAmount().toString();
+        				logger.error("popUp rebateAmount = {},userId = {}", rebateAmount, userId);
+        				poPupVo.setRebateAmount(rebateAmount);
+        				// 设置图片
+			        }
 				AfResourceDo imageInfo = afResourceService.getConfigByTypesAndSecType(H5GgActivity.GG_ACTIVITY.getCode(),
 						H5GgActivity.REBATE_IMAGE.getCode());
 				if (imageInfo != null) {
@@ -773,43 +780,23 @@ public class APPH5GgActivityController extends BaseController {
 				if (itemsInfo != null) {
 					poPupVo.setSceneName(itemsInfo.getName());
 				}
-				
-				if (msgIndexDo == null) {
-					// 没有记录，设置弹窗并添加记录到db
-					poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
-					afBoluomeActivityMsgIndexDo.setRebateIndex(lastUserRebateDo.getRid());
-					afBoluomeActivityMsgIndexDo.setUserId(userId);
-					afBoluomeActivityMsgIndexService.saveRecord(afBoluomeActivityMsgIndexDo);
-				} else if (msgIndexDo != null) {
-					// 有记录。couponId = coupon_index ?
-
-					// 如果插入coupon_index = null insert coupon_index
-					if (msgIndexDo.getRebateIndex() == null) {
-						poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
-						afBoluomeActivityMsgIndexDo.setRebateIndex(lastUserRebateDo.getRid());
-						afBoluomeActivityMsgIndexDo.setUserId(userId);
-						afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
-						afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
-						afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
-					} else if (msgIndexDo.getRebateIndex() != null) {
-						// if rebateIndex > rebate_index :do update
-						if (msgIndexDo.getRebateIndex() < maxUserRebateDo.getRid()) {
-							// 设置弹窗，更新db记录
-							poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
-							afBoluomeActivityMsgIndexDo.setRebateIndex(lastUserRebateDo.getRid());
-							afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
-							afBoluomeActivityMsgIndexDo.setUserId(userId);
-							afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
-							afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
-							afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
-						}
-					}
+				afBoluomeActivityMsgIndexDo.setRebateIndex(lastUserRebateDo.getRid());
+				afBoluomeActivityMsgIndexDo.setUserId(userId);
+				if(msgIndexDo == null){
+				    afBoluomeActivityMsgIndexService.saveRecord(afBoluomeActivityMsgIndexDo);
+				}else{
+				    afBoluomeActivityMsgIndexDo.setGmtModified(new Date());
+				    afBoluomeActivityMsgIndexDo.setRid(msgIndexDo.getRid());
+				    afBoluomeActivityMsgIndexService.updateById(afBoluomeActivityMsgIndexDo);
 				}
-			       }
+				//弹窗
+				poPupVo.setRebateToPop(H5GgActivity.TOPOPUP.getCode());
+				resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+			}else{
+			    return resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
 			}
-			// rebate end
 
-			resultStr = H5CommonResponse.getNewInstance(true, "获取弹窗信息成功", null, poPupVo).toString();
+			
 		} catch (Exception e) {
 			logger.error("/h5GgActivity/popUp" + context + "error = {}", e.getStackTrace());
 			resultStr = H5CommonResponse.getNewInstance(false, "获取弹窗信息失败").toString();
