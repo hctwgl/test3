@@ -227,14 +227,15 @@ public class GamePayController extends BaseController {
 	}
     }
 
-    @RequestMapping(value = "/callback", method = RequestMethod.GET)
+    @RequestMapping(value = "/callback", method = RequestMethod.GET, produces = "application/x-www-form-urlencoded;charset=UTF-8")
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
 	try {
 
+	    logger.info("callback: " + request.getParameterMap().toString());
 	    String userOrderId = request.getParameter("userOrderId");
 	    // 01成功 02失败
 	    String status = request.getParameter("status");
-	    String mes = URLDecoder.decode(request.getParameter("mes"),"UTF-8");
+	    String mes = URLDecoder.decode(request.getParameter("mes"), "UTF-8");
 	    String kminfo = request.getParameter("kminfo");
 	    String payoffPriceTotal = request.getParameter("payoffPriceTotal");
 	    String sign = request.getParameter("sign");

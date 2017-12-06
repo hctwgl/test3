@@ -72,8 +72,8 @@ public class AppTest extends TestCase {
 //	    System.out.println(URLDecoder.decode("QQ号", "utf-8"));
 //	    System.out.println(URLDecoder.decode("QQ号", "ascii"));
 	    
-//System.out.println(URLDecoder.decode("åå¼å¤±è´¥ï¼åå¼å¤±è´¥:è´¦å·éè¯¯,æ æ³åå¼ï¼", "utf-8"));
-	    
+//System.out.println(URLDecoder.decode("%2f%2f%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5%EF%BC%9A%E5%85%85%E5%80%BC%E5%A4%B1%E8%B4%A5:%E8%B4%A6%E5%8F%B7%E9%94%99%E8%AF%AF%2c%E6%97%A0%E6%B3%95%E5%85%85%E5%80%BC%EF%BC%81", "utf-8"));
+	    //System.out.println(URLEncoder.encode("//充值失败：充值失败:账号错误,无法充值！", "UTF-8"));
 	    OrderEntity orderEntity = new OrderEntity();
 	    orderEntity.setAcctType("网易通行证账号");
 	    orderEntity.setBusinessId("Num10428");
@@ -85,12 +85,12 @@ public class AppTest extends TestCase {
 	    orderEntity.setGoodsId("wy001jk");
 	    orderEntity.setGoodsNum(10);
 	    orderEntity.setKey("2d477a24ec9c4d4ba65403f031cd5d9f");
-	    //orderEntity.setNoticeUrl("http://1it9109157.51mypc.cn:14348/game/pay/callback");
-	    orderEntity.setNoticeUrl("https://dtestapp.51fanbei.com/game/pay/callback");
+	    orderEntity.setNoticeUrl("http://1it9109157.51mypc.cn:14348/game/pay/callback");
+	    //orderEntity.setNoticeUrl("https://dtestapp.51fanbei.com/game/pay/callback");
 	    orderEntity.setOrderArea("");
 	    orderEntity.setOrderIp("");
 	    orderEntity.setUserName("00000000@e2p.com");
-	    orderEntity.setUserOrderId("151");
+	    orderEntity.setUserOrderId("158");
 	    String result = OrderReceive.SendOrder(orderEntity);
 	    System.out.println(result);
 //
