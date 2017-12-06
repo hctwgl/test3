@@ -34,6 +34,7 @@ public class AfUserCouponDo extends AbstractSerial{
 	
 	private String	sourceType;//获取来源【REGIST：注册， INVITE：邀请 】
 	private String	type;//获取来源【REGIST：注册， INVITE：邀请 】
+	private String	sourceRef = "SYS"; //对应数据库默认值
 
 	public Long getRid() {
 		return rid;
@@ -127,6 +128,14 @@ public class AfUserCouponDo extends AbstractSerial{
 	 */
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getSourceRef() {
+		return sourceRef;
+	}
+
+	public void setSourceRef(String sourceRef) {
+		this.sourceRef = sourceRef;
 	}
 	
 }

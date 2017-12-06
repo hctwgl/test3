@@ -497,4 +497,9 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	public List<AfRenewalDetailDo> getRenewalDetailListByBorrowId(Long borrowId) {
 		return afRenewalDetailDao.getRenewalDetailListByBorrowId(borrowId);
 	}
+
+	@Override
+	public AfRenewalDetailDo getRenewalDetailHoursByBorrowId(Long borrowId) {
+		return afRenewalDetailDao.getRenewalDetailHoursByBorrowId(borrowId);
+	}
 }

@@ -61,5 +61,6 @@ public interface AfRenewalDetailService {
 	 * @return
 	 * **/
 	public List<AfRenewalDetailDo> getRenewalDetailListByBorrowId(Long borrowId);
-	
+
+    AfRenewalDetailDo getRenewalDetailHoursByBorrowId(Long borrowId);
 }

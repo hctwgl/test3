@@ -146,7 +146,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 		// 背景图配置
 		List<AfResourceDo> backgroundList = afResourceService
-				.getBackGroundByType(ResourceType.HOMEPAGE_BACKGROUND.getCode());
+				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
 
 		// 获取金融服务入口
 		Map<String, Object> financialEntranceInfo = getFinancialEntranceInfo();
@@ -419,16 +419,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	private Map<String, Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> navResclist) {
 		Map<String, Object> navigationInfo = new HashMap<String, Object>();
 		List<Object> navigationList = new ArrayList<Object>();
-
-		Map<String, Object> backgroundInfo = new HashMap<String, Object>();
-		// 查询快速导航背景图信息
-		List<AfResourceDo> bgRescList = afResourceService
-				.getConfigByTypes(ResourceType.HOME_NAVIGATION_BACKGROUND.getCode());
-		if (bgRescList != null && !bgRescList.isEmpty()) {
-			AfResourceDo afResourceDo = bgRescList.get(0);
-			backgroundInfo.put("imageUrl", afResourceDo.getValue());
-			backgroundInfo.put("type", AfResourceSecType.NAVIGATION_BACKGROUND.getCode());
-		}
 		int navCount = navResclist.size();
 		for (int i = 0; i < navCount; i++) {
 			// 如果配置大于5个，小于10个，则只显示5个
@@ -454,7 +444,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			navigationList.add(dataMap);
 		}
 		navigationInfo.put("navigationList", navigationList);
-		navigationInfo.put("backgroundInfo", backgroundInfo);
 		return navigationInfo;
 	}
 

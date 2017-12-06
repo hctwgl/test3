@@ -242,6 +242,13 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
                 if (null == card) {
                     throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
                 }
+                AfResourceDo afResource = afResourceService.getSingleResourceBytype("bank_repay_limit_" + card.getBankCode());
+                if (afResource != null && afResource.getValue().equals(card.getBankCode())) {
+                    Long limitValue = Long.valueOf(afResource.getValue1());//限制金额
+                    if (actualAmount.compareTo(new BigDecimal(limitValue)) > 0) {
+                        throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_RENEW_LIMIT_ERROR);//提示语
+                    }
+                }
                 map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion());
 
                 // 代收
