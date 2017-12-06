@@ -20,6 +20,7 @@ import com.ald.fanbei.api.common.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -869,11 +870,9 @@ public class RiskUtil extends AbstractThird {
     }
 
     /**
-     * @方法描述：实名认证时风控异步审核
-     *
-     * @author fumeiai 2017年6月7日  14:47:50
-     *
      * @return
+     * @方法描述：实名认证时风控异步审核
+     * @author fumeiai 2017年6月7日  14:47:50
      */
     public int asyRegisterStrongRisk(String code, String data, String msg, String signInfo) {
         RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
@@ -895,7 +894,7 @@ public class RiskUtil extends AbstractThird {
 
             AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
             //风控异步回调的话，以第一次异步回调成功为准
-            if(!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")){
+            if (!StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.NO.getCode()) && !StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
                 if (StringUtils.equals("10", result)) {
                     AfUserAuthDo authDo = new AfUserAuthDo();
                     authDo.setUserId(consumerNo);
@@ -906,7 +905,7 @@ public class RiskUtil extends AbstractThird {
                     afUserAuthService.updateUserAuth(authDo);
 
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
-	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+                                                    如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
                     AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
                     if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
                         AfUserAccountDo accountDo = new AfUserAccountDo();
@@ -949,11 +948,9 @@ public class RiskUtil extends AbstractThird {
     }
 
     /**
-     * @方法描述：实名认证时风控异步审核(新版本3.9.7以上)
-     *
-     * @author chefeipeng 2017年6月7日  14:47:50
-     *
      * @return
+     * @方法描述：实名认证时风控异步审核(新版本3.9.7以上)
+     * @author chefeipeng 2017年6月7日  14:47:50
      */
     public int asyRegisterStrongRiskV1(String code, String data, String msg, String signInfo) {
         RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
@@ -975,7 +972,7 @@ public class RiskUtil extends AbstractThird {
 
             AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(consumerNo);
             //风控异步回调的话，以第一次异步回调成功为准
-            if(!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode())&&!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")){
+            if (!StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.NO.getCode()) && !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.YES.getCode()) || orderNo.contains("sdrz")) {
                 if (StringUtils.equals("10", result)) {
                     AfUserAuthDo authDo = new AfUserAuthDo();
                     authDo.setUserId(consumerNo);
@@ -999,7 +996,7 @@ public class RiskUtil extends AbstractThird {
                 } else if (StringUtils.equals("30", result)) {
                     AfUserAuthDo authDo = new AfUserAuthDo();
                     authDo.setUserId(consumerNo);
-                    if(!StringUtil.equals(authDo.getRiskStatus(),RiskStatus.YES.getCode())){
+                    if (!StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())) {
                         authDo.setRiskStatus(RiskStatus.NO.getCode());
                     }
                     authDo.setBasicStatus("N");
@@ -2056,7 +2053,7 @@ public class RiskUtil extends AbstractThird {
             //region 信用支付白名单
             List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("credit_test_user");
             if (afResourceList.size() > 0) {
-                if (afResourceList.get(0).getValue()!=null&&afResourceList.get(0).getValue().contains(String.valueOf(userId))) {
+                if (afResourceList.get(0).getValue() != null && afResourceList.get(0).getValue().contains(String.valueOf(userId))) {
                     return "Y";
                 }
             }
@@ -2206,4 +2203,19 @@ public class RiskUtil extends AbstractThird {
         }
         return 0;
     }
+    @Async
+    public void syncOpenId(Long userId, String openId) {
+        try{
+            HashMap map = new HashMap();
+            map.put("consumerNo", String.valueOf(userId) );
+            map.put("openId", openId);
+            map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
+            String url = "http://192.168.111.16/modules/api/risk/updateOpenId.htm";
+            requestProxy.post(url, map);
+        }catch (Exception e){
+            logger.error("syncOpenId error:",e);
+        }
+
+    }
+
 }
