@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712051436")
+    #set($version="201712061045")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
-    <title>游戏充值</title>
+    <title>充值服务</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/11/gamePay.css?version=$version">
 </head>
 <body>
