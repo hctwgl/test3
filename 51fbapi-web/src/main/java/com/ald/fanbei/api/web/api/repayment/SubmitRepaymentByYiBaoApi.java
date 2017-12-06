@@ -50,7 +50,6 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
     @Resource
     private AfUserBankcardService afUserBankcardService;
 
-    private BigDecimal showAmount;
 
     @Resource
     private YiBaoUtility yiBaoUtility;
@@ -66,6 +65,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo,
                                      FanbeiContext context, HttpServletRequest request) {
+        BigDecimal showAmount;
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
         BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);

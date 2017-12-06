@@ -189,72 +189,75 @@ public class TestController {
     @RequestMapping("/compensate")
     @ResponseBody
     public String compensate() {
-        RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
-        List<RiskTrackerDo> riskTrackerDoList = riskTrackerService.getListByCommonCondition(riskTrackerDo);
-        for (RiskTrackerDo item : riskTrackerDoList) {
-            HashMap reqBo1 = JSON.parseObject(item.getParams(), HashMap.class);
-            String data1 = getUrlParamsByMap(reqBo1);
-            String reqResult1 = HttpUtil.post(item.getUrl(), reqBo1);
-            if (StringUtil.isBlank(reqResult1)) {
-                throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
-            }
-            RiskVerifyRespBo riskResp1 = JSONObject.parseObject(reqResult1, RiskVerifyRespBo.class);
-            if (item.getUrl().indexOf("raiseQuota") != -1 && item.getTrackId().indexOf("success_") == -1) {//未处理过得提额
-                try {
-                    HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
-                    String data = getUrlParamsByMap(reqBo);
-                    String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
-                    if (StringUtil.isBlank(reqResult)) {
-                        throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
-                    }
-                    RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
-                    if (riskResp != null && "0000".equals(riskResp.getCode())) {
-                        riskResp.setSuccess(true);
-                        JSONObject dataObj = JSON.parseObject(riskResp.getData());
-                        BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-                        Long consumerNum = Long.parseLong(reqBo.get("consumerNo").toString());
+        try{
+            RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
+            List<RiskTrackerDo> riskTrackerDoList = riskTrackerService.getListByCommonCondition(riskTrackerDo);
+            for (RiskTrackerDo item : riskTrackerDoList) {
+                HashMap reqBo1 = JSON.parseObject(item.getParams(), HashMap.class);
+                String data1 = getUrlParamsByMap(reqBo1);
+                String reqResult1 = HttpUtil.post(item.getUrl(), reqBo1);
+                if (StringUtil.isBlank(reqResult1)) {
+                    throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+                }
+                RiskVerifyRespBo riskResp1 = JSONObject.parseObject(reqResult1, RiskVerifyRespBo.class);
+                if (item.getUrl().indexOf("raiseQuota") != -1 && item.getTrackId().indexOf("success_") == -1) {//未处理过得提额
+                    try {
+                        HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
+                        String data = getUrlParamsByMap(reqBo);
+                        String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
+                        if (StringUtil.isBlank(reqResult)) {
+                            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+                        }
+                        RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
+                        if (riskResp != null && "0000".equals(riskResp.getCode())) {
+                            riskResp.setSuccess(true);
+                            JSONObject dataObj = JSON.parseObject(riskResp.getData());
+                            BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
+                            Long consumerNum = Long.parseLong(reqBo.get("consumerNo").toString());
 
-                        AfUserAccountDo accountDo = new AfUserAccountDo();
-                        accountDo.setUserId(consumerNum);
-                        accountDo.setAuAmount(au_amount);
-                        afUserAccountService.updateUserAccount(accountDo);
+                            AfUserAccountDo accountDo = new AfUserAccountDo();
+                            accountDo.setUserId(consumerNum);
+                            accountDo.setAuAmount(au_amount);
+                            afUserAccountService.updateUserAccount(accountDo);
+                            item.setTrackId("success_" + item.getTrackId());
+                            riskTrackerService.updateById(item);
+                        } else {
+                            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+                        }
+                    } catch (Exception e) {
+                        logger.error("raiseQuota compensate exception:", e);
+                    }
+
+                } else if (item.getUrl().indexOf("/overdueOrder.htm") != -1 && item.getTrackId().indexOf("success_") == -1) {
+                    try {
+                        HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
+                        String data = getUrlParamsByMap(reqBo);
+                        String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
+                        logger.info("overdueOrder.htm compensate  overdueOrder:" + reqResult);
                         item.setTrackId("success_" + item.getTrackId());
                         riskTrackerService.updateById(item);
-                    } else {
-                        throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+                    } catch (Exception e) {
+                        logger.error("overdueOrder compensate exception:", e);
                     }
-                } catch (Exception e) {
-                    logger.error("raiseQuota compensate exception:", e);
+
+                } else if (item.getUrl().indexOf("/repayment.htm") != -1 && item.getTrackId().indexOf("success_") == -1) {
+                    try {
+                        HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
+                        String data = getUrlParamsByMap(reqBo);
+                        String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
+                        logger.info("repayment.htm compensate  repayment:" + reqResult);
+                        item.setTrackId("success_" + item.getTrackId());
+                        riskTrackerService.updateById(item);
+                    } catch (Exception e) {
+                        logger.error("repayment compensate exception:", e);
+                    }
                 }
 
-            } else if (item.getUrl().indexOf("/overdueOrder.htm") != -1 && item.getTrackId().indexOf("success_") == -1) {
-                try {
-                    HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
-                    String data = getUrlParamsByMap(reqBo);
-                    String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
-                    logger.info("overdueOrder.htm compensate  overdueOrder:" + reqResult);
-                    item.setTrackId("success_" + item.getTrackId());
-                    riskTrackerService.updateById(item);
-                } catch (Exception e) {
-                    logger.error("overdueOrder compensate exception:", e);
-                }
-
-            } else if (item.getUrl().indexOf("/repayment.htm") != -1 && item.getTrackId().indexOf("success_") == -1) {
-                try {
-                    HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
-                    String data = getUrlParamsByMap(reqBo);
-                    String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
-                    logger.info("repayment.htm compensate  repayment:" + reqResult);
-                    item.setTrackId("success_" + item.getTrackId());
-                    riskTrackerService.updateById(item);
-                } catch (Exception e) {
-                    logger.error("repayment compensate exception:", e);
-                }
             }
-
+        }catch (Exception e){
+            logger.error("compensate error:",e);
         }
         return "调用处理中^";
-
     }
 
     @RequestMapping("/cuishou")

@@ -61,7 +61,7 @@
 			type = 3
 		AND
 			tag != 'MORE'
-		ORDER BY gmt_create desc
+		ORDER BY sort DESC ,gmt_create desc
 	</select>
 	
 	<select id="getHomeMoreActivity"  resultType="AfActivityDo">
