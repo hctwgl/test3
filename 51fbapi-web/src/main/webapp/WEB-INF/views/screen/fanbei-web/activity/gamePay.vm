@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712061045")
+    #set($version="201712061558")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>充值服务</title>
@@ -31,7 +31,7 @@
             <p>游戏账号</p>
             <input type="text" placeholder="请输入游戏账号"/>
         </div>
-        <div class="gameNum gameName">
+        <div class="gameNum gameName" v-if="fixCont.accountType">
             <p>{{fixCont.accountType}}</p>
             <input type="text" placeholder=" "/>
         </div>
@@ -57,9 +57,9 @@
         <div class="gameMoney">
             <p class="title01">面额</p>
             <ul class="moneyList clearFix">
-                <li v-for="(item,index) in fixCont.priceTypeList" @click="gameMoneyClick(index)">
-                    <p class="typeName"><i class="goodsNum">{{item.chargeNum}}</i>{{fixCont.chargeNumName}}</p>
-                    <p class="typePrice"><i class="pricePay">{{fixNum((item.quantity)*(fixCont.priceTimes)*discout)}}</i>元</p>
+                <li v-for="(item,index) in initPriceList.list" @click="gameMoneyClick(index)">
+                    <p class="typeName"><i class="goodsNum">{{item.chargeNum}}</i>{{initPriceList.chargeNumName}}</p>
+                    <p class="typePrice"><i class="pricePay">{{fixNum((item.quantity)*(initPriceList.priceTimes)*discout)}}</i>元</p>
                 </li>
             </ul>
         </div>

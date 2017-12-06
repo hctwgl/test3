@@ -22,6 +22,7 @@ let vm = new Vue({
         areaIndex:0, //所选游戏选区index
         maskShow:'', //蒙版显示与隐藏
         serviceList:[], //选择选区--服务器
+        initPriceList:[]  //默认显示的面额list
     },
     created: function () {
         this.logData();
@@ -108,23 +109,21 @@ let vm = new Vue({
             //面额
             let priceTypeList=[];
             let quantityList=[]; //面额--点券--价格（点数*倍数）
-            quantityList=$(_xml).find('type').children('quantity').text().split(",");
-            //点券--点数
             let chargeNumList=[];
-            chargeNumList=$(_xml).find('type').children('chargeNum').text().split(",");
-            for(let i=0;i<quantityList.length;i++){
-                let obj={quantity:quantityList[i],chargeNum:chargeNumList[i]};
-                priceTypeList.push(obj);
+            for(let i=0;i<$(_xml).find('type').length;i++){
+                quantityList[i]=$(_xml).find('type').eq(i).children('quantity').text().split(',');
+                //点券--点数
+                chargeNumList[i]=$(_xml).find('type').eq(i).children('chargeNum').text().split(',');
+                let list=[];
+                for(let j=0;j<quantityList[i].length;j++){
+                    let obj={quantity:quantityList[i][j],chargeNum:chargeNumList[i][j]};
+                    list.push(obj);
+                }
+                let aa={chargeNumName:$(_xml).find('type').eq(i).children('chargeNum').attr('name')?$(_xml).find('type').eq(i).children('chargeNum').attr('name') : '',priceTimes:$(_xml).find('type').eq(i).children('quantity').attr('priceTimes'),list:list};
+                priceTypeList.push(aa);
             }
+            //console.log(priceTypeList)
             returnobj.priceTypeList=priceTypeList;
-            //点券--价格倍数
-            returnobj.priceTimes=$(_xml).find('type').children('quantity').attr('priceTimes');
-            //点券--名称
-            if($(_xml).find('type').children('chargeNum').attr('name')){
-                returnobj.chargeNumName=$(_xml).find('type').children('chargeNum').attr('name');
-            }else{
-                returnobj.chargeNumName='';
-            }
             return returnobj;
         },
         //获取页面初始化信息
@@ -158,6 +157,8 @@ let vm = new Vue({
                     self.fixCont=self.allData[0];
                     console.log(self.allData[0], '默认显示第一个数据');
                     self.liIndex=0;
+                    //默认显示的面额为第一个充值类型下的第一个list
+                    self.initPriceList=self.allData[0].priceTypeList[0];
                     //默认显示的游戏区服
                     if(self.fixCont.areasList){
                         for(let i=0;i<self.fixCont.areasList.length;i++){
@@ -268,10 +269,15 @@ let vm = new Vue({
         },
         //点击充值类型
         gameTypeClick(index){
+            let self=this;
             $('.typeList li').eq(index).addClass('changeColor01');
             $('.typeList li').eq(index).find('p').addClass('changeColor02');
             $('.typeList li').eq(index).siblings().removeClass('changeColor01');
             $('.typeList li').eq(index).siblings().find('p').removeClass('changeColor02');
+            self.initPriceList=self.fixCont.priceTypeList[index];
+            console.log(self.initPriceList,'000')
+            $('.payMoney span').html(((self.initPriceList.list[0].quantity) * discout).toFixed(2)+'元');
+            $('.fanMoney span').html(((self.initPriceList.list[0].quantity) * discout*rebate).toFixed(2)+'元');
         },
         //点击面额
         gameMoneyClick(index){
