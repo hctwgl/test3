@@ -91,7 +91,7 @@ public class GetHomeGoodsListApi implements ApiHandle {
 			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
 			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
 			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-			goodsInfo.put("goodsIcon", goodsDo.getGoodsPic1());
+			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
 			goodsInfo.put("goodsId", goodsDo.getRid());
 			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
 			goodsInfo.put("source", goodsDo.getSource());
