@@ -21,9 +21,11 @@
  		FROM 
  		af_category 
  		WHERE parent_id  IN(
-		SELECT c1.id FROM af_category c1 LEFT JOIN af_category c2 ON c1.parent_id = c2.id WHERE c2.tag='HOMEPAGE' AND c2.is_show = 'Y'
+		SELECT c1.id FROM af_category c1 LEFT JOIN af_category c2 ON c1.parent_id = c2.id WHERE c2.tag='HOMEPAGE' AND c2.is_show = 'Y' AND c1.is_delete = 0
 		)
 		AND
 		is_show = 'Y'
+		AND
+		is_delete = 0
 	</select>
 </mapper>
