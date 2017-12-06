@@ -340,6 +340,7 @@
 				<entry key="/borrow/getMyRepaymentV1" value-ref="getMyRepaymentV1Api" />
 				<entry key="/borrow/getRepaymentDetailV1" value-ref="getRepaymentDetailV1Api" />
 				<entry key="/borrow/getRepaymentCalendarV1" value-ref="getRepaymentCalendarV1Api" />
+				<entry key="/borrow/getMyHistoryBorrowDetailV1" value-ref="getMyHistoryBorrowDetailV1Api" />
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />

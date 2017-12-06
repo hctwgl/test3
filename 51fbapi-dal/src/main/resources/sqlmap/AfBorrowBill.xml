@@ -669,20 +669,43 @@
 	</select>
 
 	<select id="getUserAllMonthBill" resultType="AfBorrowBillDo">
-		SELECT
-			COALESCE (sum(bill_amount), 0) billAmount,
-			gmt_out_day gmtOutDay
-		FROM
-			af_borrow_bill
-		WHERE
-			is_delete = 0
-			AND is_out = 1
-			AND status = 'Y'
-			AND user_id = #{userId}
-		GROUP BY
-			DATE_FORMAT(gmt_out_day,'%Y-%c')
-		ORDER BY
-			DATE_FORMAT(gmt_out_day,'%Y-%c') desc
+		select a.billAmount ,
+			str_to_date(a.gmtOutDay,'%Y-%m-%d %H:%i:%s') gmtOutDay
+		from 
+		(SELECT
+		      COALESCE (sum(bill_amount), 0) billAmount,
+		      DATE_FORMAT(gmt_out_day,'%Y-%c-01') gmtOutDay
+		      -- gmt_out_day 
+		    FROM
+		      af_borrow_bill
+		    WHERE
+		      is_delete = 0
+		      AND is_out = 1
+		      AND status = 'Y'
+		      AND user_id = #{userId}
+		    GROUP BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c')
+		    ORDER BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c') desc
+		) a
+		left join 
+		(SELECT
+		      COALESCE (sum(bill_amount), 0) billAmount,
+		      DATE_FORMAT(gmt_out_day,'%Y-%c-01') gmtOutDay
+		    FROM
+		      af_borrow_bill
+		    WHERE
+		      is_delete = 0
+		      AND is_out = 1
+		      AND status = 'N'
+		      AND user_id = #{userId}
+		    GROUP BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c')
+		    ORDER BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c') desc
+		) b
+		on a.gmtOutDay = b.gmtOutDay 
+		where  IFNULL(b.billAmount,0) = 0
 		LIMIT #{begin},#{pageSize}
 	</select>
 

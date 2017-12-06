@@ -17,7 +17,6 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -124,7 +123,9 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 				map.put("bills", yearMap.get(key));
 				list.add(map);
 			}
-			resp.setResponseData(list);
+			Map<String, Object> respMap = new HashMap<String, Object>();
+			respMap.put("list", list);
+			resp.setResponseData(respMap);
 			return resp;
 		} catch (Exception e) {
 			logger.error("getMyHistoryBorrowV1Api error :" , e);

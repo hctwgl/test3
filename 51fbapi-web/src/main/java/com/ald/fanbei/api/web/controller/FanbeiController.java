@@ -128,7 +128,7 @@ public class FanbeiController extends BaseController {
             ,"/bill/getBillListByStatus","/borrow/getCreditPromoteInfoV1"
             ,"/borrow/getBillListByMonthAndYear","/borrow/getBorrowDetailV1","/borrow/getMyBorrowListV1","/borrow/getMyBorrowV1"
             ,"/borrow/getMyHistoryBorrowV1","/borrow/getMyRepaymentDetailV1","/borrow/getMyRepaymentHistoryV1","/borrow/getMyRepaymentV1","/borrow/getRepaymentDetailV1"
-            ,"/borrow/getRepaymentCalendarV1"
+            ,"/borrow/getRepaymentCalendarV1","/borrow/getMyHistoryBorrowDetailV1"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
