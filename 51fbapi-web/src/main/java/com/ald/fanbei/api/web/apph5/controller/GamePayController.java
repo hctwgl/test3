@@ -231,10 +231,11 @@ public class GamePayController extends BaseController {
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
 	try {
 
+	    logger.info("callback: " + request.getRequestURI());
 	    String userOrderId = request.getParameter("userOrderId");
 	    // 01成功 02失败
 	    String status = request.getParameter("status");
-	    String mes = URLDecoder.decode(request.getParameter("mes"),"UTF-8");
+	    String mes = URLDecoder.decode(request.getParameter("mes"), "UTF-8");
 	    String kminfo = request.getParameter("kminfo");
 	    String payoffPriceTotal = request.getParameter("payoffPriceTotal");
 	    String sign = request.getParameter("sign");
