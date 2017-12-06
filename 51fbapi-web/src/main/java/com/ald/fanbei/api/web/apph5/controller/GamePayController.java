@@ -227,7 +227,7 @@ public class GamePayController extends BaseController {
 	}
     }
 
-    @RequestMapping(value = "/callback", method = RequestMethod.GET, produces = "application/x-www-form-urlencoded")
+    @RequestMapping(value = "/callback", method = RequestMethod.GET, produces = "application/x-www-form-urlencoded;charset=UTF-8")
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
 	try {
 
