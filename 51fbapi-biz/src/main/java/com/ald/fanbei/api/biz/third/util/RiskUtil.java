@@ -2203,14 +2203,13 @@ public class RiskUtil extends AbstractThird {
         }
         return 0;
     }
-    @Async
     public void syncOpenId(Long userId, String openId) {
         try{
             HashMap map = new HashMap();
             map.put("consumerNo", String.valueOf(userId) );
             map.put("openId", openId);
             map.put("signInfo", SignUtil.sign(createLinkString(map), PRIVATE_KEY));
-            String url = "http://192.168.111.16/modules/api/risk/updateOpenId.htm";
+            String url = getUrl()+"/modules/api/risk/updateOpenId.htm";
             requestProxy.post(url, map);
         }catch (Exception e){
             logger.error("syncOpenId error:",e);
