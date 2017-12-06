@@ -234,7 +234,7 @@ public class GamePayController extends BaseController {
 	    String userOrderId = request.getParameter("userOrderId");
 	    // 01成功 02失败
 	    String status = request.getParameter("status");
-	    String mes = request.getParameter("mes");
+	    String mes = URLDecoder.decode(request.getParameter("mes"),"UTF-8");
 	    String kminfo = request.getParameter("kminfo");
 	    String payoffPriceTotal = request.getParameter("payoffPriceTotal");
 	    String sign = request.getParameter("sign");
