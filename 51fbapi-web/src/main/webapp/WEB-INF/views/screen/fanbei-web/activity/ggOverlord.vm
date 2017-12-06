@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711291642")
+    #set($version="201712061510")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>我要吃霸王餐</title>
@@ -23,7 +23,11 @@
     <div class="secondCont">
         <div class="myPrize">
             <p class="prizeTop">我的奖励</p>
-            <p class="prizeBot">合计<span><i v-for="item in inviteSumMoney">{{item}}</i></span>元外卖券</p>
+            <p class="prizeBot">
+                <span>合计</span>
+                <span><i v-for="item in inviteSumMoney">{{item}}</i></span>
+                <span>元外卖券</span>
+            </p>
         </div>
         <p class="toCash" @click="toCashClick()">去使用外卖券 ></p>
         <div class="rebateList">

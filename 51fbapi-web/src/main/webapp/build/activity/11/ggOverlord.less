@@ -87,7 +87,9 @@
     bottom: -.3rem;
     left: 50%;
     transform: translateX(-2.32rem);
-    span i{
+    display: flex;
+    justify-content: space-around;
+    span:nth-child(2) i{
       width: .49rem;
       height: .83rem;
       border-radius: .04rem;
@@ -98,6 +100,9 @@
       font-weight: 600;
       line-height: .83rem;
       text-align: center;
+    }
+    span:nth-child(1),span:nth-child(3){
+      padding-top:.35rem;
     }
   }
 }
