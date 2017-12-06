@@ -227,11 +227,11 @@ public class GamePayController extends BaseController {
 	}
     }
 
-    @RequestMapping(value = "/callback", method = RequestMethod.GET)
+    @RequestMapping(value = "/callback", method = RequestMethod.GET, produces = "application/x-www-form-urlencoded")
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
 	try {
 
-	    logger.info("callback: " + request.getRequestURI());
+	    logger.info("callback: " + request.getParameterMap().toString());
 	    String userOrderId = request.getParameter("userOrderId");
 	    // 01成功 02失败
 	    String status = request.getParameter("status");
