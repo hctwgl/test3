@@ -90,6 +90,7 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 			// 获取已出未逾期
 			query.setOverdueStatus("N");
 			BigDecimal outMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+			map.put("outMoney", outMoney);
 			if (outMoney.compareTo(new BigDecimal(0)) == 1) {
 				List<AfBorrowBillDto> billList = afBorrowBillService.getBillListByQuery(query);
 				AfBorrowBillDto billDto = billList.get(0);
@@ -109,6 +110,10 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 			query.setOutDayStr(strOutDay);
 			query.setOutDayEnd(endOutDay);
 			BigDecimal notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+			if (notOutMoney.compareTo(new BigDecimal(0)) == 1) {
+				String month = DateUtil.getMonth(strOutDay);
+				map.put("nextMonth", month);
+			}
 			map.put("notOutMoney", notOutMoney);
 			// 获取用户余额
 			AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);

@@ -94,12 +94,12 @@ public class GetMyBorrowV1Api implements ApiHandle{
 				// 未出账单
 				query.setIsOut(0);
 				BigDecimal notOutMoeny = afBorrowBillService.getUserBillMoneyByQuery(query);
-				if (overduedMonth < 1) {
-					// 当用户没有逾期的时候获取最后还款日
-					Date lastPayDay = afBorrowBillService.getLastPayDayByUserId(userId);
-					map.put("lastPayDay", DateUtil.formatMonthAndDay(lastPayDay));
-				}else {
-					map.put("lastPayDay", null);
+				map.put("lastPayDay", null);
+				if (outMoney.compareTo(new BigDecimal(0)) == 1) {
+					if (overduedMonth < 1) {
+						Date lastPayDay = afBorrowBillService.getLastPayDayByUserId(userId);
+						map.put("lastPayDay", DateUtil.formatMonthAndDay(lastPayDay));
+					}
 				}
 				map.put("auAmount", auAmount);
 				map.put("amount", amount);

@@ -102,6 +102,7 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 				return resp;
 			}
 			List<AfUserAmountDetailDo> detailList = afUserAmountService.getAmountDetailByAmountId(amountId);
+			map.put("detailList", detailList);
 			BigDecimal amount = new BigDecimal(0);
 			String number = userAmount.getBizOrderNo();;
 			String date = DateUtil.formatDate(userAmount.getGmtCreate(), DateUtil.DATE_TIME_SHORT);

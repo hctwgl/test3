@@ -93,6 +93,8 @@ public class GetMyRepaymentDetailV1Api implements ApiHandle{
 					billList = afBorrowBillService.getBillListByQuery(query);
 					AfBorrowBillDto billDto = billList.get(0);
 					month = DateUtil.getMonth(billDto.getGmtOutDay());
+					String payDate = DateUtil.formatDate(billDto.getGmtOutDay(), DateUtil.DATE_TIME_FULL);
+					map.put("payTime", payDate);
 				}
 			}else if (StringUtil.equals("notOut", status)) {
 				// 获取下月未出账单
