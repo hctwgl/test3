@@ -295,7 +295,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("maxAmount", resource.getValue());
 		}
 		if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 		/* 如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai */
 		BigDecimal setMaxAmount = new BigDecimal(resource.getValue());

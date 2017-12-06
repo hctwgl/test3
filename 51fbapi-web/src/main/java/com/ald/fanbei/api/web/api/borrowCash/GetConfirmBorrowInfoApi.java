@@ -80,7 +80,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if(StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 		Map<String, Object> data = new HashMap<String, Object>();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();

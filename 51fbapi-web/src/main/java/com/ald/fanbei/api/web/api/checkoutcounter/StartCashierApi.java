@@ -116,9 +116,6 @@ public class StartCashierApi implements ApiHandle {
 
         AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(userId);
         AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-        if(org.apache.commons.lang.StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())){
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
-        }
         //判断额度支付是否可用
         cashierVo.setOrderId(orderInfo.getRid());
         cashierVo.setOrderType(orderType);
