@@ -230,8 +230,7 @@ public class GamePayController extends BaseController {
     @RequestMapping(value = "/callback", method = RequestMethod.GET, produces = "application/x-www-form-urlencoded;charset=UTF-8")
     public String reciceOrderResult(HttpServletRequest request, HttpServletResponse response) {
 	try {
-
-	    logger.info("callback: " + request.getParameterMap().toString());
+	    request.setCharacterEncoding("UTF-8");
 	    String userOrderId = request.getParameter("userOrderId");
 	    // 01成功 02失败
 	    String status = request.getParameter("status");
