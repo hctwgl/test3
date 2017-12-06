@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,7 @@ import com.ald.fanbei.api.biz.service.AfSupGameService;
 import com.ald.fanbei.api.biz.service.AfSupOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.yitu.EncryptionHelper.MD5Helper;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -43,12 +45,14 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.AfSupOrderDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfSupCallbackDo;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
@@ -102,13 +106,17 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    // 签名验证通过
 		    AfOrderDo orderInfo = afOrderService.getOrderByOrderNo(userOrderId);
 		    if (orderInfo != null) {
+			GameOrderInfoDto supOrderDo = afSupOrderDao.getOrderInfoByOrderNo(userOrderId);
+			AfUserDo userDo = afUserDao.getUserById(orderInfo.getUserId());
 			// 订单信息存在
 			if (afSupCallbackDo.getStatus().equals("01")) {
 			    // 充值成功(更改订单状态、返利)
 			    afOrderService.callbackCompleteOrder(orderInfo);
+			    smsUtil.sendGamePayResultToUser(userDo.getUserName(), supOrderDo.getGoodsName(), "成功");
 			} else { // 充值失败（更改订单状态、退款）
 			    afSupOrderDao.updateMsgByOrder(orderInfo.getOrderNo(), mes);
 			    afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo(), orderInfo.getOrderNo(), "SUP");
+			    smsUtil.sendGamePayResultToUser(userDo.getUserName(), supOrderDo.getGoodsName(), "失败");
 			}
 			return "<receive>ok</receive>";
 		    } else {
@@ -363,5 +371,11 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     private GeneratorClusterNo generatorClusterNo;
 
     @Autowired
+    private AfUserDao afUserDao;
+
+    @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private SmsUtil smsUtil;
 }
