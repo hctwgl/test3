@@ -16,6 +16,7 @@
         <p style="margin: .2rem 0 .44rem .6rem;color:#646464;">13777564272@163.com</p>
     </div>
     <div class="block" style="border-top:1px solid #e4e4e4 ">
+        <img style="width: 6.56rem;margin: .2rem;" src="$commonUrl/otherpay.png">
         <p style="margin-top: .3rem"><i class="icon" style="background-image: url('$commonUrl/repay2.png')"></i>银行账号</p>
         <p style="margin: .2rem 0 0 .6rem;color:#646464;">户&nbsp;&nbsp;&nbsp;&nbsp;名：浙江阿拉丁电子商务股份有限公司</p>
         <p style="margin: .14rem 0 0 .6rem;color:#646464;">开户行：招商银行杭州钱塘支行</p>
