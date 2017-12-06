@@ -1047,7 +1047,8 @@
 		) t ON t.order_type = ao.order_type
 		AND t.sec_type = ao.sec_type
 		AND br.is_delete = 0
-		AND ao.is_delete = 0;
+		AND ao.is_delete = 0
+		AND ao.`status` in ('FINISHED','REBATED');
 	</select>
 
 	
