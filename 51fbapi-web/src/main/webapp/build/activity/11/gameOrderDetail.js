@@ -23,6 +23,9 @@ let vm = new Vue({
                     if(data.success){
                         self.content=data.data;
                         console.log(self.content);
+                        if(self.content.orderStatus!='NEW'){  //只有new状态才显示 去支付 按钮；否则，不显示，删除订单按钮右移
+                            $('.deleteOrder').css('right','3.46%')
+                        }
                         self.content.orderStartTime=format((self.content.gmtCreate)*1000);//订单创建时间
                         //订单付款时间
                         if(self.content.gmtPay){
