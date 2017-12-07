@@ -275,7 +275,16 @@ $(function(){
             $('.limitRule').html(content.activityRule);
             $('.exampleRule').html(content.example);
             $('.top').append('<img src="'+content.image+'">');
-            $('.secondSpan').html('+'+content.spePreference);
+        },
+        error:function(){
+            requestMsg('哎呀，出错了！')
+        }
+    });
+    $.ajax({
+        type: 'post',
+        url: "/h5GgActivity/returnCoupon",
+        success: function (data) {
+            $('.secondSpan').html('+'+data.data.couponAmount+'元外卖券');
         },
         error:function(){
             requestMsg('哎呀，出错了！')
