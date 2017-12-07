@@ -329,7 +329,7 @@ let vm = new Vue({
                 success: function (data) {
                     if (!data.success) {
                         if (data.data != '') {
-                            location.href = data.data.loginUrl;
+                            // location.href = data.data.loginUrl;
                         } else {
                             requestMsg("哎呀，获取优惠券出错了！");
                         }
@@ -451,6 +451,10 @@ let vm = new Vue({
                 requestMsg("您已经领取过了，快去使用吧");
                 return false;
             }
+            if (item.ishas == "N") {
+                requestMsg("优惠券已领取完");
+                return false;
+            }
             if (item.isShow == 'N') {
                 requestMsg("活动暂未开始,敬请期待");
                 return false;
@@ -481,7 +485,8 @@ let vm = new Vue({
                         if (status == "OVER") { // 优惠券个数超过最大领券个数
                             // requestMsg(returnData.msg);
                             requestMsg("您已经领取过了，快去使用吧");
-                            self.maidian("couponSuccess=got&couponId=" + couponId)
+                            self.$set(self.couponData[index], 'isGet', 'Y');
+                            self.maidian("couponSuccess=got&couponId=" + couponId);
                         }
                         if (status == "COUPON_NOT_EXIST") { // 优惠券不存在
                             requestMsg(returnData.msg);
@@ -489,6 +494,7 @@ let vm = new Vue({
                         }
                         if (status == "MORE_THAN") { // 优惠券已领取完
                             requestMsg(returnData.msg);
+                            self.$set(self.couponData[index], 'ishas', 'N');
                             self.maidian("couponSuccess=end&couponId=" + couponId)
                         }
                     }
