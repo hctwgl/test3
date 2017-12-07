@@ -304,7 +304,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	}
 
 	@Override
-	public List<AfBorrowCashDo> getListByUserId(long userId, long rows) {
+	public List<AfBorrowCashDo> getListByUserId(Long userId, Long rows) {
 		return afBorrowCashDao.getListByUserId(userId, rows);
 	}
 }

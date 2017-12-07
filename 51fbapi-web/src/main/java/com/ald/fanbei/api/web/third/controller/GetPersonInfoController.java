@@ -3,7 +3,6 @@ package com.ald.fanbei.api.web.third.controller;
 
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,11 +25,14 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.afu.ApprovalStatusCode;
 import com.ald.fanbei.api.common.enums.afu.LoanStatusCode;
 import com.ald.fanbei.api.common.enums.afu.LoanTypeCode;
 import com.ald.fanbei.api.common.enums.afu.OverdueStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RC4_128_V2;
@@ -82,8 +84,7 @@ public class GetPersonInfoController {
 			//对加密过的params数据进行解密
 			String urlDecoder = StringUtil.UrlDecoder(params);//1：urlDecode解码
 			//获取rc4秘钥
-			//String rc4Key = ConfigProperties.get(Constants.YIXIN_AFU_PASSWORD);
-			String rc4Key = "8d724aadfa37cc11";
+			String rc4Key = ConfigProperties.get(Constants.YIXIN_AFU_PASSWORD);
 		    //3:rc4解密
 		    String decode = RC4_128_V2.decode(urlDecoder, rc4Key);
 		    JSONObject jsonObj = JSONObject.parseObject(decode);
@@ -102,15 +103,21 @@ public class GetPersonInfoController {
 					thirdLog.info("yiXin zhiChengAfu search personInfo from redis,idNo = "+idNo+", name="+name+" time = " + new Date());
 					return jsonString;
 				}else{
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 					//限定每天查询次数,判断当前查询次数是否超限
-					String DAY = sdf.format(new Date()).toString();
-					double time = NumberUtil.objToDoubleDefault(bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+DAY), 1);
-					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+DAY, time++, Constants.SECOND_OF_ONE_DAY);
+					String currDayStr = DateUtil.formatDate(new Date());
+					Long currDayReqNums = NumberUtil.objToLongDefault(bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+currDayStr), 1L);
+					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+currDayStr, currDayReqNums++, Constants.SECOND_OF_ONE_DAY);
 					//查询相关限制配置项
-					List<AfResourceDo> afResourceList = afResourceService.getScrollbarListByType("YIXIN_AFU_SEARCH");
-					double times = NumberUtil.strToLong(afResourceList.get(0).getValue2()).doubleValue();
-					if (time > times) {
+					//单日请求上限，配置开户且大于0时进行有效校验
+					Long limitDayTimes = 0L;
+					Long maxReturnRows = 0L;
+					AfResourceDo afResourceConfigInfo = afResourceService.getConfigByTypesAndSecType(AfResourceType.YIXIN_AFU_SEARCH.getCode(), AfResourceSecType.YIXIN_AFU_SEARCH.getCode());
+					if(afResourceConfigInfo!=null && "O".equals(afResourceConfigInfo.getValue4())){
+						limitDayTimes = NumberUtil.objToLongDefault(afResourceConfigInfo.getValue2(),0L);
+						maxReturnRows = NumberUtil.objToLongDefault(afResourceConfigInfo.getValue3(),0L);
+					}
+					
+					if (limitDayTimes>0 && currDayReqNums > limitDayTimes) {
 						map.put("errorCode", "0001");
 						map.put("message", "当日查询次数超限!");
 						map.put("params", null);
@@ -129,9 +136,14 @@ public class GetPersonInfoController {
 						return jsonString;
 					}
 					long userId = userAccount.getUserId();
-					//根据用户ID查询借款表,最多返回20条数据
-					long rows = NumberUtil.strToLong(afResourceList.get(0).getValue3());
-					List<AfBorrowCashDo> borrowCashDoList = afBorrowCashService.getListByUserId(userId,rows);
+					//根据用户ID查询借款表,最多条数控制
+					List<AfBorrowCashDo> borrowCashDoList = new ArrayList<AfBorrowCashDo>();
+					if(maxReturnRows>0){
+						borrowCashDoList = afBorrowCashService.getListByUserId(userId,maxReturnRows);
+					}else{
+						borrowCashDoList = afBorrowCashService.getListByUserId(userId,null);
+					}
+					
 					//判断用户是否存在借款
 					if (borrowCashDoList == null || borrowCashDoList.size() == 0) {
 						map.put("errorCode", "0001");
@@ -152,7 +164,7 @@ public class GetPersonInfoController {
 						if (StringUtil.equals(borrowCashDo.getStatus(), "TRANSED") || StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
 							//取打款时间，并格式化日期类型				
 							Date gmtArrival = borrowCashDo.getGmtArrival();				
-							loanRecord.setLoanDate(sdf.format(gmtArrival));	
+							loanRecord.setLoanDate(DateUtil.formatDate(gmtArrival));	
 							//通过审核的结果码
 							loanRecord.setApprovalStatusCode(ApprovalStatusCode.Approved.getCode());
 							if (StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
@@ -171,7 +183,7 @@ public class GetPersonInfoController {
 						}else{
 							//取申请时间，并格式化日期类型
 							Date gmtCreate = borrowCashDo.getGmtCreate();
-							loanRecord.setLoanDate(sdf.format(gmtCreate));				
+							loanRecord.setLoanDate(DateUtil.formatDate(gmtCreate));				
 							if (StringUtil.equals(borrowCashDo.getReviewStatus(), "REFUSE") || StringUtil.equals(borrowCashDo.getReviewStatus(), "FBREFUSE")) {
 								//审核未通过的结果码,拒贷
 								loanRecord.setApprovalStatusCode(ApprovalStatusCode.UnApprove.getCode());

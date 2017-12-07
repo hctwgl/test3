@@ -446,7 +446,7 @@
 	</update>
 	
 	<!-- 宜信查询 -->
-	<select id="getListByUserId" parameterType="java.lang.Long" resultType="AfBorrowCashDo">
+	<select id="getListByUserId" resultType="AfBorrowCashDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM
@@ -455,9 +455,11 @@
 		is_delete = 0
 		AND
 		user_id = #{userId}
+		and status not in('APPLY','TRANSEDING','WAITTRANSED')
 		ORDER BY
 		gmt_create DESC
-		LIMIT
-		#{rows}
+		<if test="rows != null">
+			limit #{rows}
+		</if>
 	</select>
 </mapper>

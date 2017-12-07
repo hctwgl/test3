@@ -198,5 +198,5 @@ public interface AfBorrowCashService {
 	/**
 	 * 宜信查询
 	 * */
-	List<AfBorrowCashDo> getListByUserId(long userId, long rows);
+	List<AfBorrowCashDo> getListByUserId(Long userId, Long rows);
 }

@@ -211,5 +211,5 @@ public interface AfBorrowCashDao {
 	/**
 	 * 宜信查询
 	 * */
-	List<AfBorrowCashDo> getListByUserId(@Param("userId")long userId, @Param("rows")long rows);
+	List<AfBorrowCashDo> getListByUserId(@Param("userId")Long userId, @Param("rows")Long rows);
 }
