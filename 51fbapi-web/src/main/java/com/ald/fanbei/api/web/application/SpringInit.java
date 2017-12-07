@@ -104,7 +104,7 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 map1.put("userId",-3l);
                 createCompanySeal(mhSeal,map1);
             }
-            logger.info("初始化执行完成...");
+            logger.info("初始化执行完成...projectId =>{},projectSecret=>{}",projectId,projectSecret);
     }
 
     private void createCompanySeal(AfUserSealDo afUserSealDo,Map map) {

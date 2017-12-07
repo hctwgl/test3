@@ -18,6 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -112,7 +115,11 @@ public class OssFileUploadServiceImpl implements OssFileUploadService {
         metadata.setContentType(contextType);
         try{
 //        	int[] widHei = FileSizeUtil.getImageWidthHeight(file.getInputStream());
-            PutObjectResult pubResult = ossClient.putObject(OSS_BUCKET, path + fileName, file.getInputStream(),metadata);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String date = simpleDateFormat.format(new Date())+"/";
+            Calendar calendar = Calendar.getInstance();
+            String hour = calendar.get(Calendar.HOUR_OF_DAY)+"/";//得到24小时机制的
+            PutObjectResult pubResult = ossClient.putObject(OSS_BUCKET, path +date+hour+fileName, file.getInputStream(),metadata);
             if(pubResult == null || StringUtils.isBlank(pubResult.getETag())){
                 log.error("upload to oss error, put object result is null or etag is empty,  fileName {}", fileName);
                 result.setSuccess(false);
@@ -122,7 +129,7 @@ public class OssFileUploadServiceImpl implements OssFileUploadService {
             result.setSuccess(true);
             result.setMsg("upload to oss succeed");
             result.setFileMd5(pubResult.getETag());
-            result.setUrl(Constants.FILE_CLOUD_PATH + path + fileName);
+            result.setUrl(Constants.FILE_CLOUD_PATH + path + date + hour+ fileName);
 //            result.setWidth(widHei[0]);
 //            result.setHeight(widHei[1]);
         }catch(Exception e){
