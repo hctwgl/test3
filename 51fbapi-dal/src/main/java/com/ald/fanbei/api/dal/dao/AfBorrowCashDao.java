@@ -207,4 +207,9 @@ public interface AfBorrowCashDao {
     AfBorrowCashDo getBorrowCashByStatus(@Param("userId")Long userId);
 
 	int updateAfBorrowCashPlanTime(@Param("userId")Long userId);
+	
+	/**
+	 * 宜信查询
+	 * */
+	List<AfBorrowCashDo> getListByUserId(@Param("userId")long userId, @Param("rows")long rows);
 }

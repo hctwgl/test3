@@ -194,4 +194,9 @@ public interface AfBorrowCashService {
 	AfBorrowCashDo getBorrowCashByStatus(Long userId);
 
 	int updateAfBorrowCashPlanTime(Long userId);
+	
+	/**
+	 * 宜信查询
+	 * */
+	List<AfBorrowCashDo> getListByUserId(long userId, long rows);
 }

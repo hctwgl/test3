@@ -30,11 +30,11 @@ public class EchoQueryOrgApiClient {
 
 		try {
 			String data = null;
-			final String url = "http://dtestapp.51fanbei.com/third/getPersonInfo";
-			final String rc4Key = "e4588f6b0a65fab9";
+			final String url = "http://localhost:8005/third/getPersonInfo";
+			final String rc4Key = "8d724aadfa37cc11";
 			System.out.println("查询程序启动~~~~~~~~");
-			final String name = "陈旋凯";
-			final String idNo = "333333333333333333";
+			final String name = "程小康";
+			final String idNo = "411381199007152658";
 			
 			final long startTime=System.currentTimeMillis();
 				data = echoQueryOrg(url, rc4Key, name, idNo);
