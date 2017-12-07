@@ -114,7 +114,7 @@ public class GetOrderListApi implements ApiHandle{
 		}else{
 		    vo.setGoodsIcon(order.getGoodsIcon());
 		}
-		
+		vo.setSecType(order.getSecType());
 		vo.setGoodsName(order.getGoodsName());
 		vo.setGoodsPriceName(order.getGoodsPriceName());
 		vo.setOrderId(order.getRid());

@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,7 +147,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	    throw new FanbeiException(FanbeiExceptionCode.GAME_IS_NOT_EXIST);
 	}
 	// 验证传递参数信息
-	checkFieldNecessoryProperty(gameName, gameType, gameAcct, gameSrv, gameArea, supGameDo.getXmlFile());
+	final String gameCode = getGameCodeValue(gameName, gameType, gameAcct, gameSrv, gameArea, supGameDo.getXmlFile());
 
 	// 获取优惠卷信息
 	BigDecimal couponAmount = new BigDecimal(0);
@@ -218,7 +217,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    supOrderDo.setGameName(gameName);
 		    supOrderDo.setGameSrv(gameSrv);
 		    supOrderDo.setGameType(gameType);
-		    supOrderDo.setGoodsCode(supGameDo.getCode());
+		    supOrderDo.setGoodsCode(gameCode);
 		    supOrderDo.setGoodsId(goodsId);
 		    supOrderDo.setGoodsNum(goodsNum);
 		    supOrderDo.setOrderNo(afOrder.getOrderNo());
@@ -300,10 +299,12 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     }
 
     @Override
-    public void checkFieldNecessoryProperty(String gameName, String gameType, String gameAcct, String gameSrv, String gameArea, String xmlProperty) throws Exception {
-	Document document = DocumentHelper.parseText(xmlProperty);
-	String nodePath = String.format("/root/deposititem/games/game[@name='%s']", gameName);
+    public String getGameCodeValue(String gameName, String gameType, String gameAcct, String gameSrv, String gameArea, String xmlContent) throws Exception {
 	// 验证游戏信息
+	String gameCode = "";
+	Document document = DocumentHelper.parseText(xmlContent);
+	String nodePath = String.format("/root/deposititem/games/game[@name='%s']", gameName);
+
 	Element game = (Element) document.selectSingleNode(nodePath);
 	if (game != null) {
 	    Attribute needGameAcct = game.attribute("needGameAcct");
@@ -311,6 +312,12 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		if ("1".equals(needGameAcct.getValue()) && StringUtils.isBlank(gameAcct)) {
 		    throw new FanbeiException("游戏账号不可为空", FanbeiExceptionCode.PARAM_ERROR);
 		}
+	    }
+
+	    // 获取游戏的code属性
+	    Attribute code = game.attribute("code");
+	    if (code != null) {
+		gameCode = code.getValue();
 	    }
 	} else {
 	    throw new FanbeiException("游戏名称错误", FanbeiExceptionCode.GAME_IS_ILLEGAL);
@@ -329,6 +336,20 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	if (checkNodeNameAttrinbute(document, nodePath + "/areas/area") && StringUtils.isBlank(gameArea)) {
 	    throw new FanbeiException("未传游戏区参数", FanbeiExceptionCode.PARAM_ERROR);
 	}
+
+	if (StringUtils.isBlank(gameCode)) {
+	    // 获取游戏的code属性
+	    String gameCodePath = nodePath + String.format("/types/type[@name='%s']", gameType);
+	    Element codeNode = (Element) document.selectSingleNode(gameCodePath);
+	    Attribute codeAttribute = codeNode.attribute("code");
+	    if (codeAttribute != null) {
+		gameCode = codeAttribute.getValue();
+	    } else {
+		throw new FanbeiException("获取游戏CODE失败", FanbeiExceptionCode.PARAM_ERROR);
+	    }
+	}
+
+	return gameCode;
     }
 
     /**

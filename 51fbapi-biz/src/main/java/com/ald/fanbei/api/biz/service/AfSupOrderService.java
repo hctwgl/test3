@@ -3,6 +3,8 @@ package com.ald.fanbei.api.biz.service;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import org.dom4j.Document;
+
 import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.GameOrderInfoDto;
 
@@ -27,5 +29,5 @@ public interface AfSupOrderService extends ParentService<AfSupOrderDo, Long> {
 
     GameOrderInfoDto getOrderInfoByOrderNo(String orderNo);
 
-    void checkFieldNecessoryProperty(String gameName, String gameType, String gameAcct, String gameSrv, String gameArea, String xmlProperty) throws Exception;
+    String getGameCodeValue(String gameName, String gameType, String gameAcct, String gameSrv, String gameArea, String xmlContent) throws Exception;
 }
