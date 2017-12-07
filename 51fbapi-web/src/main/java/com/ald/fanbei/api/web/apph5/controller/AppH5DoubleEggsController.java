@@ -173,83 +173,75 @@ public class AppH5DoubleEggsController extends BaseController {
 			context = doWebCheck(request, false);
 			Long userId = convertUserNameToUserId(context.getUserName());
 			//未登录初始化数据
+			String tag = "_DOUBLE_EGGS_";
+			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+			String coupons = couponCategory.getCoupons();
+			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
 			
+			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
 			
-			if (userId == null) {
-				return H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, data).toString();
-			}
-			//登录状态
-			
-			// 获取活动优惠券组信息
-		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
-		if(groupId == null) {
-			return H5CommonResponse.getNewInstance(false, "groupId can't be null or empty.", null, "").toString();
-		}
-			
-		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
-		String coupons = couponCategory.getCoupons();
-		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
-		
-		List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
-		
-		for (int i = 0; i < couponsArray.size(); i++) {
-			String couponId = (String)couponsArray.getString(i);
-			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
-			if(afCouponDo!=null){
-	    			AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
-	    			afCouponDouble12Vo.setId(afCouponDo.getRid());
-					afCouponDouble12Vo.setName(afCouponDo.getName());
-					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
-					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
-					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
-					
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					// 当前时间
-					Date currentTime = new Date();
-										
-					AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_COUPON_TIME");
-					if(afResourceDo==null){
-						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
-					}
-					String[] times = afResourceDo.getValue().split(",");
-					
-					if(currentTime.before(dateFormat.parse(times[0]))){
-						//2017-12-5 10:00号之前
-						afCouponDouble12Vo.setIsShow("N");//活动未开始
-					}
-					
-					if(afCouponDouble12Vo.getIsShow()==null){
-						for (int j = 0; j < times.length-1; j=j+2) {
-							if(afCouponDouble12Vo.getIsShow()==null){
-								if(currentTime.after(dateFormat.parse(times[times.length-1]))){
-									afCouponDouble12Vo.setIsShow("E");//活动已结束
+			for (int i = 0; i < couponsArray.size(); i++) {
+				String couponId = (String)couponsArray.getString(i);
+				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+				if(afCouponDo!=null){
+		    			AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
+		    			afCouponDouble12Vo.setId(afCouponDo.getRid());
+						afCouponDouble12Vo.setName(afCouponDo.getName());
+						afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
+						afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
+						afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
+						
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						// 当前时间
+						Date currentTime = new Date();
+											
+						AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_COUPON_TIME");
+						if(afResourceDo==null){
+							return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
+						}
+						String[] times = afResourceDo.getValue().split(",");
+						
+						if(currentTime.before(dateFormat.parse(times[0]))){
+							//2017-12-5 10:00号之前
+							afCouponDouble12Vo.setIsShow("N");//活动未开始
+						}
+						
+						if(afCouponDouble12Vo.getIsShow()==null){
+							for (int j = 0; j < times.length-1; j=j+2) {
+								if(afCouponDouble12Vo.getIsShow()==null){
+									if(currentTime.after(dateFormat.parse(times[times.length-1]))){
+										afCouponDouble12Vo.setIsShow("E");//活动已结束
+									}
 								}
-							}
-							if(afCouponDouble12Vo.getIsShow()==null){
-								if(currentTime.after(dateFormat.parse(times[j]))&&currentTime.before(dateFormat.parse(times[j+1]))){
-									afCouponDouble12Vo.setIsShow("Y");//在活动时间内
+								if(afCouponDouble12Vo.getIsShow()==null){
+									if(currentTime.after(dateFormat.parse(times[j]))&&currentTime.before(dateFormat.parse(times[j+1]))){
+										afCouponDouble12Vo.setIsShow("Y");//在活动时间内
+									}
 								}
-							}
-							if(afCouponDouble12Vo.getIsShow()==null){
-								if(currentTime.after(dateFormat.parse(times[j+1]))&&currentTime.before(dateFormat.parse(times[j+2]))){
-									afCouponDouble12Vo.setIsShow("N");//活动未开始
+								if(afCouponDouble12Vo.getIsShow()==null){
+									if(currentTime.after(dateFormat.parse(times[j+1]))&&currentTime.before(dateFormat.parse(times[j+2]))){
+										afCouponDouble12Vo.setIsShow("N");//活动未开始
+									}
 								}
 							}
 						}
-					}
+			if (userId == null) {
+				afCouponDouble12Vo.setIsGet("N");//未领取
 				
-					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,afCouponDo.getRid()) != 0){
-						afCouponDouble12Vo.setIsGet("Y");//已领取
-					}else{
-						afCouponDouble12Vo.setIsGet("N");//未领取
-					}
-					if(afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
-						afCouponDouble12Vo.setIshas("Y");//优惠券还有
-					}else {
-						afCouponDouble12Vo.setIshas("N");//优惠券已领完
-					}
-					
-					couponVoList.add(afCouponDouble12Vo);
+			}else{
+				if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,afCouponDo.getRid()) != 0){
+					afCouponDouble12Vo.setIsGet("Y");//已领取
+				}else{
+					afCouponDouble12Vo.setIsGet("N");//未领取
+				}
+				
+			}
+			if(afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
+				afCouponDouble12Vo.setIshas("Y");//优惠券还有
+			}else {
+				afCouponDouble12Vo.setIshas("N");//优惠券已领完
+			}
+			    couponVoList.add(afCouponDouble12Vo);
 			}
 			}
 			
@@ -258,16 +250,6 @@ public class AppH5DoubleEggsController extends BaseController {
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 		
 		} 
-//		catch (FanbeiException e) {
-//			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-//					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-//				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-//						+ H5OpenNativeType.AppLogin.getCode();
-//				data.put("loginUrl", loginUrl);
-//			logger.error("/activity/double12/couponHomePage" + context + "login error ");
-//			result = H5CommonResponse.getNewInstance(false, "没有登录", null, data).toString();
-//			}
-//		} 
 		catch (Exception e) {
 			logger.error("/activity/double12/couponHomePage error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
