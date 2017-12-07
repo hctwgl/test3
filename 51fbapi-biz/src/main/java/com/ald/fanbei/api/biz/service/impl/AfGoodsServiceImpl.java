@@ -101,5 +101,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public AfGoodsDo checkIsSelfBuild(String numId) {
 		return afGoodsDao.checkIsSelfBuild(numId);
 	}
+	@Override
+	public List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(Long parentId) {
+	    // TODO Auto-generated method stub
+	    	return afGoodsDao.listGoodsListByParentIdAndFormerCategoryId(parentId);
+	}
 
 }

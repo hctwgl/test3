@@ -27,4 +27,10 @@ public class AfCategoryServiceImpl implements AfCategoryService{
 		return afCategoryDao.getCategoryList();
 	}
 
+	@Override
+	public AfCategoryDo getParentDirectoryByName(String name) {
+	    // TODO Auto-generated method stub
+	        return afCategoryDao.getParentDirectoryByName(name);
+	}
+
 }
