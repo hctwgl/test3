@@ -18,7 +18,6 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.sun.xml.internal.xsom.impl.scd.Iterators.Map;
 
 /**
  * @Title: AppH5DoubleEggsController.java
@@ -61,6 +60,40 @@ public class AppH5DoubleEggsController extends BaseController {
 		}
 		return result;
 	}
+	
+	@RequestMapping(value = "/initOnsaleGoods")
+	public String initOnsaleGoods(HttpServletRequest request,HttpServletResponse response){
+		String result = "";
+		try {
+			java.util.Map<String, Object> data = new HashMap<>();
+			//TODO:get info from afResource;
+			
+			
+			result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "特卖商品初始化失败", "", exception.getMessage()).toString();
+			logger.error("特卖商品初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value = "/getOnSaleGoods")
+	public String getOnSaleGoods(HttpServletRequest request,HttpServletResponse response){
+		String result = "";
+		try {
+			java.util.Map<String, Object> data = new HashMap<>();
+			//TODO:get info from afResource;
+			
+			
+			result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
+			} catch (Exception exception) {
+				result = H5CommonResponse.getNewInstance(false, "特卖商品初始化失败", "", exception.getMessage()).toString();
+				logger.error("特卖商品初始化数据失败  e = {} , resultStr = {}", exception, result);
+				doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
+			}
+			return result;
+		}
 
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
