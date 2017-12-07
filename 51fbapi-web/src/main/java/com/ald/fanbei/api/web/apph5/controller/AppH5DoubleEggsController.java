@@ -32,6 +32,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
@@ -300,19 +301,30 @@ public class AppH5DoubleEggsController extends BaseController {
 				java.util.Map<String, Object> data = new HashMap<>();
 
 				Long goodsId = NumberUtil.objToLong(request.getParameter("goodsId"));
-
-				// TODO:get 10 minutes from afResource;
-				String time = "10";
-				int preTime = Integer.parseInt(time);
-				Date now = new Date();
-				// if now + preTime >= goods start time then throw
-				// error"time分钟内无需预约"
 				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 
-				// to check if this user already subscribed this goods if yes
-				// then "已经预约不能重复预约"else"预约成功"
+				if (goodsDo != null) {
+					
+					// TODO:get 10 minutes from afResource;
+					String time = "10";
+					int preTime = Integer.parseInt(time);
+					Date now = new Date();
+					
+					// if now + preTime >= goods start time then throw error"time分钟内无需预约"
+					if(DateUtil.addMins(now, preTime).after(goodsDo.getStartTime())){
+						result = H5CommonResponse.getNewInstance(false,"抱歉" + preTime + "分钟内无法预约！").toString();
+					}
+					
+					
+					
+					// to check if this user already subscribed this goods if yes
+					
+					
+					
+					// then "已经预约不能重复预约"else"预约成功"
 
-				result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
+					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
+				}
 			}
 
 		} catch (Exception exception) {

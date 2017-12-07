@@ -153,4 +153,11 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByGoodsId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+      SELECT
+        <include refid="queryFields" />
+        FROM af_goods_double_eggs
+      WHERE is_delete = 0 AND goods_id = #{goodsId};
+    </select>
+    
 </mapper>
