@@ -58,12 +58,6 @@ import java.math.BigDecimal;
     private Long alreadyCount;
 
     /**
-     * 1:已经预约； 0：未预约
-     */
-    private Integer isOrdered;
-
-
-    /**
      * 获取主键Id
      *
      * @return rid
@@ -208,22 +202,7 @@ import java.math.BigDecimal;
       this.alreadyCount = alreadyCount;
     }
 
-    /**
-     * 获取1:已经预约； 0：未预约
-     *
-     * @return 1:已经预约； 0：未预约
-     */
-    public Integer getIsOrdered(){
-      return isOrdered;
-    }
 
-    /**
-     * 设置1:已经预约； 0：未预约
-     * 
-     * @param isOrdered 要设置的1:已经预约； 0：未预约
-     */
-    public void setIsOrdered(Integer isOrdered){
-      this.isOrdered = isOrdered;
-    }
+
 
 }

@@ -66,7 +66,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	/**
 	 * 
 	* @Title: initHomePage
-	* @author qiao
+	* @author qiwei
 	* @date 2017年12月7日 下午1:58:31
 	* @Description: 主页面的两张图片和url，此接口H5和AppH5通用，无需登录
 	* @param request
@@ -95,7 +95,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	/**
 	 * 
 	* @Title: initOnsaleGoods
-	* @author qiao
+	* @author qiwei
 	* @date 2017年12月7日 下午2:04:33
 	* @Description: 初始化特卖商品
 	* @param request
@@ -123,7 +123,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	/**
 	 * 
 	* @Title: getOnSaleGoods
-	* @author qiao
+	* @author qiwei
 	* @date 2017年12月7日 下午2:04:40
 	* @Description: 获得特卖商品（点击tap进行不同的跳转）
 	* @param request
@@ -290,6 +290,64 @@ public class AppH5DoubleEggsController extends BaseController {
 
 		}
 		return userId;
+	}
+	
+	/**
+	 * 
+	* @Title: getSecondKillGoodsList
+	* @author qiao
+	* @date 2017年12月7日 下午2:27:13
+	* @Description: 获得秒杀商品
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/getSecondKillGoodsList")
+	public String getSecondKillGoodsList(HttpServletRequest request,HttpServletResponse response){
+		String result = "";
+		try {
+			java.util.Map<String, Object> data = new HashMap<>();
+			//TODO:get info from afResource;
+			
+			
+			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	* @Title: subscribe
+	* @author qiao
+	* @date 2017年12月7日 下午2:26:48
+	* @Description: 预约
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/subscribe")
+	public String subscribe(HttpServletRequest request,HttpServletResponse response){
+		String result = "";
+		try {
+			java.util.Map<String, Object> data = new HashMap<>();
+			//TODO:get info from afResource;
+			
+			
+			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
+		}
+		return result;
 	}
 	
 	@Override
