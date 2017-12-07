@@ -1,8 +1,12 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.util.HashMap;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -10,9 +14,11 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.xml.internal.xsom.impl.scd.Iterators.Map;
 
 /**
  * @Title: AppH5DoubleEggsController.java
@@ -24,9 +30,37 @@ import com.alibaba.fastjson.JSONObject;
  * @version V1.0
  */
 @RestController
-@RequestMapping("/appH5DoubleEggs")
+@RequestMapping(value = "/appH5DoubleEggs",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 public class AppH5DoubleEggsController extends BaseController {
 	
+	/**
+	 * 
+	* @Title: initHomePage
+	* @author qiao
+	* @date 2017年12月7日 下午1:58:31
+	* @Description: 
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/initHomePage")
+	public String initHomePage(HttpServletRequest request,HttpServletResponse response){
+		String result = "";
+		try {
+			java.util.Map<String, Object> data = new HashMap<>();
+			//TODO:get info from afResource;
+			
+			
+			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
+		}
+		return result;
+	}
 
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
