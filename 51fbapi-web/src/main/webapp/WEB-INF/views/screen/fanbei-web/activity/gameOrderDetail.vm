@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712071042")
+    #set($version="201712071144")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>订单详情</title>
@@ -23,7 +23,7 @@
             <p class="orderStatus" v-if="content.orderStatus==='CLOSED'">订单关闭(未付款或退款成功)</p>
             <p class="orderStatus" v-if="content.orderStatus==='WAIT_REFUND'">等待退款</p>
             <p class="orderStatus" v-if="content.orderStatus==='DEAL_REFUNDING'">退款中</p>
-            <p class="timeOut">还剩支付时间 <i>{{showTimerS(diff)}}</i></p>
+            <p class="timeOut" v-if="content.orderStatus==='NEW'">还剩支付时间 <i>{{showTimerS(diff)}}</i></p>
         </div>
         <div class="firstCont">
             <p class="serviceName" v-if="content.orderType==='GAME'">游戏充值</p>
