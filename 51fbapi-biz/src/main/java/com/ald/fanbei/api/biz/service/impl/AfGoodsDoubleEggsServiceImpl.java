@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -38,5 +40,10 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		public AfGoodsDoubleEggsDo getByGoodsId(Long goodsId) {
 			
 			return afGoodsDoubleEggsDao.getByGoodsId(goodsId);
+		}
+
+		@Override
+		public List<AfGoodsDoubleEggsDo> getAvalibleGoodsList() {
+			return afGoodsDoubleEggsDao.getAvalibleGoodsList();
 		}
 }
