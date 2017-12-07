@@ -33,10 +33,4 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 	public BaseDao<AfGoodsDoubleEggsDo, Long> getDao() {
 		return afGoodsDoubleEggsDao;
 	}
-
-		@Override
-		public AfGoodsDoubleEggsDo getByGoodsId(Long goodsId) {
-			
-			return afGoodsDoubleEggsDao.getByGoodsId(goodsId);
-		}
 }

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author maqiaopan_temple
  * @version 1.0.0 初始化
- * @date 2017-12-07 15:23:45
+ * @date 2017-12-07 14:47:43
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfGoodsDoubleEggsUserDo extends AbstractSerial {
@@ -23,7 +23,7 @@ import java.math.BigDecimal;
     
 
     /**
-     * 创建时间，预约时间
+     * 创建时间
      */
     private Date gmtCreate;
 
@@ -33,19 +33,29 @@ import java.math.BigDecimal;
     private Date gmtModified;
 
     /**
-     * 秒杀商品id(不是商品id，外键id）
+     * 商品Id
      */
-    private Long doubleEggsId;
+    private Long goodsId;
 
     /**
      * 排序
      */
-    private Long userId;
+    private Integer sort;
 
     /**
-     * 是否已经预约：0:没有预约；1：已经预约
+     * 秒杀开始时间
      */
-    private Integer isOrdered;
+    private Date startTime;
+
+    /**
+     * 秒杀结束时间
+     */
+    private Date endTime;
+
+    /**
+     * 已被秒杀的商品数量
+     */
+    private Long alreadyCount;
 
 
     /**
@@ -68,18 +78,18 @@ import java.math.BigDecimal;
     
 
     /**
-     * 获取创建时间，预约时间
+     * 获取创建时间
      *
-     * @return 创建时间，预约时间
+     * @return 创建时间
      */
     public Date getGmtCreate(){
       return gmtCreate;
     }
 
     /**
-     * 设置创建时间，预约时间
+     * 设置创建时间
      * 
-     * @param gmtCreate 要设置的创建时间，预约时间
+     * @param gmtCreate 要设置的创建时间
      */
     public void setGmtCreate(Date gmtCreate){
       this.gmtCreate = gmtCreate;
@@ -104,21 +114,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取秒杀商品id(不是商品id，外键id）
+     * 获取商品Id
      *
-     * @return 秒杀商品id(不是商品id，外键id）
+     * @return 商品Id
      */
-    public Long getDoubleEggsId(){
-      return doubleEggsId;
+    public Long getGoodsId(){
+      return goodsId;
     }
 
     /**
-     * 设置秒杀商品id(不是商品id，外键id）
+     * 设置商品Id
      * 
-     * @param doubleEggsId 要设置的秒杀商品id(不是商品id，外键id）
+     * @param goodsId 要设置的商品Id
      */
-    public void setDoubleEggsId(Long doubleEggsId){
-      this.doubleEggsId = doubleEggsId;
+    public void setGoodsId(Long goodsId){
+      this.goodsId = goodsId;
     }
 
     /**
@@ -126,35 +136,71 @@ import java.math.BigDecimal;
      *
      * @return 排序
      */
-    public Long getUserId(){
-      return userId;
+    public Integer getSort(){
+      return sort;
     }
 
     /**
      * 设置排序
      * 
-     * @param userId 要设置的排序
+     * @param sort 要设置的排序
      */
-    public void setUserId(Long userId){
-      this.userId = userId;
+    public void setSort(Integer sort){
+      this.sort = sort;
     }
 
     /**
-     * 获取是否已经预约：0:没有预约；1：已经预约
+     * 获取秒杀开始时间
      *
-     * @return 是否已经预约：0:没有预约；1：已经预约
+     * @return 秒杀开始时间
      */
-    public Integer getIsOrdered(){
-      return isOrdered;
+    public Date getStartTime(){
+      return startTime;
     }
 
     /**
-     * 设置是否已经预约：0:没有预约；1：已经预约
+     * 设置秒杀开始时间
      * 
-     * @param isOrdered 要设置的是否已经预约：0:没有预约；1：已经预约
+     * @param startTime 要设置的秒杀开始时间
      */
-    public void setIsOrdered(Integer isOrdered){
-      this.isOrdered = isOrdered;
+    public void setStartTime(Date startTime){
+      this.startTime = startTime;
+    }
+
+    /**
+     * 获取秒杀结束时间
+     *
+     * @return 秒杀结束时间
+     */
+    public Date getEndTime(){
+      return endTime;
+    }
+
+    /**
+     * 设置秒杀结束时间
+     * 
+     * @param endTime 要设置的秒杀结束时间
+     */
+    public void setEndTime(Date endTime){
+      this.endTime = endTime;
+    }
+
+    /**
+     * 获取已被秒杀的商品数量
+     *
+     * @return 已被秒杀的商品数量
+     */
+    public Long getAlreadyCount(){
+      return alreadyCount;
+    }
+
+    /**
+     * 设置已被秒杀的商品数量
+     * 
+     * @param alreadyCount 要设置的已被秒杀的商品数量
+     */
+    public void setAlreadyCount(Long alreadyCount){
+      this.alreadyCount = alreadyCount;
     }
 
 }
