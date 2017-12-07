@@ -1,7 +1,13 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.text.SimpleDateFormat;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -9,6 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -18,6 +29,16 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import org.apache.commons.lang.ObjectUtils;
+import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * @Title: AppH5DoubleEggsController.java
@@ -31,6 +52,16 @@ import com.alibaba.fastjson.JSONObject;
 @RestController
 @RequestMapping(value = "/appH5DoubleEggs",method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 public class AppH5DoubleEggsController extends BaseController {
+	@Resource
+	AfCouponCategoryService afCouponCategoryService;
+	@Resource
+	AfCouponService afCouponService;
+	@Resource
+	AfResourceService afResourceService;
+	@Resource
+	AfUserCouponService afUserCouponService;
+	@Resource
+	AfUserService afUserService;
 	
 	/**
 	 * 
@@ -123,7 +154,144 @@ public class AppH5DoubleEggsController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	/**
+	 * @Title: initCoupons
+	 * @Description:  优惠券
+	 * @return  String  
+	 * @author chenqiwei
+	 * @data  2017年12月7日
+	 */
+	@RequestMapping(value = "/initCoupons", method = RequestMethod.POST)
+	public String couponHomePage(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		FanbeiWebContext context = new FanbeiWebContext();
+		String result = "";
+		
+		try {
+			context = doWebCheck(request, false);
+			Long userId = convertUserNameToUserId(context.getUserName());
+			//未登录初始化数据
+			
+			
+			if (userId == null) {
+				return H5CommonResponse.getNewInstance(true, "获取返券列表成功", null, data).toString();
+			}
+			//登录状态
+			
+			// 获取活动优惠券组信息
+		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
+		if(groupId == null) {
+			return H5CommonResponse.getNewInstance(false, "groupId can't be null or empty.", null, "").toString();
+		}
+			
+		AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryById(groupId);
+		String coupons = couponCategory.getCoupons();
+		JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+		
+		List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
+		
+		for (int i = 0; i < couponsArray.size(); i++) {
+			String couponId = (String)couponsArray.getString(i);
+			AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+			if(afCouponDo!=null){
+	    			AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
+	    			afCouponDouble12Vo.setId(afCouponDo.getRid());
+					afCouponDouble12Vo.setName(afCouponDo.getName());
+					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
+					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
+					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
+					
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					// 当前时间
+					Date currentTime = new Date();
+										
+					AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_COUPON_TIME");
+					if(afResourceDo==null){
+						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
+					}
+					String[] times = afResourceDo.getValue().split(",");
+					
+					if(currentTime.before(dateFormat.parse(times[0]))){
+						//2017-12-5 10:00号之前
+						afCouponDouble12Vo.setIsShow("N");//活动未开始
+					}
+					
+					if(afCouponDouble12Vo.getIsShow()==null){
+						for (int j = 0; j < times.length-1; j=j+2) {
+							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[times.length-1]))){
+									afCouponDouble12Vo.setIsShow("E");//活动已结束
+								}
+							}
+							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[j]))&&currentTime.before(dateFormat.parse(times[j+1]))){
+									afCouponDouble12Vo.setIsShow("Y");//在活动时间内
+								}
+							}
+							if(afCouponDouble12Vo.getIsShow()==null){
+								if(currentTime.after(dateFormat.parse(times[j+1]))&&currentTime.before(dateFormat.parse(times[j+2]))){
+									afCouponDouble12Vo.setIsShow("N");//活动未开始
+								}
+							}
+						}
+					}
+				
+					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,afCouponDo.getRid()) != 0){
+						afCouponDouble12Vo.setIsGet("Y");//已领取
+					}else{
+						afCouponDouble12Vo.setIsGet("N");//未领取
+					}
+					if(afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
+						afCouponDouble12Vo.setIshas("Y");//优惠券还有
+					}else {
+						afCouponDouble12Vo.setIshas("N");//优惠券已领完
+					}
+					
+					couponVoList.add(afCouponDouble12Vo);
+			}
+			}
+			
+			logger.info(JSON.toJSONString(couponVoList));
+			data.put("couponList", couponVoList);
+			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
+		
+		} 
+//		catch (FanbeiException e) {
+//			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+//					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+//				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+//						+ H5OpenNativeType.AppLogin.getCode();
+//				data.put("loginUrl", loginUrl);
+//			logger.error("/activity/double12/couponHomePage" + context + "login error ");
+//			result = H5CommonResponse.getNewInstance(false, "没有登录", null, data).toString();
+//			}
+//		} 
+		catch (Exception e) {
+			logger.error("/activity/double12/couponHomePage error = {}", e.getStackTrace());
+			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @Title: convertUserNameToUserId @Description: @param userName @return
+	 *         Long @throws
+	 */
+	private Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
 
+		}
+		return userId;
+	}
+	
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
 		try {
