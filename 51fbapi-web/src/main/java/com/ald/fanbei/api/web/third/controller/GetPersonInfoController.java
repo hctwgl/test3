@@ -104,9 +104,10 @@ public class GetPersonInfoController {
 					return jsonString;
 				}else{
 					//限定每天查询次数,判断当前查询次数是否超限
-					String currDayStr = DateUtil.formatDate(new Date());
-					Long currDayReqNums = NumberUtil.objToLongDefault(bizCacheUtil.getObject(Constants.YIXIN_AFU_SEARCH_KEY+currDayStr), 1L);
-					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+currDayStr, currDayReqNums++, Constants.SECOND_OF_ONE_DAY);
+					String currDayReqNumsKey = Constants.YIXIN_AFU_SEARCH_KEY+rc4Key+DateUtil.formatDate(new Date());
+					Long currDayReqNums = NumberUtil.objToLongDefault(bizCacheUtil.getObject(currDayReqNumsKey), 0L);
+					currDayReqNums = currDayReqNums+1;
+					
 					//查询相关限制配置项
 					//单日请求上限，配置开户且大于0时进行有效校验
 					Long limitDayTimes = 0L;
@@ -259,6 +260,8 @@ public class GetPersonInfoController {
 					map.put("message", "查询成功!");
 					map.put("params", urlResp);
 					jsonString = JsonUtil.toJSONString(map);
+					//将请求次数加入缓存
+					bizCacheUtil.saveObject(currDayReqNumsKey, currDayReqNums, Constants.SECOND_OF_ONE_DAY);
 					//将数据存入缓存
 					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+rc4Key+idNo, jsonString, Constants.SECOND_OF_AN_HOUR_INT);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from dataBase success,idNo = "+idNo+", name="+name+" time = " + new Date());
