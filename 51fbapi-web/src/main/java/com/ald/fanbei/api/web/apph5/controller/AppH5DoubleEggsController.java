@@ -195,11 +195,11 @@ public class AppH5DoubleEggsController extends BaseController {
 						// 当前时间
 						Date currentTime = new Date();
 											
-						AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE12_COUPON_TIME");
+						AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE_EGGS_COUPON_TIME");
 						if(afResourceDo==null){
 							return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
 						}
-						String[] times = afResourceDo.getValue().split(",");
+						String[] times = afResourceDo.getValue2().split(",");
 						
 						if(currentTime.before(dateFormat.parse(times[0]))){
 							//2017-12-5 10:00号之前
@@ -243,7 +243,7 @@ public class AppH5DoubleEggsController extends BaseController {
 			}
 			    couponVoList.add(afCouponDouble12Vo);
 			}
-			}
+		   }
 			
 			logger.info(JSON.toJSONString(couponVoList));
 			data.put("couponList", couponVoList);
