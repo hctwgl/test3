@@ -65,7 +65,11 @@ public class GetConsumeConfirmInfoApi implements ApiHandle{
 		Long userId = context.getUserId();
 		BigDecimal goodsAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount")), BigDecimal.ZERO);
 		//获取借款分期配置信息
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		//11.27加入用户专有利率
+		AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());
+		if(resource==null){
+			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		}
 		JSONArray array  = JSON.parseArray(resource.getValue());
 		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		if(null == card){

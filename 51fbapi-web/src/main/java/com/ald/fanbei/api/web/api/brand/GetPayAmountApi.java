@@ -87,7 +87,11 @@ public class GetPayAmountApi implements ApiHandle {
 			amount = orderInfo.getActualAmount();
 		}
 		// 获取借款分期配置信息
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		//11.27加入用户专有利率
+		AfResourceDo resource= afResourceService.getVipUserRate(context.getUserName());
+		if(resource==null){
+			resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+		}
 		JSONArray array = JSON.parseArray(resource.getValue());
 		// 删除2分期
 		if (array == null) {

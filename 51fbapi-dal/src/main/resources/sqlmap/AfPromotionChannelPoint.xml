@@ -70,7 +70,7 @@
 		<include refid="queryAllFields" />
 		FROM af_promotion_channel_point where is_delete = 0 and code =
 		#{pointCode} and status = 1 and channel_id = (select id from af_promotion_channel
-		where code = #{channelCode})
+		where code = #{channelCode} and is_delete=0 and status=1)
 	</select>
 
 	<update id="addVisit" parameterType="java.lang.Long">

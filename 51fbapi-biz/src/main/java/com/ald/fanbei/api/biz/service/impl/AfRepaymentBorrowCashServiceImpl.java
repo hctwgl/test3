@@ -376,8 +376,6 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             userCardNo = System.currentTimeMillis() + StringUtils.EMPTY;
         }
         final String cardNo = userCardNo;
-
-
         long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
             public Long doInTransaction(TransactionStatus status) {
@@ -397,6 +395,13 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     bcashDo.setRid(afBorrowCashDo.getRid());
                     bcashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
                     bcashDo.setRenewalNum(afBorrowCashDo.getRenewalNum());
+                    //region 11-30新增
+
+                    afBorrowCashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage());
+                    afBorrowCashDo.setRenewalNum(afBorrowCashDo.getRenewalNum());
+
+                    //end 11-30新增
+
                     BigDecimal nowRepayAmount = repayment.getRepaymentAmount();
                     BigDecimal repayAmount = nowRepayAmount.add(afBorrowCashDo.getRepayAmount());
                     logger.info("repayAmount=" + repayAmount);
@@ -412,11 +417,23 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     if (tempRepayAmount.compareTo(afBorrowCashDo.getRateAmount()) > 0) {
                         bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
                         bcashDo.setRateAmount(BigDecimal.ZERO);
+
+                        //region 11-30新增
+
+                        afBorrowCashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), afBorrowCashDo.getRateAmount()));
+                        afBorrowCashDo.setRateAmount(BigDecimal.ZERO);
+
+                        //end 11-30新增
+
                         interest = afBorrowCashDo.getRateAmount();
                         tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getRateAmount());
                     } else {
                         bcashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), tempRepayAmount));
                         bcashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
+                        //region 11-30新增
+                        afBorrowCashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), tempRepayAmount));
+                        afBorrowCashDo.setRateAmount(afBorrowCashDo.getRateAmount().subtract(tempRepayAmount));
+                        //end 11-30新增
                         interest = tempRepayAmount;
                         tempRepayAmount = BigDecimal.ZERO;
                     }
@@ -425,17 +442,33 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     // 累计集分宝
                     bcashDo.setSumJfb(BigDecimalUtil.add(afBorrowCashDo.getSumJfb(), repayment.getJfbAmount()));
 
+                    //region 11-30新增
+                    afBorrowCashDo.setSumJfb(BigDecimalUtil.add(afBorrowCashDo.getSumJfb(), repayment.getJfbAmount()));
+                    //end 11-30新增
+
                     BigDecimal overdueAmount = BigDecimal.ZERO;
 
                     // 还款的时候 需要判断是否能还清滞纳金 同时修改累计滞纳金 start
                     if (tempRepayAmount.compareTo(afBorrowCashDo.getOverdueAmount()) > 0) {
                         bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
                         bcashDo.setOverdueAmount(BigDecimal.ZERO);
+
+                        //region 11-30新增
+                        afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount()));
+                        afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
+                        //end 11-30新增
+
                         overdueAmount = afBorrowCashDo.getOverdueAmount();
                         tempRepayAmount = BigDecimalUtil.subtract(tempRepayAmount, afBorrowCashDo.getOverdueAmount());
                     } else {
                         bcashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), tempRepayAmount));
                         bcashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
+
+                        //region 11-30新增
+                        afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), tempRepayAmount));
+                        afBorrowCashDo.setOverdueAmount(afBorrowCashDo.getOverdueAmount().subtract(tempRepayAmount));
+                        //end 11-30新增
+
                         overdueAmount = tempRepayAmount;
                         tempRepayAmount = BigDecimal.ZERO;
                     }
@@ -444,7 +477,10 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     // 累计使用余额
                     bcashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
                     bcashDo.setRepayAmount(repayAmount);
-
+                    //region 11-30新增
+                    afBorrowCashDo.setSumRebate(BigDecimalUtil.add(afBorrowCashDo.getSumRebate(), repayment.getRebateAmount()));
+                    afBorrowCashDo.setRepayAmount(repayAmount);
+                    //end 11-30新增
                     //涉及运算,放在内部传输数据
                     try {
                         String riskOrderNo = riskUtil.getOrderNo("tran", cardNo.substring(cardNo.length() - 4, cardNo.length()));
@@ -504,11 +540,15 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         notRepayMoneyStr = NumberUtil.format2Str(allAmount.subtract(repayAmount));
                     }
                     afBorrowCashService.updateBorrowCash(bcashDo);
-
                     //add by chengkang 待添加还款成功短信 start
                     try {
                         AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
-                        smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
+                        if(repayment.getName().equals("代扣付款")){
+                            String content= "代扣还款"+nowRepayAmountStr+"元，该笔借款已结清。";
+                            smsUtil.sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), content);
+                        }else{
+                            smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
+                        }
                     } catch (Exception e) {
                         logger.error("还款成功发送短信异常,userId:" + afBorrowCashDo.getUserId() + ",nowRepayAmount:" + nowRepayAmountStr + ",notRepayMoney" + notRepayMoneyStr, e);
                     }
@@ -549,10 +589,21 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             /**------------------------------------fmai风控提额end--------------------------------------------------*/
 
             //会对逾期的借款还款，向催收平台同步还款信息
-            AfBorrowCashDo currAfBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
+            AfBorrowCashDo currAfBorrowCashDo = afBorrowCashDo;
             if (DateUtil.compareDate(new Date(), afBorrowCashDo.getGmtPlanRepayment())) {
                 try {
-                    CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(repayment.getRepayNo(), currAfBorrowCashDo.getBorrowNo(), repayment.getCardNumber(), repayment.getCardName(), DateUtil.formatDateTime(new Date()), tradeNo, repayment.getRepaymentAmount(), (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).subtract(currAfBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)), (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)), currAfBorrowCashDo.getOverdueAmount(), currAfBorrowCashDo.getRepayAmount(), currAfBorrowCashDo.getRateAmount());
+                    CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(repayment.getRepayNo(),
+                            currAfBorrowCashDo.getBorrowNo(),
+                            repayment.getCardNumber(),
+                            repayment.getCardName(),
+                            DateUtil.formatDateTime(new Date()),
+                            tradeNo,
+                            repayment.getRepaymentAmount(),
+                            (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).subtract(currAfBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)),
+                            (currAfBorrowCashDo.getAmount().add(currAfBorrowCashDo.getRateAmount().add(currAfBorrowCashDo.getOverdueAmount().add(currAfBorrowCashDo.getSumRate().add(currAfBorrowCashDo.getSumOverdue())))).setScale(2, RoundingMode.HALF_UP)),
+                            currAfBorrowCashDo.getOverdueAmount(),
+                            currAfBorrowCashDo.getRepayAmount(),
+                            currAfBorrowCashDo.getRateAmount());
                     logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
                 } catch (Exception e) {
                     logger.error("向催收平台同步还款信息失败", e);
