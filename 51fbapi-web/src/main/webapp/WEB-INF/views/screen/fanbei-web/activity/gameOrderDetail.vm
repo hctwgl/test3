@@ -31,7 +31,7 @@
             <p class="serviceName" v-if="content.orderType==='AMUSEMENT'">娱乐充值</p>
             <p class="cont">
                 <span v-if="content.goodsName">游戏名称：{{content.goodsName}}；</span>
-                <span v-if="content.acctType">帐号类型：{{content.acctType}}；</span>
+                <span v-if="content.acctType">账号类型：{{content.acctType}}；</span>
                 <span v-if="content.userName">充值用户名：{{content.userName}}；</span>
                 <span v-if="content.gameType">充值类型：{{content.gameType}}；</span>
                 <span v-if="content.gameAcct">游戏账号：{{content.gameAcct}}；</span>
