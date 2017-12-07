@@ -37,7 +37,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	* @Title: initHomePage
 	* @author qiao
 	* @date 2017年12月7日 下午1:58:31
-	* @Description: 
+	* @Description: 主页面的两张图片和url，此接口H5和AppH5通用，无需登录
 	* @param request
 	* @param response
 	* @return    
@@ -61,13 +61,24 @@ public class AppH5DoubleEggsController extends BaseController {
 		return result;
 	}
 	
+	/**
+	 * 
+	* @Title: initOnsaleGoods
+	* @author qiao
+	* @date 2017年12月7日 下午2:04:33
+	* @Description: 初始化特卖商品
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
 	@RequestMapping(value = "/initOnsaleGoods")
 	public String initOnsaleGoods(HttpServletRequest request,HttpServletResponse response){
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 			//TODO:get info from afResource;
-			
 			
 			result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
 		} catch (Exception exception) {
@@ -78,6 +89,18 @@ public class AppH5DoubleEggsController extends BaseController {
 		return result;
 	}
 	
+	/**
+	 * 
+	* @Title: getOnSaleGoods
+	* @author qiao
+	* @date 2017年12月7日 下午2:04:40
+	* @Description: 获得特卖商品（点击tap进行不同的跳转）
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
 	@RequestMapping(value = "/getOnSaleGoods")
 	public String getOnSaleGoods(HttpServletRequest request,HttpServletResponse response){
 		String result = "";
