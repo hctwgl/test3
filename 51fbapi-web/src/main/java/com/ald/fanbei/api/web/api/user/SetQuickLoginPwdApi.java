@@ -60,7 +60,7 @@ public class SetQuickLoginPwdApi implements ApiHandle {
         if(StringUtil.isBlank(passwordSrc)){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
-        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.QUICK_SET_PWD.getCode());
+        AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(context.getUserName(), SmsType.QUICK_SET.getCode());
         if(smsDo == null){
         	return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }

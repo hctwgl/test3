@@ -421,14 +421,14 @@ public class SmsUtil extends AbstractThird {
 
         AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
         if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue1())) {
-            int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_SET_PWD.getCode());
+            int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_SET.getCode());
             if (countForgetPwd >= Integer.valueOf(resourceDo.getValue1()))
                 throw new FanbeiException("发送设置密码验证码超过每日限制次数", FanbeiExceptionCode.SMS_FORGET_PASSWORD_EXCEED_TIME);
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = SET_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = sendSmsToDhst(mobile, content);
-        this.addSmsRecord(SmsType.QUICK_SET_PWD, mobile, verifyCode, 0l, smsResult);
+        this.addSmsRecord(SmsType.QUICK_SET, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
 
