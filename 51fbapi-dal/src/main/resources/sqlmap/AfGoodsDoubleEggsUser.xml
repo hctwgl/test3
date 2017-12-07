@@ -1,12 +1,11 @@
-
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- af_goods_double_eggs表:双蛋活动模块 -->
-<mapper namespace="com.ald.fanbei.api.dal.dao.AfGoodsDoubleEggsDao">
+<!-- af_goods_double_eggs_user表:双蛋活动模块 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfGoodsDoubleEggsUserDao">
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,goods_id,sort,start_time,end_time,already_count
+        id rid,gmt_create,gmt_modified,goods_id,sort,start_time,end_time,already_count 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -36,16 +35,15 @@
         <if test="alreadyCount != null and alreadyCount != ''">
             AND already_count = #{alreadyCount,jdbcType=INTEGER}
         </if>
-      
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo" keyProperty="rid">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo" keyProperty="rid">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>
     
-        INSERT INTO af_goods_double_eggs
+        INSERT INTO af_goods_double_eggs_user
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        
 	            gmt_create,
@@ -67,9 +65,6 @@
 	        </if>
 	        <if test="alreadyCount != null">        
 	            already_count,
-	        </if>
-	        <if test="isOrdered != null">        
-	            is_ordered,
 	        </if>
         </trim>
         
@@ -95,14 +90,11 @@
 		    <if test="alreadyCount != null" >
 		       #{alreadyCount,jdbcType=INTEGER},
 		    </if>
-		    <if test="isOrdered != null" >
-		       #{isOrdered,jdbcType=INTEGER},
-		    </if>
         </trim>
     </insert>
     
-    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
-        UPDATE af_goods_double_eggs
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo">
+        UPDATE af_goods_double_eggs_user
           <set>
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
@@ -123,33 +115,32 @@
                 end_time = #{endTime,jdbcType=TIMESTAMP},                
             </if>
             <if test="alreadyCount != null and alreadyCount != '' ">        
-                already_count = #{alreadyCount,jdbcType=INTEGER},                
+                already_count = #{alreadyCount,jdbcType=INTEGER}                
             </if>
-      
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo">
         SELECT
         <include refid="queryFields" />
-        FROM af_goods_double_eggs
+        FROM af_goods_double_eggs_user
         WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
 
-	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo">
         SELECT
         <include refid="queryFields" />
-        FROM af_goods_double_eggs
+        FROM af_goods_double_eggs_user
         <include refid="commonCondition"/> 
         limit 0,1
     </select>
                
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo">
         SELECT
         <include refid="queryFields" />
-        FROM af_goods_double_eggs
+        FROM af_goods_double_eggs_user
         <include refid="commonCondition"/>
     </select>
     
