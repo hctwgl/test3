@@ -336,15 +336,22 @@ public class AppH5DoubleEggsController extends BaseController {
 	@RequestMapping(value = "/subscribe")
 	public String subscribe(HttpServletRequest request,HttpServletResponse response){
 		String result = "";
+		FanbeiWebContext context = new FanbeiWebContext();
 		try {
+			context = doWebCheck(request, true);
 			java.util.Map<String, Object> data = new HashMap<>();
-			//TODO:get info from afResource;
+			//TODO:get 10 minutes from afResource;
+			String time = "10";
+			int preTime = Integer.parseInt(time);
+			Date now = new Date();
+			//if now + preTime >= goods start time then throw error"time分钟内无需预约"
 			
+			//to check if this user already subscribed this goods 
 			
-			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+			result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
 		} catch (Exception exception) {
-			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
-			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			result = H5CommonResponse.getNewInstance(false, "预约化失败", "", exception.getMessage()).toString();
+			logger.error("预约失败 context = {},  e = {} ",context, exception);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
 		}
 		return result;
