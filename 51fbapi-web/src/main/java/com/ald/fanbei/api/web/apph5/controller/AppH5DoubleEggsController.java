@@ -2,6 +2,9 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -20,7 +23,8 @@ import com.alibaba.fastjson.JSONObject;
  * @date 2017年12月7日 下午1:26:54
  * @version V1.0
  */
-
+@RestController
+@RequestMapping("/appH5DoubleEggs")
 public class AppH5DoubleEggsController extends BaseController {
 	
 
