@@ -294,7 +294,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
 			data.put("maxAmount", resource.getValue());
 		}
-		if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
+		if(YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) && !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 		/* 如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai */
