@@ -159,4 +159,7 @@
       WHERE is_delete = 0 AND goods_id = #{goodsId};
     </select>
     
+    <select id="getAvalibleGoodsList" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+    
+    </select>
 </mapper>

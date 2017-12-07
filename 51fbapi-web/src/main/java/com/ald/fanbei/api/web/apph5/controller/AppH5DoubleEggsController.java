@@ -35,6 +35,17 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+
+import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
+
+import com.ald.fanbei.api.common.util.CollectionUtil;
+
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -48,15 +59,9 @@ import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.web.common.BaseController;
-import com.ald.fanbei.api.web.common.BaseResponse;
-import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
-import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * @Title: AppH5DoubleEggsController.java
@@ -383,12 +388,32 @@ public class AppH5DoubleEggsController extends BaseController {
 	@RequestMapping(value = "/getSecondKillGoodsList")
 	public String getSecondKillGoodsList(HttpServletRequest request,HttpServletResponse response){
 		String result = "";
+		FanbeiWebContext context = new FanbeiWebContext();
 		try {
-			java.util.Map<String, Object> data = new HashMap<>();
-			//TODO:get info from afResource;
+			context = doWebCheck(request, false);
+			
+			List<AfGoodsDoubleEggsDo> goodsList = afGoodsDoubleEggsService.getAvalibleGoodsList();
+			if (CollectionUtil.isNotEmpty(goodsList)) {
+				java.util.Map<String, Object> data = new HashMap<>();
+				//change to the view model
+
+				
+				// if this user has already login in then add status to goods.
+				String userName = context.getUserName();
+				long userId = 0L;
+				if (StringUtil.isNotBlank(userName) && convertUserNameToUserId(userName) != null) {
+					
+					//change status according to different users
+					
+				} 
+				
+				
+				
+				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+			}
+			result = H5CommonResponse.getNewInstance(false, "初始化失败").toString();
 			
 			
-			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
 			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
@@ -411,7 +436,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	 */
 	@RequestMapping(value = "/subscribe")
 	public String subscribe(HttpServletRequest request, HttpServletResponse response) {
-		String result = H5CommonResponse.getNewInstance(false, "预约失败").toString();
+		String result = "";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, true);
@@ -454,6 +479,7 @@ public class AppH5DoubleEggsController extends BaseController {
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
 				}
 			}
+			result = H5CommonResponse.getNewInstance(false, "预约失败").toString();
 
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "预约化失败", "", exception.getMessage()).toString();

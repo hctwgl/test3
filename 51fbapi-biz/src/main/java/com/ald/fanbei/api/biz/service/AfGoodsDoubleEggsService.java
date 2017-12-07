@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 
 /**
@@ -13,5 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEggsDo, Long>{
 
 	AfGoodsDoubleEggsDo getByGoodsId(Long goodsId);
+
+	List<AfGoodsDoubleEggsDo> getAvalibleGoodsList();
 
 }

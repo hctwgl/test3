@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
@@ -15,6 +17,8 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long> {
 
 	AfGoodsDoubleEggsDo getByGoodsId(@Param("goodsId")Long goodsId);
+
+	List<AfGoodsDoubleEggsDo> getAvalibleGoodsList();
 
     
 
