@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -33,9 +34,11 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
@@ -63,7 +66,8 @@ public class AppH5DoubleEggsController extends BaseController {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfUserService afUserService;
-	
+	@Resource
+	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
 	/**
 	 * 
 	* @Title: initHomePage
