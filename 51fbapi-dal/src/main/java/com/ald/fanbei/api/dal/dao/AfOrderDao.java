@@ -181,4 +181,6 @@ public interface AfOrderDao {
 	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
+	
+	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 }

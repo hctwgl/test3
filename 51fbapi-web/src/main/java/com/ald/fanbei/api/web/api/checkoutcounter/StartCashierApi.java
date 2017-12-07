@@ -260,7 +260,7 @@ public class StartCashierApi implements ApiHandle {
         if (status.equals(YesNoStatus.YES.getCode())) {
             AfResourceDo consumeMinResource = afResourceService.getSingleResourceBytype("CONSUME_MIN_AMOUNT");
             BigDecimal minAmount = consumeMinResource == null ? BigDecimal.ZERO : new BigDecimal(consumeMinResource.getValue());
-            if (orderInfo.getActualAmount().compareTo(minAmount) <= 0) {
+            if (orderInfo.getActualAmount().compareTo(minAmount) < 0) {
                 return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
             }
             //额度判断
@@ -325,8 +325,8 @@ public class StartCashierApi implements ApiHandle {
     private String getIsAuth(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo) {
         String status = YesNoStatus.NO.getCode();
         if (userDto.getAuAmount().compareTo(BigDecimal.ZERO) > 0) {
-            if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getIvsStatus())// 反欺诈分已验证
-                    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
+            //StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getIvsStatus())// 反欺诈分已验证&&
+            if ( StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
                     && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
                     && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
                     && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态

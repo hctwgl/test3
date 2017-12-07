@@ -162,6 +162,7 @@ public class Constants {
 	public static final String RES_THIRD_GOODS_REBATE_RATE = "THIRD_GOODS_REBATE_RATE";
 	public static final String RES_BORROW_CASH_RATE_DESC = "BORROW_CASH_RATE_DESC";
 	public static final String RES_BORROW_CONSUME = "BORROW_CONSUME";
+	public static final String RES_BORROW_CONSUME_VIP = "BORROW_CONSUME_VIP";
 	public static final String RES_BORROW_CONSUME_OVERDUE = "BORROW_CONSUME_OVERDUE";
 	public static final String RES_BORROW_CASH = "BORROW_CASH";
 	public static final String RES_BORROW_RATE = "BORROW_RATE";
@@ -404,6 +405,11 @@ public class Constants {
 	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
+	  
+	//双十二秒杀抢券活动
+	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
+	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
+	
 //借钱费率配置相关
 	 public static final String BORROW_RATE="BORROW_RATE";
 	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
@@ -418,5 +424,5 @@ public class Constants {
 	//宜信阿福RC4秘钥
 	  public static final String YIXIN_AFU_PASSWORD="fbapi.yixinafu.password";
 	  //宜信阿福查询用户逾期信息redis中的key前缀
-	  public static final String YIXIN_AFU_SEARCH_KEY="yixinafu_search_";
+	  public static final String YIXIN_AFU_SEARCH_KEY="yxafu_";
 }
