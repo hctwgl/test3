@@ -19,7 +19,7 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 
-		String tables = "af_goods_double_eggs";
+		String tables = "af_goods_double_eggs_user";
 
 		// 配置作者及Domain说明
 		String classAuthor = "maqiaopan_temple";
