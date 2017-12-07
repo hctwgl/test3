@@ -173,12 +173,9 @@ let vm = new Vue({
             let quantityNum,times;
             let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType,gameSrv;
             if($('.gamePass input').val()){
-                if(self.fixCont.priceTypeList){
-                    quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
-                    times=self.fixCont.priceTimes;
-                }else{ // goodsNum计算
-                    quantityNum=self.fixCont.priceTypeList[self.liIndex].quantity;
-                    times=self.fixCont.priceTimes;
+                if(self.fixCont.priceTypeList){ // goodsNum计算
+                    quantityNum=self.initPriceList.list[self.liIndex].quantity;
+                    times=self.initPriceList.priceTimes;
                 }
                 if($('.gameName').hasClass('needGameNum')){ //游戏账号
                     gameAcct=$('.needGameNum input').val();
