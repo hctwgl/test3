@@ -198,30 +198,7 @@ public class TestController {
     @RequestMapping("/cuishou")
     @ResponseBody
     public String cuishou() {
-
-        RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
-        List<RiskTrackerDo> riskTrackerDoList = riskTrackerService.getListByCommonCondition(riskTrackerDo);
-        for (RiskTrackerDo item : riskTrackerDoList) {
-            try {
-                HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
-                CollectionDataBo collectionDataBo = new CollectionDataBo();
-                collectionDataBo.setData(item.getParams());
-                collectionDataBo.setSign(DigestUtil.MD5(item.getParams()));
-                String timestamp = DateUtil.getDateTimeFullAll(new Date());
-                collectionDataBo.setTimestamp(timestamp);
-                //APP还款类型写3 , 线下还款写4
-                collectionDataBo.setChannel(AfRepayCollectionType.APP.getCode());
-                String data = getUrlParamsByMap(collectionDataBo);
-                String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(item.getUrl(), data);
-                if (StringUtil.isBlank(reqResult)) {
-                    throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
-                }
-
-            } catch (Exception e) {
-                logger.error("raiseQuota compensate exception:", e);
-            }
-
-        }
+        riskUtil.syncOpenId(13989455712l,"268811897276756002554870029");
         return "调用处理中^";
 
     }

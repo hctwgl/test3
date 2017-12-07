@@ -77,13 +77,7 @@ public class AuthCreditV1Api implements ApiHandle {
 		AfUserAccountDto userAccount = afUserAccountService.getUserAndAccountByUserId(context.getUserId());
 		String idNumber = userAccount.getIdNumber();
 		String realName = userAccount.getRealName();
-		/* fmai_20170608去掉风控单独调用
-		//同步openId到融都
-		RiskRespBo riskResp = riskUtil.modify(userAccount.getUserId()+"", realName, userAccount.getMobile(),idNumber, userAccount.getEmail(),
-				userAccount.getAlipayAccount(), userAccount.getAddress(), openId);
-		if(!riskResp.isSuccess()){
-			throw new FanbeiException(FanbeiExceptionCode.RISK_MODIFY_ERROR);
-		}*/
+		riskUtil.syncOpenId(context.getUserId(),openId);
 		ZhimaCreditScoreGetResponse scoreGetResp = ZhimaUtil.scoreGet(openId);
 		ZhimaCreditIvsDetailGetResponse ivsDetailResp =  ZhimaUtil.ivsDetailGet(idNumber, realName, null, null, null);
 		ZhimaCreditWatchlistiiGetResponse watchListResp = ZhimaUtil.watchlistiiGet(openId);

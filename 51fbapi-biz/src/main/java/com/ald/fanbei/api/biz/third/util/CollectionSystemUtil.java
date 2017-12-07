@@ -228,7 +228,8 @@ public class CollectionSystemUtil extends AbstractThird {
 					//还款金额校验
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 			        BigDecimal amount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount() ,afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
-			        if(NumberUtil.objToBigDecimalDefault(repayAmount, BigDecimal.ZERO).compareTo(amount) > 0) {
+			        //因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
+			        if(NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO).compareTo(amount.add(BigDecimal.valueOf(10))) > 0) {
 			            logger.info("offlineRepaymentNotify is fail,borrowCashId= "+afBorrowCashDo.getRid()+",reqInfo="+StringUtil.appendStrs(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance));
 			            notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.FAILED);
 			            return notifyRespBo;
