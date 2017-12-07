@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author maqiaopan_temple
  * @version 1.0.0 初始化
- * @date 2017-12-07 13:40:05
+ * @date 2017-12-07 16:21:14
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class AfGoodsDoubleEggsDo extends AbstractSerial {
@@ -56,6 +56,7 @@ import java.math.BigDecimal;
      * 已被秒杀的商品数量
      */
     private Long alreadyCount;
+
 
     /**
      * 获取主键Id
@@ -201,8 +202,5 @@ import java.math.BigDecimal;
     public void setAlreadyCount(Long alreadyCount){
       this.alreadyCount = alreadyCount;
     }
-
-
-
 
 }

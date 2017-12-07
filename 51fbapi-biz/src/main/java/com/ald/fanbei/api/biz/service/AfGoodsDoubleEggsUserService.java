@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
  */
 public interface AfGoodsDoubleEggsUserService extends ParentService<AfGoodsDoubleEggsUserDo, Long>{
 
+	boolean isExist(Long goodsId, Long userId);
+
 }

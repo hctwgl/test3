@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDoubleEggsUserDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 
 
@@ -33,4 +34,13 @@ public class AfGoodsDoubleEggsUserServiceImpl extends ParentServiceImpl<AfGoodsD
 	public BaseDao<AfGoodsDoubleEggsUserDo, Long> getDao() {
 		return afGoodsDoubleEggsUserDao;
 	}
+
+		@Override
+		public boolean isExist(Long goodsId, Long userId) {
+			boolean result = false;
+			if(afGoodsDoubleEggsUserDao.isExist(goodsId,userId) > 0){
+				result = true;
+			}
+			return result; 
+		}
 }

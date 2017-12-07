@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
 
 /**
@@ -12,6 +14,6 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
  */
 public interface AfGoodsDoubleEggsUserDao extends BaseDao<AfGoodsDoubleEggsUserDo, Long> {
 
-    
+	int isExist(@Param("doubleGoodsId")Long doubleGoodsId, @Param("userId")Long userId);
 
 }

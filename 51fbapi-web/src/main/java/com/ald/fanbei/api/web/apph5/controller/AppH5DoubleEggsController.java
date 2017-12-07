@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
+import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 import org.apache.commons.lang.ObjectUtils;
 import com.ald.fanbei.api.common.FanbeiWebContext;
@@ -39,6 +41,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
@@ -68,6 +71,9 @@ public class AppH5DoubleEggsController extends BaseController {
 	AfUserService afUserService;
 	@Resource
 	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+	
+	@Resource
+	AfGoodsDoubleEggsUserService afGoodsDoubleEggsUserService;
 	/**
 	 * 
 	* @Title: initHomePage
@@ -343,15 +349,24 @@ public class AppH5DoubleEggsController extends BaseController {
 					// if now + preTime >= goods start time then throw error"time分钟内无需预约"
 					if(DateUtil.addMins(now, preTime).after(goodsDo.getStartTime())){
 						result = H5CommonResponse.getNewInstance(false,"抱歉" + preTime + "分钟内无法预约！").toString();
+						return result;
 					}
 					
+					long doubleGoodsId = goodsDo.getRid();
+					// to check if this user already subscribed this goods if yes then "已经预约不能重复预约"else"预约成功"
+					if (afGoodsDoubleEggsUserService.isExist(doubleGoodsId,userId)) {
+						result = H5CommonResponse.getNewInstance(false, "已经预约过不能重复预约！").toString();
+						return result;
+					}
 					
+					AfGoodsDoubleEggsUserDo userDo = new AfGoodsDoubleEggsUserDo();
+					userDo.setDoubleEggsId(doubleGoodsId);
+					userDo.setGmtCreate(now);
+					userDo.setGmtModified(now);
+					userDo.setIsOrdered(1);
+					userDo.setUserId(userId);
 					
-					// to check if this user already subscribed this goods if yes
-					
-					
-					
-					// then "已经预约不能重复预约"else"预约成功"
+					afGoodsDoubleEggsUserService.saveRecord(userDo);
 
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
 				}
