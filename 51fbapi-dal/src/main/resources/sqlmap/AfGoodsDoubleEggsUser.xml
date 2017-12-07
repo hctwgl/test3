@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,goods_id,sort,start_time,end_time,already_count 
+        id rid,gmt_create,gmt_modified,double_eggs_id,user_id,is_ordered 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -20,20 +20,14 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="goodsId != null and goodsId != ''">
-            AND goods_id = #{goodsId,jdbcType=INTEGER}
+        <if test="doubleEggsId != null and doubleEggsId != ''">
+            AND double_eggs_id = #{doubleEggsId,jdbcType=INTEGER}
         </if>
-        <if test="sort != null and sort != ''">
-            AND sort = #{sort,jdbcType=INTEGER}
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="startTime !=null">
-            AND start_time = #{startTime,jdbcType=TIMESTAMP}
-        </if>
-        <if test="endTime !=null">
-            AND end_time = #{endTime,jdbcType=TIMESTAMP}
-        </if>
-        <if test="alreadyCount != null and alreadyCount != ''">
-            AND already_count = #{alreadyCount,jdbcType=INTEGER}
+        <if test="isOrdered != null and isOrdered != ''">
+            AND is_ordered = #{isOrdered,jdbcType=INTEGER}
         </if>
     </sql>
 
@@ -51,20 +45,14 @@
 	        <if test="gmtModified != null">        
 	            gmt_modified,
 	        </if>
-	        <if test="goodsId != null">        
-	            goods_id,
+	        <if test="doubleEggsId != null">        
+	            double_eggs_id,
 	        </if>
-	        <if test="sort != null">        
-	            sort,
+	        <if test="userId != null">        
+	            user_id,
 	        </if>
-	        <if test="startTime != null">        
-	            start_time,
-	        </if>
-	        <if test="endTime != null">        
-	            end_time,
-	        </if>
-	        <if test="alreadyCount != null">        
-	            already_count,
+	        <if test="isOrdered != null">        
+	            is_ordered,
 	        </if>
         </trim>
         
@@ -75,20 +63,14 @@
 		    <if test="gmtModified != null" >
 		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
-		    <if test="goodsId != null" >
-		       #{goodsId,jdbcType=INTEGER},
+		    <if test="doubleEggsId != null" >
+		       #{doubleEggsId,jdbcType=INTEGER},
 		    </if>
-		    <if test="sort != null" >
-		       #{sort,jdbcType=INTEGER},
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
 		    </if>
-		    <if test="startTime != null" >
-		       #{startTime,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="endTime != null" >
-		       #{endTime,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="alreadyCount != null" >
-		       #{alreadyCount,jdbcType=INTEGER},
+		    <if test="isOrdered != null" >
+		       #{isOrdered,jdbcType=INTEGER},
 		    </if>
         </trim>
     </insert>
@@ -102,20 +84,14 @@
             <if test="gmtModified != null and gmtModified != '' ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
-            <if test="goodsId != null and goodsId != '' ">        
-                goods_id = #{goodsId,jdbcType=INTEGER},                
+            <if test="doubleEggsId != null and doubleEggsId != '' ">        
+                double_eggs_id = #{doubleEggsId,jdbcType=INTEGER},                
             </if>
-            <if test="sort != null and sort != '' ">        
-                sort = #{sort,jdbcType=INTEGER},                
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="startTime != null and startTime != '' ">        
-                start_time = #{startTime,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="endTime != null and endTime != '' ">        
-                end_time = #{endTime,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="alreadyCount != null and alreadyCount != '' ">        
-                already_count = #{alreadyCount,jdbcType=INTEGER}                
+            <if test="isOrdered != null and isOrdered != '' ">        
+                is_ordered = #{isOrdered,jdbcType=INTEGER}                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}

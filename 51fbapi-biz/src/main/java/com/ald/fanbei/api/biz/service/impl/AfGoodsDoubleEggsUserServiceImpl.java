@@ -17,7 +17,7 @@ import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
  * 
  * @author maqiaopan_temple
  * @version 1.0.0 初始化
- * @date 2017-12-07 14:47:43
+ * @date 2017-12-07 15:23:45
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  
