@@ -72,10 +72,10 @@ body {
     right: -0.2rem;
     top: -0.2rem;
     z-index: 999;
-    background-image: url('http://f.51fanbei.com/h5/app/images/user/invite/cancel.png');  
+    background-image: url('http://f.51fanbei.com/h5/app/images/user/invite/cancel.png');
     background-repeat: no-repeat;
     background-position: -0.1rem -0.1rem;
-    background-size: 0.7rem 0.7rem; 
+    background-size: 0.7rem 0.7rem;
   }
 }
 
@@ -184,42 +184,39 @@ body {
   background-size: 100% 100%;
   margin: 0.13rem auto;
 }
-
-.copycode {
-  font-size: 0.28rem;
-  height: 0.3rem;
-  line-height: 0.3rem;
-  color: #ff500c;
-  font-weight: 200;
-  text-decoration: underline;
-  margin-top: 0.16rem;
-  margin-bottom: 0.34rem;
+.clickInviteCode{
   text-align: center;
-  span {
-    text-decoration: underline;
-  }
 }
-
+.copycode {
+  display: inline-block;
+  height: .3rem;
+  line-height: .3rem;
+  font-size: .28rem;
+  color: #ff500c;
+  border-bottom: 1px solid #ff500c;
+  margin:.17rem auto .12rem;
+}
 .level {
-  width: 6.80rem;
-  height: 6.61rem;
-  margin: 0 auto;
+  width: 100%;
+  height:7.06rem;
   box-sizing: border-box;
-  padding: 0.82rem 0.2rem 0.26rem 0.2rem;
   position: relative;
-  margin-bottom: 0.5rem;
   &.level1 {
-    background: url('http://f.51fanbei.com/h5/app/images/user/invite/reward1.png') 0 0 no-repeat;    
+    margin: 0 auto .3rem;
+    background: url('http://f.51fanbei.com/h5/app/activity/11/ggFix24.png') 0 0 no-repeat;
     background-size: 100% 100%;
     .box {
+      top:1.2rem;
       background: url('http://f.51fanbei.com/h5/app/images/user/invite/gift1.png') 0 0 no-repeat;
       background-size: 100% 100%;
     }
   }
   &.level2 {
-    background: url('http://f.51fanbei.com/h5/app/images/user/invite/reward2.png') 0 0 no-repeat;    
+    margin: 0 auto .5rem;
+    background: url('http://f.51fanbei.com/h5/app/activity/11/ggFix23.png') 0 0 no-repeat;
     background-size: 100% 100%;
     .box {
+      top:1.4rem;
       background: url('http://f.51fanbei.com/h5/app/images/user/invite/gift2.png') 0 0 no-repeat;
       background-size: 100% 100%;
     }
@@ -227,8 +224,8 @@ body {
   .box {
     width: 2.56rem;
     height: 2.44rem;
-    margin: 0 auto;
-    margin-top: 0.3rem;
+    position:absolute;
+    left:33%;
     animation: itrotate 2.6s linear infinite backwards;
   }
 }
@@ -259,10 +256,10 @@ body {
     margin-top: .3rem;
     overflow: hidden;
     &>div {
-      width: 3.14rem;
+      width: 32.5%;
       height: 0.75rem;
       color: #fff;
-      font-size: 0.32rem;
+      font-size: 0.22rem;
       text-align: center;
       line-height: 0.75rem;
       background-color: #bcbcbc;
@@ -271,8 +268,8 @@ body {
       &.active {
         background-color: #de5d18;
       }
-      &:first-child {
-        margin-right: .1rem;
+      &.leveltwo {
+        margin:0 1.2%;
       }
     }
   }
@@ -282,37 +279,34 @@ body {
     background-color: #fff;
     border-radius: 4px;
     margin-top: 0.12rem;
-    padding: 0.3rem 0.2rem; 
     box-sizing: border-box;
     position: relative;
     .con_tit {
-      margin-top: 0.1rem;
+      height:.3rem;
+      line-height: .3rem;
+      padding:.3rem 0 .2rem 0;
       &>div {
         float: left;
         text-align: center;
         font-size: 0.28rem;
         color: #040404;
         &:nth-child(1) {
-          width: 1.60rem;
+          width:31.5%;
         }
         &:nth-child(2) {
           margin-left: 0rem;
-          width: 1.6rem;
+          width: 28%;
         }
         &:nth-child(3) {
-          width: 1.55rem;
+          width: 16%;
         }
         &:nth-child(4) {
-          width: 1.15rem;
+          width: 24.5%;
         }
       }
     }
     .con {
-      position: absolute;
-      top: 1.2rem;
-      bottom: 0.3rem;
-      left: 0.2rem;
-      right: 0.2rem;
+      height:3.8rem;
       overflow: scroll;
       -webkit-overflow-scrolling: touch;
       .loading{
@@ -344,7 +338,7 @@ body {
       .list {
         .nodata {
           margin-top: 1.2rem;
-          font-size: 0.32rem; 
+          font-size: 0.32rem;
           text-align: center;
           color: rgba(0,0,0,.6);
         }
@@ -387,3 +381,96 @@ body {
   background-size: 100% 100%;
   margin-top: 0.40rem;
 }
+/*特惠奖励*/
+.specialPrize{
+  width:100%;
+  height:8.96rem;
+  margin:0 auto .68rem;
+  background: url('http://f.51fanbei.com/h5/app/activity/11/ggFix25.png') no-repeat;
+  background-size: contain;
+  .specialPrizeTitle{
+    text-align: center;
+    font-size:.31rem;
+    color:#fff;
+    height: 1rem;
+    line-height: 1.1rem;
+    span{
+      font-size: .35rem;
+    }
+  }
+  .specialCoupon{
+    width:49%;
+    height:1.71rem;
+    background: url('http://f.51fanbei.com/h5/app/activity/11/ggFix26.png') no-repeat;
+    background-size: cover;
+    margin:.7rem auto 0;
+    position:relative;
+    animation: itrotate 2.6s linear infinite backwards;
+    span{
+      color:#fff;
+      font-size: .8rem;
+      font-weight: 600;
+      position:absolute;
+      top: 13.5%;
+      left: 29%;
+    }
+  }
+  .goFixPage{
+    width:2.56rem;
+    height:.49rem;
+    border-radius: .43rem;
+    border: 1px solid #ff640d;
+    font-size: .26rem;
+    line-height: .49rem;
+    letter-spacing: .02rem;
+    text-align: center;
+    color: #ff6e41;
+    margin:.45rem auto .48rem;
+  }
+  .limitRule{
+    width:78.1%;
+    font-size: .28rem;
+    line-height: .5rem;
+    letter-spacing: .02rem;
+    text-align: justify;
+    color: #000000;
+    margin:0 auto .4rem;
+  }
+  .exampleRule{
+    width:61%;
+    font-size: .28rem;
+    line-height: .42rem;
+    text-align: justify;
+    color: #5e5e5e;
+    padding-left:28%;
+  }
+}
+.takeOutMoney{
+  height:.64rem;
+  line-height:.64rem;
+  font-size:.22rem;
+  span{
+    text-align: center;
+    float:left;
+  }
+  span:nth-child(1){
+    width:31.5%;
+    letter-spacing: .02rem;
+  }
+  span:nth-child(2){
+    width:28%;
+    letter-spacing: .03rem;
+    color:#666;
+    font-size:.2rem;
+  }
+  span:nth-child(3){
+    width:16%;
+    letter-spacing: .03rem;
+    color:#666;
+  }
+  span:nth-child(4){
+    width:24.5%;
+    letter-spacing: .02rem;
+  }
+}
+
