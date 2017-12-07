@@ -274,7 +274,6 @@ $(function(){
             $('.specialCoupon span').html(content.couponAmount);
             $('.limitRule').html(content.activityRule);
             $('.exampleRule').html(content.example);
-            $('.top').append('<img src="'+content.image+'">');
         },
         error:function(){
             requestMsg('哎呀，出错了！')

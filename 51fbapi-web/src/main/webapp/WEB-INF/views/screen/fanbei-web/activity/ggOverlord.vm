@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712061510")
+    #set($version="201712071328")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>我要吃霸王餐</title>
@@ -11,7 +11,7 @@
 <div id="ggOverlord" class="ggOverlord">
     <textarea type="text" id="invitecode">23123</textarea>
     <div class="loadingMask"><i class="loading"></i></div>
-    <div class="banner first"><img :src="baseData.image"></div>
+    <div class="banner first"><img src="$src/ggFix17.png"></div>
     <div class="firstCont">
         <p class="inviteButton" @click="inviteButtonClick()">有福同享 ></p>
         <div class="clickInviteCode">
