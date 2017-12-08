@@ -302,4 +302,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 	public int updateAfBorrowCashPlanTime(Long userId) {
 		return afBorrowCashDao.updateAfBorrowCashPlanTime(userId);
 	}
+
+	@Override
+	public List<AfBorrowCashDo> getListByUserId(Long userId, Long rows) {
+		return afBorrowCashDao.getListByUserId(userId, rows);
+	}
 }
