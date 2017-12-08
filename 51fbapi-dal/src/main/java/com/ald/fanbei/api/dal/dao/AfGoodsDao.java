@@ -81,4 +81,6 @@ public interface AfGoodsDao {
 
 
 	List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(@Param("parentId")Long parentId);
+
+	List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(@Param("primaryCategoryId")Long primaryCategoryId,@Param("categoryId") Long categoryId);
 }

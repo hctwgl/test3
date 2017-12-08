@@ -177,4 +177,15 @@
 	 )
 	</select>
 	
+	<select id="listGoodsListByPrimaryCategoryIdAndCategoryId"  resultType="AfGoodsDo" parameterType="java.lang.Long">
+		SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE is_delete = 0
+		AND STATUS = 'PUBLISH'
+		AND primary_category_id = #{primaryCategoryId}
+		AND category_id = #{categoryId}
+	</select>
+	
+	
 </mapper>
