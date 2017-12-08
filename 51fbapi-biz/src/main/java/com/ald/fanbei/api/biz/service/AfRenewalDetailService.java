@@ -28,7 +28,7 @@ public interface AfRenewalDetailService {
 
 	public long dealRenewalSucess(String outTradeNo, String tradeNo);
 
-	public long dealRenewalFail(final String outTradeNo, final String tradeNo);
+	public long dealRenewalFail(final String outTradeNo, final String tradeNo,String errorMsg);
 
 	/**
 	 * 续借信息
@@ -61,5 +61,6 @@ public interface AfRenewalDetailService {
 	 * @return
 	 * **/
 	public List<AfRenewalDetailDo> getRenewalDetailListByBorrowId(Long borrowId);
-	
+
+    AfRenewalDetailDo getRenewalDetailHoursByBorrowId(Long borrowId);
 }

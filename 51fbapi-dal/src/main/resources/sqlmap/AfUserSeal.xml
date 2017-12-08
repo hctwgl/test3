@@ -22,6 +22,14 @@
     and is_delete = 0
     limit 1
   </select>
+  <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from af_user_seal
+    where user_name = #{userName}
+    and is_delete = 0
+    limit 1
+  </select>
   <select id="selectByUserType" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
     <include refid="Base_Column_List" />

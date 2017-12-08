@@ -6,6 +6,7 @@ package com.ald.fanbei.api.web.api.order;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -37,8 +38,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,6 +71,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource
+	AfGoodsDouble12Service afGoodsDouble12Service;
 
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
@@ -79,6 +84,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfShareUserGoodsService afShareUserGoodsService;
 	@Resource
 	TransactionTemplate transactionTemplate;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 
 	@Override
@@ -101,9 +108,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
-		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
-			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
-		}
+//		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
+//			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+//		}
 		final AfGoodsPriceDo priceDo = afGoodsPriceService.getById(goodsPriceId);
 		AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
 		if (appversion >= 371) {
@@ -157,7 +164,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (!fromCashier) {
 			if (nper.intValue() > 0) {
 				// 保存手续费信息
-				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper);
+				BorrowRateBo borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
 				afOrder.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
 			}
 		}
@@ -175,6 +182,13 @@ public class BuySelfGoodsApi implements ApiHandle {
 			//mqp_新人专享活动增加逻辑
 			if (userId != null) {
 
+				// 双十二秒杀新增逻辑+++++++++++++>
+				if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0){
+					//是双十二秒杀商品
+					double12GoodsCheck(userId, goodsId,count);
+				}
+				// +++++++++++++++++++++++++<
+				
 				//查询用户订单数
 				int oldUserOrderAmount = afOrderService.getOldUserOrderAmount(userId);
 				if(oldUserOrderAmount==0){
@@ -192,9 +206,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 							return resp1;
 
 						}
-
-						BigDecimal decreasePrice = resultDo.getDecreasePrice();
-						priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
+						
+						//后端优化:商品详情页面展示的商品价格，各个规格的价格取后台商品的售价即可；（商品的售价会维护成商品折扣后的新人价）
+						//BigDecimal decreasePrice = resultDo.getDecreasePrice();
+						//priceDo.setActualAmount(priceDo.getActualAmount().subtract(decreasePrice));
 						transactionTemplate
 								.execute(new TransactionCallback<Long>() {
 
@@ -284,6 +299,62 @@ public class BuySelfGoodsApi implements ApiHandle {
 		return resp;
 	}
 
+	/**
+	 * 
+	 * @Title: double12GoodsCheck
+	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
+	 * @return  void  
+	 * @author yanghailong
+	 * @data  2017年11月21日
+	 */
+	private void double12GoodsCheck(Long userId, Long goodsId, Integer count){
+		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
+		try {
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
+			if (isNotLock) {
+				List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
+				if(afGoodsDouble12DoList.size()!=0){
+					//这个商品是双十二秒杀商品
+					if (count != 1||afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
+						//报错提示只能买一件商品
+						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+					//根据goodsId查询商品信息
+					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+					int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12DoList.get(0).getAlreadyCount();//秒杀商品余量
+					if(goodsDouble12Count<=0){
+						//报错提示秒杀商品已售空
+						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+					//iphoneX特殊处理
+					if(goodsId==134882||goodsId==135405){
+						//更新 已被秒杀的商品数量（count+1）
+						afGoodsDouble12Service.updateCountById(goodsId);
+						//报错提示秒杀商品已售空
+						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+	            	//---->update 更新 已被秒杀的商品数量（count+1）
+	            	afGoodsDouble12Service.updateCountById(goodsId);
+		            
+				}
+			}
+		} catch(FanbeiException e){
+			logger.error("double12 activity order error = {}", e.getStackTrace());
+			throw e;
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("double12 activity order error = {}", e.getStackTrace());
+			throw new FanbeiException(FanbeiExceptionCode.DOUBLE12ORDER_ERROR);
+		} finally{
+			bizCacheUtil.delCache(key);
+		}
+		
+	}
+	
+	
 	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo, int count) {
 		AfOrderDo afOrder = new AfOrderDo();
 		afOrder.setConsignee(addressDo.getConsignee());

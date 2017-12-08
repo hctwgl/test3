@@ -100,13 +100,18 @@ public interface AfUserAccountDao {
 	
 	int updateBorrowCashActivity(@Param("money") int money,@Param("userId") List<String> userId);
 	
-	
+
 	/**
 	 * 根据用户ID查询授信金额
 	 * @param userId
-	 * 
+	 *
 	 * **/
-	
+
 	BigDecimal getAuAmountByUserId(long userId);
-	
+
+
+
+    int updateUserAccountByUserId(@Param("userId")Long userId,@Param("money")int money);
+
+	AfUserAccountDo findByIdNo(@Param("idNo")String idNo);
 }

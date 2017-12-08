@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
+import com.alibaba.fastjson.JSONArray;
 
 
 /**
@@ -321,5 +322,14 @@ public interface AfOrderService {
      * @return
      */
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
+
+	List<AfOrderDo> getOverOrderByUserId(Long userId);
+	
+	/**
+     * 获取已生成的秒杀订单
+     * @param userId
+     * @return
+     */
+	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,Long userId);
 	
 }

@@ -184,7 +184,9 @@ public class ZhimaUtil extends AbstractThird {
 			return resp;
 		}catch(Exception e){
 			logger.error(StringUtil.appendStrs("isvDetailGet error;|",idNumber,"|",realName,"|",mobile,"|",email,"|",address), e);
-			throw new FanbeiException(FanbeiExceptionCode.ZM_ERROR);
+			ZhimaCreditIvsDetailGetResponse response=new ZhimaCreditIvsDetailGetResponse();
+			response.setSuccess(false);
+			return response;
 		}
 
 	}

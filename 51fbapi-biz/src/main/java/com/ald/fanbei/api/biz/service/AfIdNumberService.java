@@ -28,5 +28,5 @@ public interface AfIdNumberService {
 	     * 根据userId获取省份证的信息
 	     */
 	    AfIdNumberDo selectUserIdNumberByUserId(Long userId);
-
+	
 }

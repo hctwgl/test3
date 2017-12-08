@@ -6,6 +6,7 @@ import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -52,6 +53,8 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
     AfRepaymentBorrowCashService afRepaymentBorrowCashService;
     @Resource
     AfResourceService afResourceService;
+    @Resource
+    AfUserAuthService afUserAuthService;
 
     @Resource
     YiBaoUtility yiBaoUtility;
@@ -68,7 +71,12 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
         BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
+    	BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
+        AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
+        if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
+        }
 
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
@@ -137,6 +145,20 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 				borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
 			}*/
             BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
+            BigDecimal capital =BigDecimal.ZERO;
+
+            if(context.getAppVersion()<397){
+                AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
+                BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
+                capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+            }else{
+                if (renewalAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {   //判断续借金额是否大于100
+                    throw new FanbeiException(
+                            FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED);
+                }
+                capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewalAmount);
+            }
+            /*
             AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
             BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
             BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
@@ -149,8 +171,21 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 
             // 续期应缴费用(利息+手续费+滞纳金+要还本金)
             BigDecimal repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
+*/
+            //fmf_add 续借由用户手动操作  strat
 
-            if (context.getAppVersion() < 380) {
+
+    		// 续借本金
+    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
+    		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);;
+    		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
+    		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
+
+    		// 续期应缴费用(利息+手续费+滞纳金+要还本金)
+    		BigDecimal repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
+    		//fmf_add 续借由用户手动操作    end
+
+    		if (context.getAppVersion() < 380) {
                 waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
                 repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount());
             }
@@ -198,6 +233,13 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
                 AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
                 if (null == card) {
                     throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+                }
+                AfResourceDo afResource = afResourceService.getSingleResourceBytype("bank_repay_limit_" + card.getBankCode());
+                if (afResource != null && afResource.getValue().equals(card.getBankCode())) {
+                    Long limitValue = Long.valueOf(afResource.getValue1());//限制金额
+                    if (actualAmount.compareTo(new BigDecimal(limitValue)) > 0) {
+                        throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_RENEW_LIMIT_ERROR);//提示语
+                    }
                 }
                 map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion());
 

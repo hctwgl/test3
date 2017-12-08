@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public class Constants {
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
+	public static final long SECOND_OF_ONE_MINITS = 60l;
 	public static final long SECOND_OF_THREE = 30l;//30秒
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
@@ -139,6 +140,10 @@ public class Constants {
     public static final String CACHEKEY_REDRAIN_MISC = "redrain_misc";
     public static final String CACHEKEY_REDRAIN_COUNTERS = "redrain_counters";
     public static final String CACHEKEY_REDRAIN_SINK = "redrain_sink";
+    // 实名认证缓存key前缀
+    public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX 		= "real_auth_citizen_card$";
+    public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX 		= "real_auth_real_name$";
+    public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX 				= "real_auth_pass$";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
@@ -157,6 +162,7 @@ public class Constants {
 	public static final String RES_THIRD_GOODS_REBATE_RATE = "THIRD_GOODS_REBATE_RATE";
 	public static final String RES_BORROW_CASH_RATE_DESC = "BORROW_CASH_RATE_DESC";
 	public static final String RES_BORROW_CONSUME = "BORROW_CONSUME";
+	public static final String RES_BORROW_CONSUME_VIP = "BORROW_CONSUME_VIP";
 	public static final String RES_BORROW_CONSUME_OVERDUE = "BORROW_CONSUME_OVERDUE";
 	public static final String RES_BORROW_CASH = "BORROW_CASH";
 	public static final String RES_BORROW_RATE = "BORROW_RATE";
@@ -340,6 +346,8 @@ public class Constants {
 	
 	//人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";
+	//实名认证修改姓名开关
+	public static final String SWITCH = "SWITCH";
 	
 	//H5用户以及token cookie
 	public static final String H5_USER_NAME_COOKIES_KEY = "userName";
@@ -397,8 +405,24 @@ public class Constants {
 	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
+	  
+	//双十二秒杀抢券活动
+	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
+	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
+	
 //借钱费率配置相关
 	 public static final String BORROW_RATE="BORROW_RATE";
 	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
 	 public static final String BORROW_CASH_OVERDUE_POUNDAGE="BORROW_CASH_OVERDUE_POUNDAGE";
+
+	//首页滚动条
+	  public static final String HOMEPAGE_TOP_SCROLLBAR="HOMEPAGE_TOP_SCROLLBAR";
+	  public static final String BORROW_TOP_SCROLLBAR="H5_URL";
+	  
+	//代扣
+	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
+	//宜信阿福RC4秘钥
+	  public static final String YIXIN_AFU_PASSWORD="fbapi.yixinafu.password";
+	  //宜信阿福查询用户逾期信息redis中的key前缀
+	  public static final String YIXIN_AFU_SEARCH_KEY="yxafu_";
 }

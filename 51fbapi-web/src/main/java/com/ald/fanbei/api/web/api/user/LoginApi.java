@@ -214,7 +214,6 @@ public class LoginApi implements ApiHandle {
 			}
 			loginType = "2"; //可信登录验证通过，变可信
 		}
-
 		loginDo.setResult("true");
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
@@ -230,7 +229,11 @@ public class LoginApi implements ApiHandle {
 		jo.put("user", userVo);
 		jo.put("token", token);
 		jo.put("allowConsume", afUserAuthService.getConsumeStatus(afUserDo.getRid(),context.getAppVersion()));
-
+		if(failCount == -1){
+			jo.put("flag","Y");
+		}else{
+			jo.put("flag","N");
+		}
 		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC+afUserDo.getRid();
 		bizCacheUtil.saveObject(loginWifiMacKey, wifiMac);
 

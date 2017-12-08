@@ -216,10 +216,12 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
 			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-			if (waitPaidAmount.compareTo(capital) <= 0) {
+			/*if (returnAmount.compareTo(capital) <= 0) {
+				data.put("renewalStatus", "N");
+			}*/
+			if (returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
 				data.put("renewalStatus", "N");
 			}
-			
 		}
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
@@ -292,7 +294,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
 			data.put("maxAmount", resource.getValue());
 		}
-
+		if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
+		}
 		/* 如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai */
 		BigDecimal setMaxAmount = new BigDecimal(resource.getValue());
 		if (setMaxAmount.compareTo(calculateMaxAmount(usableAmount)) < 0) {

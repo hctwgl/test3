@@ -57,7 +57,7 @@
 		WHERE
 		is_delete = 0
 		AND
-		type = #{type}
+		type = #{type} ORDER BY sort DESC
 	</select>
 	<select id="getConfigByTypesAndSecType" resultType="AfResourceDo">
 		SELECT
@@ -185,7 +185,7 @@
 		type = #{type}
 		AND is_delete = 0
 		order by
-		sort
+		sort DESC
 	</select>
 
 	<select id="getOneToManyResourceOrderByBytype" resultType="AfResourceDo">
@@ -367,4 +367,14 @@
 	<select id="getActivityRule" resultType="String">
 		SELECT value from af_resource where is_delete = 0 and type =#{type}
 	</select>
+
+	<select id="getScrollbarListByType" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		type = #{type} AND is_delete = 0 and value_4 ='O'
+	</select>
+
 </mapper>

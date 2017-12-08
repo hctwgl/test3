@@ -7,28 +7,12 @@ var style=$("#style").val();  // 样式
 var os=getBlatFrom(); // 1是android，2是ios
 console.log(os);
 
-// 更换页面title
-if( style==21 ){
-    document.title="借款超人注册";
+var channelCode = getUrl('channelCode');
+var pointCode = getUrl('pointCode');
 
-    $("#borrowSuperman").click(function(){  // 更换已登陆链接
-        if ( os==1 ){
-            window.location.href="https://f.51fanbei.com/online/jiekuancaoren_v3.7.1.apk";
-        }else if( os==2 ){
-            window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%85%8D%E6%81%AF%E5%B0%8F%E9%A2%9D%E5%80%9F%E8%B4%B7%E6%89%8B%E6%9C%BA%E8%BD%AF%E4%BB%B6/id1263792729?mt=8";
-        }
-    })
-}else if( style==22 ){
-    document.title="借钱平台注册";
-    $("#BrwPlatform").click(function(){  // 更换已登陆链接
-        if ( os==1 ){
-            window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-        }else if( os==2 ){
-            window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E9%92%B1%E5%B9%B3%E5%8F%B0-%E5%B0%8F%E9%A2%9D%E6%9E%81%E9%80%9F%E7%8E%B0%E9%87%91%E5%80%9F%E8%B4%B7/id1259127316?mt=8";
-        }
-    })
+function toMaidian(data) {
+    maidianFnNew(data, channelCode, pointCode);
 }
-
 
 function formatDateTime() {
     var date = new Date();
@@ -41,7 +25,7 @@ function formatDateTime() {
     var minute = date.getMinutes();
     var second = date.getSeconds();
     return y +  m +  d +h +minute+second;
-};
+}
 
 // 同盾校验编号的sessionId
 var _fmOpt;
@@ -73,14 +57,13 @@ var _fmOpt;
         var request = new XMLHttpRequest();
         var web_url = window.encodeURIComponent(window.location.href);
         var js_url = ta.src;
-
-        if ( style==16 ) { // 钜美头条访问量
-            var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url + '&convert_id=63736236689';
-        } else if ( style==14 ) {
-            var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
-        } else {
-            var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
-        }
+        // if ( style==16 ) { // 钜美头条访问量
+        //     var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url + '&convert_id=63736236689';
+        // } else if ( style==14 ) {
+        //     var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url+'&convert_id=62421367574';
+        // } else {
+        var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url='+web_url+'&js_url='+js_url;
+        // }
         request.open('GET', url, true);
         request.send(null);
     }
@@ -88,24 +71,21 @@ var _fmOpt;
     s.parentNode.insertBefore(ta, s);
 })(window);
 
-
 // 判断手机号、接收验证码
 $(function(){
-
     var timerInterval ;
     var timerS = 60;
     function timeFunction(){ // 60s倒计时
         timerS--;
         if (timerS<=0) {
             $("#register_codeBtn").removeAttr("disabled");
-            $("#register_codeBtn").text("获取验证码");
+            $("#register_codeBtn").text("点击获取");
             clearInterval(timerInterval);
             timerS = 60;
         } else {
             $("#register_codeBtn").text(timerS+" s");
         }
-    };
-
+    }
 
     // 获取验证码
     function getCode(){
@@ -140,14 +120,12 @@ $(function(){
                     }
                 },
                 error: function(){
-                    requestMsg("网络跑丢了，请稍候重试");
+                    requestMsg(returnData.msg);
                 }
             })
-        } else{
-            requestMsg("请填写正确的手机号");
-        }
+        } else{requestMsg("请填写正确的手机号");}
     }
-//第三方图片验证
+    //第三方图片验证
     $.ajax({
         url: "/fanbei-web/getGeetestCode",
         type: "get",
@@ -165,7 +143,21 @@ $(function(){
                     if (!(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum)) ){  // 验证码不能为空、判断电话开头
                         requestMsg('请输入手机号')
                     }else{
-                        captchaObj.verify();
+                        $.ajax({
+                            url:'/app/user/checkMobileRegistered',
+                            type:'post',
+                            data:{mobile:mobileNum},
+                            success:function (data) {
+                                data=JSON.parse(data);
+                                if(data.data=='N'){
+                                    captchaObj.verify();//调起图片验证
+                                    toMaidian("getCodeSuccess");
+                                }else{
+                                    toMaidian("getCodeRegistered");
+                                    requestMsg(data.msg)
+                                }
+                            }
+                        })
                     }
                 });
                 captchaObj.onSuccess(function () {
@@ -182,8 +174,10 @@ $(function(){
                         },
                         success: function (data) {
                             if (data.data.status === 'success') {
+                                toMaidian("sendCodeSuccess");
                                 getCode();
                             } else if (data.data.status === 'fail') {
+                                toMaidian("sendCodeFail");
                                 requestMsg(data.msg);
                             }
                         }
@@ -193,38 +187,29 @@ $(function(){
         }
     });
 
+    toMaidian('channelRegister');
+
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
+        toMaidian('registerBtn');
         // md5加密
         var register_password = $("#register_password").val();
         var password_md5 = String(CryptoJS.MD5(register_password));
         var passwordLength = register_password.length;
-
         // 正则判断密码为6-18位字母+字符的组合
         var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
         var password = pwdReg.test(register_password);
-
         var mobileNum = $("#register_mobile").val();
         var register_verification = $("#register_verification").val();
         var channelCode = $("#channelCode").val();
         var pointCode = $("#pointCode").val();
-
         var isState = $("#register_codeBtn").attr("isState");
-
         if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
             if ( register_verification != "" ) { // 验证码不能为空
                 if ( password && 6 <= passwordLength && passwordLength <= 18 ) { // 密码6-18位
                     if ($("#input_check").is(":checked")) { // 判断当前是否选中
                         if ( $("#register_codeBtn").attr("isState")==1 ) {
-                            // 检测访问量
-                            if ( style==16 ) { // 钜美头条注册量
-                                _taq.push({convert_id:"63736236689", event_type:"form"})
-                            } else if ( style==14 ) {
-                                _taq.push({convert_id:"62421367574", event_type:"form"});
-                            } else {
-                                _taq.push({convert_id:"59212981134", event_type:"form"});  // 其他统计
-                            }
-
+                            _taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
                             $.ajax({ // 设置登录密码
                                 url: "/app/user/commitChannelRegister",
                                 type: 'POST',
@@ -239,68 +224,72 @@ $(function(){
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {
-                                        if ( style==10 || style==12 || style==15 || style==16 ) {
-                                            $("#register_submitBtn").attr("disabled",true);
-
-                                            $(".registerSuss8").removeClass("hide");  // 显示样式8
-                                            $(".registerSuss12").removeClass("hide");  // 显示样式10
-
-                                            $(".registerMask").removeClass("hide");  // 显示遮罩
-
-                                            $("#downloadApp").click(function(){  // 点击下载app
-                                                window.location.href = returnData.url;
-                                            });
-                                        } else if( style==20 ){
-                                            $(".registerSuss8").removeClass("hide");  // 显示样式8
-                                            $(".registerMask").removeClass("hide");  // 显示遮罩
-                                            $("#downloadApp").click(function(){  // 点击下载app
-                                                if(os==1) {
-                                                    window.location.href = 'http://fusion.qq.com/cgi-bin/qzapps/unified_jump?appid=42318693&from=mqq&actionFlag=0&params=pname%3Dcom.alfl.www%26versioncode%3D373%26channelid%3D%26actionflag%3D0';
-                                                }else{
-                                                    window.location.href = 'https://itunes.apple.com/WebObjects/MZStore.woa/wa/search?mt=8&submit=edit&term=%E5%88%86%E6%9C%9F%E8%B4%B7#software';
-                                                    window.location.href = 'https://itunes.apple.com/us/app/51%E8%BF%94%E5%91%97/id1136587444?mt=8';
-                                                }
-                                            });
-                                            // } else if( style==21 ){
-                                            //     if ( os==1 ){
-                                            //         window.location.href="https://f.51fanbei.com/online/jiekuancaoren_v3.7.1.apk";
-                                            //     }else if( os==2 ){
-                                            //         window.location.href="https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%85%8D%E6%81%AF%E5%B0%8F%E9%A2%9D%E5%80%9F%E8%B4%B7%E6%89%8B%E6%9C%BA%E8%BD%AF%E4%BB%B6/id1263792729?mt=8";
-                                            //     }
-                                        } else{
-                                            // js判断微信和QQ
-                                            let ua = navigator.userAgent.toLowerCase();
-                                            if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
-                                                window.location.href='http://sftp.51fanbei.com/51fanbei_app.apk';//安卓除了腾讯系，直接下载apk
-                                                setTimeout(function () {
-                                                    window.location.href="https://app.51fanbei.com//unionlogin/welcome?isNew=1";
-                                                },500)
-                                            }else{
-                                                window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
-                                            }
+                                        toMaidian("registerSuccess");
+                                        // js判断微信和QQ
+                                        let ua = navigator.userAgent.toLowerCase();
+                                        if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
+                                            window.location.href='http://sftp.51fanbei.com/51fanbei_app.apk';//安卓除了腾讯系，直接下载apk
+                                            // setTimeout(function () {
+                                            //     window.location.href="https://app.51fanbei.com//unionlogin/welcome?isNew=1";
+                                            // },500)
                                         }
+                                        window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {
+                                        toMaidian("registerFail");
                                         requestMsg(returnData.msg);
                                     }
                                 },
-                                error: function(){
-                                    requestMsg("注册失败");
-                                }
+                                error: function(){requestMsg("注册失败");}
                             })
-                        } else {
-                            requestMsg("请获取验证码");
-                        }
-                    } else {
-                        requestMsg("请阅读并同意《51返呗用户注册协议》");
-                    }
-                }else{
-                    requestMsg("请填写6-18位的数字、字母、字符组成的密码");
-                }
-            } else {
-                requestMsg("请输入正确的验证码");
-            }
-        } else{
-            requestMsg("请填写正确的手机号");
-        };
+                        }else{requestMsg("请获取验证码");}
+                    }else{requestMsg("请阅读并同意《51返呗用户注册协议》");}
+                }else{requestMsg("请填写6-18位的数字、字母、字符组成的密码");}
+            }else{requestMsg("请输入正确的验证码");}
+        } else{requestMsg("请填写正确的手机号");}
     });
 });
+
+
+
+// 拖动进度条相关代码
+    var tag = false, ox = 0, left = 300 * document.documentElement.clientWidth /375, bgleft = 0;
+    var totalLength = 300 * document.documentElement.clientWidth /375;
+    $('.progress_btn').on('touchstart', function (e) {
+        var originalEvent = e.originalEvent;
+        var touches = originalEvent.touches;
+        var touch;
+        if (touches) {
+            touch = touches[0];
+        } else {
+            touch = e;
+        }
+        console.log(touch);
+        ox = touch.pageX - left;
+        tag = true;
+    });
+    $(document).on('touchend', function () {
+        tag = false;
+    });
+    $(document).on('touchmove', function (e) {//鼠标移动
+        var originalEvent = e.originalEvent; // 这里要判断移动端多点触控的问题，jquery扩展的event对象没有这个属性
+        var touches = originalEvent.touches;// 获取源生event对象
+        var touch;
+        if (touches) { // 如果有touches属性，则代表是移动端touchmove事件
+            touch = touches[0]; // 取到多个触控点中的第一个，这样才能获取到触控点的对应位置
+        } else {
+            touch = e;
+        }
+        if (tag) {
+            left = touch.pageX - ox;
+            if (left <= 0) {
+                left = 0;
+            } else if (left > totalLength) {
+                left = totalLength;
+            }
+            $('.progress_btn').css('left', left);
+            $('.progress_bar').width(left / (100 * (document.documentElement.clientWidth / 750))+"rem");
+            $('.text').html("￥" + parseInt(left / totalLength*19500+500));
+            $("#leftMoney").html("￥" + parseInt(left / totalLength * 19500 + 500));
+            $("#rightMoney").html("￥" + (parseInt((left / totalLength * 19500 + 500)) * 0.001).toFixed(2));
+        }
+    });

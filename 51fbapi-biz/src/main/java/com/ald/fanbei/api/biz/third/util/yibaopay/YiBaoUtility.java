@@ -286,7 +286,7 @@ public class YiBaoUtility {
         }
         else{
             //关闭
-            afRenewalDetailService.dealRenewalFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
+            afRenewalDetailService.dealRenewalFail(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo(),"");
         }
     }
 

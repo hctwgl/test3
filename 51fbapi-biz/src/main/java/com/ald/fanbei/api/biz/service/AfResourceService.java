@@ -111,7 +111,7 @@ public interface AfResourceService {
 	 * 获取借款手续费等信息
 	 */
 
-	BorrowRateBo borrowRateWithResource(Integer realTotalNper);
+	BorrowRateBo borrowRateWithResource(Integer realTotalNper,String userName);
 	  	/*
 	 * 获取信用支付手续费等信息
 	 */
@@ -187,4 +187,19 @@ public interface AfResourceService {
 	AfResourceDo getLaunchImageInfoByType(String resourceType);
 
 	AfResourceDo getOpenBoluomeCouponById(long rid);
+	
+	/**
+	 * 根据type获取滚动条列表
+	 * 
+	 * @param type
+	 * @return
+	 */
+	List<AfResourceDo> getScrollbarListByType(String type);
+
+	/**
+	 * 获取vip用户专有利率
+	 * @param userName 用户名
+	 * @return 利率相关详情
+	 */
+	AfResourceDo getVipUserRate(String userName);
 }

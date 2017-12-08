@@ -32,7 +32,7 @@ public class AfResourceDo extends AbstractSerial {
 	private Long sort;//排序
 	private String pic1;
 	private String pic2;
-	
+
 	/**
 	 * @return the value4
 	 */

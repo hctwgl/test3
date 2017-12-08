@@ -21,7 +21,7 @@ let vm=new Vue({
             $.ajax({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
-                data: {maidianInfo: location.pathname + '?type=pvuv'},
+                data: {maidianInfo: location.pathname + '?type=creditCard'},
                 success: function (data) {
                     console.log(data)
                 }
@@ -33,7 +33,7 @@ let vm=new Vue({
             $.ajax({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
-                data: {maidianInfo: '/fanbei-web/activity/barginIndex?type=clickOne'},
+                data: {maidianInfo: '/fanbei-web/activity/creditCard?type=zheshang'},
                 success: function (data) {
                     console.log(data)
                 }
@@ -45,7 +45,7 @@ let vm=new Vue({
             $.ajax({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
-                data: {maidianInfo: '/fanbei-web/activity/barginIndex?type=clickTwo'},
+                data: {maidianInfo: '/fanbei-web/activity/creditCard?type=pufa'},
                 success: function (data) {
                     console.log(data)
                 }
@@ -57,12 +57,24 @@ let vm=new Vue({
             $.ajax({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
-                data: {maidianInfo: '/fanbei-web/activity/barginIndex?type=clickThree'},
+                data: {maidianInfo: '/fanbei-web/activity/creditCard?type=zhaoshang'},
+                success: function (data) {
+                    console.log(data)
+                }
+            });
+        },
+        zhongXinBankClick(){
+            window.location.href = 'http://creditcard.ecitic.com/h5/shenqing/index.html?sid=SJUSHALD';
+            //点击加埋点
+            $.ajax({
+                url: '/fanbei-web/postMaidianInfo',
+                type: 'post',
+                data: {maidianInfo: '/fanbei-web/activity/creditCard?type=zhongxin'},
                 success: function (data) {
                     console.log(data)
                 }
             });
         }
     }
-})
+});
     

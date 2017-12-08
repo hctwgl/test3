@@ -1,8 +1,8 @@
 /*
  * @Author: yoe
  * @Date:   2017-02-15 09:59:54
- * @Last Modified by:   Marte
- * @Last Modified time: 2017-06-08 11:22:16
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2017-11-28 14:51:05
  * @title:  公用的
  */
 
@@ -10,18 +10,18 @@
 // 公用弹框内容
 // 弹窗msg
 function requestMsg(txt) {
-    var wrap=document.createElement('div');
+    var wrap = document.createElement('div');
     $(wrap).css({
         'position': 'fixed',
-        'top':'50%',
-        'left':'50%',
-        'transform':'translate(-50%,-50%)',
-        'max-width':'50%',
-        'padding':'.2rem .4rem',
-        'color':'white',
+        'top': '50%',
+        'left': '50%',
+        'transform': 'translate(-50%,-50%)',
+        'max-width': '50%',
+        'padding': '.2rem .4rem',
+        'color': 'white',
         'z-index':'500',
         'background': 'rgba(0,0,0,0.7)',
-        'border-radius':' .08rem',
+        'border-radius': ' .08rem',
         'display': 'none'
     });
     $(wrap).html(txt);
@@ -31,7 +31,7 @@ function requestMsg(txt) {
         $(wrap).fadeOut(function () {
             $(wrap).remove();
         });
-    },1500)
+    }, 1500)
 }
 
 
@@ -110,19 +110,19 @@ function formatDate(now) {
 // 获取cookie里面的参数
 function getCookie(cookie_name) {
     var allcookies = document.cookie;
-    var cookie_pos = allcookies.indexOf(cookie_name);   //索引的长度
+    var cookie_pos = allcookies.indexOf(cookie_name); //索引的长度
 
     // 如果找到了索引，就代表cookie存在，
     // 反之，就说明不存在。
-    if (cookie_pos != -1) {  // 把cookie_pos放在值的开始，只要给值加1即可。
-        cookie_pos += cookie_name.length + 1;  // 这里容易出问题，所以请大家参考的时候自己好好研究一下
+    if (cookie_pos != -1) { // 把cookie_pos放在值的开始，只要给值加1即可。
+        cookie_pos += cookie_name.length + 1; // 这里容易出问题，所以请大家参考的时候自己好好研究一下
         var cookie_end = allcookies.indexOf(";", cookie_pos);
 
         if (cookie_end == -1) {
             cookie_end = allcookies.length;
         }
 
-        var value = unescape(allcookies.substring(cookie_pos, cookie_end));  //这里就可以得到你想要的cookie的值了。。。
+        var value = unescape(allcookies.substring(cookie_pos, cookie_end)); //这里就可以得到你想要的cookie的值了。。。
     }
     return value;
 };
@@ -136,16 +136,16 @@ function domainName() {
 }
 
 //限制文字数量
-function txtFix(str,len){
+function txtFix(str, len) {
     var char_length = 0;
-    if(str.length<=len){
+    if (str.length <= len) {
         return str
-    }else{
-        for (var i = 0; i < str.length; i++){
+    } else {
+        for (var i = 0; i < str.length; i++) {
             var son_str = str.charAt(i);
             encodeURI(son_str).length > 2 ? char_length += 1 : char_length += 0.5;
-            if (char_length >= len){
-                var sub_len = (char_length == len) ? i+1 : i;
+            if (char_length >= len) {
+                var sub_len = (char_length == len) ? i + 1 : i;
                 return str.substr(0, sub_len);
                 break;
             }
@@ -154,18 +154,18 @@ function txtFix(str,len){
 }
 
 //图片懒加载
-window.lazy = (function(window, document, undefined) {
+window.lazy = (function (window, document, undefined) {
     'use strict';
     var store = [],
         offset,
         poll;
 
-    var _inView = function(el) {
+    var _inView = function (el) {
         var coords = el.getBoundingClientRect();
         return ((coords.top >= 0 && coords.left >= 0 && coords.top) <= ((window.innerHeight || document.documentElement.clientHeight) + parseInt(offset)));
     };
 
-    var _pollImages = function() {
+    var _pollImages = function () {
         for (var i = store.length; i--;) {
             var self = store[i];
             if (_inView(self)) {
@@ -175,12 +175,12 @@ window.lazy = (function(window, document, undefined) {
         }
     };
 
-    var _throttle = function() {
+    var _throttle = function () {
         clearTimeout(poll);
-        poll = setTimeout(_pollImages,0);
+        poll = setTimeout(_pollImages, 0);
     };
 
-    var init = function(of) {
+    var init = function ( of ) {
         var nodes = document.querySelectorAll('[lazy-src]');
         offset = of || 0;
         for (var i = 0; i < nodes.length; i++) {
@@ -220,18 +220,49 @@ function formateTelNum(tel) {
 }
 
 //字符串替换+换行
-function formatStr(str){
-    str=str.replace(/<br\/>/g, "\n");
+function formatStr(str) {
+    str = str.replace(/<br\/>/g, "\n");
     return str;
 }
 
 // 加载loading图
-function loading(){
-    function loadDoc(){
-        var html="";
-        html+='<div class="loadingMask"><i class="loading"></i></div>';
+function loading() {
+    function loadDoc() {
+        var html = "";
+        html += '<div class="loadingMask"><i class="loading"></i></div>';
         return html;
     }
     $("body").append(loadDoc());
 }
 
+
+function maidianFn(data) {
+    //数据统计            // 推广埋点
+    $.ajax({
+        url: '/fanbei-web/postMaidianInfo',
+        type: 'post',
+        data: {
+            maidianInfo: location.pathname + '?type=' + data
+        },
+        success: function (data) {
+            console.log(data)
+        }
+    });
+}
+
+function maidianFnNew(data, data1, data2,data3) {
+    //数据统计            // 推广埋点
+    $.ajax({
+        url: '/fanbei-web/postMaidianInfo',
+        type: 'post',
+        data: {
+            maidianInfo: location.pathname + '?type=' + data,
+            maidianInfo1: data1,
+            maidianInfo2: data2,
+            maidianInfo3: data3
+        },
+        success: function (data) {
+            console.log(data)
+        }
+    });
+}
