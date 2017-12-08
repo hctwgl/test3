@@ -92,6 +92,9 @@ public class PayOrderV1Api implements ApiHandle {
 	AfGoodsDouble12Service afGoodsDouble12Service;
     @Resource
     AfGoodsService afGoodsService;
+    @Resource
+    AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+    
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -164,8 +167,9 @@ public class PayOrderV1Api implements ApiHandle {
     		}
         }
         
-        // ----------------
-
+        //-------------mqp doubleEggs-------------
+        doubleEggsGoodsCheck(userId, orderInfo.getGoodsId());
+        
         // 双十二秒杀新增逻辑+++++++++++++>
 		double12GoodsCheck(userId, orderInfo.getGoodsId());
 		// +++++++++++++++++++++++++<
@@ -397,6 +401,38 @@ public class PayOrderV1Api implements ApiHandle {
 			//根据goodsId查询商品信息
 			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 			int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12DoList.get(0).getAlreadyCount();//秒杀商品余量
+			if(goodsDouble12Count<0){
+				//报错提示秒杀商品已售空
+				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	* @Title: doubleEggsGoodsCheck
+	* @author qiao
+	* @date 2017年12月8日 下午4:33:02
+	* @Description: 双蛋活动秒杀
+	* @param userId
+	* @param goodsId    
+	* @return void   
+	* @throws
+	 */
+	private void doubleEggsGoodsCheck(Long userId, Long goodsId){
+		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+		if(doubleEggsDo != null){
+			//双蛋
+			List<AfOrderDo> overOrder = afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
+			//对于同一天已秒杀过得商品，提示只能买一件商品
+			if(overOrder.size()>1){
+				//报错提示只能买一件商品
+				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+			}
+			
+			//根据goodsId查询商品信息
+			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+			int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
 			if(goodsDouble12Count<0){
 				//报错提示秒杀商品已售空
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);

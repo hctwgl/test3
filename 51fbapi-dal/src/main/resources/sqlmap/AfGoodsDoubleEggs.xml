@@ -198,4 +198,11 @@
 		AND user_id = #{userId}
 		AND double_eggs_id = #{doubleGoodsId};
     </select>
+    
+    <update id="updateCountById" parameterType="java.lang.Long" >
+		UPDATE af_goods_double_eggs
+		SET already_count = already_count + 1
+		WHERE
+			goods_id = #{goodsId};
+    </update>
 </mapper>

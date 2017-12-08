@@ -56,5 +56,11 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 			return afGoodsDoubleEggsDao.getgoodsByDate(startDate);
 		}
 
+		@Override
+		public void updateCountById(Long goodsId) {
+			afGoodsDoubleEggsDao.updateCountById(goodsId);
+			
+		}
+
 
 }

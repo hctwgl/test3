@@ -24,6 +24,8 @@ public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long>
 
 	List<GoodsForDate> getgoodsByDate(@Param("startDate")Date startDate);
 
+	void updateCountById(@Param("goodsId")Long goodsId);
+
     
 
 }

@@ -22,4 +22,6 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 
 	List<GoodsForDate> getGOodsByDate(Date startDate);
 
+	void updateCountById(Long goodsId);
+
 }
