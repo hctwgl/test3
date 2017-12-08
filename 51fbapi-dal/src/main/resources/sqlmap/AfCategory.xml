@@ -14,4 +14,30 @@
 			is_delete=0 AND level=1 AND is_show='Y'
 		order by gmt_create desc
 	</select>
+	
+	<select id="getParentDirectoryByName" resultType="AfCategoryDo"  parameterType="java.lang.String">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_category
+		WHERE
+			is_delete=0 
+			AND level=1 
+			AND parent_id = 0
+			and is_show = 'Y'
+			and name= #{name}
+			limit 0,1
+	</select>
+	<select id="listByParentIdAndLevel" resultType="com.ald.fanbei.api.dal.domain.AfCategoryDo"  parameterType="com.ald.fanbei.api.dal.domain.AfCategoryDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_category
+		WHERE
+			is_delete = 0 
+			and is_show = 'Y'
+			AND level = #{level}
+			AND parent_id = #{parentId}
+			order by sort desc
+	</select>
 </mapper>

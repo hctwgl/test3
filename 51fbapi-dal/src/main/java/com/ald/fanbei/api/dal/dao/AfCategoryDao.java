@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 
 /**
@@ -17,4 +19,10 @@ public interface AfCategoryDao {
 	 * @return
 	 */
 	List<AfCategoryDo> getCategoryList();
+
+	AfCategoryDo getParentDirectoryByName(@Param("name") String name);
+
+	List<AfCategoryDo> listByParentIdAndLevel(Long parentId, Integer level);
+
+	List<AfCategoryDo> listByParentIdAndLevel(AfCategoryDo queryAfCategory);
 }

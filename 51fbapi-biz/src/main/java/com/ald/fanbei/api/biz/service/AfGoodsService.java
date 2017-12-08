@@ -81,4 +81,7 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	AfGoodsDo checkIsSelfBuild(String numId);
+
+
+	List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(Long parentId);
 }

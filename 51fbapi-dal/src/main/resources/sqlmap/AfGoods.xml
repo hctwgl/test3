@@ -149,4 +149,32 @@
 		AND is_grab_success = 0
 		AND num_id = #{numId}
 	</select>
+	<select id="listGoodsListByParentIdAndFormerCategoryId"  resultType="AfGoodsDo" parameterType="java.lang.Long">
+		SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE is_delete = 0
+		AND STATUS = 'PUBLISH'
+		AND primary_category_id = #{parentId}
+		AND category_id = (
+				SELECT 
+				 id 
+			    FROM af_category 
+				WHERE parent_id =(          
+						SELECT
+						id 
+						FROM af_category 
+						WHERE parent_id = #{parentId}
+						AND LEVEL = 2
+						AND is_show = 'Y'
+						ORDER BY sort DESC 
+						LIMIT 0,1
+				)
+		AND LEVEL = 3
+		AND is_show = 'Y'
+		ORDER BY sort DESC 
+		LIMIT 0,1
+	 )
+	</select>
+	
 </mapper>

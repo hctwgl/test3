@@ -1,52 +1,66 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import java.util.HashMap;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.text.SimpleDateFormat;
-
+import org.apache.commons.lang.StringUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.eclipse.jetty.server.UserIdentity;
 
-import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSONArray;
 
@@ -77,12 +91,25 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	@Resource
 	AfGoodsDoubleEggsUserService afGoodsDoubleEggsUserService;
-
+	@Resource
+	AfCategoryService afCategoryService;
+	@Resource
+	AfGoodsService afGoodsService;
+	@Resource
+	AfSchemeGoodsService afSchemeGoodsService;
+	@Resource
+	AfInterestFreeRulesService  afInterestFreeRulesService;
 	/**
 	 * 
-	 * @Title: initHomePage @author qiwei @date 2017年12月7日
-	 * 下午1:58:31 @Description: 主页面的两张图片和url，此接口H5和AppH5通用，无需登录 @param
-	 * request @param response @return @return String @throws
+	* @Title: initHomePage
+	* @author qiwei
+	* @date 2017年12月7日 下午1:58:31
+	* @Description: 主页面的两张图片和url，此接口H5和AppH5通用，无需登录
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
 	 */
 	@RequestMapping(value = "/initHomePage")
 	public String initHomePage(HttpServletRequest request, HttpServletResponse response) {
@@ -102,22 +129,124 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
-	 * @Title: initOnsaleGoods @author qiwei @date 2017年12月7日
-	 * 下午2:04:33 @Description: 初始化特卖商品 @param request @param
-	 * response @return @return String @throws
+	* @Title: initOnsaleGoods
+	* @author qiwei
+	* @date 2017年12月7日 下午2:04:33
+	* @Description: 初始化特卖商品
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
 	 */
 	@RequestMapping(value = "/initOnsaleGoods")
-	public String initOnsaleGoods(HttpServletRequest request, HttpServletResponse response) {
+	public String initOnsaleGoods(HttpServletRequest request,HttpServletResponse response){
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
-			// TODO:get info from afResource;
-
-			result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
+			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> firstCategoryList = new ArrayList<Map<String,Object>>();
+			
+			//TODO:get info from afResource;
+			Long pageNo = NumberUtil.objToLong(request.getParameter("pageNo"));
+			AfCategoryDo  afCategoryDo = new AfCategoryDo();
+			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
+			if(afCategoryDo != null){
+			    long parentId =   afCategoryDo.getRid();
+			    //初始化时查该parentId下的三级分类的排序最前的商品列表
+			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByParentIdAndFormerCategoryId(parentId);
+			    if(afGoodsList.size()>0){
+    				//获取借款分期配置信息
+    			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+    			        JSONArray array = JSON.parseArray(resource.getValue());
+    			        //删除2分期
+    			        if (array == null) {
+    			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+    			        }
+    			        removeSecondNper(array);
+    				
+				
+				for(AfGoodsDo goodsDo : afGoodsList) {
+		    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
+		    			goodsInfo.put("goodName",goodsDo.getName());
+		    			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+		    			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+		    			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+		    			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+		    			goodsInfo.put("goodsId", goodsDo.getRid());
+		    			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+		    			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+		    			goodsInfo.put("source", goodsDo.getSource());
+		    			goodsInfo.put("goodsType", "0");
+		    			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+		    			// 如果是分期免息商品，则计算分期
+		    			Long goodsId = goodsDo.getRid();
+						AfSchemeGoodsDo  schemeGoodsDo = null;
+						try {
+							schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+						} catch(Exception e){
+							logger.error(e.toString());
+						}
+						JSONArray interestFreeArray = null;
+						if(schemeGoodsDo != null){
+							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+							String interestFreeJson = interestFreeRulesDo.getRuleJson();
+							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+								interestFreeArray = JSON.parseArray(interestFreeJson);
+							}
+						}
+						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						if(nperList!= null){
+							goodsInfo.put("goodsType", "1");
+							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+							String isFree = (String)nperMap.get("isFree");
+							if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+								nperMap.put("freeAmount", nperMap.get("amount"));
+							}
+							goodsInfo.put("nperMap", nperMap);
+						}
+						
+						goodsList.add(goodsInfo);
+		    		}				
+			    }
+			  //遍历parent_id = xxx的
+			    //一级分类对应数据表level=2
+			    AfCategoryDo queryAfCategory = new AfCategoryDo();
+			    queryAfCategory.setParentId(parentId);
+			    queryAfCategory.setLevel(2);
+			    List<AfCategoryDo> afFirstCategoryList = afCategoryService.listByParentIdAndLevel(queryAfCategory);
+			    if(afFirstCategoryList.size()>0){
+			        for(AfCategoryDo afFirstCategoryDo:afFirstCategoryList){
+				    
+				   //   secondCategoryList.add(secondCategory);
+				      //二级分类对应数据表level=3
+				      queryAfCategory.setParentId(afFirstCategoryDo.getRid());
+				      queryAfCategory.setLevel(3);
+				      List<AfCategoryDo> afSecondCategoList = afCategoryService.listByParentIdAndLevel(queryAfCategory);
+				      List<Map<String,Object>> secondCategoryList = new ArrayList<Map<String,Object>>();
+				      //遍历parent_id = i.id
+        			      for(AfCategoryDo afSecondCategoDo:afSecondCategoList){
+                			  Map<String, Object> secondCategory = new HashMap<String, Object>();
+                			  secondCategory.put("secondCategoryId",afSecondCategoDo.getRid());
+                			  secondCategory.put("secondCategoryName",afSecondCategoDo.getName());
+                			  secondCategoryList.add(secondCategory);
+        			      }
+        			      Map<String, Object> firstCategory = new HashMap<String, Object>();
+				      firstCategory.put("firstCategoryId",afFirstCategoryDo.getRid());
+				      firstCategory.put("firstCategoryName",afFirstCategoryDo.getName());
+				      firstCategory.put("secondCategoryList",secondCategoryList);
+				      firstCategoryList.add(firstCategory);
+			         }
+			    }
+			}
+			   data.put("goodsList", goodsList);
+		           data.put("firstCategoryList", firstCategoryList);
+			   result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "特卖商品初始化失败", "", exception.getMessage()).toString();
 			logger.error("特卖商品初始化数据失败  e = {} , resultStr = {}", exception, result);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
 		}
 		return result;
 	}
@@ -196,7 +325,7 @@ public class AppH5DoubleEggsController extends BaseController {
 					String[] times = afResourceDo.getValue2().split(",");
 
 					if (currentTime.before(dateFormat.parse(times[0]))) {
-						// 2017-12-5 10:00号之前
+							//2017-12-5 10:00号之前
 						afCouponDouble12Vo.setIsShow("N");// 活动未开始
 					}
 
@@ -244,9 +373,10 @@ public class AppH5DoubleEggsController extends BaseController {
 			logger.info(JSON.toJSONString(couponVoList));
 			data.put("couponList", couponVoList);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
-
-		} catch (Exception e) {
-			logger.error("/activity/double12/couponHomePage error = {}", e.getStackTrace());
+		
+		} 
+		catch (Exception e) {
+			logger.error("/appH5DoubleEggs/initCoupons error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
 		}
 		return result;
@@ -271,9 +401,15 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
-	 * @Title: getSecondKillGoodsList @author qiao @date 2017年12月7日
-	 * 下午2:27:13 @Description: 获得秒杀商品 @param request @param
-	 * response @return @return String @throws
+	* @Title: getSecondKillGoodsList
+	* @author qiao
+	* @date 2017年12月7日 下午2:27:13
+	* @Description: 获得秒杀商品
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
 	 */
 	@RequestMapping(value = "/getSecondKillGoodsList")
 	public String getSecondKillGoodsList(HttpServletRequest request, HttpServletResponse response) {
@@ -323,8 +459,15 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
-	 * @Title: subscribe @author qiao @date 2017年12月7日 下午2:26:48 @Description:
-	 * 预约 @param request @param response @return @return String @throws
+	* @Title: subscribe
+	* @author qiao
+	* @date 2017年12月7日 下午2:26:48
+	* @Description: 预约
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
 	 */
 	@RequestMapping(value = "/subscribe")
 	public String subscribe(HttpServletRequest request, HttpServletResponse response) {
@@ -406,5 +549,18 @@ public class AppH5DoubleEggsController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	 private void removeSecondNper(JSONArray array) {
+	        if (array == null) {
+	            return;
+	        }
+	        Iterator<Object> it = array.iterator();
+	        while (it.hasNext()) {
+	            JSONObject json = (JSONObject) it.next();
+	            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+	                it.remove();
+	                break;
+	            }
+	        }
+	    }
 
 }
