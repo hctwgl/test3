@@ -46,9 +46,6 @@ public class AuthCreditCardApi implements ApiHandle {
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		//通过强风控认证才可以信用卡认证
 		AfResourceDo afResource= afResourceService.getSingleResourceBytype("credit_auth_close");
-		if(true){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
-		}
 		if(afResource==null||afResource.getValue().equals(YesNoStatus.YES.getCode())){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
 		}else{
