@@ -115,7 +115,14 @@ public class AppH5DoubleEggsController extends BaseController {
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 			// TODO:get info from afResource;
-
+			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS", "INI_HOME_PAGE");
+			if(afResourceDo != null){
+			    data.put("eggsPic", afResourceDo.getValue());
+			    data.put("eggsUrl", afResourceDo.getValue1());
+			    data.put("freshManPic", afResourceDo.getValue2());
+			    data.put("freshManUrl", afResourceDo.getValue3());
+			}
+			
 			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
@@ -385,7 +392,7 @@ public class AppH5DoubleEggsController extends BaseController {
 					// 当前时间
 					Date currentTime = new Date();
 
-					AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("DOUBLE_EGGS_COUPON_TIME");
+					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS", "COUPON_TIME");
 					if (afResourceDo == null) {
 						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
 					}
