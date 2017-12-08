@@ -44,19 +44,7 @@ public class AuthCreditCardApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		//通过强风控认证才可以信用卡认证
-		AfResourceDo afResource= afResourceService.getSingleResourceBytype("credit_auth_close");
-		if(afResource==null||afResource.getValue().equals(YesNoStatus.YES.getCode())){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
-		}else{
-			if(afResource.getValue1().equals(YesNoStatus.YES.getCode())&&request.getRequestURL().indexOf("//app")!=-1){//线上关闭
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
-			}
-		}
-		//只对强风控认证通过的打开
-		if(afResource.getValue2().equals(YesNoStatus.YES.getCode())&&!afUserAuthDo.getBasicStatus().equals(YesNoStatus.YES.getCode())){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
-		}
+
 
 		//增加提现开关
 		AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.RES_CREDIT_CARD_SWITCH);

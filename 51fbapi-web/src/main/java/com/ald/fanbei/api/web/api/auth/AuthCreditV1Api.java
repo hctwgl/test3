@@ -67,7 +67,23 @@ public class AuthCreditV1Api implements ApiHandle {
 		
 		String respBody = (String)requestDataVo.getParams().get("respBody");
 		String sign = (String)requestDataVo.getParams().get("sign");
-		
+
+		//通过强风控认证才可以信用卡认证
+		AfResourceDo afResource= afResourceService.getSingleResourceBytype("credit_auth_close");
+		if(afResource==null||afResource.getValue().equals(YesNoStatus.YES.getCode())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
+		}else{
+			if(afResource.getValue1().equals(YesNoStatus.YES.getCode())&&request.getRequestURL().indexOf("//app")!=-1){//线上关闭
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
+			}
+		}
+		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
+		Long userId = context.getUserId();
+		//只对强风控认证通过的打开
+		if(afResource.getValue2().equals(YesNoStatus.YES.getCode())&&!afUserAuthDo.getBasicStatus().equals(YesNoStatus.YES.getCode())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CREDIT_CERTIFIED_UNDER_MAINTENANCE);
+		}
+
 		ZhimaAuthResultBo zarb = ZhimaUtil.decryptAndVerifySign(respBody, sign);
 		if(!zarb.isSuccess()){
 			throw new FanbeiException(FanbeiExceptionCode.ZM_AUTH_ERROR);
@@ -113,8 +129,7 @@ public class AuthCreditV1Api implements ApiHandle {
 		afUserAuthService.updateUserAuth(userAuth);
 		
 		// TODO 计算信用分 更新userAccount
-		AfUserAuthDo auth = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
-		Long userId = context.getUserId();
+
 		
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_CREDIT_SCORE);
 		int sorce = BigDecimalUtil.getCreditScore(new BigDecimal(auth.getZmScore()), new BigDecimal(auth.getIvsScore()), 
