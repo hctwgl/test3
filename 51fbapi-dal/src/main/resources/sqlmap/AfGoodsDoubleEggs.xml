@@ -159,7 +159,30 @@
       WHERE is_delete = 0 AND goods_id = #{goodsId};
     </select>
     
-    <select id="getAvalibleGoodsList" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+    <select id="getAvalibleDateList" resultType="java.util.Date">
+	SELECT DATE(start_time) FROM af_goods_double_eggs 
+		WHERE is_delete = 0 
+	AND DATE(start_time) >= DATE(NOW()) GROUP BY start_time ORDER BY start_time ;
+    </select>
     
+    <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.dto.AfGoodsForSecondKill.GoodsForDate" parameterType="java.util.Date">
+		SELECT
+			de.goods_id,
+			g.stock_count,
+			g.stock_count - de.already_count AS count,
+			g.price_amount AS sale_amount,
+			g.sale_amount AS real_amount,
+			g.`name` AS goods_name,
+			g.goods_icon,
+			g.thumbnail_icon,
+			g.goods_url
+		FROM
+			af_goods_double_eggs de
+		INNER JOIN af_goods g ON g.id = de.goods_id
+		WHERE
+			de.is_delete = 0
+		AND DATE(de.start_time) = DATE(#{startDate})
+		ORDER BY
+			de.sort;
     </select>
 </mapper>
