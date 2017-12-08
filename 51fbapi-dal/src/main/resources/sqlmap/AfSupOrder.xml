@@ -270,7 +270,7 @@
 			o.id as orderId, s.order_no as orderNo,UNIX_TIMESTAMP(s.gmt_create) as gmtCreate,UNIX_TIMESTAMP(o.gmt_rebated) as gmtRebated,
 			UNIX_TIMESTAMP(o.gmt_closed) as gmtClosed,UNIX_TIMESTAMP(o.gmt_pay) as gmtPay, 
 			o.`status` as orderStatus, g.type as orderType,g.image as goodsIcon,s.game_name as goodsName,
-			s.goodsCount,s.acct_type as acctType,s.user_name as userName,s.game_type as gameType,
+			s.goods_count,s.acct_type as acctType,s.user_name as userName,s.game_type as gameType,
 			s.game_acct as gameAcct,s.game_area as gameArea,s.game_srv as gameSrv,o.sale_amount as orderAmount,
 			o.rebate_amount as rebateAmount,o.coupon_amount as couponAmount, o.actual_amount as actualAmount,
 			UNIX_TIMESTAMP(o.gmt_pay_end) as gmtPayEnd
