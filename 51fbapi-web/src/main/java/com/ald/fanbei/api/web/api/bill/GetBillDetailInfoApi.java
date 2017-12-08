@@ -24,6 +24,8 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBillDetailInfoVo;
 
+import java.math.BigDecimal;
+
 /**
  * 
  *@类描述：GetBillDetailInfoApi账单详情
@@ -106,11 +108,11 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		}
 		vo.setOverdueDay(billDto.getOverdueDays());
 		vo.setGmtBorrow(billDto.getGmtBorrow());
-		vo.setInterestAmount(billDto.getPoundageAmount());
+		vo.setInterestAmount(new BigDecimal(0));
 		vo.setName(billDto.getName());
 		vo.setNper(billDto.getNper());
 		vo.setOverdueAmount(billDto.getOverdueInterestAmount());
-		vo.setPoundageAmount(billDto.getInterestAmount());
+		vo.setPoundageAmount(billDto.getInterestAmount().add(billDto.getPoundageAmount()));
 		vo.setOverduePoundageAmount(billDto.getOverduePoundageAmount());
 		//vo.setRefundDate(afBorrowService.getReyLimitDate(billDto.getBillYear(),billDto.getBillMonth()));
 		vo.setRefundDate(billDto.getGmtPayTime());
