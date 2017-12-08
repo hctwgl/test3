@@ -3,7 +3,6 @@ package com.ald.fanbei.api.web.third.controller;
 
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,18 +21,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.afu.ApprovalStatusCode;
 import com.ald.fanbei.api.common.enums.afu.LoanStatusCode;
 import com.ald.fanbei.api.common.enums.afu.LoanTypeCode;
 import com.ald.fanbei.api.common.enums.afu.OverdueStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.RC4_128_V2;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.vo.afu.Data;
 import com.ald.fanbei.api.web.vo.afu.LoanRecord;
@@ -58,6 +63,8 @@ public class GetPersonInfoController {
 	private AfBorrowCashService afBorrowCashService;
 	@Resource
 	private BizCacheUtil bizCacheUtil;
+	@Resource
+	private AfResourceService afResourceService;
 	protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
 	@RequestMapping(value="/getPersonInfo", method = RequestMethod.POST,produces="text/html;charset=UTF-8")
@@ -77,7 +84,7 @@ public class GetPersonInfoController {
 			//对加密过的params数据进行解密
 			String urlDecoder = StringUtil.UrlDecoder(params);//1：urlDecode解码
 			//获取rc4秘钥
-			 String rc4Key = ConfigProperties.get(Constants.YIXIN_AFU_PASSWORD);
+			String rc4Key = ConfigProperties.get(Constants.YIXIN_AFU_PASSWORD);
 		    //3:rc4解密
 		    String decode = RC4_128_V2.decode(urlDecoder, rc4Key);
 		    JSONObject jsonObj = JSONObject.parseObject(decode);
@@ -96,6 +103,28 @@ public class GetPersonInfoController {
 					thirdLog.info("yiXin zhiChengAfu search personInfo from redis,idNo = "+idNo+", name="+name+" time = " + new Date());
 					return jsonString;
 				}else{
+					//限定每天查询次数,判断当前查询次数是否超限
+					String currDayReqNumsKey = Constants.YIXIN_AFU_SEARCH_KEY+rc4Key+DateUtil.formatDate(new Date());
+					Long currDayReqNums = NumberUtil.objToLongDefault(bizCacheUtil.getObject(currDayReqNumsKey), 0L);
+					currDayReqNums = currDayReqNums+1;
+					
+					//查询相关限制配置项
+					//单日请求上限，配置开户且大于0时进行有效校验
+					Long limitDayTimes = 0L;
+					Long maxReturnRows = 0L;
+					AfResourceDo afResourceConfigInfo = afResourceService.getConfigByTypesAndSecType(AfResourceType.YIXIN_AFU_SEARCH.getCode(), AfResourceSecType.YIXIN_AFU_SEARCH.getCode());
+					if(afResourceConfigInfo!=null && "O".equals(afResourceConfigInfo.getValue4())){
+						limitDayTimes = NumberUtil.objToLongDefault(afResourceConfigInfo.getValue2(),0L);
+						maxReturnRows = NumberUtil.objToLongDefault(afResourceConfigInfo.getValue3(),0L);
+					}
+					
+					if (limitDayTimes>0 && currDayReqNums > limitDayTimes) {
+						map.put("errorCode", "0001");
+						map.put("message", "当日查询次数超限!");
+						map.put("params", null);
+						jsonString = JsonUtil.toJSONString(map);
+						return jsonString;
+					}
 					//没有缓存，走查询
 					//根据姓名和身份证号查询借款人id
 					AfUserAccountDo userAccount = afUserAccountService.findByIdNo(idNo);
@@ -108,101 +137,110 @@ public class GetPersonInfoController {
 						return jsonString;
 					}
 					long userId = userAccount.getUserId();
-					//根据用户ID查询借款表
-					AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+					//根据用户ID查询借款表,最多条数控制
+					List<AfBorrowCashDo> borrowCashDoList = new ArrayList<AfBorrowCashDo>();
+					if(maxReturnRows>0){
+						borrowCashDoList = afBorrowCashService.getListByUserId(userId,maxReturnRows);
+					}else{
+						borrowCashDoList = afBorrowCashService.getListByUserId(userId,null);
+					}
+					
 					//判断用户是否存在借款
-					if (borrowCashDo == null) {
+					if (borrowCashDoList == null || borrowCashDoList.size() == 0) {
 						map.put("errorCode", "0001");
 						map.put("message", "用户没有借款信息!");
 						map.put("params", null);
 						jsonString = JsonUtil.toJSONString(map);
 						return jsonString;
 					}
-					//封装第一层数据
-					LoanRecord loanRecord = new LoanRecord();
-					loanRecord.setName(name);
-					loanRecord.setCertNo(idNo);
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-					if (StringUtil.equals(borrowCashDo.getStatus(), "TRANSED") || StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
-						//取打款时间，并格式化日期类型				
-						Date gmtArrival = borrowCashDo.getGmtArrival();				
-						loanRecord.setLoanDate(sdf.format(gmtArrival));	
-						//通过审核的结果码
-						loanRecord.setApprovalStatusCode(ApprovalStatusCode.Approved.getCode());
-						if (StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
-							//账单已结清
-							loanRecord.setLoanStatusCode(LoanStatusCode.Finish.getCode());
-						}else if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")) {
-							//说明借款人逾期并且未还款
-							loanRecord.setLoanStatusCode(LoanStatusCode.Overdue.getCode());
-							//借款人逾期总金额
-							BigDecimal shouldRepay = borrowCashDo.getAmount().add(borrowCashDo.getRateAmount()).add(borrowCashDo.getOverdueAmount()).add(borrowCashDo.getSumRate()).add(borrowCashDo.getSumOverdue()).subtract(borrowCashDo.getRepayAmount());
-							loanRecord.setOverdueAmount(shouldRepay);
-						}else {
-							//账单正常
-							loanRecord.setLoanStatusCode(LoanStatusCode.Normal.getCode());
-						}
-					}else{
-						//取申请时间，并格式化日期类型
-						Date gmtCreate = borrowCashDo.getGmtCreate();
-						loanRecord.setLoanDate(sdf.format(gmtCreate));				
-						if (StringUtil.equals(borrowCashDo.getReviewStatus(), "REFUSE") || StringUtil.equals(borrowCashDo.getReviewStatus(), "FBREFUSE")) {
-							//审核未通过的结果码,拒贷
-							loanRecord.setApprovalStatusCode(ApprovalStatusCode.UnApprove.getCode());
-							loanRecord.setLoanStatusCode("");
-						}else {
-							//审核中结果码
-							loanRecord.setApprovalStatusCode(ApprovalStatusCode.Approving.getCode());
-							loanRecord.setLoanStatusCode("");
-						}
-					}
-					//期数，默认写死为1
-					loanRecord.setPeriods(1);
-					//借款金额,
-					loanRecord.setLoanAmount(borrowCashDo.getAmount());
-					
-					
-					//借款类型码，默认是信用借款
-					loanRecord.setLoanTypeCode(LoanTypeCode.Credit.getCode());
-					if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")){
-						int overdueTotal = borrowCashDo.getOverdueDay().intValue()/30;
-						if (borrowCashDo.getOverdueDay() % 30 != 0) {
-							overdueTotal += 1;
-						}
-						if (overdueTotal == 1) {
-							loanRecord.setOverdueStatus(OverdueStatus.One.getCode());
-						}else if (overdueTotal == 2) {
-							loanRecord.setOverdueStatus(OverdueStatus.Two.getCode());
-						}else if (overdueTotal == 3) {											
-							loanRecord.setOverdueStatus(OverdueStatus.Three.getCode());
-						}else if (overdueTotal == 4) {
-							if (borrowCashDo.getOverdueDay() % 30 == 0) {
-								loanRecord.setOverdueStatus(OverdueStatus.Four.getCode());
-							}else {
-								loanRecord.setOverdueStatus(OverdueStatus.ThreePlus.getCode());
-							}
-						}else if (overdueTotal == 5) {
-							loanRecord.setOverdueStatus(OverdueStatus.Five.getCode());
-						}else if (overdueTotal == 6) {
-							loanRecord.setOverdueStatus(OverdueStatus.Six.getCode());
-						}else {
-							loanRecord.setOverdueStatus(OverdueStatus.SixPlus.getCode());
-						}
-						loanRecord.setOverdueTotal(overdueTotal);
-						if (StringUtil.equals(loanRecord.getOverdueStatus(), "M3+")) {
-							loanRecord.setOverdueM3(1);
-						}
-						if (StringUtil.equals(loanRecord.getOverdueStatus(), "M6+")) {
-							loanRecord.setOverdueM6(1);
-						}				
-					}else {
-						//账单结清或者没有逾期，默认返回空串
-						loanRecord.setOverdueStatus("");
-					}
 					//loanRecord数据的封装
 					List<LoanRecord> loanRecordList = new ArrayList<LoanRecord>();
-					loanRecordList.add(loanRecord);
-					
+					for (AfBorrowCashDo borrowCashDo : borrowCashDoList) {
+						
+						//封装第一层数据
+						LoanRecord loanRecord = new LoanRecord();
+						loanRecord.setName(name);
+						loanRecord.setCertNo(idNo);
+						
+						if (StringUtil.equals(borrowCashDo.getStatus(), "TRANSED") || StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
+							//取打款时间，并格式化日期类型				
+							Date gmtArrival = borrowCashDo.getGmtArrival();				
+							loanRecord.setLoanDate(DateUtil.formatDate(gmtArrival));	
+							//通过审核的结果码
+							loanRecord.setApprovalStatusCode(ApprovalStatusCode.Approved.getCode());
+							if (StringUtil.equals(borrowCashDo.getStatus(), "FINSH")) {
+								//账单已结清
+								loanRecord.setLoanStatusCode(LoanStatusCode.Finish.getCode());
+							}else if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")) {
+								//说明借款人逾期并且未还款
+								loanRecord.setLoanStatusCode(LoanStatusCode.Overdue.getCode());
+								//借款人逾期总金额
+								BigDecimal shouldRepay = borrowCashDo.getAmount().add(borrowCashDo.getRateAmount()).add(borrowCashDo.getOverdueAmount()).add(borrowCashDo.getSumRate()).add(borrowCashDo.getSumOverdue()).subtract(borrowCashDo.getRepayAmount());
+								loanRecord.setOverdueAmount(shouldRepay);
+							}else {
+								//账单正常
+								loanRecord.setLoanStatusCode(LoanStatusCode.Normal.getCode());
+							}
+						}else{
+							//取申请时间，并格式化日期类型
+							Date gmtCreate = borrowCashDo.getGmtCreate();
+							loanRecord.setLoanDate(DateUtil.formatDate(gmtCreate));				
+							if (StringUtil.equals(borrowCashDo.getReviewStatus(), "REFUSE") || StringUtil.equals(borrowCashDo.getReviewStatus(), "FBREFUSE")) {
+								//审核未通过的结果码,拒贷
+								loanRecord.setApprovalStatusCode(ApprovalStatusCode.UnApprove.getCode());
+								loanRecord.setLoanStatusCode("");
+							}else {
+								//审核中结果码
+								loanRecord.setApprovalStatusCode(ApprovalStatusCode.Approving.getCode());
+								loanRecord.setLoanStatusCode("");
+							}
+						}
+						//期数，默认写死为1
+						loanRecord.setPeriods(1);
+						//借款金额,
+						loanRecord.setLoanAmount(borrowCashDo.getAmount());
+						
+						
+						//借款类型码，默认是信用借款
+						loanRecord.setLoanTypeCode(LoanTypeCode.Credit.getCode());
+						if (borrowCashDo.getOverdueDay() > 0 && StringUtil.equals(borrowCashDo.getStatus(), "TRANSED")){
+							int overdueTotal = borrowCashDo.getOverdueDay().intValue()/30;
+							if (borrowCashDo.getOverdueDay() % 30 != 0) {
+								overdueTotal += 1;
+							}
+							if (overdueTotal == 1) {
+								loanRecord.setOverdueStatus(OverdueStatus.One.getCode());
+							}else if (overdueTotal == 2) {
+								loanRecord.setOverdueStatus(OverdueStatus.Two.getCode());
+							}else if (overdueTotal == 3) {											
+								loanRecord.setOverdueStatus(OverdueStatus.Three.getCode());
+							}else if (overdueTotal == 4) {
+								if (borrowCashDo.getOverdueDay() % 30 == 0) {
+									loanRecord.setOverdueStatus(OverdueStatus.Four.getCode());
+								}else {
+									loanRecord.setOverdueStatus(OverdueStatus.ThreePlus.getCode());
+								}
+							}else if (overdueTotal == 5) {
+								loanRecord.setOverdueStatus(OverdueStatus.Five.getCode());
+							}else if (overdueTotal == 6) {
+								loanRecord.setOverdueStatus(OverdueStatus.Six.getCode());
+							}else {
+								loanRecord.setOverdueStatus(OverdueStatus.SixPlus.getCode());
+							}
+							loanRecord.setOverdueTotal(overdueTotal);
+							if (StringUtil.equals(loanRecord.getOverdueStatus(), "M3+")) {
+								loanRecord.setOverdueM3(1);
+							}
+							if (StringUtil.equals(loanRecord.getOverdueStatus(), "M6+")) {
+								loanRecord.setOverdueM6(1);
+							}				
+						}else {
+							//账单结清或者没有逾期，默认返回空串
+							loanRecord.setOverdueStatus("");
+						}
+						
+						loanRecordList.add(loanRecord);
+					}					
 					
 					Data data = new Data();
 					data.setLoanRecords(loanRecordList);
@@ -222,6 +260,8 @@ public class GetPersonInfoController {
 					map.put("message", "查询成功!");
 					map.put("params", urlResp);
 					jsonString = JsonUtil.toJSONString(map);
+					//将请求次数加入缓存
+					bizCacheUtil.saveObject(currDayReqNumsKey, currDayReqNums, Constants.SECOND_OF_ONE_DAY);
 					//将数据存入缓存
 					bizCacheUtil.saveObject(Constants.YIXIN_AFU_SEARCH_KEY+rc4Key+idNo, jsonString, Constants.SECOND_OF_AN_HOUR_INT);
 					thirdLog.info("yiXin zhiChengAfu search personInfo from dataBase success,idNo = "+idNo+", name="+name+" time = " + new Date());
