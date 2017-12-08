@@ -158,6 +158,22 @@ public class GamePayController extends BaseController {
 		return H5CommonResponse.getNewInstance(false, "参数错误:goodsNum.");
 	    }
 
+	    if (StringUtils.isBlank(request.getParameter("priceTimes"))) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:priceTimes.");
+	    }
+	    Integer priceTimes = Integer.parseInt(request.getParameter("priceTimes"));
+	    if (priceTimes <= 0) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:priceTimes.");
+	    }
+
+	    if (StringUtils.isBlank(request.getParameter("goodsCount"))) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsCount.");
+	    }
+	    Integer goodsCount = Integer.parseInt(request.getParameter("goodsCount"));
+	    if (priceTimes <= 0) {
+		return H5CommonResponse.getNewInstance(false, "参数错误:goodsCount.");
+	    }
+
 	    String gameType = "";
 	    if (StringUtils.isNotBlank(request.getParameter("gameType")))
 		gameType = URLDecoder.decode(request.getParameter("gameType"), "utf-8");
@@ -180,7 +196,7 @@ public class GamePayController extends BaseController {
 
 	    // 下单逻辑
 	    AfUserDo afUserDo = afUserDao.getUserByUserName(context.getUserName());
-	    data = afSupOrderService.addSupOrder(afUserDo.getRid(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, gameType, gameAcct, gameArea, gameSrv, userIp);
+	    data = afSupOrderService.addSupOrder(afUserDo.getRid(), goodsId, actualAmount, couponId, acctType, gameName, userName, goodsNum, priceTimes, goodsCount, gameType, gameAcct, gameArea, gameSrv, userIp);
 	    if (data != null) {
 		return H5CommonResponse.getNewInstance(true, "充值订单提交成功", "", data);
 	    } else {

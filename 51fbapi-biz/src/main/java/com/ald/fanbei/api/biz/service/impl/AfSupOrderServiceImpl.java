@@ -134,7 +134,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
     }
 
     @Override
-    public Map<String, Object> addSupOrder(final Long userId, final Long goodsId, final BigDecimal actualAmount, final Long couponId, final String acctType, final String gameName, final String userName, final Integer goodsNum, final String gameType, final String gameAcct, final String gameArea, final String gameSrv, final String userIp) throws Exception {
+    public Map<String, Object> addSupOrder(final Long userId, final Long goodsId, final BigDecimal actualAmount, final Long couponId, final String acctType, final String gameName, final String userName, final Integer goodsNum, final Integer priceTimes, final Integer goodsCount, final String gameType, final String gameAcct, final String gameArea, final String gameSrv, final String userIp) throws Exception {
 	// 验证参数须大于零
 	if (actualAmount.compareTo(BigDecimal.ZERO) <= 0 || goodsNum <= 0) {
 	    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
@@ -161,7 +161,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 	}
 	final BigDecimal couponAmountFinal = couponAmount;
 	// 验证优惠卷
-	BigDecimal checkActualAmount = supGameDo.getOfficalDiscount().multiply(new BigDecimal(goodsNum));
+	BigDecimal checkActualAmount = supGameDo.getOfficalDiscount().multiply(new BigDecimal(goodsNum)).multiply(new BigDecimal(priceTimes));
 	final BigDecimal rebateAmountScale = supGameDo.getOfficalDiscount().subtract(supGameDo.getBusinessDiscount());
 	checkActualAmount = checkActualAmount.subtract(couponAmount);
 	if (checkActualAmount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -201,7 +201,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    afOrder.setOrderType(OrderType.BOLUOME.getCode());
 		    afOrder.setOrderNo(generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT));
 		    afOrder.setThirdOrderNo(afOrder.getOrderNo());
-		    afOrder.setCount(goodsNum);
+		    afOrder.setCount(1);
 		    afOrder.setUserCouponId(couponId);
 		    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		    afOrder.setAuAmount(userAccountInfo.getAuAmount());
@@ -220,6 +220,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    supOrderDo.setGoodsCode(gameCode);
 		    supOrderDo.setGoodsId(goodsId);
 		    supOrderDo.setGoodsNum(goodsNum);
+		    supOrderDo.setGoodsCount(goodsCount);
 		    supOrderDo.setOrderNo(afOrder.getOrderNo());
 		    supOrderDo.setUserIp(userIp);
 		    supOrderDo.setUserName(userName);
