@@ -104,6 +104,14 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public AfGoodsDo checkIsSelfBuild(String numId) {
 		return afGoodsDao.checkIsSelfBuild(numId);
 	}
+	@Override
+	public List<AfGoodsDo> getGoodsByCategoryId(Long categoryId) {
+		return afGoodsDao.getGoodsByCategoryId(categoryId);
+	}
+	@Override
+	public List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query) {
+		return afGoodsDao.getHomeCategoryGoodsList(query);
+	}
 
 	@Override
 	public List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query){

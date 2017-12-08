@@ -22,6 +22,19 @@
 				value="%d; %m%n" />
 		</layout>
 	</appender>
+
+	<!-- [应用Appender] new 收到app客户端的请求，非app接口入口日志请勿放这里  -->
+	<appender name="FANBEINEW_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/app-bi-new.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
+
 	<!-- [应用Appender] 风控请求日志  -->
 	<appender name="FBRISK_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/bi/app-risk.log" />
@@ -45,6 +58,17 @@
 				value="%d; %m%n" />
 		</layout>
 	</appender>
+	<!--新web-bi log 日志-->
+	<appender name="FANBWEBEINEW_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/web-bi-new.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
 
 	<!-- [应用Appender] 埋点相关日志,飞埋点日志请勿放这里 -->
 	<appender name="FANBEIMAIDIAN_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
@@ -57,6 +81,19 @@
 				value="%d; %m%n" />
 		</layout>
 	</appender>
+
+	<!-- [应用Appender] 埋点相关日志,飞埋点日志请勿放这里 -->
+	<appender name="FANBEIMAIDIANNEW_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/maidian-new.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
+
 
 	<!-- [应用Appender] 调用第三方接口日志，如推送日志、发送短信日志 -->
 	<appender name="FANBEI_THIRD_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
@@ -125,6 +162,12 @@
 		<appender-ref ref="FANBEI_BI_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
+	<!-- [应用Logger] new BI日志 -->
+	<logger name="FANBEINEW_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEINEW_BI_APPENDER" />
+		<appender-ref ref="STDOUT_APPENDER" />
+	</logger>
 	<!-- [应用Logger] 风控监控log日志 -->
 	<logger name="FBRISK_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
@@ -137,11 +180,24 @@
 		<appender-ref ref="FANBWEBEI_BI_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FBWEBNEW_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBWEBEINEW_BI_APPENDER" />
+		<appender-ref ref="STDOUT_APPENDER" />
+	</logger>
 	
 	<!-- [应用Logger] BI日志 -->
 	<logger name="FBMD_BI" additivity="true">
 		<level value="${fbapi.log.level}" />
 		<appender-ref ref="FANBEIMAIDIAN_BI_APPENDER" />
+		<appender-ref ref="STDOUT_APPENDER" />
+	</logger>
+
+	<!-- [应用Logger] 新 NEW BI日志 -->
+	<logger name="FBMDNEW_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEIMAIDIANNEW_BI_APPENDER" />
 		<appender-ref ref="STDOUT_APPENDER" />
 	</logger>
 

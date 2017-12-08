@@ -10,6 +10,8 @@ public enum FanbeiExceptionCode {
 
 SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 
+    GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
+
     ACTIVE_CLOSE("ACTIVE_CLOSE",11600,"active close","新邀请有礼活动，从首页Banner进入"),
 
     VERSION_ERROR("VERSION_ERROR", -2000, "version is error", "版本过低，前往应用市场更新到最新版本获得更好体验"),
@@ -19,6 +21,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     // PARAM_CODE 1001-1099
     PARAM_ERROR("PARAM_ERROR", 1001, "param error", "参数错误"),
     REQUEST_PARAM_NOT_EXIST("REQUEST_PARAM_NOT_EXIST", 1002, "request param is invalid", "请求参数缺失"),
+    POSITION_EXCEPTION("POSITION_EXCEPTION", 1018, "position exception", "所在位置异常，无法进行借款"),
     REQUEST_PARAM_METHOD_NOT_EXIST("REQUEST_PARAM_METHOD_NOT_EXIST", 1003, "request method is invalid", "请求方法不存在"),
     REQUEST_PARAM_TOKEN_ERROR("REQUEST_PARAM_TOKEN_ERROR", 1004, "token is invalid", "您未登录，请登录"),
     REQUEST_INVALID_SIGN_ERROR("REQUEST_INVALID_SIGN_ERROR", 1005, "sign is invalid", "非法请求"),
@@ -69,7 +72,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     APPLY_CASHED_AMOUNT_TOO_SMALL_JFB("APPLY_CASHED_AMOUNT_TOO_SMALL_JFB",1127,"apply cash amount jfb to small","至少提现2000集分宝"),
     RENEWAL_ORDER_NOT_EXIST_ERROR("RENEWAL_ORDER_NOT_EXIST_ERROR",1128,"nothing order can renewal","无可续期的订单"),
     HAVE_A_REPAYMENT_PROCESSING_ERROR("HAVE_A_REPAYMENT_PROCESSING_ERROR",1129,"There is a repayment is processing","有一笔还款正在处理中"),
-    
+    BACK_MONEY_CHECK("BACK_MONEY_CHECK",11290,"There is a repayment is processing","还款金额要大于1块钱"),
+
     USER_LOGIN_UNTRUST_ERROW("USER_LOGIN_UNTRUST_ERROW",1130,"user login untrust error ","请返回登录页面重新登录"),
     USER_PASSWORD_ERROR_FIRST("USER_PASSWORD_ERROR_FIRST",1131,"user password error first","密码输入有误,剩余次数(5)"),
     USER_PASSWORD_ERROR_SECOND("USER_PASSWORD_ERROR_SECOND",1132,"user password error second","密码输入有误,剩余次数(4)"),
@@ -87,6 +91,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANGE_MOBILE_TARGET_LOST("CHANGE_MOBILE_TARGET_LOST", 1143, "change mobile target lost", "要更换的新手机号已丢失，请重新操作"),
     USER_REGIST_IMAGE_ERROR("USER_REGIST_IMAGE_ERROR",1144,"user regist image error","图片验证码不正确"),
     USER_REGIST_IMAGE_ERROR2("USER_REGIST_IMAGE_ERROR",1145,"user regist image error","图片验证码不正确"),
+    USER_REGIST_SMS_LESSDUE("USER_REGIST_SMS_LESSDUE",1147,"user regist sms lessdue","验证码60秒内已获取过"),
     USER_REGIST_FREQUENTLY_ERROR("USER_REGIST_FREQUENTLY_ERROR",1146,"user_regist_frequently_error","验证码获取过于频繁，请稍后重试"),
 
     // 1200 -
@@ -103,6 +108,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     USER_MAIN_BANKCARD_NOT_EXIST_ERROR("USER_MAIN_BANKCARD_NOT_EXIST_ERROR",1301,"user main bankcard not exist error","您未绑定主卡"),
     USER_BANKCARD_NOT_EXIST_ERROR("USER_BANKCARD_NOT_EXIST_ERROR",1302,"user bankcard not exist error","用户银行卡不存在"),
+    USER_BANKCARD_LIMIT_ERROR("USER_BANKCARD_LIMIT_ERROR",1319,"user bankcard limit error"," 该银行卡单笔限额3000元，请分批还款或使用其他银行卡还款，谢谢！"),
+    USER_BANKCARD_RENEW_LIMIT_ERROR("USER_BANKCARD_LIMIT_ERROR",1320,"user bankcard limit error"," 该银行卡单笔限额3000元，请使用其他银行卡还款，谢谢！"),
     USER_FACE_AUTH_ERROR("USER_FACE_AUTH_ERROR",1303,"user face auth error","用户未通过人脸识别"),
     USER_BANKCARD_EXIST_ERROR("USER_BANKCARD_EXIST_ERROR",1304,"user bankcard exist error","用户银行卡已被绑定"),
     USER_REALNAME_AUTH_ERROR("USER_REALNAME_AUTH_ERROR",1305,"user realname auth error","用户实名认证失败"),
@@ -120,6 +127,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     RISK_OREADY_FINISH_ERROR("RISK_OREADY_FINISH_ERROR",1316,"risk oready finish error","正在认证中，请耐心等待!"),
     PLEASE_PASS_THE_BASIC_CERTIFICATION("PLEASE_PASS_THE_BASIC_CERTIFICATION",1317,"please pass the basic certification","基础认证未通过审核!"),
     ALIPAY_CERTIFIED_UNDER_MAINTENANCE("ALIPAY_CERTIFIED_UNDER_MAINTENANCE",1318,"alipay certified under maintenance","支付宝认证正在维护中，请等待！"),
+    ZM_STATUS_EXPIRED("ZM_STATUS_EXPIRED",1319,"zm status expired","芝麻信用已过期，请至信用中心-基础认证中重新认证芝麻信用分！"),
 
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
@@ -139,6 +147,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SMS_SET_PAY_PASSWORD_EXCEED_TIME("SMS_SET_PAY_PASSWORD_EXCEED_TIME",1144,"user set pay password exceed time","发送设置支付密码短信超过每日限制次数"),
     SMS_LOGIN_EXCEED_TIME("SMS_LOGIN_EXCEED_TIME",1145,"user login sms exceed time","发送登录验证码超过每日限制次数"),
     USER_ACCOUNT_MONEY_LESS("USER_ACCOUNT_MONEY_LESS", 1146, "user account money less error", "账户余额不足,请用其它支付方式"),
+    SMS_SET_QUICK_PASSWORD_EXCEED_TIME("SMS_SET_QUICK_PASSWORD_EXCEED_TIME",1148,"set quick password exceed time","发送设置快捷登录密码验证码超过每日限制次数"),
 
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),
     AUTH_CARD_ERROR("AUTH_CARD_ERROR",1541,"auth card error","银行卡认证失败"),
@@ -285,6 +294,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     NOT_CONFIG_GAME_INFO_ERROR("NOT_CONFIG_GAME_INFO_ERROR",4032,"not config game info error","请配置游戏信息"),
     NOT_CHANCE_TEAR_PACKET_ERROR("NOT_CHANCE_TEAR_PACKET_ERROR",4033,"not chance tear packet error","无抽红包机会"),
     ONLY_ONE_GOODS_ACCEPTED("ONLY_ONE_GOODS_ACCEPTED",4034,"only one goods could be accepted","新人专享只能购买一件商品"),
+    ONLY_ONE_DOUBLE12GOODS_ACCEPTED("ONLY_ONE_DOUBLE12GOODS_ACCEPTED",4035,"only one double12Goods could be accepted","亲，每个账号限购1件，不要太贪心哦"),
+    NO_DOUBLE12GOODS_ACCEPTED("NO_DOUBLE12GOODS_ACCEPTED",4036,"only one double12Goods could be accepted","秒杀商品已售空"),
+    DOUBLE12ORDER_ERROR("DOUBLE12ORDER_ERROR",4037,"double12 activity order error","秒杀商品下单异常"),
 
     // 地址管理
     CHANG_ADDRESS_ERROR("CHANG_ADDRESS_ERROR",5000,"set default address error","亲,已经是最后一个地址了,留下这个作为默认地址吧"),
@@ -309,13 +321,13 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "流量过大系统开小差啦，请尝试重新发起"),
     //7000
     BANKCARD_NOT_EXIST("BANKCARD_NOT_EXIST",7000,"bankcard is null","该用户没绑定银行卡"),
-    
+
     //物流信息不存在
     LOGISTICS_NOT_EXIST("Logistics_NOT_EXIST",6002,"order_not_exist","物流信息不存在"),
 
     //代扣提示信息
     WHIT_HOLD_DEALING("WHIT_HOLD_DEALING",5555,"whithold is dealing","抱歉，当前代扣进行中，暂时无法操作，请稍后再试！"),
-    
+
     //租房使用
     TENEMENT_USER_INVALID("TENEMENT_USER_INVALID",7002,"tenement_user_invalid","对不起，该用户尚未进行注册/身份证认证"),
     //信息已审核

@@ -1,5 +1,6 @@
 
 var userName = getUrl('userName'); //获取用户id
+var pageType = getUrl('type');
 
 let vm = new Vue({
     el: "#bankBox",
@@ -10,7 +11,7 @@ let vm = new Vue({
     },
     created: function () {
         this.logData();
-        this.maidian("card", userName);
+        this.maidian('card', userName , pageType);
     },
     mounted: function () {
 
@@ -64,17 +65,18 @@ let vm = new Vue({
 
         },
         jump: function (url,data,type) {
-            this.maidian(type,data);
-            // console.log(url, data, type)
+            this.maidian(type, data, pageType);
             location.href = url;
         },
-        maidian(type,bank) {
+        maidian(type,bank, type2) {
             //数据统计 
             $.ajax({
                 url: '/fanbei-web/postMaidianInfo',
                 type: 'post',
                 data: {
-                    maidianInfo: '/fanbei-web/activity/card?type=' + type + '&bank=' + bank
+                    maidianInfo: '/fanbei-web/activity/card?type=' + type,
+                    maidianInfo1: bank,
+                    maidianInfo2: type2,
                 },
                 success: function (data) {
                     console.log(data)

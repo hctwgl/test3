@@ -11,7 +11,11 @@ package com.ald.fanbei.api.common.enums;
 public enum AfResourceType {
 	HomeBanner("HOME_BANNER", "轮播图"),
 	HomeBannerNew("HOME_BANNER_NEW", "轮播图（新版）"),
+	HomeBannerBrand("HOME_BANNER_BRAND","逛逛轮播图"),
+	HomeBannerEcommerce("HOME_BANNER_ECOMMERCE","首页电商轮播图"),
 	HomeBannerNewMost("HOME_BANNER_NEW_MOST", "轮播图（最新）"),
+	HomeBannerV401("HOME_BANNER_V401", "轮播图（V401版本）"),
+	HomeFourImageNomalPositon("HOME_FOUR_IMAGE_NOMAL_POSITION","常驻运营位置"),
 	HomeNavigation("HOME_NAVIGATION", "四个导航"),
 	HomeSecondBanner("HOME_SECOND_BANNER", "第二个轮播"),
 	HomeOneToMany("HOME_ONE_TO_MANY", "首页1+n模块"),
@@ -98,6 +102,7 @@ public enum AfResourceType {
 	//app端 借钱按钮高亮显示时长配置
 	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
 	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片"),
+	YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询配置"),
 
 	//登录白名单
 	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单");

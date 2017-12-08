@@ -329,4 +329,11 @@ public interface AfOrderService {
 
 	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 	
+	/**
+     * 获取已生成的秒杀订单
+     * @param userId
+     * @return
+     */
+	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,Long userId);
+	
 }

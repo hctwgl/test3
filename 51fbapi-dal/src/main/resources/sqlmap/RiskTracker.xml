@@ -10,7 +10,7 @@
     
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
-    	WHERE is_delete = 0
+    	WHERE 0 = 0
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
@@ -94,14 +94,14 @@
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}                
             </if>
         </set>    
-        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+        WHERE  id = #{rid ,jdbcType=BIGINT}
     </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.RiskTrackerDo">
         SELECT
         <include refid="queryFields" />
         FROM risk_tracker
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        WHERE  id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
 

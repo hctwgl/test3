@@ -45,10 +45,10 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
-	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1",
+	"/goods/addFootMark","/goods/getHomeInfo","/goods/getHomeInfoV1","/goods/getHomeInfoV2",
 	"/goods/getThirdGoodsList","/goods/getCategoryList","/good/getSearchHome",
     	"/goods/getCateGoodsList","/good/getRecommendGoods","/good/getBrandShopList","/good/getGoodsDetailInfo","/good/getPayTypeList","/goods/getGoodsSpec",
-            "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo","/cashier/start","/cashier/pre" ,"/cashier/getNperList",
+            "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getHomeGoodsList","/goods/getThirdGoodsDetailInfo","/cashier/start","/cashier/pre" ,"/cashier/getNperList",
 	"/category/getAllGoodsCategory","/category/getGoodsList", "/goods/getGoodsRateInfo","/goods/getThirdGoodsAuction","/goods/getThirdGoodsDetailInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -102,16 +102,16 @@ public class FanbeiController extends BaseController {
     }
 
     @RequestMapping(value = {
-    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/login","/user/resetPwd","/user/getUserInfo",
+    		"/user/userLogin","/user/getVerifyCode","/user/checkVerifyCode","/user/setRegisterPwd","/user/quickRegisterPwd","/user/login","/user/quickLoginOrRegister","/user/resetPwd","/user/setQuickFirstPwd","/user/getUserInfo",
     		"/user/logout","/user/updateUserInfo","/user/getSysMsgList","/user/getMineInfo","/user/getMineCouponCount","/user/getMineCouponList","/user/getCallCenterInfo",
     		"/user/commitFeedback","/user/getCouponList","/user/pickCoupon","/user/getUserCounponListType","/user/getMobileRechargeMoneyList",
     		"/user/withdrawCash","/user/deleteCollection","/user/addCollection","/user/getCollectionList","/user/deleteBankCard","/user/changeEmail",
     		"/user/getBankCardList","/user/getEmailVerifyCode","/user/checkPayPwd","/user/getSigninInfo","/user/setPayPwd","/user/getPayPwdVerifyCode",
-    		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
-    		"/user/submitShareAction","/user/checkMobileRegistered","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
+    		"/user/checkPayPwdVerifyCode","/user/checkIdNumber","/user/changeLoginPwd","/user/setQuickLoginPwd","/user/getInvitationInfo","/user/signin","/user/changeMobile",
+    		"/user/submitShareAction","/user/checkMobileRegistered","/user/checkQuickRegisteredPwd","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
-            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts",
-            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl"
+            "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl",
+            "/user/accountAppealCheckSms","/user/accountAppealDo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String userRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -148,7 +148,7 @@ public class FanbeiController extends BaseController {
 			"/auth/checkFaceApi","/auth/getYiTuInfo" ,"/auth/uploadYiTuCount","/auth/submitIdNumberInfo","/auth/authStrongRisk","/auth/authStrongRiskV1",
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
 			"/auth/authSupplyCertify","/auth/authFund","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
-			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -166,7 +166,7 @@ public class FanbeiController extends BaseController {
      * @throws IOException
      */
     @RequestMapping(value = {"/brand/getBrandUrl","/brand/getOrderDetailUrl","/brand/getConfirmOrder","/brand/getBrandList"
-    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon","brand/payOrderV1"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    		,"/brand/getPayAmount","/brand/payOrder","/brand/getBrandCouponList","/brand/pickBrandCoupon","brand/payOrderV1","/drainage/getBannerList"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String brandShopRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

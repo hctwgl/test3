@@ -106,23 +106,14 @@ public class ApplyRenewalApi implements ApiHandle {
 		}
 		*/
 
-		if(appVersion>=397) {
-			if (renewAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {   //判断续借金额是否大于100
-				throw new FanbeiException(
-						FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED);
-			}
-		}
-
-
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
 		BigDecimal capital =BigDecimal.ZERO;
-		if(appVersion<397){
+		if(appVersion == 397){
+			capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewAmount);
+		}else{
 			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
 			capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-		}else{
-			capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewAmount);
-
 		}
 
 

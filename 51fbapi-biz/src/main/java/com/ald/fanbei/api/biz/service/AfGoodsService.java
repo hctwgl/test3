@@ -84,11 +84,14 @@ public interface AfGoodsService {
 	 */
 	AfGoodsDo checkIsSelfBuild(String numId);
 
-	/**
+/**
 	 * 限时抢购 的 商品列表
 	 * @return
 	 */
 	List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query);
 
 	List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query);
+	List<AfGoodsDo> getGoodsByCategoryId(Long categoryId);
+
+	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
 }

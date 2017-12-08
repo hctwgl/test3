@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,10 +36,14 @@ public class AppH5MaidianController extends BaseController {
     public String postMaidianInfo(HttpServletRequest request, ModelMap model) throws IOException {
     	try{
     		doWebCheck(request, false);
-    		String maidianInfo = request.getParameter("maidianInfo");
+    		String maidianInfo =  ObjectUtils.toString(request.getParameter("maidianInfo"), "").toString();
+    		String maidianInfo1 = ObjectUtils.toString(request.getParameter("maidianInfo1"), "").toString();
+    		String maidianInfo2 = ObjectUtils.toString(request.getParameter("maidianInfo2"), "").toString();
+    		String maidianInfo3 = ObjectUtils.toString(request.getParameter("maidianInfo3"), "").toString();
+    		
         	// 获取埋点标识
     		H5CommonResponse resp = H5CommonResponse.getNewInstance(true,"","",model);
-    		doMaidianLog(request, resp,maidianInfo);
+    		doMaidianLog(request, resp,maidianInfo,maidianInfo1,maidianInfo2,maidianInfo3);
     		return resp.toString();
     	} catch (Exception e){
     		return H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();

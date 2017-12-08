@@ -47,7 +47,14 @@ public class AfGoodsDo extends AbstractSerial{
 	private String goodsDetail;
 	private String remark;
 	private String tags;//免息活动标签
-
+	private String stockCount;//库存
+	
+	public String getStockCount() {
+		return stockCount;
+	}
+	public void setStockCount(String stockCount) {
+		this.stockCount = stockCount;
+	}
 	public Long getRid() {
 		return rid;
 	}
