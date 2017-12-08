@@ -151,7 +151,7 @@
 		       #{goodsNum,jdbcType=INTEGER},
 		    </if>
 		    <if test="goodsCount != null">
-            	#{goodsCount,jdbcType=INTEGER}
+            	#{goodsCount,jdbcType=INTEGER},
         	</if>
 		    <if test="gameType != null" >
 		       #{gameType,jdbcType=VARCHAR},
