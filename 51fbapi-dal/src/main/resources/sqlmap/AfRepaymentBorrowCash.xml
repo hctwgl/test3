@@ -156,7 +156,14 @@
 		gmt_create DESC
           LIMIT 1
 	</select>
-	
+	<select id="getRepaymentBorrowCashByTradeNo" parameterType="java.lang.String" resultType="AfRepaymentBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_repayment_borrow_cash
+		WHERE
+		is_delete = 0 and trade_no = #{tradeNo} limit 1;
+	</select>
 	<select id="getRepaymentByPayTradeNo" 
 		resultType="AfRepaymentBorrowCashDo">
 		SELECT
