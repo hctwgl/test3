@@ -293,7 +293,7 @@ let vm = new Vue({
         sureClick(){
             let self = this;
             let quantityNum,times;
-            let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType,gameSrv;
+            let gameName,acctType,userName,goodsNum,actualAmount,gameAcct,gameArea,gameType,gameSrv,goodsCount;
             if(self.fixCont.priceTypeList){ // goodsNum计算
                 quantityNum=self.initPriceList.list[self.liIndex].quantity;
                 times=self.initPriceList.priceTimes;
@@ -332,6 +332,7 @@ let vm = new Vue({
                 goodsNum=times*quantityNum;
                 actualAmount=$('.changeColor01 .pricePay').html();
             }
+            goodsCount=$('.changeColor01 .goodsNum').html();
             if($('.gameNum input').val() || (userName && ($('.nameconfirmDesc01').val()==userName) && !self.needGameNumShow) || (userName && ($('.nameconfirmDesc01').val()==userName) && gameAcct)){
                 $.ajax({
                     type: 'post',
@@ -339,7 +340,7 @@ let vm = new Vue({
                     data:{'goodsId':goodsId,'gameName':gameName,'acctType':acctType,
                         'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount,
                         'gameAcct':gameAcct,'gameArea':gameArea,'gameSrv':gameSrv,'gameType':gameType,
-                        'priceTimes':times
+                        'priceTimes':times,'goodsCount':goodsCount
                     },
                     success: function (data) {
                         console.log(data,'确认充值');
