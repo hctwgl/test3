@@ -396,7 +396,7 @@ public class AppH5DoubleEggsController extends BaseController {
 					if (afResourceDo == null) {
 						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
 					}
-					String[] times = afResourceDo.getValue2().split(",");
+					String[] times = afResourceDo.getValue3().split(",");
 
 					if (currentTime.before(dateFormat.parse(times[0]))) {
 							//2017-12-5 10:00号之前
