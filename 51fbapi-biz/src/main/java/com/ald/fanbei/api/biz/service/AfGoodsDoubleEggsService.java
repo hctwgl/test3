@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.GoodsForDate;
 
 /**
  * 双蛋活动Service
@@ -19,6 +20,6 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 
 	List<Date> getAvalibleDateList();
 
-	List<AfGoodsDoubleEggsDo> getGOodsByDate(Date startDate);
+	List<GoodsForDate> getGOodsByDate(Date startDate);
 
 }

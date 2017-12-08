@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDoubleEggsDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.GoodsForDate;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 
 
@@ -50,7 +51,7 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		}
 
 		@Override
-		public List<AfGoodsDoubleEggsDo> getGOodsByDate(Date startDate) {
+		public List<GoodsForDate> getGOodsByDate(Date startDate) {
 			
 			return afGoodsDoubleEggsDao.getgoodsByDate(startDate);
 		}

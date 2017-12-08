@@ -56,10 +56,13 @@ import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsForSecondKill;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.GoodsForDate;
+import com.ald.fanbei.api.dal.domain.AfGoodsForSecondKill.AfGoodsBuffer;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSONArray;
@@ -420,16 +423,19 @@ public class AppH5DoubleEggsController extends BaseController {
 
 			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
 			if (CollectionUtil.isNotEmpty(dateList)) {
-
+				
+				List<AfGoodsBuffer> goodsBufferList = new ArrayList<>();
+				
 				for (Date startDate : dateList) {
-
-					List<AfGoodsDoubleEggsDo> goodsList = afGoodsDoubleEggsService.getGOodsByDate(startDate);
+					
+					List<GoodsForDate> goodsList = afGoodsDoubleEggsService.getGOodsByDate(startDate);
 					if (CollectionUtil.isNotEmpty(goodsList)) {
+						
+						
 
 						
 						
 						
-						java.util.Map<String, Object> data = new HashMap<>();
 						// change to the view model
 
 						// if this user has already login in then add status to goods.
@@ -440,7 +446,9 @@ public class AppH5DoubleEggsController extends BaseController {
 							// change status according to different users
 
 						}
-
+						java.util.Map<String, Object> data = new HashMap<>();
+						AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
+						afGoodsForSecondKill.setGoodsList(goodsBufferList);
 						result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 					}
 				}
