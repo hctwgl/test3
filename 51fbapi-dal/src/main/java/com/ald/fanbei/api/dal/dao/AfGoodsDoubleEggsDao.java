@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -18,7 +19,9 @@ public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long>
 
 	AfGoodsDoubleEggsDo getByGoodsId(@Param("goodsId")Long goodsId);
 
-	List<AfGoodsDoubleEggsDo> getAvalibleGoodsList();
+	List<Date> getAvalibleDateList();
+
+	List<AfGoodsDoubleEggsDo> getgoodsByDate(@Param("startDate")Date startDate);
 
     
 

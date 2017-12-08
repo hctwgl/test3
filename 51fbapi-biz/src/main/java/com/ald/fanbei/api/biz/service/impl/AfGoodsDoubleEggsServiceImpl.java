@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -43,7 +44,16 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		}
 
 		@Override
-		public List<AfGoodsDoubleEggsDo> getAvalibleGoodsList() {
-			return afGoodsDoubleEggsDao.getAvalibleGoodsList();
+		public List<Date> getAvalibleDateList() {
+		
+			return afGoodsDoubleEggsDao.getAvalibleDateList();
 		}
+
+		@Override
+		public List<AfGoodsDoubleEggsDo> getGOodsByDate(Date startDate) {
+			
+			return afGoodsDoubleEggsDao.getgoodsByDate(startDate);
+		}
+
+
 }
