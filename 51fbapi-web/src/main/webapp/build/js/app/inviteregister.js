@@ -459,7 +459,7 @@ window.onload = () => {
             if (returnData.success) {
               window.location.href = returnData.url;
             } else {
-              maidianFn("registerFail");
+              maidianFnNew("registerFail",returnData.msg);
               requestMsg(returnData.msg);
             }
           },

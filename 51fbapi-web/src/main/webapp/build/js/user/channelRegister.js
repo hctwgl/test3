@@ -235,7 +235,7 @@ $(function(){
                                         }
                                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {
-                                        toMaidian("registerFail");
+                                        maidianFnNew("registerFail", channelCode, pointCode, returnData.msg);
                                         requestMsg(returnData.msg);
                                     }
                                 },
