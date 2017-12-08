@@ -9,10 +9,9 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * 
  * @author 高继斌_temple
  * @version 1.0.0 初始化
- * @date 2017-11-24 16:00:31
- * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @date 2017-11-24 16:00:31 Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- public class AfSupOrderDo extends AbstractSerial {
+public class AfSupOrderDo extends AbstractSerial {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +19,6 @@ import com.ald.fanbei.api.common.AbstractSerial;
      * 主键Rid
      */
     private Long rid;
-    
 
     /**
      * 创建时间
@@ -92,15 +90,17 @@ import com.ald.fanbei.api.common.AbstractSerial;
      */
     private String userIp;
 
-private String msg;
-    
+    private Integer goodsCount;
+
+    private String msg;
+
     /**
      * 获取主键Id
      *
      * @return rid
      */
-    public Long getRid(){
-      return rid;
+    public Long getRid() {
+	return rid;
     }
 
     /**
@@ -108,35 +108,43 @@ private String msg;
      * 
      * @param 要设置的主键Id
      */
-    public void setRid(Long rid){
-      this.rid = rid;
+    public void setRid(Long rid) {
+	this.rid = rid;
     }
-    
+
+    public Integer getGoodsCount() {
+	return goodsCount;
+    }
+
+    public void setGoodsCount(Integer goodsCount) {
+	this.goodsCount = goodsCount;
+    }
 
     public String getMsg() {
-		return msg;
-	}
+	return msg;
+    }
 
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
+    public void setMsg(String msg) {
+	this.msg = msg;
+    }
 
-	/**
+    /**
      * 获取创建时间
      *
      * @return 创建时间
      */
-    public Date getGmtCreate(){
-      return gmtCreate;
+    public Date getGmtCreate() {
+	return gmtCreate;
     }
 
     /**
      * 设置创建时间
      * 
-     * @param gmtCreate 要设置的创建时间
+     * @param gmtCreate
+     *            要设置的创建时间
      */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
+    public void setGmtCreate(Date gmtCreate) {
+	this.gmtCreate = gmtCreate;
     }
 
     /**
@@ -144,17 +152,18 @@ private String msg;
      *
      * @return 最后修改时间
      */
-    public Date getGmtModified(){
-      return gmtModified;
+    public Date getGmtModified() {
+	return gmtModified;
     }
 
     /**
      * 设置最后修改时间
      * 
-     * @param gmtModified 要设置的最后修改时间
+     * @param gmtModified
+     *            要设置的最后修改时间
      */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
+    public void setGmtModified(Date gmtModified) {
+	this.gmtModified = gmtModified;
     }
 
     /**
@@ -162,17 +171,18 @@ private String msg;
      *
      * @return 关联af_order表的id
      */
-    public String getOrderNo(){
-      return orderNo;
+    public String getOrderNo() {
+	return orderNo;
     }
 
     /**
      * 设置关联af_order表的id
      * 
-     * @param orderNo 要设置的关联af_order表的id
+     * @param orderNo
+     *            要设置的关联af_order表的id
      */
-    public void setOrderNo(String orderNo){
-      this.orderNo = orderNo;
+    public void setOrderNo(String orderNo) {
+	this.orderNo = orderNo;
     }
 
     /**
@@ -180,17 +190,18 @@ private String msg;
      *
      * @return 关联af_sup_game表的id
      */
-    public Long getGoodsId(){
-      return goodsId;
+    public Long getGoodsId() {
+	return goodsId;
     }
 
     /**
      * 设置关联af_sup_game表的id
      * 
-     * @param goodsId 要设置的关联af_sup_game表的id
+     * @param goodsId
+     *            要设置的关联af_sup_game表的id
      */
-    public void setGoodsId(Long goodsId){
-      this.goodsId = goodsId;
+    public void setGoodsId(Long goodsId) {
+	this.goodsId = goodsId;
     }
 
     /**
@@ -198,17 +209,18 @@ private String msg;
      *
      * @return 充值商品编号
      */
-    public String getGoodsCode(){
-      return goodsCode;
+    public String getGoodsCode() {
+	return goodsCode;
     }
 
     /**
      * 设置充值商品编号
      * 
-     * @param goodsCode 要设置的充值商品编号
+     * @param goodsCode
+     *            要设置的充值商品编号
      */
-    public void setGoodsCode(String goodsCode){
-      this.goodsCode = goodsCode;
+    public void setGoodsCode(String goodsCode) {
+	this.goodsCode = goodsCode;
     }
 
     /**
@@ -216,17 +228,18 @@ private String msg;
      *
      * @return 充值帐号类型
      */
-    public String getAcctType(){
-      return acctType;
+    public String getAcctType() {
+	return acctType;
     }
 
     /**
      * 设置充值帐号类型
      * 
-     * @param acctType 要设置的充值帐号类型
+     * @param acctType
+     *            要设置的充值帐号类型
      */
-    public void setAcctType(String acctType){
-      this.acctType = acctType;
+    public void setAcctType(String acctType) {
+	this.acctType = acctType;
     }
 
     /**
@@ -234,17 +247,18 @@ private String msg;
      *
      * @return 充值游戏名称
      */
-    public String getGameName(){
-      return gameName;
+    public String getGameName() {
+	return gameName;
     }
 
     /**
      * 设置充值游戏名称
      * 
-     * @param gameName 要设置的充值游戏名称
+     * @param gameName
+     *            要设置的充值游戏名称
      */
-    public void setGameName(String gameName){
-      this.gameName = gameName;
+    public void setGameName(String gameName) {
+	this.gameName = gameName;
     }
 
     /**
@@ -252,17 +266,18 @@ private String msg;
      *
      * @return 充值用户名
      */
-    public String getUserName(){
-      return userName;
+    public String getUserName() {
+	return userName;
     }
 
     /**
      * 设置充值用户名
      * 
-     * @param userName 要设置的充值用户名
+     * @param userName
+     *            要设置的充值用户名
      */
-    public void setUserName(String userName){
-      this.userName = userName;
+    public void setUserName(String userName) {
+	this.userName = userName;
     }
 
     /**
@@ -270,17 +285,18 @@ private String msg;
      *
      * @return 充值数量
      */
-    public Integer getGoodsNum(){
-      return goodsNum;
+    public Integer getGoodsNum() {
+	return goodsNum;
     }
 
     /**
      * 设置充值数量
      * 
-     * @param goodsNum 要设置的充值数量
+     * @param goodsNum
+     *            要设置的充值数量
      */
-    public void setGoodsNum(Integer goodsNum){
-      this.goodsNum = goodsNum;
+    public void setGoodsNum(Integer goodsNum) {
+	this.goodsNum = goodsNum;
     }
 
     /**
@@ -288,17 +304,18 @@ private String msg;
      *
      * @return 充值类型
      */
-    public String getGameType(){
-      return gameType;
+    public String getGameType() {
+	return gameType;
     }
 
     /**
      * 设置充值类型
      * 
-     * @param gameType 要设置的充值类型
+     * @param gameType
+     *            要设置的充值类型
      */
-    public void setGameType(String gameType){
-      this.gameType = gameType;
+    public void setGameType(String gameType) {
+	this.gameType = gameType;
     }
 
     /**
@@ -306,17 +323,18 @@ private String msg;
      *
      * @return 充值游戏账号
      */
-    public String getGameAcct(){
-      return gameAcct;
+    public String getGameAcct() {
+	return gameAcct;
     }
 
     /**
      * 设置充值游戏账号
      * 
-     * @param gameAcct 要设置的充值游戏账号
+     * @param gameAcct
+     *            要设置的充值游戏账号
      */
-    public void setGameAcct(String gameAcct){
-      this.gameAcct = gameAcct;
+    public void setGameAcct(String gameAcct) {
+	this.gameAcct = gameAcct;
     }
 
     /**
@@ -324,17 +342,18 @@ private String msg;
      *
      * @return 充值游戏区
      */
-    public String getGameArea(){
-      return gameArea;
+    public String getGameArea() {
+	return gameArea;
     }
 
     /**
      * 设置充值游戏区
      * 
-     * @param gameArea 要设置的充值游戏区
+     * @param gameArea
+     *            要设置的充值游戏区
      */
-    public void setGameArea(String gameArea){
-      this.gameArea = gameArea;
+    public void setGameArea(String gameArea) {
+	this.gameArea = gameArea;
     }
 
     /**
@@ -342,17 +361,18 @@ private String msg;
      *
      * @return 充值游戏服
      */
-    public String getGameSrv(){
-      return gameSrv;
+    public String getGameSrv() {
+	return gameSrv;
     }
 
     /**
      * 设置充值游戏服
      * 
-     * @param gameSrv 要设置的充值游戏服
+     * @param gameSrv
+     *            要设置的充值游戏服
      */
-    public void setGameSrv(String gameSrv){
-      this.gameSrv = gameSrv;
+    public void setGameSrv(String gameSrv) {
+	this.gameSrv = gameSrv;
     }
 
     /**
@@ -360,17 +380,18 @@ private String msg;
      *
      * @return 真实玩家充值请求ip
      */
-    public String getUserIp(){
-      return userIp;
+    public String getUserIp() {
+	return userIp;
     }
 
     /**
      * 设置真实玩家充值请求ip
      * 
-     * @param userIp 要设置的真实玩家充值请求ip
+     * @param userIp
+     *            要设置的真实玩家充值请求ip
      */
-    public void setUserIp(String userIp){
-      this.userIp = userIp;
+    public void setUserIp(String userIp) {
+	this.userIp = userIp;
     }
 
 }
