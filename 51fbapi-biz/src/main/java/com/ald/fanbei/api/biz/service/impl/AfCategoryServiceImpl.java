@@ -27,4 +27,9 @@ public class AfCategoryServiceImpl implements AfCategoryService{
 		return afCategoryDao.getCategoryList();
 	}
 
+	@Override
+	public List<AfCategoryDo> getHomePageCategoryInfo() {
+		return afCategoryDao.getHomePageCategoryInfo();
+	}
+
 }

@@ -28,7 +28,7 @@ public class UpdateRealnameManualApi implements ApiHandle {
 	
 	@Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        Map<String, Object> params = requestDataVo.getParams();
+		Map<String, Object> params = requestDataVo.getParams();
         String realname = (String)params.get("realname");
         logger.info("UpdateRealnameManualApi realname=>" + realname);
         if(StringUtils.isBlank(realname)) {
