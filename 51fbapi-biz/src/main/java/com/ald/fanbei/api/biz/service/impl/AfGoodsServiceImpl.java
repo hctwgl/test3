@@ -106,5 +106,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	    // TODO Auto-generated method stub
 	    	return afGoodsDao.listGoodsListByParentIdAndFormerCategoryId(parentId);
 	}
+	@Override
+	public List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(Long primaryCategoryId, Long categoryId) {
+	    // TODO Auto-generated method stub
+	        return afGoodsDao.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
+	}
 
 }

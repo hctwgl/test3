@@ -151,7 +151,6 @@ public class AppH5DoubleEggsController extends BaseController {
 			List<Map<String,Object>> firstCategoryList = new ArrayList<Map<String,Object>>();
 			
 			//TODO:get info from afResource;
-			Long pageNo = NumberUtil.objToLong(request.getParameter("pageNo"));
 			AfCategoryDo  afCategoryDo = new AfCategoryDo();
 			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
 			if(afCategoryDo != null){
@@ -265,15 +264,85 @@ public class AppH5DoubleEggsController extends BaseController {
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
-			// TODO:get info from afResource;
 
-			result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
-		} catch (Exception exception) {
-			result = H5CommonResponse.getNewInstance(false, "特卖商品初始化失败", "", exception.getMessage()).toString();
-			logger.error("特卖商品初始化数据失败  e = {} , resultStr = {}", exception, result);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
-		}
-		return result;
+			//TODO:get info from afResource;
+			Long secondCategoryId = NumberUtil.objToLong(request.getParameter("secondCategoryId"));
+			if(secondCategoryId == null){
+			    return H5CommonResponse.getNewInstance(false, "参数异常", "", data).toString();
+			}
+			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+			//TODO:get info from afResource;
+			AfCategoryDo  afCategoryDo = new AfCategoryDo();
+			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
+			if(afCategoryDo != null){
+			    Long primaryCategoryId =   afCategoryDo.getRid();
+			    Long categoryId =  secondCategoryId;
+			    //初始化时查该parentId下的该categoryId 的商品
+			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
+			    if(afGoodsList.size()>0){
+    				//获取借款分期配置信息
+    			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+    			        JSONArray array = JSON.parseArray(resource.getValue());
+    			        //删除2分期
+    			        if (array == null) {
+    			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+    			        }
+    			        removeSecondNper(array);
+    				
+				
+				for(AfGoodsDo goodsDo : afGoodsList) {
+		    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
+		    			goodsInfo.put("goodName",goodsDo.getName());
+		    			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+		    			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+		    			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+		    			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+		    			goodsInfo.put("goodsId", goodsDo.getRid());
+		    			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+		    			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+		    			goodsInfo.put("source", goodsDo.getSource());
+		    			goodsInfo.put("goodsType", "0");
+		    			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+		    			// 如果是分期免息商品，则计算分期
+		    			Long goodsId = goodsDo.getRid();
+						AfSchemeGoodsDo  schemeGoodsDo = null;
+						try {
+							schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+						} catch(Exception e){
+							logger.error(e.toString());
+						}
+						JSONArray interestFreeArray = null;
+						if(schemeGoodsDo != null){
+							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+							String interestFreeJson = interestFreeRulesDo.getRuleJson();
+							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+								interestFreeArray = JSON.parseArray(interestFreeJson);
+							}
+						}
+						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+						if(nperList!= null){
+							goodsInfo.put("goodsType", "1");
+							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+							String isFree = (String)nperMap.get("isFree");
+							if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+								nperMap.put("freeAmount", nperMap.get("amount"));
+							}
+							goodsInfo.put("nperMap", nperMap);
+						}
+						
+						goodsList.add(goodsInfo);
+		    		}				
+			    }
+			}
+			 data.put("goodsList", goodsList);
+			result = H5CommonResponse.getNewInstance(true, "获取特卖商品成功", "", data).toString();
+			} catch (Exception exception) {
+				result = H5CommonResponse.getNewInstance(false, "获取特卖商品失败", "", exception.getMessage()).toString();
+				logger.error("获取特卖商品失败  e = {} , resultStr = {}", exception, result);
+				doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
+			}
+			return result;
 	}
 
 	@Override
