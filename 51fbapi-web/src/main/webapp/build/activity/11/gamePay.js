@@ -338,7 +338,8 @@ let vm = new Vue({
                     url: "/game/pay/order",
                     data:{'goodsId':goodsId,'gameName':gameName,'acctType':acctType,
                         'userName':userName,'goodsNum':goodsNum,'actualAmount':actualAmount,
-                        'gameAcct':gameAcct,'gameArea':gameArea,'gameSrv':gameSrv,'gameType':gameType
+                        'gameAcct':gameAcct,'gameArea':gameArea,'gameSrv':gameSrv,'gameType':gameType,
+                        'priceTimes':times
                     },
                     success: function (data) {
                         console.log(data,'确认充值');
