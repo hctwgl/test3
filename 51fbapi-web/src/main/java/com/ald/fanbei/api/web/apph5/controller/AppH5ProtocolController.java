@@ -174,6 +174,12 @@ public class AppH5ProtocolController extends BaseController {
 		}
 		model.put("repayDay", repayDay);
 
+		if (StringUtils.isNotBlank(consumeDo.getValue3())) {
+			model.put("interest", borrowAmount.multiply(new BigDecimal( consumeDo.getValue3())).multiply(new BigDecimal(nper)).divide(new BigDecimal(12),2,BigDecimal.ROUND_UP));
+		}
+		else {
+			model.put("interest", new BigDecimal(0));
+		}
 		logger.info(JSON.toJSONString(model));
 	}
 	@RequestMapping("/getBorrowIdByNo")
