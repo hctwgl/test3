@@ -21,4 +21,8 @@ public interface AfCategoryDao {
 	List<AfCategoryDo> getCategoryList();
 
 	AfCategoryDo getParentDirectoryByName(@Param("name") String name);
+
+	List<AfCategoryDo> listByParentIdAndLevel(Long parentId, Integer level);
+
+	List<AfCategoryDo> listByParentIdAndLevel(AfCategoryDo queryAfCategory);
 }

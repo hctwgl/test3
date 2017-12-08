@@ -33,4 +33,13 @@ public class AfCategoryServiceImpl implements AfCategoryService{
 	        return afCategoryDao.getParentDirectoryByName(name);
 	}
 
+	@Override
+	public List<AfCategoryDo> listByParentIdAndLevel(AfCategoryDo queryAfCategory) {
+	    // TODO Auto-generated method stub
+	         return afCategoryDao.listByParentIdAndLevel(queryAfCategory);
+	}
+
+
+	
+
 }

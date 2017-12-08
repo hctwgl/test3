@@ -19,4 +19,6 @@ public interface AfCategoryService {
 	List<AfCategoryDo> getCategoryList();
 
 	AfCategoryDo getParentDirectoryByName(String name);
+
+	List<AfCategoryDo> listByParentIdAndLevel(AfCategoryDo queryAfCategory);
 }

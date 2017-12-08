@@ -145,6 +145,8 @@ public class AppH5DoubleEggsController extends BaseController {
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+			List<Map<String,Object>> firstCategoryList = new ArrayList<Map<String,Object>>();
+			
 			//TODO:get info from afResource;
 			Long pageNo = NumberUtil.objToLong(request.getParameter("pageNo"));
 			AfCategoryDo  afCategoryDo = new AfCategoryDo();
@@ -207,11 +209,40 @@ public class AppH5DoubleEggsController extends BaseController {
 						
 						goodsList.add(goodsInfo);
 		    		}				
-			    }			  			  
+			    }
+			  //遍历parent_id = xxx的
+			    //一级分类对应数据表level=2
+			    AfCategoryDo queryAfCategory = new AfCategoryDo();
+			    queryAfCategory.setParentId(parentId);
+			    queryAfCategory.setLevel(2);
+			    List<AfCategoryDo> afFirstCategoryList = afCategoryService.listByParentIdAndLevel(queryAfCategory);
+			    if(afFirstCategoryList.size()>0){
+			        for(AfCategoryDo afFirstCategoryDo:afFirstCategoryList){
+				    
+				   //   secondCategoryList.add(secondCategory);
+				      //二级分类对应数据表level=3
+				      queryAfCategory.setParentId(afFirstCategoryDo.getRid());
+				      queryAfCategory.setLevel(3);
+				      List<AfCategoryDo> afSecondCategoList = afCategoryService.listByParentIdAndLevel(queryAfCategory);
+				      List<Map<String,Object>> secondCategoryList = new ArrayList<Map<String,Object>>();
+				      //遍历parent_id = i.id
+        			      for(AfCategoryDo afSecondCategoDo:afSecondCategoList){
+                			  Map<String, Object> secondCategory = new HashMap<String, Object>();
+                			  secondCategory.put("secondCategoryId",afSecondCategoDo.getRid());
+                			  secondCategory.put("secondCategoryName",afSecondCategoDo.getName());
+                			  secondCategoryList.add(secondCategory);
+        			      }
+        			      Map<String, Object> firstCategory = new HashMap<String, Object>();
+				      firstCategory.put("firstCategoryId",afFirstCategoryDo.getRid());
+				      firstCategory.put("firstCategoryName",afFirstCategoryDo.getName());
+				      firstCategory.put("secondCategoryList",secondCategoryList);
+				      firstCategoryList.add(firstCategory);
+			         }
+			    }
 			}
-			data.put("goodsList", goodsList);
-			//
-			result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
+			   data.put("goodsList", goodsList);
+		           data.put("firstCategoryList", firstCategoryList);
+			   result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "特卖商品初始化失败", "", exception.getMessage()).toString();
 			logger.error("特卖商品初始化数据失败  e = {} , resultStr = {}", exception, result);
