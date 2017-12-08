@@ -44,33 +44,7 @@ public class AfGoodsForSecondKill extends AbstractSerial {
 		return "AfGoodsForSecondKill [serviceDate=" + serviceDate + ", goodsList=" + goodsList + "]";
 	}
 
-	public class AfGoodsBuffer {
-		private Date startTime;
-
-		private List<GoodsForDate> goodsListForDate;
-
-		public Date getStartTime() {
-			return startTime;
-		}
-
-		public void setStartTime(Date startTime) {
-			this.startTime = startTime;
-		}
-
-		public List<GoodsForDate> getGoodsListForDate() {
-			return goodsListForDate;
-		}
-
-		public void setGoodsListForDate(List<GoodsForDate> goodsListForDate) {
-			this.goodsListForDate = goodsListForDate;
-		}
-
-		@Override
-		public String toString() {
-			return "AfGoodsBuffer [startTime=" + startTime + ", goodsListForDate=" + goodsListForDate + "]";
-		}
-
-	}
+	
 
 	
 

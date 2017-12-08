@@ -43,4 +43,10 @@ public class AfGoodsDoubleEggsUserServiceImpl extends ParentServiceImpl<AfGoodsD
 			}
 			return result; 
 		}
+
+		@Override
+		public int isSubscribed(long userId, Long doubleGoodsId) {
+			
+			return afGoodsDoubleEggsUserDao.isSubscribed(userId,doubleGoodsId);
+		}
 }

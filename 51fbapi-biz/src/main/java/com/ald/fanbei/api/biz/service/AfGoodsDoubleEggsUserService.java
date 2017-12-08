@@ -14,4 +14,6 @@ public interface AfGoodsDoubleEggsUserService extends ParentService<AfGoodsDoubl
 
 	boolean isExist(Long goodsId, Long userId);
 
+	int isSubscribed(long userId, Long doubleGoodsId);
+
 }

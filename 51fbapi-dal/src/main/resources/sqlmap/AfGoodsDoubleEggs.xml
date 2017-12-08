@@ -160,13 +160,15 @@
     </select>
     
     <select id="getAvalibleDateList" resultType="java.util.Date">
-	SELECT DATE(start_time) FROM af_goods_double_eggs 
+	SELECT start_time FROM af_goods_double_eggs 
 		WHERE is_delete = 0 
 	AND DATE(start_time) >= DATE(NOW()) GROUP BY start_time ORDER BY start_time ;
     </select>
     
     <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" parameterType="java.util.Date">
 		SELECT
+			de.id as double_goods_id,
+			IF(now() > de.start_time,'2','0') as `status`,
 			de.goods_id,
 			g.stock_count,
 			g.stock_count - de.already_count AS count,
@@ -181,8 +183,19 @@
 		INNER JOIN af_goods g ON g.id = de.goods_id
 		WHERE
 			de.is_delete = 0
-		AND DATE(de.start_time) = DATE(#{startDate})
+		AND DATE(de.start_time) = #DATE(#{startDate})
 		ORDER BY
 			de.sort;
+    </select>
+    
+    <select id="isSubscribed" resultType="java.lang.Integer" parameterType="java.long.Long">
+	    SELECT
+			COUNT(1)
+		FROM
+			af_goods_double_eggs_user
+		WHERE
+			is_delete = 0
+		AND user_id = #{userId}
+		AND double_eggs_id = #{doubleGoodsId};
     </select>
 </mapper>

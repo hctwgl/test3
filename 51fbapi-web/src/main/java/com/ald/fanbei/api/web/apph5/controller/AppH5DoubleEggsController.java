@@ -42,11 +42,11 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsBuffer;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsForSecondKill;
-import com.ald.fanbei.api.dal.domain.AfGoodsForSecondKill.AfGoodsBuffer;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
@@ -485,37 +485,47 @@ public class AppH5DoubleEggsController extends BaseController {
 		try {
 			context = doWebCheck(request, false);
 
+			Date now = new Date() ;
 			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
 			if (CollectionUtil.isNotEmpty(dateList)) {
 				
-				List<AfGoodsBuffer> goodsBufferList = new ArrayList<>();
+				AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
+				List<AfGoodsBuffer> goodsList = new ArrayList<>();
 				
 				for (Date startDate : dateList) {
 					
-					List<GoodsForDate> goodsList = afGoodsDoubleEggsService.getGOodsByDate(startDate);
-					if (CollectionUtil.isNotEmpty(goodsList)) {
+					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate);
+					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
 						
+						AfGoodsBuffer goodsBuffer = new AfGoodsBuffer();
 						
-
-						
-						
-						
-						// change to the view model
-
-						// if this user has already login in then add status to goods.
+						// if this user has already login in then add status to goods. goodsListForDate
 						String userName = context.getUserName();
 						long userId = 0L;
 						if (StringUtil.isNotBlank(userName) && convertUserNameToUserId(userName) != null) {
-
-							// change status according to different users
-
+							for(GoodsForDate goodsForDate :goodsListForDate){
+								
+								// change status according to different users(change the status for goodsListForDate)
+								int num = afGoodsDoubleEggsUserService.isSubscribed(userId,goodsForDate.getDoubleGoodsId());
+								
+									//only to make sure if this user has already subscribed this goods
+								if (now.before(startDate) && num > 0 ) {
+									goodsForDate.setStatus(1);
+								}
+							}
 						}
-						java.util.Map<String, Object> data = new HashMap<>();
-						AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
-						afGoodsForSecondKill.setGoodsList(goodsBufferList);
-						result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+						
+						goodsBuffer.setStartTime(startDate);
+						goodsBuffer.setGoodsListForDate(goodsListForDate);
+						
 					}
 				}
+				
+				java.util.Map<String, Object> data = new HashMap<>();
+				
+				afGoodsForSecondKill.setGoodsList(goodsList);
+				afGoodsForSecondKill.setServiceDate(new Date());
+				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 
 				
 			}

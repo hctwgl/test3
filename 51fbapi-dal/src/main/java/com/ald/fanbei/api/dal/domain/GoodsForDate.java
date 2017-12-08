@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.domain;
 import java.math.BigDecimal;
 
 public class GoodsForDate {
+	private Long doubleGoodsId;
 	private int status;
 	private Long goodsId;
 	private int stockCount;
@@ -14,6 +15,14 @@ public class GoodsForDate {
 	private String goodsIcon;
 	private String thumbnaillcon;
 	private String goodsUrl;
+
+	public Long getDoubleGoodsId() {
+		return doubleGoodsId;
+	}
+
+	public void setDoubleGoodsId(Long doubleGoodsId) {
+		this.doubleGoodsId = doubleGoodsId;
+	}
 
 	public int getStatus() {
 		return status;
@@ -105,10 +114,12 @@ public class GoodsForDate {
 
 	@Override
 	public String toString() {
-		return "GoodsForDate [status=" + status + ", goodsId=" + goodsId + ", stockCount=" + stockCount + ", count="
-				+ count + ", saleAmount=" + saleAmount + ", realAmount=" + realAmount + ", rebateAmount="
-				+ rebateAmount + ", goodsName=" + goodsName + ", goodsIcon=" + goodsIcon + ", thumbnaillcon="
-				+ thumbnaillcon + ", goodsUrl=" + goodsUrl + "]";
+		return "GoodsForDate [doubleGoodsId=" + doubleGoodsId + ", status=" + status + ", goodsId=" + goodsId
+				+ ", stockCount=" + stockCount + ", count=" + count + ", saleAmount=" + saleAmount + ", realAmount="
+				+ realAmount + ", rebateAmount=" + rebateAmount + ", goodsName=" + goodsName + ", goodsIcon="
+				+ goodsIcon + ", thumbnaillcon=" + thumbnaillcon + ", goodsUrl=" + goodsUrl + "]";
 	}
+
+
 
 }
