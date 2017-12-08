@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.util;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -436,11 +437,18 @@ public class BizCacheUtil extends AbstractThird {
 	public void hset(String key, String hkey, String value) {
 		hashOps.put(key, hkey, value);
 	}
-	public void hset(String key, String hkey, String value, long timeout) {
+	public void hset(String key, String hkey, String value, long timeoutInSecs) {
 		long curTimeout = redisTemplate.getExpire(key);
 		hashOps.put(key, hkey, value);
 		if(curTimeout == -1) { // -2不存在, -1永久
-			redisTemplate.expire(key, timeout, TimeUnit.SECONDS);
+			redisTemplate.expire(key, timeoutInSecs, TimeUnit.SECONDS);
+		}
+	}
+	public void hset(String key, String hkey, String value, Date date) {
+		long curTimeout = redisTemplate.getExpire(key);
+		hashOps.put(key, hkey, value);
+		if(curTimeout == -1) { // -2不存在, -1永久
+			redisTemplate.expireAt(key, date);
 		}
 	}
 	public void hdel(String key, String hkey) {
