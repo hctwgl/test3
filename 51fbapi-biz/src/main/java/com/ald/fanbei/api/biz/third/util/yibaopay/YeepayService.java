@@ -28,6 +28,7 @@ public class YeepayService {
 	public static final String REFUNDQUERY_URL = "refundQueryURI";
 	public static final String MULTIORDERQUERY_URL = "multiOrderQueryURI";
 	public static final String ORDERCLOSE_URL = "orderCloseURI";
+	public static final String CASHIER_URL ="CASHIER";
 	
 	//接口参数
 	public static final String[] TRADEORDER = {"parentMerchantNo","merchantNo","orderId","orderAmount","timeoutExpress","requestDate","redirectUrl","notifyUrl","goodsParamExt","paymentParamExt","industryParamExt","memo","riskParamExt","csUrl"};
@@ -83,11 +84,17 @@ public class YeepayService {
 			String name = params[i];
 //			System.out.println("name:"+name);
 //			System.out.println("paramValue:"+paramValues.get(name));
-			String value = URLEncoder.encode(paramValues.get(name),"UTF-8");
+			String value =null;
+			if(paramValues.get(name) !=null) {
+				value = URLEncoder.encode(paramValues.get(name), "UTF-8");
+			}
 			if(i != 0){
 				stringBuilder.append("&");
 			}
-			stringBuilder.append(name+"=").append(value);
+			stringBuilder.append(name+"=");
+			if(value!=null){
+				stringBuilder.append(value);
+			}
 		}
 		System.out.println(stringBuilder);
 		String sign = getSign(stringBuilder.toString());

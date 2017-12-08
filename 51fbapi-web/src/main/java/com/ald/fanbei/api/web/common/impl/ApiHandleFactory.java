@@ -26,6 +26,8 @@ public class ApiHandleFactory {
     Map<String,ApiHandle>  apiHandleMap;
     @Resource
     List<String> beforeLoginApiList ;
+    @Resource
+    List<String> abTestHandleList;
 
     public ApiHandle getApiHandle(String method){
         if(StringUtils.isBlank(method)){
@@ -40,7 +42,7 @@ public class ApiHandleFactory {
      * @return true:登录之前的方法  false:登录之后的方法
      */
     public boolean checkBeforlogin(String method){
-        if(apiHandleMap.get(method) == null){
+        if(apiHandleMap.get(method) == null && !abTestHandleList.contains(method)){
             throw new FanbeiException("request method not exist", FanbeiExceptionCode.REQUEST_PARAM_METHOD_NOT_EXIST);
         }
         if(beforeLoginApiList != null && beforeLoginApiList.contains(method)){
