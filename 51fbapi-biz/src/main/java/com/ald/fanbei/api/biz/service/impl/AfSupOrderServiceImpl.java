@@ -199,7 +199,7 @@ public class AfSupOrderServiceImpl extends ParentServiceImpl<AfSupOrderDo, Long>
 		    afOrder.setGoodsName(supGameDo.getName());
 		    afOrder.setGoodsId(goodsId);
 		    afOrder.setOrderType(OrderType.BOLUOME.getCode());
-		    afOrder.setOrderNo(generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT));
+		    afOrder.setOrderNo(generatorClusterNo.getOrderNo(OrderType.BOLUOME));
 		    afOrder.setThirdOrderNo(afOrder.getOrderNo());
 		    afOrder.setCount(1);
 		    afOrder.setUserCouponId(couponId);
