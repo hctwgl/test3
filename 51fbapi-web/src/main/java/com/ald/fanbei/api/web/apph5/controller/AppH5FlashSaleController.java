@@ -145,7 +145,7 @@ public class AppH5FlashSaleController extends BaseController {
 			if(null == total){
 				goodsInfo.put("total",count);
 			}else{
-				goodsInfo.put("total",total+volume+count);
+				goodsInfo.put("total",total+Integer.parseInt(String.valueOf(goodsInfo.get("volume"))));
 			}
 			AfSchemeGoodsDo schemeGoodsDo = null;
 			try {
