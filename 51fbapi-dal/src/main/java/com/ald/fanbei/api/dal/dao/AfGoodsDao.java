@@ -85,4 +85,8 @@ public interface AfGoodsDao {
 	List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query);
 
 	List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query);
+	List<AfGoodsDo> getGoodsByCategoryId(Long categoryId);
+
+	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
+
 }
