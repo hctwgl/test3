@@ -76,7 +76,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 	@RequestMapping(value = "/getFlashSaleGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String GetFlashSaleGoods(HttpServletRequest request) {
+	public String GetFlashSaleGoods(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = null;
 		Map<String,Object> data = new HashMap<String,Object>();
  		List<Object> topBannerList = new ArrayList<Object>();
