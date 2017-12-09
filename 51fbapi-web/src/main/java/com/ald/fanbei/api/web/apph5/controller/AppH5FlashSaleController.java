@@ -135,17 +135,17 @@ public class AppH5FlashSaleController extends BaseController {
 			}else{
 				count = 0;
 			}
-  			Integer total = afGoodsPriceService.selectSumStock(goodsId);
-			if(null == total){
-				goodsInfo.put("total",count);
-			}else{
-				goodsInfo.put("total",total+count);
-			}
  			Integer volume = afOrderService.selectSumCountByGoodsId(goodsId);
 			if(null == volume){
 				goodsInfo.put("volume",count);
 			}else{
 				goodsInfo.put("volume",volume+count);
+			}
+			Integer total = afGoodsPriceService.selectSumStock(goodsId);
+			if(null == total){
+				goodsInfo.put("total",count);
+			}else{
+				goodsInfo.put("total",total+count+Integer.parseInt(String.valueOf(goodsInfo.get("volume"))));
 			}
 			AfSchemeGoodsDo schemeGoodsDo = null;
 			try {
