@@ -97,8 +97,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 								+ riskResp.getConsumerNo() + ",poundageRate=" + poundage);
 						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage,
 								Constants.SECOND_OF_ONE_MONTH);
-						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId,
-								new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);
+						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(),
+								Constants.SECOND_OF_ONE_MONTH);
 					}
 				} catch (Exception e) {
 					logger.info(userId + "从风控获取分层用户额度失败：" + e);
@@ -107,7 +107,6 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		}
 		// 计算原始利率
 		BigDecimal oriRate = serviceRate.add(poundageRate);
-
 		// 查询新利率
 		BigDecimal newRate = BigDecimal.valueOf(0.36);
 

@@ -45,6 +45,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -59,6 +60,8 @@ import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -139,12 +142,11 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String couponId = ObjectUtils.toString(requestDataVo.getParams().get("couponId"));
-		
+
 		// 获取销售商品信息
 		String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
 		String goodsAmount = ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount"));
-		
 
 		if (StringUtils.isBlank(amountStr) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox)
@@ -422,6 +424,37 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		amountCurrentDay.setDay(day);
 		amountCurrentDay.setAmount(amount);
 		afBorrowCacheAmountPerdayService.updateBorrowCacheAmount(amountCurrentDay);
+	}
+
+	public AfBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(BigDecimal goodsAmount, String type, Long userId,
+			Long orderId, BigDecimal poundage, Long borrowId) {
+
+		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new AfBorrowLegalOrderCashDo();
+		afBorrowLegalOrderCashDo.setAmount(goodsAmount);
+		afBorrowLegalOrderCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type).getName());
+		afBorrowLegalOrderCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
+		afBorrowLegalOrderCashDo.setUserId(userId);
+		afBorrowLegalOrderCashDo.setPoundageRate(poundage);
+		afBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
+		afBorrowLegalOrderCashDo.setBorrowId(borrowId);
+		return afBorrowLegalOrderCashDo;
+	}
+
+	public AfBorrowLegalOrderDo buildBorrowLegalOrder(BigDecimal goodsAmount, Long userId, int currentDay,
+			Long orderId,  Long borrowId,Long goodsId,String goodsName,String address,String province,String city,String county) {
+
+		AfBorrowLegalOrderDo afBorrowLegalOrderDo = new AfBorrowLegalOrderDo();
+		afBorrowLegalOrderDo.setUserId(userId);
+		afBorrowLegalOrderDo.setBorrowId(borrowId);
+		afBorrowLegalOrderDo.setGoodsId(goodsId);
+		afBorrowLegalOrderDo.setPriceAmount(goodsAmount);
+		afBorrowLegalOrderDo.setGoodsName(goodsName);
+		afBorrowLegalOrderDo.setStatus(OrderStatus.NEW.getCode());
+		afBorrowLegalOrderDo.setAddress(address);
+		afBorrowLegalOrderDo.setProvince(province);
+		afBorrowLegalOrderDo.setCity(city);
+		afBorrowLegalOrderDo.setCounty(county);
+		return afBorrowLegalOrderDo;
 	}
 
 	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude,
