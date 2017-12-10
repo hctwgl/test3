@@ -427,7 +427,7 @@
 				<!-- 首页滚动条 -->
 				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
 				<!-- legalborrow -->
-				<entry key="/legalborrow/applyBorrowCash" value-ref="applyBorrowCashApi" />
+				<entry key="/legalborrow/applyBorrowCashV2" value-ref="applyBorrowCashV2Api" />
 
 			</map>
 		</constructor-arg>
