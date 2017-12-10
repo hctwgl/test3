@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalGoodsDo;
 
 /**
@@ -12,6 +16,6 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalGoodsDo;
  */
 public interface AfBorrowLegalGoodsDao extends BaseDao<AfBorrowLegalGoodsDo, Long> {
 
-    
+	Long getGoodsIdByProfitAmout(@Param("profitAmout")BigDecimal profitAmout);
 
 }

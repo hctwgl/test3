@@ -132,4 +132,17 @@
         <include refid="commonCondition"/>
     </select>
     
+     <select id="getGoodsIdByProfitAmout" resultType="java.lang.Long" >
+        SELECT
+        <include refid="queryFields" />
+        FROM af_borrow_legal_goods
+        WHERE
+        start_profit_amount >= #{profitAmout}
+        AND
+        #{profitAmout} > end_profit_amount
+        AND
+        is_delete = 0
+    </select>
+    
+    
 </mapper>

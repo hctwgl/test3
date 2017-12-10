@@ -80,8 +80,8 @@ import io.netty.util.internal.StringUtil;
  * @author suweili 2017年3月25日下午1:06:18
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("applyBorrowCashV2Api")
-public class ApplyBorrowCashV2Api extends GetBorrowCashBase implements ApiHandle {
+@Component("applyLegalBorrowCashApi")
+public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 
 	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
 
