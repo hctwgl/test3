@@ -237,15 +237,15 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
                 newMap.put("refId", map.get("refId"));
                 newMap.put("type", map.get("type"));
                 resp.setResponseData(newMap);
-                if (wxDo != null && wxDo.getValue().toLowerCase().equals("true")) {
-                    map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo);
-                    map.put("userNo", afUserAccountDo.getUserName());
-                    map.put("userType", "USER_ID");
-                    map.put("directPayType", "WX");
-                    resp.setResponseData(map);
-                } else {
-                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
-                }
+//                if (wxDo != null && wxDo.getValue().toLowerCase().equals("true")) {
+//                    map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo);
+//                    map.put("userNo", afUserAccountDo.getUserName());
+//                    map.put("userType", "USER_ID");
+//                    map.put("directPayType", "WX");
+//                    resp.setResponseData(map);
+//                } else {
+//                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+//                }
             }
         } catch (FanbeiException e) {
             logger.error("borrowbill repayment fail" + e);
