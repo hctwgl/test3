@@ -72,7 +72,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			throw new FanbeiException("borrowType can't be empty.");
 		}
 		BigDecimal borrowDay = BigDecimal.ZERO;
-		if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
+		if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
 			borrowDay = BigDecimal.valueOf(7);
 		} else {
 			borrowDay = BigDecimal.valueOf(14);
@@ -109,7 +109,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		BigDecimal oriRate = serviceRate.add(poundageRate);
 		// 查询新利率
 		BigDecimal newRate = BigDecimal.valueOf(0.36);
-
+		newRate = newRate.divide(BigDecimal.valueOf(360),6, RoundingMode.HALF_UP);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(new BigDecimal(borrowAmount)).multiply(borrowDay)
 				.divide(BigDecimal.valueOf(360));
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);

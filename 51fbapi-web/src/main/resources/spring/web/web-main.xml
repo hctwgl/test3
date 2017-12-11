@@ -428,7 +428,7 @@
 				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
 				<!-- legalborrow -->
 				<entry key="/legalborrow/applyLegalBorrowCash" value-ref="applyLegalBorrowCashApi" />
-
+				<entry key="/legalborrow/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoApi" />
 			</map>
 		</constructor-arg>
 	</bean>
