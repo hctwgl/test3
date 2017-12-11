@@ -104,7 +104,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		
+
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		// 获取当前环境
@@ -112,7 +112,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		
+
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getBannerObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
@@ -416,7 +416,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			if (gameResultList != null) {
 				takePartTime = gameResultList.size();
 			}
-			// 获取拆红包游戏信息 
+			// 获取拆红包游戏信息
 			AfGameDo gameDo = afGameService.getByCode("tear_packet");
 			Date gmtStart = gameDo.getGmtStart();
 			Date gmtEnd = gameDo.getGmtEnd();
@@ -450,7 +450,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			// 风控拒绝红包
 			AfGameDo riskPacketGameDo = afGameService.getByCode("risk_packet");
 			if (riskPacketGameDo != null) {
-				// 查询活动时间内是否有风控拒绝记录 
+				// 查询活动时间内是否有风控拒绝记录
 				Date gameStart = riskPacketGameDo.getGmtStart();
 				Date gameEnd = riskPacketGameDo.getGmtEnd();
 				List<AfBorrowCashDo> riskRefuseResultList = afBorrowCashService.getRiskRefuseBorrowCash(userId,

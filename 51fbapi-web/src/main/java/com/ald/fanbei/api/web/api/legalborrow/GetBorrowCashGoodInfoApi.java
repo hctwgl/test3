@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
+import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -25,6 +26,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -56,6 +58,9 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 	@Resource
 	private AfGoodsService afGoodsService;
 
+	@Resource
+	private AfGoodsPriceService afGoodsPriceService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -72,7 +77,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			throw new FanbeiException("borrowType can't be empty.");
 		}
 		BigDecimal borrowDay = BigDecimal.ZERO;
-		if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
+		if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
 			borrowDay = BigDecimal.valueOf(7);
 		} else {
 			borrowDay = BigDecimal.valueOf(14);
@@ -97,8 +102,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 								+ riskResp.getConsumerNo() + ",poundageRate=" + poundage);
 						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage,
 								Constants.SECOND_OF_ONE_MONTH);
-						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId,
-								new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);
+						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(),
+								Constants.SECOND_OF_ONE_MONTH);
 					}
 				} catch (Exception e) {
 					logger.info(userId + "从风控获取分层用户额度失败：" + e);
@@ -107,12 +112,17 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		}
 		// 计算原始利率
 		BigDecimal oriRate = serviceRate.add(poundageRate);
-
 		// 查询新利率
 		BigDecimal newRate = BigDecimal.valueOf(0.36);
-
+		newRate = newRate.divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(new BigDecimal(borrowAmount)).multiply(borrowDay)
 				.divide(BigDecimal.valueOf(360));
+
+		// 如果用户未登录，则利润空间为0
+		if (userId == null) {
+			profitAmount = BigDecimal.ZERO;
+		}
+
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
@@ -120,7 +130,17 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				respData.put("saleAmout", goodsInfo.getSaleAmount());
 				respData.put("goodsId", goodsId);
 				respData.put("goodsName", goodsInfo.getName());
+				respData.put("goodsIcon", goodsInfo.getGoodsIcon());
 			}
+			// 查询商品默认规格
+			AfGoodsPriceDo afGoodsProperty = afGoodsPriceService.getGoodsPriceByGoodsId(goodsId);
+			if (afGoodsProperty != null) {
+				String props = afGoodsProperty.getPropertyValueNames();
+				if (StringUtils.isNotEmpty(props)) {
+					String[] propsArray = props.split(";");
+					respData.put("goodsProperty", propsArray[0]);
+				}
+			} 
 		}
 		resp.setResponseData(respData);
 		return resp;

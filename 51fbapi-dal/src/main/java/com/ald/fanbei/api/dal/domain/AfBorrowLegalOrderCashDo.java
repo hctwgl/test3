@@ -256,9 +256,9 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取借款状态【APPLYING:审核中，AWAIT_POST:待入账，AWAIT_REPAY:待还款,PART_REPAID: 部分还款, FINISHED:已经结清,CLOSED:借款关闭】
+     * 获取借款状态【APPLYING:审核中，AWAIT_REPAY:待还款,PART_REPAID: 部分还款, FINISHED:已经结清,CLOSED:借款关闭】
      *
-     * @return 借款状态【APPLYING:审核中，AWAIT_POST:待入账，AWAIT_REPAY:待还款,PART_REPAID: 部分还款, FINISHED:已经结清,CLOSED:借款关闭】
+     * @return 借款状态【APPLYING:审核中，AWAIT_REPAY:待还款,PART_REPAID: 部分还款, FINISHED:已经结清,CLOSED:借款关闭】
      */
     public String getStatus(){
       return status;

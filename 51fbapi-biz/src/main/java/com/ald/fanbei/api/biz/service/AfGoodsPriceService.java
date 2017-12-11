@@ -15,4 +15,6 @@ public interface AfGoodsPriceService extends ParentService<AfGoodsPriceDo, Long>
 	int updateStockAndSaleByPriceId(Long priceId, boolean isSold);
 
 	List<AfGoodsPriceDo> getByGoodsId(Long goodsId);
+
+	AfGoodsPriceDo getGoodsPriceByGoodsId(Long goodsId);
 }

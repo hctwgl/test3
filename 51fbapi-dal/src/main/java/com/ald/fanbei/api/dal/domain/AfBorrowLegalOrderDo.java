@@ -55,7 +55,7 @@ import java.math.BigDecimal;
     /**
      * 对应商品订单
      */
-    private Integer goodsId;
+    private Long goodsId;
 
     /**
      * 订单价格
@@ -240,7 +240,7 @@ import java.math.BigDecimal;
      *
      * @return 对应商品订单
      */
-    public Integer getGoodsId(){
+    public Long getGoodsId(){
       return goodsId;
     }
 
@@ -249,7 +249,7 @@ import java.math.BigDecimal;
      * 
      * @param goodsId 要设置的对应商品订单
      */
-    public void setGoodsId(Integer goodsId){
+    public void setGoodsId(Long goodsId){
       this.goodsId = goodsId;
     }
 
