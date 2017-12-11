@@ -221,6 +221,14 @@ public class GetNperListApi implements ApiHandle {
                             }
                         }
                     }
+                    JSONObject objtemp12 = config.get("12");
+                    String up12 = objtemp12.getString("max");
+                    String down12 = objtemp12.getString("min");
+                    if(!("0".equals(up12) && "0".equals(down12))){
+                        if (new BigDecimal(up12).compareTo(totalamount)<0) {
+                            array.removeAll(array);
+                        }
+                    }
                     Iterator<Object> it = array.iterator();
                     while (it.hasNext()) {
                         JSONObject json = (JSONObject) it.next();
