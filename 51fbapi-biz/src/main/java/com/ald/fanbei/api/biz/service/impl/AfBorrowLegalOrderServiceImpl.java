@@ -1,14 +1,19 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 
 /**
  * ServiceImpl
@@ -26,11 +31,20 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 
 	@Resource
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
+	
+	@Resource
+	GeneratorClusterNo generatorClusterNo;
 
 	@Override
 	public BaseDao<AfBorrowLegalOrderDo, Long> getDao() {
 		return afBorrowLegalOrderDao;
 	}
 
-	
+	@Override
+	public int saveBorrowLegalOrder(AfBorrowLegalOrderDo afBorrowLegalOrderDo) {
+		String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
+		afBorrowLegalOrderDo.setOrderNo(orderCashNo);
+		return afBorrowLegalOrderDao.saveRecord(afBorrowLegalOrderDo);
+	}
+
 }
