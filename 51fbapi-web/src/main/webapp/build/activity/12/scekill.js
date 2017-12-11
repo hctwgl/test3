@@ -59,20 +59,25 @@ let vm=new Vue({
                 data:{pageNo:page},
                 success:function (data) {
                     data = eval('(' + data + ')');
-                    if(self.type===1){
-                        self.content.bannerList = data.data.BannerList;
-                    }
-                    self.content.goodsList = data.data.goodsList;
-                    console.log(self.content);
-                    finished=0;
-                    self.$nextTick(function(){
-                        let imgS=new Swiper ('.banner', {
-                            loop: true,
-                            autoplay : 4000,
-                            pagination: '.img-pagination',
+                    if(data.success){
+                        if(self.type===1){
+                            self.content.bannerList = data.data.BannerList;
+                        }
+                        self.content.goodsList = data.data.goodsList;
+                        console.log(self.content);
+                        finished=0;
+                        self.$nextTick(function(){
+                            let imgS=new Swiper ('.banner', {
+                                loop: true,
+                                autoplay : 4000,
+                                pagination: '.img-pagination',
 
-                        });
-                    })
+                            });
+                        })
+                    }else{
+                        window.location.href=data.url
+                    }
+
                 }
             });
         },
