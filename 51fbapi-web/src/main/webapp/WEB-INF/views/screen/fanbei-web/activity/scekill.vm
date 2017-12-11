@@ -41,7 +41,7 @@
                     </template>
                     <template v-else="type==2">
                         <span class="goodsRemindTxt">10:00准时开抢</span>
-                        <span @click="remind(data)" class="goodsRemindBtn">{{data.reserve=='Y'?'已预约':'提醒我'}}</span>
+                        <span @click="remind(data)" class="goodsRemindBtn">{{data.reserve=='Y'?'已预约':'立即预约'}}</span>
                     </template>
                 </div>
             </div>
