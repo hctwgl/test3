@@ -114,7 +114,7 @@ public class AppH5DoubleEggsController extends BaseController {
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
-			// TODO:get info from afResource;
+			// get info from afResource;
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS", "INI_HOME_PAGE");
 			if(afResourceDo != null){
 			    data.put("eggsPic", afResourceDo.getValue());
@@ -152,7 +152,7 @@ public class AppH5DoubleEggsController extends BaseController {
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			List<Map<String,Object>> firstCategoryList = new ArrayList<Map<String,Object>>();
 			
-			//TODO:get info from afResource;
+			//get info from afResource;
 			AfCategoryDo  afCategoryDo = new AfCategoryDo();
 			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
 			if(afCategoryDo != null){
@@ -257,9 +257,14 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
-	 * @Title: getOnSaleGoods @author qiwei @date 2017年12月7日
-	 * 下午2:04:40 @Description: 获得特卖商品（点击tap进行不同的跳转） @param request @param
-	 * response @return @return String @throws
+	 * @Title: getOnSaleGoods 
+	 * @author qiwei @date 2017年12月7日
+	 * 下午2:04:40 
+	 * @Description: 获得特卖商品（点击tap进行不同的跳转） 
+	 * @param request @param
+	 * response 
+	 * @return @return String 
+	 * @throws
 	 */
 	@RequestMapping(value = "/getOnSaleGoods")
 	public String getOnSaleGoods(HttpServletRequest request, HttpServletResponse response) {
@@ -267,13 +272,13 @@ public class AppH5DoubleEggsController extends BaseController {
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 
-			//TODO:get info from afResource;
+			
 			Long secondCategoryId = NumberUtil.objToLong(request.getParameter("secondCategoryId"));
 			if(secondCategoryId == null){
 			    return H5CommonResponse.getNewInstance(false, "参数异常", "", data).toString();
 			}
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-			//TODO:get info from afResource;
+			
 			AfCategoryDo  afCategoryDo = new AfCategoryDo();
 			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
 			if(afCategoryDo != null){
@@ -573,9 +578,8 @@ public class AppH5DoubleEggsController extends BaseController {
 
 				if (goodsDo != null) {
 
-					// TODO:get 10 minutes from afResource;
-					String time = "10";
-					int preTime = Integer.parseInt(time);
+					//String time = "10";
+					int preTime = 10;//Integer.parseInt(time);
 					Date now = new Date();
 
 					// if now + preTime >= goods start time then throw
