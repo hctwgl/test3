@@ -21,8 +21,9 @@ public enum OrderType {
 	BOLUOME("BOLUOME", "菠萝觅","BL"),
 	BOLUOMECP("BOLUOMECP", "菠萝觅组合","BL_CP"),
 	SELFSUPPORTCP("SELFSUPPORTCP", "自营商品订单组合","SG_CP"),
-
-    TRADE("TRADE", "商圈订单", "TR");
+    TRADE("TRADE", "商圈订单", "TR"),
+	
+	LEGAL("LEGAL", "借钱搭售商品订单","LG");
     
     private String code;
     private String name;
