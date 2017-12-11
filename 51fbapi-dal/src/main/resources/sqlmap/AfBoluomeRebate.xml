@@ -178,7 +178,7 @@
 			    WHERE
 			    o.user_id =  #{userId}
 			    AND o.`status` in ('FINISHED','REBATED')
-			    AND o.`gmt_create` > =
+			    AND o.`gmt_create` >=
 			    ( SELECT `gmt_create` from `af_boluome_rebate` WHERE user_id = #{user_id}		
 			        AND is_delete = 0
 			        ORDER BY gmt_create LIMIT 1)
