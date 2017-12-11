@@ -188,7 +188,7 @@
 			de.sort;
     </select>
     
-    <select id="isSubscribed" resultType="java.lang.Integer" parameterType="java.long.Long">
+    <select id="isSubscribed" resultType="java.lang.Integer" parameterType="java.lang.Long">
 	    SELECT
 			COUNT(1)
 		FROM
