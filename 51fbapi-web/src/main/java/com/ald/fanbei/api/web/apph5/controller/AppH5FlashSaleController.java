@@ -1,18 +1,15 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -25,10 +22,6 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -50,7 +43,7 @@ import java.util.*;
 @Controller
 @RequestMapping("/fanbei-web/activity")
 public class AppH5FlashSaleController extends BaseController {
-
+	String  opennative = "/fanbei-web/opennative?name=";
 	@Resource
 	AfUserService afUserService;
 	@Resource
@@ -76,7 +69,7 @@ public class AppH5FlashSaleController extends BaseController {
 
 	@RequestMapping(value = "/getFlashSaleGoods", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String GetFlashSaleGoods(HttpServletRequest request) {
+	public String GetFlashSaleGoods(HttpServletRequest request,HttpServletResponse response) {
 		H5CommonResponse resp = null;
 		Map<String,Object> data = new HashMap<String,Object>();
  		List<Object> topBannerList = new ArrayList<Object>();
@@ -135,17 +128,17 @@ public class AppH5FlashSaleController extends BaseController {
 			}else{
 				count = 0;
 			}
-  			Integer total = afGoodsPriceService.selectSumStock(goodsId);
-			if(null == total){
-				goodsInfo.put("total",count);
-			}else{
-				goodsInfo.put("total",total+count);
-			}
  			Integer volume = afOrderService.selectSumCountByGoodsId(goodsId);
 			if(null == volume){
 				goodsInfo.put("volume",count);
 			}else{
 				goodsInfo.put("volume",volume+count);
+			}
+			Integer total = afGoodsPriceService.selectSumStock(goodsId);
+			if(null == total){
+				goodsInfo.put("total",count);
+			}else{
+				goodsInfo.put("total",total+Integer.parseInt(String.valueOf(goodsInfo.get("volume"))));
 			}
 			AfSchemeGoodsDo schemeGoodsDo = null;
 			try {
@@ -287,13 +280,18 @@ public class AppH5FlashSaleController extends BaseController {
                 goodsList.add(goodsInfo);
             }
             data.put("goodsList",goodsList);
-            resp = H5CommonResponse.getNewInstance(true, "成功", "", data);
-        }catch (Exception e){
+			return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+        }catch(FanbeiException e){
+			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();
+			return H5CommonResponse
+					.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+					.toString();
+		}catch (Exception e){
             logger.error(e.getMessage(), e);
-            resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
+			return   H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
         }
 
-		return resp.toString();
+
 	}
 
 
@@ -371,6 +369,8 @@ public class AppH5FlashSaleController extends BaseController {
 		}
 	}
 
+
+
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
 		// TODO Auto-generated method stub
@@ -381,7 +381,7 @@ public class AppH5FlashSaleController extends BaseController {
         Long userId = null;
         if (!StringUtil.isBlank(userName)) {
             AfUserDo user = afUserService.getUserByUserName(userName);
-            if (user != null) {
+            if (null != user ) {
                 userId = user.getRid();
             }
 
