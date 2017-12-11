@@ -327,7 +327,7 @@ public class AppH5FlashSaleController extends BaseController {
             afUserGoodsSmsDo.setUserId(userId);
             afUserGoodsSmsDo.setIsDelete(0l);
             afUserGoodsSmsDo.setGoodsName(goodsName);
-            AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
+            AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectBookingByGoodsIdAndUserId(afUserGoodsSmsDo);
             if(null != afUserGoodsSms){
 				return  H5CommonResponse.getNewInstance(false, "商品已预约").toString();
             }
