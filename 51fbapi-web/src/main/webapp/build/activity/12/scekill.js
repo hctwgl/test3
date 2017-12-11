@@ -92,8 +92,8 @@ let vm=new Vue({
         },
         typeClick(type){
             this.type=type;
+            page=1;
             this.logData(1)
-
         },
         remind(data){
             if(data.reserve=='N'){
