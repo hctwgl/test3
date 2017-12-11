@@ -12,7 +12,7 @@
 <body>
     <div id="vueCon" v-cloak>
         <div class="banner">
-            <div class="swiper-wrapper">
+            <div :class="content.bannerList.length==1?'':'swiper-wrapper'">
                 <div class="swiper-slide" v-for="item of content.bannerList">
                     <a :href="item.content">
                         <img :src="item.imageUrl">
@@ -37,7 +37,7 @@
                     <p class="goodsTxt">月供{{data.nperMap.isFree==0?data.nperMap.amount:data.nperMap.freeAmount}}元起</p>
                     <template v-if="type==1">
                         <span class="goodsNum" :class="loading(data)==0?'goodsNumOver':''">已抢{{data.volume}}件<div class="shadow" :style="{width:loading(data)}"></div></span>
-                        <span class="goodsBtn" @click="goodsClick(data)" :class="loading(data)==0?'goodsBtnOver':''">马上抢</span>
+                        <span class="goodsBtn" @click="goodsClick(data)" :class="loading(data)==0?'goodsBtnOver':''">{{loading(data)==0?'已抢光':'马上抢'}}</span>
                     </template>
                     <template v-else="type==2">
                         <span class="goodsRemindTxt">10:00准时开抢</span>
