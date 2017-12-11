@@ -99,7 +99,8 @@ let vm=new Vue({
                     success:function (res) {
                         res = eval('(' + res + ')');
                         if(res.success){
-                            requestMsg('预约成功')
+                            requestMsg('预约成功');
+                            data.reserve='Y'
                         }else{
                             requestMsg('预约失败')
                         }
