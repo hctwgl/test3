@@ -107,7 +107,11 @@ let vm=new Vue({
                             requestMsg(res.msg);
                             data.reserve='Y'
                         }else{
-                            requestMsg(res.msg)
+                            if(res.msg=='登陆之后才能进行查看'){
+                                window.location.href=res.url
+                            }else {
+                                requestMsg(res.msg);
+                            }
                         }
                     }
                 })
