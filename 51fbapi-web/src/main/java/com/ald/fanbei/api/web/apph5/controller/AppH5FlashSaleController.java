@@ -207,7 +207,7 @@ public class AppH5FlashSaleController extends BaseController {
 		Map<String,Object> data = new HashMap<String,Object>();
         FanbeiWebContext context = new FanbeiWebContext();
         try{
-            context = doWebCheck(request,true);
+            context = doWebCheck(request,false);
             String userName = context.getUserName();
             Long userId = convertUserNameToUserId(userName);
             //商品展示
@@ -239,16 +239,20 @@ public class AppH5FlashSaleController extends BaseController {
                 goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
                 goodsInfo.put("goodsType", "0");
                 //是否预约
-                AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
+				if(null == userId){
+					goodsInfo.put("reserve","N");
+				}else{
+					AfUserGoodsSmsDo afUserGoodsSmsDo = new AfUserGoodsSmsDo();
 
-                afUserGoodsSmsDo.setGoodsId(goodsDo.getRid());
-                afUserGoodsSmsDo.setUserId(userId);
-                AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
-                if(null != afUserGoodsSms){
-                    goodsInfo.put("reserve","Y");
-                }else{
-                    goodsInfo.put("reserve","N");
-                }
+					afUserGoodsSmsDo.setGoodsId(goodsDo.getRid());
+					afUserGoodsSmsDo.setUserId(userId);
+					AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
+					if(null != afUserGoodsSms){
+						goodsInfo.put("reserve","Y");
+					}else{
+						goodsInfo.put("reserve","N");
+					}
+				}
                 // 如果是分期免息商品，则计算分期
                 Long goodsId = goodsDo.getRid();
                 AfSchemeGoodsDo schemeGoodsDo = null;
@@ -281,12 +285,7 @@ public class AppH5FlashSaleController extends BaseController {
             }
             data.put("goodsList",goodsList);
 			return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
-        }catch(FanbeiException e){
-			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();
-			return H5CommonResponse
-					.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
-					.toString();
-		}catch (Exception e){
+        }catch (Exception e){
             logger.error(e.getMessage(), e);
 			return   H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString()).toString();
         }
@@ -340,7 +339,12 @@ public class AppH5FlashSaleController extends BaseController {
 				return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
             }
 			return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
-        } catch (Exception e){
+        } catch(FanbeiException e){
+			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+ H5OpenNativeType.AppLogin.getCode();
+			return H5CommonResponse
+					.getNewInstance(false, "登陆之后才能进行查看", notifyUrl,null )
+					.toString();
+		}catch (Exception e){
             logger.error(e.getMessage(), e);
 			return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
         }
