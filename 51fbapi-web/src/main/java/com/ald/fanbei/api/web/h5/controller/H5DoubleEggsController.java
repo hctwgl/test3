@@ -27,9 +27,14 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsBuffer;
+import com.ald.fanbei.api.dal.domain.AfGoodsForSecondKill;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.GoodsForDate;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
@@ -74,11 +79,9 @@ public class H5DoubleEggsController extends H5Controller {
 	@RequestMapping(value = "/initCoupons", method = RequestMethod.POST)
 	public String couponHomePage(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		FanbeiWebContext context = new FanbeiWebContext();
 		String result = "";
 
 		try {
-			context = doWebCheck(request, false);
 
 			// 未登录初始化数据
 			String tag = "_DOUBLE_EGGS_";
@@ -159,4 +162,61 @@ public class H5DoubleEggsController extends H5Controller {
 		return result;
 	}
 
+	
+	@RequestMapping(value = "/getSecondKillGoodsList")
+	public String getSecondKillGoodsList(HttpServletRequest request, HttpServletResponse response) {
+		String result = "";
+		try {
+
+			Date now = new Date() ;
+			
+			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
+			
+			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
+			if (CollectionUtil.isNotEmpty(dateList)) {
+				
+				log = log + String.format("middle params dateList.size() = %s", dateList.size());
+				logger.info(log);
+				
+				AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
+				List<AfGoodsBuffer> goodsList = new ArrayList<>();
+				
+				for (Date startDate : dateList) {
+					
+					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate);
+					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
+						
+						AfGoodsBuffer goodsBuffer = new AfGoodsBuffer();
+						
+					
+						
+						log = log + String.format("goodsListForDate=%s ,startDate = %s",goodsListForDate.toString() ,startDate);
+						logger.info(log);
+						
+						goodsBuffer.setStartTime(startDate);
+						goodsBuffer.setGoodsListForDate(goodsListForDate);
+						
+					}
+				}
+				
+				java.util.Map<String, Object> data = new HashMap<>();
+				
+				log = log + String.format("goodsList = %s",goodsList.toString());
+				logger.info(log);
+				
+				afGoodsForSecondKill.setGoodsList(goodsList);
+				afGoodsForSecondKill.setServiceDate(new Date());
+				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+
+				
+			}
+			result = H5CommonResponse.getNewInstance(false, "初始化失败").toString();
+
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+		}
+		return result;
+	}
 }
