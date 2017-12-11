@@ -20,6 +20,7 @@ import com.ald.fanbei.api.web.vo.BoluomeConfirmOrderVo;
 import com.ald.fanbei.api.web.vo.CashierTypeVo;
 import com.ald.fanbei.api.web.vo.CashierVo;
 import com.ald.fanbei.api.web.vo.ConfirmOrderVo;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
@@ -69,6 +70,8 @@ public class StartCashierApi implements ApiHandle {
     AfBorrowCashService afBorrowCashService;
     @Resource
     AfCheckoutCounterService afCheckoutCounterService;
+    @Resource
+    GetNperListApi getNperListApi;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -297,6 +300,11 @@ public class StartCashierApi implements ApiHandle {
      */
     private CashierTypeVo canCredit(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter) {
         if (StringUtil.isEmpty(checkoutCounter.getCreditStatus()) || checkoutCounter.getCreditStatus().equals(YesNoStatus.NO.getCode())) {
+            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
+        }
+        //分期金额限制
+        String nper = getNperListApi.checkMoneyLimit(new JSONArray(),orderInfo.getOrderType(),orderInfo.getActualAmount());
+        if ("0".equals(nper)) {
             return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
         }
         AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(orderInfo.getUserId());
