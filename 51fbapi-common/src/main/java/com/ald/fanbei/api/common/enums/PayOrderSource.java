@@ -16,7 +16,12 @@ public enum PayOrderSource {
 	BORROWCASH("BORROWCASH","借钱"),
 	REPAYMENTCASH("REPAYMENTCASH","借钱还款"),
 	RENEWAL_PAY("RENEWAL_PAY", "续期支付"),
-	REPAYMENT("REPAYMENT","还款");
+	REPAYMENT("REPAYMENT","还款"),
+	
+	// 合规
+	REPAY_CASH_LEGAL("REPAY_CASH_LEGAL", "合规借钱还款"),
+	REPAY_ORDER_LEGAL("REPAY_ORDER_LEGAL", "合规订单还款");
+	
 
 	public String code;
 	public String name;
