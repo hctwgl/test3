@@ -498,8 +498,14 @@ public class AppH5DoubleEggsController extends BaseController {
 			context = doWebCheck(request, false);
 
 			Date now = new Date() ;
+			
+			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
+			
 			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
 			if (CollectionUtil.isNotEmpty(dateList)) {
+				
+				log = log + String.format("middle params dateList.size() = %s", dateList.size());
+				logger.info(log);
 				
 				AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
@@ -513,6 +519,7 @@ public class AppH5DoubleEggsController extends BaseController {
 						
 						// if this user has already login in then add status to goods. goodsListForDate
 						String userName = context.getUserName();
+						
 						long userId = 0L;
 						if (StringUtil.isNotBlank(userName) && convertUserNameToUserId(userName) != null) {
 							for(GoodsForDate goodsForDate :goodsListForDate){
@@ -520,12 +527,18 @@ public class AppH5DoubleEggsController extends BaseController {
 								// change status according to different users(change the status for goodsListForDate)
 								int num = afGoodsDoubleEggsUserService.isSubscribed(userId,goodsForDate.getDoubleGoodsId());
 								
-									//only to make sure if this user has already subscribed this goods
+								log = log + String.format("num = %s",num);
+								logger.info(log);
+								
+								//only to make sure if this user has already subscribed this goods
 								if (now.before(startDate) && num > 0 ) {
 									goodsForDate.setStatus(1);
 								}
 							}
 						}
+						
+						log = log + String.format("goodsListForDate=%s, userName = %s,startDate = %s",goodsListForDate.toString(), userName,startDate);
+						logger.info(log);
 						
 						goodsBuffer.setStartTime(startDate);
 						goodsBuffer.setGoodsListForDate(goodsListForDate);
@@ -534,6 +547,9 @@ public class AppH5DoubleEggsController extends BaseController {
 				}
 				
 				java.util.Map<String, Object> data = new HashMap<>();
+				
+				log = log + String.format("goodsList = %s",goodsList.toString());
+				logger.info(log);
 				
 				afGoodsForSecondKill.setGoodsList(goodsList);
 				afGoodsForSecondKill.setServiceDate(new Date());
@@ -568,14 +584,24 @@ public class AppH5DoubleEggsController extends BaseController {
 		String result = "";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
+			
+			String log = "/appH5DoubleEggs/subscribe";
+			
 			context = doWebCheck(request, true);
 			if (context != null) {
 				Long userId = convertUserNameToUserId(context.getUserName());
 				java.util.Map<String, Object> data = new HashMap<>();
 
 				Long goodsId = NumberUtil.objToLong(request.getParameter("goodsId"));
+				
+				log = log + String.format("goodsId = %s",goodsId);
+				logger.info(log);
+				
 				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 
+				log = log + String.format("goodsDo = %s",goodsDo.toString());
+				logger.info(log);
+				
 				if (goodsDo != null) {
 
 					//String time = "10";
@@ -604,6 +630,9 @@ public class AppH5DoubleEggsController extends BaseController {
 					userDo.setIsOrdered(1);
 					userDo.setUserId(userId);
 
+					log = log + String.format("afGoodsDoubleEggsUserDo for saving = %s",userDo.toString());
+					logger.info(log);
+					
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
 
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
