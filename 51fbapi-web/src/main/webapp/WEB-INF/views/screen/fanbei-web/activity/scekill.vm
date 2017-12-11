@@ -31,7 +31,7 @@
                 <img :src="data.goodsIcon">
                 <div class="goodsInfo">
                     <p class="goodsName">{{data.goodName}}</p>
-                    <span class="goodsPrice">￥{{data.priceAmount}}</span>
+                    <span class="goodsPrice">￥{{data.saleAmount}}</span>
                     <span class="goodsFan">返</span>
                     <span class="goodsRebate">￥{{data.rebateAmount}}</span>
                     <p class="goodsTxt">月供{{data.nperMap.isFree==0?data.nperMap.amount:data.nperMap.freeAmount}}元起</p>
