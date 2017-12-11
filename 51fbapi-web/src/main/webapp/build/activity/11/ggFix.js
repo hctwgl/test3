@@ -22,7 +22,7 @@ let vm = new Vue({
     el: '#ggFix',
     data: {
         content: {},
-        ruleShow:false,
+        ruleShow:'',
         couponCont:{},
         firstTitle:'',
         firstValue:'',
@@ -30,7 +30,7 @@ let vm = new Vue({
         secondValue:'',
         myRebateMoney:'',
         alertData:'',
-        alertShow:false
+        alertShow:''
     },
     created: function () {
         this.logData();
@@ -261,6 +261,9 @@ let vm = new Vue({
         },
         //领取188元页面scroll到我的场景
         toGetClick(){
+            let self=this;
+            $('.toast').hide();
+            self.alertShow=false;
             $('html,body').animate({scrollTop: $('.fourthCont').offset().top}, 800);
         },
         //点击活动规则
