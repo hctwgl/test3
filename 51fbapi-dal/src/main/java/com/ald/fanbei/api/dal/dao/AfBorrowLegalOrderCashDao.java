@@ -12,6 +12,9 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
  */
 public interface AfBorrowLegalOrderCashDao extends BaseDao<AfBorrowLegalOrderCashDo, Long> {
 
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowLegalOrderId(
+			Long rid);
+
     
 
 }
