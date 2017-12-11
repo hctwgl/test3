@@ -161,26 +161,31 @@
 			LIMIT 0,1;
     </select>
     <select id="getRebateList" parameterType="java.lang.Long"  resultType="com.ald.fanbei.api.dal.domain.AfRebateDo">
-		SELECT s.name as consumeScene, tt.surpriseRebate,date_format(tt.consumeTime, '%Y-%m-%d') as consumeTime,tt.sceneRebate
-					FROM af_shop s 
-					INNER JOIN 
-					(
-					SELECT br.rebate_amount as surpriseRebate ,o.gmt_create as consumeTime,o.rebate_amount as sceneRebate,
-					IF (
-						o.sec_type = 'HUAFEI'
-						OR o.sec_type = 'LIULIANG',
-						'CHONGZHI',
-						o.sec_type
-					) as type 
-					FROM
-					af_order o  
-					LEFT JOIN af_boluome_rebate br ON  o.id = br.order_id AND o.is_delete = 0 and br.is_delete = 0
-					WHERE
-						o.user_id = #{userId}
-						AND o.`status` in ('FINISHED','REBATED')
-					) as tt 
-					on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
-				ORDER BY consumeTime desc , sceneRebate DESC;
+			SELECT s.name as consumeScene, tt.surpriseRebate,date_format(tt.consumeTime, '%Y-%m-%d') as consumeTime,tt.sceneRebate
+			FROM af_shop s 
+			INNER JOIN 
+			(
+			    SELECT br.rebate_amount as surpriseRebate ,o.gmt_create as consumeTime,o.rebate_amount as sceneRebate,
+			    IF (
+			        o.sec_type = 'HUAFEI'
+			        OR o.sec_type = 'LIULIANG',
+			        'CHONGZHI',
+			        o.sec_type
+			    ) as type 
+			    FROM
+			    af_order o  
+			    LEFT JOIN af_boluome_rebate br ON  o.id = br.order_id AND o.is_delete = 0 and br.is_delete = 0
+			    WHERE
+			    o.user_id =  #{userId}
+			    AND o.`status` in ('FINISHED','REBATED')
+			    AND o.`gmt_create` > 
+			    ( SELECT `gmt_create` from `af_boluome_rebate` WHERE user_id = #{user_id}		
+			        AND is_delete = 0
+			        ORDER BY gmt_create LIMIT 1)
+			) as tt 
+			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
+			ORDER BY consumeTime desc , sceneRebate DESC;
+
     </select>
      <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
         SELECT
