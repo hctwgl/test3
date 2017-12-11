@@ -34,5 +34,10 @@ public class AfUserGoodsSmsServiceImpl implements AfUserGoodsSmsService {
 	public int insertByGoodsIdAndUserId(AfUserGoodsSmsDo afUserGoodsSmsDo){
 		return afUserGoodsSmsDao.insertByGoodsIdAndUserId(afUserGoodsSmsDo);
 	}
+
+	@Override
+	public AfUserGoodsSmsDo selectBookingByGoodsIdAndUserId(AfUserGoodsSmsDo afUserGoodsSmsDo){
+		return afUserGoodsSmsDao.selectBookingByGoodsIdAndUserId(afUserGoodsSmsDo);
+	}
 	
 }

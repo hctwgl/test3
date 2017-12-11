@@ -329,22 +329,22 @@ public class AppH5FlashSaleController extends BaseController {
             afUserGoodsSmsDo.setGoodsName(goodsName);
             AfUserGoodsSmsDo afUserGoodsSms = afUserGoodsSmsService.selectByGoodsIdAndUserId(afUserGoodsSmsDo);
             if(null != afUserGoodsSms){
-                throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_BEEN_RESERVED);
+				return  H5CommonResponse.getNewInstance(false, "商品已预约").toString();
             }
             try{
                 int flag = afUserGoodsSmsService.insertByGoodsIdAndUserId(afUserGoodsSmsDo);
                 if(flag <= 0){
-                    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+					return H5CommonResponse.getNewInstance(false, "预约失败").toString();
                 }
             }catch (Exception e){
-                throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+				return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
             }
-             resp = H5CommonResponse.getNewInstance(true, "成功", "", goodsId);
+			return H5CommonResponse.getNewInstance(true, "设置提醒成功，商品开抢后将通过短信通知您", "", goodsId).toString();
         } catch (Exception e){
             logger.error(e.getMessage(), e);
-            resp = H5CommonResponse.getNewInstance(false, "请求失败，错误信息" + e.toString());
+			return H5CommonResponse.getNewInstance(false, "预约失败" + e.toString()).toString();
         }
-        return resp.toString();
+
 	}
 
 	@Override
