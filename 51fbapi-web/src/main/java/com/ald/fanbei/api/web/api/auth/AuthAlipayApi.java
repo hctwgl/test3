@@ -53,7 +53,7 @@ public class AuthAlipayApi implements ApiHandle {
 			}
 		}
 		//只对强风控认证通过的打开
-		if(afResource.getValue2().equals(YesNoStatus.YES.getCode())&&!afUserAuthDo.getRiskStatus().equals(YesNoStatus.YES.getCode())){
+		if(afResource.getValue2().equals(YesNoStatus.YES.getCode())&&!afUserAuthDo.getBasicStatus().equals(YesNoStatus.YES.getCode())){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
 		}
 

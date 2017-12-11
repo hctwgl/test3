@@ -71,7 +71,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 		String passwordSrc = ObjectUtils.toString(requestDataVo.getParams().get("password"));
 		String verifyCode = ObjectUtils.toString(requestDataVo.getParams().get("verifyCode"));
 		String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), null);
-		String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);
+		String recommendCode = ObjectUtils.toString(requestDataVo.getParams().get("recommendCode"), null);//邀请码
 		String registerChannelPointId = ObjectUtils.toString(requestDataVo.getParams().get("channelPointId"), null);
 
 		//风控可信异步通知
