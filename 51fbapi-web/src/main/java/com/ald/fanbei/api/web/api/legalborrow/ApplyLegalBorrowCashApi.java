@@ -291,9 +291,9 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 					new BigDecimal(goodsAmount), type, userId, 0l, BigDecimal.ZERO, 0l, BigDecimal.ZERO, borrowRemark,
 					refundRemark);
 
-			BorrowInfo borrowInfo = transactionTemplate.execute(new TransactionCallback<BorrowInfo>() {
+			Long borrowId = transactionTemplate.execute(new TransactionCallback<Long>() {
 				@Override
-				public BorrowInfo doInTransaction(TransactionStatus arg0) {
+				public Long doInTransaction(TransactionStatus arg0) {
 					afBorrowCashService.addBorrowCash(afBorrowCashDo);
 					Long borrowId = afBorrowCashDo.getRid();
 					afBorrowLegalOrderDo.setBorrowId(borrowId);
@@ -303,15 +303,14 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 					afBorrowLegalOrderDo.setBorrowId(borrowId);
 					afBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
 					afBorrowLegalOrderCashService.saveBorrowLegalOrderCash(afBorrowLegalOrderCashDo);
-					return new BorrowInfo(borrowId, orderId, afBorrowLegalOrderCashDo.getRid());
+					return borrowId;
 				}
 			});
 			// 生成借款信息失败
-			if (borrowInfo == null) {
+			if (borrowId == null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ADD_BORROW_CASH_INFO_FAIL);
 			}
 
-			Long borrowId = borrowInfo.getBorrowId();
 
 			// 借过款的放入缓存，借钱按钮不需要高亮显示
 			bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));
@@ -512,7 +511,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new AfBorrowLegalOrderCashDo();
 		afBorrowLegalOrderCashDo.setAmount(goodsAmount);
 		afBorrowLegalOrderCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type).getName());
-		afBorrowLegalOrderCashDo.setStatus(AfBorrowCashStatus.apply.getCode());
+		afBorrowLegalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.APPLYING.getCode());
 		afBorrowLegalOrderCashDo.setUserId(userId);
 		afBorrowLegalOrderCashDo.setPoundageRate(poundage);
 		afBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
@@ -532,7 +531,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowLegalOrderDo.setGoodsId(goodsId);
 		afBorrowLegalOrderDo.setPriceAmount(goodsAmount);
 		afBorrowLegalOrderDo.setGoodsName(goodsName);
-		afBorrowLegalOrderDo.setStatus(OrderStatus.NEW.getCode());
+		afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
 		afBorrowLegalOrderDo.setAddress(address);
 		afBorrowLegalOrderDo.setProvince(province);
 		afBorrowLegalOrderDo.setCity(city);
@@ -658,29 +657,4 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		}
 	}
 
-	private static class BorrowInfo {
-		private Long borrowId;
-		private Long orderId;
-		private Long orderBorrowId;
-
-		public BorrowInfo(Long borrowId, Long orderId, Long orderBorrowId) {
-			super();
-			this.borrowId = borrowId;
-			this.orderId = orderId;
-			this.orderBorrowId = orderBorrowId;
-		}
-
-		public Long getBorrowId() {
-			return borrowId;
-		}
-
-		public Long getOrderId() {
-			return orderId;
-		}
-
-		public Long getOrderBorrowId() {
-			return orderBorrowId;
-		}
-
-	}
 }

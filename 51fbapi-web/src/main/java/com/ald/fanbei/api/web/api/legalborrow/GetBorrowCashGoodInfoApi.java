@@ -117,6 +117,12 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		newRate = newRate.divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(new BigDecimal(borrowAmount)).multiply(borrowDay)
 				.divide(BigDecimal.valueOf(360));
+
+		// 如果用户未登录，则利润空间为0
+		if (userId == null) {
+			profitAmount = BigDecimal.ZERO;
+		}
+
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
@@ -134,9 +140,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 					String[] propsArray = props.split(";");
 					respData.put("goodsProperty", propsArray[0]);
 				}
-			} else {
-				respData.put("goodsProperty", "无");
-			}
+			} 
 		}
 		resp.setResponseData(respData);
 		return resp;
