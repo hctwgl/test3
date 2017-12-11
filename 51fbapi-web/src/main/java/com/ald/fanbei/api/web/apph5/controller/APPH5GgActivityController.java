@@ -443,7 +443,9 @@ public class APPH5GgActivityController extends BaseController {
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "HOME_PAGE_INFO");
 			AfResourceDo resourceInfo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "HOME_PAGE_RULE");
 			log = log + String.format("middle business params: resourceDo = %s", resourceDo.toString());
+			
 			logger.info(log);
+			logger.info("/h5GgActivity/homePage resourceInfo = {}",resourceInfo);
 			Map<String, Object> data = new HashMap<>();
 			if (resourceDo != null) {
 				// if the user has not login
@@ -475,6 +477,7 @@ public class APPH5GgActivityController extends BaseController {
 						if (userId != null) {
 							
 							AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
+							logger.info("/h5GgActivity/homePage do1 = {}",do1);
 							if(do1 != null){
 								String startTime = do1.getValue();
 								if (StringUtil.isNotBlank(startTime)) {
@@ -482,6 +485,7 @@ public class APPH5GgActivityController extends BaseController {
 								List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
 								rebateList = afBoluomeRebateService.getListByUserId(userId);
 								// the status of items
+								logger.info("/h5GgActivity/homePage rebateList = {}",rebateList);
 								List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
 								if (cardsList != null && cardsList.size() > 0) {
 									cardList = cardsList;
@@ -489,7 +493,9 @@ public class APPH5GgActivityController extends BaseController {
 									cardList = convertItemsListToCardList(itemsList, true);
 								}
 								// the rebate stuff
+								logger.info("/h5GgActivity/homePage cardsList = {}",cardsList);
 								List<AfRebateDo> rebateeList = afBoluomeRebateService.getRebateList(userId,startTime);
+								logger.info("/h5GgActivity/homePage rebateeList = {}",rebateeList);
 								BigDecimal totalRebate = getTotalRebate(rebateeList);
 								data.put("totalRebate", totalRebate);
 								data.put("rebateList", rebateeList);
