@@ -67,6 +67,7 @@ public enum AfResourceSecType {
 		SMS_MOBILE_OPERATE_FAIL("SMS_MOBILE_OPERATE_FAIL","运营商认证异步失败通知用户"),
 		FUND_SIDE_BORROW_CASH_ONOFF("FUND_SIDE_BORROW_CASH_ONOFF", "打款时引入资金方配置开关"),
 		ASSET_SIDE_CONFIG_BANK_INFOS("ASSET_SIDE_CONFIG_BANK_INFOS", "资产方债权对应开户行信息配置"),
+		YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询限制配置"),
 		BORROW_CASH_AMOUNT_CHANNEL_ERROR("BORROW_CASH_AMOUNT_CHANNEL_ERROR","用户借钱时渠道包问题给用户的短信内容");
 		
 	 	private String code;

@@ -216,4 +216,9 @@ public interface AfBorrowCashDao {
 	 * @return
 	 */
 	AfUserBorrowCashOverdueInfoDto getOverdueInfoByUserId(@Param("userId") Long userId);
+	
+	/**
+	 * 宜信查询
+	 * */
+	List<AfBorrowCashDo> getListByUserId(@Param("userId")Long userId, @Param("rows")Long rows);
 }

@@ -216,10 +216,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
 			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-			/*if (returnAmount.compareTo(capital) <= 0) {
-				data.put("renewalStatus", "N");
-			}*/
-			if (returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
+			if (returnAmount.compareTo(capital) <= 0 || returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
 				data.put("renewalStatus", "N");
 			}
 		}
@@ -294,9 +291,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
 			data.put("maxAmount", resource.getValue());
 		}
-		if(YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) && !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
-		}
+//		if(YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) && !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())){
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
+//		}
 		/* 如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai */
 		BigDecimal setMaxAmount = new BigDecimal(resource.getValue());
 		if (setMaxAmount.compareTo(calculateMaxAmount(usableAmount)) < 0) {
