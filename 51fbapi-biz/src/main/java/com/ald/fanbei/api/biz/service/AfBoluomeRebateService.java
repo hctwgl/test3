@@ -22,7 +22,7 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 	Long getLightShopId(Long orderId);
 
-	List<AfRebateDo> getRebateList(Long userId);
+	List<AfRebateDo> getRebateList(Long userId,String startTime);
 	
 	AfBoluomeRebateDo getLastUserRebateByUserId(Long userId);
 

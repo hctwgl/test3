@@ -473,20 +473,30 @@ public class APPH5GgActivityController extends BaseController {
 					if (userName != null) {
 						Long userId = convertUserNameToUserId(userName);
 						if (userId != null) {
-							List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
-							rebateList = afBoluomeRebateService.getListByUserId(userId);
-							// the status of items
-							List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
-							if (cardsList != null && cardsList.size() > 0) {
-								cardList = cardsList;
-							} else {
-								cardList = convertItemsListToCardList(itemsList, true);
+							
+							AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
+							if(do1 != null){
+								String startTime = do1.getValue();
+								if (StringUtil.isNotBlank(startTime)) {
+									
+								List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
+								rebateList = afBoluomeRebateService.getListByUserId(userId);
+								// the status of items
+								List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
+								if (cardsList != null && cardsList.size() > 0) {
+									cardList = cardsList;
+								} else {
+									cardList = convertItemsListToCardList(itemsList, true);
+								}
+								// the rebate stuff
+								List<AfRebateDo> rebateeList = afBoluomeRebateService.getRebateList(userId,startTime);
+								BigDecimal totalRebate = getTotalRebate(rebateeList);
+								data.put("totalRebate", totalRebate);
+								data.put("rebateList", rebateeList);
+								}
 							}
-							// the rebate stuff
-							List<AfRebateDo> rebateeList = afBoluomeRebateService.getRebateList(userId);
-							BigDecimal totalRebate = getTotalRebate(rebateeList);
-							data.put("totalRebate", totalRebate);
-							data.put("rebateList", rebateeList);
+							
+							
 						}
 					}
 					Long shopId = afShopService.getWaiMainShopId();

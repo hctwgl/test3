@@ -220,8 +220,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	 * 下午3:59:30 @Description: @param userId @return @throws
 	 */
 	@Override
-	public List<AfRebateDo> getRebateList(Long userId) {
-		return afBoluomeRebateDao.getRebateList(userId);
+	public List<AfRebateDo> getRebateList(Long userId,String startTime) {
+		return afBoluomeRebateDao.getRebateList(userId,startTime);
 	}
 
 	@Override

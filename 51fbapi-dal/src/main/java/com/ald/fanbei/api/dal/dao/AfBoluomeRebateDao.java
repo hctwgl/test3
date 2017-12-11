@@ -27,7 +27,7 @@ public interface AfBoluomeRebateDao extends BaseDao<AfBoluomeRebateDo, Long> {
 
 	Long getLightShopId(@Param("orderId")Long orderId);
 
-	List<AfRebateDo> getRebateList(@Param("userId")Long userId);
+	List<AfRebateDo> getRebateList(@Param("userId")Long userId,@Param("startTime")String startTime);
 
 	String getScence(@Param("orderId")Long orderId);
 	
