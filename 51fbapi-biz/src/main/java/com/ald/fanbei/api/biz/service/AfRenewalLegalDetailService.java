@@ -8,6 +8,12 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 
+/**  
+ * @Description: 
+ * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
+ * @author yanghailong
+ * @date 2017年12月11日
+ */
 public interface AfRenewalLegalDetailService {
 
 	/**
@@ -21,5 +27,6 @@ public interface AfRenewalLegalDetailService {
 
 	public long dealLegalRenewalFail(final String outTradeNo, final String tradeNo,String errorMsg);
 
+	AfRenewalDetailDo getLastRenewalDetailByBorrowId(Long rid);
 
 }

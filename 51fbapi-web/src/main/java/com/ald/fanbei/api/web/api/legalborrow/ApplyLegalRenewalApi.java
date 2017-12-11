@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -64,6 +65,8 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
+	@Resource
+	AfRenewalLegalDetailService afRenewalLegalDetailService;
 	
 
 	@Override
@@ -155,7 +158,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		if(afBorrowCashDo.getRenewalNum()>0){
 			//续借过
 			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借钱手续费率（日）
-			AfRenewalDetailDo renewalDetail = afRenewalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
 		}else {
 			//未续借过
@@ -163,8 +166,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		}
 		
 		// 续借本金（总） 
-		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),
-													afBorrowCashDo.getSumRate(),afBorrowCashDo.getRateAmount(),borrowPoundage);
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),borrowPoundage);
 		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 		

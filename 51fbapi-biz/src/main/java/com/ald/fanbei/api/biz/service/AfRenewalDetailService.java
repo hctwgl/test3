@@ -64,5 +64,4 @@ public interface AfRenewalDetailService {
 
     AfRenewalDetailDo getRenewalDetailHoursByBorrowId(Long borrowId);
 
-	AfRenewalDetailDo getLastRenewalDetailByBorrowId(Long rid);
 }

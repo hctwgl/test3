@@ -508,9 +508,4 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		return afRenewalDetailDao.getRenewalDetailHoursByBorrowId(borrowId);
 	}
 
-	@Override
-	public AfRenewalDetailDo getLastRenewalDetailByBorrowId(Long rid) {
-		// TODO Auto-generated method stub
-		return afRenewalDetailDao.getLastRenewalDetailByBorrowId(rid);
-	}
 }

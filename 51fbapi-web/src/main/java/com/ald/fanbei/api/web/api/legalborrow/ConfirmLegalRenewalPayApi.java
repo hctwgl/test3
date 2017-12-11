@@ -230,7 +230,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		if(afBorrowCashDo.getRenewalNum()>0){
     			//续借过
     			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借钱手续费率（日）
-    			AfRenewalDetailDo renewalDetail = afRenewalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+    			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
     			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
     		}else {
     			//未续借过
@@ -238,8 +238,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		}
     		
     		// 续借本金（总） 
-    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),
-    													afBorrowCashDo.getSumRate(),afBorrowCashDo.getRateAmount(),borrowPoundage);
+    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),borrowPoundage);
     		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
     		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
     		
@@ -318,7 +317,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
     		BigDecimal repaymentAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital,orderAmount);
 
-            
     		//---------
     		
     		//fmf_add 续借由用户手动操作    end
