@@ -543,7 +543,7 @@ public class UpsUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
-		if(authSignResp != null && authSignResp.getTradeDate()!=null && (
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (
 				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
 			authSignResp.setSuccess(true);
 			return authSignResp;
