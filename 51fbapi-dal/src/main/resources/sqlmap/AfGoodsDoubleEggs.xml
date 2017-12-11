@@ -183,7 +183,7 @@
 		INNER JOIN af_goods g ON g.id = de.goods_id
 		WHERE
 			de.is_delete = 0
-		AND DATE(de.start_time) = #DATE(#{startDate})
+		AND DATE(de.start_time) = DATE(#{startDate})
 		ORDER BY
 			de.sort;
     </select>

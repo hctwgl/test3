@@ -529,16 +529,20 @@ public class AppH5DoubleEggsController extends BaseController {
 						
 						goodsBuffer.setStartTime(startDate);
 						goodsBuffer.setGoodsListForDate(goodsListForDate);
+						goodsList.add(goodsBuffer);
 						
 					}
+					afGoodsForSecondKill.setServiceDate(new Date());
+					afGoodsForSecondKill.setGoodsList(goodsList);
 				}
+				
 				
 				java.util.Map<String, Object> data = new HashMap<>();
 				
-				afGoodsForSecondKill.setGoodsList(goodsList);
-				afGoodsForSecondKill.setServiceDate(new Date());
+				data.put("goodsList", goodsList);
+				data.put("serviceDate", new Date());
 				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-
+				return result;
 				
 			}
 			result = H5CommonResponse.getNewInstance(false, "初始化失败").toString();
