@@ -20,5 +20,7 @@ public interface AfUserGoodsSmsService {
 	AfUserGoodsSmsDo selectByGoodsIdAndUserId(AfUserGoodsSmsDo afUserGoodsSmsDo);
 
 	int insertByGoodsIdAndUserId(AfUserGoodsSmsDo afUserGoodsSmsDo);
+
+	AfUserGoodsSmsDo selectBookingByGoodsIdAndUserId(AfUserGoodsSmsDo afUserGoodsSmsDo);
 	
 }

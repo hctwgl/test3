@@ -17,4 +17,6 @@ public interface AfUserGoodsSmsDao {
 
 	int insertByGoodsIdAndUserId(AfUserGoodsSmsDo afUserGoodsSmsDo);
 
+	AfUserGoodsSmsDo selectBookingByGoodsIdAndUserId(AfUserGoodsSmsDo afUserGoodsSmsDo);
+
 }
