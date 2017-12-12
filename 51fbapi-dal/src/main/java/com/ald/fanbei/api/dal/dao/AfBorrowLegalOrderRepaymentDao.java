@@ -24,4 +24,6 @@ public interface AfBorrowLegalOrderRepaymentDao extends BaseDao<AfBorrowLegalOrd
 	 * @return
 	 */
     int updateBorrowLegalOrderRepayment(AfBorrowLegalOrderRepaymentDo afBorrowLegalOrderRepaymentDo);
+    
+    AfBorrowLegalOrderRepaymentDo getLastByOrderId(Long orderId);
 }

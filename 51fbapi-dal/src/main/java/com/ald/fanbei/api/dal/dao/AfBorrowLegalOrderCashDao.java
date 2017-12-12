@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 
 /**
@@ -20,4 +21,6 @@ public interface AfBorrowLegalOrderCashDao extends BaseDao<AfBorrowLegalOrderCas
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(@Param("borrowId")Long borrowId);
 
 	AfBorrowLegalOrderCashDo getByOrderId(Long orderId);
+	
+	AfBorrowCashDo getRefBorrowCashByOrderId(Long orderId);
 }
