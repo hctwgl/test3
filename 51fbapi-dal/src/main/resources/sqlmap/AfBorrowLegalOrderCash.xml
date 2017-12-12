@@ -360,4 +360,18 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getBorrowLegalOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM af_borrow_legal_order_cash
+        where borrow_id = #{borrowId}
+        AND
+        is_delete = 0
+        AND
+        status 
+        IN ('AWAIT_REPAY','PART_REPAID')
+        LIMIT 1
+    </select>
+    
+    
 </mapper>

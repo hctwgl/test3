@@ -20,8 +20,11 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
@@ -52,8 +55,10 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfGameDo;
 import com.ald.fanbei.api.dal.domain.AfGameResultDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -66,6 +71,8 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfScrollbarVo;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 
 /**
@@ -107,6 +114,12 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 	AfRecommendUserService afRecommendUserService;
 	@Resource
 	RiskUtil riskUtil;
+	@Resource
+	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+	@Resource
+	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
+	@Resource 
+	AfGoodsService afGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -129,7 +142,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();
-		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
+		List<AfResourceDo> borrowHomeConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
 
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			bannerList = getBannerObjectWithResourceDolist(
@@ -147,7 +160,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
 
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
+		Map<String, Object> rate = getObjectWithResourceDolist(borrowHomeConfigList);
 
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String unfinished = YesNoStatus.NO.getCode();
@@ -157,13 +170,90 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
-		// 增加最低借款金额资源判断，如果额度低于这个，则显示借款超市
-		AfResourceDo borrowCashLimitAmountResource = afResourceService
-				.getSingleResourceBytype(Constants.RES_BORROW_CASH_LIMIT_AMOUNT);
-		BigDecimal borrowCashLimitAmount = borrowCashLimitAmountResource == null ? BigDecimal.ZERO
-				: new BigDecimal(borrowCashLimitAmountResource.getValue());
+		if (account == null) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+
+		// 获取后台配置的最大金额和最小金额
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
+				Constants.BORROW_CASH_INFO_LEGAL);
+		String strMinAmount = "0";
+		String strMaxAmount = "0";
+		if (rateInfoDo != null) {
+			strMinAmount = rateInfoDo.getValue4();
+			strMaxAmount = rateInfoDo.getValue1();
+		}
+
+		BigDecimal minAmount = new BigDecimal(strMinAmount);
+		BigDecimal maxAmount = new BigDecimal(strMaxAmount);
+
+		// 获取可用额度
 		BigDecimal usableAmount = account.getAuAmount().subtract(account.getUsedAmount());
 
+		// 计算最高借款金额
+		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
+		// FIXME 获取搭售商品价格
+		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
+		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
+		BigDecimal serviceRate = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
+		BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
+
+		if (userId != null) {
+			Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+			if (poundageRateCash != null) {
+				poundageRate = new BigDecimal(poundageRateCash.toString());
+			} else {
+				try {
+					RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+					String poundage = riskResp.getPoundageRate();
+					if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
+						logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="
+								+ riskResp.getConsumerNo() + ",poundageRate=" + poundage);
+						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage,
+								Constants.SECOND_OF_ONE_MONTH);
+						bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(),
+								Constants.SECOND_OF_ONE_MONTH);
+					}
+				} catch (Exception e) {
+					logger.info(userId + "从风控获取分层用户额度失败：" + e);
+				}
+			}
+		}
+		// 计算原始利率
+		BigDecimal oriRate = serviceRate.add(poundageRate);
+		
+		BigDecimal newRate = null;
+		if (rateInfoDo != null) {
+			String borrowRate = rateInfoDo.getValue2();
+			JSONArray array = JSONObject.parseArray(borrowRate);
+			double totalRate = 0;
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject info = array.getJSONObject(i);
+				String borrowTag = info.getString("borrowTag");
+				if (StringUtils.equals("INTEREST_RATE", borrowTag) || StringUtils.equals("SERVICE_RATE", borrowTag)) {
+					if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), "FOURTEEN")) {
+						double tmp = info.getDouble("borrowSevenDay");
+						totalRate += tmp;
+					} else {
+						double tmp = info.getDouble("borrowFourteenDay");
+						totalRate += tmp;
+					}
+				}
+			}
+			newRate = BigDecimal.valueOf(totalRate / 100);
+		} else {
+			newRate = BigDecimal.valueOf(0.36);
+		}
+
+		newRate = newRate.divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP);
+		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(maxAmount).multiply(BigDecimal.valueOf(14));
+		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
+		if (goodsId != null) {
+			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
+			BigDecimal saleAmount = goodsInfo.getSaleAmount();
+			maxAmount.subtract(saleAmount);
+		}
+		
 		// 增加判断，如果前面还有没有还的借款，优先还掉
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
 		if (afBorrowCashDo == null) {
@@ -178,7 +268,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 			} else if (!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())
-					&& usableAmount.compareTo(borrowCashLimitAmount) < 0
+					&& usableAmount.compareTo(minAmount) < 0
 					&& StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
 				inRejectLoan = YesNoStatus.YES.getCode();
 			}
@@ -186,8 +276,20 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("rebateAmount", account.getRebateAmount());
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
+			// FIXME +商品订单借款金额+逾期费
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
 					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+			// 查询借款相关商品借款,计算总还款金额
+			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
+					.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
+			if (afBorrowLegalOrderCash != null) {
+				BigDecimal overdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
+				BigDecimal repaidAmount = afBorrowLegalOrderCash.getRepaidAmount();
+				BigDecimal poundageAmount = afBorrowLegalOrderCash.getPoundageAmount();
+				BigDecimal interestAmount = afBorrowLegalOrderCash.getInterestAmount();
+				allAmount = allAmount.add(overdueAmount).add(poundageAmount).add(interestAmount).subtract(repaidAmount);
+			}
+			// FIXME 商品借款已还金额
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
@@ -229,7 +331,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
 				AfResourceDo amountResource = afResourceService
 						.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
-				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
+				BigDecimal amountLimit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
 
 				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(now,
 						afBorrowCashDo.getGmtPlanRepayment());
@@ -237,7 +339,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 						.add(afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
 				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0
-						&& waitPaidAmount.compareTo(amount_limit) >= 0) {
+						&& waitPaidAmount.compareTo(amountLimit) >= 0) {
 					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService
 							.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
 					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo
@@ -247,28 +349,22 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				}
 			}
 
-			// 计算待还本金6%
+			// 判断是否显示续借按钮
 			BigDecimal tmpAmount = afBorrowCashDo.getAmount().multiply(new BigDecimal(0.06));
 			tmpAmount = tmpAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) > 0 ? tmpAmount : BigDecimalUtil.ONE_HUNDRED;
 			if (returnAmount.compareTo(tmpAmount) < 0) {
 				data.put("renewalStatus", "N");
 			}
 		}
-		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
-		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
 
 		data.put("bankDoubleRate", bankService.toString());
 		data.put("overdueRate", rate.get("overduePoundage"));
-		data.put("maxAmount", calculateMaxAmount(usableAmount));
+		data.put("maxAmount", calculateMaxAmount(maxAmount));
 		data.put("minAmount", rate.get("minAmount"));
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
-
 		data.put("lender", rate.get("lender"));
 
-		if (account != null) {
-			data.put("maxAmount", calculateMaxAmount(usableAmount));
-		}
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 		AfBorrowCacheAmountPerdayDo currentAmount = afBorrowCacheAmountPerdayService.getSigninByDay(currentDay);
 		if (currentAmount == null) {
@@ -279,6 +375,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
+
+		// 是否放款总开关
 		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
 				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			data.put("canBorrow", "N");
@@ -324,26 +422,16 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
-				Constants.RES_BORROW_CASH_RANGE);
 		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
-		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
-			data.put("maxAmount", resource.getValue());
 		}
 		if (YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus())
 				&& !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
-		/* 如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai */
-		BigDecimal setMaxAmount = new BigDecimal(resource.getValue());
-		if (setMaxAmount.compareTo(calculateMaxAmount(usableAmount)) < 0) {
-			data.put("maxAmount", setMaxAmount);
-		}
 
 		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())
-				&& usableAmount.compareTo(borrowCashLimitAmount) < 0
-				&& StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
+				&& usableAmount.compareTo(minAmount) < 0 && StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 
@@ -376,16 +464,14 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			scrollbarVo = getAfScrollbarVo(resourceDo);
 		} else {
 			bannerResultList = bannerList;
-			if (context.getAppVersion() >= 377) {
-				List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");// 获取活动图片
-				if (recommend_imgs != null && recommend_imgs.size() > 0) {
-					for (AfResourceDo afResourceDo : recommend_imgs) {
-						Map<String, Object> map = Maps.newHashMap();
-						map.put("imageUrl", afResourceDo.getValue() + "?name=RECOMMEND_IMG");
-						map.put("titleName", afResourceDo.getName());
-						map.put("type", "RECOMMEND_IMG");
-						bannerResultList.add(0, map);
-					}
+			List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");// 获取活动图片
+			if (recommend_imgs != null && recommend_imgs.size() > 0) {
+				for (AfResourceDo afResourceDo : recommend_imgs) {
+					Map<String, Object> map = Maps.newHashMap();
+					map.put("imageUrl", afResourceDo.getValue() + "?name=RECOMMEND_IMG");
+					map.put("titleName", afResourceDo.getName());
+					map.put("type", "RECOMMEND_IMG");
+					bannerResultList.add(0, map);
 				}
 			}
 		}
@@ -475,6 +561,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
+
 		try {
 			// 用户点击借钱页面时去风控获取用户的借钱手续费
 			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
@@ -532,11 +619,18 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		data.put("poundageRate", rate.get("poundage"));
 		data.put("overdueRate", rate.get("overduePoundage"));
 
-		data.put("maxAmount", rate.get("maxAmount"));
-		data.put("minAmount", rate.get("minAmount"));
+		// 获取后台配置的最大金额和最小金额
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
+				Constants.BORROW_CASH_INFO_LEGAL);
+
+		String strMinAmount = rateInfoDo.getValue4();
+		String strMaxAmount = rateInfoDo.getValue1();
+
+		data.put("maxAmount", strMaxAmount);
+		data.put("minAmount", strMinAmount);
+
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 		data.put("lender", rate.get("lender"));
-
 		data.put("bannerList", bannerList);
 
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());

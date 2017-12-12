@@ -42,4 +42,9 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 		afBorrowLegalOrderCashDo.setCashNo(cashNo);
 		return afBorrowLegalOrderCashDao.saveRecord(afBorrowLegalOrderCashDo);
 	}
+
+	@Override
+	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long borrowId) {
+		return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(borrowId);
+	}
 }

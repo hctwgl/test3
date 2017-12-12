@@ -14,4 +14,6 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 
 	int saveBorrowLegalOrderCash(AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo);
 
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long rid);
+
 }

@@ -132,6 +132,8 @@
 
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
+				<value>/legalborrow/getBorrowCashGoodInfo</value>
+				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
 			</list>
 		</constructor-arg>
 	</bean>
