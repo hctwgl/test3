@@ -176,13 +176,14 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		}
 
 		// 判断用户借款金额是否在后台配置的金额范围内
-		AfResourceDo limitRangeResource = afResourceService.getConfigByTypesAndSecType(
-				AfResourceType.borrowRate.getCode(), AfResourceSecType.BorrowCashRange.getCode());
-		if (limitRangeResource != null) {
-			BigDecimal limitRangeStart = new BigDecimal(limitRangeResource.getValue1());
-			BigDecimal limitRangeEnd = new BigDecimal(limitRangeResource.getValue());
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
+				Constants.BORROW_CASH_INFO_LEGAL);
+		
+		if (rateInfoDo != null) {
+			BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
+			BigDecimal maxAmount = new BigDecimal(rateInfoDo.getValue1());
 			BigDecimal amount = new BigDecimal(amountStr);
-			if (amount.compareTo(limitRangeStart) < 0 || amount.compareTo(limitRangeEnd) > 0) {
+			if (amount.compareTo(minAmount) < 0 || amount.compareTo(maxAmount) > 0) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
 			}
 		}
@@ -311,7 +312,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ADD_BORROW_CASH_INFO_FAIL);
 			}
 
-
 			// 借过款的放入缓存，借钱按钮不需要高亮显示
 			bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));
 			AfBorrowCashDo cashDo = new AfBorrowCashDo();
@@ -420,7 +420,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 			String bankNumber = card.getCardNumber();
 			String lastBank = bankNumber.substring(bankNumber.length() - 4);
-
 			smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
 			// 审核通过
 			cashDo.setGmtArrival(currDate);
@@ -473,6 +472,10 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 			cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
+			// 更新订单状态
+			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
+			// 更新订单借款状态
+			afBorrowLegalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.CLOSED.getCode());
 			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
 		}
 		
@@ -567,6 +570,9 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		BigDecimal longitudeBig = NumberUtil.objToBigDecimalDefault(longitude, BigDecimal.ZERO);
 		BigDecimal rateAmount = BigDecimalUtil.multiply(serviceAmountDay, new BigDecimal(day));
 		BigDecimal poundageBig = BigDecimalUtil.multiply(poundageAmountDay, new BigDecimal(day));
+		
+		// 计算手续费和利息
+		
 
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
 		afBorrowCashDo.setAmount(amount);

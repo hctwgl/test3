@@ -254,6 +254,21 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			maxAmount.subtract(saleAmount);
 		}
 		
+		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
+		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(14));
+		Long tmpGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(minProfitAmount);
+		BigDecimal tmpLimitAmount = BigDecimal.ZERO;
+		if (tmpGoodsId != null) {
+			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(tmpGoodsId);
+			BigDecimal saleAmount = goodsInfo.getSaleAmount();
+			tmpLimitAmount = saleAmount.add(minAmount);
+		}
+		if(usableAmount.compareTo(tmpLimitAmount) >= 0) {
+			data.put("canBorrow", "Y");
+		} else {
+			data.put("canBorrow", "N");
+		}
+		
 		// 增加判断，如果前面还有没有还的借款，优先还掉
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
 		if (afBorrowCashDo == null) {
@@ -380,9 +395,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
 				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			data.put("canBorrow", "N");
-		} else {
-			data.put("canBorrow", "Y");
-		}
+		} 
 		BigDecimal nums = new BigDecimal((String) rate.get("nums"));
 		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
 		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
