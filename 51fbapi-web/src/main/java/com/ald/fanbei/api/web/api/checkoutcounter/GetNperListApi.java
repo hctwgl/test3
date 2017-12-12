@@ -123,7 +123,7 @@ public class GetNperListApi implements ApiHandle {
             //removeSecondNper(array);
 
             //分期金额限制
-            String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),orderInfo.getActualAmount());
+            String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
 
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                     nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
