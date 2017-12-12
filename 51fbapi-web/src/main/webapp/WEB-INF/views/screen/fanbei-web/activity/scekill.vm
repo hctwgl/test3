@@ -5,7 +5,7 @@
     #set($version="20171117")
     #set($src="https://f.51fanbei.com/h5/app/activity/12")
     <meta charset="UTF-8">
-    <title>限时秒杀</title>
+    <title>限时抢购</title>
     <link rel="stylesheet" type="text/css" href="/dist/activity/12/scekill.css?version=$version">
     <link rel="stylesheet" type="text/css" href="https://f.51fanbei.com/h5/static/swiper-3.4.2.min.css">
 </head>
