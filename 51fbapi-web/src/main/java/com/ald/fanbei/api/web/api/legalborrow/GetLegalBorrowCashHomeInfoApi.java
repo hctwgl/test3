@@ -125,7 +125,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		Long userId = context.getUserId();
 		// 判断用户是否登录
-		if (userId != null) {
+		if (userId != null) { 
 			return processLogin(requestDataVo, context, request);
 		} else {
 			return processUnLogin(requestDataVo, context, request);
