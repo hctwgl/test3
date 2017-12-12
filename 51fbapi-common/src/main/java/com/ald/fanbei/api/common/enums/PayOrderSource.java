@@ -20,7 +20,7 @@ public enum PayOrderSource {
 	
 	// 合规
 	REPAY_CASH_LEGAL("REPAY_CASH_LEGAL", "合规借钱还款"),
-	REPAY_ORDER_LEGAL("REPAY_ORDER_LEGAL", "合规订单还款");
+	RENEW_CASH_LEGAL("RENEW_CASH_LEGAL", "合规续期还款");
 	
 
 	public String code;
