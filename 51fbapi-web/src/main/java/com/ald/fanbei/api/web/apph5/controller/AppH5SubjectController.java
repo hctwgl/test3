@@ -141,7 +141,7 @@ public class AppH5SubjectController  extends BaseController{
 	        if (array == null) {
 	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 	        }
-	        removeSecondNper(array);
+	        //removeSecondNper(array);
 			List<AfGoodsDo>  qualityGoodsDoList = afSubjectGoodsService.listQualitySubjectGoods();
 			List<Map> qualityGoodsList = new ArrayList<Map>();
 			for(AfGoodsDo qualityGoods : qualityGoodsDoList) {
@@ -210,7 +210,7 @@ public class AppH5SubjectController  extends BaseController{
         Iterator<Object> it = array.iterator();
         while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }
@@ -245,7 +245,7 @@ public class AppH5SubjectController  extends BaseController{
 	        if (array == null) {
 	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 	        }
-	        removeSecondNper(array);
+	        //removeSecondNper(array);
 			
 			JSONObject jsonObj = new JSONObject();
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
@@ -453,7 +453,7 @@ public class AppH5SubjectController  extends BaseController{
 	        if (array == null) {
 	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 	        }
-	        removeSecondNper(array);
+	        //removeSecondNper(array);
 			
 			JSONObject jsonObj = new JSONObject();
 			String notifyUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST)+opennative+H5OpenNativeType.GoodsInfo.getCode();
@@ -658,7 +658,7 @@ public class AppH5SubjectController  extends BaseController{
 	        if (array == null) {
 	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 	        }
-	        removeSecondNper(array);
+	        //removeSecondNper(array);
 			List<AfGoodsDo> goodsList = afSubjectGoodsService.listAllSubjectGoods(query);
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("totalCount", query.getTotalCount());

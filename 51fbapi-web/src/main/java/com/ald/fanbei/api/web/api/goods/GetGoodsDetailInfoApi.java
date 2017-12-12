@@ -74,7 +74,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        removeSecondNper(array);
+        //removeSecondNper(array);
         
     	BigDecimal saleAmount = goods.getSaleAmount();
     	AfSchemeGoodsDo schemeGoodsDo = null;
@@ -109,7 +109,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
         Iterator<Object> it = array.iterator();
         while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }

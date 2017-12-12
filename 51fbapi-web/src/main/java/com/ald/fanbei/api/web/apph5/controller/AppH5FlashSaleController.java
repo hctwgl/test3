@@ -98,14 +98,14 @@ public class AppH5FlashSaleController extends BaseController {
 		if (array == null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
-		Iterator<Object> it = array.iterator();
-		while (it.hasNext()) {
-			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-				it.remove();
-				break;
-			}
-		}
+//		Iterator<Object> it = array.iterator();
+//		while (it.hasNext()) {
+//			JSONObject json = (JSONObject) it.next();
+//			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+//				it.remove();
+//				break;
+//			}
+//		}
  		for(AfEncoreGoodsDto goodsDo : list) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			goodsInfo.put("goodName",goodsDo.getName());
@@ -220,14 +220,14 @@ public class AppH5FlashSaleController extends BaseController {
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
             }
-            Iterator<Object> it = array.iterator();
-            while (it.hasNext()) {
-                JSONObject json = (JSONObject) it.next();
-                if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-                    it.remove();
-                    break;
-                }
-            }
+//            Iterator<Object> it = array.iterator();
+//            while (it.hasNext()) {
+//                JSONObject json = (JSONObject) it.next();
+//                if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+//                    it.remove();
+//                    break;
+//                }
+//            }
             for(AfEncoreGoodsDto goodsDo : list) {
                 Map<String, Object> goodsInfo = new HashMap<String, Object>();
                 goodsInfo.put("goodName",goodsDo.getName());

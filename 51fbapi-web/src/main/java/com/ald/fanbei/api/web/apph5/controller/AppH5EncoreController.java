@@ -142,7 +142,7 @@ public class AppH5EncoreController extends BaseController {
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
             }
-            removeSecondNper(array);
+            //removeSecondNper(array);
             // 查询活动商品信息
     		List<AfActivityGoodsDto> activityGoodsDtoList = afActivityGoodsService.listActivityGoodsByActivityId(activityId, appVersion);
     		List activityGoodsList  = new ArrayList();
@@ -309,7 +309,7 @@ public class AppH5EncoreController extends BaseController {
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
             }
-            removeSecondNper(array);
+            //removeSecondNper(array);
     		// 获取活动商品
     		List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService.listNewEncoreGoodsByActivityId(activityId, appVersion);
     		for(AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
@@ -391,7 +391,7 @@ public class AppH5EncoreController extends BaseController {
         Iterator<Object> it = array.iterator();
         while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }
