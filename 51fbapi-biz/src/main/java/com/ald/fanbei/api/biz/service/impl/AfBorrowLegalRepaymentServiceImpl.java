@@ -246,8 +246,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 
     	// 检查交易流水 对应记录数据库中是否已经处理
         final AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
-        logger.info("dealRepaymentSucess process begin, repayment=" + repayment);
-        if (repayment == null || YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
+        final AfBorrowLegalOrderRepaymentDo orderRepayment = afBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByPayTradeNo(tradeNo);
+        logger.info("dealRepaymentSucess process begin, borrowRepayment=" + JSON.toJSONString(repayment) + ", orderRepayment=" + JSON.toJSONString(orderRepayment));
+        if ((repayment != null && YesNoStatus.YES.getCode().equals(repayment.getStatus()) ) 
+        		|| (orderRepayment != null && YesNoStatus.YES.getCode().equals(orderRepayment.getStatus()) )) {
         	unLock(tradeNo);
             return 0l;
         }
