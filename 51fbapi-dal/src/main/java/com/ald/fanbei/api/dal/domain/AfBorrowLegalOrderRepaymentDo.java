@@ -17,9 +17,9 @@ public class AfBorrowLegalOrderRepaymentDo extends AbstractSerial {
 	
 	private Long id;
 	private Long userId;
+	private String name;
 	private Long borrowLegalOrderCashId;
 	private BigDecimal repayAmount;
-	private String type;
 	private String tradeNo;
 	private String tradeNoUps;
 	private String tradeNoWx;
@@ -56,12 +56,6 @@ public class AfBorrowLegalOrderRepaymentDo extends AbstractSerial {
 	}
 	public void setRepayAmount(BigDecimal repayAmount) {
 		this.repayAmount = repayAmount;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
 	}
 	public String getTradeNo() {
 		return tradeNo;
@@ -134,6 +128,12 @@ public class AfBorrowLegalOrderRepaymentDo extends AbstractSerial {
 	}
 	public void setGmtModified(Date gmtModified) {
 		this.gmtModified = gmtModified;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }
