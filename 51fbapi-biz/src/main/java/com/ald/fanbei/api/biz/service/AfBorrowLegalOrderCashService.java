@@ -12,6 +12,12 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
  */
 public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLegalOrderCashDo, Long>{
 
+
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowLegalOrderId(
+			Long rid);
+
 	int saveBorrowLegalOrderCash(AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo);
+
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long rid);
 
 }

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
@@ -36,11 +37,23 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 		return afBorrowLegalOrderCashDao;
 	}
 
+
+		@Override
+		public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowLegalOrderId(
+				Long rid) {
+			// TODO Auto-generated method stub
+			return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowLegalOrderId(rid);
+		}
+
 	@Override
 	public int saveBorrowLegalOrderCash(AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo) {
 		String cashNo = generatorClusterNo.geBorrowLegalOrderCashNo(new Date());
 		afBorrowLegalOrderCashDo.setCashNo(cashNo);
 		return afBorrowLegalOrderCashDao.saveRecord(afBorrowLegalOrderCashDo);
 	}
-	
+
+	@Override
+	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long borrowId) {
+		return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(borrowId);
+	}
 }

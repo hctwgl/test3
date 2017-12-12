@@ -132,6 +132,8 @@
 
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
+				<value>/legalborrow/getBorrowCashGoodInfo</value>
+				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -431,6 +433,7 @@
 				<entry key="/legalborrow/applyLegalBorrowCash" value-ref="applyLegalBorrowCashApi" />
 				<entry key="/legalborrow/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoApi" />
 				<entry key="/legalborrow/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoApi" />
+				<entry key="/legalborrow/getCashPageType" value-ref="getCashPageTypeApi" />
 			</map>
 		</constructor-arg>
 	</bean>

@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,borrow_legal_order_id,cash_no,type,amount,status,remark,overdue_day,overdue_status,overdue_amount,repaid_amount,poundage_amount,interest_amount,poundage_rate,interest_rate,plan_repay_days,gmt_plan_repay,gmt_create,gmt_close,gmt_modifed,gmt_last_repayment,gmt_finish,borrow_remark,refund_remark,borrow_id 
+        id rid,is_delete,user_id,borrow_legal_order_id,cash_no,type,amount,status,remark,overdue_day,overdue_status,overdue_amount,repaid_amount,poundage_amount,interest_amount,poundage_rate,interest_rate,plan_repay_days,gmt_plan_repay,gmt_create,gmt_close,gmt_modifed,gmt_last_repayment,gmt_finish,borrow_remark,refund_remark,borrow_id 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -366,6 +366,27 @@
         <include refid="queryFields" />
         FROM af_borrow_legal_order_cash
         <include refid="commonCondition"/>
+    </select>
+        
+    <select id="getBorrowLegalOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM af_borrow_legal_order_cash
+        WHERE
+        borrow_id = #{borrowId}
+        AND
+        is_delete = 0
+        AND
+        status 
+        IN ('AWAIT_REPAY','PART_REPAID')
+        LIMIT 1
+    </select>
+    <select id="getBorrowLegalOrderCashByBorrowLegalOrderId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">
+    SELECT
+     <include refid="queryFields" />
+    FROM af_borrow_legal_order_cash 
+    WHERE
+    borrow_legal_order_id = #{rid};
     </select>
     
 </mapper>

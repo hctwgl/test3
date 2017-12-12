@@ -32,6 +32,8 @@ import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 
 /**
@@ -112,11 +114,34 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		}
 		// 计算原始利率
 		BigDecimal oriRate = serviceRate.add(poundageRate);
-		// 查询新利率
-		BigDecimal newRate = BigDecimal.valueOf(0.36);
+		// 查询新利率配置
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
+				Constants.BORROW_CASH_INFO_LEGAL);
+		BigDecimal newRate = null;
+		if (rateInfoDo != null) {
+			String borrowRate = rateInfoDo.getValue2();
+			JSONArray array = JSONObject.parseArray(borrowRate);
+			double totalRate = 0;
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject info = array.getJSONObject(i);
+				String borrowTag = info.getString("borrowTag");
+				if (StringUtils.equals("INTEREST_RATE", borrowTag) || StringUtils.equals("SERVICE_RATE", borrowTag)) {
+					if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
+						double tmp = info.getDouble("borrowSevenDay");
+						totalRate += tmp;
+					} else {
+						double tmp = info.getDouble("borrowFourteenDay");
+						totalRate += tmp;
+					}
+				}
+			}
+			newRate = BigDecimal.valueOf(totalRate / 100);
+		} else {
+			newRate = BigDecimal.valueOf(0.36);
+		}
+
 		newRate = newRate.divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP);
-		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(new BigDecimal(borrowAmount)).multiply(borrowDay)
-				.divide(BigDecimal.valueOf(360));
+		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(new BigDecimal(borrowAmount)).multiply(borrowDay);
 
 		// 如果用户未登录，则利润空间为0
 		if (userId == null) {
@@ -127,7 +152,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
 			if (goodsInfo != null) {
-				respData.put("saleAmout", goodsInfo.getSaleAmount());
+				respData.put("saleAmount", goodsInfo.getSaleAmount());
 				respData.put("goodsId", goodsId);
 				respData.put("goodsName", goodsInfo.getName());
 				respData.put("goodsIcon", goodsInfo.getGoodsIcon());
@@ -140,7 +165,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 					String[] propsArray = props.split(";");
 					respData.put("goodsProperty", propsArray[0]);
 				}
-			} 
+			}
 		}
 		resp.setResponseData(respData);
 		return resp;

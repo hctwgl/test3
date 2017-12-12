@@ -136,6 +136,20 @@
 			<include refid="queryFields"/> 
 		from af_renewal_detail WHERE is_delete=0 AND borrow_id=#{borrowId} AND status='Y'
 	</select>
+	
+	<select id="getLastRenewalDetailByBorrowId" parameterType="java.lang.Long" resultType="AfRenewalDetailDo">
+			SELECT
+				<include refid="queryFields"/> 
+			FROM
+				af_renewal_detail
+			WHERE
+				is_delete = 0
+			AND borrow_id = #{borrowId}
+			AND STATUS = 'Y'
+			ORDER BY
+				gmt_create DESC
+			LIMIT 1;
+	</select>
 
 	<select id="getCurrDayRepayErrorTimes" resultType="java.lang.Integer">
 		SELECT

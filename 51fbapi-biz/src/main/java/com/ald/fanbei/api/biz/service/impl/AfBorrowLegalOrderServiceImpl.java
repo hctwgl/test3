@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -40,6 +41,12 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 		return afBorrowLegalOrderDao;
 	}
 
+		@Override
+		public AfBorrowLegalOrderDo getLastBorrowLegalOrderByBorrowId(Long borrowId) {
+			// TODO Auto-generated method stub
+			return afBorrowLegalOrderDao.getLastBorrowLegalOrderByBorrowId(borrowId);
+		}
+		
 	@Override
 	public int saveBorrowLegalOrder(AfBorrowLegalOrderDo afBorrowLegalOrderDo) {
 		String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
