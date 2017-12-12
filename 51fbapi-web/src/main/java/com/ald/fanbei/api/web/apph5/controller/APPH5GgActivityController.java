@@ -122,6 +122,19 @@ public class APPH5GgActivityController extends BaseController {
 
 	String opennative = "/fanbei-web/opennative?name=";
 
+	
+	/** 
+	* author chenqiwei
+	* @Title: returnCoupon 
+	* @Description: 返券列表 
+	* @param @param request
+	* @param @param response
+	* @param @param model
+	* @param @return
+	* @param @throws IOException     
+	* @return String    返回类型 
+	* @throws 
+	*/
 	@RequestMapping(value = "/returnCoupon", method = RequestMethod.POST)
 	public String returnCoupon(HttpServletRequest request, HttpServletResponse response, ModelMap model)
 			throws IOException {
@@ -228,6 +241,18 @@ public class APPH5GgActivityController extends BaseController {
 
 	}
 
+	/** 
+	* author chenqiwei
+	* @Title: inviteFriend 
+	* @Description: 邀请好友（吃霸王餐）
+	* @param @param request
+	* @param @param response
+	* @param @param model
+	* @param @return
+	* @param @throws IOException     
+	* @return String    返回类型 
+	* @throws 
+	*/
 	@RequestMapping(value = "/inviteFriend", method = RequestMethod.POST)
 	public String inviteFriend(HttpServletRequest request, HttpServletResponse response, ModelMap model)
 			throws IOException {
@@ -283,6 +308,19 @@ public class APPH5GgActivityController extends BaseController {
 
 	}
 
+	
+	/** 
+	* author chenqiwei
+	* @Title: inviteCeremony 
+	* @Description: 邀请有礼（邀请好友拿奖励）
+	* @param @param request
+	* @param @param response
+	* @param @param model
+	* @param @return
+	* @param @throws IOException     
+	* @return String    返回类型 
+	* @throws 
+	*/
 	@RequestMapping(value = "/inviteCeremony", method = RequestMethod.POST)
 	public String inviteCeremony(HttpServletRequest request, HttpServletResponse response, ModelMap model)
 			throws IOException {
@@ -672,6 +710,18 @@ public class APPH5GgActivityController extends BaseController {
 		return resultStr.toString();
 	}
 
+	/** 
+	* author chenqiwei
+	* @Title: popUp 
+	* @Description: 活动首页弹窗(完成)
+	* @param @param request
+	* @param @param response
+	* @param @param model
+	* @param @return
+	* @param @throws IOException     
+	* @return String    返回类型 
+	* @throws 
+	*/
 	@RequestMapping(value = "/popUp", method = RequestMethod.POST)
 	public String popUp(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
 		FanbeiWebContext context = new FanbeiWebContext();
