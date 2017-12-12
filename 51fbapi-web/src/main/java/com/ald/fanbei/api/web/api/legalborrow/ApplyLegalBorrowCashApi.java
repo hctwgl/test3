@@ -163,6 +163,11 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
 		String goodsAmount = ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount"));
+		
+		String deliveryAddress = ObjectUtils.toString(requestDataVo.getParams().get("deliveryAddress"));
+		String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"));
+		String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"));
+
 
 		if (StringUtils.isBlank(amountStr) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox) || StringUtils.isBlank(goodsId)
@@ -287,7 +292,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 
 			// 搭售商品订单
 			final AfBorrowLegalOrderDo afBorrowLegalOrderDo = buildBorrowLegalOrder(new BigDecimal(goodsAmount), userId,
-					0l, Long.parseLong(goodsId), goodsName, address, province, city, county);
+					0l, Long.parseLong(goodsId), goodsName, deliveryAddress,deliveryUser,deliveryPhone);
 
 			// 订单借款
 			final AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = buildBorrowLegalOrderCashDo(
@@ -528,7 +533,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	}
 
 	public AfBorrowLegalOrderDo buildBorrowLegalOrder(BigDecimal goodsAmount, Long userId, Long borrowId, Long goodsId,
-			String goodsName, String address, String province, String city, String county) {
+			String goodsName, String deliveryAddress, String deliveryUser, String deliveryPhone) {
 
 		AfBorrowLegalOrderDo afBorrowLegalOrderDo = new AfBorrowLegalOrderDo();
 		afBorrowLegalOrderDo.setUserId(userId);
@@ -537,10 +542,9 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowLegalOrderDo.setPriceAmount(goodsAmount);
 		afBorrowLegalOrderDo.setGoodsName(goodsName);
 		afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
-		afBorrowLegalOrderDo.setAddress(address);
-		afBorrowLegalOrderDo.setProvince(province);
-		afBorrowLegalOrderDo.setCity(city);
-		afBorrowLegalOrderDo.setCounty(county);
+		afBorrowLegalOrderDo.setAddress(deliveryAddress);
+		afBorrowLegalOrderDo.setDeliveryPhone(deliveryPhone);
+		afBorrowLegalOrderDo.setDeliveryUser(deliveryUser);
 		return afBorrowLegalOrderDo;
 	}
 
