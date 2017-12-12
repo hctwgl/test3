@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**  
  * @Description: 续期确认支付（合规）
@@ -173,6 +175,36 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
             
             // 借钱手续费率（日）
             BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
+            // 查询新利率配置
+    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+    		
+    		//借款利率
+    		BigDecimal newRate = null;
+    		//借款手续费率
+    		BigDecimal newServiceRate = null;
+    		
+    		if (rateInfoDo != null) {
+    			String borrowRate = rateInfoDo.getValue2();
+    			JSONArray array = JSONObject.parseArray(borrowRate);
+    			double rate = 0;
+    			double serviceRate = 0;
+    			for (int i = 0; i < array.size(); i++) {
+    				JSONObject info = array.getJSONObject(i);
+    				String borrowTag = info.getString("borrowTag");
+    				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+    						rate = info.getDouble("borrowSevenDay");
+    				}
+    				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+    					serviceRate = info.getDouble("borrowSevenDay");
+    				}
+    			}
+    			newRate = BigDecimal.valueOf(rate / 100);
+    			newServiceRate = BigDecimal.valueOf(serviceRate / 100);
+    		}else{
+    			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
+    		}		
+            
+            
             BigDecimal capital =BigDecimal.ZERO;
 
             AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
@@ -184,35 +216,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
                         FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED);
             }
            
-/*
-            AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
-            BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
-            BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-
-            //续借本金
-            BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-            BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
-            // 本期手续费  = 未还金额 * 续期天数 * 借钱手续费率（日）
-            BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
-
-            // 续期应缴费用(利息+手续费+滞纳金+要还本金)
-            BigDecimal repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
-*/
-            //fmf_add 续借由用户手动操作  strat
-
-
-    		/*---
-    		// 续借本金
-    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-    		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);;
-    		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
-    		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
-
-    		// 续期应缴费用(利息+手续费+滞纳金+要还本金)
-    		BigDecimal repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount(), capital);
-    		---*/
-    		
-    		
             //---------
             //上一笔订单记录
     		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
@@ -227,14 +230,22 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal borrowPoundage = BigDecimal.ZERO;
     		//上期订单手续费
     		BigDecimal orderPoundage = afBorrowLegalOrderCash.getPoundageAmount();
+    		//上期利息（借款和订单）
+    		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
+    		BigDecimal orderRateAmount = afBorrowLegalOrderCash.getInterestAmount();
+    		BigDecimal oneYeayDays = new BigDecimal(Constants.ONE_YEAY_DAYS);
+    		
     		if(afBorrowCashDo.getRenewalNum()>0){
     			//续借过
-    			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借钱手续费率（日）
     			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
-    			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
+    			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
+    			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
+    			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360
+    			borrowRateAmount = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
     		}else {
     			//未续借过
     			borrowPoundage = afBorrowCashDo.getPoundage();
+    			borrowRateAmount = afBorrowCashDo.getRateAmount();
     		}
     		
     		// 续借本金（总） 
@@ -257,11 +268,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		//上期逾期费（借款和订单）
     		BigDecimal borrowOverdueAmount = afBorrowCashDo.getOverdueAmount();
     		BigDecimal orderOverdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
-    		
-    		//上期利息（借款和订单）
-    		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
-    		BigDecimal orderRateAmount = afBorrowLegalOrderCash.getInterestAmount();
-    		
+
     		//上期订单借款金额
     		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
     		

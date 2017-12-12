@@ -152,7 +152,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
 			if (goodsInfo != null) {
-				respData.put("saleAmout", goodsInfo.getSaleAmount());
+				respData.put("saleAmount", goodsInfo.getSaleAmount());
 				respData.put("goodsId", goodsId);
 				respData.put("goodsName", goodsInfo.getName());
 				respData.put("goodsIcon", goodsInfo.getGoodsIcon());

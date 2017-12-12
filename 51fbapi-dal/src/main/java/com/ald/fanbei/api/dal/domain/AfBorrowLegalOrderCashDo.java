@@ -21,6 +21,7 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
+    
     /**
      * 
      */
