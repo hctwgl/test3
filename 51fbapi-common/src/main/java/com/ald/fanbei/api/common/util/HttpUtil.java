@@ -70,7 +70,7 @@ public class HttpUtil {
             URLConnection conn = realUrl.openConnection();
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("content-type", "application/json");
             in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
             String line;
             while ((line = in.readLine()) != null) {

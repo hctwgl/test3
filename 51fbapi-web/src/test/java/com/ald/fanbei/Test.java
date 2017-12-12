@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,7 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -45,13 +51,33 @@ public class Test {
 
 		//System.out.println(new Date(1508998500000L));
 		
-		try {
-			BaseController.getTestUser(URLDecoder.decode("http://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=http://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=74&_appInfo=%7B%22id%22%3A%22a_867068024279399_1511925513970_www%22%2C%22time%22%3A%221511925513970%22%2C%22sign%22%3A%2226f66db053efb4d1c3ccb73ba56dc6e1d66e3c6fe3ef3bd376dab55284f0a579%22%2C%22userName%22%3A%2215669066271%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22397%22%7D","utf-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+//		try {
+//			BaseController.getTestUser(URLDecoder.decode("http://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=http://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=74&_appInfo=%7B%22id%22%3A%22a_867068024279399_1511925513970_www%22%2C%22time%22%3A%221511925513970%22%2C%22sign%22%3A%2226f66db053efb4d1c3ccb73ba56dc6e1d66e3c6fe3ef3bd376dab55284f0a579%22%2C%22userName%22%3A%2215669066271%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22397%22%7D","utf-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
+        	try {
+        	    Map<String, String> params = new HashMap<String, String>();
+        	    params.put(BoluomeCore.ORDER_ID, "ala202895912378377");
+        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime() / 1000));
+        
+        	    //String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==", "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) + AesUtil.decrypt("OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B", "testC1b6x@6aH$2dlw");
+        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(params) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+          	  beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
+        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
+        
+        	    //params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==", "testC1b6x@6aH$2dlw"));
+        	    params.put("appKey", "7887978286");
+        	    params.put(BoluomeCore.SIGN, sign);
+        	    String paramsStr = BoluomeCore.createLinkString(params);
+
+        	    System.out.println(HttpUtil.doGet("https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr, 100));
+        	} catch (UnsupportedEncodingException e) {
+        	    // TODO Auto-generated catch block
+        	    e.printStackTrace();
+        	}
 	}
 	
 	
