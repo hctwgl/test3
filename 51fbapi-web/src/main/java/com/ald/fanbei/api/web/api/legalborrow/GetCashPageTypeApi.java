@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.api.borrowCash;
+package com.ald.fanbei.api.web.api.legalborrow;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;

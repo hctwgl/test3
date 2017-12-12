@@ -328,7 +328,6 @@
 				<entry key="/borrowCash/getBorrowCashList" value-ref="getBorrowCashListApi" />
 				<entry key="/borrowCash/getBorrowOverdueList" value-ref="getBorrowOverdueListApi" />
 				<entry key="/borrowCash/applyRenewal" value-ref="applyRenewalApi" />
-				<entry key="/borrowCash/getCashPageType" value-ref="getCashPageTypeApi" />
 				<entry key="/borrowCash/confirmRenewalPay" value-ref="confirmRenewalPayApi" />
 				<entry key="/borrowCash/confirmRenewalPayV1" value-ref="confirmRenewalPayV1Api" />
 				<entry key="/borrowCash/getRenewalList" value-ref="getRenewalListApi" />
@@ -434,6 +433,7 @@
 				<entry key="/legalborrow/applyLegalBorrowCash" value-ref="applyLegalBorrowCashApi" />
 				<entry key="/legalborrow/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoApi" />
 				<entry key="/legalborrow/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoApi" />
+				<entry key="/legalborrow/getCashPageType" value-ref="getCashPageTypeApi" />
 			</map>
 		</constructor-arg>
 	</bean>

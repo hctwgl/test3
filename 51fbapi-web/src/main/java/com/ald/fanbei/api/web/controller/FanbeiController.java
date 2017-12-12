@@ -184,7 +184,7 @@ public class FanbeiController extends BaseController {
      */
     @RequestMapping(value = {"/borrowCash/getBorrowCashHomeInfo","/borrowCash/getBowCashLogInInfo","/borrowCash/getConfirmBorrowInfo","/borrowCash/applyBorrowCash",
     		"/borrowCash/getBorrowCashDetail","/borrowCash/getBorrowCashList","/borrowCash/getBorrowOverdueList","/repayCash/getConfirmRepayInfo","/good/deleteHistory",
-    		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/getCashPageType","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList",
+    		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList",
     		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket","borrowCash/applyBorrowCashV1",
             "/repayCash/getConfirmRepayInfoV1","/borrowCash/confirmRenewalPayV1","/repayCash/getRepayCashByOrderId",
             "/borrowCash/getLoanSupermarketTabList","/borrowCash/getLoanSupermarketListByTab","/borrowCash/tearPacket","/instalments/getInstalmentsAd",
