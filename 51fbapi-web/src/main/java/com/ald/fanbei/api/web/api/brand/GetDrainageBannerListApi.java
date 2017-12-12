@@ -59,7 +59,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
 		 }
 		 else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
 		//预发不区分状态
-		      afResourceService
+		 bannerList1 =  afResourceService
 				.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
 		 }
 		logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
