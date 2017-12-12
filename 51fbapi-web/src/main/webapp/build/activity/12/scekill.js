@@ -143,6 +143,12 @@ let vm=new Vue({
 //滚动加载更多商品
 let page=1;
 $(window).on('scroll',function () {
+    let win=jQuery(window).scrollTop();
+    if(win>=330){
+        jQuery('.nav').addClass('fixTop');
+    }else{
+        jQuery('.nav').removeClass('fixTop');
+    }
     if(finished===0){
         let scrollTop = $(this).scrollTop();
         let allHeight = $(document).height();

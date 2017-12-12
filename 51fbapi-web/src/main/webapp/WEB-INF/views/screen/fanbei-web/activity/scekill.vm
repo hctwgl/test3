@@ -21,6 +21,7 @@
             </div>
             <div class="img-pagination"></div>
         </div>
+        <div style="height: 1rem"></div>
         <div class="nav">
             <div><span @click="typeClick(1)" :class="type===1?'active':''">正在抢购</span></div>
             <div><span @click="typeClick(2)" :class="type===2?'active':''">明日预告</span></div>
