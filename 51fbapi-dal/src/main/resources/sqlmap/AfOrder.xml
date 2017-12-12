@@ -137,7 +137,7 @@
 	            district,
 	        </if>
 	        <if test="blackBox != null">
-	            blackBox,
+	            black_box,
 	        </if>
 	        <if test="ip != null">
 	            ip,
