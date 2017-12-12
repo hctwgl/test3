@@ -1052,5 +1052,8 @@
 		AND
 			user_id=#{userId}
 	</select>
-	
+
+	<select id="getOrderTypeByBorrowId" resultType="java.lang.String" parameterType="java.lang.Long">
+		select a.order_type from af_order as a INNER JOIN af_borrow as b ON a.id=b.order_id WHERE b.id=#{borrowId}
+	</select>
 </mapper>

@@ -74,6 +74,8 @@ public class GetBillDetailInfoApi implements ApiHandle{
 	
 	private AfBillDetailInfoVo getBorrowBillVo(AfBorrowBillDto billDto){
 		AfBillDetailInfoVo vo = new AfBillDetailInfoVo();
+		//是否按新收费机制显示（商圈按原来的显示）
+		Boolean isNewRate = false;
 		vo.setBillAmount(billDto.getBillAmount());
 		vo.setBillId(billDto.getRid());
 		vo.setBorrowId(billDto.getBorrowId());
@@ -92,6 +94,9 @@ public class GetBillDetailInfoApi implements ApiHandle{
 			vo.setOrderNo(billDto.getOrderNo());
 			if(null != billDto.getOrderId()   && billDto.getOrderId()>0){
 				AfOrderDo order = afOrderService.getOrderInfoByIdWithoutDeleted(billDto.getOrderId(), billDto.getUserId());
+				if(!order.getOrderType().equals("TRADE")) {
+					isNewRate = true;
+				}
 				vo.setGoodsId(order.getGoodsId());
 			}else{
 				AfBorrowTempDo temp = afBorrowService.getBorrowTempByBorrowId(billDto.getBorrowId());
@@ -108,14 +113,21 @@ public class GetBillDetailInfoApi implements ApiHandle{
 		}
 		vo.setOverdueDay(billDto.getOverdueDays());
 		vo.setGmtBorrow(billDto.getGmtBorrow());
-		vo.setInterestAmount(new BigDecimal(0));
 		vo.setName(billDto.getName());
 		vo.setNper(billDto.getNper());
 		vo.setOverdueAmount(billDto.getOverdueInterestAmount());
-		vo.setPoundageAmount(billDto.getInterestAmount().add(billDto.getPoundageAmount()));
 		vo.setOverduePoundageAmount(billDto.getOverduePoundageAmount());
 		//vo.setRefundDate(afBorrowService.getReyLimitDate(billDto.getBillYear(),billDto.getBillMonth()));
 		vo.setRefundDate(billDto.getGmtPayTime());
+		//判断是否按新收费机制显示（商圈按原来的显示）
+		if(isNewRate) {
+			vo.setInterestAmount(new BigDecimal(0));
+			vo.setPoundageAmount(billDto.getInterestAmount().add(billDto.getPoundageAmount()));
+		}
+		else {
+			vo.setInterestAmount(billDto.getInterestAmount());
+			vo.setPoundageAmount(billDto.getPoundageAmount());
+		}
 		return vo;
 	}
 }
