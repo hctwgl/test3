@@ -417,4 +417,6 @@ public class Constants {
 	public static final String YIXIN_AFU_PASSWORD = "fbapi.yixinafu.password";
 	// 宜信阿福查询用户逾期信息redis中的key前缀
 	public static final String YIXIN_AFU_SEARCH_KEY = "yxafu_";
+	
+	public static final int ONE_YEAY_DAYS = 360;
 }

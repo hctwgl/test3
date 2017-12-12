@@ -87,7 +87,7 @@ import io.netty.util.internal.StringUtil;
 /**
  * @类描述：申请借钱
  * 
- * @author suweili 2017年3月25日下午1:06:18
+ * @author Jiang Rongbo 2017年3月25日下午1:06:18
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("applyLegalBorrowCashApi")
@@ -251,7 +251,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 			String ipAddress = CommonUtil.getIpAddr(request);
 			final AfBorrowCashDo afBorrowCashDo = borrowCashDoWithAmount(amount, type, latitude, longitude, card, city,
-					province, county, address, userId, currentDay);
+					province, county, address, userId, currentDay,rateInfoDo);
 			// 用户借钱时app来源区分
 			String majiabaoName = requestDataVo.getId().substring(requestDataVo.getId().lastIndexOf("_") + 1,
 					requestDataVo.getId().length());
@@ -544,7 +544,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 
 	public AfBorrowCashDo borrowCashDoWithAmount(BigDecimal amount, String type, String latitude, String longitude,
 			AfUserBankcardDo afUserBankcardDo, String city, String province, String county, String address, Long userId,
-			int currentDay) {
+			int currentDay,AfResourceDo rateInfoDo) {
 
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(list);
