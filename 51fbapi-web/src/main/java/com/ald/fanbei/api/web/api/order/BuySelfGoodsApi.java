@@ -136,7 +136,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
-
+		//新增下单时，记录ip和同盾设备指纹锁 cxk
+		afOrder.setIp(request.getRemoteAddr());//用户ip地址
+		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
 		// afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new
 		// BigDecimal(count)));
 
@@ -364,8 +366,17 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setPriceAmount(goodsDo.getPriceAmount());
 		afOrder.setGoodsIcon(goodsDo.getGoodsIcon());
 		afOrder.setGoodsName(goodsDo.getName());
-		String address = addressDo.getProvince() != null ? addressDo.getProvince() : "";
-		if (addressDo.getCity() != null) {
+		
+		//新增下单时记录 省、 市、 区 、详细地址 、IP 、设备指纹 2017年12月12日11:17:51 cxk
+		String province = addressDo.getProvince() !=null?addressDo.getProvince():"";
+		String city = addressDo.getCity() !=null?addressDo.getCity():"";
+		String district = addressDo.getCounty() !=null?addressDo.getCounty():"";
+		String address = addressDo.getAddress() !=null?addressDo.getAddress():"";
+		afOrder.setProvince(province);//省
+		afOrder.setCity(city);//市
+		afOrder.setDistrict(district);//区
+		afOrder.setAddress(address);//详细地址
+		/*if (addressDo.getCity() != null) {
 			address = address.concat(addressDo.getCity());
 
 		}
@@ -376,7 +387,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (addressDo.getAddress() != null) {
 			address = address.concat(addressDo.getAddress());
 		}
-		afOrder.setAddress(address);
+		afOrder.setAddress(address);*/
 		afOrder.setGoodsId(goodsDo.getRid());
 		afOrder.setOpenId(goodsDo.getOpenId());
 		afOrder.setNumId(goodsDo.getNumId());

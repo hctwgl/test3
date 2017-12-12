@@ -130,6 +130,9 @@ public class TradeOrderApi implements ApiHandle {
         BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
         afOrder.setAuAmount(userAccountInfo.getAuAmount());
 		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
+		//新增下单时记录 IP 、设备指纹 2017年12月12日13:21:39 cxk
+		afOrder.setIp(request.getRemoteAddr());//用户ip地址		
+		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹		
         afOrderService.createOrder(afOrder);
         AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
         afTradeOrderDo.setOrderId(afOrder.getRid());

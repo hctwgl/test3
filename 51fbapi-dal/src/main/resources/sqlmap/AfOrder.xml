@@ -126,6 +126,21 @@
 	        </if>
 	        <if test="usedAmount != null">
 	            used_amount,
+	        </if>	        
+	        <if test="province != null">
+	            province,
+	        </if>
+	        <if test="city != null">
+	            city,
+	        </if>
+	        <if test="district != null">
+	            district,
+	        </if>
+	        <if test="blackBox != null">
+	            blackBox,
+	        </if>
+	        <if test="ip != null">
+	            ip,
 	        </if>
 			gmt_create ,
 			gmt_modified
@@ -237,6 +252,21 @@
 		     </if>
 			<if test="usedAmount != null">
 	            #{usedAmount},
+	        </if>
+			<if test="province != null">
+	            #{province},
+	        </if>
+			<if test="city != null">
+	            #{city},
+	        </if>
+			<if test="district != null">
+	            #{district},
+	        </if>
+			<if test="blackBox != null">
+	            #{blackBox},
+	        </if>
+			<if test="ip != null">
+	            #{ip},
 	        </if>
 			NOW(),
 			NOW()
