@@ -47,7 +47,9 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
+import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
@@ -57,6 +59,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -127,9 +130,13 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
     AfRenewalLegalDetailService afRenewalLegalDetailService;
     @Resource
     AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
+    @Resource
+    AfBorrowLegalOrderDao afBorrowLegalOrderDao;
+    @Resource
+    AfGoodsDao afGoodsDao;
 
 	@Override
-	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
+	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRenewalBorrowCashNo(now);
 		final String payTradeNo = repayNo;
@@ -141,6 +148,20 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		Map<String, Object> map = new HashMap<String, Object>();
 		afRenewalDetailDao.addRenewalDetail(renewalDetail);
 		afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
+		
+		//新增订单记录
+		AfGoodsDo goodsDo = afGoodsDao.getGoodsById(goodsId);
+		AfBorrowLegalOrderDo borrowLegalOrder = new AfBorrowLegalOrderDo();
+		borrowLegalOrder.setBorrowId(afBorrowCashDo.getRid());
+		borrowLegalOrder.setGoodsId(goodsId);
+		borrowLegalOrder.setDeliveryUser(deliveryUser);
+		borrowLegalOrder.setDeliveryPhone(deliveryPhone);
+		borrowLegalOrder.setAddress(address);
+		borrowLegalOrder.setUserId(userId);
+		borrowLegalOrder.setStatus("UNPAID");//未支付
+		borrowLegalOrder.setPriceAmount(goodsDo.getSaleAmount());
+		borrowLegalOrder.setGoodsName(goodsDo.getName());
+		afBorrowLegalOrderDao.addBorrowLegalOrder(borrowLegalOrder);
 		
 		if (cardId == -1) {// 微信支付
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.RENEWAL_PAY.getCode());

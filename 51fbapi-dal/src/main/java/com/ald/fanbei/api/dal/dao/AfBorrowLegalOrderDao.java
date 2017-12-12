@@ -19,6 +19,8 @@ public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Lon
 
 	List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query);
 
+	int addBorrowLegalOrder(AfBorrowLegalOrderDo borrowLegalOrder);
+
     
 
 }

@@ -92,6 +92,11 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
         //续借金额
         BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
         
+        Long goodsId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("goodsId")), 0l);
+        String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"), "").toString();
+        String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"), "").toString();
+        String address = ObjectUtils.toString(requestDataVo.getParams().get("address"), "").toString();
+        
         //用户认证信息
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
@@ -113,6 +118,9 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
 
         if (borrowId == 0) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+        }
+        if (goodsId == 0) {
+        	throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
         }
 
         String lockKey = Constants.CACHEKEY_APPLY_RENEWAL_LOCK + userId;
@@ -389,7 +397,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
                     }
                 }
                 //map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion());
-                map = afRenewalLegalDetailService.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion());
+                map = afRenewalLegalDetailService.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
 
                 // 代收
                 UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

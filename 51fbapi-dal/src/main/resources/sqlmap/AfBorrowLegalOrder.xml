@@ -61,6 +61,33 @@
 	</sql>
 
 
+	<insert id="addBorrowLegalOrder" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo" useGeneratedKeys="true" keyProperty="rid">
+        INSERT INTO af_borrow_legal_order(gmt_create,gmt_modified,user_id,borrow_id,order_no,status,goods_id,price_amount,gmt_deliver,gmt_confirm_received,gmt_closed,closed_detail,address,goods_name,logistics_info,logistics_company,logistics_no,delivery_user,delivery_phone)
+        VALUES (
+            NOW(),
+            NOW(),
+            #{userId},
+            #{borrowId},
+            #{orderNo},
+            #{status},
+            #{goodsId},
+            #{priceAmount},
+            #{gmtDeliver},
+            #{gmtConfirmReceived},
+            #{gmtClosed},
+            #{closedDetail},
+            #{address},
+            #{goodsName},
+            #{logisticsInfo},
+            #{logisticsCompany},
+            #{logisticsNo},
+            #{deliveryUser},
+            #{deliveryPhone},
+      	)
+    </insert>
+
+
+
 	<insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo"
 		keyProperty="rid">
 		<selectKey resultType="java.lang.Long" keyProperty="rid"
