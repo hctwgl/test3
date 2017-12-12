@@ -230,8 +230,9 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal borrowPoundage = BigDecimal.ZERO;
     		//上期订单手续费
     		BigDecimal orderPoundage = afBorrowLegalOrderCash.getPoundageAmount();
-    		//上期利息（借款和订单）
-    		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
+    		//上期借款利息
+    		BigDecimal borrowRateAmount = BigDecimal.ZERO;
+    		//上期订单利息
     		BigDecimal orderRateAmount = afBorrowLegalOrderCash.getInterestAmount();
     		BigDecimal oneYeayDays = new BigDecimal(Constants.ONE_YEAY_DAYS);
     		
