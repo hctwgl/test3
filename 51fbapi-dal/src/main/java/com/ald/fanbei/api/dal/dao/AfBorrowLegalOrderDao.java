@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
  */
 public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Long> {
 
+	AfBorrowLegalOrderDo getLastBorrowLegalOrderByBorrowId(Long borrowId);
+
     
 
 }

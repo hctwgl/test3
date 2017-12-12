@@ -1,5 +1,9 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -49,6 +53,8 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -59,14 +65,14 @@ import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 
-/**
- * @类描述：
- * 
- * @author fumeiai 2017年5月19日 20:04:43
- * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+/**  
+ * @Description: 
+ * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
+ * @author yanghailong
+ * @date 2017年12月11日
  */
-@Service("afRenewalDetailService")
-public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewalDetailService {
+@Service("afRenewalLegalDetailService")
+public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRenewalLegalDetailService {
 	@Resource
 	UpsUtil upsUtil;
 	@Resource
@@ -109,66 +115,15 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	ContractPdfThreadPool contractPdfThreadPool;
     @Resource
     SmsUtil smsUtil;
-	@Override
-	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
-		Date now = new Date();
-		String repayNo = generatorClusterNo.getRenewalBorrowCashNo(now);
-		final String payTradeNo = repayNo;
-
-		String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
-
-		final AfRenewalDetailDo renewalDetail = buildRenewalDetailDo(afBorrowCashDo, jfbAmount, repaymentAmount, repayNo, actualAmount, rebateAmount, capital, borrow, cardId, payTradeNo, userId, appVersion);
-		Map<String, Object> map = new HashMap<String, Object>();
-		afRenewalDetailDao.addRenewalDetail(renewalDetail);
-
-		if (cardId == -1) {// 微信支付
-			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
-			for (String key : map1.keySet()) {
-				map.put(key,map1.get(key));
-			}
-			AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-			afYibaoOrderDo.setOrderNo(repayNo);
-			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
-			afYibaoOrderDo.setStatus(0);
-			afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
-			afYibaoOrderDo.setUserId(userId);
-			afYibaoOrderDo.setoType(1);
-			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-		}
-		else if(cardId ==-3){
-			Map<String, String> map1 = yiBaoUtility.createOrder(actualAmount,payTradeNo);
-			for (String key : map1.keySet()) {
-				map.put(key,map1.get(key));
-			}
-			AfYibaoOrderDo afYibaoOrderDo = new AfYibaoOrderDo();
-			afYibaoOrderDo.setOrderNo(repayNo);
-			afYibaoOrderDo.setPayType(PayOrderSource.RENEWAL_PAY.getCode());
-			afYibaoOrderDo.setStatus(0);
-			afYibaoOrderDo.setYibaoNo(map1.get("uniqueOrderNo"));
-			afYibaoOrderDo.setUserId(userId);
-			afYibaoOrderDo.setoType(1);
-			afYibaoOrderDao.addYibaoOrder(afYibaoOrderDo);
-		}
-		else if (cardId > 0) {// 银行卡支付
-			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
-			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
-			if (!respBo.isSuccess()) {
-				dealRenewalFail(payTradeNo, "","");
-				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-			}
-			map.put("resp", respBo);
-		} else if (cardId == -2) {// 余额支付
-			dealRenewalSucess(renewalDetail.getPayTradeNo(), "");
-		}
-		map.put("refId", renewalDetail.getRid());
-		map.put("type", UserAccountLogType.RENEWAL_PAY.getCode());
-
-		return map;
-	}
+    @Resource
+    AfBorrowLegalOrderService afBorrowLegalOrderService;
+    @Resource
+    AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+    @Resource
+    AfRenewalLegalDetailService afRenewalLegalDetailService;
 
 	@Override
-	public Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
+	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion) {
 		Date now = new Date();
 		String repayNo = generatorClusterNo.getRenewalBorrowCashNo(now);
 		final String payTradeNo = repayNo;
@@ -186,12 +141,12 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
 			if (!respBo.isSuccess()) {
-				dealRenewalFail(payTradeNo, "",StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+				dealLegalRenewalFail(payTradeNo, "",StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
 		} else if (cardId == -2) {// 余额支付
-			dealRenewalSucess(renewalDetail.getPayTradeNo(), "");
+			dealLegalRenewalSucess(renewalDetail.getPayTradeNo(), "");
 		}
 		map.put("refId", renewalDetail.getRid());
 		map.put("type", UserAccountLogType.RENEWAL_PAY.getCode());
@@ -221,7 +176,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	}
 
 	@Override
-	public long dealRenewalFail(String outTradeNo, String tradeNo,String errorMsg) {
+	public long dealLegalRenewalFail(String outTradeNo, String tradeNo,String errorMsg) {
 		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByPayTradeNo(outTradeNo);
 		if (YesNoStatus.YES.getCode().equals(afRenewalDetailDo.getStatus())) {
 			return 0l;
@@ -246,7 +201,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	}
 
 	@Override
-	public long dealRenewalSucess(final String outTradeNo, final String tradeNo) {
+	public long dealLegalRenewalSucess(final String outTradeNo, final String tradeNo) {
 
 		final String key = outTradeNo +"_success_repayCash_renewal";
 		long count = redisTemplate.opsForValue().increment(key, 1);
@@ -428,16 +383,36 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		AfResourceDo baseBankRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BASE_BANK_RATE);
 		BigDecimal baseBankRate = new BigDecimal(baseBankRateResource.getValue());// 央行基准利率
 
-		//未还金额
-		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
+//		//未还金额
+//		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
+//		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 
-		if (appVersion < 380) {
-			waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+//		if (appVersion < 380) {
+//			waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+//		}
+		
+//		// 本期手续费  = 未还金额 * 续期天数 * 借钱手续费率（日）
+//		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
+		
+        //---------
+		//上期手续费
+		BigDecimal poundage = BigDecimal.ZERO;
+		if(afBorrowCashDo.getRenewalNum()>0){
+			//续借过
+			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借钱手续费率（日）
+			AfRenewalDetailDo renewalDetail = getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+			poundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
+		}else {
+			//未续借过
+			poundage = afBorrowCashDo.getPoundage();
 		}
 		
-		// 本期手续费  = 未还金额 * 续期天数 * 借钱手续费率（日）
-		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
+		// 续借本金（总） 
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),poundage);
+		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
+		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
+		
+		//---------
 		
 		AfRenewalDetailDo afRenewalDetailDo = new AfRenewalDetailDo();
 		afRenewalDetailDo.setBorrowId(borrowId);
@@ -446,7 +421,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		afRenewalDetailDo.setRenewalAmount(waitPaidAmount);// 续期本金
 		afRenewalDetailDo.setPriorInterest(afBorrowCashDo.getRateAmount());// 上期利息
 		afRenewalDetailDo.setPriorOverdue(afBorrowCashDo.getOverdueAmount());// 上期滞纳金
-		afRenewalDetailDo.setNextPoundage(poundage);// 下期手续费
+		afRenewalDetailDo.setNextPoundage(poundage);// 上期手续费*****************************************************************************需增加字段
 		afRenewalDetailDo.setJfbAmount(jfbAmount);// 集分宝个数
 		afRenewalDetailDo.setRebateAmount(rebateAmount);// 账户余额
 		afRenewalDetailDo.setPayTradeNo(payTradeNo);// 平台提供给三方支付的交易流水号
@@ -457,11 +432,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		afRenewalDetailDo.setPoundageRate(borrowCashPoundage);// 借钱手续费率（日）
 		afRenewalDetailDo.setBaseBankRate(baseBankRate);// 央行基准利率
 		
-		if (appVersion >= 380) {
-			afRenewalDetailDo.setCapital(capital);
-		} else {
-			afRenewalDetailDo.setCapital(BigDecimal.ZERO);
-		}
+		afRenewalDetailDo.setCapital(capital);
 		
 		if (cardId == -2) {
 			afRenewalDetailDo.setCardNumber("");
@@ -482,30 +453,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 
 		return afRenewalDetailDo;
 	}
-
+	
 	@Override
-	public List<AfRenewalDetailDo> getRenewalListByBorrowId(Long borrowId, Integer start) {
-		return afRenewalDetailDao.getRenewalListByBorrowId(borrowId, start);
+	public AfRenewalDetailDo getLastRenewalDetailByBorrowId(Long rid) {
+		// TODO Auto-generated method stub
+		return afRenewalDetailDao.getLastRenewalDetailByBorrowId(rid);
 	}
-
-	@Override
-	public AfRenewalDetailDo getRenewalDetailByRenewalId(Long rId) {
-		return afRenewalDetailDao.getRenewalDetailByRenewalId(rId);
-	}
-
-	@Override
-	public AfRenewalDetailDo getRenewalDetailByBorrowId(Long borrowId) {
-		return afRenewalDetailDao.getRenewalDetailByBorrowId(borrowId);
-	}
-
-	@Override
-	public List<AfRenewalDetailDo> getRenewalDetailListByBorrowId(Long borrowId) {
-		return afRenewalDetailDao.getRenewalDetailListByBorrowId(borrowId);
-	}
-
-	@Override
-	public AfRenewalDetailDo getRenewalDetailHoursByBorrowId(Long borrowId) {
-		return afRenewalDetailDao.getRenewalDetailHoursByBorrowId(borrowId);
-	}
-
 }

@@ -359,7 +359,7 @@
         FROM af_borrow_legal_order_cash
         <include refid="commonCondition"/>
     </select>
-    
+        
     <select id="getBorrowLegalOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo" >
         SELECT
         <include refid="queryFields" />
@@ -372,6 +372,12 @@
         IN ('AWAIT_REPAY','PART_REPAID')
         LIMIT 1
     </select>
-    
+    <select id="getBorrowLegalOrderCashByBorrowLegalOrderId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">
+    SELECT
+     <include refid="queryFields" />
+    FROM af_borrow_legal_order_cash 
+    WHERE 
+    borrow_legal_order_id = #{rid};
+    </select>
     
 </mapper>
