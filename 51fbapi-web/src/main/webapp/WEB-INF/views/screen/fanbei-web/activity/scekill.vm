@@ -29,15 +29,15 @@
             <div class="title"><span>精选好货 限量抢购</span><span class="time">每天10：00上新</span></div>
             <div class="goods" v-for="data of content.goodsList">
                 <img :src="data.goodsIcon">
-                <div class="goodsInfo">
-                    <p class="goodsName">{{data.goodName}}</p>
+                <div class="goodsInfo" @click="goodsClick(data)">
+                    <p class="goodsName"  style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
                     <span class="goodsPrice">￥{{data.saleAmount}}</span>
                     <span class="goodsFan">返</span>
                     <span class="goodsRebate">￥{{data.rebateAmount}}</span>
                     <p class="goodsTxt">月供{{data.nperMap.isFree==0?data.nperMap.amount:data.nperMap.freeAmount}}元起</p>
                     <template v-if="type==1">
                         <span class="goodsNum" :class="loading(data)==0?'goodsNumOver':''">已抢{{data.volume}}件<div class="shadow" :style="{width:loading(data)}"></div></span>
-                        <span class="goodsBtn" @click="goodsClick(data)" :class="loading(data)==0?'goodsBtnOver':''">{{loading(data)==0?'已抢光':'马上抢'}}</span>
+                        <span class="goodsBtn" :class="loading(data)==0?'goodsBtnOver':''">{{loading(data)==0?'已抢光':'马上抢'}}</span>
                     </template>
                     <template v-else="type==2">
                         <span class="goodsRemindTxt">10:00准时开抢</span>

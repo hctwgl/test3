@@ -1,3 +1,4 @@
+
 .banner{
   overflow: hidden;
   height: 3.4rem;
@@ -11,6 +12,10 @@
   z-index: 3;
   .swiper-pagination-bullet-active{
     background: #fff;
+  }
+  .swiper-pagination-bullet{
+    background: #fff;
+    opacity: .4;
   }
 }
 .nav{
@@ -69,20 +74,24 @@
 .goodsInfo{
   width: 4rem;
   float: left;
-  height: 2.8rem;
+  margin-top: .2rem;
+  height: 2.6rem;
   overflow: hidden;
 }
 .goodsName{
   font-size: .34rem;
-  white-space: nowrap;
-  margin-bottom: .25rem;
+  height:.48rem;
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
 }
 .goodsPrice{
   font-size: .4rem;
-  line-height: .4rem;
+  line-height: .58rem;
   font-weight: 600;
   position: relative;
-  top: .03rem;
+  top: .06rem;
 }
 .goodsFan{
   font-size: .24rem;
@@ -93,7 +102,7 @@
   border-radius: 2px;
   background: #ff5546;
   color:white;
-  margin: 0 0 0 .1rem;
+  margin: 0 0 0 .2rem;
 }
 .goodsRebate{
   font-size: .28rem;
@@ -117,7 +126,7 @@
   font-size: .2rem;
   overflow: hidden;
   position: relative;
-  top: .06rem;
+  top: .02rem;
   .shadow{
     height:.3rem;
     position: absolute;
@@ -129,7 +138,7 @@
 }
 .goodsNumOver{
   background:rgba(153,153,153,0.16);
-  border:1px solid #999;
+  border:1px solid #ccc;
   color:#999;
 }
 .goodsBtn{
@@ -140,7 +149,7 @@
   text-align: center;
   color:#ffffff;
   background:#ff8833;
-  margin-left: .35rem;
+  margin-left: .5rem;
   border-radius:.08rem;
   font-size: .28rem;
 }

@@ -121,7 +121,8 @@ let vm=new Vue({
         },
 
         goodsClick(data){
-            $.ajax({
+            if(this.type===1){
+                $.ajax({
                     url:'/fanbei-web/activity/checkGoods',
                     type:'post',
                     data:{goodsId:data.goodsId},
@@ -135,6 +136,7 @@ let vm=new Vue({
                         }
                     }
                 })
+            }
         }
     }
 });
