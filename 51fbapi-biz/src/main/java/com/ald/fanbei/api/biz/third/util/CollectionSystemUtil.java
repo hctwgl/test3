@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.CollectionDataBo;
@@ -225,8 +226,15 @@ public class CollectionSystemUtil extends AbstractThird {
 
 				// 参数校验
 				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance)) {
+
 					//还款金额校验
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+					AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(afBorrowCashDo.getRid(), tradeNo);
+					if(existItem!=null){
+						logger.error("offlineRepaymentNotify exist trade_no");
+						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.COLLECTION_THIRD_NO_EXIST);
+						return notifyRespBo;
+					}
 			        BigDecimal amount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount() ,afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
 			        //因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
 			        if(NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO).compareTo(amount.add(BigDecimal.valueOf(10))) > 0) {
