@@ -201,14 +201,14 @@ let vm = new Vue({
                     gameName=$('.gameName:first-child').find('span').html();
                     acctType=$('.gamePass p').html();
                     userName=$('.gamePass input').val();
-                    goodsNum=$('.changeColor01 .goodsNum').html();
+                    goodsNum=quantityNum*times;
                     actualAmount=$('.changeColor01 .pricePay').html();
                 }
                 if(self.dataType=='B'){
                     gameName=$('.gameName:first-child').find('span').html();
                     acctType=$('.gamePass p').html();
                     userName=$('.gamePass input').val();
-                    goodsNum=$('.changeColor01 .goodsNum').html();
+                    goodsNum=quantityNum*times;
                     actualAmount=$('.changeColor01 .pricePay').html();
                 }
                 goodsCount=$('.changeColor01 .goodsNum').html();
