@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -53,6 +54,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		Integer appVersion = context.getAppVersion();
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), 0);
 		Long userId = context.getUserId();
+		VersionCheckUitl.setVersion(context.getAppVersion());
 		//用户订单检查
 		AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
 		if(null == orderInfo){
@@ -110,24 +112,25 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 
 
 	private void addBorrowBill_1(AfOrderDo afOrderDo){
-		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
-		if(afBorrowDo !=null){
-			//查询是否己产生
-			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-			if(borrowList == null || borrowList.size()==0 ){
-				AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
-				if(_aa ==null) {
-					AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-					afBorrowExtendDo.setId(afBorrowDo.getRid());
-					afBorrowExtendDo.setInBill(0);
-					afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+		if(VersionCheckUitl.getVersion()>=VersionCheckUitl.VersionZhangDanSecond) {
+			AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+			if (afBorrowDo != null) {
+				//查询是否己产生
+				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+				if (borrowList == null || borrowList.size() == 0) {
+					AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+					if (_aa == null) {
+						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+						afBorrowExtendDo.setId(afBorrowDo.getRid());
+						afBorrowExtendDo.setInBill(0);
+						afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+					} else {
+						_aa.setInBill(1);
+						afBorrowExtendDao.updateBorrowExtend(_aa);
+					}
+					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+					afBorrowService.addBorrowBill(billList);
 				}
-				else{
-					_aa.setInBill(1);
-					afBorrowExtendDao.updateBorrowExtend(_aa);
-				}
-				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
-				afBorrowService.addBorrowBill(billList);
 			}
 		}
 	}
