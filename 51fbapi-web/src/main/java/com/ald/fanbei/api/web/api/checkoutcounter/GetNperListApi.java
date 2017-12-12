@@ -227,6 +227,7 @@ public class GetNperListApi implements ApiHandle {
                     if(!("0".equals(up12) && "0".equals(down12))){
                         if (new BigDecimal(up12).compareTo(totalamount)<0) {
                             array.removeAll(array);
+                            oneNper = "0";
                         }
                     }
                     Iterator<Object> it = array.iterator();
