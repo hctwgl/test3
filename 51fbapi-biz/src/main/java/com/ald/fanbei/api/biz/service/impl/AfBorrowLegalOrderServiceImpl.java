@@ -1,20 +1,18 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
 
 /**
  * ServiceImpl
@@ -28,11 +26,9 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLegalOrderDo, Long>
 		implements AfBorrowLegalOrderService {
 
-	private static final Logger logger = LoggerFactory.getLogger(AfBorrowLegalOrderServiceImpl.class);
-
 	@Resource
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
-	
+
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
 
@@ -41,17 +37,22 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 		return afBorrowLegalOrderDao;
 	}
 
-		@Override
-		public AfBorrowLegalOrderDo getLastBorrowLegalOrderByBorrowId(Long borrowId) {
-			// TODO Auto-generated method stub
-			return afBorrowLegalOrderDao.getLastBorrowLegalOrderByBorrowId(borrowId);
-		}
-		
+	@Override
+	public AfBorrowLegalOrderDo getLastBorrowLegalOrderByBorrowId(Long borrowId) {
+		return afBorrowLegalOrderDao.getLastBorrowLegalOrderByBorrowId(borrowId);
+	}
+
 	@Override
 	public int saveBorrowLegalOrder(AfBorrowLegalOrderDo afBorrowLegalOrderDo) {
 		String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
 		afBorrowLegalOrderDo.setOrderNo(orderCashNo);
 		return afBorrowLegalOrderDao.saveRecord(afBorrowLegalOrderDo);
+	}
+
+
+	@Override
+	public List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query) {
+		return afBorrowLegalOrderDao.getUserBorrowLegalOrderList(query);
 	}
 
 }

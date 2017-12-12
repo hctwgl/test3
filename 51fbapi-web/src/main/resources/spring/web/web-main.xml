@@ -433,7 +433,11 @@
 				<entry key="/legalborrow/applyLegalBorrowCash" value-ref="applyLegalBorrowCashApi" />
 				<entry key="/legalborrow/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoApi" />
 				<entry key="/legalborrow/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalOrderInfo" value-ref="getBorrowLegalOrderInfoApi" />
 				<entry key="/legalborrow/getCashPageType" value-ref="getCashPageTypeApi" />
+				<entry key="/legalborrow/applyLegalRenewal" value-ref="applyLegalRenewalApi" />
+				<entry key="/legalborrow/confirmLegalRenewalPay" value-ref="confirmLegalRenewalPayApi" />
+				
 			</map>
 		</constructor-arg>
 	</bean>

@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
 
 /**
  * Dao
@@ -13,6 +16,10 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Long> {
 
 	AfBorrowLegalOrderDo getLastBorrowLegalOrderByBorrowId(Long borrowId);
+
+	List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query);
+
+	int addBorrowLegalOrder(AfBorrowLegalOrderDo borrowLegalOrder);
 
     
 

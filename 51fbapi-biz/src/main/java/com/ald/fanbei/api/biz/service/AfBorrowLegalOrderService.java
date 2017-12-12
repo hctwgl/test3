@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
 
 /**
  * Service
@@ -18,5 +21,7 @@ public interface AfBorrowLegalOrderService extends ParentService<AfBorrowLegalOr
 	AfBorrowLegalOrderDo getLastBorrowLegalOrderByBorrowId(Long borrowId);
 
 	int saveBorrowLegalOrder(AfBorrowLegalOrderDo afBorrowLegalOrderDo);
+
+	List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query);
 	
 }
