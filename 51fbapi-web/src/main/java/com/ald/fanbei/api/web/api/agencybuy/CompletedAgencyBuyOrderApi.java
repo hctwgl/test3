@@ -11,11 +11,11 @@ import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.common.VersionCheckUitl;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,6 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -46,6 +45,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	RebateContext rebateContext;
 	@Resource
 	AfBorrowExtendDao afBorrowExtendDao;
+
+	@Resource
+	AfUserAccountDao afUserAccountDao;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -114,7 +116,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	private void addBorrowBill_1(AfOrderDo afOrderDo){
 		if(VersionCheckUitl.getVersion()>=VersionCheckUitl.VersionZhangDanSecond) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
-			if (afBorrowDo != null) {
+			if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
 				//查询是否己产生
 				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
 				if (borrowList == null || borrowList.size() == 0) {
@@ -130,6 +132,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					}
 					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
 					afBorrowService.addBorrowBill(billList);
+
+					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrderDo.getUserId());
+					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrderDo.getUserId());
 				}
 			}
 		}
