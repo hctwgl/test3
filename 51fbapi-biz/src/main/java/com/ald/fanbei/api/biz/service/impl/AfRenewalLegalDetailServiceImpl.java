@@ -1,9 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
-import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -15,9 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,12 +21,20 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.RiskOverdueBorrowBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
@@ -68,7 +69,6 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
-import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -226,22 +226,18 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		if (cardId == -2) {
 			legalOrderRepayment.setCardNo("");
 			legalOrderRepayment.setCardName(Constants.DEFAULT_USER_ACCOUNT);
-			legalOrderRepayment.setType("USER_ACCOUNT");
 		} else if (cardId == -1) {
 			legalOrderRepayment.setCardNo("");
 			legalOrderRepayment.setCardName(Constants.DEFAULT_WX_PAY_NAME);
-			legalOrderRepayment.setType("WX");
 		}
 		else if(cardId ==-3){
 			legalOrderRepayment.setCardNo("");
 			legalOrderRepayment.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
-			legalOrderRepayment.setType("ZFB");
 		}
 		else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			legalOrderRepayment.setCardNo(bank.getCardNumber());
 			legalOrderRepayment.setCardName(bank.getBankName());
-			legalOrderRepayment.setType("CARD");
 		}
 
 		return legalOrderRepayment;
