@@ -117,7 +117,7 @@ public class RepayDoApi implements ApiHandle {
 		bo.actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
 		bo.payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		bo.cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")),0l);
-		bo.userCouponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("userCouponId")), 0l);
+		bo.couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
 		bo.borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
 		bo.borrowOrderId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowOrderId")), 0l);
 		bo.from = ObjectUtils.toString(requestDataVo.getParams().get("from"), "").toString();
@@ -186,7 +186,7 @@ public class RepayDoApi implements ApiHandle {
 	}
 	
 	private void checkAmount(RepayBo bo) {
-		AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponById(bo.userCouponId);
+		AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponById(bo.couponId);
 		bo.userCouponDto = userCouponDto;
 		if (null != userCouponDto && !userCouponDto.getStatus().equals(CouponStatus.NOUSE.getCode())) {
 			logger.error("extractAndCheckParams.coupon" + JSON.toJSONString(userCouponDto));

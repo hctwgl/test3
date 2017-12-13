@@ -171,7 +171,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		AfRepaymentBorrowCashDo repayment = null;
 		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = null;
 		if(AfBorrowLegalRepayFromEnum.INDEX.name().equalsIgnoreCase(bo.from)) {
-			AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashDao.getById(bo.borrowOrderId);
+			AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
+			bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
+			
 			BigDecimal orderSumCash = orderCashDo.getAmount().add(orderCashDo.getOverdueAmount()).add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getOverdueAmount());
 			BigDecimal orderRemainCash = orderSumCash.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
 			
@@ -681,7 +683,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayment.setName(name);
 		repayment.setTradeNo(bo.tradeNo);
 		if (null != bo.userCouponDto) {
-			repayment.setUserCouponId(bo.userCouponId);
+			repayment.setUserCouponId(bo.couponId);
 			repayment.setCouponAmount(bo.userCouponDto.getAmount());
 		}
 		repayment.setRebateAmount(bo.rebateAmount);
@@ -720,7 +722,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		public BigDecimal rebateAmount; //可选字段
 		public String payPwd;			//可选字段
 		public Long cardId;
-		public Long userCouponId;		//可选字段
+		public Long couponId;		//可选字段
 		public Long borrowId;			//可选字段
 		public Long borrowOrderId; 		//可选字段
 		public String from;

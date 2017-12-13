@@ -35,7 +35,6 @@ public class RepayDoTest  extends BaseTest{
 		params.put("cardId", "3111464117");
 		params.put("actualAmount", "100");
 		params.put("borrowId", "1259619");
-		params.put("borrowOrderId", "2");
 		params.put("from", "INDEX");
 		
 		testApi(url, params, userName ,true);
