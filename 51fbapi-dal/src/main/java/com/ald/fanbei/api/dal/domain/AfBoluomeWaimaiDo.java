@@ -221,7 +221,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      *
      * @return 商品详细信息（json）
      */
-    @JSONField(name="food")
+    @JSONField(name = "food")
     public String getGoodsinfo() {
 	return goodsinfo;
     }
@@ -232,7 +232,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      * @param goodsinfo
      *            要设置的商品详细信息（json）
      */
-    @JSONField(name="food")
+    @JSONField(name = "food")
     public void setGoodsinfo(String goodsinfo) {
 	this.goodsinfo = goodsinfo;
     }
@@ -394,7 +394,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      *
      * @return 收件联系人手机号
      */
-    @JSONField(name="phone")
+    @JSONField(name = "phone")
     public String getContactMobile() {
 	return contactMobile;
     }
@@ -405,7 +405,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      * @param contactMobile
      *            要设置的收件联系人手机号
      */
-    @JSONField(name="phone")
+    @JSONField(name = "phone")
     public void setContactMobile(String contactMobile) {
 	this.contactMobile = contactMobile;
     }
@@ -511,9 +511,11 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
 
     public void setContact(BoluomeWaimaiContactDto contact) {
 	this.contact = contact;
-	this.contactAddr = contact.getAddress();
-	this.contactMobile = contact.getMobile();
-	this.contactName = contact.getName();
+	if (contact != null) {
+	    this.contactAddr = contact.getAddress();
+	    this.contactMobile = contact.getMobile();
+	    this.contactName = contact.getName();
+	}
     }
 
 }

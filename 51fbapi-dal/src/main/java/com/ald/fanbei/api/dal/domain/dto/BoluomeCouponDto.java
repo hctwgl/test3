@@ -29,8 +29,10 @@ public class BoluomeCouponDto extends AbstractSerial {
 
     public void setCoupon(CouponInfoDto coupon) {
 	this.coupon = coupon;
-	this.couponPrice = this.coupon.getPrice();
-	this.couponTitle = this.coupon.getTitle();
+	if (coupon != null) {
+	    this.couponPrice = this.coupon.getPrice();
+	    this.couponTitle = this.coupon.getTitle();
+	}
     }
 
     public String getCouponId() {
@@ -47,7 +49,7 @@ public class BoluomeCouponDto extends AbstractSerial {
      * @return 优惠劵金额
      */
     public BigDecimal getCouponPrice() {
-	return coupon.getPrice();
+	return this.couponPrice;
     }
 
     /**
@@ -66,7 +68,7 @@ public class BoluomeCouponDto extends AbstractSerial {
      * @return 优惠卷描述
      */
     public String getCouponTitle() {
-	return coupon.getTitle();
+	return this.couponTitle;
     }
 
     /**

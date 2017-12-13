@@ -579,8 +579,10 @@ public class AfBoluomeDianyingDo extends BoluomeCouponDto {
 
     public void setCinema(BoluomeCinemaDto cinema) {
 	this.cinema = cinema;
-	this.cinemaAddr = cinema.getAddr();
-	this.cinemaName = cinema.getName();
+	if (cinema != null) {
+	    this.cinemaAddr = cinema.getAddr();
+	    this.cinemaName = cinema.getName();
+	}
     }
 
 }

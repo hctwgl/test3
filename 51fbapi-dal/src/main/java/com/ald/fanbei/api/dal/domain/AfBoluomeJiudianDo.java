@@ -601,8 +601,10 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
     @JSONField(name = "Contact")
     public void setBoluomeContactDto(BoluomeJiudianContactDto boluomeContactDto) {
 	this.boluomeContactDto = boluomeContactDto;
-	this.contactMobile = boluomeContactDto.getMobile();
-	this.contactName = boluomeContactDto.getName();
+	if (boluomeContactDto != null) {
+	    this.contactMobile = boluomeContactDto.getMobile();
+	    this.contactName = boluomeContactDto.getName();
+	}
     }
 
 }
