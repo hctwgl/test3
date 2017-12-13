@@ -71,25 +71,25 @@ public class Test {
         	    AfBoluomeWaimaiDo afBoluomeJiudianDo  = JSON.parseObject("{        \"canCancel\": 0,        \"cancelledAt\": 1513070958782,        \"cartId\": \"cf33eba4df1c11e79a5f707990a81cc5\",        \"channel\": \"ele\",        \"channelName\": \"饿了么\",        \"contact\": {            \"address\": \"星耀城1期江陵路2028附近1栋2304\",            \"latitude\": 30.2135370853725,            \"longitude\": 120.214486948808,            \"name\": \"马巧盼\"        },        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },        \"couponId\": \"18879352\",        \"deliveryTimeShow\": \"18:19\",        \"displayStatus\": \"已取消\",        \"food\": {            \"abandoned_extra\": [],            \"group\": [                [                    {                        \"attrs\": [],                        \"category_id\": 1,                        \"garnish\": [],                        \"id\": 70597072,                        \"name\": \"梅干菜扣肉套餐\",                        \"new_specs\": [],                        \"price\": 29,                        \"quantity\": 3,                        \"sale_mode\": 0,                        \"sku_code\": \"\",                        \"sku_id\": \"3890636101\",                        \"specs\": [],                        \"supply_type\": 0,                        \"upc_code\": \"\",                        \"vfood_id\": 30398569,                        \"weight\": 1                    }                ]            ]        },        \"icon\": \"https://fuss10.elemecdn.com/8/d2/e45c0cae4109952d8ab0d6e1a670dpng.png?imageView2/1/w/150/h/150/format/png\",        \"id\": \"ala202895912378377\",        \"isOnlinePaid\": 1,        \"isVipDelivery\": 0,        \"name\": \"老娘舅（杭州星耀城店）\",        \"orderPrice\": 81,        \"orderType\": \"waimai\",        \"orderTypeName\": \"外卖\",        \"partnerId\": \"3016562176256905297\",        \"phone\": \"18730627127\",        \"price\": 71,        \"quantity\": 1,       \"restaurantId\": 50806125,        \"restaurantName\": \"老娘舅（杭州星耀城店）\",        \"restaurantPhone\": \"18058410527\",        \"status\": 8,        \"userId\": \"1953217\",        \"userPhone\": \"13043324643\"    }",AfBoluomeWaimaiDo.class);
         	    
         	    System.out.println(afBoluomeJiudianDo.toString());
-//        	    Map<String, String> params = new HashMap<String, String>();
-//        	    params.put(BoluomeCore.ORDER_ID, "ala202895912378377");
-//        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime() / 1000));
-//        
-//        	    // String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
-//        	    // "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) +
-//        	    // AesUtil.decrypt("OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B",
-//        	    // "testC1b6x@6aH$2dlw");
-//        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(params) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
-//        	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
-//        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
-//        
-//        	    // params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
-//        	    // "testC1b6x@6aH$2dlw"));
-//        	    params.put("appKey", "7887978286");
-//        	    params.put(BoluomeCore.SIGN, sign);
-//        	    String paramsStr = BoluomeCore.createLinkString(params);
-//        
-//        	    System.out.println(HttpUtil.doGet("https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr, 100));
+        	    Map<String, String> params = new HashMap<String, String>();
+        	    params.put(BoluomeCore.ORDER_ID, "ala202895912378377");
+        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime() / 1000));
+        
+        	    // String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
+        	    // "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) +
+        	    // AesUtil.decrypt("OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B",
+        	    // "testC1b6x@6aH$2dlw");
+        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(params) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+        	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
+        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
+        
+        	    // params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
+        	    // "testC1b6x@6aH$2dlw"));
+        	    params.put("appKey", "7887978286");
+        	    params.put(BoluomeCore.SIGN, sign);
+        	    String paramsStr = BoluomeCore.createLinkString(params);
+        
+        	    System.out.println(HttpUtil.doGet("https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr, 100));
         	} catch (Exception e) {
         	    // TODO Auto-generated catch block
         	    e.printStackTrace();
