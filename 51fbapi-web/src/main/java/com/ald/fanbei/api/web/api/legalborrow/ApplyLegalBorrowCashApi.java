@@ -52,7 +52,6 @@ import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -75,7 +74,6 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
@@ -102,7 +100,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	SmsUtil smsUtil;
 	@Resource
 	AfBorrowCashService afBorrowCashService;
-
 	@Resource
 	AfResourceService afResourceService;
 	@Resource
@@ -163,7 +160,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
 		String goodsAmount = ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount"));
-
+		// 收货地址信息
 		String deliveryAddress = ObjectUtils.toString(requestDataVo.getParams().get("deliveryAddress"));
 		String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"));
 		String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"));

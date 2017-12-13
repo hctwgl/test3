@@ -35,11 +35,6 @@ public class GetBorrowLegalChargeInfoApi implements ApiHandle {
         Map<String, Object> data = Maps.newHashMap();
         resp.setResponseData(data);
 
-        // 判断用户是否登录
-        Long userId = context.getUserId();
-        if (userId == null) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-        }
         AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(BORROW_RATE, BORROW_CASH_INFO_LEGAL);
         if (afResourceDo != null) {
             data.put("description", afResourceDo.getDescription());
