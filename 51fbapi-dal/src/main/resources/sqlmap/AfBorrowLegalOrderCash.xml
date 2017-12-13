@@ -92,7 +92,7 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo" keyProperty="rid">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo" keyProperty="id">
     	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
 	      SELECT LAST_INSERT_ID()
 	    </selectKey>

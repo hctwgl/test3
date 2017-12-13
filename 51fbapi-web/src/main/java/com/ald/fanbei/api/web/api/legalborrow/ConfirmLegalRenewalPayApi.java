@@ -231,7 +231,9 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
     		}
     		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
-
+    		if(afBorrowLegalOrderCash==null){
+    			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
+    		}
     		//上期总手续费
     		BigDecimal poundage = BigDecimal.ZERO;
     		//上期借款手续费
