@@ -100,14 +100,10 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				// 上翻 
 				endDate = DateUtil.parseDate(year+month, DateUtil.MONTH_SHOT_PATTERN);
 				strDate = DateUtil.addMonths(endDate, -4);
-			}else if (StringUtil.equals("bottom", operation)) {
-				// 下翻
+			}else {
+				// 下翻 bottom
 				strDate = DateUtil.parseDate(year+month, DateUtil.MONTH_SHOT_PATTERN);
 				endDate = DateUtil.addMonths(strDate, 4);
-			}else {
-				logger.error("getMyRepaymentHistoryV1Api operation error ,RequestDataVo id =" + requestDataVo.getId() + " ,operation=" + operation);
-				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.PARAM_ERROR);
-				return resp;
 			}
 			query.setStrDate(strDate);
 			query.setEndDate(endDate);
@@ -117,8 +113,32 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				query.setBizType(AfUserAmountBizType.REFUND.getCode());
 			}
 			amountList = afUserAmountService.getUserAmountByQuery(query);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			Integer strMonth = Integer.parseInt(DateUtil.getMonth(strDate));
+			for (int i = 0; i < 4; i++) {
+				Map<String, Object> timeMap = new HashMap<String, Object>();
+				if (strMonth + i - 12 > 0) {
+					timeMap.put("month", strMonth + i - 12);
+					List<AfUserAmountDo> list2 = new ArrayList<AfUserAmountDo>();
+					timeMap.put("amountList", list2);
+					list.add(timeMap);
+				}else {
+					timeMap.put("month", strMonth + i);
+					List<AfUserAmountDo> list2 = new ArrayList<AfUserAmountDo>();
+					timeMap.put("amountList", list2);
+					list.add(timeMap);
+				}
+			}
+			for (AfUserAmountDo amountDo : amountList) {
+				for (Map<String, Object> map2 : list) {
+					if (StringUtil.equals(map2.get("month").toString(), DateUtil.getMonth(amountDo.getGmtCreate()))) {
+						List<AfUserAmountDo> list2 = (List) map2.get("amountList");
+						list2.add(amountDo);
+					}
+				}
+			}
 			map.put("status", status);
-			map.put("amountList", amountList);
+			map.put("list", list);
 			resp.setResponseData(map);
 			return resp;
 		} catch (Exception e) {
