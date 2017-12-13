@@ -270,13 +270,15 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderRepayment.setGmtModified(new Date());
 		afBorrowLegalOrderRepaymentDao.updateBorrowLegalOrderRepayment(borrowLegalOrderRepayment);
 		
-		//更新订单记录
-		AfBorrowLegalOrderDo borrowLegalOrderDo = new AfBorrowLegalOrderDo();
-		borrowLegalOrderDo.setRid(orderId);
-		borrowLegalOrderDo.setStatus("CLOSED");
-		borrowLegalOrderDo.setGmtClosed(new Date());
-		borrowLegalOrderDo.setGmtModified(new Date());
-		afBorrowLegalOrderDao.updateById(borrowLegalOrderDo);
+		if(status.equals("Y")){
+			//更新订单记录
+			AfBorrowLegalOrderDo borrowLegalOrderDo = new AfBorrowLegalOrderDo();
+			borrowLegalOrderDo.setRid(orderId);
+			borrowLegalOrderDo.setStatus("CLOSED");
+			borrowLegalOrderDo.setGmtClosed(new Date());
+			borrowLegalOrderDo.setGmtModified(new Date());
+			afBorrowLegalOrderDao.updateById(borrowLegalOrderDo);
+		}
 
 		//更新还款记录
 		AfRenewalDetailDo afRenewalDetailDo = new AfRenewalDetailDo();
