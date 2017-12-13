@@ -192,6 +192,7 @@ public interface AfOrderDao {
 	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
-
+	Integer selectSumCountByGoodsId(Long goodsId);
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
+	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 }
