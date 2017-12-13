@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.legalborrow;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 
 /**
  * @author zjf
@@ -87,7 +89,14 @@ public class RepayDoApi implements ApiHandle {
 		this.afBorrowLegalRepaymentService.repay(bo);
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		// TODO 
+		Map<String, Object> data = Maps.newHashMap();
+		data.put("rid", bo.rid);
+		data.put("refId", bo.refId);
+		data.put("type", bo.type);
+		data.put("outTradeNo", bo.outTradeNo);
+		data.put("tradeNo", bo.tradeNo);
+		data.put("cardNo", bo.cardNo);
+		resp.setResponseData(data);
 		
 		return resp;
 		
