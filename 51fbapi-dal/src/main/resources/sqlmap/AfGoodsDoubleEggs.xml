@@ -162,7 +162,7 @@
     <select id="getAvalibleDateList" resultType="java.util.Date">
 	SELECT start_time FROM af_goods_double_eggs 
 		WHERE is_delete = 0 
-	AND DATE(start_time) >= DATE(NOW()) GROUP BY start_time ORDER BY start_time ;
+	GROUP BY start_time ORDER BY start_time ;
     </select>
     
     <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" parameterType="java.util.Date">
