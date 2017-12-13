@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712111621")
+    #set($version="201712131133")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -84,7 +84,7 @@
         <p class="fourthTitle"><img src="$src/ggFix13.png">我的场景</p>
         <p class="toRebateMoney" @click="toRebateMoneyClick()">去“吃玩住行”领返利金 ></p>
         <div class="couponList clearFix">
-            <div class="coupon" v-for="(item,index) in couponCont.boluomeCouponList" @click="couponClick(index)">
+            <div class="coupon" v-for="(item,index) in couponList" @click="couponClick(index)">
                 <p class="couponName">{{item.name}}</p>
                 <div class="middle">
                     <p class="couponAmount" v-if="item.type===1">￥<span>{{item.value}}</span></p>

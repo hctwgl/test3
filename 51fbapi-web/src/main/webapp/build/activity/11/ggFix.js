@@ -24,6 +24,7 @@ let vm = new Vue({
         content: {},
         ruleShow:'',
         couponCont:{},
+        couponList:'',
         firstTitle:'',
         firstValue:'',
         secondTitle:'',
@@ -44,7 +45,7 @@ let vm = new Vue({
                 type: 'post',
                 url: "/h5GgActivity/homePage",
                 success: function (data) {
-                    //console.log(data);
+                    console.log(data,'初始化数据');
                     self.content=eval('('+data+')').data;
                     console.log(self.content,'初始化数据');
                     /*外卖券+返利金*/
@@ -90,9 +91,13 @@ let vm = new Vue({
                 type: 'post',
                 url: "/h5GgActivity/boluomeCoupon",
                 success: function (data) {
-                    //console.log(data);
+                    console.log(data,'优惠券初始化');
                     self.couponCont=eval('('+data+')').data;
-                    console.log(self.couponCont,'优惠券初始化');
+                    console.log(self.couponCont);
+                    if(self.couponCont.boluomeCouponList){
+                        self.couponList=self.couponCont.boluomeCouponList;
+                    }
+                    console.log(self.couponList,'优惠券列表')
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
