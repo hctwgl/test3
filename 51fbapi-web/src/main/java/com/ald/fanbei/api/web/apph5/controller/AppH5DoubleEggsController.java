@@ -72,7 +72,7 @@ import com.alibaba.fastjson.JSONObject;
  * @version V1.0
  */
 @RestController
-@RequestMapping(value = "/appH5DoubleEggs", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+@RequestMapping(value = "/appH5DoubleEggs", produces = "text/html;charset=UTF-8")
 public class AppH5DoubleEggsController extends BaseController {
 	@Resource
 	AfCouponCategoryService afCouponCategoryService;
@@ -109,7 +109,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	* @return String   
 	* @throws
 	 */
-	@RequestMapping(value = "/initHomePage")
+	@RequestMapping(value = "/initHomePage",method = RequestMethod.POST )
 	public String initHomePage(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
@@ -144,7 +144,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	* @return String   
 	* @throws
 	 */
-	@RequestMapping(value = "/initOnsaleGoods")
+	@RequestMapping(value = "/initOnsaleGoods",method = RequestMethod.POST)
 	public String initOnsaleGoods(HttpServletRequest request,HttpServletResponse response){
 		String result = "";
 		try {
@@ -266,14 +266,12 @@ public class AppH5DoubleEggsController extends BaseController {
 	 * @return @return String 
 	 * @throws
 	 */
-	@RequestMapping(value = "/getOnSaleGoods")
+	@RequestMapping(value = "/getOnSaleGoods",method = RequestMethod.GET)
 	public String getOnSaleGoods(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 
-			Object object = request.getParameter("secondCategory");
-			Object o1 = request.getParameter("secondCategoryId");
 			Long secondCategoryId = NumberUtil.objToLong(request.getParameter("secondCategoryId"));
 			if(secondCategoryId == null){
 			    return H5CommonResponse.getNewInstance(false, "参数异常", "", data).toString();
@@ -491,7 +489,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	* @return String   
 	* @throws
 	 */
-	@RequestMapping(value = "/getSecondKillGoodsList")
+	@RequestMapping(value = "/getSecondKillGoodsList",method = RequestMethod.POST)
 	public String getSecondKillGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		FanbeiWebContext context = new FanbeiWebContext();
@@ -585,7 +583,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	* @return String   
 	* @throws
 	 */
-	@RequestMapping(value = "/subscribe")
+	@RequestMapping(value = "/subscribe",method = RequestMethod.POST)
 	public String subscribe(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		FanbeiWebContext context = new FanbeiWebContext();
