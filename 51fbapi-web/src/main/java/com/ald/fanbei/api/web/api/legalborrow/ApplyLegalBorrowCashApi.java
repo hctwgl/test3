@@ -261,7 +261,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 					// 新增搭售商品订单
 					afBorrowLegalOrderService.saveBorrowLegalOrder(afBorrowLegalOrderDo);
 					Long orderId = afBorrowLegalOrderDo.getRid();
-					afBorrowLegalOrderDo.setBorrowId(borrowId);
+					afBorrowLegalOrderCashDo.setBorrowId(borrowId);
 					afBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
 					afBorrowLegalOrderCashService.saveBorrowLegalOrderCash(afBorrowLegalOrderCashDo);
 					return borrowId;

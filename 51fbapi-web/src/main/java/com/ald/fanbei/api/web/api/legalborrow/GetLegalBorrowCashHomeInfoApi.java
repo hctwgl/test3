@@ -251,7 +251,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
 			BigDecimal saleAmount = goodsInfo.getSaleAmount();
-			maxAmount.subtract(saleAmount);
+			maxAmount = maxAmount.subtract(saleAmount);
 		}
 		
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
