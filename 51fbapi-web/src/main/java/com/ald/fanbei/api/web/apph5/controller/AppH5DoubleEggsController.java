@@ -507,7 +507,7 @@ public class AppH5DoubleEggsController extends BaseController {
 				log = log + String.format("middle params dateList.size() = %s", dateList.size());
 				logger.info(log);
 				
-				AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
+			//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
 				
 				for (Date startDate : dateList) {
@@ -545,19 +545,19 @@ public class AppH5DoubleEggsController extends BaseController {
 						goodsList.add(goodsBuffer);
 						
 					}
-//					afGoodsForSecondKill.setServiceDate(new Date());
-//					afGoodsForSecondKill.setGoodsList(goodsList);
+		
 				}
 				
 				
 				java.util.Map<String, Object> data = new HashMap<>();
+				
+
 				data.put("goodsList", goodsList);
 				data.put("serviceDate", new Date());
 
 				log = log + String.format("goodsList = %s",goodsList.toString());
 				logger.info(log);
 				
-
 				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 				return result;
 				

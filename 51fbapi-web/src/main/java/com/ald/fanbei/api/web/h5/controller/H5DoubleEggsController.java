@@ -162,53 +162,51 @@ public class H5DoubleEggsController extends H5Controller {
 		return result;
 	}
 
-	
 	@RequestMapping(value = "/getSecondKillGoodsList")
 	public String getSecondKillGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
 
-			Date now = new Date() ;
-			
 			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
-			
+
 			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
 			if (CollectionUtil.isNotEmpty(dateList)) {
-				
+
 				log = log + String.format("middle params dateList.size() = %s", dateList.size());
 				logger.info(log);
-				
-				AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
+
+				//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
-				
+
 				for (Date startDate : dateList) {
-					
+
 					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate);
 					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
-						
+
 						AfGoodsBuffer goodsBuffer = new AfGoodsBuffer();
-						
-					
-						
-						log = log + String.format("goodsListForDate=%s ,startDate = %s",goodsListForDate.toString() ,startDate);
+
+						log = log + String.format("goodsListForDate=%s ,startDate = %s", goodsListForDate.toString(),
+								startDate);
 						logger.info(log);
-						
+
 						goodsBuffer.setStartTime(startDate);
 						goodsBuffer.setGoodsListForDate(goodsListForDate);
+						goodsList.add(goodsBuffer);
 						
 					}
 				}
-				
-				java.util.Map<String, Object> data = new HashMap<>();
-				
-				log = log + String.format("goodsList = %s",goodsList.toString());
-				logger.info(log);
-				
-				afGoodsForSecondKill.setGoodsList(goodsList);
-				afGoodsForSecondKill.setServiceDate(new Date());
-				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 
-				
+				java.util.Map<String, Object> data = new HashMap<>();
+
+				data.put("goodsList", goodsList);
+				data.put("serviceDate", new Date());
+
+				log = log + String.format("goodsList = %s", goodsList.toString());
+				logger.info(log);
+
+				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+				return result;
+
 			}
 			result = H5CommonResponse.getNewInstance(false, "初始化失败").toString();
 
