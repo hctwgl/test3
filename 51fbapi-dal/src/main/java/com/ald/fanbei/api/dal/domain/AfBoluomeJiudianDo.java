@@ -3,7 +3,9 @@ package com.ald.fanbei.api.dal.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.ald.fanbei.api.dal.domain.dto.BoluomeContactDto;
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 新人专享实体
@@ -131,6 +133,8 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      */
     private String userPhone;
 
+    private BoluomeContactDto boluomeContactDto;
+
     /**
      * 获取主键Id
      *
@@ -211,6 +215,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 第三方订单号
      */
+    @JSONField(name = "id")
     public String getThirdOrderNo() {
 	return thirdOrderNo;
     }
@@ -221,6 +226,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param thirdOrderNo
      *            要设置的第三方订单号
      */
+    @JSONField(name = "id")
     public void setThirdOrderNo(String thirdOrderNo) {
 	this.thirdOrderNo = thirdOrderNo;
     }
@@ -230,6 +236,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 入住日期
      */
+    @JSONField(name = "ArrivalDate")
     public Date getArrivalDate() {
 	return arrivalDate;
     }
@@ -240,6 +247,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param arrivalDate
      *            要设置的入住日期
      */
+    @JSONField(name = "ArrivalDate")
     public void setArrivalDate(Date arrivalDate) {
 	this.arrivalDate = arrivalDate;
     }
@@ -249,6 +257,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 结束日期
      */
+    @JSONField(name = "DepartureDate")
     public Date getDepartureDate() {
 	return departureDate;
     }
@@ -259,6 +268,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param departureDate
      *            要设置的结束日期
      */
+    @JSONField(name = "DepartureDate")
     public void setDepartureDate(Date departureDate) {
 	this.departureDate = departureDate;
     }
@@ -268,6 +278,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 最早到店时间
      */
+    @JSONField(name = "EarliestArrivalTime")
     public Date getEarliestArrivalTime() {
 	return earliestArrivalTime;
     }
@@ -278,6 +289,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param earliestArrivalTime
      *            要设置的最早到店时间
      */
+    @JSONField(name = "EarliestArrivalTime")
     public void setEarliestArrivalTime(Date earliestArrivalTime) {
 	this.earliestArrivalTime = earliestArrivalTime;
     }
@@ -287,6 +299,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 酒店地址
      */
+    @JSONField(name = "HotelAddr")
     public String getHotelAddr() {
 	return hotelAddr;
     }
@@ -297,6 +310,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param hotelAddr
      *            要设置的酒店地址
      */
+    @JSONField(name = "HotelAddr")
     public void setHotelAddr(String hotelAddr) {
 	this.hotelAddr = hotelAddr;
     }
@@ -306,6 +320,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 酒店图标
      */
+    @JSONField(name = "HotelImg")
     public String getHotelImage() {
 	return hotelImage;
     }
@@ -316,6 +331,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param hotelImage
      *            要设置的酒店图标
      */
+    @JSONField(name = "HotelImg")
     public void setHotelImage(String hotelImage) {
 	this.hotelImage = hotelImage;
     }
@@ -325,6 +341,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 酒店名称
      */
+    @JSONField(name = "HotelName")
     public String getHotelName() {
 	return hotelName;
     }
@@ -335,6 +352,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param hotelName
      *            要设置的酒店名称
      */
+    @JSONField(name = "HotelName")
     public void setHotelName(String hotelName) {
 	this.hotelName = hotelName;
     }
@@ -344,6 +362,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 酒店电话
      */
+    @JSONField(name = "HotelTel")
     public String getHotelTel() {
 	return hotelTel;
     }
@@ -354,6 +373,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param hotelTel
      *            要设置的酒店电话
      */
+    @JSONField(name = "HotelTel")
     public void setHotelTel(String hotelTel) {
 	this.hotelTel = hotelTel;
     }
@@ -363,6 +383,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 最晚到店时间
      */
+    @JSONField(name = "LatestArrivalTime")
     public Date getLatestArrivalTime() {
 	return latestArrivalTime;
     }
@@ -373,6 +394,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param latestArrivalTime
      *            要设置的最晚到店时间
      */
+    @JSONField(name = "LatestArrivalTime")
     public void setLatestArrivalTime(Date latestArrivalTime) {
 	this.latestArrivalTime = latestArrivalTime;
     }
@@ -382,6 +404,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 入住人数
      */
+    @JSONField(name = "NumberOfCustomers")
     public Integer getNumberOfCustomers() {
 	return numberOfCustomers;
     }
@@ -392,6 +415,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param numberOfCustomers
      *            要设置的入住人数
      */
+    @JSONField(name = "NumberOfCustomers")
     public void setNumberOfCustomers(Integer numberOfCustomers) {
 	this.numberOfCustomers = numberOfCustomers;
     }
@@ -401,6 +425,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      *
      * @return 预定房间数
      */
+    @JSONField(name = "NumberOfRooms")
     public Integer getNumberOfRooms() {
 	return numberOfRooms;
     }
@@ -411,6 +436,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      * @param numberOfRooms
      *            要设置的预定房间数
      */
+    @JSONField(name = "NumberOfRooms")
     public void setNumberOfRooms(Integer numberOfRooms) {
 	this.numberOfRooms = numberOfRooms;
     }
@@ -565,6 +591,18 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      */
     public void setUserPhone(String userPhone) {
 	this.userPhone = userPhone;
+    }
+
+    @JSONField(name = "Contact")
+    public BoluomeContactDto getBoluomeContactDto() {
+	return boluomeContactDto;
+    }
+
+    @JSONField(name = "Contact")
+    public void setBoluomeContactDto(BoluomeContactDto boluomeContactDto) {
+	this.boluomeContactDto = boluomeContactDto;
+	this.contactMobile = boluomeContactDto.getMobile();
+	this.contactName = boluomeContactDto.getName();
     }
 
 }

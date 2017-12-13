@@ -3,7 +3,9 @@ package com.ald.fanbei.api.dal.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.ald.fanbei.api.dal.domain.dto.BoluomeCinemaDto;
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 新人专享实体
@@ -131,6 +133,8 @@ public class AfBoluomeDianyingDo extends BoluomeCouponDto {
      */
     private String userPhone;
 
+    private BoluomeCinemaDto cinema;
+
     /**
      * 获取主键Id
      *
@@ -211,6 +215,7 @@ public class AfBoluomeDianyingDo extends BoluomeCouponDto {
      *
      * @return 第三方订单号
      */
+    @JSONField(name = "id")
     public String getThirdOrderNo() {
 	return thirdOrderNo;
     }
@@ -221,6 +226,7 @@ public class AfBoluomeDianyingDo extends BoluomeCouponDto {
      * @param thirdOrderNo
      *            要设置的第三方订单号
      */
+    @JSONField(name = "id")
     public void setThirdOrderNo(String thirdOrderNo) {
 	this.thirdOrderNo = thirdOrderNo;
     }
@@ -566,4 +572,15 @@ public class AfBoluomeDianyingDo extends BoluomeCouponDto {
     public void setUserPhone(String userPhone) {
 	this.userPhone = userPhone;
     }
+
+    public BoluomeCinemaDto getCinema() {
+	return cinema;
+    }
+
+    public void setCinema(BoluomeCinemaDto cinema) {
+	this.cinema = cinema;
+	this.cinemaAddr = cinema.getAddr();
+	this.cinemaName = cinema.getName();
+    }
+
 }

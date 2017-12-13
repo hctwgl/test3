@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 新人专享实体
@@ -196,18 +197,19 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      *
      * @return 第三方订单号
      */
-    public String getThirdOrderNo() {
-	return thirdOrderNo;
+    @JSONField(name="id")
+    public String getThirdOrderNo(){
+      return thirdOrderNo;
     }
 
     /**
      * 设置第三方订单号
      * 
-     * @param thirdOrderNo
-     *            要设置的第三方订单号
+     * @param thirdOrderNo 要设置的第三方订单号
      */
-    public void setThirdOrderNo(String thirdOrderNo) {
-	this.thirdOrderNo = thirdOrderNo;
+    @JSONField(name="id")
+    public void setThirdOrderNo(String thirdOrderNo){
+      this.thirdOrderNo = thirdOrderNo;
     }
 
     /**

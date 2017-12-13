@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 新人专享实体
@@ -44,7 +45,7 @@ public class AfBoluomeJiayoukaDo extends BoluomeCouponDto {
     /**
      * 
      */
-    private String cardid;
+    private String cardId;
 
     /**
      * 充值号码运营商
@@ -171,18 +172,19 @@ public class AfBoluomeJiayoukaDo extends BoluomeCouponDto {
      *
      * @return 第三方订单号
      */
-    public String getThirdOrderNo() {
-	return thirdOrderNo;
+    @JSONField(name="id")
+    public String getThirdOrderNo(){
+      return thirdOrderNo;
     }
 
     /**
      * 设置第三方订单号
      * 
-     * @param thirdOrderNo
-     *            要设置的第三方订单号
+     * @param thirdOrderNo 要设置的第三方订单号
      */
-    public void setThirdOrderNo(String thirdOrderNo) {
-	this.thirdOrderNo = thirdOrderNo;
+    @JSONField(name="id")
+    public void setThirdOrderNo(String thirdOrderNo){
+      this.thirdOrderNo = thirdOrderNo;
     }
 
     /**
@@ -190,8 +192,8 @@ public class AfBoluomeJiayoukaDo extends BoluomeCouponDto {
      *
      * @return
      */
-    public String getCardid() {
-	return cardid;
+    public String getCardId() {
+	return cardId;
     }
 
     /**
@@ -200,8 +202,8 @@ public class AfBoluomeJiayoukaDo extends BoluomeCouponDto {
      * @param cardid
      *            要设置的
      */
-    public void setCardid(String cardid) {
-	this.cardid = cardid;
+    public void setCardId(String cardId) {
+	this.cardId = cardId;
     }
 
     /**
