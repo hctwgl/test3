@@ -190,9 +190,13 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     GOODS_COLLECTION_ALREADY_EXIST_ERROR("GOODS_COLLECTION_ALREADY_EXIST_ERROR",1602,"goods not exist error","商品已经收藏"),
     ORDER_NOFINISH_CANNOT_DELETE("ORDER_NOFINISH_CANNOT_DELETE",1603,"order not finish cannot delete","订单未完成，删除失败"),
     GOODS_HAVE_CANCEL("GOODS_HAVE_CANCEL",1604,"goods have cancel","商品已下架"),
-    
+    GOODS_HAVE_BEEN_RESERVED("GOODS_HAVE_BEEN_RESERVED",1605,"goods have been reserved","商品已预约"),
+    SOLD_OUT("SOLD_OUT",1607,"sold out","您来晚了，商品已抢光"),
+    GOODS_ARE_NOT_IN_STOCK("GOODS_ARE_NOT_IN_STOCK",1608,"goods are not in stock","商品库存不足，请重新购买"),
+    EXCEED_THE_LIMIT_OF_PURCHASE("EXCEED_THE_LIMIT_OF_PURCHASE",1609,"exceed the limit of purchase","超过限购数量，请修改商品数量"),
+
     //borrow model 1700-1799 
-    USER_ORDER_HAVE_CLOSED("USER_ORDER_HAVE_CLOSED",1604,"user order have closed","用户订单已关闭"),
+    USER_ORDER_HAVE_CLOSED("USER_ORDER_HAVE_CLOSED",1606,"user order have closed","用户订单已关闭"),
     BORROW_CONSUME_NOT_EXIST_ERROR("BORROW_CONSUME_NOT_EXIST_ERROR",1701,"borrow consume not exist error","分期未配置"),
     BORROW_CONSUME_MONEY_ERROR("BORROW_CONSUME_MONEY_ERROR",1702,"borrow consume money error","分期金额超过上限"),
     BORROW_BILL_NOT_EXIST_ERROR("BORROW_BILL_NOT_EXIST_ERROR",1703,"borrow bill not exist error","账单不存在"),

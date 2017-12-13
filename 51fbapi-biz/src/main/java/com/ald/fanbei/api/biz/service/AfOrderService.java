@@ -324,6 +324,10 @@ public interface AfOrderService {
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
+
+	Integer selectSumCountByGoodsId(Long goodsId);
+
+	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 	
 	/**
      * 获取已生成的秒杀订单

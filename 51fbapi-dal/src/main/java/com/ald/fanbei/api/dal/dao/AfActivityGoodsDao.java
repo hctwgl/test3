@@ -36,4 +36,5 @@ public interface AfActivityGoodsDao {
 
 	List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(@Param("activityId")Long activityId);
 
+	AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(@Param("goodsId") Long goodsId);
 }

@@ -97,7 +97,7 @@ public class GetPayAmountApi implements ApiHandle {
 		if (array == null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
-		removeSecondNper(array);
+		//removeSecondNper(array);
 
 		// 免息
 		String interestFreeJson = orderInfo.getInterestFreeJson();// 免息规则JSON
@@ -161,7 +161,7 @@ public class GetPayAmountApi implements ApiHandle {
 		Iterator<Object> it = array.iterator();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
 				it.remove();
 				break;
 			}

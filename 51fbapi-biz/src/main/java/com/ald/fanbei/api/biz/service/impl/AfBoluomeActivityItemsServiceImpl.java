@@ -33,4 +33,10 @@ public class AfBoluomeActivityItemsServiceImpl extends ParentServiceImpl<AfBoluo
 	public BaseDao<AfBoluomeActivityItemsDo, Long> getDao() {
 		return afBoluomeActivityItemsDao;
 	}
+
+	@Override
+	public AfBoluomeActivityItemsDo getItemsInfoByOrderId(long orderId) {
+		    // TODO Auto-generated method stub
+	        return afBoluomeActivityItemsDao.getItemsInfoByOrderId(orderId);
+	}
 }
