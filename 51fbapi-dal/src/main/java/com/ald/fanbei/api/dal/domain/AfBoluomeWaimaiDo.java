@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
+import com.ald.fanbei.api.dal.domain.dto.BoluomeWaimaiContactDto;
 import com.alibaba.fastjson.annotation.JSONField;
 
 /**
@@ -117,6 +118,8 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      */
     private String userPhone;
 
+    private BoluomeWaimaiContactDto contact;
+
     /**
      * 获取主键Id
      *
@@ -197,19 +200,20 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      *
      * @return 第三方订单号
      */
-    @JSONField(name="id")
-    public String getThirdOrderNo(){
-      return thirdOrderNo;
+    @JSONField(name = "id")
+    public String getThirdOrderNo() {
+	return thirdOrderNo;
     }
 
     /**
      * 设置第三方订单号
      * 
-     * @param thirdOrderNo 要设置的第三方订单号
+     * @param thirdOrderNo
+     *            要设置的第三方订单号
      */
-    @JSONField(name="id")
-    public void setThirdOrderNo(String thirdOrderNo){
-      this.thirdOrderNo = thirdOrderNo;
+    @JSONField(name = "id")
+    public void setThirdOrderNo(String thirdOrderNo) {
+	this.thirdOrderNo = thirdOrderNo;
     }
 
     /**
@@ -217,6 +221,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      *
      * @return 商品详细信息（json）
      */
+    @JSONField(name="food")
     public String getGoodsinfo() {
 	return goodsinfo;
     }
@@ -227,6 +232,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      * @param goodsinfo
      *            要设置的商品详细信息（json）
      */
+    @JSONField(name="food")
     public void setGoodsinfo(String goodsinfo) {
 	this.goodsinfo = goodsinfo;
     }
@@ -388,6 +394,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      *
      * @return 收件联系人手机号
      */
+    @JSONField(name="phone")
     public String getContactMobile() {
 	return contactMobile;
     }
@@ -398,6 +405,7 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      * @param contactMobile
      *            要设置的收件联系人手机号
      */
+    @JSONField(name="phone")
     public void setContactMobile(String contactMobile) {
 	this.contactMobile = contactMobile;
     }
@@ -495,6 +503,17 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      */
     public void setUserPhone(String userPhone) {
 	this.userPhone = userPhone;
+    }
+
+    public BoluomeWaimaiContactDto getContact() {
+	return contact;
+    }
+
+    public void setContact(BoluomeWaimaiContactDto contact) {
+	this.contact = contact;
+	this.contactAddr = contact.getAddress();
+	this.contactMobile = contact.getMobile();
+	this.contactName = contact.getName();
     }
 
 }

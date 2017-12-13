@@ -3,7 +3,7 @@ package com.ald.fanbei.api.dal.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.ald.fanbei.api.dal.domain.dto.BoluomeContactDto;
+import com.ald.fanbei.api.dal.domain.dto.BoluomeJiudianContactDto;
 import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -133,7 +133,7 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
      */
     private String userPhone;
 
-    private BoluomeContactDto boluomeContactDto;
+    private BoluomeJiudianContactDto boluomeContactDto;
 
     /**
      * 获取主键Id
@@ -594,12 +594,12 @@ public class AfBoluomeJiudianDo extends BoluomeCouponDto {
     }
 
     @JSONField(name = "Contact")
-    public BoluomeContactDto getBoluomeContactDto() {
+    public BoluomeJiudianContactDto getBoluomeContactDto() {
 	return boluomeContactDto;
     }
 
     @JSONField(name = "Contact")
-    public void setBoluomeContactDto(BoluomeContactDto boluomeContactDto) {
+    public void setBoluomeContactDto(BoluomeJiudianContactDto boluomeContactDto) {
 	this.boluomeContactDto = boluomeContactDto;
 	this.contactMobile = boluomeContactDto.getMobile();
 	this.contactName = boluomeContactDto.getName();

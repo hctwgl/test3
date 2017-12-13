@@ -2,7 +2,7 @@ package com.ald.fanbei.api.dal.domain.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class BoluomeContactDto {
+public class BoluomeJiudianContactDto {
     private String mobile;
     private String name;
 
