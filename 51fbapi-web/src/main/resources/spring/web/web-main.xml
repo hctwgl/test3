@@ -438,7 +438,9 @@
 				<entry key="/legalborrow/getCashPageType" value-ref="getCashPageTypeApi" />
 				<entry key="/legalborrow/applyLegalRenewal" value-ref="applyLegalRenewalApi" />
 				<entry key="/legalborrow/confirmLegalRenewalPay" value-ref="confirmLegalRenewalPayApi" />
-				
+				<entry key="/legalborrow/getBorrowLegalChargeInfo" value-ref="getBorrowLegalChargeInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalOrderDetail" value-ref="getBorrowLegalOrderDetailApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>

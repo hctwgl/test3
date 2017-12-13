@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfBorrowLegalOrderDeatilVo;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
@@ -43,10 +44,32 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
         if (userId == null) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
         }
+        AfBorrowLegalOrderDeatilVo afBorrowLegalOrderDeatilVo = new AfBorrowLegalOrderDeatilVo();
         AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
         AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
-        data.put("afBorrowLegalOrderCashDo", afBorrowLegalOrderCashDo);
-        data.put("afBorrowLegalOrderDo", afBorrowLegalOrderDo);
+        if (afBorrowLegalOrderCashDo != null){
+            afBorrowLegalOrderDeatilVo.setAmount(afBorrowLegalOrderCashDo.getAmount());
+            afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
+            afBorrowLegalOrderDeatilVo.setStatus(afBorrowLegalOrderCashDo.getStatus());
+            afBorrowLegalOrderDeatilVo.setType(afBorrowLegalOrderCashDo.getType());
+            afBorrowLegalOrderDeatilVo.setPoundageAmount(afBorrowLegalOrderCashDo.getPoundageAmount());
+            afBorrowLegalOrderDeatilVo.setInterestAmount(afBorrowLegalOrderCashDo.getInterestAmount());
+            afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
+            afBorrowLegalOrderDeatilVo.setOverdueDay(afBorrowLegalOrderCashDo.getOverdueDay());
+            afBorrowLegalOrderDeatilVo.setOverdueAmount(afBorrowLegalOrderCashDo.getOverdueAmount());
+        }
+        if (afBorrowLegalOrderCashDo != null){
+            afBorrowLegalOrderDeatilVo.setDeliveryPhone(afBorrowLegalOrderDo.getDeliveryPhone());
+            afBorrowLegalOrderDeatilVo.setDeliveryUser(afBorrowLegalOrderDo.getDeliveryUser());
+            afBorrowLegalOrderDeatilVo.setAddress(afBorrowLegalOrderDo.getAddress());
+            afBorrowLegalOrderDeatilVo.setGoodsName(afBorrowLegalOrderDo.getGoodsName());
+            afBorrowLegalOrderDeatilVo.setPriceAmount(afBorrowLegalOrderDo.getPriceAmount());
+            afBorrowLegalOrderDeatilVo.setOrderNo(afBorrowLegalOrderDo.getOrderNo());
+            afBorrowLegalOrderDeatilVo.setLogisticsInfo(afBorrowLegalOrderDo.getLogisticsInfo());
+            afBorrowLegalOrderDeatilVo.setGmtCreate(afBorrowLegalOrderCashDo.getGmtCreate());
+            afBorrowLegalOrderDeatilVo.setGmtDeliver(afBorrowLegalOrderDo.getGmtDeliver());
+        }
+        data.put("afBorrowLegalOrderDeatilVo", afBorrowLegalOrderDeatilVo);
         resp.setResponseData(data);
         return resp;
     }
