@@ -268,7 +268,7 @@ public class AppH5DoubleEggsController extends BaseController {
 	 * @return @return String 
 	 * @throws
 	 */
-	@RequestMapping(value = "/getOnSaleGoods",method = RequestMethod.GET)
+	@RequestMapping(value = "/getOnSaleGoods",method = RequestMethod.POST)
 	public String getOnSaleGoods(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
