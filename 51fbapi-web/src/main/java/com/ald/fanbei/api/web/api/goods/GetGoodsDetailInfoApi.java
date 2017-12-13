@@ -9,14 +9,12 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -25,10 +23,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -53,7 +47,8 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 	
 	@Resource
 	private TaobaoApiUtil taobaoApiUtil;
-	
+	@Resource
+	AfActivityGoodsService afActivityGoodsService;
 	@Resource
 	private AfResourceService afResourceService;
 	
@@ -79,7 +74,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        removeSecondNper(array);
+        //removeSecondNper(array);
         
     	BigDecimal saleAmount = goods.getSaleAmount();
     	AfSchemeGoodsDo schemeGoodsDo = null;
@@ -114,7 +109,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
         Iterator<Object> it = array.iterator();
         while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }
@@ -161,6 +156,19 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		//如果为自营商品，numId设置为goodsId
 		if(AfGoodsSource.SELFSUPPORT.getCode().equals(goods.getSource())){
 			vo.setNumId(goods.getRid()+"");
+			//是否限购
+			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goods.getRid());
+			if(null != afActivityGoodsDo){
+				if(StringUtils.isEmpty(afActivityGoodsDo.getLimitCount()+"") || (afActivityGoodsDo.getLimitCount() == 0)){
+					vo.setLimitedPurchase(-1);
+				}else{
+					vo.setLimitedPurchase(new Long(afActivityGoodsDo.getLimitCount()).intValue());
+				}
+			}else{
+				vo.setLimitedPurchase(-1);
+			}
+		}else{
+			vo.setLimitedPurchase(-1);
 		}
 		return vo;
 	}

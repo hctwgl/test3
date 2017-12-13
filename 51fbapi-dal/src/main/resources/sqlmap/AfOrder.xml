@@ -1020,6 +1020,8 @@
 		AND 
 			order_type IN ('TAOBAO','TMALL','AGENTBUY','SELFSUPPORT','SELFBUILD')
 	</select>
+	
+	
 	<select id="getOverOrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
 		SELECT
 		<include refid="queryFields"/>
@@ -1058,6 +1060,14 @@
 		WHERE
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+	</select>
+
+	<select id="selectSumCountByGoodsId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		SELECT sum(count) from af_order where is_delete = 0 and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId}
+	</select>
+
+	<select id="selectSumCountByGoodsIdAndType" resultType="java.lang.Integer" parameterType="AfOrderDo">
+		SELECT sum(count) from af_order where is_delete = 0 and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId} AND user_id = #{userId}
 	</select>
 	
 	<select id="getDouble12OrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
