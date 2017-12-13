@@ -11,17 +11,13 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.ImageType;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -139,6 +135,20 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// 获取首页商品信息
 		List<Map<String, Object>> categoryGoodsInfo = null;
 		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
+		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
+			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
+				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+			}else if(StringUtils.equals(afResourceDo.getValue1(),"Y")){
+				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+			}
+		}else{
+			if(StringUtils.equals(afResourceDo.getValue2(),"N")){
+				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+			}else if(StringUtils.equals(afResourceDo.getValue2(),"Y")){
+				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+			}
+		}
+
 		if(StringUtils.equals(afResourceDo.getValue(),"N")){
 			categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
 		}else if(StringUtils.equals(afResourceDo.getValue(),"Y")){

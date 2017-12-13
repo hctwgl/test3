@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -69,11 +70,20 @@ public class GetHomeGoodsListApi implements ApiHandle {
 		query.setPageSize(50);
 		List<AfGoodsDo> goodsDoList = null;
 		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
-		if(StringUtils.equals(afResourceDo.getValue(),"N")){
-			goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
-		}else if(StringUtils.equals(afResourceDo.getValue(),"Y")){
-			goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
+			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
+				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+			}else if(StringUtils.equals(afResourceDo.getValue1(),"Y")){
+				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+			}
+		}else{
+			if(StringUtils.equals(afResourceDo.getValue2(),"N")){
+				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+			}else if(StringUtils.equals(afResourceDo.getValue2(),"Y")){
+				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+			}
 		}
+
 
 
 		List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
