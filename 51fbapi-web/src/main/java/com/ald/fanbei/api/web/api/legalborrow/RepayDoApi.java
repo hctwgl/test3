@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.legalborrow;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 
 /**
  * @author zjf
@@ -87,7 +89,14 @@ public class RepayDoApi implements ApiHandle {
 		this.afBorrowLegalRepaymentService.repay(bo);
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		// TODO 
+		Map<String, Object> data = Maps.newHashMap();
+		data.put("rid", bo.rid);
+		data.put("refId", bo.refId);
+		data.put("type", bo.type);
+		data.put("outTradeNo", bo.outTradeNo);
+		data.put("tradeNo", bo.tradeNo);
+		data.put("cardNo", bo.cardNo);
+		resp.setResponseData(data);
 		
 		return resp;
 		
@@ -108,7 +117,7 @@ public class RepayDoApi implements ApiHandle {
 		bo.actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
 		bo.payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		bo.cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")),0l);
-		bo.userCouponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("userCouponId")), 0l);
+		bo.couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
 		bo.borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
 		bo.borrowOrderId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowOrderId")), 0l);
 		bo.from = ObjectUtils.toString(requestDataVo.getParams().get("from"), "").toString();
@@ -130,7 +139,7 @@ public class RepayDoApi implements ApiHandle {
 				&& (cashDo = afBorrowCashDao.getBorrowCashByrid(bo.borrowId)) != null
 				&& (orderCashDo = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId)) != null){
 		} else {
-			throw new FanbeiException(); // TODO
+			throw new FanbeiException("checkFrom error!"); // TODO
 		}
 		bo.cashDo = cashDo;
 		bo.orderCashDo = orderCashDo;
@@ -147,7 +156,7 @@ public class RepayDoApi implements ApiHandle {
 		
 		// 检查 当前借款 是否在续期操作中
 		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(bo.borrowId);
-		if (lastAfRenewalDetailDo == null || AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
+		if (lastAfRenewalDetailDo != null && AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
 			throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
 		}
 		
@@ -177,7 +186,7 @@ public class RepayDoApi implements ApiHandle {
 	}
 	
 	private void checkAmount(RepayBo bo) {
-		AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponById(bo.userCouponId);
+		AfUserCouponDto userCouponDto = afUserCouponService.getUserCouponById(bo.couponId);
 		bo.userCouponDto = userCouponDto;
 		if (null != userCouponDto && !userCouponDto.getStatus().equals(CouponStatus.NOUSE.getCode())) {
 			logger.error("extractAndCheckParams.coupon" + JSON.toJSONString(userCouponDto));

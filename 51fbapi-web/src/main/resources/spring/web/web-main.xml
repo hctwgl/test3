@@ -468,6 +468,8 @@
 				<entry key="/legalborrow/confirmLegalRenewalPay" value-ref="confirmLegalRenewalPayApi" />
 				<entry key="/legalborrow/getBorrowLegalChargeInfo" value-ref="getBorrowLegalChargeInfoApi" />
 				<entry key="/legalborrow/getBorrowLegalOrderDetail" value-ref="getBorrowLegalOrderDetailApi" />
+				<entry key="/legalborrow/repayDo" value-ref="repayDoApi" />
+
 
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
