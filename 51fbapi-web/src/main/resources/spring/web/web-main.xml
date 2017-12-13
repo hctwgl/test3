@@ -134,6 +134,7 @@
 				<value>/resource/getRedRainRounds</value>
 				<value>/legalborrow/getBorrowCashGoodInfo</value>
 				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
+				<value>/legalborrow/getCashPageType</value>
 			</list>
 		</constructor-arg>
 	</bean>
