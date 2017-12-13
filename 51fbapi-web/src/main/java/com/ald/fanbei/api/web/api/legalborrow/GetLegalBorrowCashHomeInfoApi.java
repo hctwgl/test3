@@ -118,14 +118,14 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	@Resource
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
-	@Resource 
+	@Resource
 	AfGoodsService afGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		Long userId = context.getUserId();
 		// 判断用户是否登录
-		if (userId != null) { 
+		if (userId != null) {
 			return processLogin(requestDataVo, context, request);
 		} else {
 			return processUnLogin(requestDataVo, context, request);
@@ -221,7 +221,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 		// 计算原始利率
 		BigDecimal oriRate = serviceRate.add(poundageRate);
-		
+
 		BigDecimal newRate = null;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
@@ -253,7 +253,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			BigDecimal saleAmount = goodsInfo.getSaleAmount();
 			maxAmount = maxAmount.subtract(saleAmount);
 		}
-		
+
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
 		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(14));
 		Long tmpGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(minProfitAmount);
@@ -263,12 +263,12 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			BigDecimal saleAmount = goodsInfo.getSaleAmount();
 			tmpLimitAmount = saleAmount.add(minAmount);
 		}
-		if(usableAmount.compareTo(tmpLimitAmount) >= 0) {
+		if (usableAmount.compareTo(tmpLimitAmount) >= 0) {
 			data.put("canBorrow", "Y");
 		} else {
 			data.put("canBorrow", "N");
 		}
-		
+
 		// 增加判断，如果前面还有没有还的借款，优先还掉
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
 		if (afBorrowCashDo == null) {
@@ -291,20 +291,22 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("rebateAmount", account.getRebateAmount());
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
-			// FIXME +商品订单借款金额+逾期费
+			// 计算总的还款金额，包括商品借款金额
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
 					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 			// 查询借款相关商品借款,计算总还款金额
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
 					.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 			if (afBorrowLegalOrderCash != null) {
+				BigDecimal orderCashAmount = afBorrowLegalOrderCash.getAmount();
 				BigDecimal overdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
 				BigDecimal repaidAmount = afBorrowLegalOrderCash.getRepaidAmount();
 				BigDecimal poundageAmount = afBorrowLegalOrderCash.getPoundageAmount();
 				BigDecimal interestAmount = afBorrowLegalOrderCash.getInterestAmount();
-				allAmount = allAmount.add(overdueAmount).add(poundageAmount).add(interestAmount).subtract(repaidAmount);
+				allAmount = allAmount.add(orderCashAmount).add(overdueAmount).add(poundageAmount).add(interestAmount)
+						.subtract(repaidAmount);
 			}
-			// FIXME 商品借款已还金额
+			//  减掉借款已还金额
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
@@ -395,7 +397,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
 				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			data.put("canBorrow", "N");
-		} 
+		}
 		BigDecimal nums = new BigDecimal((String) rate.get("nums"));
 		data.put("loanMoney", nums.multiply(currentAmount.getAmount()));
 		data.put("loanNum", nums.multiply(BigDecimal.valueOf(currentAmount.getNums())));
