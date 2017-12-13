@@ -159,7 +159,9 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
 		}
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
-		
+		if(afBorrowLegalOrderCash == null){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
+		}
 		//续借需要支付本金
 		BigDecimal capital =BigDecimal.ZERO;
 		
