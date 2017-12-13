@@ -16,7 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
@@ -91,10 +93,19 @@ public class PayRoutController {
     @Resource
     AfRenewalLegalDetailService afRenewalLegalDetailService;
 
+
+	@Resource
+	private HuichaoUtility huichaoUtility;
+
+	@Resource
+	private AfHuicaoOrderDao afHuicaoOrderDao;
     @Resource
     private YiBaoUtility yiBaoUtility;
     @Resource
     RedisTemplate redisTemplate;
+
+    @Resource
+    ThirdPayUtility thirdPayUtility;
 
     @Resource
     AfBankDao afBankDao;
@@ -535,7 +546,8 @@ public class PayRoutController {
             }
             //Map a = yiBaoUtility.getYiBaoOrder("hq2017091523034389983", "1001201709150000000017453099");
             thirdLog.info("YiBaoUpdate start ");
-            yiBaoUtility.updateYiBaoAllNotCheck();
+            //yiBaoUtility.updateYiBaoAllNotCheck();
+            thirdPayUtility.updateAllNotCheck();
             thirdLog.info("YiBaoUpdate end ");
             redisTemplate.delete(key);
             return "success";
@@ -544,6 +556,62 @@ public class PayRoutController {
             return e.toString();
         }
     }
+	/**
+	 *汇潮支付回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/huicaoback" })
+	@ResponseBody
+	public String huicaoback(HttpServletRequest request, HttpServletResponse response){
+		//String siginString = huichaoUtility.getSign("merchantOutOrderNo=1509598766744&merid=100001&msg={\"payMoney\":\"1.00\"}&noncestr=test2&orderNo=0000015095987667441&payResult=1");
+		thirdLog.info("huicaoBack start");
+		String merchantOutOrderNo = request.getParameter("merchantOutOrderNo");
+		String merid = request.getParameter("merid");
+		String msg = request.getParameter("msg");
+		String noncestr = request.getParameter("noncestr");
+		String orderNo = request.getParameter("orderNo");
+		String payResult = request.getParameter("payResult");
+		String sign = request.getParameter("sign");
+
+		String stringA = "merchantOutOrderNo="+merchantOutOrderNo+"&merid="+merid+"&msg="+msg+"&noncestr="+noncestr+"&orderNo="+orderNo+"&payResult="+payResult;
+		String signA  = huichaoUtility.getSign(stringA);
+
+		thirdLog.info("huicaoback:{merchantOutOrderNo:"+merchantOutOrderNo+",merid:"+merid+",msg:"+msg+",noncestr:"+noncestr+",orderNo:"+orderNo+",payResult:"+payResult+",sign:"+sign+"}");
+		if(sign.equals(signA)){
+			if(payResult.equals("1")){
+				AfHuicaoOrderDo afHuicaoOrderDo= afHuicaoOrderDao.getHuicaoOrderByThirdOrderNo(merchantOutOrderNo);
+				if(afHuicaoOrderDo == null){
+					thirdLog.info("huicaoback orderNo error :{merchantOutOrderNo:"+merchantOutOrderNo+",merid:"+merid+",msg:"+msg+",noncestr:"+noncestr+",orderNo:"+orderNo+",payResult:"+payResult+",sign:"+sign+"}");
+					return "error";
+				}
+				String attach = afHuicaoOrderDo.getPayType();
+				if (PayOrderSource.ORDER.getCode().equals(attach)) {
+					afOrderService.dealMobileChargeOrder(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
+					afRepaymentService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
+					//afOrderService.dealBrandOrderSucc(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo(), PayType.WECHAT.getCode());
+				} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
+					afRepaymentBorrowCashService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
+					afRenewalDetailService.dealRenewalSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+				}
+			}
+			else{
+
+			}
+			return "success";
+		}
+		return "error";
+
+
+
+
+
+	}
+
 
 
     /**

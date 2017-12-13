@@ -20,6 +20,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.rebate" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
+	<context:component-scan base-package="com.ald.fanbei.api.abtest.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.listener" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.api" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
@@ -91,14 +92,24 @@
 	<bean id="beforeLoginApiList" class="java.util.ArrayList">
 		<constructor-arg>
 			<list>
+				<value>/auth/getFaceTypeFree</value>
+			    <value>/auth/updateRealnameManualFree</value>
+
 				<value>/user/login</value>
+				<value>/user/quickLoginOrRegister</value>
 				<value>/user/getVerifyCode</value>
 				<value>/user/setRegisterPwd</value>
+				<value>/user/quickRegisterPwd</value>
 				<value>/user/checkVerifyCode</value>
 				<value>/user/resetPwd</value>
 				<value>/user/checkLoginVerifyCode</value>
+				<value>/user/accountAppealCheckSms</value>
+				<value>/user/accountAppealDo</value>
 				<value>/goods/getHomeInfo</value>
 				<value>/goods/getHomeInfoV1</value>
+				<value>/goods/getHomeInfoV2</value>
+				<value>/goods/getHomeInfoFront</value>
+				<value>/user/loginFront</value>
 				<value>/good/getSearchHome</value>
 				<value>/good/getBrandShopList</value>
 				<value>/goods/getThirdGoodsList</value>
@@ -128,6 +139,7 @@
 				<value>/trade/login</value>
 				<value>/instalments/getInstalmentsAd</value>
 				<value>/category/getGoodsList</value>
+				<value>/goods/getHomeGoodsList</value>
 				<value>/category/getAllGoodsCategory</value>
 
 				<value>/homePage/homeScrollBar</value>
@@ -145,10 +157,13 @@
 
 				<!-- user -->
 				<entry key="/user/login" value-ref="loginApi" />
+				<entry key="/user/quickLoginOrRegister" value-ref="quickLoginOrRegisterApi" />
 				<entry key="/user/getVerifyCode" value-ref="getVerifyCodeApi" />
 				<entry key="/user/checkVerifyCode" value-ref="checkVerifyCodeApi" />
 				<entry key="/user/setRegisterPwd" value-ref="setRegisterPwdApi" />
+				<entry key="/user/quickRegisterPwd" value-ref="quickRegisterPwdApi" />
 				<entry key="/user/resetPwd" value-ref="resetPwdApi" />
+				<entry key="/user/setQuickFirstPwd" value-ref="setQuickFirstPwdApi" />
 				<entry key="/user/getUserInfo" value-ref="getUserInfoApi" />
 				<entry key="/user/logout" value-ref="logoutApi" />
 				<entry key="/user/updateUserInfo" value-ref="updateUserInfoApi" />
@@ -160,6 +175,7 @@
 				<entry key="/user/commitFeedback" value-ref="commitFeedbackApi" />
 				<entry key="/user/getSigninInfo" value-ref="getSigninInfoApi" />
 				<entry key="/user/changeLoginPwd" value-ref="changeLoginPwdApi" />
+				<entry key="/user/setQuickLoginPwd" value-ref="setQuickLoginPwdApi" />
 				<entry key="/user/changeMobile" value-ref="changeMobileApi" />
 				<entry key="/user/getInvitationInfo" value-ref="getInvitationInfoApi" />
 				<entry key="/user/setPayPwd" value-ref="setPayPwdApi" />
@@ -188,11 +204,16 @@
 				<entry key="/user/getUserRecommed" value-ref="getUserRecommedApi"/>
 				<entry key="/user/checkLoginVerifyCode" value-ref="checkLoginVerifyCodeApi"/>
 				<entry key="/user/checkMobileRegistered" value-ref="checkMobileRegisteredApi"/>
+				<entry key="/user/checkQuickRegisteredPwd" value-ref="checkQuickRegisteredPwdApi"/>
 				<entry key="/user/changeMobile" value-ref="changeMobileApi"/>
 				<entry key="/user/changeMobileIfAble" value-ref="changeMobileIfAbleApi"/>
 				<entry key="/user/changeMobileCheckVerifyCode" value-ref="changeMobileCheckVerifyCodeApi"/>
 				<entry key="/user/changeMobileVerify" value-ref="changeMobileVerifyApi"/>
 				<entry key="/user/changeMobileSyncConacts" value-ref="changeMobileSyncConactsApi"/>
+				<entry key="/user/accountAppealCheckSms" value-ref="accountAppealCheckSmsApi"/>
+				<entry key="/user/accountAppealDo" value-ref="accountAppealDoApi"/>
+
+				
 				<entry key="/user/checkBankCardPwd" value-ref="checkBankCardPwdApi" />
 				<entry key="/user/signin" value-ref="signinApi" />
 
@@ -202,6 +223,7 @@
 				<entry key="/goods/getFootMarkList" value-ref="getFootMarkListApi" />
 				<entry key="/goods/getHomeInfo" value-ref="getHomeInfoApi" />
 				<entry key="/goods/getHomeInfoV1" value-ref="getHomeInfoV1Api" />
+				<entry key="/goods/getHomeInfoV2" value-ref="getHomeInfoV2Api" />
 				<entry key="/goods/getCateGoodsList" value-ref="getCateGoodsListApi" />
 				<entry key="/goods/getCategoryList" value-ref="getCategoryListApi" />
 				<entry key="/goods/getThirdGoodsList" value-ref="getThirdGoodsListApi" />
@@ -288,6 +310,8 @@
 				<entry key="/auth/authSupplyVerifying" value-ref="authSupplyVerifyingApi" />
 				<entry key="/auth/authAlipay" value-ref="authAlipayApi" />
                 <entry key="/auth/updateRealnameManual" value-ref="updateRealnameManualApi" />
+                <entry key="/auth/updateRealnameManualFree" value-ref="updateRealnameManualFreeApi" />
+
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
 				<!-- borrow -->
@@ -319,6 +343,8 @@
 				<entry key="/brand/getBrandCouponList" value-ref="getBrandCouponListApi" />
 				<entry key="/brand/pickBrandCoupon" value-ref="pickBrandCouponApi" />
 				<entry key="/brand/payOrderV1" value-ref="payOrderV1Api" />
+				<entry key="/drainage/getBannerList" value-ref="getDrainageBannerListApi" />
+
 
 				<!--borrowCash -->
 				<entry key="/borrowCash/getBorrowCashHomeInfo" value-ref="getBorrowCashHomeInfoApi" />
@@ -375,6 +401,7 @@
 
 				<!-- face++人脸识别 -->
 				<entry key="/auth/getFaceType" value-ref="getFaceTypeApi" />
+				<entry key="/auth/getFaceTypeFree" value-ref="getFaceTypeFreeApi" />
 				<entry key="/auth/submitIdNumberInfoForFacePlus" value-ref="submitIdNumberInfoForFacePlusApi" />
 				<entry key="/auth/updateIdCardForFacePlus" value-ref="updateIdCardForFacePlusApi" />
 				
@@ -441,7 +468,19 @@
 				<entry key="/legalborrow/getBorrowLegalChargeInfo" value-ref="getBorrowLegalChargeInfoApi" />
 				<entry key="/legalborrow/getBorrowLegalOrderDetail" value-ref="getBorrowLegalOrderDetailApi" />
 
+				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
+
 			</map>
+		</constructor-arg>
+	</bean>
+
+	<!-- 灰度测试 URL-->
+	<bean id="abTestHandleList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>/goods/getHomeInfoFront</value>
+				<value>/user/loginFront</value>
+			</list>
 		</constructor-arg>
 	</bean>
 
