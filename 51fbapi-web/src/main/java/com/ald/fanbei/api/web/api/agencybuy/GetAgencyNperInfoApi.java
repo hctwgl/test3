@@ -126,7 +126,7 @@ public class GetAgencyNperInfoApi implements ApiHandle {
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        removeSecondNper(array);
+        //removeSecondNper(array);
         
         AfUserAccountDo afUserAccountDo = afUserAccountService.getUserAccountByUserId(userId);
         BigDecimal useableAmount = BigDecimalUtil.subtract(afUserAccountDo.getAuAmount(), afUserAccountDo.getUsedAmount());
@@ -171,9 +171,9 @@ public class GetAgencyNperInfoApi implements ApiHandle {
             return;
         }
         Iterator<Object> it = array.iterator();
-        while (it.hasNext()) {
+    while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }

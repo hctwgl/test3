@@ -25,5 +25,6 @@ public interface AfActivityGoodsService {
 
 	List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(Long activityId);
 
+	AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(Long goodsId);
 	
 }

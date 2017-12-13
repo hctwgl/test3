@@ -223,5 +223,18 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
 		from af_goods_price 
 		WHERE goods_id=#{goodsId}
     </select>
-    
+
+    <select id="selectSumStock" parameterType="java.lang.Long" resultType="java.lang.Integer" >
+        select SUM(stock) from af_goods_price where  is_delete = 0 and is_sale = 'Y' and goods_id = #{goodsId}
+    </select>
+
+    <update id="updateSell" parameterType="java.lang.Long">
+        UPDATE af_goods_price SET stock = stock - #{count} , sale_count = sale_count + #{count} where id = #{priceId}
+    </update>
+
+    <update id="updateReturnGoods" parameterType="java.lang.Long"  >
+        UPDATE af_goods_price SET stock = stock + #{count} , sale_count = sale_count - #{count} where id = #{priceId}
+    </update>
+
+
 </mapper>

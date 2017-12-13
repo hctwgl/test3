@@ -1063,7 +1063,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        removeSecondNper(array);
+        //removeSecondNper(array);
 
         JSONArray interestFreeArray = null;
         if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
@@ -1119,7 +1119,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         Iterator<Object> it = array.iterator();
         while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }
@@ -2066,9 +2066,20 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	}
 
 	@Override
+    public Integer selectSumCountByGoodsId(Long goodsId){
+        return orderDao.selectSumCountByGoodsId(goodsId);
+    }
+
+    @Override
+    public Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo){
+        return orderDao.selectSumCountByGoodsIdAndType(afOrderDo);
+    }
+	
+	@Override
 	public List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,
 			Long userId) {
 		// TODO Auto-generated method stub
 		return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId,userId);
 	}
+
 }

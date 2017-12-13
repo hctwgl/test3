@@ -2,6 +2,9 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -9,6 +12,7 @@ import java.util.Random;
 import javax.annotation.Resource;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.log4j.lf5.util.DateFormatManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,7 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.alibaba.druid.sql.visitor.functions.Now;
 import com.timevale.esign.sdk.tech.impl.model.GetAccountInfoModel;
 import com.timevale.esign.sdk.tech.service.impl.i;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -74,9 +79,9 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	/**
 	 * 
 	 * @Title: addRedPacket @author qiao @date 2017年11月17日
-	 * 下午3:59:57 @Description: the second time light activity some logics during
-	 * the order is finished . @param orderId @param userId @throws
-	 * Exception @throws
+	 *         下午3:59:57 @Description: the second time light activity some
+	 *         logics during the order is finished . @param orderId @param
+	 *         userId @throws Exception @throws
 	 */
 	@Override
 	public void addRedPacket(Long orderId, Long userId) throws Exception {
@@ -92,12 +97,12 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 				rebateDo.setOrderId(orderId);
 				rebateDo.setUserId(userId);
 				// check if its the first time for one specific channel
-				int orderTimes = afOrderDao.findFirstOrder(orderId,userId);
+				int orderTimes = afOrderDao.findFirstOrder(orderId, userId);
 				log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 				logger.info(log);
 				if (orderTimes == 0) {
 					rebateDo.setFirstOrder(1);
-					
+
 					// check if the order times for red packet
 					int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
 					log = log + String.format("redOrderTimes = %s ", redOrderTimes);
@@ -177,8 +182,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 			List<Long> redpacketIdList = relationDao.getRedpacketIdListByThreshold(thresholdId);
 			if (redpacketIdList != null && redpacketIdList.size() > 0) {
 				int length = redpacketIdList.size();
-				int index = new Random().nextInt(length)%(length-1+1) + 1;
-				redpacketId = redpacketIdList.get(index-1);
+				int index = new Random().nextInt(length) % (length - 1 + 1) + 1;
+				redpacketId = redpacketIdList.get(index - 1);
 			}
 
 			if (redpacketId != 0L) {
@@ -196,7 +201,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	/**
 	 * 
 	 * @Title: getListByUserId @author qiao @date 2017年11月17日
-	 * 下午12:59:03 @Description: 根据用户查所有返利 @param userId @return @throws
+	 *         下午12:59:03 @Description: 根据用户查所有返利 @param userId @return @throws
 	 */
 	@Override
 	public List<AfBoluomeRebateDo> getListByUserId(Long userId) {
@@ -207,7 +212,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	/**
 	 * 
 	 * @Title: getLightShopId @author qiao @date 2017年11月17日
-	 * 下午3:59:24 @Description: @param orderId @return @throws
+	 *         下午3:59:24 @Description: @param orderId @return @throws
 	 */
 	@Override
 	public Long getLightShopId(Long orderId) {
@@ -217,12 +222,33 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	/**
 	 * 
 	 * @Title: getRebateList @author qiao @date 2017年11月17日
-	 * 下午3:59:30 @Description: @param userId @return @throws
+	 *         下午3:59:30 @Description: @param userId @return @throws
 	 */
 	@Override
-	public List<AfRebateDo> getRebateList(Long userId,String startTime) {
-		return afBoluomeRebateDao.getRebateList(userId,startTime);
+	public List<AfRebateDo> getRebateList(Long userId, String startTime) {
+
+		List<AfRebateDo> listRebateDo = afBoluomeRebateDao.getRebateList(userId, startTime);
+		
+		for (AfRebateDo do1 : listRebateDo) {
+			String date = "";
+			try {
+				date = StringdateToString(do1.getConsumeTime());
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			do1.setConsumeTime(date);
+		}
+		return listRebateDo;
 	}
+
+	
+	public static String StringdateToString(String time) throws ParseException{ 
+	    SimpleDateFormat formatter; 
+	    formatter = new SimpleDateFormat ("yyyy-MM-dd"); 
+	    String ctime = formatter.format(formatter.parse(time)); 
+
+	    return ctime; 
+	} 
 
 	@Override
 	public AfBoluomeRebateDo getLastUserRebateByUserId(Long userId) {
@@ -230,23 +256,17 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		return afBoluomeRebateDao.getLastUserRebateByUserId(userId);
 	}
 
-//	@Override
-//	public AfBoluomeRebateDo getHighestNeverPopedRebate(Long userId) {
-//
-//		return afBoluomeRebateDao.getHighestNeverPopedRebate(userId);
-//	}
 
 	@Override
-	public int getRebateCount(Long shopId,Long userId) {
-		return afBoluomeRebateDao.getRebateCount(shopId,userId);
-		
+	public int getRebateCount(Long shopId, Long userId) {
+		return afBoluomeRebateDao.getRebateCount(shopId, userId);
+
 	}
 
 	@Override
 	public AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(Long startId, Long endId, Long userId) {
-	    // TODO Auto-generated method stub
-	    	return afBoluomeRebateDao.getMaxUserRebateByStartIdAndEndIdAndUserId(startId,endId,userId);
+		// TODO Auto-generated method stub
+		return afBoluomeRebateDao.getMaxUserRebateByStartIdAndEndIdAndUserId(startId, endId, userId);
 	}
-
 
 }
