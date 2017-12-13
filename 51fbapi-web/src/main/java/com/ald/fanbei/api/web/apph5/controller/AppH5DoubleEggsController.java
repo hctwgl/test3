@@ -272,7 +272,8 @@ public class AppH5DoubleEggsController extends BaseController {
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 
-			
+			Object object = request.getParameter("secondCategory");
+			Object o1 = request.getParameter("secondCategoryId");
 			Long secondCategoryId = NumberUtil.objToLong(request.getParameter("secondCategoryId"));
 			if(secondCategoryId == null){
 			    return H5CommonResponse.getNewInstance(false, "参数异常", "", data).toString();
@@ -294,7 +295,7 @@ public class AppH5DoubleEggsController extends BaseController {
     			        if (array == null) {
     			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
     			        }
-    			        removeSecondNper(array);
+    			       // removeSecondNper(array);
     				
 				
 				for(AfGoodsDo goodsDo : afGoodsList) {
