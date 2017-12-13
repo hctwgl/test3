@@ -94,6 +94,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		contextApp = context;
 		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("homePageType", "OLD");
 		Integer appVersion = context.getAppVersion();
 		try{
 			String userName = context.getUserName();

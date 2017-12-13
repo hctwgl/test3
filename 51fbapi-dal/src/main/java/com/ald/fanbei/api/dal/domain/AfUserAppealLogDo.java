@@ -15,6 +15,7 @@ public class AfUserAppealLogDo extends AbstractSerial {
 	private Long rid;  
 	
 	private Long userId;
+	private String oldMobile;
 	private String newMobile;
 	private String realName;
 	private String citizenId;
@@ -25,9 +26,10 @@ public class AfUserAppealLogDo extends AbstractSerial {
 	private Date gmtModified;
 	private Integer isDelete;
 	
-	public static AfUserAppealLogDo generate(Long userId, String newMobile, AfUserAppealLogStatusEnum status) {
+	public static AfUserAppealLogDo generate(Long userId, String oldMobile, String newMobile, AfUserAppealLogStatusEnum status) {
 		AfUserAppealLogDo logDo = new AfUserAppealLogDo();
 		logDo.userId = userId;
+		logDo.oldMobile = oldMobile;
 		logDo.newMobile = newMobile;
 		logDo.status = status.name();
 		return logDo;
@@ -98,6 +100,12 @@ public class AfUserAppealLogDo extends AbstractSerial {
 	}
 	public void setIsDelete(Integer isDelete) {
 		this.isDelete = isDelete;
+	}
+	public String getOldMobile() {
+		return oldMobile;
+	}
+	public void setOldMobile(String oldMobile) {
+		this.oldMobile = oldMobile;
 	}
 	 
 }

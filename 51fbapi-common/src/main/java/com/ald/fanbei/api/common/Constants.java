@@ -25,7 +25,7 @@ public class Constants {
 
 	public static final int MINITS_OF_2HOURS = 120;
 	public static final int MINITS_OF_HALF_HOUR = 30;
-
+	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
 	//商品详情图片信息包含数据总计部分
 	public static final int GOODSDETAIL_PIC_PARTS = 3;
@@ -144,6 +144,7 @@ public class Constants {
     public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX 		= "real_auth_citizen_card$";
     public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX 		= "real_auth_real_name$";
     public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX 				= "real_auth_pass$";
+    public static final String CACHEKEY_REAL_AUTH_MOBILE_INFO 				= "real_auth_mobile_info";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
