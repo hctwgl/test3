@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -89,7 +90,8 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 		return afGoodsPriceDao.selectSumStock(goodsId);
 	}
 
-	public Integer updateStockAndSaleCount(Long goodsId){
-		return afGoodsPriceDao.selectSumStock(goodsId);
+	@Override
+	public List<AfGoodsPriceDto> selectSumStockMap(String param){
+		return afGoodsPriceDao.selectSumStockMap(param);
 	}
 }

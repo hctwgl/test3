@@ -4,6 +4,7 @@
 package com.ald.fanbei.api.biz.rule.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -63,5 +64,9 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 	public AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(Long goodsId){
 		return afActivityGoodsDao.getActivityGoodsByGoodsIdAndType(goodsId);
 	}
-	
+
+	@Override
+	public List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(String param){
+		return afActivityGoodsDao.getActivityGoodsByGoodsIdAndTypeMap(param);
+	}
 }

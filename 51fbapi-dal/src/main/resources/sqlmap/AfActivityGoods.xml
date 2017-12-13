@@ -217,4 +217,17 @@
 		AND
 			goods_id = #{goodsId}
 	</select>
+
+	<select id="getActivityGoodsByGoodsIdAndTypeMap" resultType="AfActivityGoodsDo">
+		SELECT
+		<include refid="queryTotalFields"/>
+		FROM
+		af_activity_goods
+		WHERE
+		is_delete = 0
+		AND
+		type = 'LIMIT'
+		AND
+		goods_id in ( #{param} )
+	</select>
 </mapper>

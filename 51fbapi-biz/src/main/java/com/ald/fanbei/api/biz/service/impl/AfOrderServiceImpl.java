@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -2066,8 +2067,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	}
 
 	@Override
-    public Integer selectSumCountByGoodsId(Long goodsId){
-        return orderDao.selectSumCountByGoodsId(goodsId);
+    public List<AfOrderDto> selectSumCountByGoodsId(String param){
+        return orderDao.selectSumCountByGoodsId(param);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSONArray;
 
@@ -325,7 +326,7 @@ public interface AfOrderService {
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
 
-	Integer selectSumCountByGoodsId(Long goodsId);
+	List<AfOrderDto> selectSumCountByGoodsId(String param);
 
 	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 	

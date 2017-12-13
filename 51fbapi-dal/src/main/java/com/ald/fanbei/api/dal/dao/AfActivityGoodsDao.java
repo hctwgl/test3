@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -37,4 +38,6 @@ public interface AfActivityGoodsDao {
 	List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(@Param("activityId")Long activityId);
 
 	AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(@Param("goodsId") Long goodsId);
+
+	List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(String param);
 }

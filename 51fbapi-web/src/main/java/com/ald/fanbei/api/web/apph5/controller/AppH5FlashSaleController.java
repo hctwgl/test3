@@ -14,6 +14,8 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.*;
 import com.alibaba.fastjson.JSON;
@@ -106,6 +108,14 @@ public class AppH5FlashSaleController extends BaseController {
 //				break;
 //			}
 //		}
+		StringBuffer sb = new StringBuffer();
+		for(AfEncoreGoodsDto goodsDo : list){
+			sb.append("'").append(goodsDo.getRid()).append("'").append(",");
+		}
+		String param = sb.deleteCharAt(sb.length() - 1).toString();
+		List<AfActivityGoodsDo> goodslist = afActivityGoodsService.getActivityGoodsByGoodsIdAndTypeMap(param);
+		List<AfOrderDto> orderList = afOrderService.selectSumCountByGoodsId(param);
+		List<AfGoodsPriceDto> priceDtos = afGoodsPriceService.selectSumStockMap(param);
  		for(AfEncoreGoodsDto goodsDo : list) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			goodsInfo.put("goodName",goodsDo.getName());
@@ -118,28 +128,18 @@ public class AppH5FlashSaleController extends BaseController {
 			goodsInfo.put("goodsType", "0");
 			// 如果是分期免息商品，则计算分期
 			Long goodsId = goodsDo.getRid();
-			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsDo.getRid());
-			if(null != afActivityGoodsDo){
-				long initialCount = 0;
-				if(null != afActivityGoodsDo.getInitialCount()){
-					initialCount = afActivityGoodsDo.getInitialCount();
-				}
-				count = new Long(initialCount).intValue();
-			}else{
-				count = 0;
-			}
- 			Integer volume = afOrderService.selectSumCountByGoodsId(goodsId);
-			if(null == volume){
-				goodsInfo.put("volume",count);
-			}else{
-				goodsInfo.put("volume",volume+count);
-			}
-			Integer total = afGoodsPriceService.selectSumStock(goodsId);
-			if(null == total){
-				goodsInfo.put("total",count);
-			}else{
-				goodsInfo.put("total",total+Integer.parseInt(String.valueOf(goodsInfo.get("volume"))));
-			}
+//			Map<> map  = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsDo.getRid());
+//			if(null != afActivityGoodsDo){
+//				long initialCount = 0;
+//				if(null != afActivityGoodsDo.getInitialCount()){
+//					initialCount = afActivityGoodsDo.getInitialCount();
+//				}
+//				count = new Long(initialCount).intValue();
+//			}else{
+//				count = 0;
+//			}
+
+
 			AfSchemeGoodsDo schemeGoodsDo = null;
 			try {
 				schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);

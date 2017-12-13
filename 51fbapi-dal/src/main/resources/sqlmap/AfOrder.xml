@@ -1062,8 +1062,8 @@
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
 
-	<select id="selectSumCountByGoodsId" resultType="java.lang.Integer" parameterType="java.lang.Long">
-		SELECT sum(count) from af_order where is_delete = 0 and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId}
+	<select id="selectSumCountByGoodsId" resultType="AfOrderDto" >
+		SELECT sum(count) num ,goods_id from af_order where is_delete = 0 AND goods_id in (#{param}) and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) GROUP BY goods_id
 	</select>
 
 	<select id="selectSumCountByGoodsIdAndType" resultType="java.lang.Integer" parameterType="AfOrderDo">
