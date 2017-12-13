@@ -104,27 +104,20 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		// 获取当前环境
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 		List<Object> bannerList = new ArrayList<Object>();
 		List<Object> bannerListForShop = new ArrayList<Object>();
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
-			bannerList = getBannerObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
-			// 另一个banner
-			bannerListForShop = getBannerObjectWithResourceDolist(
-					afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
-		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
-			bannerList = getBannerObjectWithResourceDolist(afResourceService
-					.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowTopBanner.getCode()));
-			// 另一个banner
-			bannerListForShop = getBannerObjectWithResourceDolist(afResourceService
-					.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowShopBanner.getCode()));
+		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowTopBanner.getCode()));
+		    //另一个banner
+		    bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.BorrowShopBanner.getCode()));
+		}else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
+		    bannerList = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowTopBanner.getCode()));
+		   //另一个banner
+		    bannerListForShop = getBannerObjectWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(AfResourceType.BorrowShopBanner.getCode()));
 		}
 		AfScrollbarVo scrollbarVo = new AfScrollbarVo();
 		List<Object> bannerResultList = new ArrayList<>();
@@ -140,10 +133,8 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(userId);
 		// xiaotianjian 2017/06/20 增加最低借款金额资源判断，如果额度低于这个，则显示借款超市
-		AfResourceDo borrowCashLimitAmountResource = afResourceService
-				.getSingleResourceBytype(Constants.RES_BORROW_CASH_LIMIT_AMOUNT);
-		BigDecimal borrowCashLimitAmount = borrowCashLimitAmountResource == null ? BigDecimal.ZERO
-				: new BigDecimal(borrowCashLimitAmountResource.getValue());
+		AfResourceDo borrowCashLimitAmountResource = afResourceService.getSingleResourceBytype(Constants.RES_BORROW_CASH_LIMIT_AMOUNT);
+		BigDecimal borrowCashLimitAmount = borrowCashLimitAmountResource == null ? BigDecimal.ZERO : new BigDecimal(borrowCashLimitAmountResource.getValue());
 		BigDecimal usableAmount = account.getAuAmount().subtract(account.getUsedAmount());
 
 		// hy 2017年06月13日16:48:35 增加判断，如果前面还有没有还的借款，优先还掉 start
@@ -158,12 +149,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else {
 			data.put("status", afBorrowCashDo.getStatus());
 
-			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
-					|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
-			} else if (!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode())
-					&& usableAmount.compareTo(borrowCashLimitAmount) < 0
-					&& StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
+			} else if (!StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) && usableAmount.compareTo(borrowCashLimitAmount) < 0 && StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
 				inRejectLoan = YesNoStatus.YES.getCode();
 			}
 			data.put("jfbAmount", account.getJfbAmount());
@@ -172,8 +160,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
-			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
-					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			data.put("returnAmount", returnAmount);
 			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
@@ -184,8 +171,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 			data.put("overdueStatus", "N");
 			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
-			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")
-					&& afBorrowCashDo.getGmtPlanRepayment().before(now)) {
+			if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED") && afBorrowCashDo.getGmtPlanRepayment().before(now)) {
 				long day = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(), now);
 				data.put("overdueDay", day);
 				data.put("overdueStatus", "Y");
@@ -205,47 +191,32 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("rid", afBorrowCashDo.getRid());
 
 			data.put("renewalStatus", "N");
-			AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService
-					.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+			AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 			if (afRenewalDetailDo != null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
 				data.put("renewalStatus", "P");
 			} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
-				AfResourceDo duedateResource = afResourceService
-						.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
+				AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
 				BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
-				AfResourceDo amountResource = afResourceService
-						.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
+				AfResourceDo amountResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
 				BigDecimal amount_limit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
 
-				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(now,
-						afBorrowCashDo.getGmtPlanRepayment());
-				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().add(afBorrowCashDo.getSumOverdue())
-						.add(afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
+				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(now, afBorrowCashDo.getGmtPlanRepayment());
+				BigDecimal waitPaidAmount = afBorrowCashDo.getAmount().add(afBorrowCashDo.getSumOverdue()).add(afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
 				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
-				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0
-						&& waitPaidAmount.compareTo(amount_limit) >= 0) {
-					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService
-							.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
-					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo
-							&& !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
+				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amount_limit) >= 0) {
+					AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
+					if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
 						data.put("renewalStatus", "Y");
 					}
 				}
 			}
-
-			// 当待还本金小于等于第一次续期时待还本金的10%时，不再显示续期入口
-			BigDecimal waitPaidAmount = BigDecimalUtil.subtract(returnAmount, afBorrowCashDo.getOverdueAmount())
-					.subtract(afBorrowCashDo.getRateAmount());
-			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
-					Constants.RENEWAL_CAPITAL_RATE);
+			
+			//当待还本金小于等于第一次续期时待还本金的10%时，不再显示续期入口
+			BigDecimal waitPaidAmount = BigDecimalUtil.subtract(returnAmount, afBorrowCashDo.getOverdueAmount()).subtract(afBorrowCashDo.getRateAmount());
+			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
-			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2,
-					RoundingMode.HALF_UP);
-			/*
-			 * if (returnAmount.compareTo(capital) <= 0) {
-			 * data.put("renewalStatus", "N"); }
-			 */
-			if (returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
+			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+			if (returnAmount.compareTo(capital) <= 0 || returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
 				data.put("renewalStatus", "N");
 			}
 		}
@@ -274,8 +245,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
-		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
-				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
+		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode()) || currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			data.put("canBorrow", "N");
 		} else {
 			data.put("canBorrow", "Y");
@@ -288,12 +258,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		String jumpToRejectPage = YesNoStatus.NO.getCode();
 		String jumpPageBannerUrl = "";
 
-		if (afBorrowCashDo != null && AfBorrowCashStatus.closed.getCode().equals(afBorrowCashDo.getStatus())
-				&& AfBorrowCashReviewStatus.refuse.getCode().equals(afBorrowCashDo.getReviewStatus())) {
+		if (afBorrowCashDo != null && AfBorrowCashStatus.closed.getCode().equals(afBorrowCashDo.getStatus()) && AfBorrowCashReviewStatus.refuse.getCode().equals(afBorrowCashDo.getReviewStatus())) {
 			// 借款被拒绝
-			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(
-					AfResourceType.RiskManagementBorrowcashLimit.getCode(),
-					AfResourceSecType.RejectTimePeriod.getCode());
+			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if (afResourceDo != null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())) {
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
 				Date desTime = DateUtil.addDays(afBorrowCashDo.getGmtCreate(), rejectTimePeriod);
@@ -306,9 +273,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			// 如果存在风控限制，需校验是否需要跳转至不通过页面等信息
 			if (YesNoStatus.YES.getCode().equals(inRejectLoan)) {
 				// 从用户操作日志中获取用户是否存在在现金借款操作
-				AfUserOperationLogDo afUserOperationLogDo = new AfUserOperationLogDo(userId,
-						AfUserOperationLogType.RISKBORROWCASH.getCode(),
-						AfUserOperationLogRefType.AFBORROWCASH.getCode(), afBorrowCashDo.getRid() + "");
+				AfUserOperationLogDo afUserOperationLogDo = new AfUserOperationLogDo(userId, AfUserOperationLogType.RISKBORROWCASH.getCode(), AfUserOperationLogRefType.AFBORROWCASH.getCode(), afBorrowCashDo.getRid() + "");
 				Integer riskBcNums = afUserOperationLogService.getNumsByUserAndType(afUserOperationLogDo);
 				if (NumberUtil.isNullOrZero(riskBcNums)) {
 					jumpToRejectPage = YesNoStatus.YES.getCode();
@@ -320,35 +285,29 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 
 		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
-				Constants.RES_BORROW_CASH_RANGE);
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_RANGE);
 		if (StringUtils.equals(RiskStatus.NO.getCode(), afUserAuthDo.getRiskStatus())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
 			data.put("maxAmount", resource.getValue());
 		}
-		if (YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus())
-				&& !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
-		}
+//		if(YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) && !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())){
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
+//		}
 		/* 如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai */
 		BigDecimal setMaxAmount = new BigDecimal(resource.getValue());
 		if (setMaxAmount.compareTo(calculateMaxAmount(usableAmount)) < 0) {
 			data.put("maxAmount", setMaxAmount);
 		}
 
-		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())
-				&& usableAmount.compareTo(borrowCashLimitAmount) < 0
-				&& StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
+		if (StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus()) && usableAmount.compareTo(borrowCashLimitAmount) < 0 && StringUtils.equals(unfinished, YesNoStatus.NO.getCode())) {
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 
 		// 如果需要跳转至不通过页面，则获取对应banner图地址
 		if (YesNoStatus.YES.getCode().equals(jumpToRejectPage)) {
 			// 获取不通过页面内banner图对应地址
-			AfResourceDo bannerResourceDo = afResourceService.getConfigByTypesAndSecType(
-					AfResourceType.RiskManagementBorrowcashLimit.getCode(),
-					AfResourceSecType.RejectPageBannerUrl.getCode());
+			AfResourceDo bannerResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectPageBannerUrl.getCode());
 			if (bannerResourceDo != null && AfCounponStatus.O.getCode().equals(bannerResourceDo.getValue4())) {
 				jumpPageBannerUrl = bannerResourceDo.getValue1();
 			}
@@ -372,23 +331,41 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			scrollbarVo = getAfScrollbarVo(resourceDo);
 		} else {
 			bannerResultList = bannerList;
-			if (context.getAppVersion() >= 377) {
-				List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");// 获取活动图片
-				if (recommend_imgs != null && recommend_imgs.size() > 0) {
+			if(context.getAppVersion()>=377) {
+				List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");//获取活动图片
+				if(recommend_imgs != null && recommend_imgs.size()>0) {
 					for (AfResourceDo afResourceDo : recommend_imgs) {
 						Map<String, Object> map = new HashMap();
-						map.put("imageUrl", afResourceDo.getValue() + "?name=RECOMMEND_IMG");
-						map.put("titleName", afResourceDo.getName());
-						map.put("type", "RECOMMEND_IMG");
-						bannerResultList.add(0, map);
+						map.put("imageUrl",afResourceDo.getValue()+"?name=RECOMMEND_IMG" );
+						map.put("titleName",afResourceDo.getName());
+						map.put("type","RECOMMEND_IMG");
+						bannerResultList.add(0,map);
 					}
 				}
 			}
 
 		}
 
+		/*List<Object> _bannerResultList = new ArrayList<>();
+		List<AfResourceDo> recommend_imgs = afRecommendUserService.getActivieResourceByType("RECOMMEND_IMG");//获取活动图片
+		if(recommend_imgs != null && recommend_imgs.size()>0) {
+			for (AfResourceDo afResourceDo : recommend_imgs) {
+				Map<String, Object> map = new HashMap();
+				map.put("imageUrl", afResourceDo.getValue() + "?name=RECOMMEND_IMG");
+				map.put("titleName", afResourceDo.getName());
+				map.put("type", "RECOMMEND_IMG");
+				_bannerResultList.add(map);
+			}
+			// _bannerResultList.add(bannerList);
+			for (Object obj : bannerList) {
+				_bannerResultList.add(obj);
+			}
+
+		}*/
+
 		data.put("scrollbar", scrollbarVo);
 		data.put("bannerList", bannerResultList);
+		//data.put("bannerList", _bannerResultList);
 		data.put("inRejectLoan", inRejectLoan);
 		data.put("jumpToRejectPage", jumpToRejectPage);
 		data.put("jumpPageBannerUrl", jumpPageBannerUrl);
@@ -409,14 +386,13 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		try {
 			// 首先判断用户是否参与过拆红包活动
 			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-			List<AfGameResultDo> gameResultList = afGameResultService.getTearPacketResultByUserId(userId,
-					afLastBorrowCashDo.getRid(), "tear_packet");
+			List<AfGameResultDo> gameResultList = afGameResultService.getTearPacketResultByUserId(userId, afLastBorrowCashDo.getRid(), "tear_packet");
 			String status = afLastBorrowCashDo.getStatus();
 			int takePartTime = 0;
 			if (gameResultList != null) {
 				takePartTime = gameResultList.size();
 			}
-			// 获取拆红包游戏信息
+			// 获取拆红包游戏信息 FIXME
 			AfGameDo gameDo = afGameService.getByCode("tear_packet");
 			Date gmtStart = gameDo.getGmtStart();
 			Date gmtEnd = gameDo.getGmtEnd();
@@ -435,8 +411,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 				data.put("showPacket", "N");
 			}
 			// 查询是否有借钱免息优惠券
-			List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByType(userId,
-					CouponType.FREEINTEREST.getCode());
+			List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByType(userId, CouponType.FREEINTEREST.getCode());
 			if (couponList != null && couponList.size() > 0) {
 				AfUserCouponDto afUserCouponDto = couponList.get(0);
 				Long couponId = afUserCouponDto.getCouponId();
@@ -450,13 +425,11 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			// 风控拒绝红包
 			AfGameDo riskPacketGameDo = afGameService.getByCode("risk_packet");
 			if (riskPacketGameDo != null) {
-				// 查询活动时间内是否有风控拒绝记录
+				// 查询活动时间内是否有风控拒绝记录 FIXME
 				Date gameStart = riskPacketGameDo.getGmtStart();
 				Date gameEnd = riskPacketGameDo.getGmtEnd();
-				List<AfBorrowCashDo> riskRefuseResultList = afBorrowCashService.getRiskRefuseBorrowCash(userId,
-						gameStart, gameEnd);
-				List<AfGameResultDo> gameResultList = afGameResultService.getTearRiskPacketResultByUserId(userId,
-						"risk_packet");
+				List<AfBorrowCashDo> riskRefuseResultList = afBorrowCashService.getRiskRefuseBorrowCash(userId, gameStart, gameEnd);
+				List<AfGameResultDo> gameResultList = afGameResultService.getTearRiskPacketResultByUserId(userId, "risk_packet");
 				int takePartTime = 0;
 				if (gameResultList != null) {
 					takePartTime = gameResultList.size();
@@ -473,14 +446,13 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			logger.error(e.getMessage());
 		}
 		try {
-			/** add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费 */
+			/**add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费*/
 			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
 		} catch (Exception e) {
-			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, rate.get("poundage").toString(),
-					Constants.SECOND_OF_ONE_MONTH);
-			logger.info(userId + "从风控获取分层用户额度失败：" + e);
+			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, rate.get("poundage").toString(), Constants.SECOND_OF_ONE_MONTH);
+			logger.info(userId + "从风控获取分层用户额度失败："  + e);
 		}
-
+		
 		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 		if (poundageRateCash != null) {
 			data.put("poundageRate", poundageRateCash.toString());
@@ -488,47 +460,40 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			data.put("poundageRate", rate.get("poundage").toString());
 		}
 
-		// 爬取商品开关
-		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,
-				Constants.THIRD_GOODS_IS_WORM_SECTYPE);
-		if (null != isWorm) {
-			data.put("isWorm", isWorm.getValue());
-		} else {
-			data.put("isWorm", 0);
+		//爬取商品开关
+		AfResourceDo isWorm = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		if(null != isWorm){
+			data.put("isWorm",isWorm.getValue());
+		}else{
+			data.put("isWorm",0);
 		}
-
+		
 		resp.setResponseData(data);
 		return resp;
 	}
 
 	private void getUserPoundageRate(Long userId, Map<String, Object> data, String inRejectLoan, String poundage) {
-		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
-		if (saveRateDate == null
-				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
+		Date saveRateDate =  (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
+		if (saveRateDate==null || DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
 			String poundageRate = riskResp.getPoundageRate();
 			if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
-				logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo()
-						+ ",poundageRate=" + poundageRate);
+				logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo() + ",poundageRate=" + poundageRate);
 				Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 
 				BigDecimal userPoundageRate = BigDecimal.ZERO;
-				if (poundageRateCash != null) {
+				if (poundageRateCash != null) {  
 					userPoundageRate = new BigDecimal(poundageRateCash.toString());
 				}
 
-				if (new BigDecimal(poundageRate).compareTo(userPoundageRate) < 0
-						&& StringUtils.equals(inRejectLoan, YesNoStatus.NO.getCode())) {
+				if (new BigDecimal(poundageRate).compareTo(userPoundageRate) < 0 && StringUtils.equals(inRejectLoan, YesNoStatus.NO.getCode())) {
 					data.put("showRatePopup", "Y");
 				}
-				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate,
-						Constants.SECOND_OF_ONE_MONTH);
-
-				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId,
-						new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
+				
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);				
 			} else {
-				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage,
-						Constants.SECOND_OF_ONE_MONTH);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage, Constants.SECOND_OF_ONE_MONTH);
 			}
 		}
 	}

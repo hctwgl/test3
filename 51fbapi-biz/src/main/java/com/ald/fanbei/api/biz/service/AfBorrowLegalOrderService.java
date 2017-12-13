@@ -20,6 +20,8 @@ public interface AfBorrowLegalOrderService extends ParentService<AfBorrowLegalOr
 	 */
 	AfBorrowLegalOrderDo getLastBorrowLegalOrderByBorrowId(Long borrowId);
 
+	AfBorrowLegalOrderDo getLastBorrowLegalOrderById(Long id);
+
 	int saveBorrowLegalOrder(AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
 	List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query);

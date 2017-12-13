@@ -120,7 +120,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
         }
         if (goodsId == 0) {
-        	throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+        	throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_GOOD_NOT_EXIST_ERROR);
         }
 
         String lockKey = Constants.CACHEKEY_APPLY_RENEWAL_LOCK + userId;
@@ -231,17 +231,19 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
     		}
     		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
-
+    		if(afBorrowLegalOrderCash==null){
+    			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
+    		}
     		//上期总手续费
     		BigDecimal poundage = BigDecimal.ZERO;
     		//上期借款手续费
     		BigDecimal borrowPoundage = BigDecimal.ZERO;
     		//上期订单手续费
-    		BigDecimal orderPoundage = afBorrowLegalOrderCash.getPoundageAmount();
+    		BigDecimal orderPoundage = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getPoundageAmount(),BigDecimal.ZERO);
     		//上期借款利息
     		BigDecimal borrowRateAmount = BigDecimal.ZERO;
     		//上期订单利息
-    		BigDecimal orderRateAmount = afBorrowLegalOrderCash.getInterestAmount();
+    		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
     		BigDecimal oneYeayDays = new BigDecimal(Constants.ONE_YEAY_DAYS);
     		
     		if(afBorrowCashDo.getRenewalNum()>0){
@@ -272,7 +274,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		//借款已还金额
     		BigDecimal borrowRepayAmount = afBorrowCashDo.getRepayAmount();
     		//订单已还金额
-    		BigDecimal orderRepayAmount = afBorrowLegalOrderCash.getRepaidAmount();
+    		BigDecimal orderRepayAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getRepaidAmount(),BigDecimal.ZERO);
 
     		//上期逾期费（借款和订单）
     		BigDecimal borrowOverdueAmount = afBorrowCashDo.getOverdueAmount();
@@ -345,7 +347,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
             //BigDecimal actualAmount = BigDecimalUtil.subtract(repaymentAmount, jfb).subtract(userAmount);
     		BigDecimal actualAmount = repaymentAmount;
 
-            if(! yiBaoUtility.checkCanNext(userId,1)){
+            if(! yiBaoUtility.checkCanNext(userId,"",1)){
                 return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
             }
 
