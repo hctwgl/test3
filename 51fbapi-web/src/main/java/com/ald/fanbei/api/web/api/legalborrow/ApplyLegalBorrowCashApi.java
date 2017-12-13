@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -163,11 +164,10 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
 		String goodsAmount = ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount"));
-		
+
 		String deliveryAddress = ObjectUtils.toString(requestDataVo.getParams().get("deliveryAddress"));
 		String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"));
 		String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"));
-
 
 		if (StringUtils.isBlank(amountStr) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
 				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox) || StringUtils.isBlank(goodsId)
@@ -257,8 +257,8 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 			String ipAddress = CommonUtil.getIpAddr(request);
-			final AfBorrowCashDo afBorrowCashDo = buildBorrowCashDoWithAmount(borrowAmount, type, latitude, longitude, mainCard,
-					city, province, county, address, userId, currentDay, rateInfoDo);
+			final AfBorrowCashDo afBorrowCashDo = buildBorrowCashDoWithAmount(borrowAmount, type, latitude, longitude,
+					mainCard, city, province, county, address, userId, currentDay, rateInfoDo);
 			// 用户借钱时app来源区分
 			String majiabaoName = requestDataVo.getId().substring(requestDataVo.getId().lastIndexOf("_") + 1,
 					requestDataVo.getId().length());
@@ -292,7 +292,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 
 			// 搭售商品订单
 			final AfBorrowLegalOrderDo afBorrowLegalOrderDo = buildBorrowLegalOrder(new BigDecimal(goodsAmount), userId,
-					0l, Long.parseLong(goodsId), goodsName, deliveryAddress,deliveryUser,deliveryPhone);
+					0l, Long.parseLong(goodsId), goodsName, deliveryAddress, deliveryUser, deliveryPhone);
 
 			// 订单借款
 			final AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = buildBorrowLegalOrderCashDo(
@@ -351,8 +351,8 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 						borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null);
 
 				if (verifyBo.isSuccess()) {
-					delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(), verifyBo.getResult(), afBorrowLegalOrderDo,
-							afBorrowLegalOrderCashDo);
+					delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(), verifyBo.getResult(),
+							afBorrowLegalOrderDo, afBorrowLegalOrderCashDo);
 					// 加入借款埋点信息,来自哪个包等
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
 				} else {
@@ -531,6 +531,12 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowLegalOrderCashDo.setOverdueAmount(overdueAmount);
 		afBorrowLegalOrderCashDo.setBorrowRemark(borrowRemark);
 		afBorrowLegalOrderCashDo.setRefundRemark(refundRemark);
+		// 获取借款天数
+		Integer planRepayDays = NumberUtil.objToIntDefault(type,0);
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_YEAR, planRepayDays);
+		afBorrowLegalOrderCashDo.setPlanRepayDays(planRepayDays);
+		afBorrowLegalOrderCashDo.setGmtPlanRepay(cal.getTime());
 		return afBorrowLegalOrderCashDo;
 	}
 
