@@ -27,10 +27,10 @@
             <div><span @click="typeClick(2)" :class="type===2?'active':''">明日预告</span></div>
         </div>
         <div class="con">
-            <div class="title"><span>精选好货 限量抢购</span><span class="time">每天10：00上新</span></div>
-            <div class="goods" v-for="data of content.goodsList">
+            <div class="title"><span>精选好货 限量抢购</span><span class="time">每天10:00上新</span></div>
+            <div class="goods" v-for="data of content.goodsList" @click="goodsClick(data)">
                 <img :src="data.goodsIcon">
-                <div class="goodsInfo" @click="goodsClick(data)">
+                <div class="goodsInfo">
                     <p class="goodsName"  style="-webkit-box-orient: vertical;">{{data.goodName}}</p>
                     <span class="goodsPrice">￥{{data.saleAmount}}</span>
                     <span class="goodsFan">返</span>
