@@ -139,7 +139,7 @@ public class RepayDoApi implements ApiHandle {
 				&& (cashDo = afBorrowCashDao.getBorrowCashByrid(bo.borrowId)) != null
 				&& (orderCashDo = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId)) != null){
 		} else {
-			throw new FanbeiException(); // TODO
+			throw new FanbeiException("checkFrom error!"); // TODO
 		}
 		bo.cashDo = cashDo;
 		bo.orderCashDo = orderCashDo;
@@ -156,7 +156,7 @@ public class RepayDoApi implements ApiHandle {
 		
 		// 检查 当前借款 是否在续期操作中
 		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(bo.borrowId);
-		if (lastAfRenewalDetailDo == null || AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
+		if (lastAfRenewalDetailDo != null && AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
 			throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
 		}
 		

@@ -162,6 +162,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		}
 		
 		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+		bo.tradeNo = tradeNo;
 		String finalName = typeName;
 		Long cardId = bo.cardId;
 		Long userId = bo.userId;
@@ -439,6 +440,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         
         cashDo.setSumRebate(BigDecimalUtil.add(cashDo.getSumRebate(), repaymentDo.getRebateAmount()));//余额使用
        
+        repaymentDo.setTradeNo(repayDealBo.curOutTradeNo);
         repaymentDo.setStatus(AfBorrowCashRepmentStatus.YES.getCode());// 变更还款记录为已还款
         afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repaymentDo);
         
@@ -477,6 +479,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.refId += orderCashDo.getRid();
 		repayDealBo.userId = cashDo.getUserId();
 		
+		orderRepaymentDo.setTradeNoUps(repayDealBo.curOutTradeNo);
 		orderRepaymentDo.setStatus(AfBorrowCashRepmentStatus.YES.getCode());// 变更还款记录为已还款
         afBorrowLegalOrderRepaymentDao.updateBorrowLegalOrderRepayment(orderRepaymentDo);
         
@@ -612,7 +615,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         temRepayMent.setStatus(status);
         temRepayMent.setTradeNo(outTradeNo);
         temRepayMent.setId(rid);
-        return afBorrowLegalOrderRepaymentDao.updateById(temRepayMent);
+        return afBorrowLegalOrderRepaymentDao.updateBorrowLegalOrderRepayment(temRepayMent);
     }
 	
 	/**
