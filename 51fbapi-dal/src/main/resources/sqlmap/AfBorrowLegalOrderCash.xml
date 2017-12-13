@@ -352,14 +352,12 @@
         WHERE is_delete = 0 AND borrow_legal_order_id=#{orderId ,jdbcType=BIGINT}
         LIMIT 1
     </select>
+    
     <select id="getRefBorrowCashByOrderId" resultType="com.ald.fanbei.api.dal.domain.AfBorrowCashDo">
         SELECT * FROM af_borrow_cash 
         WHERE is_delete = 0 AND id = (SELECT borrow_id FROM af_borrow_legal_order WHERE id = #{orderId ,jdbcType=BIGINT})
     </select>
-    <select id="getByOrderId" resultType="com.ald.fanbei.api.dal.domain.AfBorrowCashDo">
-        SELECT * FROM af_borrow_cash 
-        WHERE is_delete = 0 AND id = (SELECT borrow_id FROM af_borrow_legal_order WHERE id = #{orderId ,jdbcType=BIGINT})
-    </select>
+   
 
 	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo" parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">
         SELECT

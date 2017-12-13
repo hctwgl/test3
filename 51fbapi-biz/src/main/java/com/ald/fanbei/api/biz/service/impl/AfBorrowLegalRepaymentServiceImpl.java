@@ -12,6 +12,7 @@ import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -78,6 +79,7 @@ import com.alibaba.fastjson.JSONObject;
  * @date 2017-12-10 10:14:21
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Service("afBorrowLegalRepaymentService")
 public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorrowLegalOrderRepaymentDo, Long> implements AfBorrowLegalRepaymentService {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
