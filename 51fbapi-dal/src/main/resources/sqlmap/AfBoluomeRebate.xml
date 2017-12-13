@@ -174,11 +174,12 @@
 			    ) as type 
 			    FROM
 			    af_order o  
-			    LEFT JOIN af_boluome_rebate br ON  o.id = br.order_id AND o.is_delete = 0 and br.is_delete = 0
+			    LEFT JOIN af_boluome_rebate br ON  o.id = br.order_id AND br.is_delete = 0
 			    WHERE
 			    o.user_id =  #{userId}
 			    AND o.`status` in ('FINISHED','REBATED')
 			    AND o.`gmt_create` >= #{startTime}
+			    And o.is_delete = 0 
 			) as tt 
 			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
 			ORDER BY consumeTime desc , sceneRebate DESC;
