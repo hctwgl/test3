@@ -182,7 +182,7 @@
 			    And o.is_delete = 0 
 			) as tt 
 			on s.type = tt.type and s.is_delete = 0 AND s.`status`='O'
-			ORDER BY consumeTime desc , sceneRebate DESC;
+			ORDER BY consumeTime desc , surpriseRebate DESC;
 
     </select>
      <select id="getLastUserRebateByUserId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo" parameterType="java.lang.Long">
@@ -208,31 +208,7 @@
 		ORDER BY userRebate.rebate_amount DESC
 		LIMIT 0,1
     </select>
-    
-    <!-- <select id="getHighestNeverPopedRebate" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo">
-		<![CDATA[SELECT
-			id rid,gmt_create,gmt_modified,user_id,first_order,order_id, MAX(rebate_amount) as rebate_amount
-		FROM
-			af_boluome_rebate
-		WHERE
-			user_id = #{userId}
-		and is_delete = 0
-		
-		AND id > IFNULL(1,(
-			SELECT
-				rebate_index
-			FROM
-				af_boluome_activity_msg_index
-			WHERE
-				user_id = #{userId}
-				and is_delete = 0
-		LIMIT 0,1 
-		)) LIMIT 0,1
-		;]]>
-    
-    </select> -->
-    
-    
+   
     <select id="getScence" parameterType="java.lang.Long" resultType="java.lang.String">
     	
 	 SELECT name 
