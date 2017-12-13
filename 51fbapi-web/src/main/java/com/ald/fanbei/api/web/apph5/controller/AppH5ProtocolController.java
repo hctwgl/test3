@@ -111,6 +111,8 @@ public class AppH5ProtocolController extends BaseController {
 	AfUserOutDayDao afUserOutDayDao;
 	@Resource
 	AfOrderDao afOrderDao;
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 
 	@RequestMapping(value = {"protocolFenqiService"}, method = RequestMethod.GET)
 	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
@@ -154,6 +156,13 @@ public class AppH5ProtocolController extends BaseController {
 		if (null != borrowId && 0 != borrowId) {
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
+			//判断安卓401版本之前borrowId传成borrowBillId
+			String appInfo = JSON.parseObject(webContext.getAppInfo()).getString("id");
+			if(!"i".equals(appInfo.substring(0,1).toLowerCase()) && webContext.getAppVersion() < 401)
+			{
+				AfBorrowBillDo afBorrowBillDo = afBorrowBillService.getBorrowBillById(borrowId);
+				borrowId = afBorrowBillDo.getBorrowId();
+			}
 			isNewRate = GetIsNewRateByOrderType(borrowId);
 		}
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
