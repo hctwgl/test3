@@ -1032,6 +1032,27 @@
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
+	<select id="findFirstOrder" parameterType="java.lang.Long" resultType = "java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_order ao
+		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id AND ao.user_id = #{userId} 
+		INNER JOIN (
+			SELECT
+				o.order_type,
+				o.sec_type
+			FROM
+				af_order o
+			WHERE
+				o.id = #{orderId}
+		) t ON t.order_type = ao.order_type
+		AND t.sec_type = ao.sec_type
+		AND br.is_delete = 0
+		AND ao.is_delete = 0
+		AND ao.`status` in ('FINISHED','REBATED');
+	</select>
+	
 	<select id="getOverOrderByUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
 		SELECT
 		<include refid="queryFields"/>

@@ -19,7 +19,7 @@ function requestMsg(txt) {
         'max-width': '50%',
         'padding': '.2rem .4rem',
         'color': 'white',
-        'z-index': '20',
+        'z-index':'500',
         'background': 'rgba(0,0,0,0.7)',
         'border-radius': ' .08rem',
         'display': 'none'

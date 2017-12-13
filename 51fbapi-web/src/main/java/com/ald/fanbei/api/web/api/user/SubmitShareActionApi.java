@@ -1,13 +1,8 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
@@ -15,15 +10,13 @@ import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserItemsDao;
-import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserItemsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.h5.controller.H5GGShareController;
 
 /**
  *@类现描述：客户端提交分享行为，针对某些h5页面用户去分享时服务端需要记录是否分享、分享了之后需要做一些业务。针对需要服务端统计分享的页面客户端需把分享的行为告诉服务端
@@ -32,13 +25,12 @@ import com.ald.fanbei.api.web.h5.controller.H5GGShareController;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller("submitShareActionApi")
-public class SubmitShareActionApi implements ApiHandle {
-	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
+public class SubmitShareActionApi extends BaseController implements ApiHandle {
+	//protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");//埋点日志
 	@Resource
 	private AfGameChanceService afGameChanceService;
 	@Resource
 	AfBoluomeActivityUserItemsService afBoluomeActivityUserItemsService;
-	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -52,32 +44,49 @@ public class SubmitShareActionApi implements ApiHandle {
 		if("gameShare".equals(sharePage)){
 			afGameChanceService.dealWithShareGame(context.getMobile());
 		}
+		doMaidianLog(request, H5CommonResponse.getNewInstance(true, "分享"),"sharePage="+sharePage, context.getMobile());
+		//maidianLog.info("sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl"));
 //		if("ggIndexShare".equals(sharePage)){
 //			maidianLog.info(context.getUserName() + "ggIndexShare");
 //		}
 //
 		//若是逛逛点亮活动则形式为类似 ggpresents_userItemsId_5 格式
-		String[] strings = sharePage.split("_");
-		if (strings != null && strings.length == 3) {
-		       maidianLog.info(context.getUserName() +strings[0]);
-			if ("ggpresents".equals(strings[0])) {
-				String strUserItemsId = strings[2];
-				Long userItemsId = Long.parseLong(strUserItemsId);
-				//进行冻结卡片
-				try {
-					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
-					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
-						afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
-					}
-				} catch (Exception e) {
-					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-					
-				}
-				
-			}
-			
-		}
+//		String[] strings = sharePage.split("_");
+//		if (strings != null && strings.length == 3) {
+//		       maidianLog.info(context.getUserName() +strings[0]);
+//			if ("ggpresents".equals(strings[0])) {
+//				String strUserItemsId = strings[2];
+//				Long userItemsId = Long.parseLong(strUserItemsId);
+//				//进行冻结卡片
+//				try {
+//					AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+//					if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+//						afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+//					}
+//				} catch (Exception e) {
+//					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+//					
+//				}
+//				
+//			}
+//			
+//		}
 		
 		return resp;
+	}
+	@Override
+	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+	@Override
+	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
+	@Override
+	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
+	    // TODO Auto-generated method stub
+	    return null;
 	}
 }

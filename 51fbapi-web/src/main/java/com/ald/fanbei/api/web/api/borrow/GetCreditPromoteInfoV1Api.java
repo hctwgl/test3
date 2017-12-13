@@ -186,11 +186,18 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 			}
 		}
 
+
+
 		if(StringUtil.equals(authDo.getRealnameStatus(), YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode())
 				|| StringUtil.equals(authDo.getMobileStatus(),YesNoStatus.NO.getCode()) || StringUtil.equals(authDo.getTeldirStatus(),YesNoStatus.NO.getCode())
 				|| (StringUtil.equals(authDo.getRiskStatus(),RiskStatus.A.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.A.getCode()))){
-			data.put("title1","你好，"+userDto.getRealName());
-			data.put("title2","完善基本资料即可获取3000-20000额度");
+			if(StringUtil.equals(authDo.getBasicStatus(), YesNoStatus.YES.getCode()) && StringUtil.equals(authDo.getZmStatus(), YesNoStatus.NO.getCode()) ){
+				data.put("title1","你好，"+userDto.getRealName());
+				data.put("title2","请展开基础认证并重新认证芝麻信用，即可立即恢复额度");
+			}else{
+				data.put("title1","你好，"+userDto.getRealName());
+				data.put("title2","完善基本资料即可获取3000-20000额度");
+			}
 		}else if(StringUtil.equals(authDo.getRiskStatus(),RiskStatus.SECTOR.getCode()) && StringUtil.equals(authDo.getBasicStatus(),RiskStatus.SECTOR.getCode())){
 			data.put("title1","暂无信用额度");
 			data.put("title2","可以尝试重新提交啦，完成补充认证可以提高成功率");

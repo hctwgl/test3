@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.third.util.JpushUtil;
@@ -30,7 +32,8 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 
 	@Resource
 	JpushUtil jpushUtil;
-
+        @Resource 
+        AfResourceService afResourceService;
 	@Resource
 	private AfResourceDao afResourceDao;
 	private static final String PID = "pid";
@@ -38,6 +41,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	private static final String DATA = "data";
 	private static final String TIMESTAMP = "time";
 
+	
 	@Override
 	public void userInviteSuccess(String userName, String mobile) {
 		try {
@@ -854,5 +858,80 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}	
 		
 	}
+	@Override
+	public void boluomeActivityMsg(String userName,String type,String secType) {
+		try {
+		    
+		        //从af_resource 取得配置信息
+		    	AfResourceDo resourceInfo = afResourceService.getConfigByTypesAndSecType(type, secType);
+		    	if(resourceInfo!= null){
+        			String msgContext = resourceInfo.getValue();
+        			String pid = userName + "_" + System.currentTimeMillis();
+        			logger.info(StringUtil.appendStrs("boluomeActivityMsg,pid=", pid));
+        			Map<String, String> extras = new HashMap<String, String>();
+        			extras.put(PID, pid);
+        			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+        			extras.put(PUSH_JUMP_TYPE, "229");
+        			extras.put(DATA, "");
+        			jpushUtil.pushNotifyByAlias(resourceInfo.getValue1(), msgContext, extras, new String[] { userName });
+		    }
+		} catch (Exception e) {
+			logger.info("boluomeActivityMsg error", e);
+		}	
+		
+	}
 
+	@Override
+	public void send15Coupon(String userName) {
+		try {
+			String msgContext = "恭喜您邀请好友成功！15元无门槛外卖券已发放到您的账户，请记得查收并使用！";
+			String title = "恭喜您邀请好友成功";
+			logger.info("send15Coupon params ：　userName = {} , middle business params : msgContext = {} ,  title = {}",userName,msgContext,title);
+			commonMethod(userName,msgContext,title);
+		} catch (Exception e) {
+			logger.info("send15Coupon error", e);
+		}	
+		
+		
+	}
+	/**
+	 * 
+	* @Title: commonMethod
+	* @author qiao
+	* @date 2017年11月17日 下午4:40:31
+	* @Description: 一般发短信的接口可以调用的通用接口
+	* @param userName
+	* @param msgContext    
+	* @return void   
+	* @throws
+	 */
+	public void commonMethod(String userName,String msgContext,String title) {
+		try {
+			String pid = userName + "_" + System.currentTimeMillis();
+			logger.info(StringUtil.appendStrs("commonMethod,pid=", pid));
+			Map<String, String> extras = new HashMap<String, String>();
+			extras.put(PID, pid);
+			extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+			extras.put(PUSH_JUMP_TYPE, "229");
+			extras.put(DATA, "");
+			logger.info("commonMethod params : userName = {} , msgContext = {} , title = {} , pushNotifyByAlias params : extras = {}" ,new Object[]{userName,msgContext,title,extras});
+			jpushUtil.pushNotifyByAlias(title, msgContext, extras, new String[] { userName });
+		} catch (Exception e) {
+			logger.info("zhengxinRiskFault error", e);
+		}	
+		
+	}
+
+	@Override
+	public void sendRebateMsg(String userName, String scence, BigDecimal rebateAmount) {
+		try {
+			logger.info("sendRebateMsg params : userName = {} , scence = {} , rebateAmount = {}" ,new Object[]{userName,scence,rebateAmount});
+			String msgContext = "您已参与“" + scence + "”场景获得" + rebateAmount + "元惊喜返利金！参与越多，奖励越多，最高领取188元>>>";
+			String errorMsg = "恭喜您赢得返利";
+			commonMethod(userName,msgContext,errorMsg);
+		} catch (Exception e) {
+			logger.info("send15Coupon error", e);
+		}
+		
+	}
 }
