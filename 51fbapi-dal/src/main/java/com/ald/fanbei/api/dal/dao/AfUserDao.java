@@ -47,6 +47,13 @@ public interface AfUserDao {
 	 *@return
 	 */
 	AfUserDo getUserByUserName(@Param("userName")String userName);
+
+	/**
+	 * 通过用户名获取用户信息
+	 *@param id
+	 *@return
+	 */
+	AfUserDo getUserByMobile(@Param("mobile")String mobile);
 	/**
 	 * 获取该用户邀请的用户
 	 * @param recommendId

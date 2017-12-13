@@ -158,13 +158,27 @@ public interface AfResourceDao {
 	AfResourceDo getLaunchImageInfoByType(@Param("type")String resourceType);
 
 	AfResourceDo getOpenBoluomeCouponById(@Param("rid") Long rid);
-	
+
 	/**
 	 * 根据type获取滚动条列表
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
 	List<AfResourceDo> getScrollbarListByType(String type);
+
+	List<AfResourceDo> getEcommercePositionUpRescoure();
+
+	List<AfResourceDo> getEcommercePositionDownRescoure();
+
+	AfResourceDo getEcommerceFloorImgRes();
+
+	AfResourceDo getBrandFloorImgRes();
+
+	List<AfResourceDo> getHomeNomalPositionList();
+
+	List<AfResourceDo> getHomeBrandPositonInfoList();
+
+	AfResourceDo getFinancialEntranceInfo();
 
 }

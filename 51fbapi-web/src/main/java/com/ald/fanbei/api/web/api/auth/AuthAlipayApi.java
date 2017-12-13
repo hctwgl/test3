@@ -42,10 +42,9 @@ public class AuthAlipayApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		
 //		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FUNCTION_REPAIRING_ERROR);
-		
 		Long userId = context.getUserId();
 		AfResourceDo afResource= afResourceService.getSingleResourceBytype("ali_auth_close");
-
+		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(context.getUserId());
 		if(afResource==null||afResource.getValue().equals(YesNoStatus.YES.getCode())){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
 		}else{
@@ -53,10 +52,11 @@ public class AuthAlipayApi implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
 			}
 		}
-//		if(true){
-//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
-//		}
-		AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		//只对强风控认证通过的打开
+		if(afResource.getValue2().equals(YesNoStatus.YES.getCode())&&!afUserAuthDo.getBasicStatus().equals(YesNoStatus.YES.getCode())){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ALIPAY_CERTIFIED_UNDER_MAINTENANCE);
+		}
+
 		if (afUserAuthDo != null && afUserAuthDo.getAlipayStatus().equals(SupplyCertifyStatus.WAIT.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
 		}

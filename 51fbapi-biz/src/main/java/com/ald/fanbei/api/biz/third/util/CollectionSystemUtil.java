@@ -7,12 +7,14 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.CollectionDataBo;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyReqBo;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
@@ -29,6 +31,7 @@ import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -43,6 +46,8 @@ public class CollectionSystemUtil extends AbstractThird {
 
 	private static String url = null;
 
+	@Resource
+	AfBorrowCashService afBorrowCashService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 
@@ -221,6 +226,22 @@ public class CollectionSystemUtil extends AbstractThird {
 
 				// 参数校验
 				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance)) {
+
+					//还款金额校验
+					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+					AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(afBorrowCashDo.getRid(), tradeNo);
+					if(existItem!=null){
+						logger.error("offlineRepaymentNotify exist trade_no");
+						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.COLLECTION_THIRD_NO_EXIST);
+						return notifyRespBo;
+					}
+			        BigDecimal amount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount() ,afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
+			        //因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
+			        if(NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO).compareTo(amount.add(BigDecimal.valueOf(10))) > 0) {
+			            logger.info("offlineRepaymentNotify is fail,borrowCashId= "+afBorrowCashDo.getRid()+",reqInfo="+StringUtil.appendStrs(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance));
+			            notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.FAILED);
+			            return notifyRespBo;
+			        }
 					// 业务处理
 					String respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo, repayType, repayTime, NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO), NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo, isBalance);
 					FanbeiThirdRespCode respInfo = FanbeiThirdRespCode.findByCode(respCode);

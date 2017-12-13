@@ -341,9 +341,11 @@ $(function () {
                     console.log(returnData);
                     var a=JSON.parse(returnData);
                     if (a.success) {
+                        maidianFn("registerSuccess");
                         requestMsg("注册成功");
                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                     }else{
+                        maidianFnNew("registerFail", a.msg);
                         requestMsg(a.msg);
                     }
                 } ,

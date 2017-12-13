@@ -17,4 +17,6 @@ public interface AfCategoryDao {
 	 * @return
 	 */
 	List<AfCategoryDo> getCategoryList();
+
+	List<AfCategoryDo> getHomePageCategoryInfo();
 }

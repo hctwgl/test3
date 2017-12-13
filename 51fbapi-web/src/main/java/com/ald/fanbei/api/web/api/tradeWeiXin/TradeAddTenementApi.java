@@ -3,14 +3,19 @@ package com.ald.fanbei.api.web.api.tradeWeiXin;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
@@ -33,6 +38,11 @@ public class TradeAddTenementApi implements ApiHandle {
     private TradeTenementService tradeTenementService;
     @Resource
     private AfUserService afUserService;
+    @Resource
+    private AfResourceService afResourceService;
+    @Resource
+    private SmsUtil smsUtil;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo,
                                      FanbeiContext context, HttpServletRequest request) {
@@ -52,13 +62,9 @@ public class TradeAddTenementApi implements ApiHandle {
         String beginTime = ObjectUtils.toString(requestDataVo.getParams().get("beginTime"), "").toString();
         String endTime = ObjectUtils.toString(requestDataVo.getParams().get("endTime"), "").toString();
 
-     
-        
-        
-       
 
-        AfIdNumberDo afIdNumberDo= tradeTenementService.getUserIdentityUrl(mobile);
-        if(afIdNumberDo==null){
+        AfIdNumberDo afIdNumberDo = tradeTenementService.getUserIdentityUrl(mobile);
+        if (afIdNumberDo == null) {
             throw new FanbeiException(FanbeiExceptionCode.TENEMENT_USER_INVALID);
         }
         AfTradeTenementInfoDo afTradeTenementInfoDo = null;
@@ -92,7 +98,14 @@ public class TradeAddTenementApi implements ApiHandle {
         } else {
             tradeTenementService.updateTenementInfo(afTradeTenementInfoDo);
         }
+        try {
+            AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("tenement_notify_worker");
+            if (afResourceDo != null && !StringUtil.isEmpty(afResourceDo.getValue())) {
+                smsUtil.sendTenementNotify(afResourceDo.getValue(), "您好，租房业务新订单来啦！姓名" + userName + "的用户等待审核。请尽快完成审核。");
+            }
+        } catch (Exception e) {
 
+        }
         return resp;
     }
 
