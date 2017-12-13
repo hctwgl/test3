@@ -229,15 +229,20 @@ public class YiBaoUtility  implements ThirdInterface{
     public void updateYiBaoAllNotCheck(){
         List<AfYibaoOrderDo> list = afYibaoOrderDao.getYiBaoUnFinishOrderAll();
         for(AfYibaoOrderDo afYibaoOrderDo:list){
-            Map<String, String> result  = getYiBaoOrder(afYibaoOrderDo.getOrderNo(),afYibaoOrderDo.getYibaoNo());
-            if(!result.get("code").equals("OPR00000")){
-                continue;
+            try {
+                Map<String, String> result = getYiBaoOrder(afYibaoOrderDo.getOrderNo(), afYibaoOrderDo.getYibaoNo());
+                if (!result.get("code").equals("OPR00000")) {
+                    continue;
+                }
+                String status = result.get("status");
+                if (status.equals("PROCESSING")) {
+                    //处理中
+                }
+                proessUpdate(afYibaoOrderDo, status, afYibaoOrderDo.getoType());
             }
-            String status = result.get("status");
-            if(status.equals("PROCESSING")){
-                //处理中
+            catch (Exception e){
+                e.printStackTrace();
             }
-            proessUpdate(afYibaoOrderDo,status,afYibaoOrderDo.getoType());
         }
     }
 

@@ -949,6 +949,15 @@ public class SmsUtil extends AbstractThird {
         }
 
     }
+
+    public void sendTenementNotify(String mobiles, String content) {
+        try {
+            SmsResult smsResult = sendSmsToDhst(mobiles, content);
+            logger.error("sendTenementNotify success,mobile:" + mobiles + "content:" + content);
+        } catch (Exception e) {
+            logger.error("sendTenementNotify error:", e);
+        }
+    }
 }
 
 class SmsResult {
