@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.BoluomeOrderInfoService;
@@ -23,6 +24,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeWaimaiDo;
 import com.ald.fanbei.api.dal.domain.dto.BoluomeOrderResponseDto;
 import com.alibaba.fastjson.JSON;
 
+@Service
 public class BoluomeOrderInfoServiceImpl extends BaseService implements BoluomeOrderInfoService {
 
     @Autowired
