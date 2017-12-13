@@ -92,12 +92,14 @@ let vm = new Vue({
                 url: "/h5GgActivity/boluomeCoupon",
                 success: function (data) {
                     console.log(data,'优惠券初始化');
-                    self.couponCont=eval('('+data+')').data;
-                    console.log(self.couponCont);
-                    if(self.couponCont.boluomeCouponList){
-                        self.couponList=self.couponCont.boluomeCouponList;
+                    if(data.success){
+                        self.couponCont=eval('('+data+')').data;
+                        console.log(self.couponCont);
+                        if(self.couponCont.boluomeCouponList){
+                            self.couponList=self.couponCont.boluomeCouponList;
+                        }
+                        console.log(self.couponList,'优惠券列表')
                     }
-                    console.log(self.couponList,'优惠券列表')
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
