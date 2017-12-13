@@ -25,7 +25,7 @@ public class Constants {
 
 	public static final int MINITS_OF_2HOURS = 120;
 	public static final int MINITS_OF_HALF_HOUR = 30;
-
+	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
 	//商品详情图片信息包含数据总计部分
 	public static final int GOODSDETAIL_PIC_PARTS = 3;
@@ -144,6 +144,7 @@ public class Constants {
     public static final String CACHEKEY_REAL_AUTH_CITIZEN_CARD_PREFFIX 		= "real_auth_citizen_card$";
     public static final String CACHEKEY_REAL_AUTH_REAL_NAME_PREFFIX 		= "real_auth_real_name$";
     public static final String CACHEKEY_REAL_AUTH_PASS_PREFFIX 				= "real_auth_pass$";
+    public static final String CACHEKEY_REAL_AUTH_MOBILE_INFO 				= "real_auth_mobile_info";
 
 	//查询用户是否结果款，1代表已借款
 	public static final String HAVE_BORROWED = "have_borrowed$";
@@ -162,6 +163,7 @@ public class Constants {
 	public static final String RES_THIRD_GOODS_REBATE_RATE = "THIRD_GOODS_REBATE_RATE";
 	public static final String RES_BORROW_CASH_RATE_DESC = "BORROW_CASH_RATE_DESC";
 	public static final String RES_BORROW_CONSUME = "BORROW_CONSUME";
+	public static final String RES_BORROW_CONSUME_VIP = "BORROW_CONSUME_VIP";
 	public static final String RES_BORROW_CONSUME_OVERDUE = "BORROW_CONSUME_OVERDUE";
 	public static final String RES_BORROW_CASH = "BORROW_CASH";
 	public static final String RES_BORROW_RATE = "BORROW_RATE";
@@ -404,6 +406,11 @@ public class Constants {
 	  public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	  public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
+	  
+	//双十二秒杀抢券活动
+	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
+	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
+	
 //借钱费率配置相关
 	 public static final String BORROW_RATE="BORROW_RATE";
 	 public static final String BORROW_CASH_POUNDAGE="BORROW_CASH_POUNDAGE";
@@ -415,5 +422,8 @@ public class Constants {
 	  
 	//代扣
 	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
-
+	//宜信阿福RC4秘钥
+	  public static final String YIXIN_AFU_PASSWORD="fbapi.yixinafu.password";
+	  //宜信阿福查询用户逾期信息redis中的key前缀
+	  public static final String YIXIN_AFU_SEARCH_KEY="yxafu_";
 }

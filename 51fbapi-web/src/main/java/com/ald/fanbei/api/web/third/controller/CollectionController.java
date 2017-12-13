@@ -216,35 +216,31 @@ public class CollectionController {
 		AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
 		if(afBorrowCashDo==null) {
-			logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null" );
+			logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null,borrowNo="+borrowNo );
 			updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
 			updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
 			return updteBo;
 		}
 		String sign1=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign, sign1)) {	// 验签成功
-				if((afBorrowCashDo.getRepayAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getSumRate()))).compareTo(afBorrowCashDo.getAmount()) == 1){
+				if(afBorrowCashDo.getRepayAmount().compareTo(afBorrowCashDo.getAmount()) >= 0){
 					//平账
-					afBorrowCashDo.setStatus("FINSH");
-					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));//sum_rate+rate_amount
-					afBorrowCashDo.setRateAmount(BigDecimal.ZERO);
-					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
-					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getAmount().add(afBorrowCashDo.getSumRate())));//repay_amount-amount-sum_rate
-
+					afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 					borrowCashService.updateBalancedDate(afBorrowCashDo);
-
+					logger.info("repayAmount>=amount Balanced is success,borrowNo="+borrowNo+",repayAmount="+afBorrowCashDo.getRepayAmount()+",amount="+afBorrowCashDo.getAmount());
+					
 					updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
 					updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
 					return updteBo;
 				} else {
-					//还款金额小于借款金额，不能平账
-					logger.info("repayAmount<(amount+rate_amount+sum_rate) Balanced is fail");
+					//已还款金额小于借款金额，不能平账
+					logger.error("repayAmount<amount Balanced is fail,borrowNo="+borrowNo);
 					updteBo.setCode(FanbeiThirdRespCode.COLLECTION_NOT_Balanced.getCode());
 					updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_NOT_Balanced.getMsg());
 					return updteBo;
 				}
 		  } else {
-			  logger.info("sign and sign is fail");
+			  logger.error("sign and sign is fail,borrowNo="+borrowNo);
 			  updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
 			  updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
 			  return updteBo;

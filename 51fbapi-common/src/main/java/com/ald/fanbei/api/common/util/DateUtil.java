@@ -112,6 +112,7 @@ public class DateUtil {
     public static final Long NO_END_DATE_TIME              = 253402271999000l;
     
     public static final Date NO_END_DATE                   = new Date(NO_END_DATE_TIME);
+    public static final String FINAL_START_DATE_STR		   = "1970-01-01";
     public static final String FINAL_END_DATE_STR		   = "9999-12-31";
 
     private static Logger      logger                      = LoggerFactory.getLogger(DateUtil.class);
@@ -160,6 +161,13 @@ public class DateUtil {
         cal.setTime(date);
         cal.add(Calendar.HOUR, hour);
         return cal.getTime();
+    }
+    /**
+     * 返回一个Date默认最小值
+     * @return
+     */
+    public static Date getStartDate() {
+    	return parseDate(FINAL_START_DATE_STR, DEFAULT_PATTERN_WITH_HYPHEN);
     }
     /**
      * 返回一个Date默认最大值
@@ -377,12 +385,25 @@ public class DateUtil {
     }
 
     /**
+     * Format date as "yyyyMMdd".
+     * 
+     * @param date 日期
+     * @return 格式化后的日期字符串
+     */
+    public static String formatDateForPatternWithHyhen(final Date date) {
+        return formatDate(date, DEFAULT_PATTERN_WITH_HYPHEN);
+    }
+
+    /**
      * Format date as given date format.
      * 
      * @param date 日期
      * @return 格式化后的日期字符串
      */
     public static String formatDate(final Date date, String format) {
+    	if(date==null){
+    		return "";
+    	}
         return new SimpleDateFormat(format).format(date);
     }
 

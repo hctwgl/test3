@@ -28,6 +28,27 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.AfAgentOrderService;
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
+import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.AfBoluomeUserCouponService;
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfContractPdfCreateService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsReservationService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeOrderService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.AfUserVirtualAccountService;
+import com.ald.fanbei.api.biz.service.BaseService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.KaixinUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -209,6 +230,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Resource
     AfContractPdfCreateService afContractPdfCreateService;
 
+    @Resource
+    AfBoluomeRebateService afBoluomeRebateService;
+    @Resource
+    AfBoluomeUserCouponService afBoluomeUserCouponService;
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
         return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -693,22 +718,28 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             afUserAccountDao.updateOriginalUserAccount(accountInfo);
                             afUserAccountLogDao.addUserAccountLog(accountLog);
                             orderDao.updateOrder(afOrder);
-                            //逛逛点亮活动
-                            try {
-                                afBoluomeActivityService.ggLightActivity(afOrder);
-                            } catch (Exception e) {
-                                logger.info("ggLightActivity error:", e);
+                            //qiao+2017-11-14 15:30:27:the second time to light the activity
+                            try{
+                            	logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",afOrder.getRid(),userId);
+                            	//send red packet 
+                            	afBoluomeRebateService.addRedPacket(afOrder.getRid(),userId);
+                            }catch (Exception e) {
+                            	logger.info("afBoluomeRebateService.addRedPacket error",e);
                             }
+                            //qiao+2017-11-14 15:30:27:the second time to light the activity
+                            try{
+                            	logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",afOrder.getRid(),userId);
+                            	//send coupon
+                            	boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+                            	if (!flag1) {
+									throw new Exception();
+								}
+                            }catch (Exception e) {
+                            	logger.info("afBoluomeRebateService.sendCoupon error",e);
+                            }
+                            
 
 
-//                      AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-//						if(afBorrowDo !=null) {
-//							List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-//							if(borrowList == null || borrowList.size()==0 ){
-//								List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-//								afBorrowDao.addBorrowBill(billList);
-//							}
-//						}
                             break;
                         default:
                             logger.info(" status is {} ", afOrder.getStatus());
@@ -790,7 +821,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
                                 bo = afResourceService.borrowRateWithResourceForTrade(nper);
                             } else {
-                                bo = afResourceService.borrowRateWithResource(nper);
+                                bo = afResourceService.borrowRateWithResource(nper,userAccountInfo.getUserName());
                             }
                         }
                         String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
@@ -857,7 +888,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         BigDecimal bankAmount = BigDecimalUtil.subtract(saleAmount, leftAmount);
 
                         orderInfo.setNper(nper);
-                        BorrowRateBo bo = afResourceService.borrowRateWithResource(nper);
+                        BorrowRateBo bo = afResourceService.borrowRateWithResource(nper,userAccountInfo.getUserName());
                         String boStr = BorrowRateBoUtil.parseToDataTableStrFromBo(bo);
                         orderInfo.setBorrowRate(boStr);
 
@@ -900,34 +931,42 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         }
                     } else {
                         orderInfo.setPayType(PayType.BANK.getCode());
-                        orderInfo.setPayStatus(PayStatus.DEALING.getCode());
-                        orderInfo.setStatus(OrderStatus.DEALING.getCode());
-
-                        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-
-                        AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
-
-                        resultMap = new HashMap<String, Object>();
-
-                        if (null == cardInfo) {
-                            throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-                        }
-                        logger.info("payBrandOrder orderInfo = {}", orderInfo);
-                        orderDao.updateOrder(orderInfo);
-                        // 银行卡支付 代收
-                        UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
-                        if (!respBo.isSuccess()) {
-                            throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                        }
                         Map<String, Object> newMap = new HashMap<String, Object>();
-                        newMap.put("outTradeNo", respBo.getOrderNo());
-                        newMap.put("tradeNo", respBo.getTradeNo());
-                        newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
-                        resultMap.put("resp", newMap);
-                        resultMap.put("status", PayStatus.DEALING.getCode());
-                        resultMap.put("success", true);
-                        //活动返利
+                        if(saleAmount.compareTo(BigDecimal.ZERO)<=0){
+                            orderInfo.setPayStatus(PayStatus.PAYED.getCode());
+                            orderInfo.setStatus(OrderStatus.PAID.getCode());
+                            logger.info("payBrandOrder orderInfo = {}", orderInfo);
+                            orderDao.updateOrder(orderInfo);
+                            resultMap.put("resp", newMap);
+                            resultMap.put("status", PayStatus.PAYED.getCode());
+                            resultMap.put("success", true);
+                        }else{
+                            orderInfo.setPayStatus(PayStatus.DEALING.getCode());
+                            orderInfo.setStatus(OrderStatus.DEALING.getCode());
+                            AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
 
+                            AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+
+                            resultMap = new HashMap<String, Object>();
+
+                            if (null == cardInfo) {
+                                throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+                            }
+                            logger.info("payBrandOrder orderInfo = {}", orderInfo);
+                            orderDao.updateOrder(orderInfo);
+                            // 银行卡支付 代收
+                            UpsCollectRespBo respBo = upsUtil.collect(tradeNo, saleAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
+                            if (!respBo.isSuccess()) {
+                                throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+                            }
+                            newMap.put("outTradeNo", respBo.getOrderNo());
+                            newMap.put("tradeNo", respBo.getTradeNo());
+                            newMap.put("cardNo", Base64.encodeString(respBo.getCardNo()));
+                            resultMap.put("resp", newMap);
+                            resultMap.put("status", PayStatus.DEALING.getCode());
+                            resultMap.put("success", true);
+                        }
+                        //活动返利
                     }
                     return resultMap;
                 } catch (FanbeiException exception) {
@@ -1011,14 +1050,20 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         if (orderType.equals(OrderType.TRADE.getCode())) {
             resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
         } else {
-            resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            //获取借款分期配置信息
+            //11.27加入用户专有利率
+            AfUserDo afUserDo= afUserService.getUserById(userId);
+            resource= afResourceService.getVipUserRate(afUserDo.getUserName());
+            if(resource==null){
+                resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+            }
         }
         JSONArray array = JSON.parseArray(resource.getValue());
         //删除2分期
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        removeSecondNper(array);
+        //removeSecondNper(array);
 
         JSONArray interestFreeArray = null;
         if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
@@ -1074,7 +1119,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         Iterator<Object> it = array.iterator();
         while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }
@@ -2018,6 +2063,23 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	public List<AfOrderDo> getOverOrderByUserId(Long userId) {
 		// TODO Auto-generated method stub
 		return orderDao.getOverOrderByUserId(userId);
+	}
+
+	@Override
+    public Integer selectSumCountByGoodsId(Long goodsId){
+        return orderDao.selectSumCountByGoodsId(goodsId);
+    }
+
+    @Override
+    public Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo){
+        return orderDao.selectSumCountByGoodsIdAndType(afOrderDo);
+    }
+	
+	@Override
+	public List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,
+			Long userId) {
+		// TODO Auto-generated method stub
+		return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId,userId);
 	}
 
 }

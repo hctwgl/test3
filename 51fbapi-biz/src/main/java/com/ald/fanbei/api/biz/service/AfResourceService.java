@@ -3,6 +3,9 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
 
@@ -111,7 +114,7 @@ public interface AfResourceService {
 	 * 获取借款手续费等信息
 	 */
 
-	BorrowRateBo borrowRateWithResource(Integer realTotalNper);
+	BorrowRateBo borrowRateWithResource(Integer realTotalNper,String userName);
 	  	/*
 	 * 获取信用支付手续费等信息
 	 */
@@ -180,6 +183,11 @@ public interface AfResourceService {
 
 	AfResourceDo getAfResourceAppVesion();
 
+	ThirdPayBo getThirdPayBo(ThirdPayTypeEnum thirdPayTypeEnum);
+
+	boolean checkThirdPayByType(ThirdBizType thirdBizType,ThirdPayTypeEnum thirdPayTypeEnum);
+
+
 	List<AfResourceDo> getBackGroundByType(String code);
 
 	AfResourceDo getLaunchImageInfoByTypeAndVersion(String resourceType, String appVersion);
@@ -187,12 +195,32 @@ public interface AfResourceService {
 	AfResourceDo getLaunchImageInfoByType(String resourceType);
 
 	AfResourceDo getOpenBoluomeCouponById(long rid);
-	
+
 	/**
 	 * 根据type获取滚动条列表
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
 	List<AfResourceDo> getScrollbarListByType(String type);
+
+	List<AfResourceDo> getEcommercePositionUpRescoure();
+	List<AfResourceDo> getEcommercePositionDownRescoure();
+	
+	/**
+	 * 获取vip用户专有利率
+	 * @param userName 用户名
+	 * @return 利率相关详情
+	 */
+	AfResourceDo getVipUserRate(String userName);
+
+	AfResourceDo getEcommerceFloorImgRes();
+
+	AfResourceDo getBrandFloorImgRes();
+
+	List<AfResourceDo> getHomeNomalPositionList();
+
+	List<AfResourceDo> getHomeBrandPositonInfoList();
+
+	AfResourceDo getFinancialEntranceInfo();
 }

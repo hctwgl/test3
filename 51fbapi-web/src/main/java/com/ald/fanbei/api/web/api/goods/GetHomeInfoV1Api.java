@@ -94,6 +94,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		contextApp = context;
 		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("homePageType", "OLD");
 		Integer appVersion = context.getAppVersion();
 		try{
 			String userName = context.getUserName();
@@ -257,7 +258,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        removeSecondNper(array);
+        //removeSecondNper(array);
 		List<AfActivityDo> activityList = afActivityService.listAllHomeActivity();
 		List<Map<String,Object>> activityInfoList = new ArrayList<Map<String,Object>>();
 		for(AfActivityDo afActivityDo : activityList) {
@@ -592,7 +593,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	        Iterator<Object> it = array.iterator();
 	        while (it.hasNext()) {
 	            JSONObject json = (JSONObject) it.next();
-	            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+	            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
 	                it.remove();
 	                break;
 	            }

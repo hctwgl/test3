@@ -105,27 +105,27 @@ public class ApplyRenewalApi implements ApiHandle {
 			borrowCashPoundage = new BigDecimal(poundageRateCash.toString());
 		}
 		*/
+
 		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
 		BigDecimal capital =BigDecimal.ZERO;
-		if(appVersion<397){
+		if(appVersion == 397){
+			capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewAmount);
+		}else{
 			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
 			capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-		}else{
-			capital = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount()).subtract(renewAmount);
+		}
 
-		}
-		
-		if (capital.compareTo(afBorrowCashDo.getAmount()) == 1) {   //判断续借金额是否大于借款金额
-			throw new FanbeiException(
-					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
-		}
-		
+
 		// 续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 		
 		BigDecimal allRenewalAmount= BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+		if (renewAmount.compareTo(allRenewalAmount) >0) {   //判断续借金额是否大于借款金额
+			throw new FanbeiException(
+					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+		}
 		// 本期手续费 = 未还金额 * 续期天数 * 借钱手续费率（日）
 		BigDecimal poundage = waitPaidAmount.multiply(allowRenewalDay).multiply(borrowCashPoundage).setScale(2, RoundingMode.HALF_UP);
 

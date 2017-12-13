@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 
 /**
@@ -13,4 +15,6 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 public interface AfBoluomeActivityUserLoginService extends ParentService<AfBoluomeActivityUserLoginDo, Long>{
 
 	Integer getBindingNum (Long activityId , Long refUserId);
+
+	List<AfBoluomeActivityUserLoginDo> getByRefUserIdAndActivityId(Long userId,Long activityId);
 }

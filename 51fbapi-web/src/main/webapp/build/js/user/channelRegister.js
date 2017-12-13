@@ -7,6 +7,13 @@ var style=$("#style").val();  // 样式
 var os=getBlatFrom(); // 1是android，2是ios
 console.log(os);
 
+var channelCode = getUrl('channelCode');
+var pointCode = getUrl('pointCode');
+
+function toMaidian(data) {
+    maidianFnNew(data, channelCode, pointCode);
+}
+
 function formatDateTime() {
     var date = new Date();
     var y = date.getFullYear();
@@ -144,9 +151,9 @@ $(function(){
                                 data=JSON.parse(data);
                                 if(data.data=='N'){
                                     captchaObj.verify();//调起图片验证
-                                    maidianFn("getCodeSuccess");
+                                    toMaidian("getCodeSuccess");
                                 }else{
-                                    maidianFn("getCodeRegistered");
+                                    toMaidian("getCodeRegistered");
                                     requestMsg(data.msg)
                                 }
                             }
@@ -167,10 +174,10 @@ $(function(){
                         },
                         success: function (data) {
                             if (data.data.status === 'success') {
-                                maidianFn("sendCodeSuccess");
+                                toMaidian("sendCodeSuccess");
                                 getCode();
                             } else if (data.data.status === 'fail') {
-                                maidianFn("sendCodeFail");
+                                toMaidian("sendCodeFail");
                                 requestMsg(data.msg);
                             }
                         }
@@ -180,11 +187,11 @@ $(function(){
         }
     });
 
-    maidianFn('channelRegister');
+    toMaidian('channelRegister');
 
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
-        maidianFn('registerBtn');
+        toMaidian('registerBtn');
         // md5加密
         var register_password = $("#register_password").val();
         var password_md5 = String(CryptoJS.MD5(register_password));
@@ -217,7 +224,7 @@ $(function(){
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {
-                                        maidianFn("registerSuccess");
+                                        toMaidian("registerSuccess");
                                         // js判断微信和QQ
                                         let ua = navigator.userAgent.toLowerCase();
                                         if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
@@ -228,7 +235,7 @@ $(function(){
                                         }
                                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {
-                                        maidianFn("registerFail");
+                                        maidianFnNew("registerFail", channelCode, pointCode, returnData.msg);
                                         requestMsg(returnData.msg);
                                     }
                                 },
@@ -245,14 +252,9 @@ $(function(){
 
 
 // 拖动进度条相关代码
-// $(function () {
-    var tag = false, ox = 0, left = 0, bgleft = 0; 
-    // 移动端对应down,move,up事件分别是touchstart,touchmove,touchend
-    var startEvent = 'touchstart';
-    var moveEvent = 'touchmove';
-    var upEvent ='touchend';
+    var tag = false, ox = 0, left = 300 * document.documentElement.clientWidth /375, bgleft = 0;
     var totalLength = 300 * document.documentElement.clientWidth /375;
-    $('.progress_btn').on(startEvent, function (e) {
+    $('.progress_btn').on('touchstart', function (e) {
         var originalEvent = e.originalEvent;
         var touches = originalEvent.touches;
         var touch;
@@ -265,10 +267,10 @@ $(function(){
         ox = touch.pageX - left;
         tag = true;
     });
-    $(document).on(upEvent, function () {
+    $(document).on('touchend', function () {
         tag = false;
     });
-    $(document).on(moveEvent, function (e) {//鼠标移动
+    $(document).on('touchmove', function (e) {//鼠标移动
         var originalEvent = e.originalEvent; // 这里要判断移动端多点触控的问题，jquery扩展的event对象没有这个属性
         var touches = originalEvent.touches;// 获取源生event对象
         var touch;
@@ -291,4 +293,3 @@ $(function(){
             $("#rightMoney").html("￥" + (parseInt((left / totalLength * 19500 + 500)) * 0.001).toFixed(2));
         }
     });
-// })
