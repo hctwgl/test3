@@ -92,8 +92,10 @@ let vm = new Vue({
                 url: "/h5GgActivity/boluomeCoupon",
                 success: function (data) {
                     console.log(data,'优惠券初始化');
+                    data=eval('('+data+')');
+                    console.log(data);
                     if(data.success){
-                        self.couponCont=eval('('+data+')').data;
+                        self.couponCont=data.data;
                         console.log(self.couponCont);
                         if(self.couponCont.boluomeCouponList){
                             self.couponList=self.couponCont.boluomeCouponList;
