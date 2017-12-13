@@ -159,6 +159,13 @@
       WHERE is_delete = 0 AND goods_id = #{goodsId};
     </select>
     
+       <select id="getByDoubleGoodsId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
+      SELECT
+        <include refid="queryFields" />
+        FROM af_goods_double_eggs
+      WHERE is_delete = 0 AND id = #{doubleGoodsId};
+    </select>
+    
     <select id="getAvalibleDateList" resultType="java.util.Date">
 	SELECT start_time FROM af_goods_double_eggs 
 		WHERE is_delete = 0 

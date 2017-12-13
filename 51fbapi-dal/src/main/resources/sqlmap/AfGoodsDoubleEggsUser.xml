@@ -120,7 +120,7 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="isExist" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    <select id="isSubscribed" resultType="java.lang.Integer">
 		SELECT
 			COUNT(1)
 		FROM
@@ -130,4 +130,5 @@
 		AND user_id = #{userId}
 		AND double_eggs_id = #{doubleGoodsId};
     </select>
+
 </mapper>

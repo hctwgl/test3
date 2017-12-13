@@ -17,7 +17,8 @@ import com.ald.fanbei.api.dal.domain.GoodsForDate;
 public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEggsDo, Long>{
 
 	AfGoodsDoubleEggsDo getByGoodsId(Long goodsId);
-
+	AfGoodsDoubleEggsDo getByDoubleGoodsId(Long goodsId);
+	
 	List<Date> getAvalibleDateList();
 
 	List<GoodsForDate> getGOodsByDate(Date startDate);

@@ -43,6 +43,13 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 			
 			return afGoodsDoubleEggsDao.getByGoodsId(goodsId);
 		}
+		
+		@Override
+		public AfGoodsDoubleEggsDo getByDoubleGoodsId(Long goodsId) {
+			
+			return afGoodsDoubleEggsDao.getByDoubleGoodsId(goodsId);
+		}
+		
 
 		@Override
 		public List<Date> getAvalibleDateList() {

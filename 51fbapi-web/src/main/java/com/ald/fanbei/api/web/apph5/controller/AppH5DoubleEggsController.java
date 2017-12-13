@@ -63,6 +63,7 @@ import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * @Title: AppH5DoubleEggsController.java
@@ -524,7 +525,7 @@ public class AppH5DoubleEggsController extends BaseController {
 						long userId = 0L;
 						if (StringUtil.isNotBlank(userName) && convertUserNameToUserId(userName) != null) {
 							for(GoodsForDate goodsForDate :goodsListForDate){
-								
+								userId = convertUserNameToUserId(userName);
 								// change status according to different users(change the status for goodsListForDate)
 								int num = afGoodsDoubleEggsUserService.isSubscribed(userId,goodsForDate.getDoubleGoodsId());
 								
@@ -603,7 +604,7 @@ public class AppH5DoubleEggsController extends BaseController {
 				log = log + String.format("goodsId = %s",goodsId);
 				logger.info(log);
 				
-				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByDoubleGoodsId(goodsId);
 
 				log = log + String.format("goodsDo = %s",goodsDo.toString());
 				logger.info(log);
@@ -624,7 +625,7 @@ public class AppH5DoubleEggsController extends BaseController {
 					long doubleGoodsId = goodsDo.getRid();
 					// to check if this user already subscribed this goods if
 					// yes then "已经预约不能重复预约"else"预约成功"
-					if (afGoodsDoubleEggsUserService.isExist(doubleGoodsId, userId)) {
+					if (afGoodsDoubleEggsUserService.isSubscribed(doubleGoodsId, userId) > 0) {
 						result = H5CommonResponse.getNewInstance(false, "已经预约过不能重复预约！").toString();
 						return result;
 					}
@@ -642,12 +643,13 @@ public class AppH5DoubleEggsController extends BaseController {
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
 
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
+					return result;
 				}
 			}
 			result = H5CommonResponse.getNewInstance(false, "预约失败").toString();
 
 		}catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();

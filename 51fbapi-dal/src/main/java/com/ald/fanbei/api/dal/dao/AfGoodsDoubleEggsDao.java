@@ -19,6 +19,8 @@ import com.ald.fanbei.api.dal.domain.GoodsForDate;
 public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long> {
 
 	AfGoodsDoubleEggsDo getByGoodsId(@Param("goodsId")Long goodsId);
+	AfGoodsDoubleEggsDo getByDoubleGoodsId(@Param("doubleGoodsId")Long doubleGoodsId);
+	
 
 	List<Date> getAvalibleDateList();
 
