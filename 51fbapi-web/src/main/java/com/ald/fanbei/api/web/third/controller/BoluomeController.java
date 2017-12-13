@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.BoluomeOrderInfoService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
@@ -64,6 +66,9 @@ public class BoluomeController extends AbstractThird {
     BizCacheUtil bizCacheUtil;
     @Resource
     AfUserAccountService afUserAccountService;
+    
+    @Autowired
+    BoluomeOrderInfoService boluomeOrderInfoService;
 
     @RequestMapping(value = { "/synchOrder", "/synchOrderStatus" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -91,6 +96,8 @@ public class BoluomeController extends AbstractThird {
 				if (orderInfo.getRid() == null) {
 				    // 补偿订单
 				    afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
+				    //获取菠萝觅订单详情
+				    boluomeOrderInfoService.addBoluomeOrderInfo(orderInfo.getRid(), orderInfo.getThirdOrderNo(), orderInfo.getSecType());
 				} else {
 				    afOrderService.dealBoluomeOrder(orderInfo);
 				}
