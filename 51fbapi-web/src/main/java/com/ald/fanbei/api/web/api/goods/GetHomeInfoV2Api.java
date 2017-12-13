@@ -137,23 +137,19 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
 		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
 			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
-				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+				categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
 			}else if(StringUtils.equals(afResourceDo.getValue1(),"Y")){
-				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+				categoryGoodsInfo = getHomePageGoodsCategoryInfo();
 			}
 		}else{
 			if(StringUtils.equals(afResourceDo.getValue2(),"N")){
-				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+				categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
 			}else if(StringUtils.equals(afResourceDo.getValue2(),"Y")){
-				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+				categoryGoodsInfo = getHomePageGoodsCategoryInfo();
 			}
 		}
 
-		if(StringUtils.equals(afResourceDo.getValue(),"N")){
-			categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
-		}else if(StringUtils.equals(afResourceDo.getValue(),"Y")){
-			categoryGoodsInfo = getHomePageGoodsCategoryInfo();
-		}
+		
 		// logger.info("home page category goods info => {}" +
 		// JSONObject.toJSONString(categoryGoodsInfo));
 
