@@ -21,6 +21,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     // PARAM_CODE 1001-1099
     PARAM_ERROR("PARAM_ERROR", 1001, "param error", "参数错误"),
     REQUEST_PARAM_NOT_EXIST("REQUEST_PARAM_NOT_EXIST", 1002, "request param is invalid", "请求参数缺失"),
+    POSITION_EXCEPTION("POSITION_EXCEPTION", 1018, "position exception", "所在位置异常，无法进行借款"),
     REQUEST_PARAM_METHOD_NOT_EXIST("REQUEST_PARAM_METHOD_NOT_EXIST", 1003, "request method is invalid", "请求方法不存在"),
     REQUEST_PARAM_TOKEN_ERROR("REQUEST_PARAM_TOKEN_ERROR", 1004, "token is invalid", "您未登录，请登录"),
     REQUEST_INVALID_SIGN_ERROR("REQUEST_INVALID_SIGN_ERROR", 1005, "sign is invalid", "非法请求"),
@@ -127,7 +128,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     PLEASE_PASS_THE_BASIC_CERTIFICATION("PLEASE_PASS_THE_BASIC_CERTIFICATION",1317,"please pass the basic certification","基础认证未通过审核!"),
     ALIPAY_CERTIFIED_UNDER_MAINTENANCE("ALIPAY_CERTIFIED_UNDER_MAINTENANCE",1318,"alipay certified under maintenance","支付宝认证正在维护中，请等待！"),
     ZM_STATUS_EXPIRED("ZM_STATUS_EXPIRED",1319,"zm status expired","芝麻信用已过期，请至信用中心-基础认证中重新认证芝麻信用分！"),
-
+    CREDIT_CERTIFIED_UNDER_MAINTENANCE("CREDIT_CERTIFIED_UNDER_MAINTENANCE",1320,"credit certified under maintenance","信用卡认证正在维护中，请等待！"),
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
     
