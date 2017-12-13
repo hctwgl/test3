@@ -261,7 +261,7 @@ $(function () {
                         }, 1500);
 
                     } else if (a.url == "Register") {
-                        maidianFun("registerFail");
+                        maidianFnNew("registerFail", a.msg);
                         requestMsg(a.msg);
                     }
                 },

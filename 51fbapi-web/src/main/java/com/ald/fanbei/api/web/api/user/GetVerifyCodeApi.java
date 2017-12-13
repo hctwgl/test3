@@ -3,6 +3,11 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.AfSmsRecordService;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -18,6 +23,8 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+
+import java.util.Date;
 
 /**
  * 
@@ -35,6 +42,8 @@ public class GetVerifyCodeApi implements ApiHandle {
 	SmsUtil smsUtil;
 	@Resource
 	TongdunUtil tongdunUtil;
+	@Resource
+	AfSmsRecordService afSmsRecordService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -56,13 +65,20 @@ public class GetVerifyCodeApi implements ApiHandle {
 		AfUserDo afUserDo = null;
 		SmsType type = SmsType.findByCode(typeParam);
 		if(SmsType.REGIST.equals(type) || SmsType.MOBILE_BIND.equals(type)) {// 除了注册和更换手机号功能，其余须检查手机号是否存在
-		}else {
+		}else if (SmsType.QUICK_LOGIN.equals(type)){//快速注册
+		}
+		else {
 			afUserDo = afUserService.getUserByUserName(mobile);
 			if (afUserDo == null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 			}
 		}
-		
+		AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, type.getCode());//查看短信60秒内是否发过
+		if (null != smsDo && null != smsDo.getGmtCreate() && 0 == smsDo.getIsCheck()){
+			if (!DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_SIXTY))) {
+				throw new FanbeiException("invalid Sms or email", FanbeiExceptionCode.USER_REGIST_SMS_LESSDUE);
+			}
+		}
 		boolean resultSms = false;
 		switch (type) {
 		case REGIST:// 注册短信
@@ -85,8 +101,29 @@ public class GetVerifyCodeApi implements ApiHandle {
 		case FORGET_PASS:// 忘记密码
 			resultSms = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
 			break;
+		case QUICK_SET_PWD:// 设置快速登录密码
+			resultSms = smsUtil.sendSetQuickPwdVerifyCode(mobile, afUserDo.getRid());
+			break;
 		case LOGIN:
 			resultSms = smsUtil.sendLoginVerifyCode(mobile,afUserDo.getRid());
+			break;
+		case QUICK_LOGIN:
+			afUserDo = afUserService.getUserByUserName(mobile);
+			if (null != afUserDo){//快速登录
+				resp.addResponseData("code",1000);
+				resultSms = smsUtil.sendQuickLoginVerifyCode(mobile,afUserDo.getRid());
+				break;
+			}
+			if (context.getAppVersion() >= 340) {//快速注册
+				if (StringUtils.isBlank(blackBox)) {
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+				}
+				// todo 这里面放同盾代码,下面是示例
+				tongdunUtil.getRegistResult(requestDataVo.getId(), blackBox, CommonUtil.getIpAddr(request), mobile,
+						mobile, "", "", "");
+			}
+			resultSms = smsUtil.sendQuickRegistVerifyCode(mobile);
+			resp.addResponseData("code",1146);
 			break;
 		case MOBILE_BIND:// 更换手机号
 			resultSms = smsUtil.sendMobileBindVerifyCode(mobile);

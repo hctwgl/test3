@@ -43,6 +43,11 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 	}
 
 	@Override
+	public AfBorrowLegalOrderDo getLastBorrowLegalOrderById(Long id) {
+		return afBorrowLegalOrderDao.getById(id);
+	}
+
+	@Override
 	public int saveBorrowLegalOrder(AfBorrowLegalOrderDo afBorrowLegalOrderDo) {
 		String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
 		afBorrowLegalOrderDo.setOrderNo(orderCashNo);

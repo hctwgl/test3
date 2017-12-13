@@ -159,7 +159,7 @@ public class UpsUtil extends AbstractThird {
 				return authSignResp;
 			}
 			UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
-			if(authSignResp != null && authSignResp.getRespCode()!=null && StringUtil.equals(authSignResp.getRespCode(), TRADE_RESP_SUCC)){
+			if(authSignResp != null && authSignResp.getTradeState()!=null &&(StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)||StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_DEAL))){
 				authSignResp.setSuccess(true);
 				return authSignResp;
 			}else{
@@ -219,7 +219,7 @@ public class UpsUtil extends AbstractThird {
 				return authSignResp;
 			}
 			UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
-			if(authSignResp != null && authSignResp.getRespCode()!=null && TRADE_RESP_SUCC.equals(authSignResp.getRespCode())){
+			if(authSignResp != null && authSignResp.getTradeState()!=null &&(StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)||StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_DEAL))){
 				authSignResp.setSuccess(true);
 				return authSignResp;
 			}else{
@@ -543,7 +543,7 @@ public class UpsUtil extends AbstractThird {
 			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
-		if(authSignResp != null && TRADE_RESP_SUCC.equals(authSignResp.getRespCode()) && (
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (
 				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
 			authSignResp.setSuccess(true);
 			return authSignResp;

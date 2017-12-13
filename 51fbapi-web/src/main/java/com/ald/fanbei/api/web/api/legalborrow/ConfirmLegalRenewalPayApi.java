@@ -347,7 +347,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
             //BigDecimal actualAmount = BigDecimalUtil.subtract(repaymentAmount, jfb).subtract(userAmount);
     		BigDecimal actualAmount = repaymentAmount;
 
-            if(! yiBaoUtility.checkCanNext(userId,1)){
+            if(! yiBaoUtility.checkCanNext(userId,"",1)){
                 return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
             }
 
