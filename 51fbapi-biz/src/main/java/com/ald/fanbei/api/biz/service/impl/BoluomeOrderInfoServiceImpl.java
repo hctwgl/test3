@@ -55,23 +55,18 @@ public class BoluomeOrderInfoServiceImpl extends BaseService implements BoluomeO
 		if (orderResponse.getCode() == 1000 && "true".equals(orderResponse.getSuccess())) {
 		    if (OrderSecType.DIAN_YING.getCode().equals(secOrderType)) {
 			AfBoluomeDianyingDo afBoluomeDianyingDo = JSON.parseObject(orderResponse.getData(), AfBoluomeDianyingDo.class);
-			afBoluomeDianyingDo.setOrderId(orderId);
 			afBoluomeDianyingDao.saveRecord(afBoluomeDianyingDo);
 		    } else if (OrderSecType.JIU_DIAN.getCode().equals(secOrderType)) {
 			AfBoluomeJiudianDo afBoluomeJiudianDo = JSON.parseObject(orderResponse.getData(), AfBoluomeJiudianDo.class);
-			afBoluomeJiudianDo.setOrderId(orderId);
 			afBoluomeJiudianDao.saveRecord(afBoluomeJiudianDo);
 		    } else if (OrderSecType.WAI_MAI.getCode().equals(secOrderType)) {
 			AfBoluomeWaimaiDo afBoluomeWaimaiDo = JSON.parseObject(orderResponse.getData(), AfBoluomeWaimaiDo.class);
-			afBoluomeWaimaiDo.setOrderId(orderId);
 			afBoluomeWaimaiDao.saveRecord(afBoluomeWaimaiDo);
 		    } else if (OrderSecType.HUA_FEI.getCode().equals(secOrderType) || OrderSecType.LIU_LIANG.getCode().equals(secOrderType)) {
 			AfBoluomeShoujiDo afBoluomeShoujiDo = JSON.parseObject(orderResponse.getData(), AfBoluomeShoujiDo.class);
-			afBoluomeShoujiDo.setOrderId(orderId);
 			afBoluomeShoujiDao.saveRecord(afBoluomeShoujiDo);
 		    } else if (OrderSecType.JIA_YOU_KA.getCode().equals(secOrderType)) {
 			AfBoluomeJiayoukaDo afBoluomeJiayoukaDo = JSON.parseObject(orderResponse.getData(), AfBoluomeJiayoukaDo.class);
-			afBoluomeJiayoukaDo.setOrderId(orderId);
 			afBoluomeJiayoukaDao.saveRecord(afBoluomeJiayoukaDo);
 		    }
 		} else {
