@@ -215,21 +215,21 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 		}
 
-		BigDecimal amount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
-		AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(amountStr, BigDecimal.ZERO);
+		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
 		boolean doRish = true;
-		AfBorrowCashDo afnewstBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+		AfBorrowCashDo latestBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 
-		if (afnewstBorrowCashDo != null
-				&& AfBorrowCashReviewStatus.refuse.getCode().equals(afnewstBorrowCashDo.getReviewStatus())) {
+		if (latestBorrowCashDo != null
+				&& AfBorrowCashReviewStatus.refuse.getCode().equals(latestBorrowCashDo.getReviewStatus())) {
 			// 借款被拒绝
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(
 					AfResourceType.RiskManagementBorrowcashLimit.getCode(),
 					AfResourceSecType.RejectTimePeriod.getCode());
 			if (afResourceDo != null && StringUtils.equals("O", afResourceDo.getValue4())) {
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
-				Date desTime = DateUtil.addDays(afnewstBorrowCashDo.getGmtCreate(), rejectTimePeriod);
+				Date desTime = DateUtil.addDays(latestBorrowCashDo.getGmtCreate(), rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) {
 					// 风控拒绝日期内
 					doRish = false;
@@ -239,7 +239,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		// 获取用户可借金额
 		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 		BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
-		if (accountBorrow.compareTo(amount) < 0) {
+		if (accountBorrow.compareTo(borrowAmount) < 0) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 		}
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
@@ -257,7 +257,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
 			String appName = (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
 			String ipAddress = CommonUtil.getIpAddr(request);
-			final AfBorrowCashDo afBorrowCashDo = buildBorrowCashDoWithAmount(amount, type, latitude, longitude, card,
+			final AfBorrowCashDo afBorrowCashDo = buildBorrowCashDoWithAmount(borrowAmount, type, latitude, longitude, mainCard,
 					city, province, county, address, userId, currentDay, rateInfoDo);
 			// 用户借钱时app来源区分
 			String majiabaoName = requestDataVo.getId().substring(requestDataVo.getId().lastIndexOf("_") + 1,
@@ -330,7 +330,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 					throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
 				}
 
-				String cardNo = card.getCardNumber();
+				String cardNo = mainCard.getCardNumber();
 				String riskOrderNo = riskUtil.getOrderNo("vefy",
 						cardNo.substring(cardNo.length() - 4, cardNo.length()));
 				cashDo.setUserId(userId);
@@ -342,16 +342,16 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				afBorrowLegalOrderCashDo.setStatus(AfBorrowCashReviewStatus.apply.getCode());
 				afBorrowLegalOrderCashService.updateById(afBorrowLegalOrderCashDo);
 
-				BigDecimal riskReviewAmount = amount.add(new BigDecimal(goodsAmount));
+				BigDecimal riskReviewAmount = borrowAmount.add(new BigDecimal(goodsAmount));
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String borrowTime = sdf.format(new Date(System.currentTimeMillis()));
-				RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
+				RiskVerifyRespBo verifyBo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
 						afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress,
 						blackBox, riskOrderNo, accountDo.getUserName(), riskReviewAmount, afBorrowCashDo.getPoundage(),
 						borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null);
 
-				if (verybo.isSuccess()) {
-					delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(), verybo.getResult(), afBorrowLegalOrderDo,
+				if (verifyBo.isSuccess()) {
+					delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(), verifyBo.getResult(), afBorrowLegalOrderDo,
 							afBorrowLegalOrderCashDo);
 					// 加入借款埋点信息,来自哪个包等
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
@@ -362,10 +362,12 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 					afBorrowCashService.updateBorrowCash(cashDo);
 					// 更新订单借款状态
 					afBorrowLegalOrderCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+					afBorrowLegalOrderCashDo.setGmtClose(new Date());
 					afBorrowLegalOrderCashService.updateById(afBorrowLegalOrderCashDo);
 					// 更新订单状态为关闭
 					afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
 					afBorrowLegalOrderDo.setClosedDetail("risk refuse");
+					afBorrowLegalOrderDo.setGmtClosed(new Date());
 					afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
 				}
 				return resp;
