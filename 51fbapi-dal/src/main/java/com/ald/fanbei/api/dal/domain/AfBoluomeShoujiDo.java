@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.dal.domain;
 
-import com.ald.fanbei.api.common.AbstractSerial;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+
+import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
+import com.alibaba.fastjson.annotation.JSONField;
 
 /**
  * 新人专享实体
@@ -12,9 +14,13 @@ import java.math.BigDecimal;
  * @date 2017-12-13 10:51:09
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- public class AfBoluomeShoujiDo extends AbstractSerial {
+ public class AfBoluomeShoujiDo extends BoluomeCouponDto {
 
+    /** 
+    * @Fields serialVersionUID : TODO(用一句话描述这个变量表示什么) 
+    */
     private static final long serialVersionUID = 1L;
+
 
     /**
      * 主键Rid
@@ -91,22 +97,6 @@ import java.math.BigDecimal;
      * 登录用户名
      */
     private String userPhone;
-
-    /**
-     * 优惠劵金额
-     */
-    private BigDecimal couponPrice;
-
-    /**
-     * 优惠卷描述
-     */
-    private String couponTitle;
-
-    /**
-     * 优惠劵id
-     */
-    private Long couponId;
-
 
     /**
      * 获取主键Id
@@ -186,6 +176,7 @@ import java.math.BigDecimal;
      *
      * @return 第三方订单号
      */
+    @JSONField(name="id")
     public String getThirdOrderNo(){
       return thirdOrderNo;
     }
@@ -195,6 +186,7 @@ import java.math.BigDecimal;
      * 
      * @param thirdOrderNo 要设置的第三方订单号
      */
+    @JSONField(name="id")
     public void setThirdOrderNo(String thirdOrderNo){
       this.thirdOrderNo = thirdOrderNo;
     }
@@ -377,60 +369,6 @@ import java.math.BigDecimal;
      */
     public void setUserPhone(String userPhone){
       this.userPhone = userPhone;
-    }
-
-    /**
-     * 获取优惠劵金额
-     *
-     * @return 优惠劵金额
-     */
-    public BigDecimal getCouponPrice(){
-      return couponPrice;
-    }
-
-    /**
-     * 设置优惠劵金额
-     * 
-     * @param couponPrice 要设置的优惠劵金额
-     */
-    public void setCouponPrice(BigDecimal couponPrice){
-      this.couponPrice = couponPrice;
-    }
-
-    /**
-     * 获取优惠卷描述
-     *
-     * @return 优惠卷描述
-     */
-    public String getCouponTitle(){
-      return couponTitle;
-    }
-
-    /**
-     * 设置优惠卷描述
-     * 
-     * @param couponTitle 要设置的优惠卷描述
-     */
-    public void setCouponTitle(String couponTitle){
-      this.couponTitle = couponTitle;
-    }
-
-    /**
-     * 获取优惠劵id
-     *
-     * @return 优惠劵id
-     */
-    public Long getCouponId(){
-      return couponId;
-    }
-
-    /**
-     * 设置优惠劵id
-     * 
-     * @param couponId 要设置的优惠劵id
-     */
-    public void setCouponId(Long couponId){
-      this.couponId = couponId;
     }
 
 }

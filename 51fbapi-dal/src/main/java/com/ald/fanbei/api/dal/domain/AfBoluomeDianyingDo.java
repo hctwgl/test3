@@ -1,18 +1,18 @@
 package com.ald.fanbei.api.dal.domain;
 
-import com.ald.fanbei.api.common.AbstractSerial;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+
+import com.ald.fanbei.api.dal.domain.dto.BoluomeCouponDto;
 
 /**
  * 新人专享实体
  * 
  * @author gaojibin_temple
  * @version 1.0.0 初始化
- * @date 2017-12-13 10:51:11
- * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @date 2017-12-13 10:51:11 Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- public class AfBoluomeDianyingDo extends AbstractSerial {
+public class AfBoluomeDianyingDo extends BoluomeCouponDto {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +20,6 @@ import java.math.BigDecimal;
      * 主键Rid
      */
     private Long rid;
-    
 
     /**
      * 创建时间
@@ -133,28 +132,12 @@ import java.math.BigDecimal;
     private String userPhone;
 
     /**
-     * 优惠劵金额
-     */
-    private BigDecimal couponPrice;
-
-    /**
-     * 优惠卷描述
-     */
-    private String couponTitle;
-
-    /**
-     * 优惠劵id
-     */
-    private Long couponId;
-
-
-    /**
      * 获取主键Id
      *
      * @return rid
      */
-    public Long getRid(){
-      return rid;
+    public Long getRid() {
+	return rid;
     }
 
     /**
@@ -162,27 +145,27 @@ import java.math.BigDecimal;
      * 
      * @param 要设置的主键Id
      */
-    public void setRid(Long rid){
-      this.rid = rid;
+    public void setRid(Long rid) {
+	this.rid = rid;
     }
-    
 
     /**
      * 获取创建时间
      *
      * @return 创建时间
      */
-    public Date getGmtCreate(){
-      return gmtCreate;
+    public Date getGmtCreate() {
+	return gmtCreate;
     }
 
     /**
      * 设置创建时间
      * 
-     * @param gmtCreate 要设置的创建时间
+     * @param gmtCreate
+     *            要设置的创建时间
      */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
+    public void setGmtCreate(Date gmtCreate) {
+	this.gmtCreate = gmtCreate;
     }
 
     /**
@@ -190,17 +173,18 @@ import java.math.BigDecimal;
      *
      * @return 最后修改时间
      */
-    public Date getGmtModified(){
-      return gmtModified;
+    public Date getGmtModified() {
+	return gmtModified;
     }
 
     /**
      * 设置最后修改时间
      * 
-     * @param gmtModified 要设置的最后修改时间
+     * @param gmtModified
+     *            要设置的最后修改时间
      */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
+    public void setGmtModified(Date gmtModified) {
+	this.gmtModified = gmtModified;
     }
 
     /**
@@ -208,17 +192,18 @@ import java.math.BigDecimal;
      *
      * @return 订单id
      */
-    public Long getOrderId(){
-      return orderId;
+    public Long getOrderId() {
+	return orderId;
     }
 
     /**
      * 设置订单id
      * 
-     * @param orderId 要设置的订单id
+     * @param orderId
+     *            要设置的订单id
      */
-    public void setOrderId(Long orderId){
-      this.orderId = orderId;
+    public void setOrderId(Long orderId) {
+	this.orderId = orderId;
     }
 
     /**
@@ -226,215 +211,227 @@ import java.math.BigDecimal;
      *
      * @return 第三方订单号
      */
-    public String getThirdOrderNo(){
-      return thirdOrderNo;
+    public String getThirdOrderNo() {
+	return thirdOrderNo;
     }
 
     /**
      * 设置第三方订单号
      * 
-     * @param thirdOrderNo 要设置的第三方订单号
+     * @param thirdOrderNo
+     *            要设置的第三方订单号
      */
-    public void setThirdOrderNo(String thirdOrderNo){
-      this.thirdOrderNo = thirdOrderNo;
+    public void setThirdOrderNo(String thirdOrderNo) {
+	this.thirdOrderNo = thirdOrderNo;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getCinemaAddr(){
-      return cinemaAddr;
+    public String getCinemaAddr() {
+	return cinemaAddr;
     }
 
     /**
      * 设置
      * 
-     * @param cinemaAddr 要设置的
+     * @param cinemaAddr
+     *            要设置的
      */
-    public void setCinemaAddr(String cinemaAddr){
-      this.cinemaAddr = cinemaAddr;
+    public void setCinemaAddr(String cinemaAddr) {
+	this.cinemaAddr = cinemaAddr;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getCinemaName(){
-      return cinemaName;
+    public String getCinemaName() {
+	return cinemaName;
     }
 
     /**
      * 设置
      * 
-     * @param cinemaName 要设置的
+     * @param cinemaName
+     *            要设置的
      */
-    public void setCinemaName(String cinemaName){
-      this.cinemaName = cinemaName;
+    public void setCinemaName(String cinemaName) {
+	this.cinemaName = cinemaName;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public Integer getCount(){
-      return count;
+    public Integer getCount() {
+	return count;
     }
 
     /**
      * 设置
      * 
-     * @param count 要设置的
+     * @param count
+     *            要设置的
      */
-    public void setCount(Integer count){
-      this.count = count;
+    public void setCount(Integer count) {
+	this.count = count;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public Date getShowDate(){
-      return showDate;
+    public Date getShowDate() {
+	return showDate;
     }
 
     /**
      * 设置
      * 
-     * @param showDate 要设置的
+     * @param showDate
+     *            要设置的
      */
-    public void setShowDate(Date showDate){
-      this.showDate = showDate;
+    public void setShowDate(Date showDate) {
+	this.showDate = showDate;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getShowTime(){
-      return showTime;
+    public String getShowTime() {
+	return showTime;
     }
 
     /**
      * 设置
      * 
-     * @param showTime 要设置的
+     * @param showTime
+     *            要设置的
      */
-    public void setShowTime(String showTime){
-      this.showTime = showTime;
+    public void setShowTime(String showTime) {
+	this.showTime = showTime;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getEndTime(){
-      return endTime;
+    public String getEndTime() {
+	return endTime;
     }
 
     /**
      * 设置
      * 
-     * @param endTime 要设置的
+     * @param endTime
+     *            要设置的
      */
-    public void setEndTime(String endTime){
-      this.endTime = endTime;
+    public void setEndTime(String endTime) {
+	this.endTime = endTime;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getHallName(){
-      return hallName;
+    public String getHallName() {
+	return hallName;
     }
 
     /**
      * 设置
      * 
-     * @param hallName 要设置的
+     * @param hallName
+     *            要设置的
      */
-    public void setHallName(String hallName){
-      this.hallName = hallName;
+    public void setHallName(String hallName) {
+	this.hallName = hallName;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getLanguage(){
-      return language;
+    public String getLanguage() {
+	return language;
     }
 
     /**
      * 设置
      * 
-     * @param language 要设置的
+     * @param language
+     *            要设置的
      */
-    public void setLanguage(String language){
-      this.language = language;
+    public void setLanguage(String language) {
+	this.language = language;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getMovieName(){
-      return movieName;
+    public String getMovieName() {
+	return movieName;
     }
 
     /**
      * 设置
      * 
-     * @param movieName 要设置的
+     * @param movieName
+     *            要设置的
      */
-    public void setMovieName(String movieName){
-      this.movieName = movieName;
+    public void setMovieName(String movieName) {
+	this.movieName = movieName;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getMoviePhoto(){
-      return moviePhoto;
+    public String getMoviePhoto() {
+	return moviePhoto;
     }
 
     /**
      * 设置
      * 
-     * @param moviePhoto 要设置的
+     * @param moviePhoto
+     *            要设置的
      */
-    public void setMoviePhoto(String moviePhoto){
-      this.moviePhoto = moviePhoto;
+    public void setMoviePhoto(String moviePhoto) {
+	this.moviePhoto = moviePhoto;
     }
 
     /**
      * 获取
      *
-     * @return 
+     * @return
      */
-    public String getScreenType(){
-      return screenType;
+    public String getScreenType() {
+	return screenType;
     }
 
     /**
      * 设置
      * 
-     * @param screenType 要设置的
+     * @param screenType
+     *            要设置的
      */
-    public void setScreenType(String screenType){
-      this.screenType = screenType;
+    public void setScreenType(String screenType) {
+	this.screenType = screenType;
     }
 
     /**
@@ -442,17 +439,18 @@ import java.math.BigDecimal;
      *
      * @return 商品名称
      */
-    public String getName(){
-      return name;
+    public String getName() {
+	return name;
     }
 
     /**
      * 设置商品名称
      * 
-     * @param name 要设置的商品名称
+     * @param name
+     *            要设置的商品名称
      */
-    public void setName(String name){
-      this.name = name;
+    public void setName(String name) {
+	this.name = name;
     }
 
     /**
@@ -460,17 +458,18 @@ import java.math.BigDecimal;
      *
      * @return 订单金额
      */
-    public BigDecimal getOrderPrice(){
-      return orderPrice;
+    public BigDecimal getOrderPrice() {
+	return orderPrice;
     }
 
     /**
      * 设置订单金额
      * 
-     * @param orderPrice 要设置的订单金额
+     * @param orderPrice
+     *            要设置的订单金额
      */
-    public void setOrderPrice(BigDecimal orderPrice){
-      this.orderPrice = orderPrice;
+    public void setOrderPrice(BigDecimal orderPrice) {
+	this.orderPrice = orderPrice;
     }
 
     /**
@@ -478,17 +477,18 @@ import java.math.BigDecimal;
      *
      * @return 订单类型
      */
-    public String getOrderType(){
-      return orderType;
+    public String getOrderType() {
+	return orderType;
     }
 
     /**
      * 设置订单类型
      * 
-     * @param orderType 要设置的订单类型
+     * @param orderType
+     *            要设置的订单类型
      */
-    public void setOrderType(String orderType){
-      this.orderType = orderType;
+    public void setOrderType(String orderType) {
+	this.orderType = orderType;
     }
 
     /**
@@ -496,17 +496,18 @@ import java.math.BigDecimal;
      *
      * @return 绑卡手机号
      */
-    public String getPhone(){
-      return phone;
+    public String getPhone() {
+	return phone;
     }
 
     /**
      * 设置绑卡手机号
      * 
-     * @param phone 要设置的绑卡手机号
+     * @param phone
+     *            要设置的绑卡手机号
      */
-    public void setPhone(String phone){
-      this.phone = phone;
+    public void setPhone(String phone) {
+	this.phone = phone;
     }
 
     /**
@@ -514,17 +515,18 @@ import java.math.BigDecimal;
      *
      * @return 支付金额
      */
-    public BigDecimal getPrice(){
-      return price;
+    public BigDecimal getPrice() {
+	return price;
     }
 
     /**
      * 设置支付金额
      * 
-     * @param price 要设置的支付金额
+     * @param price
+     *            要设置的支付金额
      */
-    public void setPrice(BigDecimal price){
-      this.price = price;
+    public void setPrice(BigDecimal price) {
+	this.price = price;
     }
 
     /**
@@ -532,17 +534,18 @@ import java.math.BigDecimal;
      *
      * @return 登录用户id
      */
-    public Long getUserId(){
-      return userId;
+    public Long getUserId() {
+	return userId;
     }
 
     /**
      * 设置登录用户id
      * 
-     * @param userId 要设置的登录用户id
+     * @param userId
+     *            要设置的登录用户id
      */
-    public void setUserId(Long userId){
-      this.userId = userId;
+    public void setUserId(Long userId) {
+	this.userId = userId;
     }
 
     /**
@@ -550,71 +553,17 @@ import java.math.BigDecimal;
      *
      * @return 登录用户名
      */
-    public String getUserPhone(){
-      return userPhone;
+    public String getUserPhone() {
+	return userPhone;
     }
 
     /**
      * 设置登录用户名
      * 
-     * @param userPhone 要设置的登录用户名
+     * @param userPhone
+     *            要设置的登录用户名
      */
-    public void setUserPhone(String userPhone){
-      this.userPhone = userPhone;
+    public void setUserPhone(String userPhone) {
+	this.userPhone = userPhone;
     }
-
-    /**
-     * 获取优惠劵金额
-     *
-     * @return 优惠劵金额
-     */
-    public BigDecimal getCouponPrice(){
-      return couponPrice;
-    }
-
-    /**
-     * 设置优惠劵金额
-     * 
-     * @param couponPrice 要设置的优惠劵金额
-     */
-    public void setCouponPrice(BigDecimal couponPrice){
-      this.couponPrice = couponPrice;
-    }
-
-    /**
-     * 获取优惠卷描述
-     *
-     * @return 优惠卷描述
-     */
-    public String getCouponTitle(){
-      return couponTitle;
-    }
-
-    /**
-     * 设置优惠卷描述
-     * 
-     * @param couponTitle 要设置的优惠卷描述
-     */
-    public void setCouponTitle(String couponTitle){
-      this.couponTitle = couponTitle;
-    }
-
-    /**
-     * 获取优惠劵id
-     *
-     * @return 优惠劵id
-     */
-    public Long getCouponId(){
-      return couponId;
-    }
-
-    /**
-     * 设置优惠劵id
-     * 
-     * @param couponId 要设置的优惠劵id
-     */
-    public void setCouponId(Long couponId){
-      this.couponId = couponId;
-    }
-
 }

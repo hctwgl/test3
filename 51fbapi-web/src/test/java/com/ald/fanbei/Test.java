@@ -26,8 +26,10 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBoluomeShoujiDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSON;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
@@ -57,26 +59,29 @@ public class Test {
 //		}
 	    
         	try {
-        	    Map<String, String> params = new HashMap<String, String>();
-        	    params.put(BoluomeCore.ORDER_ID, "ala202895912378377");
-        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime() / 1000));
-        
-        	    // String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
-        	    // "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) +
-        	    // AesUtil.decrypt("OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B",
-        	    // "testC1b6x@6aH$2dlw");
-        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(params) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
-        	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
-        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
-        
-        	    // params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
-        	    // "testC1b6x@6aH$2dlw"));
-        	    params.put("appKey", "7887978286");
-        	    params.put(BoluomeCore.SIGN, sign);
-        	    String paramsStr = BoluomeCore.createLinkString(params);
-        
-        	    System.out.println(HttpUtil.doGet("https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr, 100));
-        	} catch (UnsupportedEncodingException e) {
+        	    
+        	    AfBoluomeShoujiDo afBoluomeShoujiDo = JSON.parseObject(" {        \"area\": \"北京\",        \"canCancel\": 0,        \"cancelledAt\": 1513056463818,        \"channel\": \"dhst\",        \"displayStatus\": \"已取消\",        \"flow\": \"50M\",        \"goodsId\": \"cucc_50M\", \"id\": \"ala102894012481600\",        \"isp\": \"联通\",        \"name\": \"(全国)北京联通50M - 186****5787\",        \"orderPrice\": 5.9,        \"orderType\": \"liuliang\",        \"partnerId\": \"\",        \"phone\": \"18612115787\",        \"price\": 5.9,        \"status\": 8,        \"userId\": \"1953217\",        \"userPhone\": \"13043324643\"    ,        \"coupon\": {            \"price\": 10,            \"title\": \"10元外卖劵\"        },\"couponId\": \"18879352\"}",AfBoluomeShoujiDo.class);
+        	    System.out.println(afBoluomeShoujiDo.toString());
+//        	    Map<String, String> params = new HashMap<String, String>();
+//        	    params.put(BoluomeCore.ORDER_ID, "ala202895912378377");
+//        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime() / 1000));
+//        
+//        	    // String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
+//        	    // "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) +
+//        	    // AesUtil.decrypt("OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B",
+//        	    // "testC1b6x@6aH$2dlw");
+//        	    String beforeSign = "7887978286" + BoluomeCore.concatParams(params) + "OMulI3N5ERyUko5fBKEs3UQzxamly2WC";
+//        	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
+//        	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
+//        
+//        	    // params.put("appKey", AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
+//        	    // "testC1b6x@6aH$2dlw"));
+//        	    params.put("appKey", "7887978286");
+//        	    params.put(BoluomeCore.SIGN, sign);
+//        	    String paramsStr = BoluomeCore.createLinkString(params);
+//        
+//        	    System.out.println(HttpUtil.doGet("https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr, 100));
+        	} catch (Exception e) {
         	    // TODO Auto-generated catch block
         	    e.printStackTrace();
         	}
