@@ -47,6 +47,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
@@ -205,9 +206,9 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
 		
 		//上期订单手续费
-		BigDecimal orderPoundage = afBorrowLegalOrderCash.getPoundageAmount();
+		BigDecimal orderPoundage = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getPoundageAmount(),BigDecimal.ZERO);
 		//上期订单利息
-		BigDecimal orderRateAmount = afBorrowLegalOrderCash.getInterestAmount();
+		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
 		
 		//---------
 		//订单续期记录
@@ -217,7 +218,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		legalOrderRepayment.setRepayAmount(afBorrowLegalOrderCash.getAmount());
 		legalOrderRepayment.setTradeNo(payTradeNo);
 		legalOrderRepayment.setTradeNoUps(tradeNo);
-		
+		legalOrderRepayment.setStatus("A");
 		//legalOrderRepayment.setTradeNoWx(tradeNoWx);
 		//legalOrderRepayment.setTradeNoZfb(tradeNoZfb);
 		
@@ -389,22 +390,31 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		    		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
 		    		//借款利率
 		    		BigDecimal newRate = null;
+		    		//借款手续费率
+		    		BigDecimal newServiceRate = null;
+		    		
 		    		if (rateInfoDo != null) {
 		    			String borrowRate = rateInfoDo.getValue2();
 		    			JSONArray array = JSONObject.parseArray(borrowRate);
 		    			double rate = 0;
+		    			double serviceRate = 0;
 		    			for (int i = 0; i < array.size(); i++) {
 		    				JSONObject info = array.getJSONObject(i);
 		    				String borrowTag = info.getString("borrowTag");
 		    				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
 		    						rate = info.getDouble("borrowSevenDay");
 		    				}
+		    				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+		    					serviceRate = info.getDouble("borrowSevenDay");
+		    				}
 		    			}
 		    			newRate = BigDecimal.valueOf(rate / 100);
+		    			newServiceRate = BigDecimal.valueOf(serviceRate / 100);
 		    		}else{
 		    			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
 		    		}
 		    		BigDecimal rateAmount = BigDecimalUtil.multiply(waitPaidAmount, newRate, new BigDecimal(afRenewalDetailDo.getRenewalDay()).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		    		BigDecimal poundage = BigDecimalUtil.multiply(waitPaidAmount, newServiceRate, new BigDecimal(afRenewalDetailDo.getRenewalDay()).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 					// ----<
 		    		
 					Date gmtPlanRepayment = afBorrowCashDo.getGmtPlanRepayment();
@@ -423,10 +433,11 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getSumOverdue().add(afBorrowCashDo.getOverdueAmount()));// 累计滞纳金
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);// 滞纳金置0
 					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));// 累计利息
-					afBorrowCashDo.setRateAmount(rateAmount);// 利息改成本次续期的利息
+					afBorrowCashDo.setRateAmount(rateAmount);// 利息改成本次续期金额的利息
 					afBorrowCashDo.setSumJfb(afBorrowCashDo.getSumJfb().add(afRenewalDetailDo.getJfbAmount()));// 累计使用集分宝
 					afBorrowCashDo.setSumRebate(afBorrowCashDo.getSumRebate().add(afRenewalDetailDo.getRebateAmount()));// 累计使用账户余额
 					afBorrowCashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage().add(afRenewalDetailDo.getPriorPoundage()));// 累计续期手续费
+					afBorrowCashDo.setPoundage(poundage);
 					afBorrowCashDo.setRenewalNum(afBorrowCashDo.getRenewalNum() + 1);// 累计续期次数
 					afBorrowCashService.updateBorrowCash(afBorrowCashDo);
 
@@ -603,6 +614,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		afRenewalDetailDo.setPriorInterest(borrowRateAmount);// 上期利息
 		afRenewalDetailDo.setPriorOverdue(afBorrowCashDo.getOverdueAmount());// 上期滞纳金
 		afRenewalDetailDo.setPriorPoundage(borrowPoundage);// 上期手续费
+		afRenewalDetailDo.setNextPoundage(BigDecimal.ZERO);// 下期手续费
 		afRenewalDetailDo.setJfbAmount(jfbAmount);// 集分宝个数
 		afRenewalDetailDo.setRebateAmount(rebateAmount);// 账户余额
 		afRenewalDetailDo.setPayTradeNo(payTradeNo);// 平台提供给三方支付的交易流水号
