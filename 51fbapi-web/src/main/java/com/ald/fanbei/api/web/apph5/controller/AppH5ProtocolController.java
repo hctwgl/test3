@@ -126,9 +126,6 @@ public class AppH5ProtocolController extends BaseController {
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
 		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
 
-		//是否按新收费机制显示
-		Boolean isNewRate = true;
-
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 
 		Long userId = afUserDo.getRid();
@@ -156,14 +153,6 @@ public class AppH5ProtocolController extends BaseController {
 		if (null != borrowId && 0 != borrowId) {
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
-			//判断安卓401版本之前borrowId传成borrowBillId
-			String appInfo = JSON.parseObject(webContext.getAppInfo()).getString("id");
-			if(!"i".equals(appInfo.substring(0,1).toLowerCase()) && webContext.getAppVersion() < 401)
-			{
-				AfBorrowBillDo afBorrowBillDo = afBorrowBillService.getBorrowBillById(borrowId);
-				borrowId = afBorrowBillDo.getBorrowId();
-			}
-			isNewRate = GetIsNewRateByOrderType(borrowId);
 		}
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
@@ -190,14 +179,11 @@ public class AppH5ProtocolController extends BaseController {
 			repayDay = afUserOutDayDo.getPayDay();
 		}
 		model.put("repayDay", repayDay);
-		model.put("isNewRate", isNewRate);
-		if(isNewRate) {
-			if (StringUtils.isNotBlank(consumeDo.getValue3())) {
-				model.put("interest", borrowAmount.multiply(new BigDecimal( consumeDo.getValue3())).multiply(new BigDecimal(nper)).divide(new BigDecimal(12),2,BigDecimal.ROUND_UP));
-			}
-			else {
-				model.put("interest", new BigDecimal(0));
-			}
+		if (StringUtils.isNotBlank(consumeDo.getValue3())) {
+			model.put("interest", borrowAmount.multiply(new BigDecimal( consumeDo.getValue3())).multiply(new BigDecimal(nper)).divide(new BigDecimal(12),2,BigDecimal.ROUND_UP));
+		}
+		else {
+			model.put("interest", new BigDecimal(0));
 		}
 		logger.info(JSON.toJSONString(model));
 	}
@@ -358,20 +344,6 @@ public class AppH5ProtocolController extends BaseController {
 			}
 		}catch (Exception e){
 			logger.error("UserSeal create error",e);
-		}
-	}
-
-	//判断是否按新收费机制显示（商圈按原来的显示）
-	private Boolean GetIsNewRateByOrderType(Long borrowId) {
-		try {
-			String orderTpye = afOrderDao.getOrderTypeByBorrowId(borrowId);
-			if(orderTpye.equals("TRADE")) {
-				return  false;
-			}
-			return true;
-		}catch (Exception e){
-			logger.error("UserSeal create error",e);
-			return true;
 		}
 	}
 
