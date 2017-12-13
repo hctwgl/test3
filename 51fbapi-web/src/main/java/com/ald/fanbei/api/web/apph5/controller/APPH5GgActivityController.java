@@ -178,7 +178,7 @@ public class APPH5GgActivityController extends BaseController {
 					AfOrderDo order = new AfOrderDo();
 					order.setUserId(uDo.getUserId());
 					int queryCount = afOrderService.getOrderCountByStatusAndUserId(order);
-
+					logger.info("/h5GgActivity/returnCoupon queryCount = {},userId = {}",queryCount,userId);
 					if (queryCount <= 0) {
 						returnCouponVo.setStatus(H5GgActivity.NO_CONSUME.getDescription());
 					}
@@ -187,6 +187,7 @@ public class APPH5GgActivityController extends BaseController {
 						orderStatus.setUserId(uDo.getUserId());
 						orderStatus.setOrderStatus("FINISHED");
 						int orderCount = afOrderService.getOrderCountByStatusAndUserId(orderStatus);
+						logger.info("/h5GgActivity/returnCoupon orderCount = {},userId = {}",orderCount,userId);
 						if (orderCount <= 0) {
 							returnCouponVo.setStatus(H5GgActivity.NO_FINISH.getDescription());
 						} else {
@@ -199,23 +200,24 @@ public class APPH5GgActivityController extends BaseController {
 
 							AfBoluomeUserCouponDo userCoupon = afBoluomeUserCouponService
 									.getUserCouponByUerIdAndRefIdAndChannel(queryUserCoupon);
-
+							logger.info("/h5GgActivity/returnCoupon userCoupon = {},userId = {}",userCoupon,userId);
 							if (userCoupon != null) {
 								long couponId = userCoupon.getCouponId();
-								AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
+								//AfResourceDo rDo = afResourceService.getResourceByResourceId(couponId);
 								// if (rDo != null) {
 								// returnCouponVo.setReward(rDo.getName());
 								// }
 								// 通过af_resoource 获取url，再调用菠萝觅接口,获取对应金额
 								try {
 									AfResourceDo afResourceDo = afResourceService.getResourceByResourceId(couponId);
+									logger.info("/h5GgActivity/returnCoupon afResourceDo = {},couponId = {}",userCoupon,couponId);
 									if (afResourceDo != null) {
 										BigDecimal money = new BigDecimal(String.valueOf(afResourceDo.getPic1()));
 										returnCouponVo.setReward(money + "元外卖券");
 										couponAmount = couponAmount.add(money);
 									}
 								} catch (Exception e) {
-									logger.error("get coluome activity inviteAmount error", e.getStackTrace());
+									logger.error("/h5GgActivity/returnCoupon get boluome activity inviteAmount error", e.getStackTrace());
 								}
 							}
 
