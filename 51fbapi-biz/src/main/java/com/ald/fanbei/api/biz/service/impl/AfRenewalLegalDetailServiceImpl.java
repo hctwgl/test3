@@ -161,7 +161,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrder.setStatus("UNPAID");//未支付
 		borrowLegalOrder.setPriceAmount(goodsDo.getSaleAmount());
 		borrowLegalOrder.setGoodsName(goodsDo.getName());
-		afBorrowLegalOrderDao.addBorrowLegalOrder(borrowLegalOrder);
+		afBorrowLegalOrderService.saveBorrowLegalOrder(borrowLegalOrder);
 		
 		if (cardId == -1) {// 微信支付
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.RENEWAL_PAY.getCode());
