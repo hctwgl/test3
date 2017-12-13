@@ -10,16 +10,11 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
-import com.ald.fanbei.api.biz.service.AfActivityService;
-import com.ald.fanbei.api.biz.service.AfCategoryService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -31,11 +26,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -74,12 +64,19 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	@Resource
 	AfGoodsService afGoodsService;
 
+	@Resource
+	AfModelH5ItemService afModelH5ItemService;
+
+	@Resource
+	AfModelH5Service afModelH5Service;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("homePageType", "NEW");
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		Integer appVersion = context.getAppVersion();
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
@@ -140,7 +137,13 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// JSONObject.toJSONString(ecommerceAreaInfo));
 
 		// 获取首页商品信息
-		List<Map<String, Object>> categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+		List<Map<String, Object>> categoryGoodsInfo = null;
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
+		if(StringUtils.equals(afResourceDo.getValue(),"N")){
+			categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+		}else if(StringUtils.equals(afResourceDo.getValue(),"Y")){
+			categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+		}
 		// logger.info("home page category goods info => {}" +
 		// JSONObject.toJSONString(categoryGoodsInfo));
 
@@ -291,6 +294,21 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			}
 		}
 		return categoryInfoList;
+	}
+
+	private List<Map<String, Object>> getHomePageGoodsCategoryInfoV1() {
+		List<AfModelH5ItemDo> categoryList = afModelH5ItemService.selectModelByTag();
+		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
+		for (AfModelH5ItemDo modelH5ItemDo : categoryList) {
+			Map<String, Object> categoryInfoMap = Maps.newHashMap();
+			categoryInfoMap.put("categoryId", modelH5ItemDo.getRid());
+			categoryInfoMap.put("categoryName", modelH5ItemDo.getItemValue());
+			categoryInfoList.add(categoryInfoMap);
+		}
+		if (null != categoryList && !categoryList.isEmpty()){
+
+		}
+		return null;
 	}
 
 	private Map<String, Object> getEcommerceAreaInfo() {
