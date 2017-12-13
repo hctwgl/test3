@@ -32,10 +32,12 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -644,14 +646,28 @@ public class AppH5DoubleEggsController extends BaseController {
 			}
 			result = H5CommonResponse.getNewInstance(false, "预约失败").toString();
 
-		} catch (Exception exception) {
+		}catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+				return result.toString();
+			}
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", e.getErrorCode().getDesc()).toString();
+			logger.error("resultStr = {}", result);
+			logger.error("初始化数据失败  e = {} , resultStr = {}", e, result);
+		}
+		
+		catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "预约化失败", "", exception.getMessage()).toString();
 			logger.error("预约失败 context = {},  e = {} ", context, exception);
 			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
 		}
 		return result;
 	}
-
+	String opennative = "/fanbei-web/opennative?name=";
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
 		try {
