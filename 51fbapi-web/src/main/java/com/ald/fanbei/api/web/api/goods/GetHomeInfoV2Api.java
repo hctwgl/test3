@@ -305,10 +305,75 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			categoryInfoMap.put("categoryName", modelH5ItemDo.getItemValue());
 			categoryInfoList.add(categoryInfoMap);
 		}
-		if (null != categoryList && !categoryList.isEmpty()){
-
+		// 爬取商品开关
+		AfResourceDo isWormResc = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,
+				Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		String isWorm = "0";
+		if (null != isWormResc) {
+			isWorm = isWormResc.getValue();
 		}
-		return null;
+		// 获取借款分期配置信息
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+				Constants.RES_BORROW_CONSUME);
+		JSONArray array = JSON.parseArray(resource.getValue());
+		// 删除2分期
+		if (array == null) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+		}
+		removeSecondNper(array);
+		if (null != categoryList && !categoryList.isEmpty()){
+			Map<String, Object> infoMap = categoryInfoList.get(0);
+			Long categoryId = (Long) infoMap.get("categoryId");
+			List<AfGoodsDo> goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			for (AfGoodsDo goodsDo : goodsDoList) {
+				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				goodsInfo.put("goodName", goodsDo.getName());
+				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+				goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+				goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+				goodsInfo.put("goodsId", goodsDo.getRid());
+				goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+				goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+				goodsInfo.put("source", goodsDo.getSource());
+				goodsInfo.put("goodsType", "0");
+				goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+				goodsInfo.put("isWorm", isWorm);
+				// 如果是分期免息商品，则计算分期
+				Long goodsId = goodsDo.getRid();
+				AfSchemeGoodsDo schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch (Exception e) {
+					logger.error(e.toString());
+				}
+				JSONArray interestFreeArray = null;
+				if (schemeGoodsDo != null) {
+					AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
+							.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+
+				if (nperList != null) {
+					goodsInfo.put("goodsType", "1");
+					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+					String isFree = (String) nperMap.get("isFree");
+					if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+						nperMap.put("freeAmount", nperMap.get("amount"));
+					}
+					goodsInfo.put("nperMap", nperMap);
+				}
+				goodsInfoList.add(goodsInfo);
+				infoMap.put("goodsInfoList", goodsInfoList);
+			}
+		}
+		return categoryInfoList;
 	}
 
 	private Map<String, Object> getEcommerceAreaInfo() {

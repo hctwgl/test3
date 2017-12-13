@@ -85,4 +85,8 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsByCategoryId(Long categoryId);
 
 	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
+
+	List<AfGoodsDo> getGoodsByModelId (Long categoryId);
+
+	List<AfGoodsDo> getHomeGoodsByModelId (AfGoodsQuery query);
 }

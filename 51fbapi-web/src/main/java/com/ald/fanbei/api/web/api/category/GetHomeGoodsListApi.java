@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.ResourceType;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -66,7 +67,14 @@ public class GetHomeGoodsListApi implements ApiHandle {
 		query.setCategoryId(categoryId);
 		query.setPageNo(pageNo);
 		query.setPageSize(50);
-		List<AfGoodsDo> goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+		List<AfGoodsDo> goodsDoList = null;
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
+		if(StringUtils.equals(afResourceDo.getValue(),"N")){
+			goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+		}else if(StringUtils.equals(afResourceDo.getValue(),"Y")){
+			goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+		}
+
 
 		List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
 		// 获取借款分期配置信息
