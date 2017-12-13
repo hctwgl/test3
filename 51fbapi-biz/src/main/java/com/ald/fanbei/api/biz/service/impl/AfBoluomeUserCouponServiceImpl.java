@@ -98,8 +98,6 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 					log = log + String.format("couponId =  %s ", couponId);
 					logger.info(log);
 					
-					afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
-					
 					//send coupon
 					AfResourceDo temCoupon = afResourceDao.getResourceByResourceId(couponId);
 					if (temCoupon != null) {
@@ -109,17 +107,22 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 						log = log + String.format("sendBoluomeCoupon  bo =  %s, resultString =  %s", JSONObject.toJSONString(bo),
 								resultString);
 						logger.info(log);
+						JSONObject resultJson = JSONObject.parseObject(resultString);
+	        				String code = resultJson.getString("code");
+	        		        	//发券成功，保存记录，推送极光 
+	        				if ("0".equals(code)) {
+	        				 afBoluomeUserCouponDao.saveRecord(afBoluomeUserCouponDo);
+	        				 result = true;
+	    					//call Jpush for rebate
+	    					String userName = convertToUserName(refUserIdTemp);
+	    					log = log + String.format("userName = %s ", userName);
+	    					logger.info(log);
+	    					if (userName != null) {
+	    						jpushService.send15Coupon(userName);
+	    					}
+	        			}
 					
-					}
-					
-					result = true;
-					//call Jpush for rebate
-					String userName = convertToUserName(refUserIdTemp);
-					log = log + String.format("userName = %s ", userName);
-					logger.info(log);
-					if (userName != null) {
-						jpushService.send15Coupon(userName);
-					}
+				   }
 					
 				}
 
