@@ -41,6 +41,8 @@ public class RiskStrongV1 extends RiskRegisterStrongReqBo {
 		userInfo.put("openId", accountDo.getOpenId());
 		userInfo.put("address", afUserDo.getAddress());
 		userInfo.put("channel", CHANNEL);
+		//12-13新增用户相似度字段
+		userInfo.put("similarDegree",afUserAuthDo.getSimilarDegree());
 		userInfo.put("reqExt", "");
 		userInfo.put("realName", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getRealName()));
 		userInfo.put("phone", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getMobile()));

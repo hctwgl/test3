@@ -485,6 +485,7 @@ public class RiskUtil extends AbstractThird {
         obj.put("appName", appName);
         obj.put("ipAddress", ipAddress);
         obj.put("blackBox", blackBox);
+
         reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 
         JSONObject eventObj = new JSONObject();
@@ -506,7 +507,9 @@ public class RiskUtil extends AbstractThird {
         eventObj.put("SecSence", codeForSecond == null ? "" : codeForSecond);
         eventObj.put("ThirdSence", codeForThird == null ? "" : codeForThird);
         reqBo.setEventInfo(JSON.toJSONString(eventObj));
-
+        //12-13 弱风控加入用户借款信息
+        HashMap summaryData= afBorrowDao.getUserSummary(userAuth.getUserId());
+        reqBo.setSummaryData(JSON.toJSONString(summaryData));
         reqBo.setReqExt("");
 
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
