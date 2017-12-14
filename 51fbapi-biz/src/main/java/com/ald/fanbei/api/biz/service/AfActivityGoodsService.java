@@ -28,6 +28,6 @@ public interface AfActivityGoodsService {
 
 	AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(Long goodsId);
 
-	List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(String param);
+	List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(List<AfEncoreGoodsDto> list);
 	
 }

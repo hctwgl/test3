@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 	}
 
 	@Override
-	public List<AfGoodsPriceDto> selectSumStockMap(String param){
-		return afGoodsPriceDao.selectSumStockMap(param);
+	public List<AfGoodsPriceDto> selectSumStockMap(List<AfEncoreGoodsDto> list ){
+		return afGoodsPriceDao.selectSumStockMap(list);
 	}
 }

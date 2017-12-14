@@ -218,9 +218,9 @@
 			goods_id = #{goodsId}
 	</select>
 
-	<select id="getActivityGoodsByGoodsIdAndTypeMap" resultType="AfActivityGoodsDo">
+	<select id="getActivityGoodsByGoodsIdAndTypeMap" resultType="AfActivityGoodsDo" parameterType="list">
 		SELECT
-		<include refid="queryTotalFields"/>
+			goods_id,initial_count
 		FROM
 		af_activity_goods
 		WHERE
@@ -228,6 +228,10 @@
 		AND
 		type = 'LIMIT'
 		AND
-		goods_id in ( #{param} )
+		goods_id in
+		<foreach item="item" collection="list" separator="," open="(" close=")">
+			#{item.rid}
+		</foreach>
+		 GROUP BY goods_id
 	</select>
 </mapper>

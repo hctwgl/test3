@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,7 +21,7 @@ public interface AfGoodsPriceDao extends BaseDao<AfGoodsPriceDo, Long> {
 
     Integer selectSumStock(Long goodsId);
 
-    List<AfGoodsPriceDto> selectSumStockMap(String param);
+    List<AfGoodsPriceDto> selectSumStockMap(List<AfEncoreGoodsDto> list);
 
     int updateSell(@Param("priceId") Long priceId,@Param("count") Long count);
 

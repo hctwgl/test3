@@ -66,7 +66,7 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 	}
 
 	@Override
-	public List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(String param){
-		return afActivityGoodsDao.getActivityGoodsByGoodsIdAndTypeMap(param);
+	public List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(List<AfEncoreGoodsDto> list){
+		return afActivityGoodsDao.getActivityGoodsByGoodsIdAndTypeMap(list);
 	}
 }

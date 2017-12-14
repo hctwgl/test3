@@ -108,14 +108,12 @@ public class AppH5FlashSaleController extends BaseController {
 //				break;
 //			}
 //		}
-		StringBuffer sb = new StringBuffer();
-		for(AfEncoreGoodsDto goodsDo : list){
-			sb.append("'").append(goodsDo.getRid()).append("'").append(",");
-		}
-		String param = sb.deleteCharAt(sb.length() - 1).toString();
-		List<AfActivityGoodsDo> AfActivityGoodslist = afActivityGoodsService.getActivityGoodsByGoodsIdAndTypeMap(param);
-		List<AfOrderDto> orderList = afOrderService.selectSumCountByGoodsId(param);
-		List<AfGoodsPriceDto> priceDtos = afGoodsPriceService.selectSumStockMap(param);
+
+
+
+		List<AfActivityGoodsDo> AfActivityGoodslist = afActivityGoodsService.getActivityGoodsByGoodsIdAndTypeMap(list);
+		List<AfOrderDto> orderList = afOrderService.selectSumCountByGoodsId(list);
+		List<AfGoodsPriceDto> priceDtos = afGoodsPriceService.selectSumStockMap(list);
  		for(AfEncoreGoodsDto goodsDo : list) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			goodsInfo.put("goodName",goodsDo.getName());
@@ -142,7 +140,7 @@ public class AppH5FlashSaleController extends BaseController {
 			long initialCount = 0;
 			if(null != AfActivityGoodslist && AfActivityGoodslist.size()>0){
 				for(AfActivityGoodsDo activityDo : AfActivityGoodslist){
-					if(activityDo.getGoodsId() == goodsId){
+					if(goodsId.equals(activityDo.getGoodsId())){
 						if(null != activityDo.getInitialCount()){
 							flag = true;
 							initialCount = activityDo.getInitialCount();
@@ -161,7 +159,7 @@ public class AppH5FlashSaleController extends BaseController {
 			flag = false;
 			if(null != orderList && orderList.size()>0){
 				for(AfOrderDto orderDto : orderList){
-					if(orderDto.getGoodsId() == goodsId){
+					if(goodsId.equals(orderDto.getGoodsId()) ){
 						if(null != orderDto.getNum()){
 							flag = true;
 							volume = orderDto.getNum()+count;
@@ -179,7 +177,7 @@ public class AppH5FlashSaleController extends BaseController {
 			flag = false;
 			if(null != priceDtos && priceDtos.size()>0){
 				for(AfGoodsPriceDto priceDto : priceDtos){
-					if(priceDto.getGoodsId() == goodsId){
+					if(goodsId.equals(priceDto.getGoodsId()) ){
 						if(null != priceDto.getNum()){
 							flag = true;
 							total = priceDto.getNum()+volume;

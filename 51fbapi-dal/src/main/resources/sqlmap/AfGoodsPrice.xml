@@ -236,8 +236,16 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
         UPDATE af_goods_price SET stock = stock + #{count} , sale_count = sale_count - #{count} where id = #{priceId}
     </update>
 
-    <select id="selectSumStockMap"  resultType="AfGoodsPriceDto" >
-        select SUM(stock) num,goods_id from af_goods_price where  is_delete = 0 and is_sale = 'Y' and goods_id in (#{param}) GROUP BY goods_id
+    <select id="selectSumStockMap"  resultType="AfGoodsPriceDto" parameterType="list">
+        select SUM(stock) num,goods_id from af_goods_price where  is_delete = 0 and is_sale = 'Y'
+        and goods_id in
+        <foreach item="item" collection="list" separator="," open="(" close=")">
+            #{item.rid}
+        </foreach>
+         GROUP BY goods_id
     </select>
+
+
+
 
 </mapper>
