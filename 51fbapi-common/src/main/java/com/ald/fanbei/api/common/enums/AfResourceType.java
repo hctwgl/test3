@@ -103,6 +103,7 @@ public enum AfResourceType {
 	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
 	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片"),
 	YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询配置"),
+	RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
 
 	//登录白名单
 	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单");

@@ -147,8 +147,7 @@ public class AppH5TradeController extends BaseController {
         String status = YesNoStatus.NO.getCode();
         if (account.getAuAmount().compareTo(BigDecimal.ZERO) > 0) {
             if (appVersion >= 340) {
-                if (StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())// 反欺诈分已验证
-                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())// 芝麻信用已验证
+                if (StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())// 芝麻信用已验证
                         && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())// 通讯录匹配状态
                         && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getMobileStatus())// 手机运营商
 //						&& (null != auth.getGmtMobile() && DateUtil.beforeDay(auth.getGmtMobile(), DateUtil.addMonths(new Date(), 2)))// 手机运营商认证时间小于两个月
@@ -158,8 +157,7 @@ public class AppH5TradeController extends BaseController {
                     status = YesNoStatus.YES.getCode();
                 }
             } else {
-                if (StringUtil.equals(YesNoStatus.YES.getCode(), auth.getIvsStatus())// 反欺诈分已验证
-                        && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())// 芝麻信用已验证
+                if (StringUtil.equals(YesNoStatus.YES.getCode(), auth.getZmStatus())// 芝麻信用已验证
                         && StringUtil.equals(YesNoStatus.YES.getCode(), auth.getTeldirStatus())// 通讯录匹配状态
                         ) {
                     status = YesNoStatus.YES.getCode();

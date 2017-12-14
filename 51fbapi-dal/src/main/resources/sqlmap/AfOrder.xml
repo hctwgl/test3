@@ -278,12 +278,8 @@
 			rebate_amount , 
 			commission_amount ,
 			bank_id,
-			<if test="auAmount != null">
-	            au_amount,
-	        </if>
-	        <if test="usedAmount != null">
-	            used_amount,
-	        </if>
+            au_amount,
+            used_amount,
 			gmt_pay_end
 			)
 		VALUES
@@ -322,12 +318,22 @@
     		#{item.rebateAmount},
     		#{item.commissionAmount},
     		#{item.bankId},
-    		<if test="auAmount != null">
-	            #{auAmount},
-		     </if>
-			<if test="usedAmount != null">
-	            #{usedAmount},
-	        </if>
+    		<choose>
+		        <when test="item.auAmount !=null and item.auAmount != ''">
+		            #{item.auAmount},
+		        </when>
+		        <otherwise>
+		            0,
+		        </otherwise>
+		    </choose>
+		    <choose>
+		        <when test="item.usedAmount !=null and item.usedAmount != ''">
+		            #{item.usedAmount},
+		        </when>
+		        <otherwise>
+		            0,
+		        </otherwise>
+		    </choose>
     		#{item.gmtPayEnd}
 		)
 		</foreach>
