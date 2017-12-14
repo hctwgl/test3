@@ -121,8 +121,7 @@ let vm = new Vue({
             this.getId=this.arr[i];
             let self = this;
             this.detailDes = [];
-            this.pageNo=0;
-            
+            this.pageNo=1;
             $.ajax({
                 type: 'post',
                 url: "https://supplier.51fanbei.com/goods/h5/list",
