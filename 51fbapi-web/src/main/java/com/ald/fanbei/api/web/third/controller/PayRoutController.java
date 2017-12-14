@@ -469,7 +469,13 @@ public class PayRoutController {
                 	
                 	afBorrowLegalRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
                 } else if(PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期失败
+                	if (StringUtil.isNotBlank(respDesc)) {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+                    } else {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+                    }
                 	
+                	afRenewalLegalDetailService.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
                 }
             }
             return "SUCCESS";
