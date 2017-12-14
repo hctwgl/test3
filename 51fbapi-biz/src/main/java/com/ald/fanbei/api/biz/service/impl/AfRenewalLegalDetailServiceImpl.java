@@ -2,7 +2,9 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +75,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.timevale.tgtext.text.pdf.da;
 
 /**  
  * @Description: 
@@ -146,25 +149,20 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		final String payTradeNo = repayNo;
 
 		String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
-
+		
+		//新增还款记录（本金还款记录，订单还款记录）
 		final AfRenewalDetailDo renewalDetail = buildRenewalDetailDo(afBorrowCashDo, jfbAmount, repaymentAmount, repayNo, actualAmount, rebateAmount, capital, borrow, cardId, payTradeNo, userId, appVersion);
 		final AfBorrowLegalOrderRepaymentDo legalOrderRepayment = buildBorrowLegalOrderRepaymentDo(afBorrowCashDo, jfbAmount, repaymentAmount, repayNo, actualAmount, rebateAmount, capital, borrow, cardId, payTradeNo, userId, appVersion);
+		
+		//新增订单记录（订单记录，订单借款记录）
+		final AfBorrowLegalOrderDo borrowLegalOrder = buildAfBorrowLegalOrderDo(afBorrowCashDo, userId, goodsId, deliveryUser, deliveryPhone, address);
+		final AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = buildAfBorrowLegalOrderCashDo(afBorrowCashDo,userId,payTradeNo,borrowLegalOrder);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
+		
 		afRenewalDetailDao.addRenewalDetail(renewalDetail);
 		afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
-		
-		//新增订单记录
-		AfGoodsDo goodsDo = afGoodsDao.getGoodsById(goodsId);
-		AfBorrowLegalOrderDo borrowLegalOrder = new AfBorrowLegalOrderDo();
-		borrowLegalOrder.setBorrowId(afBorrowCashDo.getRid());
-		borrowLegalOrder.setGoodsId(goodsId);
-		borrowLegalOrder.setDeliveryUser(deliveryUser);
-		borrowLegalOrder.setDeliveryPhone(deliveryPhone);
-		borrowLegalOrder.setAddress(address);
-		borrowLegalOrder.setUserId(userId);
-		borrowLegalOrder.setStatus("UNPAID");//未支付
-		borrowLegalOrder.setPriceAmount(goodsDo.getSaleAmount());
-		borrowLegalOrder.setGoodsName(goodsDo.getName());
+		afBorrowLegalOrderCashDao.saveRecord(afBorrowLegalOrderCashDo);
 		afBorrowLegalOrderService.saveBorrowLegalOrder(borrowLegalOrder);
 		
 		if (cardId == -1) {// 微信支付
@@ -188,66 +186,9 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 
 		return map;
 	}
-
-	private AfBorrowLegalOrderRepaymentDo buildBorrowLegalOrderRepaymentDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId, Integer appVersion) {
-
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
-
-		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
-		
-        //---------
-		
-		//上一笔订单记录
-		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
-		if(afBorrowLegalOrder==null){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
-		}
-		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
-		
-		//上期订单手续费
-		BigDecimal orderPoundage = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getPoundageAmount(),BigDecimal.ZERO);
-		//上期订单利息
-		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
-		
-		//---------
-		//订单续期记录
-		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = new AfBorrowLegalOrderRepaymentDo();
-		legalOrderRepayment.setUserId(userId);
-		legalOrderRepayment.setBorrowLegalOrderCashId(afBorrowLegalOrderCash.getRid());
-		legalOrderRepayment.setRepayAmount(afBorrowLegalOrderCash.getAmount());
-		legalOrderRepayment.setTradeNo(payTradeNo);
-		legalOrderRepayment.setTradeNoUps(tradeNo);
-		legalOrderRepayment.setStatus("A");
-		//legalOrderRepayment.setTradeNoWx(tradeNoWx);
-		//legalOrderRepayment.setTradeNoZfb(tradeNoZfb);
-		
-		//legalOrderRepayment.setUserCouponId(userCouponId);
-		//legalOrderRepayment.setCouponAmount(couponAmount);
-		legalOrderRepayment.setRebateAmount(rebateAmount);
-		
-		//legalOrderRepayment.setStatus(status);
-		
-		if (cardId == -2) {
-			legalOrderRepayment.setCardNo("");
-			legalOrderRepayment.setCardName(Constants.DEFAULT_USER_ACCOUNT);
-		} else if (cardId == -1) {
-			legalOrderRepayment.setCardNo("");
-			legalOrderRepayment.setCardName(Constants.DEFAULT_WX_PAY_NAME);
-		}
-		else if(cardId ==-3){
-			legalOrderRepayment.setCardNo("");
-			legalOrderRepayment.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
-		}
-		else {
-			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
-			legalOrderRepayment.setCardNo(bank.getCardNumber());
-			legalOrderRepayment.setCardName(bank.getBankName());
-		}
-
-		return legalOrderRepayment;
-	}
-
+	
+	
+	
 	long dealChangStatus(String outTradeNo, String tradeNo, String status, Long rid, Long orderRepaymentId, Long orderId) {
 
 		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
@@ -547,6 +488,12 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		return accountLog;
 	}
 
+	
+	/**
+	 * @Description:  本金还款记录
+	 * @return  AfRenewalDetailDo  
+	 * @data  2017年12月14日
+	 */
 	private AfRenewalDetailDo buildRenewalDetailDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId, Integer appVersion) {
 
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
@@ -653,6 +600,130 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		}
 
 		return afRenewalDetailDo;
+	}
+	
+	
+	/**
+	 * @Description:  订单记录
+	 * @return  AfBorrowLegalOrderDo  
+	 * @data  2017年12月14日
+	 */
+	private AfBorrowLegalOrderDo buildAfBorrowLegalOrderDo(AfBorrowCashDo afBorrowCashDo, Long userId, Long goodsId, String deliveryUser, String deliveryPhone, String address){
+		//新增订单记录
+		AfGoodsDo goodsDo = afGoodsDao.getGoodsById(goodsId);
+		AfBorrowLegalOrderDo borrowLegalOrder = new AfBorrowLegalOrderDo();
+		borrowLegalOrder.setBorrowId(afBorrowCashDo.getRid());
+		borrowLegalOrder.setGoodsId(goodsId);
+		borrowLegalOrder.setDeliveryUser(deliveryUser);
+		borrowLegalOrder.setDeliveryPhone(deliveryPhone);
+		borrowLegalOrder.setAddress(address);
+		borrowLegalOrder.setUserId(userId);
+		borrowLegalOrder.setStatus("UNPAID");//未支付
+		borrowLegalOrder.setPriceAmount(goodsDo.getSaleAmount());
+		borrowLegalOrder.setGoodsName(goodsDo.getName());
+		return borrowLegalOrder;
+	}
+
+	
+	/**
+	 * @Description:  订单借款记录
+	 * @return  AfBorrowLegalOrderCashDo  
+	 * @data  2017年12月14日
+	 */
+	private AfBorrowLegalOrderCashDo buildAfBorrowLegalOrderCashDo(AfBorrowCashDo afBorrowCashDo, Long userId, String payTradeNo,AfBorrowLegalOrderDo borrowLegalOrder){
+		//上一笔订单记录
+		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+		if(afBorrowLegalOrder==null){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
+		}
+		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
+		if(afBorrowLegalOrderCash==null){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
+		}
+		
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
+		//新增订单借钱记录
+		AfBorrowLegalOrderCashDo borrowLegalOrderCash = new AfBorrowLegalOrderCashDo();
+		borrowLegalOrderCash.setUserId(userId);
+		borrowLegalOrderCash.setBorrowId(afBorrowCashDo.getRid());
+		borrowLegalOrderCash.setBorrowLegalOrderId(borrowLegalOrder.getRid());
+		borrowLegalOrderCash.setCashNo(payTradeNo);
+		borrowLegalOrderCash.setType("SEVEN");
+		borrowLegalOrderCash.setAmount(borrowLegalOrder.getPriceAmount());
+		borrowLegalOrderCash.setStatus("APPLYING");
+		borrowLegalOrderCash.setBorrowRemark(afBorrowLegalOrderCash.getBorrowRemark());
+		borrowLegalOrderCash.setRefundRemark(afBorrowLegalOrderCash.getRefundRemark());
+		borrowLegalOrderCash.setOverdueDay((short)0);
+		borrowLegalOrderCash.setOverdueStatus("N");
+		borrowLegalOrderCash.setOverdueAmount(BigDecimal.ZERO);
+		borrowLegalOrderCash.setRepaidAmount(BigDecimal.ZERO);
+		borrowLegalOrderCash.setPoundageAmount(BigDecimal.ZERO);
+		borrowLegalOrderCash.setInterestAmount(BigDecimal.ZERO);
+		borrowLegalOrderCash.setPlanRepayDays(allowRenewalDay.intValue());
+		
+		Date date = DateUtil.addDays(new Date(), 7);
+		borrowLegalOrderCash.setGmtPlanRepay(date);
+				
+		return borrowLegalOrderCash;
+	}
+	
+	
+	/**
+	 * @Description:  订单还款记录
+	 * @return  AfBorrowLegalOrderRepaymentDo  
+	 * @data  2017年12月14日
+	 */
+	private AfBorrowLegalOrderRepaymentDo buildBorrowLegalOrderRepaymentDo(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, String tradeNo, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrowId, Long cardId, String payTradeNo, Long userId, Integer appVersion) {
+
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
+
+		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
+		
+        //---------
+		
+		//上一笔订单记录
+		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+		if(afBorrowLegalOrder==null){
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
+		}
+		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
+		
+		//上期订单手续费
+		BigDecimal orderPoundage = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getPoundageAmount(),BigDecimal.ZERO);
+		//上期订单利息
+		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
+		
+		//---------
+		//订单续期记录
+		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = new AfBorrowLegalOrderRepaymentDo();
+		legalOrderRepayment.setUserId(userId);
+		legalOrderRepayment.setBorrowLegalOrderCashId(afBorrowLegalOrderCash.getRid());
+		legalOrderRepayment.setRepayAmount(afBorrowLegalOrderCash.getAmount());
+		legalOrderRepayment.setTradeNo(payTradeNo);
+		legalOrderRepayment.setTradeNoUps(tradeNo);
+		legalOrderRepayment.setStatus("A");
+		legalOrderRepayment.setRebateAmount(rebateAmount);
+		
+		if (cardId == -2) {
+			legalOrderRepayment.setCardNo("");
+			legalOrderRepayment.setCardName(Constants.DEFAULT_USER_ACCOUNT);
+		} else if (cardId == -1) {
+			legalOrderRepayment.setCardNo("");
+			legalOrderRepayment.setCardName(Constants.DEFAULT_WX_PAY_NAME);
+		}
+		else if(cardId ==-3){
+			legalOrderRepayment.setCardNo("");
+			legalOrderRepayment.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
+		}
+		else {
+			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
+			legalOrderRepayment.setCardNo(bank.getCardNumber());
+			legalOrderRepayment.setCardName(bank.getBankName());
+		}
+
+		return legalOrderRepayment;
 	}
 	
 	@Override
