@@ -106,7 +106,7 @@ public class H5ActivityCommonController extends BaseController {
 	String tongduanToken = ObjectUtils.toString(request.getParameter("token"), "").toString();
 	AfUserDo UserDo =  new AfUserDo();
         String referer = request.getHeader("referer");  
-        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
+    //    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
      try{
 	 
 	UserDo = afUserService.getUserByUserName(userName);
@@ -159,11 +159,11 @@ public class H5ActivityCommonController extends BaseController {
 		logger.error("boluomeActivityLogin error",e.getMessage());
 	}
            //该用户是否新用户，用于埋点
-	    AfOrderDo queryCount = new AfOrderDo();
-	    queryCount.setUserId(UserDo.getRid());
-	    String orderCount = String.valueOf(afOrderService.getOrderCountByStatusAndUserId(queryCount));
-	    logger.info("orderCount = {}", orderCount);
-	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer,orderCount);
+//	    AfOrderDo queryCount = new AfOrderDo();
+//	    queryCount.setUserId(UserDo.getRid());
+//	    String orderCount = String.valueOf(afOrderService.getOrderCountByStatusAndUserId(queryCount));
+//	    logger.info("orderCount = {}", orderCount);
+//	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer,orderCount,userName);
 	return H5CommonResponse.getNewInstance(true, "登录成功", "", "").toString();
     }
 
@@ -175,7 +175,7 @@ public class H5ActivityCommonController extends BaseController {
     public String commitActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
 	 String resultStr = "";
 	 String referer = request.getHeader("referer"); 
-	 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
+	// doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"callingInterface");
 	try {
 	    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
 	    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
@@ -257,7 +257,7 @@ public class H5ActivityCommonController extends BaseController {
 	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
 	    bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
 	    //埋点
-	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
+	    //doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
 	    return resultStr;
 
 	} catch (FanbeiException e) {

@@ -55,13 +55,23 @@ public class ClickAmountNumApi implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("popupsId"), null);
 		String userType = ObjectUtils.toString(requestDataVo.getParams().get("userType"), "").toString();
+		String amountType = ObjectUtils.toString(requestDataVo.getParams().get("amountType"), "").toString();
 		if(!("".equals(userType)) && !("4".equals(userType))){
-			AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
-			if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
-				afPopupsService.updatePopups(afPopupsDo);
-			}else{
-				logger.error("首页极光推送跳转失败，popupsId："+id);
+				AfPopupsDo afPopupsDo = afPopupsService.selectPopups(id);
+			if (null == amountType || "".equals(amountType)){
+				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+					afPopupsService.updatePopups(afPopupsDo);
+				}else{
+					logger.error("首页极光推送跳转失败，popupsId："+id);
+				}
+			}else if ("reachAmount".equals(amountType)){
+				if(afPopupsDo!=null && StringUtil.isNotBlank(afPopupsDo.getUrl())){
+					afPopupsService.updatePopupsReachAmount(afPopupsDo.getId());
+				}else{
+					logger.error("首页极光推送跳转失败，popupsId："+id);
+				}
 			}
+
 		}
 		return resp;
 	}

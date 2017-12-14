@@ -80,6 +80,7 @@ public class BoluomeController extends AbstractThird {
 		JSONObject requestParams = JSON.parseObject(requestData);
 		Map<String, String> params = buildOrderParamMap(requestParams);
 		boolean sign =  BoluomeNotify.verify(params);
+//	        boolean sign =  true;
 		String retunStr = StringUtils.EMPTY;
 		if (sign) {
 		    try {

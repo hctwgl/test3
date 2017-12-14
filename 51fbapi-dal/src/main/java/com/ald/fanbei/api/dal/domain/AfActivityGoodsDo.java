@@ -20,8 +20,16 @@ public class AfActivityGoodsDo extends AbstractSerial {
 	private Long limitCount; // 限购数量
 	private Long goodsId; // 商品id
 	private String type; // 商品类型:PUTONG,TEMAI,FANLI
-	
-	
+	private Long initialCount;//初始量
+
+	public Long getInitialCount() {
+		return initialCount;
+	}
+
+	public void setInitialCount(Long initialCount) {
+		this.initialCount = initialCount;
+	}
+
 	public Long getRid() {
 		return rid;
 	}

@@ -40,6 +40,7 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
@@ -701,19 +702,19 @@ public class H5GGShareController extends H5Controller {
 			String shareAppUrl = request.getParameter("shareAppUrl");
 			if (StringUtil.isNotBlank(shareAppUrl)) {
 				// shareAppUrl = new String(Base64.decode(shareAppUrl));
-				shareAppUrl = shareAppUrl.replace("_", "&");
-				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
-
-				AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
-				if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
-					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
-				}
+//				shareAppUrl = shareAppUrl.replace("_", "&");
+//				Long userItemsId = NumberUtil.objToLong(request.getParameter("userItemsId"));
+//
+//				AfBoluomeActivityUserItemsDo prevousDo = afBoluomeActivityUserItemsService.getById(userItemsId);
+//				if (prevousDo != null && "NORMAL".equals(prevousDo.getStatus())) {
+//					afBoluomeActivityUserItemsService.updateUserItemsStatus(userItemsId, "FROZEN");
+//				}
 				/*
 				 * String userName = request.getParameter("userName"); String
 				 * activityId = request.getParameter("activityId");
 				 */
 				String redirectShareAppUrl = shareAppUrl;
-				doMaidianLog(request, H5CommonResponse.getNewInstance(true, redirectShareAppUrl));
+				doMaidianLog(request, H5CommonResponse.getNewInstance(true, redirectShareAppUrl),request.getParameter("shareAppUrl"));
 				response.sendRedirect(redirectShareAppUrl);
 			}
 		} catch (Exception exception) {
