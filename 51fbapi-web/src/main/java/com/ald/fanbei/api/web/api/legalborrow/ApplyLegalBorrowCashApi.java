@@ -159,7 +159,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		// 获取销售商品信息
 		String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
-		String goodsAmount = ObjectUtils.toString(requestDataVo.getParams().get("goodsAmount"));
+		int goodsAmount = NumberUtil.objToIntDefault(requestDataVo.getParams().get("goodsAmount"),0);
 		// 收货地址信息
 		String deliveryAddress = ObjectUtils.toString(requestDataVo.getParams().get("deliveryAddress"));
 		String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"));
@@ -217,7 +217,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		// 获取用户可借金额
 		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 		BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
-		if (accountBorrow.compareTo(borrowAmount) < 0) {
+		if (accountBorrow.compareTo(borrowAmount.add(new BigDecimal(goodsAmount))) < 0) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 		}
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
@@ -454,6 +454,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				// 减少额度，包括搭售商品借款
 				accountInfo.setUsedAmount(BigDecimalUtil.add(accountInfo.getUsedAmount(), afBorrowCashDo.getAmount(),
 						afBorrowLegalOrderDo.getPriceAmount()));
+				
 				afUserAccountService.updateOriginalUserAccount(accountInfo);
 				// 增加日志
 				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
@@ -541,6 +542,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowLegalOrderDo.setAddress(deliveryAddress);
 		afBorrowLegalOrderDo.setDeliveryPhone(deliveryPhone);
 		afBorrowLegalOrderDo.setDeliveryUser(deliveryUser);
+		afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
 		return afBorrowLegalOrderDo;
 	}
 
