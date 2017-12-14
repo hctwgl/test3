@@ -174,7 +174,7 @@
 		FROM
 			(
 				SELECT
-					m.goods_id
+					m.goods_id,m.gmt_create
 				FROM
 					af_activity_model m,
 					(
@@ -197,7 +197,7 @@
 		WHERE
 			g.is_delete = 0
 		AND g.status = 'PUBLISH'
-		ORDER BY g.gmt_create desc
+		ORDER BY s.gmt_create desc
 	</select>
 
 	<select id="selectBookingRushGoods" resultType="AfEncoreGoodsDto" parameterType="AfGoodsQuery" >
