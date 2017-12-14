@@ -113,7 +113,7 @@ public class AppH5FlashSaleController extends BaseController {
 			sb.append("'").append(goodsDo.getRid()).append("'").append(",");
 		}
 		String param = sb.deleteCharAt(sb.length() - 1).toString();
-		List<AfActivityGoodsDo> goodslist = afActivityGoodsService.getActivityGoodsByGoodsIdAndTypeMap(param);
+		List<AfActivityGoodsDo> AfActivityGoodslist = afActivityGoodsService.getActivityGoodsByGoodsIdAndTypeMap(param);
 		List<AfOrderDto> orderList = afOrderService.selectSumCountByGoodsId(param);
 		List<AfGoodsPriceDto> priceDtos = afGoodsPriceService.selectSumStockMap(param);
  		for(AfEncoreGoodsDto goodsDo : list) {
@@ -138,8 +138,63 @@ public class AppH5FlashSaleController extends BaseController {
 //			}else{
 //				count = 0;
 //			}
-
-
+			boolean flag = false;
+			long initialCount = 0;
+			if(null != AfActivityGoodslist && AfActivityGoodslist.size()>0){
+				for(AfActivityGoodsDo activityDo : AfActivityGoodslist){
+					if(activityDo.getGoodsId() == goodsId){
+						if(null != activityDo.getInitialCount()){
+							flag = true;
+							initialCount = activityDo.getInitialCount();
+							count = new Long(initialCount).intValue();
+							break;
+						}
+					}
+				}
+				if(!flag){
+					count = 0;
+				}
+			}else{
+				count = 0;
+			}
+			Integer volume = 0;
+			flag = false;
+			if(null != orderList && orderList.size()>0){
+				for(AfOrderDto orderDto : orderList){
+					if(orderDto.getGoodsId() == goodsId){
+						if(null != orderDto.getNum()){
+							flag = true;
+							volume = orderDto.getNum()+count;
+							break;
+						}
+					}
+				}
+				if(!flag){
+					volume = count;
+				}
+			}else{
+				volume = count;
+			}
+			Integer total = 0;
+			flag = false;
+			if(null != priceDtos && priceDtos.size()>0){
+				for(AfGoodsPriceDto priceDto : priceDtos){
+					if(priceDto.getGoodsId() == goodsId){
+						if(null != priceDto.getNum()){
+							flag = true;
+							total = priceDto.getNum()+volume;
+							break;
+						}
+					}
+				}
+				if(!flag){
+					total = count;
+				}
+			}else{
+				total = count;
+			}
+			goodsInfo.put("volume",volume);
+			goodsInfo.put("total",total);
 			AfSchemeGoodsDo schemeGoodsDo = null;
 			try {
 				schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
