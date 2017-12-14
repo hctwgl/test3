@@ -75,7 +75,7 @@ import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
  * @version V1.0
  */
 @RestController
-@RequestMapping(value = "/appH5DoubleEggs", produces = "text/html;charset=UTF-8")
+@RequestMapping(value = "/appH5DoubleEggs", produces = "application/json;charset=UTF-8")
 public class AppH5DoubleEggsController extends BaseController {
 	@Resource
 	AfCouponCategoryService afCouponCategoryService;
