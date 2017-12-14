@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -242,13 +241,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			}
 			
 			bo.outTradeNo = respBo.getTradeNo();
-			bo.cardNo = Base64.encodeString(respBo.getCardNo());
 		} else if (bo.cardId == -2) {// 余额支付
-			bo.cardNo = String.valueOf(-2);
 			dealRepaymentSucess(bo.tradeNo, "");
 		}
 		
-		bo.type = PayOrderSource.REPAY_CASH_LEGAL.getCode();
 	}
 	
 	
@@ -741,12 +737,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		/* biz 业务处理字段 */
 		
 		/* Response字段 */
-		public Long rid;
-		public String refId;
-		public String type;
+		public String cardName;		//交易卡名称
+		public String cardNo;		//交易卡号
 		public String outTradeNo; 	//自己放交易流水号
 		public String tradeNo;		//我方交易流水号
-		public String cardNo;
 		/* Response字段 */
 		
 		/* 错误码区域 */
