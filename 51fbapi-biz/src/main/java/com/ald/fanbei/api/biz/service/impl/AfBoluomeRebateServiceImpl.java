@@ -83,12 +83,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	 */
 	@Override
 	public void addRedPacket(Long orderId, Long userId) throws Exception {
-
-		String key = Constants.GG_SURPRISE_LOCK + ":" + userId + ":" + orderId;
-		boolean lock = bizCacheUtil.getLockTryTimes(key, "1", 100);
 		try {
-			if (lock) {
-
 				// check if this orderId has already been rebated
 				int isHave = afBoluomeRebateDao.getRebateNumByOrderId(orderId);
 				if (isHave == 0) {
@@ -164,14 +159,12 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 						}
 					}
 				}
-			}
+			
 
 		} catch (Exception e) {
 			logger.error("afBoluomeRebateService.addRedPacket() error :", e);
 			throw new Exception();
-		} finally {
-			bizCacheUtil.delCache(key);
-		}
+		} 
 
 	}
 
