@@ -200,6 +200,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 			String poundageRate = riskResp!=null?riskResp.getPoundageRate():"";
 			if (!StringUtils.isBlank(poundageRate)) {
 				logger.info("direct get user poundage rate from risk,not null: userName=" + userName + ",poundageRate=" + poundageRate);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);		
 				return poundageRate;
 			}else{
 				logger.info("direct get user poundage rate from risk,is null,getUserPoundageRateByUserId:.userName=" + userName);
