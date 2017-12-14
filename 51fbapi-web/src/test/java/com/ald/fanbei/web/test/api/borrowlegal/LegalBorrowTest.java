@@ -1,13 +1,16 @@
 package com.ald.fanbei.web.test.api.borrowlegal;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 
 public class LegalBorrowTest  extends BaseTest{
@@ -31,8 +34,21 @@ public class LegalBorrowTest  extends BaseTest{
 		
 	}
 	
+	@Test
 	public void renewal() {
+		String url = urlBase + "/legalborrow/confirmLegalRenewalPay";
+		Map<String,String> params = new HashMap<>();
 		
+		params.put("borrowId", "1259666");
+		params.put("payPwd", DigestUtils.md5Hex("111111"));
+		params.put("renewalAmount", "200");
+		params.put("cardId", "3111464124");
+		params.put("goodsId", "100");
+		params.put("deliveryUser", "啊阿斯顿");
+		params.put("deliveryPhone", "18659876572");
+		params.put("address", "江苏南京");
+		
+		testApi(url, params, userName ,true);
 	}
 	
 //	@Test
@@ -51,7 +67,7 @@ public class LegalBorrowTest  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
 		String orderNo = "hq2017121417372400383";
