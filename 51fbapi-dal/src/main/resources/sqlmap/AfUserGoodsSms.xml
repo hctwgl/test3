@@ -8,7 +8,7 @@
 	
 	<select id="selectByGoodsIdAndUserId" parameterType="AfUserGoodsSmsDo" resultType="AfUserGoodsSmsDo">
 		select <include refid="smsSqlField" /> FROM  af_user_goods_sms where is_delete = 0 and goods_id = #{goodsId} and user_id = #{userId}
-		and CAST(CAST(gmt_create AS DATE)AS DATETIME) = date_sub(CAST(CAST(SYSDATE()AS DATE)AS DATETIME), interval 1 day)
+		and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME)
 	</select>
 
 	<select id="selectBookingByGoodsIdAndUserId" parameterType="AfUserGoodsSmsDo" resultType="AfUserGoodsSmsDo">
