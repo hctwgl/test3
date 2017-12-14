@@ -426,6 +426,4 @@ public class Constants {
 	  public static final String YIXIN_AFU_PASSWORD="fbapi.yixinafu.password";
 	  //宜信阿福查询用户逾期信息redis中的key前缀
 	  public static final String YIXIN_AFU_SEARCH_KEY="yxafu_";
-	  //用户分层利率从风控直接取的手机号列表
-	  public static final String RISK_POUNDAGE_USERNAME_LIST="18767092838";
 }

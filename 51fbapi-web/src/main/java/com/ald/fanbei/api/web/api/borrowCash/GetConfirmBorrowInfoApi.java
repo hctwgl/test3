@@ -194,7 +194,8 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	}
 	
 	private Object getUserPoundageRate(Long userId,String userName) {
-		if(Constants.RISK_POUNDAGE_USERNAME_LIST.contains(userName)){
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RISK_POUNDAGE_USERNAME_LIST.getCode(), AfResourceSecType.RISK_POUNDAGE_USERNAME_LIST.getCode());
+		if(resourceDo!=null && "O".equals(resourceDo.getValue4()) && resourceDo.getValue().contains(userName)){
 			//直接从风控系统取，没的话，走之前逻辑
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
 			String poundageRate = riskResp!=null?riskResp.getPoundageRate():"";
