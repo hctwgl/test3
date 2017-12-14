@@ -196,5 +196,4 @@ public interface AfOrderDao {
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 
-	String getOrderTypeByBorrowId( @Param("borrowId")Long borrowId);
 }

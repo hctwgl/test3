@@ -109,10 +109,6 @@ public class AppH5ProtocolController extends BaseController {
 	AfUserSealDao afUserSealDao;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
-	@Resource
-	AfOrderDao afOrderDao;
-	@Resource
-	AfBorrowBillService afBorrowBillService;
 
 	@RequestMapping(value = {"protocolFenqiService"}, method = RequestMethod.GET)
 	public void protocolFenqiService(HttpServletRequest request, ModelMap model) throws IOException {
