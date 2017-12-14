@@ -99,7 +99,7 @@ let vm = new Vue({
                     var scrollHeight = $(document).height();//当前页面的总高度
                     var windowHeight = $(this).height();//当前可视的页面高度
                     console.log()
-                    if (scrollTop + windowHeight >= scrollHeight) {
+                    if (scrollTop + windowHeight >= scrollHeight-50) {
                         self.pageNo++;
                         self.logData(self.getId);
                         console.log(self.getId);
