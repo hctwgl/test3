@@ -1,8 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,33 +8,30 @@ import java.util.Random;
 
 import javax.annotation.Resource;
 
-import org.apache.ibatis.annotations.Param;
-import org.apache.log4j.lf5.util.DateFormatManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRebateDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketRelationDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketThresholdDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketDo;
-import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketRelationDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo;
-import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.alibaba.druid.sql.visitor.functions.Now;
-import com.timevale.esign.sdk.tech.impl.model.GetAccountInfoModel;
-import com.timevale.esign.sdk.tech.service.impl.i;
-import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
-import com.ald.fanbei.api.biz.service.JpushService;
 
 /**
  * 点亮活动新版ServiceImpl
@@ -67,6 +61,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	AfBoluomeRedpacketRelationDao relationDao;
 	@Resource
 	AfUserDao afUserDao;
+	@Resource
+	AfUserAccountLogDao afUserAccountLogDao;
 
 	@Override
 	public BaseDao<AfBoluomeRebateDo, Long> getDao() {
@@ -75,6 +71,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 
 	@Resource
 	JpushService jpushService;
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	/**
 	 * 
@@ -85,59 +83,85 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	 */
 	@Override
 	public void addRedPacket(Long orderId, Long userId) throws Exception {
+
+		String key = Constants.GG_SURPRISE_LOCK + ":" + userId + ":" + orderId;
+		boolean lock = bizCacheUtil.getLockTryTimes(key, "1", 100);
 		try {
-			// check if this orderId has already been rebated
-			int isHave = afBoluomeRebateDao.getRebateNumByOrderId(orderId);
-			if (isHave == 0) {
+			if (lock) {
 
-				String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId, userId);
-				logger.info(log);
-				AfBoluomeRebateDo rebateDo = new AfBoluomeRebateDo();
+				// check if this orderId has already been rebated
+				int isHave = afBoluomeRebateDao.getRebateNumByOrderId(orderId);
+				if (isHave == 0) {
 
-				rebateDo.setOrderId(orderId);
-				rebateDo.setUserId(userId);
-				// check if its the first time for one specific channel
-				int orderTimes = afOrderDao.findFirstOrder(orderId, userId);
-				log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
-				logger.info(log);
-				if (orderTimes == 0) {
-					rebateDo.setFirstOrder(1);
-
-					// check if the order times for red packet
-					int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
-					log = log + String.format("redOrderTimes = %s ", redOrderTimes);
+					String log = String.format("addRedPacket || params : orderId = %s , userId = %s", orderId, userId);
 					logger.info(log);
+					AfBoluomeRebateDo rebateDo = new AfBoluomeRebateDo();
 
-					redOrderTimes += 1;
-					// check the red packet amount
-					boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
-
-					log = log + String.format("flag = %s ", flag);
+					rebateDo.setOrderId(orderId);
+					rebateDo.setUserId(userId);
+					// check if its the first time for one specific channel
+					int orderTimes = afOrderDao.findFirstOrder(orderId, userId);
+					log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 					logger.info(log);
-					if (flag) {
-						// insert the table af_boluome_redpacket
-						rebateDo.setGmtCreate(new Date());
-						rebateDo.setGmtModified(new Date());
-						afBoluomeRebateDao.saveRecord(rebateDo);
+					if (orderTimes == 0) {
+						rebateDo.setFirstOrder(1);
 
-						// update the table af_user_account
-						AfUserAccountDo accountDo = new AfUserAccountDo();
-						accountDo.setUserId(userId);
-						accountDo.setRebateAmount(rebateDo.getRebateAmount());
-						afUserAccountDao.updateRebateAmount(accountDo);
-
-						// call Jpush for rebate
-						String userName = convertToUserName(userId);
-						log = log
-								+ String.format("userName = %s , rebateAmount = %s", flag, rebateDo.getRebateAmount());
+						// check if the order times for red packet
+						int redOrderTimes = afBoluomeRebateDao.checkOrderTimes(userId);
+						log = log + String.format("redOrderTimes = %s ", redOrderTimes);
 						logger.info(log);
-						if (userName != null) {
-							String scence = afBoluomeRebateDao.getScence(orderId);
-							log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
-							logger.info(log);
-							jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount());
-						}
 
+						redOrderTimes += 1;
+						// check the red packet amount
+						boolean flag = this.getAmountAndName(rebateDo, redOrderTimes);
+
+						log = log + String.format("flag = %s ", flag);
+						logger.info(log);
+						if (flag) {
+							// insert the table af_boluome_redpacket
+							rebateDo.setGmtCreate(new Date());
+							rebateDo.setGmtModified(new Date());
+							int saveResult = afBoluomeRebateDao.saveRecord(rebateDo);
+
+							log = log + String.format("saveResult = %s ", saveResult);
+							logger.info(log);
+							if (saveResult > 0) {
+
+								// update the table af_user_account
+								AfUserAccountDo accountDo = new AfUserAccountDo();
+								accountDo.setUserId(userId);
+								accountDo.setRebateAmount(rebateDo.getRebateAmount());
+								int updateResult = afUserAccountDao.updateRebateAmount(accountDo);
+
+								log = log + String.format("updateResult = %s ", updateResult);
+								logger.info(log);
+
+								if (updateResult > 0) {
+									AfUserAccountLogDo logDo = new AfUserAccountLogDo();
+									logDo.setAmount(rebateDo.getRebateAmount());
+									logDo.setType("REBATE");
+									logDo.setGmtCreate(new Date());
+									logDo.setUserId(userId);
+									logDo.setRefId(orderId.toString());
+									int saveLogResult = afUserAccountLogDao.addUserAccountLog(logDo);
+
+									log = log + String.format("saveLogResult = %s ", saveLogResult);
+									logger.info(log);
+								}
+
+								// call Jpush for rebate
+								String userName = convertToUserName(userId);
+								log = log + String.format("userName = %s , rebateAmount = %s", userName,
+										rebateDo.getRebateAmount());
+								logger.info(log);
+								if (userName != null) {
+									String scence = afBoluomeRebateDao.getScence(orderId);
+									log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
+									logger.info(log);
+									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount());
+								}
+							}
+						}
 					}
 				}
 			}
@@ -145,6 +169,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		} catch (Exception e) {
 			logger.error("afBoluomeRebateService.addRedPacket() error :", e);
 			throw new Exception();
+		} finally {
+			bizCacheUtil.delCache(key);
 		}
 
 	}
@@ -228,7 +254,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	public List<AfRebateDo> getRebateList(Long userId, String startTime) {
 
 		List<AfRebateDo> listRebateDo = afBoluomeRebateDao.getRebateList(userId, startTime);
-		
+
 		for (AfRebateDo do1 : listRebateDo) {
 			String date = "";
 			try {
@@ -241,21 +267,19 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		return listRebateDo;
 	}
 
-	
-	public static String StringdateToString(String time) throws ParseException{ 
-	    SimpleDateFormat formatter; 
-	    formatter = new SimpleDateFormat ("yyyy-MM-dd"); 
-	    String ctime = formatter.format(formatter.parse(time)); 
+	public static String StringdateToString(String time) throws ParseException {
+		SimpleDateFormat formatter;
+		formatter = new SimpleDateFormat("yyyy-MM-dd");
+		String ctime = formatter.format(formatter.parse(time));
 
-	    return ctime; 
-	} 
+		return ctime;
+	}
 
 	@Override
 	public AfBoluomeRebateDo getLastUserRebateByUserId(Long userId) {
 		// TODO Auto-generated method stub
 		return afBoluomeRebateDao.getLastUserRebateByUserId(userId);
 	}
-
 
 	@Override
 	public int getRebateCount(Long shopId, Long userId) {
