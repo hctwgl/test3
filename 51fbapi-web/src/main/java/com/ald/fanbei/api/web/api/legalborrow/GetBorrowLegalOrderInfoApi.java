@@ -1,22 +1,26 @@
 package com.ald.fanbei.api.web.api.legalborrow;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Jiang Rongbo 2017年3月25日下午1:06:18
@@ -28,6 +32,9 @@ public class GetBorrowLegalOrderInfoApi implements ApiHandle {
 
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
+
+	@Resource
+	AfGoodsService afGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -49,15 +56,20 @@ public class GetBorrowLegalOrderInfoApi implements ApiHandle {
 		query.setPageNo(pageNo);
 		// 查询用户订单记录
 		List<AfBorrowLegalOrderDo> borrowLegalOrdersList = afBorrowLegalOrderService.getUserBorrowLegalOrderList(query);
-		List<Map<String,Object>> orderList = Lists.newArrayList();
+		List<Map<String, Object>> orderList = Lists.newArrayList();
 		for (AfBorrowLegalOrderDo borrowLegalOrderDo : borrowLegalOrdersList) {
-			Map<String,Object> orderInfoMap = Maps.newHashMap();
+			Map<String, Object> orderInfoMap = Maps.newHashMap();
 			orderInfoMap.put("orderId", borrowLegalOrderDo.getRid());
 			orderInfoMap.put("goodsName", borrowLegalOrderDo.getGoodsName());
 			orderInfoMap.put("status", borrowLegalOrderDo.getStatus());
 			orderInfoMap.put("gmtCreate", borrowLegalOrderDo.getGmtCreate());
 			orderInfoMap.put("amount", borrowLegalOrderDo.getPriceAmount());
-			
+			Long goodsId = borrowLegalOrderDo.getGoodsId();
+
+			AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
+			if (goodsDo != null) {
+				orderInfoMap.put("goodsIcon", goodsDo.getGoodsIcon());
+			}
 			orderList.add(orderInfoMap);
 		}
 		data.put("orderList", orderList);
