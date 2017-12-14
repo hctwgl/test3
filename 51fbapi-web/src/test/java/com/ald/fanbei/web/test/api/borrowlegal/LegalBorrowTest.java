@@ -34,7 +34,7 @@ public class LegalBorrowTest  extends BaseTest{
 		
 	}
 	
-	@Test
+//	@Test
 	public void renewal() {
 		String url = urlBase + "/legalborrow/confirmLegalRenewalPay";
 		Map<String,String> params = new HashMap<>();
@@ -67,12 +67,12 @@ public class LegalBorrowTest  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2017121417372400383";
+		String orderNo = "hq2017121420272900389";
 		String merPriv = PayOrderSource.REPAY_CASH_LEGAL.getCode();
-		String tradeNo = "xianFenghq2017121417372400383";
+		String tradeNo = "xianFenghq2017121420241100388";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv +"&tradeNo="+tradeNo+"&tradeState="+tradeState;

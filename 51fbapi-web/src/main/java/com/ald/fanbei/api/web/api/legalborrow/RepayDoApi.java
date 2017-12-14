@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.legalborrow;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -18,6 +20,7 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentServiceImpl.RepayBo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
@@ -90,12 +93,11 @@ public class RepayDoApi implements ApiHandle {
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();
-		data.put("rid", bo.rid);
-		data.put("refId", bo.refId);
-		data.put("type", bo.type);
-		data.put("outTradeNo", bo.outTradeNo);
+		data.put("repaymentAmount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("tradeNo", bo.tradeNo);
+		data.put("tradeTime", new Date());
 		data.put("cardNo", bo.cardNo);
+		data.put("cardName", bo.cardName);
 		resp.setResponseData(data);
 		
 		return resp;
@@ -178,9 +180,13 @@ public class RepayDoApi implements ApiHandle {
 				throw new FanbeiException("Password is error",FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 			}
 			
+			bo.cardName = Constants.DEFAULT_USER_ACCOUNT;
+			
 			if(bo.cardId > 0) {
 				AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(bo.cardId);
 				if (null == card) { throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR); }
+				bo.cardName = card.getBankName();
+				bo.cardNo = card.getCardNumber();
 			}
 		}
 	}
