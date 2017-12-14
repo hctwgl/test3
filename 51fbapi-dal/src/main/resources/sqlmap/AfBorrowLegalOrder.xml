@@ -325,6 +325,7 @@
 		WHERE
 		is_delete = 0
 		AND borrow_id = #{borrowId}
+		AND status != 'CLOSED'
 		ORDER BY
 		gmt_create DESC
 		LIMIT 1
@@ -341,6 +342,20 @@
 		AND user_id = #{userId}
 		ORDER BY
 		gmt_create DESC
+	</select>
+	
+	<select id="getLastOrderByBorrowId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_legal_order
+		WHERE
+		is_delete = 0
+		AND borrow_id = #{borrowId}
+		AND status IN ('AWAIT_DELIVER','DELIVERED','CONFIRM_RECEIVED')
+		ORDER BY
+		gmt_create DESC
+		LIMIT 1
 	</select>
 	
 </mapper>
