@@ -628,7 +628,7 @@
 		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
 			AND a.gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
 		</if>
-		AND a.`user_id`= = #{userId}
+		AND a.`user_id` = #{userId}
 		ORDER BY c.`gmt_pay`
 	</select>
 
@@ -772,5 +772,6 @@
 		AND DATE_FORMAT(gmt_out_day,'%c') = #{billMonth}
 		and is_out = 1
 		order by gmt_pay_time
+		limit 0,1
 	</select>
 </mapper>

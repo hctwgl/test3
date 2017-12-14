@@ -80,7 +80,8 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				// 查询用户最后一条还款记录
 				query.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
 				List<AfUserAmountDo> queryList = afUserAmountService.getUserAmountByQuery(query);
-				if(queryList == null && queryList.size() < 1) {
+				if(queryList == null || queryList.size() < 1) {
+					resp.setResponseData(map);
 					return resp;
 				}
 				AfUserAmountDo firstAmount = queryList.get(0);
