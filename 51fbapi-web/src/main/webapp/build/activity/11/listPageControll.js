@@ -83,7 +83,7 @@ let vm = new Vue({
                         self.page=productList.pageNo;//页数
                         self.pageNo=self.page;
                     }else{
-                        $('.nomore').show();//显示没有更多数据的文字
+                        //$('.nomore').show();//显示没有更多数据的文字
                     }
                 },
                 error: function () {
