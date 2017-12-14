@@ -191,6 +191,7 @@ public class AfBoluomeActivityServiceImpl extends ParentServiceImpl<AfBoluomeAct
 			ItemsMessageSet.setRefId(shopId);
 			// ItemsMessageSet.setBoluomeActivityId(userLoginRecord.getBoluomeActivityId());
 			ItemsMessageSet.setBoluomeActivityId(afBoluomeActivityDo.getRid());
+			ItemsMessageSet.setStatus("O");
 			AfBoluomeActivityItemsDo afBoluomeActivityItemsDo  =  afBoluomeActivityItemsDao.getItemsInfo(ItemsMessageSet);
 			if(afBoluomeActivityItemsDo!= null){
 				//规则判断
