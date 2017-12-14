@@ -2,5 +2,5 @@ package com.ald.fanbei.api.biz.service;
 
 public interface BoluomeOrderInfoService {
 
-    void addBoluomeOrderInfo(Long orderId, String thirdOrderNo, String secOrderType);
+    void addBoluomeOrderInfo(String thirdOrderNo, String secOrderType);
 }

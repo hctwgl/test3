@@ -3,8 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.BoluomeOrderInfoService;
@@ -24,22 +23,30 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeWaimaiDo;
 import com.ald.fanbei.api.dal.domain.dto.BoluomeOrderResponseDto;
 import com.alibaba.fastjson.JSON;
 
-@Service
-public class BoluomeOrderInfoServiceImpl extends BaseService implements BoluomeOrderInfoService {
+public class BoluomeOrderInfoThread extends BaseService implements BoluomeOrderInfoService, Runnable {
 
-    @Autowired
-    AfBoluomeDianyingDao afBoluomeDianyingDao;
-    @Autowired
-    AfBoluomeJiayoukaDao afBoluomeJiayoukaDao;
-    @Autowired
-    AfBoluomeJiudianDao afBoluomeJiudianDao;
-    @Autowired
-    AfBoluomeWaimaiDao afBoluomeWaimaiDao;
-    @Autowired
-    AfBoluomeShoujiDao afBoluomeShoujiDao;
+    private AfBoluomeDianyingDao afBoluomeDianyingDao;
+    private AfBoluomeJiayoukaDao afBoluomeJiayoukaDao;
+    private AfBoluomeJiudianDao afBoluomeJiudianDao;
+    private AfBoluomeWaimaiDao afBoluomeWaimaiDao;
+    private AfBoluomeShoujiDao afBoluomeShoujiDao;
+
+    private String thirdOrderNo;
+    private String secOrderType;
+
+    public BoluomeOrderInfoThread(String thirdOrderNo, String secOrderType, AfBoluomeDianyingDao afBoluomeDianyingDao, AfBoluomeJiayoukaDao afBoluomeJiayoukaDao, AfBoluomeJiudianDao afBoluomeJiudianDao, AfBoluomeWaimaiDao afBoluomeWaimaiDao, AfBoluomeShoujiDao afBoluomeShoujiDao) {
+	this.thirdOrderNo = thirdOrderNo;
+	this.secOrderType = secOrderType;
+
+	this.afBoluomeDianyingDao = afBoluomeDianyingDao;
+	this.afBoluomeJiayoukaDao = afBoluomeJiayoukaDao;
+	this.afBoluomeJiudianDao = afBoluomeJiudianDao;
+	this.afBoluomeWaimaiDao = afBoluomeWaimaiDao;
+	this.afBoluomeShoujiDao = afBoluomeShoujiDao;
+    }
 
     @Override
-    public void addBoluomeOrderInfo(Long orderId, String thirdOrderNo, String secOrderType) {
+    public void addBoluomeOrderInfo(String thirdOrderNo, String secOrderType) {
 	try {
 	    if (OrderSecType.DIAN_YING.getCode().equals(secOrderType) || OrderSecType.JIU_DIAN.getCode().equals(secOrderType) || OrderSecType.WAI_MAI.getCode().equals(secOrderType) || OrderSecType.HUA_FEI.getCode().equals(secOrderType) || OrderSecType.LIU_LIANG.getCode().equals(secOrderType) || OrderSecType.JIA_YOU_KA.getCode().equals(secOrderType)) {
 		// 构造查询参数
@@ -76,5 +83,11 @@ public class BoluomeOrderInfoServiceImpl extends BaseService implements BoluomeO
 	} catch (Exception e) {
 	    logger.error("addBoluomeOrderInfo error:", e);
 	}
+    }
+
+    @Async
+    @Override
+    public void run() {
+	addBoluomeOrderInfo(this.thirdOrderNo, this.secOrderType);
     }
 }

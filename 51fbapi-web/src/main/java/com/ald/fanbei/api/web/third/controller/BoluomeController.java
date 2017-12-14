@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,10 +23,10 @@ import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.BoluomeOrderInfoService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.impl.BoluomeOrderInfoThread;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -35,6 +36,11 @@ import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBoluomeDianyingDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJiayoukaDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJiudianDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeShoujiDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeWaimaiDao;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -67,7 +73,15 @@ public class BoluomeController extends AbstractThird {
     AfUserAccountService afUserAccountService;
 
     @Autowired
-    BoluomeOrderInfoService boluomeOrderInfoService;
+    private AfBoluomeDianyingDao afBoluomeDianyingDao;
+    @Autowired
+    private AfBoluomeJiayoukaDao afBoluomeJiayoukaDao;
+    @Autowired
+    private AfBoluomeJiudianDao afBoluomeJiudianDao;
+    @Autowired
+    private AfBoluomeWaimaiDao afBoluomeWaimaiDao;
+    @Autowired
+    private AfBoluomeShoujiDao afBoluomeShoujiDao;
 
     @RequestMapping(value = { "/synchOrder", "/synchOrderStatus" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
@@ -95,9 +109,9 @@ public class BoluomeController extends AbstractThird {
 			if (orderInfo.getRid() == null) {
 			    // 补偿订单
 			    afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
-			    // 获取菠萝觅订单详情
-			    boluomeOrderInfoService.addBoluomeOrderInfo(orderInfo.getRid(), orderInfo.getThirdOrderNo(), orderInfo.getSecType());
-
+			    // 获取菠萝觅订单详情(线程池)
+			    ExecutorService cacheThreadPool = Executors.newCachedThreadPool();
+			    cacheThreadPool.execute(new BoluomeOrderInfoThread(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), afBoluomeDianyingDao, afBoluomeJiayoukaDao, afBoluomeJiudianDao, afBoluomeWaimaiDao, afBoluomeShoujiDao));
 			} else {
 			    afOrderService.dealBoluomeOrder(orderInfo);
 			}
