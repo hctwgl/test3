@@ -41,7 +41,7 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: "https://supplier.51fanbei.com/category/h5/list ",
+                url: "https://testsupplier.51fanbei.com/category/h5/list ",
                 success: function (data) {
                     let categoryList=data;
                     self.leimu=categoryList.data;
@@ -69,7 +69,7 @@ let vm = new Vue({
             let self = this;
             $.ajax({
                 type: 'post',
-                url: "https://supplier.51fanbei.com/goods/h5/list",
+                url: "https://testsupplier.51fanbei.com/goods/h5/list",
                 data:{
                     categoryId:c,
                     pageNo:self.pageNo
@@ -124,7 +124,7 @@ let vm = new Vue({
             this.pageNo=1;
             $.ajax({
                 type: 'post',
-                url: "https://supplier.51fanbei.com/goods/h5/list",
+                url: "https://testsupplier.51fanbei.com/goods/h5/list",
                 data:{
                     categoryId:self.arr[i],
                     pageNo:1
