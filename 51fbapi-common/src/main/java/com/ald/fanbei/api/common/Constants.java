@@ -408,6 +408,7 @@ public class Constants {
 	  public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 	  //逛逛惊喜返礼金
 	  public static final String GG_SURPRISE_LOCK = "gg_suprise_lock";
+	  public static final String GG_COUPON_LOCK = "gg_coupon_lock";
 	  
 	//双十二秒杀抢券活动
 	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
