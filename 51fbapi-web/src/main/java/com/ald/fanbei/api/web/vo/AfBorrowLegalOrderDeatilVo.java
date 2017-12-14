@@ -202,6 +202,8 @@ public class AfBorrowLegalOrderDeatilVo extends AbstractSerial{
 	private String deliveryUser;
 
 	private String deliveryPhone;
+	
+	private String goodsIcon;
 
 	public Date getGmtModified() {
 		return gmtModified;
@@ -790,4 +792,14 @@ public class AfBorrowLegalOrderDeatilVo extends AbstractSerial{
 	public void setBorrowId(Long borrowId){
 		this.borrowId = borrowId;
 	}
+
+	public String getGoodsIcon() {
+		return goodsIcon;
+	}
+
+	public void setGoodsIcon(String goodsIcon) {
+		this.goodsIcon = goodsIcon;
+	}
+	
+	
 }

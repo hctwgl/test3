@@ -1,23 +1,26 @@
 package com.ald.fanbei.api.web.api.legalborrow;
 
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBorrowLegalOrderDeatilVo;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * @author Jiang Rongbo 2017年3月25日下午1:06:18
@@ -31,6 +34,8 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
     AfBorrowLegalOrderService afBorrowLegalOrderService;
     @Resource
     AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+    @Resource
+    AfGoodsService afGoodsService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -58,7 +63,7 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
             afBorrowLegalOrderDeatilVo.setOverdueDay(afBorrowLegalOrderCashDo.getOverdueDay());
             afBorrowLegalOrderDeatilVo.setOverdueAmount(afBorrowLegalOrderCashDo.getOverdueAmount());
         }
-        if (afBorrowLegalOrderCashDo != null){
+        if (afBorrowLegalOrderDo != null){
             afBorrowLegalOrderDeatilVo.setDeliveryPhone(afBorrowLegalOrderDo.getDeliveryPhone());
             afBorrowLegalOrderDeatilVo.setDeliveryUser(afBorrowLegalOrderDo.getDeliveryUser());
             afBorrowLegalOrderDeatilVo.setAddress(afBorrowLegalOrderDo.getAddress());
@@ -66,8 +71,15 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
             afBorrowLegalOrderDeatilVo.setPriceAmount(afBorrowLegalOrderDo.getPriceAmount());
             afBorrowLegalOrderDeatilVo.setOrderNo(afBorrowLegalOrderDo.getOrderNo());
             afBorrowLegalOrderDeatilVo.setLogisticsInfo(afBorrowLegalOrderDo.getLogisticsInfo());
-            afBorrowLegalOrderDeatilVo.setGmtCreate(afBorrowLegalOrderCashDo.getGmtCreate());
+            afBorrowLegalOrderDeatilVo.setGmtCreate(afBorrowLegalOrderDo.getGmtCreate());
             afBorrowLegalOrderDeatilVo.setGmtDeliver(afBorrowLegalOrderDo.getGmtDeliver());
+            
+            // 获取商品ID
+            Long goodsId = afBorrowLegalOrderDo.getGoodsId();
+            AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
+            if(goodsDo != null) {
+            	afBorrowLegalOrderDeatilVo.setGoodsIcon(goodsDo.getGoodsIcon());
+            }
         }
         data.put("afBorrowLegalOrderDeatilVo", afBorrowLegalOrderDeatilVo);
         resp.setResponseData(data);

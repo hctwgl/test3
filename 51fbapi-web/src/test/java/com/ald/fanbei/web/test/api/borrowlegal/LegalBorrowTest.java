@@ -17,7 +17,7 @@ public class LegalBorrowTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://192.168.96.216:8080";
+	String urlBase = "http://192.168.96.2:80";
 	String userName = "13638668564";
 	
 	/**
@@ -43,7 +43,7 @@ public class LegalBorrowTest  extends BaseTest{
 		params.put("payPwd", DigestUtils.md5Hex("111111"));
 		params.put("renewalAmount", "200");
 		params.put("cardId", "3111464124");
-		params.put("goodsId", "100");
+		params.put("goodsId", "91630");
 		params.put("deliveryUser", "啊阿斯顿");
 		params.put("deliveryPhone", "18659876572");
 		params.put("address", "江苏南京");
@@ -70,9 +70,9 @@ public class LegalBorrowTest  extends BaseTest{
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2017121420272900389";
-		String merPriv = PayOrderSource.REPAY_CASH_LEGAL.getCode();
-		String tradeNo = "xianFenghq2017121420241100388";
+		String orderNo = "xj2017121419585700922";
+		String merPriv = PayOrderSource.RENEW_CASH_LEGAL.getCode();
+		String tradeNo = "";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv +"&tradeNo="+tradeNo+"&tradeState="+tradeState;

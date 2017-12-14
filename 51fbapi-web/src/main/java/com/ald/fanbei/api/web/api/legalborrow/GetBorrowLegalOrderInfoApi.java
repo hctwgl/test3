@@ -9,6 +9,7 @@ import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Component;
 
@@ -25,32 +26,43 @@ import java.util.Map;
 @Component("getBorrowLegalOrderInfoApi")
 public class GetBorrowLegalOrderInfoApi implements ApiHandle {
 
-    @Resource
-    AfBorrowLegalOrderService afBorrowLegalOrderService;
+	@Resource
+	AfBorrowLegalOrderService afBorrowLegalOrderService;
 
-    @Override
-    public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+	@Override
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
-        ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        Map<String, Object> data = Maps.newHashMap();
-        resp.setResponseData(data);
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		Map<String, Object> data = Maps.newHashMap();
+		resp.setResponseData(data);
 
-        // 判断用户是否登录
-        Long userId = context.getUserId();
-        if (userId == null) {
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-        }
-        // 获取查询页码
-        int pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 0);
+		// 判断用户是否登录
+		Long userId = context.getUserId();
+		if (userId == null) {
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
+		}
+		// 获取查询页码
+		int pageNo = NumberUtil.objToIntDefault(requestDataVo.getParams().get("pageNo"), 0);
 
-        AfBorrowLegalOrderQuery query = new AfBorrowLegalOrderQuery();
-        query.setUserId(userId);
-        query.setPageNo(pageNo);
-        // 查询用户订单记录
-        List<AfBorrowLegalOrderDo> borrowLegalOrdersList = afBorrowLegalOrderService.getUserBorrowLegalOrderList(query);
-        data.put("orderList", borrowLegalOrdersList);
-        resp.setResponseData(data);
-        return resp;
-    }
+		AfBorrowLegalOrderQuery query = new AfBorrowLegalOrderQuery();
+		query.setUserId(userId);
+		query.setPageNo(pageNo);
+		// 查询用户订单记录
+		List<AfBorrowLegalOrderDo> borrowLegalOrdersList = afBorrowLegalOrderService.getUserBorrowLegalOrderList(query);
+		List<Map<String,Object>> orderList = Lists.newArrayList();
+		for (AfBorrowLegalOrderDo borrowLegalOrderDo : borrowLegalOrdersList) {
+			Map<String,Object> orderInfoMap = Maps.newHashMap();
+			orderInfoMap.put("orderId", borrowLegalOrderDo.getRid());
+			orderInfoMap.put("goodsName", borrowLegalOrderDo.getGoodsName());
+			orderInfoMap.put("status", borrowLegalOrderDo.getStatus());
+			orderInfoMap.put("gmtCreate", borrowLegalOrderDo.getGmtCreate());
+			orderInfoMap.put("amount", borrowLegalOrderDo.getPriceAmount());
+			
+			orderList.add(orderInfoMap);
+		}
+		data.put("orderList", orderList);
+		resp.setResponseData(data);
+		return resp;
+	}
 
 }
