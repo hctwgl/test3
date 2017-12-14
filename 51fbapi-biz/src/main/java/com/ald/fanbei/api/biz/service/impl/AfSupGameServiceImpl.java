@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfSupGameService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.GameGoodsType;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfSupGameDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfSupGameDo;
@@ -42,9 +44,9 @@ public class AfSupGameServiceImpl extends ParentServiceImpl<AfSupGameDo, Long> i
     public List<GameGoodsGroup> getGoodsList(String type) {
 
 	if (type.equals(GameGoodsType.GAME.getCode()))
-	    return afSupGameDao.getGameGoodsList();
+	    return afSupGameDao.getGameGoodsList(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE));
 	else if (type.equals(GameGoodsType.AMUSEMENT.getCode()))
-	    return afSupGameDao.getAmusementGoodsList();
+	    return afSupGameDao.getAmusementGoodsList(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE));
 	else {
 	    logger.error("Game pay type is not support :" + type);
 	    return null;
@@ -54,6 +56,6 @@ public class AfSupGameServiceImpl extends ParentServiceImpl<AfSupGameDo, Long> i
     @Override
     public List<GameGoods> getHotGoodsList(String type) {
 
-	return afSupGameDao.getHotGoodsList(type);
+	return afSupGameDao.getHotGoodsList(type, ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE));
     }
 }
