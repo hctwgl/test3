@@ -1,22 +1,24 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.AfUnionLoginRegisterDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfUnionLoginRegisterDao;
-import com.ald.fanbei.api.biz.service.AfUnionLoginRegisterService;
 
-import java.util.Date;
+import com.ald.fanbei.api.biz.service.AfUnionLoginRegisterService;
+import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfUnionLoginRegisterDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfUnionLoginRegisterDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 
 
 /**
@@ -69,6 +71,16 @@ public class AfUnionLoginRegisterServiceImpl extends ParentServiceImpl<AfUnionLo
             afUnionLoginRegisterDo.setPhone(phone);
             afUnionLoginRegisterDo.setUserId(userId);
             saveRecord(afUnionLoginRegisterDo) ;
+            //新增用户成功后，生成邀请码，并更新用户记录
+            try{
+                    Long invteLong = Constants.INVITE_START_VALUE + userId;
+        	    String inviteCode = Long.toString(invteLong, 36);
+        	    userDo.setRecommendCode(inviteCode);
+        	    userDo.setRid(userId);
+        	    afUserService.updateUser(userDo);
+                }catch(Exception e){
+                    thirdLog.error("更新邀请码失败！" + phone + e);
+            }
         } else {
             thirdLog.error("新增用户失败！phone ：" + phone);
             throw new Exception("新增用户失败");

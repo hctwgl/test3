@@ -27,7 +27,7 @@ public enum AfResourceType {
 	HomeNavigationUpOne("HOME_NAVIGATION_UP","快捷导航上方活动专场"),
 	HomeNavigationDownTwo("HOME_NAVIGATION_DOWN","快捷导航下方活动专场"),
 	NewHomeCarouseToMany("NEW_HOME_CAROUSEL_TO_MANY","显示双十一东西"),
-
+	LimitedPurchaseBanner("LIMITED_PURCHASE_BANNER","限时抢购顶部轮播"),
 	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
 	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),
