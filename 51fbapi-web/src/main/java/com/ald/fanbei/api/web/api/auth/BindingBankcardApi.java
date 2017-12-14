@@ -62,55 +62,8 @@ public class BindingBankcardApi implements ApiHandle {
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
-		Long bankId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("bankId")), null);
-		BigDecimal lat = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lat"), null);
-		BigDecimal lng = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("lng"), null);
-		String wifiMac = ObjectUtils.toString(requestDataVo.getParams().get("wifi_mac"));
-		String userName = context.getUserName();
-		if(null== bankId){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_REGIST_SMS_NOTEXIST);
-		}
-		AfUserBankcardDo bank = afUserBankcardService.getUserBankcardById(bankId);
-		AfUserAccountDo account = afUserAccountService.getUserAccountByUserId(context.getUserId());
 
-		//绑卡
-		bank.setStatus(BankcardStatus.BIND.getCode());
-		afUserBankcardService.updateUserBankcard(bank);
-		//更新userAuth记录
-		if(YesNoStatus.YES.getCode().equals(bank.getIsMain())){
-			//实名认证
-			AfUserAuthDo authDo = new AfUserAuthDo();
-			authDo.setUserId(context.getUserId());
-			authDo.setBankcardStatus(YesNoStatus.YES.getCode());
-			authDo.setRealnameScore(0);
-			authDo.setRealnameStatus(YesNoStatus.YES.getCode());
-			authDo.setGmtRealname(new Date());
-			afUserAuthService.updateUserAuth(authDo);
-			resp.addResponseData("realNameStatus", YesNoStatus.YES.getCode());
-			resp.addResponseData("realNameScore", 0);
-			//触发邀请人获得奖励规则
-			AfUserDo userDo = afUserService.getUserById(context.getUserId());
-			if(userDo.getRecommendId() > 0l){
-				couponSceneRuleEnginerUtil.realNameAuth(context.getUserId(), userDo.getRecommendId());
-			}
-		}
-		
-		String ipAddress = CommonUtil.getIpAddr(request);
-		if (lat == null || lng == null) {
-			IPTransferBo bo = iPTransferUtil.parseIpToLatAndLng(ipAddress);
-			lat = bo.getLatitude();
-			lng = bo.getLongitude();
-		}
-		if (StringUtils.isEmpty(uuid)) {
-			AfUserLoginLogDo loginInfo = afUserLoginLogService.getUserLastLoginInfo(userName);
-			uuid = loginInfo.getUuid();
-		}
-		if(ipAddress == null || StringUtil.isEmpty(ipAddress)) {
-			ipAddress = "0";
-		}
-		AfUserBankDidiRiskDo didiInfo = BuildInfoUtil.buildUserBankDidiRiskInfo(ipAddress, lat, lng, context.getUserId(), bankId, uuid, wifiMac);
-		afUserBankDidiRiskService.saveRecord(didiInfo);
+
 		//新版本绑定银行卡是可以设置支付密码
 		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
 		if(context.getAppVersion()>397){
@@ -125,12 +78,7 @@ public class BindingBankcardApi implements ApiHandle {
 				afUserAccountService.updateUserAccount(afUserAccountDo);
 			}
 		}
-		//判断是否需要设置支付密码
-		String allowPayPwd = YesNoStatus.YES.getCode();
-		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){
-			allowPayPwd = YesNoStatus.NO.getCode();
-		}
-		resp.addResponseData("allowPayPwd", allowPayPwd);
+
 		return resp;
 	}
 
