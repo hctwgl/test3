@@ -13,4 +13,8 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
  */
 public interface AfBorrowLegalRepaymentService extends ParentService<AfBorrowLegalOrderRepaymentDo, Long>{
 	void repay(RepayBo bo);
+	
+	void dealRepaymentSucess(String tradeNo, String outTradeNo);
+	
+	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 }

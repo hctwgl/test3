@@ -175,7 +175,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		
 		//续借需还本金比例
 		AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
-		BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
+		BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借需还本金比例
 		//续借需要支付本金 = 借款金额 * 续借需还本金比例
 		capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
 
