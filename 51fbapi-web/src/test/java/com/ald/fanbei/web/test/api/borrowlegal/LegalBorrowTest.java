@@ -54,9 +54,9 @@ public class LegalBorrowTest  extends BaseTest{
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2017121415484400370";
+		String orderNo = "hq2017121417372400383";
 		String merPriv = PayOrderSource.REPAY_CASH_LEGAL.getCode();
-		String tradeNo = "unspayhq2017121415484400370";
+		String tradeNo = "xianFenghq2017121417372400383";
 		String tradeState = "00";
 		
 		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv +"&tradeNo="+tradeNo+"&tradeState="+tradeState;

@@ -174,12 +174,14 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			BigDecimal orderSumCash = orderCashDo.getAmount().add(orderCashDo.getOverdueAmount()).add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getOverdueAmount());
 			BigDecimal orderRemainCash = orderSumCash.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
 			
-			BigDecimal borrowCash = bo.repaymentAmount.subtract(orderRemainCash);
-			if(borrowCash.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款到借款中
-				legalOrderRepayment = buildOrderRepayment(bo, orderRemainCash, name);
-				repayment = buildRepayment(BigDecimal.ZERO, borrowCash, tradeNo, now, borrowCash, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
-				afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
+			BigDecimal orderBorrowCash = bo.repaymentAmount.subtract(orderRemainCash);
+			if(orderBorrowCash.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款到借款中
+				repayment = buildRepayment(BigDecimal.ZERO, orderBorrowCash, tradeNo, now, orderBorrowCash, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
 				afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
+				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
+					legalOrderRepayment = buildOrderRepayment(bo, orderRemainCash, name);
+					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
+				}
 			} else { //还款全部进入订单欠款中
 				legalOrderRepayment = buildOrderRepayment(bo, bo.repaymentAmount, name);
 				afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
@@ -207,6 +209,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			UpsCollectRespBo respBo = upsUtil.collect(bo.tradeNo, bo.actualAmount, bo.userId.toString(), 
 						bo.userDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 						bank.getCardNumber(), bo.userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, bo.name, "02", PayOrderSource.REPAY_CASH_LEGAL.getCode());
+			
+			logger.info("doRepay,ups respBo="+JSON.toJSONString(respBo));
 			if(repayment != null) {
 				changBorrowRepaymentStatus(respBo.getTradeNo(), AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
 			}
