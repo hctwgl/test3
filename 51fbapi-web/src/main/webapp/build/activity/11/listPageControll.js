@@ -21,7 +21,7 @@ let vm = new Vue({
         flag :true,
         categoryList:'',
         leimu:'',
-        detailDes:'',
+        detailDes: [],
         categoryId:'',
         arr:[],
         index:'',
@@ -44,7 +44,6 @@ let vm = new Vue({
                 url: "https://supplier.51fanbei.com/category/h5/list ",
                 success: function (data) {
                     let categoryList=data;
-                    console.log(categoryList,'categoryList');
                     self.leimu=categoryList.data;
                     let aa=[];
                     for(var i=0;i<self.leimu.length;i++){
@@ -68,8 +67,6 @@ let vm = new Vue({
         //商品初始化信息
           logData(c) {
             let self = this;
-            console.log(self.pageNo)
-            console.log(self.detailDes,">>>>>>>")
             $.ajax({
                 type: 'post',
                 url: "https://supplier.51fanbei.com/goods/h5/list",
@@ -79,15 +76,11 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     let productList=data;
-                    console.log(productList.data,'productList');
                     if(productList.data.length>0){
-                        self.detailDes=self.detailDes.concat(productList.data);
-                        // for(var i=0; i< productList.data.length; i++){
-                        //     // self.detailDes.push(productList.data[i]);
-                        //     console.log(self.detailDes,'2222222222222222222')
-                        // }
-                        self.detailDes=productList.data;
                         console.log( self.detailDes,'detailDes')
+                        // self.detailDes=self.detailDes.concat(productList.data);
+                        self.detailDes=self.detailDes.concat(productList.data);//将获取的数据加到原有的数据当中
+                        console.log( self.detailDes, '111')
                         self.page=productList.pageNo;//页数
                         self.pageNo=self.page;
                     }else{
@@ -107,17 +100,11 @@ let vm = new Vue({
                     var scrollTop = $(this).scrollTop();//滚动条距离顶部的高度
                     var scrollHeight = $(document).height();//当前页面的总高度
                     var windowHeight = $(this).height();//当前可视的页面高度
-                    console.log(windowHeight,'windowHeight');
                     if (scrollTop + windowHeight >= scrollHeight) {
                         self.pageNo++;
                         self.logData(self.getId);
                         
                     }  
-                    /* if(scrollHeight-windowHeight<=scrollTop+400){
-                        // self.pageNo++;
-                        self.logData(self.getId);
-                        
-                    } */
                 });
         },
         //点击商品
@@ -132,8 +119,8 @@ let vm = new Vue({
         tabClick(i) {
             this.tab = i + 1;
             this.getId=this.arr[i];
-            console.log(this.getId,'getId')
             let self = this;
+            this.detailDes = [];
             $.ajax({
                 type: 'post',
                 url: "https://supplier.51fanbei.com/goods/h5/list",
@@ -143,9 +130,7 @@ let vm = new Vue({
                 },
                 success: function (data) {
                     let productList=data;
-                    console.log(productList,'productList');
                     self.detailDes=productList.data;
-                    console.log( self.detailDes,'detailDes')
 
                 },
                 error: function () {
