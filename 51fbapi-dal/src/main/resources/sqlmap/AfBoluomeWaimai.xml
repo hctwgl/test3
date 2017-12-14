@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,order_id,third_order_no,goodsinfo,quantity,delivery_time_show,restaurant_phone,restaurant_name,name,order_price,order_type,order_type_name,contact_mobile,contact_name,contact_addr,price,user_id,user_phone,coupon_price,coupon_title,coupon_id 
+        id rid,gmt_create,gmt_modified,third_order_no,goodsinfo,quantity,delivery_time_show,restaurant_phone,restaurant_name,name,order_price,order_type,order_type_name,contact_mobile,contact_name,contact_addr,price,user_id,user_phone,coupon_price,coupon_title,coupon_id 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -19,9 +19,6 @@
         </if>
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
-        </if>
-        <if test="orderId != null and orderId != ''">
-            AND order_id = #{orderId,jdbcType=INTEGER}
         </if>
         <if test="thirdOrderNo != null and thirdOrderNo != ''">
             AND third_order_no = #{thirdOrderNo,jdbcType=VARCHAR}
@@ -96,9 +93,6 @@
 	        <if test="gmtModified != null">        
 	            gmt_modified,
 	        </if>
-	        <if test="orderId != null">        
-	            order_id,
-	        </if>
 	        <if test="thirdOrderNo != null">        
 	            third_order_no,
 	        </if>
@@ -164,9 +158,6 @@
 		    </if>
 		    <if test="gmtModified != null" >
 		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="orderId != null" >
-		       #{orderId,jdbcType=INTEGER},
 		    </if>
 		    <if test="thirdOrderNo != null" >
 		       #{thirdOrderNo,jdbcType=VARCHAR},
@@ -236,9 +227,6 @@
             </if>
             <if test="gmtModified != null and gmtModified != '' ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="orderId != null and orderId != '' ">        
-                order_id = #{orderId,jdbcType=INTEGER},                
             </if>
             <if test="thirdOrderNo != null and thirdOrderNo != '' ">        
                 third_order_no = #{thirdOrderNo,jdbcType=VARCHAR},                

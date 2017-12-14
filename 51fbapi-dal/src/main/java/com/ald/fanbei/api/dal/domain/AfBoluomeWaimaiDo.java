@@ -34,11 +34,6 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
     private Date gmtModified;
 
     /**
-     * 订单id
-     */
-    private Long orderId;
-
-    /**
      * 第三方订单号
      */
     private String thirdOrderNo;
@@ -174,25 +169,6 @@ public class AfBoluomeWaimaiDo extends BoluomeCouponDto {
      */
     public void setGmtModified(Date gmtModified) {
 	this.gmtModified = gmtModified;
-    }
-
-    /**
-     * 获取订单id
-     *
-     * @return 订单id
-     */
-    public Long getOrderId() {
-	return orderId;
-    }
-
-    /**
-     * 设置订单id
-     * 
-     * @param orderId
-     *            要设置的订单id
-     */
-    public void setOrderId(Long orderId) {
-	this.orderId = orderId;
     }
 
     /**
