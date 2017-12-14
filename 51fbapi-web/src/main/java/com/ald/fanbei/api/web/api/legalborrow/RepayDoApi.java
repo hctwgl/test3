@@ -139,7 +139,7 @@ public class RepayDoApi implements ApiHandle {
 				&& (cashDo = afBorrowCashDao.getBorrowCashByrid(bo.borrowId)) != null
 				&& (orderCashDo = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId)) != null){
 		} else {
-			throw new FanbeiException("checkFrom error!"); // TODO
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
 		bo.cashDo = cashDo;
 		bo.orderCashDo = orderCashDo;

@@ -3,10 +3,10 @@ package com.ald.fanbei.api.web.third.controller;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -15,14 +15,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
-import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
-import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
-import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,9 +23,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
+import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.biz.service.AfOrderRefundService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
+import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
+import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.Constants;
@@ -47,7 +55,22 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBankDao;
+import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
+import com.ald.fanbei.api.dal.dao.AfHuicaoOrderDao;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
+import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfHuicaoOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author chenjinhu 2017年2月20日 下午2:59:32
@@ -92,6 +115,8 @@ public class PayRoutController {
     private AfYibaoOrderDao afYibaoOrderDao;
     @Resource
     AfRenewalLegalDetailService afRenewalLegalDetailService;
+    @Resource
+    AfBorrowLegalRepaymentService afBorrowLegalRepaymentService;
 
 
 	@Resource
@@ -354,7 +379,7 @@ public class PayRoutController {
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
                     afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
                 } else if(PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款
-                	
+                	afBorrowLegalRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo); // ourTradeNo 为我方还款交易流水号
                 } else if(PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期
                 	afRenewalLegalDetailService.dealLegalRenewalSucess(outTradeNo, tradeNo);
                 }
@@ -435,6 +460,16 @@ public class PayRoutController {
                     if (result <= 0) {
                         return "ERROR";
                     }
+                } else if(PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款失败
+                	if (StringUtil.isNotBlank(respDesc)) {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
+                    } else {
+                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
+                    }
+                	
+                	afBorrowLegalRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
+                } else if(PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期失败
+                	
                 }
             }
             return "SUCCESS";
