@@ -55,7 +55,7 @@ let vm = new Vue({
                     if(data.code!==1000){//code不等于1000的时候弹出信息
                         requestMsg(data.msg);
                     }
-
+                    self.getId=self.arr[0];//初始化categoryId;
                     self.logData(self.arr[0])
 
                 },
@@ -78,7 +78,6 @@ let vm = new Vue({
                     let productList=data;
                     if(productList.data.length>0){
                         console.log( self.detailDes,'detailDes')
-                        // self.detailDes=self.detailDes.concat(productList.data);
                         self.detailDes=self.detailDes.concat(productList.data);//将获取的数据加到原有的数据当中
                         console.log( self.detailDes, '111')
                         self.page=productList.pageNo;//页数
@@ -86,7 +85,6 @@ let vm = new Vue({
                     }else{
                         $('.nomore').show();//显示没有更多数据的文字
                     }
-
                 },
                 error: function () {
                     requestMsg('哎呀，出错了！')
@@ -100,11 +98,13 @@ let vm = new Vue({
                     var scrollTop = $(this).scrollTop();//滚动条距离顶部的高度
                     var scrollHeight = $(document).height();//当前页面的总高度
                     var windowHeight = $(this).height();//当前可视的页面高度
+                    console.log()
                     if (scrollTop + windowHeight >= scrollHeight) {
                         self.pageNo++;
                         self.logData(self.getId);
+                        console.log(self.getId);
                         
-                    }  
+                    }
                 });
         },
         //点击商品
@@ -121,11 +121,13 @@ let vm = new Vue({
             this.getId=this.arr[i];
             let self = this;
             this.detailDes = [];
+            this.pageNo=0;
+            
             $.ajax({
                 type: 'post',
                 url: "https://supplier.51fanbei.com/goods/h5/list",
                 data:{
-                    categoryId:this.arr[i],
+                    categoryId:self.arr[i],
                     pageNo:1
                 },
                 success: function (data) {
