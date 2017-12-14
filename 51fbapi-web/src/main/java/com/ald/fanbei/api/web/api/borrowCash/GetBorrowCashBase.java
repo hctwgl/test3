@@ -32,44 +32,40 @@ public class GetBorrowCashBase {
 					data.put("maxAmount", afResourceDo.getValue());
 					data.put("minAmount", afResourceDo.getValue1());
 
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
 					data.put("bankDouble", afResourceDo.getValue());
 
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashPoundage.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashPoundage.getCode())) {
 					data.put("poundage", afResourceDo.getValue());
 
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
 					data.put("overduePoundage", afResourceDo.getValue());
 
 				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
 					data.put("bankRate", afResourceDo.getValue());
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashSupuerSwitch.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashSupuerSwitch.getCode())) {
 					data.put("supuerSwitch", afResourceDo.getValue());
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashLenderForCash.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashLenderForCash.getCode())) {
 					data.put("lender", afResourceDo.getValue());
-					
-				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashTotalAmount.getCode())) {
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashTotalAmount.getCode())) {
 					data.put("amountPerDay", afResourceDo.getValue());
-				}else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.borrowCashShowNum.getCode())) {
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashShowNum.getCode())) {
 					data.put("nums", afResourceDo.getValue());
 				}
-
-
-
 			} else {
 				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
 					data.put("borrowCashDay", afResourceDo.getValue());
-
 				}
 			}
 		}
-
-		// rate.put("overduePoundage", data.get("overduePoundage"));
-		// rate.put("bankService", bankService);
-		// rate.put("poundage", data.get("poundage"));
-		// rate.put("maxAmount", data.get("maxAmount"));
-		// rate.put("minAmount", data.get("minAmount"));
-		// rate.put("borrowCashDay", data.get("borrowCashDay"));
 
 		return data;
 
@@ -90,5 +86,4 @@ public class GetBorrowCashBase {
 		return bannerList;
 	}
 
-	
 }

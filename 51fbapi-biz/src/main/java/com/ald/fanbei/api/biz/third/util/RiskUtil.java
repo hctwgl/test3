@@ -1061,7 +1061,7 @@ public class RiskUtil extends AbstractThird {
      * @param method   接口标识（固定4位）
      * @param identity 身份标识（固定4位）
      */
-    public static String getOrderNo(String method, String identity) {
+    public String getOrderNo(String method, String identity) {
         if (StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity)
                 || identity.length() != 4) {
             throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);

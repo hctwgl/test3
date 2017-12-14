@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- ${tableName}表:${functionName}模块 -->
+<!-- ${tableName}表 -->
 <mapper namespace="${packageName}.dal.dao.${ClassName}Dao">
     
     <!--基本的sql查询字段 公共引用...-->

@@ -90,6 +90,8 @@ public class PayRoutController {
     private AfTradeWithdrawRecordService afTradeWithdrawRecordService;
     @Resource
     private AfYibaoOrderDao afYibaoOrderDao;
+    @Resource
+    AfRenewalLegalDetailService afRenewalLegalDetailService;
 
 
 	@Resource
@@ -351,6 +353,10 @@ public class PayRoutController {
                     afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
                     afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
+                } else if(PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款
+                	
+                } else if(PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期
+                	afRenewalLegalDetailService.dealLegalRenewalSucess(outTradeNo, tradeNo);
                 }
             } else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
                 String errorWarnMsg = "";
