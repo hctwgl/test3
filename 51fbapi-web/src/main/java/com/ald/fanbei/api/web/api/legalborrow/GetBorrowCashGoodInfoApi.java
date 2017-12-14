@@ -118,6 +118,9 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
 				Constants.BORROW_CASH_INFO_LEGAL);
 		BigDecimal newRate = null;
+
+		double newServiceRate = 0;
+		double newInterestRate = 0;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
 			JSONArray array = JSONObject.parseArray(borrowRate);
@@ -125,15 +128,25 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject info = array.getJSONObject(i);
 				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("INTEREST_RATE", borrowTag) || StringUtils.equals("SERVICE_RATE", borrowTag)) {
+				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
 					if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-						double tmp = info.getDouble("borrowSevenDay");
-						totalRate += tmp;
+						newInterestRate = info.getDouble("borrowSevenDay");
+						totalRate += newInterestRate;
 					} else {
-						double tmp = info.getDouble("borrowFourteenDay");
-						totalRate += tmp;
+						newInterestRate = info.getDouble("borrowFourteenDay");
+						totalRate += newInterestRate;
 					}
 				}
+				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+					if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
+						newServiceRate = info.getDouble("borrowSevenDay");
+						totalRate += newServiceRate;
+					} else {
+						newServiceRate = info.getDouble("borrowFourteenDay");
+						totalRate += newServiceRate;
+					}
+				}
+
 			}
 			newRate = BigDecimal.valueOf(totalRate / 100);
 		} else {
@@ -143,6 +156,14 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		newRate = newRate.divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(new BigDecimal(borrowAmount)).multiply(borrowDay);
 
+		// 计算服务费和手续费
+		BigDecimal serviceFee = new BigDecimal(newServiceRate).multiply(new BigDecimal(borrowAmount))
+				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+		BigDecimal interestFee = new BigDecimal(newInterestRate).multiply(new BigDecimal(borrowAmount))
+				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+
+		respData.put("serviceFee", serviceFee);
+		respData.put("interestFee", interestFee);
 		// 如果用户未登录，则利润空间为0
 		if (userId == null) {
 			profitAmount = BigDecimal.ZERO;
