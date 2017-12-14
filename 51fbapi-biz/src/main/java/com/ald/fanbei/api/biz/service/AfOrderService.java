@@ -63,7 +63,7 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,
-			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo);
+			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox);
 	
 	/**
 	 * 手机充值订单充值逻辑
@@ -324,6 +324,10 @@ public interface AfOrderService {
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
+
+	Integer selectSumCountByGoodsId(Long goodsId);
+
+	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 	
 	/**
      * 获取已生成的秒杀订单

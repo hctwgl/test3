@@ -21,4 +21,6 @@ public interface AfPopupsDao {
 
 	int updatePopups(AfPopupsDo afPopupsDo);
 
+	int updatePopupsReachAmount(Long id);
+
 }

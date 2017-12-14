@@ -45,7 +45,6 @@ import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogRefType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogType;
-import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -56,8 +55,6 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.AfGameDo;
-import com.ald.fanbei.api.dal.domain.AfGameResultDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
@@ -65,7 +62,6 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserOperationLogDo;
-import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -192,7 +188,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 
 		// 计算最高借款金额
 		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
-		// FIXME 获取搭售商品价格
+		// 获取搭售商品价格
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
 		BigDecimal serviceRate = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
@@ -221,7 +217,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 		// 计算原始利率
 		BigDecimal oriRate = serviceRate.add(poundageRate);
-
+		double newServiceRate = 0;
+		double newInterestRate = 0;
 		BigDecimal newRate = null;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
@@ -230,13 +227,22 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject info = array.getJSONObject(i);
 				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("INTEREST_RATE", borrowTag) || StringUtils.equals("SERVICE_RATE", borrowTag)) {
-					if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), "FOURTEEN")) {
-						double tmp = info.getDouble("borrowSevenDay");
-						totalRate += tmp;
+				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+					if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowTag)) {
+						newInterestRate = info.getDouble("borrowSevenDay");
+						totalRate += newInterestRate;
 					} else {
-						double tmp = info.getDouble("borrowFourteenDay");
-						totalRate += tmp;
+						newInterestRate = info.getDouble("borrowFourteenDay");
+						totalRate += newInterestRate;
+					}
+				}
+				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+					if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowTag)) {
+						newServiceRate = info.getDouble("borrowSevenDay");
+						totalRate += newServiceRate;
+					} else {
+						newServiceRate = info.getDouble("borrowFourteenDay");
+						totalRate += newServiceRate;
 					}
 				}
 			}
@@ -245,7 +251,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			newRate = BigDecimal.valueOf(0.36);
 		}
 
-		newRate = newRate.divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP);
+		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(maxAmount).multiply(BigDecimal.valueOf(14));
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
 		if (goodsId != null) {
@@ -297,20 +303,36 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			// 查询借款相关商品借款,计算总还款金额
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
 					.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
+
+			// 计算已经还款金额
+			BigDecimal paidAmount = afBorrowCashDo.getRepayAmount();
+			// 计算逾期金额
+			BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount();
 			if (afBorrowLegalOrderCash != null) {
 				BigDecimal orderCashAmount = afBorrowLegalOrderCash.getAmount();
-				BigDecimal overdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
+				BigDecimal orderCashOverdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
 				BigDecimal repaidAmount = afBorrowLegalOrderCash.getRepaidAmount();
 				BigDecimal poundageAmount = afBorrowLegalOrderCash.getPoundageAmount();
 				BigDecimal interestAmount = afBorrowLegalOrderCash.getInterestAmount();
-				allAmount = allAmount.add(orderCashAmount).add(overdueAmount).add(poundageAmount).add(interestAmount)
-						.subtract(repaidAmount);
+				allAmount = allAmount.add(orderCashAmount).add(orderCashOverdueAmount).add(poundageAmount)
+						.add(interestAmount).subtract(repaidAmount);
+				paidAmount = paidAmount.add(repaidAmount);
+				overdueAmount = overdueAmount.add(orderCashOverdueAmount);
 			}
-			//  减掉借款已还金额
+			// 减掉借款已还金额
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+
+			// 计算服务费和手续费
+			BigDecimal serviceFee = new BigDecimal(newServiceRate).multiply(returnAmount)
+					.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+			BigDecimal interestFee = new BigDecimal(newInterestRate).multiply(returnAmount)
+					.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+			data.put("serviceFee", serviceFee);
+			data.put("interestFee", interestFee);
+
 			data.put("returnAmount", returnAmount);
-			data.put("paidAmount", afBorrowCashDo.getRepayAmount());
-			data.put("overdueAmount", afBorrowCashDo.getOverdueAmount());
+			data.put("paidAmount", paidAmount);
+			data.put("overdueAmount", overdueAmount);
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
 			long currentTime = System.currentTimeMillis();
 			Date now = DateUtil.getEndOfDate(new Date(currentTime));
@@ -509,73 +531,6 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 		data.put("existRepayingMoney", existRepayingMoney);
 		data.put("repayingMoney", repayingMoney);
-		// 红包是否显示
-		try {
-			// 首先判断用户是否参与过拆红包活动
-			AfBorrowCashDo afLastBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-			List<AfGameResultDo> gameResultList = afGameResultService.getTearPacketResultByUserId(userId,
-					afLastBorrowCashDo.getRid(), "tear_packet");
-			String status = afLastBorrowCashDo.getStatus();
-			int takePartTime = 0;
-			if (gameResultList != null) {
-				takePartTime = gameResultList.size();
-			}
-			// 获取拆红包游戏信息
-			AfGameDo gameDo = afGameService.getByCode("tear_packet");
-			Date gmtStart = gameDo.getGmtStart();
-			Date gmtEnd = gameDo.getGmtEnd();
-			Date nowDate = new Date();
-			if (nowDate.after(gmtStart) && nowDate.before(gmtEnd)) {
-				if ("FINSH".equals(status) && takePartTime < 1) {
-					data.put("showPacket", "Y");
-				} else {
-					data.put("showPacket", "N");
-				}
-			} else {
-				data.put("showPacket", "N");
-			}
-			Date borrowCreate = afLastBorrowCashDo.getGmtCreate();
-			if (borrowCreate.before(gmtStart) || borrowCreate.after(gmtEnd)) {
-				data.put("showPacket", "N");
-			}
-			// 查询是否有借钱免息优惠券
-			List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByType(userId,
-					CouponType.FREEINTEREST.getCode());
-			if (couponList != null && couponList.size() > 0) {
-				AfUserCouponDto afUserCouponDto = couponList.get(0);
-				Long couponId = afUserCouponDto.getCouponId();
-				data.put("couponId", couponId);
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-
-		try {
-			// 风控拒绝红包
-			AfGameDo riskPacketGameDo = afGameService.getByCode("risk_packet");
-			if (riskPacketGameDo != null) {
-				// 查询活动时间内是否有风控拒绝记录
-				Date gameStart = riskPacketGameDo.getGmtStart();
-				Date gameEnd = riskPacketGameDo.getGmtEnd();
-				List<AfBorrowCashDo> riskRefuseResultList = afBorrowCashService.getRiskRefuseBorrowCash(userId,
-						gameStart, gameEnd);
-				List<AfGameResultDo> gameResultList = afGameResultService.getTearRiskPacketResultByUserId(userId,
-						"risk_packet");
-				int takePartTime = 0;
-				if (gameResultList != null) {
-					takePartTime = gameResultList.size();
-				}
-				if (riskRefuseResultList == null || riskRefuseResultList.size() != 1 || takePartTime >= 1) {
-					data.put("showRiskPacket", "N");
-				} else {
-					data.put("showRiskPacket", "Y");
-				}
-			} else {
-				data.put("showRiskPacket", "N");
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
 
 		try {
 			// 用户点击借钱页面时去风控获取用户的借钱手续费

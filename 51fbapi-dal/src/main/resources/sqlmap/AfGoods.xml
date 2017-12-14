@@ -167,8 +167,72 @@
 		AND is_grab_success = 0
 		AND num_id = #{numId}
 	</select>
-	
-	
+
+	<select id="selectFlashSaleGoods" resultType="AfEncoreGoodsDto" parameterType="AfGoodsQuery" >
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+			(
+				SELECT
+					m.goods_id
+				FROM
+					af_activity_model m,
+					(
+						SELECT
+							id
+						FROM
+							af_activity
+						WHERE
+							is_delete = 0
+						AND type = '7'
+						AND `status` = '2'
+						AND gmt_start = CAST(CAST(SYSDATE()AS DATE)AS DATETIME)
+					) a
+				WHERE
+					a.id = m.activity_id
+				AND m.is_delete = 0
+				AND m.goods_type = 3
+			) s
+		LEFT JOIN af_goods g ON s.goods_id = g.id
+		WHERE
+			g.is_delete = 0
+		AND g.status = 'PUBLISH'
+		ORDER BY g.gmt_create desc
+	</select>
+
+	<select id="selectBookingRushGoods" resultType="AfEncoreGoodsDto" parameterType="AfGoodsQuery" >
+		SELECT
+		<include refid="queryFields"/>
+		FROM
+		(
+		SELECT
+		m.goods_id
+		FROM
+		af_activity_model m,
+		(
+		SELECT
+		id
+		FROM
+		af_activity
+		WHERE
+		is_delete = 0
+		AND type = '7'
+		AND `status` = '2'
+		AND gmt_start = date_add(CAST(CAST(SYSDATE()AS DATE)AS DATETIME), interval 1 day)
+		) a
+		WHERE
+		a.id = m.activity_id
+		AND m.is_delete = 0
+		AND m.goods_type = 3
+		) s
+		LEFT JOIN af_goods g ON s.goods_id = g.id
+		WHERE
+			g.is_delete = 0
+		AND g.status = 'PUBLISH'
+		ORDER BY g.gmt_create desc
+	</select>
+
+
 	<select id="getGoodsByCategoryId" resultType="AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>
@@ -179,4 +243,5 @@
 			category_id = #{categoryId}
 		LIMIT 50
 	</select>
+
 </mapper>

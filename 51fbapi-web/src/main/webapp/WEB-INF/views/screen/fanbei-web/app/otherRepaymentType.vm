@@ -5,7 +5,7 @@
     <title>还款方式</title>
     <link rel="stylesheet" href="/dist/css/app/otherRepaymentType.css">
 </head>
-<body scroll=no style="overflow:hidden">
+<body style="overflow-x:hidden">
 <div class="line">
     <p style="font-size: .32rem;margin-top: .62rem"><i class="icon icon1" style="background-image: url('$commonUrl/repay.png')"></i>请在转账时备注</p>
     <p style="font-size: .26rem;margin: .28rem 0 .44rem">您的返呗账号（即注册手机号）</p>
@@ -27,7 +27,8 @@
 <div class="line">
     <div class="block">
         <p style="margin-top: .3rem"><i class="icon" style="background-image: url('$commonUrl/repay3.png')"></i>温馨提示</p>
-        <p class="rule"><i class="yuan"></i>线下还款会在2-3个工作日处理完成，时间紧迫建议使用51返呗线上还款。</p>
+        <p class="rule"><i class="yuan"></i>线下还款会在2-3个工作日处理完成，请耐心等待，时间紧迫建议使用51返呗线上还款。</p>
+        <p class="rule"><i class="yuan"></i>在您线下还款后至系统处理期间，若产生了额外的逾期费，请勿担心，系统会自动处理，51返呗不会给您带来逾期记录和额外支出，感谢您的配合和谅解。</p>
         <p class="rule" style="margin-bottom:.44rem;"><i class="yuan"></i>若有疑问请联系客服电话：400-002-5151</p>
     </div>
 </div>
