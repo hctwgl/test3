@@ -34,6 +34,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfBrandCouponVo;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * 
@@ -85,6 +86,7 @@ public class GetBrandCouponListApi implements ApiHandle {
 				resp.addResponseData("nextPageNo", resultMap.get(NEXT_PAGE_INDEX));
 			}
 			resp.addResponseData("pageNo", pageNo);
+			logger.info("getBrandCouponListApi resp",JSONObject.toJSONString(resp));
 			return resp;
 		} catch (Exception e) {
 			return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.FAILED);

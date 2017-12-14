@@ -34,5 +34,10 @@ public class AfPopupsServiceImpl  implements AfPopupsService {
 	public int updatePopups(AfPopupsDo afPopupsDo){
 		return afPopupsDao.updatePopups(afPopupsDo);
 	}
-	
+
+	@Override
+	public int updatePopupsReachAmount(Long id) {
+		return afPopupsDao.updatePopupsReachAmount(id);
+	}
+
 }

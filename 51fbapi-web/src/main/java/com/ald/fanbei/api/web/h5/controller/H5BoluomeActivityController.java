@@ -297,66 +297,57 @@ public class H5BoluomeActivityController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/boluomeActivityRegisterLogin", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String bouomeActivityRegisterLogin(HttpServletRequest request, HttpServletResponse response, ModelMap model) throws IOException {
-	// 执行时间
-	String exeT = DateUtil.formatDateToYYYYMMddHHmmss(new Date());
-	// IP
-	String rmtIp = CommonUtil.getIpAddr(request);
+	
 	String resultStr = "";
 	String referer = request.getHeader("referer");  
 	doMaidianLog(request, H5CommonResponse.getNewInstance(true, "calling"),referer,"calling boluomeActivityRegisterLogin");
 	try {
-	    String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
-	  //  String refUserName = ObjectUtils.toString(request.getParameter("refUserName"), "").toString();
+	    String mobile = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
+  	    String inviteer = ObjectUtils.toString(request.getParameter("inviteer"), "").toString();
 	    String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-	//    String registerSource = ObjectUtils.toString(request.getParameter("urlName"), "").toString();
 	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
 	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
-//	    if (registerSource == null || "".equals(registerSource)) {
-//		if (CookieUtil.getCookie(request, "urlName") != null) {
-//		    registerSource = CookieUtil.getCookie(request, "urlName").getValue();
-//		}
-//	    }
 
-	    AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
-	    logger.info("boluomeActivityRegisterLogin eUserDo",eUserDo,moblie); 
+	    AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
+	    logger.info("boluomeActivityRegisterLogin eUserDo",eUserDo,mobile); 
 	    if (eUserDo != null) {
-		logger.error("boluomeActivityRegisterLogin user regist account exist",moblie);
+		logger.error("boluomeActivityRegisterLogin user regist account exist",mobile);
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "Register", null).toString();
 
 	    }
-	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
+	    AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(mobile, SmsType.REGIST.getCode());
 	    if (smsDo == null) {
-		logger.error("boluomeActivityRegisterLogin sms record is empty",moblie);
+		logger.error("boluomeActivityRegisterLogin sms record is empty",mobile);
 		resultStr = H5CommonResponse.getNewInstance(false, "手机号与验证码不匹配", "Register", null).toString();
 		return resultStr;
 	    }
 
 	    String realCode = smsDo.getVerifyCode();
 	    if (!StringUtils.equals(verifyCode, realCode)) {
-		logger.error("boluomeActivityRegisterLogin verifyCode is invalid",moblie);
+		logger.error("boluomeActivityRegisterLogin verifyCode is invalid",mobile);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
 	    if (smsDo.getIsCheck() == 1) {
-		logger.error("boluomeActivityRegisterLogin verifyCode is already invalid",moblie);
+		logger.error("boluomeActivityRegisterLogin verifyCode is already invalid",mobile);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
 	    // 判断验证码是否过期
 	    if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-		logger.error("boluomeActivityRegisterLogin user regist sms overdue",moblie);
+		logger.error("boluomeActivityRegisterLogin user regist sms overdue",mobile);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc(), "Register", null).toString();
 		return resultStr;
 
 	    }
 	    try {
-		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
+		tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), mobile, mobile, "");
 	    } catch (Exception e) {
-		logger.error("boluomeActivityRegisterLogin tongtun fengkong error",moblie);
+		logger.error("boluomeActivityRegisterLogin tongtun fengkong error",mobile);
 		resultStr = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc(), "Register", null).toString();
 		return resultStr;
 	    }
@@ -369,8 +360,8 @@ public class H5BoluomeActivityController extends BaseController {
 
 	    AfUserDo userDo = new AfUserDo();
 	    userDo.setSalt(salt);
-	    userDo.setUserName(moblie);
-	    userDo.setMobile(moblie);
+	    userDo.setUserName(mobile);
+	    userDo.setMobile(mobile);
 	    userDo.setNick("");
 	    userDo.setPassword(password);
 	    userDo.setRecommendId(0l);
@@ -379,9 +370,9 @@ public class H5BoluomeActivityController extends BaseController {
 		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
-	    logger.info("boluomeActivityRegisterLogin userDo",userDo,moblie);
+	    logger.info("boluomeActivityRegisterLogin userDo",userDo,mobile);
 	    int result = afUserService.addUser(userDo);
-	    logger.info("boluomeActivityRegisterLogin result",result,moblie);
+	    logger.info("boluomeActivityRegisterLogin result",result,mobile);
 	    Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
 	    String inviteCode = Long.toString(invteLong, 36);
 	    userDo.setRecommendCode(inviteCode);
@@ -393,29 +384,41 @@ public class H5BoluomeActivityController extends BaseController {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
-	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),typeFrom,typeFromNum,moblie);
+	   
 	    // save token to cache
-            String  token1 = UserUtil.generateToken(moblie);
-	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
-	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
+            String  token1 = UserUtil.generateToken(mobile);
+	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + mobile;
+	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, mobile, Constants.SECOND_OF_HALF_HOUR_INT);
 	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
 	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
-	    //进行相应的埋点，送券
+//	    //进行相应的埋点
 	    if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
-		//送券
-		try{
-		     AfUserDo afUserDo = afUserService.getUserByUserName(moblie);
-		     if (afUserDo != null) {
-			        sentNewUserBoluomeCouponForChannel(afUserDo);
-		     }
-		   }catch (Exception e){
-				logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
-		}
-		//埋点
-		 String reqData = request.toString();
-		 doLog(reqData, H5CommonResponse.getNewInstance(true, "注册成功", "", ""), request.getMethod(), rmtIp, exeT, "/H5GGShare/bouomeActivityRegisterLogin", moblie, typeFrom, typeFrom+typeFromNum, "", "", "");
+		 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),typeFrom,typeFromNum,mobile);
 	    }
-	  
+	    try{
+        	    if (inviteer != null && !"".equals(inviteer)){
+        		    if (!inviteer.equals(mobile)) {
+        		  	       	// 绑定关系mobile
+        			        AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
+        			        AfUserDo refUserDo =  afUserService.getUserByUserName(inviteer);
+        			        if(StringUtils.isEmpty(boluomeActivityId.toString())){
+        			            boluomeActivityId  = 1000L;
+        			        }
+        		  		if(afUserDo !=  null && refUserDo != null){
+                		  		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
+                		  		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
+                		  		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
+                		  		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
+                		  		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
+                		  		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
+                		  		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+        		  		}
+        		    }
+        	    }
+	    }catch (FanbeiException e) {
+        	logger.error("save boluomeActivity user binding exception" + e.getMessage());
+        		  
+            } 
 	    return resultStr;
 
 	} catch (FanbeiException e) {

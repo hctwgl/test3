@@ -76,6 +76,8 @@
 		AND
 			type = #{type}
 	</select>
-	
+	<select id="getWaiMainShopId" resultType="java.lang.Long">
+		SELECT id FROM af_shop WHERE type = 'WAIMAI' AND is_delete = 0 AND `status` = 'O';
+	</select>
 	
 </mapper>
