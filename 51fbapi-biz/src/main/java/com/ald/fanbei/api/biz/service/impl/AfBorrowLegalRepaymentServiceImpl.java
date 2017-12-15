@@ -440,7 +440,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
             obj.put("borrowNo", repayDealBo.borrowNo);
             obj.put("amount", repayDealBo.sumAmount);
             obj.put("repayment", repayDealBo.sumRepaidAmount);
-            obj.put("income", BigDecimal.ZERO);
+            obj.put("income", repayDealBo.sumIncome);
             obj.put("interest", repayDealBo.sumInterest);
             obj.put("overdueAmount", repayDealBo.sumOverdueAmount);
             obj.put("overdueDay", repayDealBo.overdueDay);
@@ -481,8 +481,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                         DateUtil.formatDateTime(new Date()),
                         repayDealBo.curOutTradeNo,
                         repayDealBo.curSumRepayAmount,
-                        repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount).setScale(2, RoundingMode.HALF_UP),
-                        repayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),
+                        repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount).setScale(2, RoundingMode.HALF_UP), //未还的
+                        repayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),	
                         repayDealBo.sumOverdueAmount,
                 		repayDealBo.sumRepaidAmount,
                 		repayDealBo.sumInterest);
