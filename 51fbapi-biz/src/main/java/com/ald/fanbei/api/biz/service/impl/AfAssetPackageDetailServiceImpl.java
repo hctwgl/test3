@@ -369,7 +369,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
         					//标记重新分配记录
-        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowCashId());
+        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowNo());
         				}
         				for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : fourteenDebtList) {
         					realFourteenAmount = realFourteenAmount.add(afViewAssetBorrowCashDo.getAmount());
@@ -383,7 +383,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
         					//标记重新分配记录
-        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowCashId());
+        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowNo());
         				}
         				
         				//更新实际金额
@@ -743,7 +743,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					afAssetPackageDetailDo.setStatus(AfAssetPackageDetailStatus.VALID.getCode());
         					afAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
         					//标记重新分配记录
-        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowDo.getBorrowId());
+        					afAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowDo.getBorrowNo());
         				}
         				//更新实际金额
         				afAssetPackageDo.setRealTotalMoney(realAmount);
