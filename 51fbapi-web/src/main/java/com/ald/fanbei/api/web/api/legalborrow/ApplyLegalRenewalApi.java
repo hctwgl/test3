@@ -198,9 +198,9 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 			//续借过
 			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
-			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
+			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays, 2, RoundingMode.HALF_UP);
 			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360
-			borrowRateAmount = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
+			borrowRateAmount = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newRate).divide(oneYeayDays, 2, RoundingMode.HALF_UP);
 		}else {
 			//未续借过
 			borrowPoundage = afBorrowCashDo.getPoundage();
