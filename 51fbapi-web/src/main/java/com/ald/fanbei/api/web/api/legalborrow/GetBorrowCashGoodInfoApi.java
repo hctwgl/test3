@@ -124,7 +124,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		double newInterestRate = 0;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
-			Map<String,Object> rateInfo = getRateInfo(borrowRate,borrowType);
+			Map<String,Object> rateInfo = getRateInfo(borrowRate,borrowType,"borrow");
 			newServiceRate = (double) rateInfo.get("serviceRate");
 			newInterestRate = (double) rateInfo.get("interestRate");
 			double totalRate = (double) rateInfo.get("totalRate");
@@ -163,7 +163,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				respData.put("goodsIcon", goodsInfo.getGoodsIcon());
 				
 				String borrowRate = rateInfoDo.getValue3();
-				Map<String,Object> rateInfo = getRateInfo(borrowRate,borrowType);
+				Map<String,Object> rateInfo = getRateInfo(borrowRate,borrowType,"consume");
 				double totalRate = (double) rateInfo.get("totalRate");
 				// 计算商品借款总费用 
 				BigDecimal goodsRate = BigDecimal.valueOf(totalRate / 100);
@@ -187,7 +187,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		return resp;
 	}
 
-	private Map<String, Object> getRateInfo(String borrowRate,String borrowType) {
+	private Map<String, Object> getRateInfo(String borrowRate,String borrowType,String tag) {
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -198,19 +198,19 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			String borrowTag = info.getString("borrowTag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
 				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-					interestRate = info.getDouble("borrowSevenDay");
+					interestRate = info.getDouble(tag + "SevenDay");
 					totalRate += interestRate;
 				} else {
-					interestRate = info.getDouble("borrowFourteenDay");
+					interestRate = info.getDouble(tag + "FourteenDay");
 					totalRate += interestRate;
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
 				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
-					serviceRate = info.getDouble("borrowSevenDay");
+					serviceRate = info.getDouble(tag + "SevenDay");
 					totalRate += serviceRate;
 				} else {
-					serviceRate = info.getDouble("borrowFourteenDay");
+					serviceRate = info.getDouble(tag + "FourteenDay");
 					totalRate += serviceRate;
 				}
 			}
