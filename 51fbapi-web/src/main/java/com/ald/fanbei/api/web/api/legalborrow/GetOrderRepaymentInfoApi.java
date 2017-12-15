@@ -80,6 +80,8 @@ public class GetOrderRepaymentInfoApi implements ApiHandle {
 				repayList.add(repayInfoMap);
 			}
 		}
+		data.put("repayAmount", repayAmount);
+		data.put("repayList", repayList);
 
 		resp.setResponseData(data);
 		return resp;
