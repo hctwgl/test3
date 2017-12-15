@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *@类现描述：签约银行卡时短信验证
@@ -79,7 +81,9 @@ public class BindingBankcardApi implements ApiHandle {
 				afUserAccountService.updateUserAccount(afUserAccountDo);
 			}
 		}
-
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("test", "");
+		resp.setResponseData(map);
 		return resp;
 	}
 
