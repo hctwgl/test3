@@ -38,7 +38,7 @@ public class GetDataViewApi implements ApiHandle {
         HashMap resulitMap = new HashMap();
         List<AllBarlyClearanceBo> list = afBorrowBillService.getAllClear(userId,billId);
 
-        resulitMap.put("data",list);
+        resulitMap.put("result",list);
 
         resp.setResponseData(resulitMap);
         return resp;
