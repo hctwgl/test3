@@ -26,5 +26,7 @@ public interface AfPopupsService {
 	AfPopupsDo selectPopups(Long id);
 	
 	int updatePopups(AfPopupsDo afPopupsDo);
-	
+
+	int updatePopupsReachAmount(Long id);
+
 }

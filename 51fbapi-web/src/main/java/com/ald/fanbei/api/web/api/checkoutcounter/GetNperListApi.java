@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -22,11 +23,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +86,10 @@ public class GetNperListApi implements ApiHandle {
             //获取借款分期配置信息
             AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_TRADE);
             JSONArray array = JSON.parseArray(resource.getValue());
+
+            //分期金额限制
+            String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
+
             List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, rebateModels, BigDecimal.ONE.intValue(),
                     nperAmount, resource.getValue1(), resource.getValue2());
             resp.addResponseData("nperList", nperList);
@@ -92,7 +99,11 @@ public class GetNperListApi implements ApiHandle {
             if(orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())){
                 String numId = orderInfo.getGoodsId() + "";
                 interestFreeArray = getInterestFreeArray(numId, orderType);
-            }else{
+            }else if (orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())){
+                interestFreeArray= JSON.parseArray(orderInfo.getInterestFreeJson());
+            }
+
+            else{
                 if (orderInfo.getGoodsId()!=0&&orderInfo.getGoodsId() != null&&!orderInfo.getGoodsId().equals("")) {
                     String numId = orderInfo.getGoodsId() + "";
                     interestFreeArray = getInterestFreeArray(numId, orderType);
@@ -113,11 +124,19 @@ public class GetNperListApi implements ApiHandle {
             if (array == null) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
             }
-            removeSecondNper(array);
+            //removeSecondNper(array);
 
-            List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                    nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
-            resp.addResponseData("nperList", nperList);
+            //分期金额限制
+            String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
+
+            try{
+                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
+                resp.addResponseData("nperList", nperList);
+            }catch (Exception e){
+                logger.error("get nperList error:",e);
+            }
+
             return resp;
         }
 
@@ -166,5 +185,82 @@ public class GetNperListApi implements ApiHandle {
             }
         }
 
+    }
+
+    /**
+     * 收银台分期金额校验
+     * @param array 可用分期数组
+     * @param orderType 订单类型
+     * @param totalamount 订单金额
+     * @return   是否可以信用支付1是0否
+     */
+    public String checkMoneyLimit(JSONArray array,String orderType,BigDecimal totalamount) {
+        String oneNper = "1";
+        try{
+            String cType = "";
+            if(OrderType.AGENTBUY.getCode().equals(orderType)|| OrderType.SELFBUILD.equals(orderType)){
+                cType = ResourceType.STAGE_MONEY_LIMIT_D.getCode();
+            }else if (OrderType.SELFSUPPORT.getCode().equals(orderType)){
+                cType = ResourceType.STAGE_MONEY_LIMIT_Z.getCode();
+            }else if (OrderType.BOLUOME.getCode().equals(orderType)){
+                cType = ResourceType.STAGE_MONEY_LIMIT_B.getCode();
+            }else if (OrderType.TRADE.getCode().equals(orderType)){
+                cType = ResourceType.STAGE_MONEY_LIMIT_S.getCode();
+            }
+            if (!"".equals(cType)){
+                List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes(cType);
+                if (array != null&&afResourceList !=  null&& afResourceList.size()>0) {
+                    AfResourceDo afdao = afResourceList.get(0);
+                    String value = afdao.getValue();
+                    Map<String,JSONObject> config = new HashMap<String,JSONObject>();
+                    if (!StringUtils.isBlank(value)){
+                        JSONArray arraytemp = JSON.parseArray(value);
+                        for (int i=0;i<arraytemp.size();i++){
+                            JSONObject obj = arraytemp.getJSONObject(i);
+                            config.put(obj.getString("nper").replace("s",""),obj);
+                            if(obj.getString("nper").equals("s1")){
+                                String up = obj.getString("max");
+                                String down = obj.getString("min");
+                                if("0".equals(up) && "0".equals(down)){
+                                    continue;
+                                }
+                                if (new BigDecimal(down).compareTo(totalamount)>0) {
+                                    oneNper = "0";
+                                }
+                            }
+                        }
+                    }
+                    JSONObject objtemp12 = config.get("12");
+                    String up12 = objtemp12.getString("max");
+                    String down12 = objtemp12.getString("min");
+                    if(!("0".equals(up12) && "0".equals(down12))){
+                        if (new BigDecimal(up12).compareTo(totalamount)<0) {
+                            array.removeAll(array);
+                            oneNper = "0";
+                        }
+                    }
+                    Iterator<Object> it = array.iterator();
+                    while (it.hasNext()) {
+                        JSONObject json = (JSONObject) it.next();
+                        String nper = json.getString(Constants.DEFAULT_NPER);
+                        if(config.containsKey(nper)){
+                            JSONObject objtemp = config.get(nper);
+                            String up = objtemp.getString("max");
+                            String down = objtemp.getString("min");
+                            if("0".equals(up) && "0".equals(down)){
+                                continue;
+                            }
+                            if (new BigDecimal(down).compareTo(totalamount)>0) {
+                                it.remove();
+                            }
+                        }
+
+                    }
+                }
+            }
+        }catch (Exception e){
+            logger.error("分期金额限制过滤失败："+e);
+        }
+        return oneNper;
     }
 }

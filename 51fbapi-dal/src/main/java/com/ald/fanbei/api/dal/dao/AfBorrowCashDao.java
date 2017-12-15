@@ -11,8 +11,6 @@ import org.apache.ibatis.annotations.Param;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 
-import javax.swing.plaf.basic.BasicScrollPaneUI;
-
 /**
  * @类描述：
  * 

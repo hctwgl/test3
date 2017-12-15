@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 
 /**
@@ -13,6 +15,9 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 public interface AfBoluomeActivityItemsDao extends BaseDao<AfBoluomeActivityItemsDo, Long> {
 
 	AfBoluomeActivityItemsDo getItemsInfo(AfBoluomeActivityItemsDo itemsMessageSet);
+
+
+	AfBoluomeActivityItemsDo getItemsInfoByOrderId(@Param("orderId") long orderId);
 
     
 

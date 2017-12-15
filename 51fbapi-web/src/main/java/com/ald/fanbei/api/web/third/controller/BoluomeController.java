@@ -4,12 +4,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,17 +26,21 @@ import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeNotify;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.service.impl.BoluomeOrderInfoThread;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
 import com.ald.fanbei.api.common.enums.UnitType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBoluomeDianyingDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJiayoukaDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeJiudianDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeShoujiDao;
+import com.ald.fanbei.api.dal.dao.AfBoluomeWaimaiDao;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
@@ -65,49 +72,63 @@ public class BoluomeController extends AbstractThird {
     @Resource
     AfUserAccountService afUserAccountService;
 
+    @Autowired
+    private AfBoluomeDianyingDao afBoluomeDianyingDao;
+    @Autowired
+    private AfBoluomeJiayoukaDao afBoluomeJiayoukaDao;
+    @Autowired
+    private AfBoluomeJiudianDao afBoluomeJiudianDao;
+    @Autowired
+    private AfBoluomeWaimaiDao afBoluomeWaimaiDao;
+    @Autowired
+    private AfBoluomeShoujiDao afBoluomeShoujiDao;
+
     @RequestMapping(value = { "/synchOrder", "/synchOrderStatus" }, method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String synchOrder(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws Exception {
-	
-		String uri = StringUtils.EMPTY;
-		if (request.getRequestURI().contains("synchOrderStatus")) {
-		    uri = "synchOrderStatus";
-		} else {
-		    uri = "synchOrder";
-		}
-	
-		thirdLog.info(uri + "begin requestParams = {}", requestData);
-		JSONObject requestParams = JSON.parseObject(requestData);
-		Map<String, String> params = buildOrderParamMap(requestParams);
-		boolean sign =  BoluomeNotify.verify(params);
-		String retunStr = StringUtils.EMPTY;
-		if (sign) {
-		    try {
-			String status = params.get(BoluomeCore.STATUS);
-			OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
-			if (orderStatus != null && orderStatus != OrderStatus.DEALING) {
-			    AfOrderDo orderInfo = buildOrderInfo(params);
-			    if (orderInfo != null) {
-				if (orderInfo.getRid() == null) {
-				    // 补偿订单
-				    afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
-				} else {
-				    afOrderService.dealBoluomeOrder(orderInfo);
-				}
-			    }
+
+	String uri = StringUtils.EMPTY;
+	if (request.getRequestURI().contains("synchOrderStatus")) {
+	    uri = "synchOrderStatus";
+	} else {
+	    uri = "synchOrder";
+	}
+
+	thirdLog.info(uri + "begin requestParams = {}", requestData);
+	JSONObject requestParams = JSON.parseObject(requestData);
+	Map<String, String> params = buildOrderParamMap(requestParams);
+	boolean sign = BoluomeNotify.verify(params);
+	String retunStr = StringUtils.EMPTY;
+	if (sign) {
+	    try {
+		String status = params.get(BoluomeCore.STATUS);
+		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
+		if (orderStatus != null && orderStatus != OrderStatus.DEALING) {
+		    AfOrderDo orderInfo = buildOrderInfo(params);
+		    if (orderInfo != null) {
+			if (orderInfo.getRid() == null) {
+			    // 补偿订单
+			    afOrderService.syncOrderInfo(orderInfo.getThirdOrderNo(), OrderType.BOLUOME.getCode(), orderInfo);
+			    // 获取菠萝觅订单详情(线程池)
+			    ExecutorService cacheThreadPool = Executors.newCachedThreadPool();
+			    cacheThreadPool.execute(new BoluomeOrderInfoThread(orderInfo.getThirdOrderNo(), orderInfo.getSecType(), afBoluomeDianyingDao, afBoluomeJiayoukaDao, afBoluomeJiudianDao, afBoluomeWaimaiDao, afBoluomeShoujiDao));
+			} else {
+			    afOrderService.dealBoluomeOrder(orderInfo);
 			}
-			retunStr = "Successs";
-		    } catch (Exception e) {
-			logger.error("error message " + e);
-			retunStr = "error";
-			throw e;
 		    }
-		} else {
-		    thirdLog.info("sign is invalid ");
-		    throw new Exception("签名不对");
 		}
-		thirdLog.info(uri + " complete, result = {}, sign = {}", retunStr, sign);
-		return retunStr;
+		retunStr = "Successs";
+	    } catch (Exception e) {
+		logger.error("error message " + e);
+		retunStr = "error";
+		throw e;
+	    }
+	} else {
+	    thirdLog.info("sign is invalid ");
+	    throw new Exception("签名不对");
+	}
+	thirdLog.info(uri + " complete, result = {}, sign = {}", retunStr, sign);
+	return retunStr;
     }
 
     private Map<String, String> buildOrderParamMap(JSONObject requestParams) {
@@ -217,14 +238,14 @@ public class BoluomeController extends AbstractThird {
 	    orderInfo.setBankId(0l);
 	    orderInfo.setServiceProvider(channel);
 	    if (shopInfo.getInterestFreeId() != 0) {
-			AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
-			orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
+		AfInterestFreeRulesDo ruleInfo = afInterestFreeRulesService.getById(shopInfo.getInterestFreeId());
+		orderInfo.setInterestFreeJson(ruleInfo.getRuleJson());
 	    }
 	    AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(userId, 0l));
-		if(userAccountInfo!=null){
-			orderInfo.setAuAmount(userAccountInfo.getAuAmount());
-			orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
-		}
+	    if (userAccountInfo != null) {
+		orderInfo.setAuAmount(userAccountInfo.getAuAmount());
+		orderInfo.setUsedAmount(userAccountInfo.getUsedAmount());
+	    }
 	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	} else {
 
@@ -277,3 +298,4 @@ public class BoluomeController extends AbstractThird {
     }
 
 }
+

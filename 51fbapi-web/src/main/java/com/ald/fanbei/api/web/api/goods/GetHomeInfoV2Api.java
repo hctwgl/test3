@@ -234,7 +234,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		if (array == null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
-		removeSecondNper(array);
+		//removeSecondNper(array);
 
 		if (categoryInfoList != null && !categoryInfoList.isEmpty()) {
 
@@ -454,7 +454,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Iterator<Object> it = array.iterator();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
 				it.remove();
 				break;
 			}

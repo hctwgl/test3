@@ -99,7 +99,7 @@ public class H5FreshmanShareController extends H5Controller{
 	        if (array == null) {
 	            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 	        }
-	        removeSecondNper(array);
+	        //removeSecondNper(array);
 			
 			for (AfFreshmanGoodsVo goodsInfo : resultList) {
                 List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, null, BigDecimal.ONE.intValue(),
@@ -133,7 +133,7 @@ public class H5FreshmanShareController extends H5Controller{
         Iterator<Object> it = array.iterator();
         while (it.hasNext()) {
             JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
                 it.remove();
                 break;
             }
