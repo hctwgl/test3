@@ -57,7 +57,7 @@ public class BindingBankcardApi implements ApiHandle {
 
 		//新版本绑定银行卡是可以设置支付密码
 		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
-		if( 396 < context.getAppVersion() && context.getAppVersion() <402){
+		if( 396 < context.getAppVersion() && context.getAppVersion() <402&&requestDataVo.getId().startsWith("a")){
 			if(null != oldPassword){
 				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
 				oldPassword = md5(oldPassword);
