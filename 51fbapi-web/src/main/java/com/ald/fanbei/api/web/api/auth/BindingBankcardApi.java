@@ -1,19 +1,11 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import com.ald.fanbei.api.biz.bo.IPTransferBo;
-import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.IPTransferUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BankcardStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -22,12 +14,9 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  *@类现描述：签约银行卡时短信验证
@@ -69,9 +58,8 @@ public class BindingBankcardApi implements ApiHandle {
 		if(context.getAppVersion()>397){
 			if(null != oldPassword){
 				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-				String password = Base64.decodeToString(oldPassword);
 				String salt = UserUtil.getSalt();
-				String newPwd = UserUtil.getPassword(password, salt);
+				String newPwd = UserUtil.getPassword(oldPassword, salt);
 				afUserAccountDo.setUserId(context.getUserId());
 				afUserAccountDo.setSalt(salt);
 				afUserAccountDo.setPassword(newPwd);
