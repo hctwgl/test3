@@ -135,7 +135,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// 获取首页商品信息
 		List<Map<String, Object>> categoryGoodsInfo = null;
 		//做线上和预发开关
-		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOMEPAGE.getCode());
 		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
 			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
 				categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
