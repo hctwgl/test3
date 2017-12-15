@@ -11,12 +11,14 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang.ObjectUtils;
 import org.dbunit.util.Base64;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.security.MessageDigest;
 
 /**
  *@类现描述：签约银行卡时短信验证
@@ -47,7 +49,7 @@ public class BindingBankcardApi implements ApiHandle {
 	AfUserBankDidiRiskService afUserBankDidiRiskService;
 	@Resource
 	AfUserLoginLogService afUserLoginLogService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
@@ -55,7 +57,18 @@ public class BindingBankcardApi implements ApiHandle {
 
 		//新版本绑定银行卡是可以设置支付密码
 		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
-		if(context.getAppVersion()>397){
+		if( 396 < context.getAppVersion() && context.getAppVersion() <402){
+			if(null != oldPassword){
+				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				oldPassword = md5(oldPassword);
+				String salt = UserUtil.getSalt();
+				String newPwd = UserUtil.getPassword(oldPassword, salt);
+				afUserAccountDo.setUserId(context.getUserId());
+				afUserAccountDo.setSalt(salt);
+				afUserAccountDo.setPassword(newPwd);
+				afUserAccountService.updateUserAccount(afUserAccountDo);
+			}
+		}else {
 			if(null != oldPassword){
 				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
 				String salt = UserUtil.getSalt();
@@ -68,6 +81,25 @@ public class BindingBankcardApi implements ApiHandle {
 		}
 
 		return resp;
+	}
+
+	public static String md5(String source) {
+
+		StringBuffer sb = new StringBuffer(32);
+
+		try {
+			MessageDigest md    = MessageDigest.getInstance("MD5");
+			byte[] array        = md.digest(source.getBytes("utf-8"));
+
+			for (int i = 0; i < array.length; i++) {
+				sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+			}
+		} catch (Exception e) {
+			logger.error("Can not encode the string '" + source + "' to MD5!", e);
+			return null;
+		}
+
+		return sb.toString();
 	}
 
 }
