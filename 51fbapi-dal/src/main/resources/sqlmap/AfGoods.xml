@@ -194,7 +194,7 @@
 		SELECT
 		<include refid="queryFields"/>
 		from af_goods
-		where id_delete = 0
+		where is_delete = 0
 		AND
 		id in (select item_value from af_model_h5_item where item_value2 = #{categoryId} and item_type = 'GOODS_ID' and type = 'GOODSLIST' and is_delete = 0)
 

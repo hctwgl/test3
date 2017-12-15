@@ -332,7 +332,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			Map<String, Object> infoMap = categoryInfoList.get(0);
 			List<AfGoodsDo> goodsDoList = null;
 			if(null != categoryInfoList.get(0)){
-				Long categoryId = (Long) infoMap.get("categoryId");
+				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
 				goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
 			}
 			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
