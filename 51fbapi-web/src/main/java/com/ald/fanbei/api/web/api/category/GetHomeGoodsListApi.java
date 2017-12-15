@@ -69,7 +69,7 @@ public class GetHomeGoodsListApi implements ApiHandle {
 		query.setPageNo(pageNo);
 		query.setPageSize(50);
 		List<AfGoodsDo> goodsDoList = null;
-		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOMEPAGE.getCode());
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
 		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
 			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
 				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
