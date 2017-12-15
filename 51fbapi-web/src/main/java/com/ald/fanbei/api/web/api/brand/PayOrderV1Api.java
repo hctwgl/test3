@@ -131,7 +131,7 @@ public class PayOrderV1Api implements ApiHandle {
             AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
                 if(afResourceDo!=null&&afResourceDo.getValue().contains(orderInfo.getGoodsName()) ){
                     logger.error("filter shop : "+orderInfo.getGoodsName());
-                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BOLUOME_UNTRUST_SHOPGOODS);
                 }
         }
         //双十一砍价添加
