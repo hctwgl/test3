@@ -408,7 +408,7 @@ public interface AfBorrowBillDao {
 	 * @param borrowId
 	 * @return
 	 */
-	BigDecimal getInterestByBorrowId(@Param("userId")Long borrowId);
+	BigDecimal getInterestByBorrowId(@Param("borrowId")Long borrowId);
 
 	/**
 	 * 根据borrowId查询账单逾期利息
@@ -417,7 +417,7 @@ public interface AfBorrowBillDao {
 	 * @param borrowId
 	 * @return
 	 */
-	BigDecimal getOverdueInterestByBorrowId(@Param("userId")Long borrowId);
+	BigDecimal getOverdueInterestByBorrowId(@Param("borrowId")Long borrowId);
 
 	/**
 	 * 查询用户历史账单
