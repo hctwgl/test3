@@ -19,4 +19,5 @@ public interface AfBoluomeActivityService extends ParentService<AfBoluomeActivit
     int ggLightActivity(final AfOrderDo afOrder);
     Map<String, String> activityOffical(Long userId);
     int sentNewUserBoluomeCoupon(AfUserDo afUserDo);
+    int sentNewUserBoluomeCouponForDineDash(AfUserDo afUserDo);
 }

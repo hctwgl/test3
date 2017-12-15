@@ -4,9 +4,11 @@
 package com.ald.fanbei.api.biz.rule.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
@@ -58,6 +60,13 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 		return afActivityGoodsDao.listHomeActivityGoodsByActivityId(activityId);
 	}
 	
-	
-	
+	@Override
+	public AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(Long goodsId){
+		return afActivityGoodsDao.getActivityGoodsByGoodsIdAndType(goodsId);
+	}
+
+	@Override
+	public List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(List<AfEncoreGoodsDto> list){
+		return afActivityGoodsDao.getActivityGoodsByGoodsIdAndTypeMap(list);
+	}
 }

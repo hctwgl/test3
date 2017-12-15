@@ -103,11 +103,11 @@ public class AppH5Double12ActivityController extends BaseController{
 		String result = "";
 		
 		try {
-			context = doWebCheck(request, true);
+			context = doWebCheck(request, false);
 			
-			String userName = context.getUserName();
-			logger.info("/activity/double12/couponHomePage params: userName ={}", userName);
-			Long userId = convertUserNameToUserId(userName);
+//			String userName = context.getUserName();
+//			logger.info("/activity/double12/couponHomePage params: userName ={}", userName);
+//			Long userId = convertUserNameToUserId(userName);
 			
 			// 获取活动优惠券组信息
     		String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
@@ -131,6 +131,7 @@ public class AppH5Double12ActivityController extends BaseController{
 					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
 					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
 					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
+					afCouponDouble12Vo.setIsGet("N");//未领取
 					
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					// 当前时间
@@ -167,11 +168,11 @@ public class AppH5Double12ActivityController extends BaseController{
 						}
 					}
     				
-					if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,afCouponDo.getRid()) != 0){
+					/*if(afUserCouponService.getUserCouponByUserIdAndCouponId(userId,afCouponDo.getRid()) != 0){
 						afCouponDouble12Vo.setIsGet("Y");//已领取
 					}else{
 						afCouponDouble12Vo.setIsGet("N");//未领取
-					}
+					}*/
 					if(afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
 						afCouponDouble12Vo.setIshas("Y");//优惠券还有
 					}else {
@@ -186,15 +187,6 @@ public class AppH5Double12ActivityController extends BaseController{
 			data.put("couponList", couponVoList);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 		
-		} catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
-					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
-				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
-						+ H5OpenNativeType.AppLogin.getCode();
-				data.put("loginUrl", loginUrl);
-			logger.error("/activity/double12/couponHomePage" + context + "login error ");
-			result = H5CommonResponse.getNewInstance(false, "没有登录", null, data).toString();
-			}
 		} catch (Exception e) {
 			logger.error("/activity/double12/couponHomePage error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();

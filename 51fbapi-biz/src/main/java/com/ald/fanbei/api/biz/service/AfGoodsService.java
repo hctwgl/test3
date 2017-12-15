@@ -1,11 +1,12 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.Date;
 import java.util.List;
 
 
-
-
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 
 /**
@@ -82,9 +83,19 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	AfGoodsDo checkIsSelfBuild(String numId);
+/**
+	 * 限时抢购 的 商品列表
+	 * @return
+	 */
+	List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query);
 
+	List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query);
+	List<AfGoodsDo> getGoodsByCategoryId(Long categoryId);
+
+	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
 
 	List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(Long parentId);
 
 	List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(Long primaryCategoryId, Long categoryId);
+
 }

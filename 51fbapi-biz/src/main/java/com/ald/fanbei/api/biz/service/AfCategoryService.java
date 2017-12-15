@@ -21,4 +21,6 @@ public interface AfCategoryService {
 	AfCategoryDo getParentDirectoryByName(String name);
 
 	List<AfCategoryDo> listByParentIdAndLevel(AfCategoryDo queryAfCategory);
+	
+	List<AfCategoryDo> getHomePageCategoryInfo();
 }

@@ -64,6 +64,8 @@ public interface AfRepaymentBorrowCashDao {
 	 * @return
 	 */
 	List<AfRepaymentBorrowCashDo> getRepaymentBorrowCashListByUserId(@Param("userId") Long userId);
+
+	AfRepaymentBorrowCashDo getRepaymentBorrowCashByTradeNo(@Param("borrowCashId") Long borrowCashId,@Param("tradeNo") String tradeNo);
 	
 	AfRepaymentBorrowCashDo getRepaymentByPayTradeNo(@Param("payTradeNo") String payTradeNo);
 	

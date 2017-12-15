@@ -89,6 +89,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 	@Resource
 	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+	@Resource
+	AfActivityGoodsService afActivityGoodsService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -254,8 +256,28 @@ public class BuySelfGoodsApi implements ApiHandle {
 				}
 			}
 			//-------------------------------
-			
-			afGoodsPriceService.updateStockAndSaleByPriceId(goodsPriceId, true);
+			//限时抢购增加逻辑
+			AfActivityGoodsDo afActivityGoodsDo = afActivityGoodsService.getActivityGoodsByGoodsIdAndType(goodsId);
+			if(null != afActivityGoodsDo){
+				AfOrderDo afOrderDo = new AfOrderDo();
+				afOrderDo.setUserId(userId);
+				afOrderDo.setGoodsId(goodsId);
+				Integer sum = afOrderService.selectSumCountByGoodsIdAndType(afOrderDo);
+				Long limitCount = afActivityGoodsDo.getLimitCount();
+
+				if(null != sum){
+					if(limitCount.intValue() - sum < count && limitCount.intValue() != 0){
+						throw new FanbeiException(FanbeiExceptionCode.EXCEED_THE_LIMIT_OF_PURCHASE);
+					}
+				}else{
+					if(limitCount.intValue()  < count && limitCount.intValue() != 0){
+						throw new FanbeiException(FanbeiExceptionCode.EXCEED_THE_LIMIT_OF_PURCHASE);
+					}
+				}
+			}
+			//-------------------------------
+
+			afGoodsPriceService.updateNewStockAndSaleByPriceId(goodsPriceId,count, true);
 			afOrder.setGoodsPriceName(priceDo.getPropertyValueNames());
 			afOrder.setSaleAmount(priceDo.getActualAmount().multiply(new BigDecimal(count)));
 			afOrder.setPriceAmount(priceDo.getPriceAmount());

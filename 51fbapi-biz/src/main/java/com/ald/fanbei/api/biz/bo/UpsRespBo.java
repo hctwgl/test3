@@ -24,6 +24,7 @@ public class UpsRespBo{
 	private String respDesc;  //应答码描述
 	private String tppRespCode;  //第三方响应应答码
 	private boolean success;
+	private String tradeState;
 	
 
 	
@@ -104,4 +105,12 @@ public class UpsRespBo{
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
+
+	public String getTradeState() {
+		return tradeState;
+	}
+
+	public void setTradeState(String tradeState) {
+		this.tradeState = tradeState;
+	}
 }

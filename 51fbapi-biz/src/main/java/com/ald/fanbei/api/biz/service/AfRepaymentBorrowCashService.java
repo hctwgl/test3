@@ -97,4 +97,6 @@ public interface AfRepaymentBorrowCashService {
 	public String dealOfflineRepaymentSucess(final String repayNo,final String borrowNo,final String repayType,final String repayTime,final BigDecimal repayAmount,final BigDecimal restAmount,final String tradeNo,final String isBalance);
 
 	int updateRepaymentBorrowCashName(Long refId);
+
+    AfRepaymentBorrowCashDo getRepaymentBorrowCashByTradeNo(Long borrowId, String tradeNo);
 }

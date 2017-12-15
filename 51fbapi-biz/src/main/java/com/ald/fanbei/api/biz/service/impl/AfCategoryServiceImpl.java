@@ -38,8 +38,9 @@ public class AfCategoryServiceImpl implements AfCategoryService{
 	    // TODO Auto-generated method stub
 	         return afCategoryDao.listByParentIdAndLevel(queryAfCategory);
 	}
-
-
-	
+	@Override
+	public List<AfCategoryDo> getHomePageCategoryInfo() {
+		return afCategoryDao.getHomePageCategoryInfo();
+	}
 
 }

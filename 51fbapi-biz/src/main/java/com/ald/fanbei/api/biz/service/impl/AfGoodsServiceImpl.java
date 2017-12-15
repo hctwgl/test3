@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfActivityDo;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -101,7 +104,7 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public AfGoodsDo checkIsSelfBuild(String numId) {
 		return afGoodsDao.checkIsSelfBuild(numId);
 	}
-	@Override
+@Override
 	public List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(Long parentId) {
 	    // TODO Auto-generated method stub
 	    	return afGoodsDao.listGoodsListByParentIdAndFormerCategoryId(parentId);
@@ -110,6 +113,24 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(Long primaryCategoryId, Long categoryId) {
 	    // TODO Auto-generated method stub
 	        return afGoodsDao.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
+	}
+	@Override
+	public List<AfGoodsDo> getGoodsByCategoryId(Long categoryId) {
+		return afGoodsDao.getGoodsByCategoryId(categoryId);
+	}
+	@Override
+	public List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query) {
+		return afGoodsDao.getHomeCategoryGoodsList(query);
+	}
+
+	@Override
+	public List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query){
+		return afGoodsDao.selectFlashSaleGoods(query);
+	}
+
+	@Override
+	public List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query){
+		return afGoodsDao.selectBookingRushGoods(query);
 	}
 
 }
