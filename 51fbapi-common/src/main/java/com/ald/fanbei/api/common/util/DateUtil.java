@@ -871,6 +871,17 @@ public class DateUtil {
         long millisec = end.getTime() - before.getTime();
         return millisec / (60 * 1000);
     }
+    
+    /**
+     * 返回两个时间间隔的天数
+     * @param before 起始时间
+     * @param end 终止时间
+     * @return 分钟数
+     */
+    public static long getNumberOfDayBetween(final Date before, final Date end) {
+    	long millisec = end.getTime() - before.getTime();
+    	return millisec / (60 * 1000 * 60 * 24);
+    }
 
     public static int getNumberOfMonthsBetween(final Date before, final Date end) {
         Calendar cal1 = Calendar.getInstance();
@@ -1239,5 +1250,9 @@ public class DateUtil {
 		}else{
 			return new Date(timeSecondTimpstamp*1000);
 		}
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(DateUtil.getNumberOfDayBetween(new  Date(2017, 12, 14, 0, 25, 0), new  Date(2017, 12, 15, 0, 0, 0)));
 	}
 }

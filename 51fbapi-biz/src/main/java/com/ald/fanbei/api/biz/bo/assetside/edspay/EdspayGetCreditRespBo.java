@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.bo.assetside.edspay;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
+
 
 /**
  * @类现描述：钱包平台获取债权响应实体
@@ -34,19 +36,31 @@ public class EdspayGetCreditRespBo implements Serializable {
 	private Integer isRepayAcctOtherBank;//放款账户是否为他行（0：否[default]，1是）
 	private BigDecimal manageFee;//分期手续费
 	
+	private Long pushTime;//推送时间(可选，默认为当天)
+	private String repaymentSource;//还款来源
+	private Integer debtType;//债权类型，(0现金贷[Default]，1消费分期)
+	private Integer isPeriod;//是否分期,(0:未分期[Default],1:分期)
+	private Integer totalPeriod;//总期数，可选
+	private Integer loanerType;//借款人性质(0:个人[Default],1:公司)
+	private Integer overdueTimes;//平台总逾期次数
+	private BigDecimal overdueAmount;//平台总逾期金额
+	private List<RepaymentPlan> repaymentPlans;//还款计划数组
+	
 	
 	public EdspayGetCreditRespBo() {
 		super();
 	}
 	
-	
-	public EdspayGetCreditRespBo(String packageNo, String orderNo,
-			Long userId, String name, String cardId, String mobile,
-			String bankNo, String acctName, BigDecimal money, BigDecimal apr,
+	public EdspayGetCreditRespBo(String packageNo, String orderNo, Long userId,
+			String name, String cardId, String mobile, String bankNo,
+			String acctName, BigDecimal money, BigDecimal apr,
 			Integer timeLimit, Long loanStartTime, Integer purpose,
 			Integer repaymentStatus, Integer repaymentType, String repayName,
 			String repayAcct, String repayAcctBankNo, Integer repayAcctType,
-			Integer isRepayAcctOtherBank, BigDecimal manageFee) {
+			Integer isRepayAcctOtherBank, BigDecimal manageFee, Long pushTime,
+			String repaymentSource, Integer debtType, Integer isPeriod,
+			Integer totalPeriod, Integer loanerType, Integer overdueTimes,
+			BigDecimal overdueAmount, List<RepaymentPlan> repaymentPlans) {
 		super();
 		this.packageNo = packageNo;
 		this.orderNo = orderNo;
@@ -69,7 +83,18 @@ public class EdspayGetCreditRespBo implements Serializable {
 		this.repayAcctType = repayAcctType;
 		this.isRepayAcctOtherBank = isRepayAcctOtherBank;
 		this.manageFee = manageFee;
+		this.pushTime = pushTime;
+		this.repaymentSource = repaymentSource;
+		this.debtType = debtType;
+		this.isPeriod = isPeriod;
+		this.totalPeriod = totalPeriod;
+		this.loanerType = loanerType;
+		this.overdueTimes = overdueTimes;
+		this.overdueAmount = overdueAmount;
+		this.repaymentPlans = repaymentPlans;
 	}
+
+
 
 
 	public String getPackageNo() {
@@ -198,7 +223,96 @@ public class EdspayGetCreditRespBo implements Serializable {
 	public void setManageFee(BigDecimal manageFee) {
 		this.manageFee = manageFee;
 	}
-	
+
+
+	public Long getPushTime() {
+		return pushTime;
+	}
+
+
+	public void setPushTime(Long pushTime) {
+		this.pushTime = pushTime;
+	}
+
+
+	public String getRepaymentSource() {
+		return repaymentSource;
+	}
+
+
+	public void setRepaymentSource(String repaymentSource) {
+		this.repaymentSource = repaymentSource;
+	}
+
+
+	public Integer getDebtType() {
+		return debtType;
+	}
+
+
+	public void setDebtType(Integer debtType) {
+		this.debtType = debtType;
+	}
+
+
+	public Integer getIsPeriod() {
+		return isPeriod;
+	}
+
+
+	public void setIsPeriod(Integer isPeriod) {
+		this.isPeriod = isPeriod;
+	}
+
+
+	public Integer getTotalPeriod() {
+		return totalPeriod;
+	}
+
+
+	public void setTotalPeriod(Integer totalPeriod) {
+		this.totalPeriod = totalPeriod;
+	}
+
+
+	public Integer getLoanerType() {
+		return loanerType;
+	}
+
+
+	public void setLoanerType(Integer loanerType) {
+		this.loanerType = loanerType;
+	}
+
+
+	public Integer getOverdueTimes() {
+		return overdueTimes;
+	}
+
+
+	public void setOverdueTimes(Integer overdueTimes) {
+		this.overdueTimes = overdueTimes;
+	}
+
+
+	public BigDecimal getOverdueAmount() {
+		return overdueAmount;
+	}
+
+
+	public void setOverdueAmount(BigDecimal overdueAmount) {
+		this.overdueAmount = overdueAmount;
+	}
+
+
+	public List<RepaymentPlan> getRepaymentPlans() {
+		return repaymentPlans;
+	}
+
+
+	public void setRepaymentPlans(List<RepaymentPlan> repaymentPlans) {
+		this.repaymentPlans = repaymentPlans;
+	}
 	
 	
 }

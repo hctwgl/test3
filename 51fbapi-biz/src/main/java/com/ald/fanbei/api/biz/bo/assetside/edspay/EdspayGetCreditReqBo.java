@@ -24,9 +24,21 @@ public class EdspayGetCreditReqBo implements Serializable {
 	 */
 	private Long loanEndTime;
 	/**
+	 * 债权类型，0现金贷，1消费分期
+	 */
+	private Integer debtType;
+	/**
 	 * 如果为空则按照金额分配债权
 	 */
 	private EdspayCreditDetailInfo creditDetails;
+
+	public Integer getDebtType() {
+		return debtType;
+	}
+
+	public void setDebtType(Integer debtType) {
+		this.debtType = debtType;
+	}
 
 	public BigDecimal getMoney() {
 		return money;

@@ -14,7 +14,15 @@ import java.math.BigDecimal;
  */
  public class AfAssetPackageDo extends AbstractSerial {
 
-    private static final long serialVersionUID = 1L;
+    public Integer getBusiType() {
+		return busiType;
+	}
+
+	public void setBusiType(Integer busiType) {
+		this.busiType = busiType;
+	}
+
+	private static final long serialVersionUID = 1L;
 
     /**
      * 主键Rid
@@ -131,6 +139,11 @@ import java.math.BigDecimal;
      * 备注，记录当前发送邮箱地址及资产方诉求等信息
      */
     private String remark;
+    
+    /**
+     * 业务类型 【0：现金贷，1：消费分期】
+     */
+    private Integer busiType;
 
 
     /**

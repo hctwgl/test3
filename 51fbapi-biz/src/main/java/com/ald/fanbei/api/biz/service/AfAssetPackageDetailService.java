@@ -34,7 +34,7 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	int giveBackCreditInfo(AfAssetSideInfoDo afAssetSideInfoDo,String orderNo);
 	
 	/**
-	 * 根据资产方要求,获取资产方对应的债权信息
+	 * 根据资产方要求,获取资产方对应的现金贷债权信息
 	 * @param edspayGetCreditReqBo
 	 * @return
 	 */
@@ -47,5 +47,12 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	 * @return
 	 */
 	List<EdspayGetPlatUserInfoRespBo> getBatchPlatUserInfo(AfAssetSideInfoDo afAssetSideInfoDo, List<String> orderNos);
+
+	/**
+	 * 根据资产方要求,获取资产方对应的消费分期债权信息
+	 * @param edspayGetCreditReqBo
+	 * @return
+	 */
+	List<EdspayGetCreditRespBo> getBorrowBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo, BigDecimal money,Date startTime, Date endTime);
 
 }
