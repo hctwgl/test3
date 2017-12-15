@@ -56,4 +56,10 @@ public class AfShopServiceImpl implements AfShopService {
 		return afShopDao.getShopInfoBySecTypeOpen(afShopDo);
 	}
 
+	@Override
+	public Long getWaiMainShopId() {
+		
+		return afShopDao.getWaiMainShopId();
+	}
+
 }

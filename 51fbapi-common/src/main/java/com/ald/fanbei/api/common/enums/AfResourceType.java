@@ -27,7 +27,7 @@ public enum AfResourceType {
 	HomeNavigationUpOne("HOME_NAVIGATION_UP","快捷导航上方活动专场"),
 	HomeNavigationDownTwo("HOME_NAVIGATION_DOWN","快捷导航下方活动专场"),
 	NewHomeCarouseToMany("NEW_HOME_CAROUSEL_TO_MANY","显示双十一东西"),
-
+	LimitedPurchaseBanner("LIMITED_PURCHASE_BANNER","限时抢购顶部轮播"),
 	HomeActivity("HOME_ACTIVITY", "活动模块"),
 	
 	CodeMaxFail("CODE_MAX_FAIL", "验证码失败次数"),
@@ -103,6 +103,7 @@ public enum AfResourceType {
 	HIGH_LIGHT_TIME("HIGH_LIGHT_TIME","高亮显示时间"),
 	IS_USE_IMG("IS_USE_IMG","底部菜单栏是否使用图片"),
 	YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询配置"),
+	RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
 
 	//资产方相关配置
 	ASSET_SIDE_CONFIG("ASSET_SIDE_CONFIG","资产方相关配置"),

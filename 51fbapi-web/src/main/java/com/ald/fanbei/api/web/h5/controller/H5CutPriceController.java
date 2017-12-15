@@ -449,7 +449,9 @@ public class H5CutPriceController extends H5Controller {
 				String nickName = request.getParameter("nickName");
 				String headImagUrl = request.getParameter("headImgUrl");
 				
-				String loggerStr = String.format("/activityH5/de/cutPrice params: userName = {} goodsPriceId = {} openId = {} nickName = {} headImgUrl = {}",userName,goodsPriceIdStr,openId,nickName,headImagUrl);
+				logger.info("/activityH5/de/cutPrice params: userName = {} goodsPriceId = {} openId = {} nickName = {} headImgUrl = {}",new Object[]{userName,goodsPriceIdStr,openId,nickName,headImagUrl});
+				
+				String loggerStr = String.format("/activityH5/de/cutPrice params: userName = %s goodsPriceId = %s openId = %s nickName = %s headImgUrl = %s",userName,goodsPriceIdStr,openId,nickName,headImagUrl);
 				
 				logger.info(loggerStr);
 				

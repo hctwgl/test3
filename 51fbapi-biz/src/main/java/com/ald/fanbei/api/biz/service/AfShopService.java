@@ -23,4 +23,6 @@ public interface AfShopService {
 	AfShopDo getShopInfoBySecType(AfShopDo afShopDo);
 
 	AfShopDo getShopInfoBySecTypeOpen(AfShopDo afShopDo);
+
+	Long getWaiMainShopId();
 }

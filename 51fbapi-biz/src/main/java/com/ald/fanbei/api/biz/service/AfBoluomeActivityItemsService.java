@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
  */
 public interface AfBoluomeActivityItemsService extends ParentService<AfBoluomeActivityItemsDo, Long>{
 
+    AfBoluomeActivityItemsDo getItemsInfoByOrderId(long orderId);
+
 }

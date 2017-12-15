@@ -33,4 +33,6 @@ public interface AfShopDao {
 
 	AfShopDo getShopInfoBySecType(AfShopDo afShopDo);
 	AfShopDo getShopInfoBySecTypeOpen(AfShopDo afShopDo);
+
+	Long getWaiMainShopId();
 }

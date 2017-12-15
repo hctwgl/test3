@@ -77,14 +77,14 @@ public class GetHomeGoodsListApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
 
-		Iterator<Object> it = array.iterator();
-		while (it.hasNext()) {
-			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-				it.remove();
-				break;
-			}
-		}
+//		Iterator<Object> it = array.iterator();
+//		while (it.hasNext()) {
+//			JSONObject json = (JSONObject) it.next();
+//			if (json.getString(Constants.DEFAULT_NPER).equals("2")) { //mark
+//				it.remove();
+//				break;
+//			}
+//		}
 		for (AfGoodsDo goodsDo : goodsDoList) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			goodsInfo.put("goodName", goodsDo.getName());
