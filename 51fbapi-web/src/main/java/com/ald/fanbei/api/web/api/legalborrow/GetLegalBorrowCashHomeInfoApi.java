@@ -300,7 +300,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			// 计算总的还款金额，包括商品借款金额 
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
 					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),
-					afBorrowCashDo.getPoundage(), afBorrowCash.getSumRenewalPoundage());
+					afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
 			// 查询借款相关商品借款,计算总还款金额
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
 					.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
