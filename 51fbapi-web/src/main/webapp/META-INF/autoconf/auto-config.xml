@@ -128,7 +128,7 @@
 		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
 		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
 
-		<property name="fbapi.orderFinish.key" defaultValue="51fanbeiOrder" description="订单自动确认收货" />
+		<property name="fbapi.orderfinish.key" defaultValue="51fanbeiOrderV" />
 	</group>
 
 	<script>
