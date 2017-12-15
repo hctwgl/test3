@@ -217,11 +217,12 @@ $(function () {
 
     maidianFun('enter');
 
-    
+
     // ---------------------------end
 
     // 完成注册提交
     $(".loginbtn").click(function () {
+        maidianFun('registerBtn')
         var smsCode = $(".check").val(); //获取短信
         var registerMoblie = $(".mobile").val(); //获取手机号
         var password = $("#password").val(); //获取密码
@@ -249,7 +250,7 @@ $(function () {
                 },
                 success: function (returnData) {
                     console.log(returnData);
-                    var a = JSON.parse(returnData);
+                    var a = returnData;
                     console.log(a);
                     if (a.success) {
                         maidianFun("registerSuccess");
@@ -260,7 +261,7 @@ $(function () {
                         }, 1500);
 
                     } else if (a.url == "Register") {
-                        maidianFnNew("registerFail",a.msg);
+                        maidianFnNew("registerFail", a.msg);
                         requestMsg(a.msg);
                     }
                 },
@@ -295,4 +296,9 @@ function getUrlParam(url) {
     return param;
 }
 
+
+function toLogin() {
+    maidianFun('toLogin')
+    location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www'
+}
 

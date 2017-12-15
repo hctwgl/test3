@@ -28,13 +28,13 @@ let vm = new Vue({
         secondKillData: '',
         loadFlag: [false, false, false], //加载flag
     },
-    created: function() {
+    created: function () {
         this.isAppFn();
         this.maidian("enter=true");
     },
     watch: {
         loadFlag() {
-            if (this.loadFlag[0] && this.loadFlag[1]  && this.loadFlag[2] ) {
+            if (this.loadFlag[0] && this.loadFlag[1] && this.loadFlag[2]) {
                 this.$nextTick(() => {
                     setTimeout(() => {
                         $('#tabBox').pin({
@@ -64,7 +64,7 @@ let vm = new Vue({
             this.nowkey2 = i
             this.changeGoodsData(this.nowkey, i)
         },
-        isAppFn: function() {
+        isAppFn: function () {
             let isAppParam = getUrl('spread');
             if (isAppParam != 'app') {
                 this.isApp = false;
@@ -73,7 +73,7 @@ let vm = new Vue({
             }
             this.logData();
         },
-        logData: function() { // get 初始化 信息
+        logData: function () { // get 初始化 信息
             let self = this;
             // 获取优惠券信息
             // var flag1,flag2.flag3 = false,false,false;
@@ -84,7 +84,7 @@ let vm = new Vue({
                 data: {
                     groupId: groupId
                 },
-                success: function(data) {
+                success: function (data) {
                     $(".loadingMask").fadeOut();
                     if (!data.success) {
                         if (data.data != '') {
@@ -96,10 +96,10 @@ let vm = new Vue({
                     }
                     self.couponData = data.data.couponList;
                 },
-                error: function() {
+                error: function () {
                     requestMsg("哎呀，出错了！");
                 },
-                complete: function() {
+                complete: function () {
                     self.$set(self.loadFlag, 0, 'true');
                 }
             });
@@ -108,7 +108,7 @@ let vm = new Vue({
                 url: self.goodUrl,
                 type: 'POST',
                 dataType: 'json',
-                success: function(data) {
+                success: function (data) {
                     if (!data.success) {
                         requestMsg("哎呀，获取商品信息出错了！");
                         return false;
@@ -117,7 +117,7 @@ let vm = new Vue({
                     self.secondKillData = data.data.goodsList;
                     self.nowTime = data.data.serviceDate;
                     var d1 = new Date(parseInt(self.nowTime)).toLocaleString();
-                    d1 = d1.replace(new RegExp(/-/gm) ,"/");
+                    d1 = d1.replace(new RegExp(/-/gm), "/");
                     var arr1 = d1.split(" ");
                     var arr2 = arr1[0].split("/");
                     var nowDate = new Date(arr1[0]).getTime();
@@ -126,7 +126,7 @@ let vm = new Vue({
                     for (var i = 0; i < self.secondKillData.length; i++) {
                         var t = self.secondKillData[i].startTime;
                         var date = new Date(parseInt(t)).toLocaleString();
-                        date = date.replace(new RegExp(/-/gm) ,"/");// 兼容iOS系统
+                        date = date.replace(new RegExp(/-/gm), "/"); // 兼容iOS系统
                         var arr1 = date.split(" ");
                         var arr2 = arr1[0].split("/");
                         var d = arr2[1] + "月" + arr2[2] + "日";
@@ -168,10 +168,10 @@ let vm = new Vue({
                         self.countDown(self.triangleFlag);
                     }
                 },
-                error: function() {
+                error: function () {
                     requestMsg("哎呀，出错了！");
                 },
-                complete: function() {
+                complete: function () {
                     self.$set(self.loadFlag, 1, 'true');
                 }
             });
@@ -180,7 +180,7 @@ let vm = new Vue({
                 url: "/appH5DoubleEggs/initOnsaleGoods",
                 type: 'POST',
                 dataType: 'json',
-                success: function(data) {
+                success: function (data) {
                     if (!data.success) {
                         requestMsg("哎呀，获取品牌出错了！");
                         return false;
@@ -193,16 +193,16 @@ let vm = new Vue({
 
 
                 },
-                error: function() {
+                error: function () {
                     requestMsg("哎呀，出错了！");
                 },
-                complete: function() {
+                complete: function () {
                     self.$set(self.loadFlag, 2, 'true');
                 }
             });
 
         },
-        initGoodsData: function() {
+        initGoodsData: function () {
             let self = this;
             let data = self.brandList;
             self.goodsData = new Array(data.length);
@@ -211,7 +211,7 @@ let vm = new Vue({
             }
             self.goodsData[0][0] = self.currentGood;
         },
-        changeGoodsData: function(a, b) { // 点击品牌分类
+        changeGoodsData: function (a, b) { // 点击品牌分类
             let d = this.goodsData[a][b];
             if (d == undefined) {
                 var a = this.brandList[a].secondCategoryList[b];
@@ -222,7 +222,7 @@ let vm = new Vue({
                 this.currentGood = this.goodsData[a][b];
             }
         },
-        getGoodsData: function(brandId, a, b) {
+        getGoodsData: function (brandId, a, b) {
             let self = this;
             // 获取单个品牌数据
             $.ajax({
@@ -232,7 +232,7 @@ let vm = new Vue({
                 data: {
                     secondCategoryId: brandId
                 },
-                success: function(data) {
+                success: function (data) {
                     if (!data.success) {
                         requestMsg("哎呀，获取品牌出错了！");
                         return false;
@@ -240,16 +240,16 @@ let vm = new Vue({
                     self.goodsData[self.nowkey][self.nowkey2] = data.data.goodsList
                     self.currentGood = data.data.goodsList;
                 },
-                error: function() {
+                error: function () {
                     requestMsg("哎呀，出错了！");
                 }
             });
         },
-        countDown: function(num) { // 倒计时
+        countDown: function (num) { // 倒计时
             let self = this;
             let data = self.secondKillData[num];
             console.log("time=", data)
-            let timer = setInterval(function() {
+            let timer = setInterval(function () {
                 self.nowTime += 1000;
                 if (self.nowTime >= data.startTime) {
                     for (var i = 0; i < data.goodsListForDate.length; i++) {
@@ -261,7 +261,7 @@ let vm = new Vue({
             }, 1000);
         },
         /*点击优惠券*/
-        couponClick: function(item, index) {
+        couponClick: function (item, index) {
             let self = this;
             let couponId = item.id;
             if (!self.isApp) {
@@ -289,7 +289,7 @@ let vm = new Vue({
                 data: {
                     couponId: couponId
                 },
-                success: function(returnData) {
+                success: function (returnData) {
                     if (returnData.success) {
                         requestMsg("优惠劵领取成功");
                         self.$set(self.couponData[index], 'isGet', 'Y');
@@ -314,12 +314,12 @@ let vm = new Vue({
                         }
                     }
                 },
-                error: function() {
+                error: function () {
                     requestMsg("哎呀，出错了！");
                 }
             });
         },
-        productFn: function(item, index) {
+        productFn: function (item, index) {
             // this.maidian("productId=" + id);
             // status   0:“立即预约“；1：”已预约“；2：”去秒杀“3：”已秒杀“
             // type   0: 已结束  1：进行中   2：即将开始
@@ -339,7 +339,7 @@ let vm = new Vue({
                         return false;
                     }
                     // 跳转秒杀页秒杀
-                    this.maidian("secKillGoodId="+ item.doubleGoodsId);
+                    this.maidian("secKillGoodId=" + item.doubleGoodsId);
                     window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + item.doubleGoodsId + '"}';
                     // this.buy(item.doubleGoodsId);
                 } else {
@@ -354,7 +354,7 @@ let vm = new Vue({
             }
 
         },
-        bookFn: function(item, index) {
+        bookFn: function (item, index) {
             this.maidian("bookBtn=click")
             let self = this;
             $.ajax({
@@ -364,7 +364,7 @@ let vm = new Vue({
                 data: {
                     goodsId: item.doubleGoodsId
                 },
-                success: function(data) {
+                success: function (data) {
                     if (!data.success) {
                         if (data.data.loginUrl) {
                             location.href = data.data.loginUrl;
@@ -377,13 +377,13 @@ let vm = new Vue({
                     self.secondKillData[self.triangleFlag].goodsListForDate[index].status = 1;
                     self.maidian("bookBtn=success")
                 },
-                error: function() {
+                error: function () {
                     requestMsg("哎呀，出错了！");
                 }
             });
         },
-        buy: function(id) {
-            this.maidian("clickProductId="+id)
+        buy: function (id) {
+            this.maidian("clickProductId=" + id)
             if (this.isApp) {
                 // 跳转原生app商品购买页
                 window.location.href = '/fanbei-web/opennative?name=GOODS_DETAIL_INFO&params={"privateGoodsId":"' + id + '"}';
@@ -401,26 +401,26 @@ let vm = new Vue({
                     maidianInfo: '/fanbei-web/activity/doubleEgg?userName=' + userName + "&" + data,
                     maidianInfo1: spread
                 },
-                success: function(data) {
+                success: function (data) {
                     console.log(data)
                 }
             });
         },
-        changeProduct: function(key) {
+        changeProduct: function (key) {
             this.currentData = this.secondKillData[key];
             this.triangleFlag = key;
             $(".product-box").scrollLeft(0);
         },
-        showMore: function() {
+        showMore: function () {
             this.tabFlag = true;
         },
-        closeMore: function() {
+        closeMore: function () {
             this.tabFlag = false;
         },
-        toRegister: function() {
+        toRegister: function () {
             location.href = "doubleEggRegister.html?spread=" + spread;
         },
-        initScroll: function() {
+        initScroll: function () {
             let t = sessionStorage.getItem('goodType');
             if (t != null) {
                 this.nowkey = t;
@@ -442,8 +442,8 @@ function alaShareData() {
         "type": "share", // 此页面的类型
         "shareAppTitle": "元旦狂欢盛宴 畅想欢乐购", // 分享的title
         'shareAppContent': "抢神券红包雨 1212元秒杀iPhone X，X任性到底，欢乐购不停~", // 分享的内容
-        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/12/double12_share.png", // 分享右边小图
-        "shareAppUrl": domainName + "/fanbei-web/activity/doubleEgg?groupId=" + groupId + "&spread=2", // 分享后的链接
+        "shareAppImage": "http://f.51fanbei.com/h5/app/activity/12/doubleEgg_shareIcon.png", // 分享右边小图
+        "shareAppUrl": domainName + "/fanbei-web/activity/doubleEgg.html?groupId=" + groupId + "&spread=2&javaUrl=testapp.51fanbei.com&port=443", // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "doubleEgg" // 分享的页面
     };
@@ -455,15 +455,15 @@ function alaShareData() {
 var shareInfo = {
     title: "元旦狂欢盛宴 畅想欢乐购",
     desc: "抢神券红包雨 1212元秒杀iPhone X，元旦任性到底，欢乐购不停~",
-    link: domainName + "/fanbei-web/activity/doubleEgg?groupId=" + groupId + "&spread=" + spread,
-    imgUrl: "http://f.51fanbei.com/h5/app/activity/12/double12_share.png",
-    success: function() {
+    link: domainName + "/fanbei-web/activity/doubleEgg.html?groupId=" + groupId + "&spread=" + spread + "&javaUrl=testapp.51fanbei.com&port=443",
+    imgUrl: "http://f.51fanbei.com/h5/app/activity/12/doubleEgg_shareIcons.png",
+    success: function () {
         alert("分享成功！");
     },
-    error: function() {
+    error: function () {
         alert("分享失败！");
     },
-    cancel: function(res) {
+    cancel: function (res) {
         // 用户取消分享后执行的回调函数
         alert("取消分享！");
     }
