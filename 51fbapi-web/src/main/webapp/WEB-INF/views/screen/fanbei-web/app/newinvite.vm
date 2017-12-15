@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  #set($version="201712071017")
+  #set($version="201712151641")
   #set($commonUrl="http://f.51fanbei.com/h5")
     <meta charset="UTF-8">
     <title>邀请好友拿奖励</title>
@@ -35,7 +35,7 @@
     <div class="specialPrize">
         <p class="specialPrizeTitle">特惠奖励 每成功邀请1人得<span></span></p>
         <p class="specialCoupon"><span></span></p>
-        <a class="goFixPage" href="../activity/ggFix">去活动现场看看></a>
+        <a class="goFixPage" href="../activity/ggFix?addUiName=SHOWSHARE&typeFrom=appNewInvite">去活动现场看看></a>
         <p class="limitRule"></p>
         <p class="exampleRule"></p>
     </div>
