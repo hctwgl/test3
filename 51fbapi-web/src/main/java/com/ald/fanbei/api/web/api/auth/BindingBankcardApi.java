@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.security.MessageDigest;
 import java.util.Date;
 
 /**
@@ -113,12 +114,22 @@ public class BindingBankcardApi implements ApiHandle {
 		afUserBankDidiRiskService.saveRecord(didiInfo);
 		//新版本绑定银行卡是可以设置支付密码
 		String oldPassword = ObjectUtils.toString(requestDataVo.getParams().get("password"),null);
-		if(context.getAppVersion()>397){
+		if( 396 < context.getAppVersion() && context.getAppVersion() <402){
 			if(null != oldPassword){
 				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-				String password = Base64.decodeToString(oldPassword);
+				oldPassword = md5(oldPassword);
 				String salt = UserUtil.getSalt();
-				String newPwd = UserUtil.getPassword(password, salt);
+				String newPwd = UserUtil.getPassword(oldPassword, salt);
+				afUserAccountDo.setUserId(context.getUserId());
+				afUserAccountDo.setSalt(salt);
+				afUserAccountDo.setPassword(newPwd);
+				afUserAccountService.updateUserAccount(afUserAccountDo);
+			}
+		}else {
+			if(null != oldPassword){
+				AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+				String salt = UserUtil.getSalt();
+				String newPwd = UserUtil.getPassword(oldPassword, salt);
 				afUserAccountDo.setUserId(context.getUserId());
 				afUserAccountDo.setSalt(salt);
 				afUserAccountDo.setPassword(newPwd);
@@ -132,6 +143,25 @@ public class BindingBankcardApi implements ApiHandle {
 		}
 		resp.addResponseData("allowPayPwd", allowPayPwd);
 		return resp;
+	}
+
+	public static String md5(String source) {
+
+		StringBuffer sb = new StringBuffer(32);
+
+		try {
+			MessageDigest md    = MessageDigest.getInstance("MD5");
+			byte[] array        = md.digest(source.getBytes("utf-8"));
+
+			for (int i = 0; i < array.length; i++) {
+				sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+			}
+		} catch (Exception e) {
+			logger.error("Can not encode the string '" + source + "' to MD5!", e);
+			return null;
+		}
+
+		return sb.toString();
 	}
 
 }
