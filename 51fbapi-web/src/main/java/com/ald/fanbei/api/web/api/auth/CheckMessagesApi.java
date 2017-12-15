@@ -106,8 +106,7 @@ public class CheckMessagesApi implements ApiHandle {
 			authDo.setRealnameStatus(YesNoStatus.YES.getCode());
 			authDo.setGmtRealname(new Date());
 			afUserAuthService.updateUserAuth(authDo);
-			resp.addResponseData("realNameStatus", YesNoStatus.YES.getCode());
-			resp.addResponseData("realNameScore", 0);
+
 			//触发邀请人获得奖励规则
 			AfUserDo userDo = afUserService.getUserById(context.getUserId());
 			if(userDo.getRecommendId() > 0l){
@@ -137,7 +136,7 @@ public class CheckMessagesApi implements ApiHandle {
 		if(null != account.getPassword() && !StringUtil.equals("", account.getPassword())){
 			allowPayPwd = YesNoStatus.NO.getCode();
 		}
-		resp.addResponseData("allowPayPwd", allowPayPwd);
+
 		return resp;
 	}
 
