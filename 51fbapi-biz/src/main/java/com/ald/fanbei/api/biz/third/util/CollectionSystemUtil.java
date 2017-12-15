@@ -87,7 +87,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	 *            --利息
 	 * @return
 	 */
-	public CollectionSystemReqRespBo consumerRepayment(String repayNo, String borrowNo, String cardNumber, String cardName, String repayTime, String tradeNo, BigDecimal amount, BigDecimal restAmount, BigDecimal repayAmount, BigDecimal overdueAmount, BigDecimal repayAmountSum, BigDecimal rateAmount) {
+	public CollectionSystemReqRespBo consumerRepayment(String repayNo, String borrowNo, String cardNumber,
+			String cardName, String repayTime, String tradeNo, BigDecimal amount, BigDecimal restAmount,
+			BigDecimal repayAmount, BigDecimal overdueAmount, BigDecimal repayAmountSum, BigDecimal rateAmount) {
 		CollectionDataBo data = new CollectionDataBo();
 		Map<String, String> reqBo = new HashMap<String, String>();
 		reqBo.put("repay_no", repayNo);
@@ -95,7 +97,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		reqBo.put("card_number", cardNumber);
 		reqBo.put("card_name", cardName);
 		reqBo.put("repay_time", repayTime);
-		if(StringUtil.isEmpty(tradeNo)){
+		if (StringUtil.isEmpty(tradeNo)) {
 			tradeNo = repayNo;
 		}
 		reqBo.put("trade_no", tradeNo);
@@ -105,18 +107,19 @@ public class CollectionSystemUtil extends AbstractThird {
 		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-		
+
 		String json = JsonUtil.toJSONString(reqBo);
 		data.setData(json);// 数据集合
 		data.setSign(DigestUtil.MD5(json));
 		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
-		//APP还款类型写3 , 线下还款写4
+		// APP还款类型写3 , 线下还款写4
 		data.setChannel(AfRepayCollectionType.APP.getCode());
 		try {
-			logger.info("repaymentAchieve request :",JSON.toJSONString(data));
-			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(data));
-			logger.info("repaymentAchieve response :",reqResult);
+			logger.info("repaymentAchieve request :", JSON.toJSONString(data));
+			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
+					getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(data));
+			logger.info("repaymentAchieve response :", reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("consumerRepayment fail , reqResult is null");
 			} else {
@@ -127,14 +130,17 @@ public class CollectionSystemUtil extends AbstractThird {
 			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
 				return respInfo;
 			} else {
-				throw new FanbeiException("consumerRepayment fail , respInfo info is " + JSONObject.toJSONString(respInfo));
+				throw new FanbeiException(
+						"consumerRepayment fail , respInfo info is " + JSONObject.toJSONString(respInfo));
 			}
 		} catch (Exception e) {
-			logger.error("consumerRepayment error:",e);
-			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json, getUrl() + "/api/getway/repayment/repaymentAchieve");
+			logger.error("consumerRepayment error:", e);
+			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json,
+					getUrl() + "/api/getway/repayment/repaymentAchieve");
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
+
 	/**
 	 * 将map转换成url
 	 *
@@ -168,8 +174,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	 *            续借期数
 	 * @return
 	 * 
-	 * **/
-	public CollectionSystemReqRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum, String renewalAmount) {
+	 **/
+	public CollectionSystemReqRespBo renewalNotify(String borrowNo, String renewalNo, Integer renewalNum,
+			String renewalAmount) {
 
 		CollectionDataBo data = new CollectionDataBo();
 		Map<String, String> reqBo = new HashMap<String, String>();
@@ -184,9 +191,10 @@ public class CollectionSystemUtil extends AbstractThird {
 		String timestamp = DateUtil.getDateTimeFullAll(new Date());
 		data.setTimestamp(timestamp);
 		try {
-			logger.info("renewalNotify request :",data);
-			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getUrl() + "/api/getway/repayment/renewalAchieve",  getUrlParamsByMap(data));
-			logger.info("renewalNotify response :",reqResult);
+			logger.info("renewalNotify request :", data);
+			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
+					getUrl() + "/api/getway/repayment/renewalAchieve", getUrlParamsByMap(data));
+			logger.info("renewalNotify response :", reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("renewalNotify fail , reqResult is null");
 			} else {
@@ -199,7 +207,8 @@ public class CollectionSystemUtil extends AbstractThird {
 				throw new FanbeiException("renewalNotify fail , respInfo info is " + JSONObject.toJSONString(respInfo));
 			}
 		} catch (Exception e) {
-			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_RENEWAL.getCode(), borrowNo, json, getUrl() + "/api/getway/repayment/renewalAchieve");
+			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_RENEWAL.getCode(), borrowNo, json,
+					getUrl() + "/api/getway/repayment/renewalAchieve");
 			throw new FanbeiException("renewalNotify fail Exception is " + e + ",renewalNotify send again");
 		}
 
@@ -225,25 +234,38 @@ public class CollectionSystemUtil extends AbstractThird {
 				String isBalance = obj.getString("is_balance");
 
 				// 参数校验
-				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance)) {
+				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo,
+						isBalance)) {
 
-					//还款金额校验
+					// 还款金额校验
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
-					AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(afBorrowCashDo.getRid(), tradeNo);
-					if(existItem!=null){
+					AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService
+							.getRepaymentBorrowCashByTradeNo(afBorrowCashDo.getRid(), tradeNo);
+					if (existItem != null) {
 						logger.error("offlineRepaymentNotify exist trade_no");
 						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.COLLECTION_THIRD_NO_EXIST);
 						return notifyRespBo;
 					}
-			        BigDecimal amount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getRateAmount() ,afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
-			        //因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
-			        if(NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO).compareTo(amount.add(BigDecimal.valueOf(10))) > 0) {
-			            logger.info("offlineRepaymentNotify is fail,borrowCashId= "+afBorrowCashDo.getRid()+",reqInfo="+StringUtil.appendStrs(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance));
-			            notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.FAILED);
-			            return notifyRespBo;
-			        }
+					// FIXME  应还金额
+					BigDecimal amount = BigDecimalUtil.add(afBorrowCashDo.getAmount(),
+							afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(),
+							afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate())
+							.subtract(afBorrowCashDo.getRepayAmount());
+					// 因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
+					if (NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO)
+							.compareTo(amount.add(BigDecimal.valueOf(10))) > 0) {
+						logger.info("offlineRepaymentNotify is fail,borrowCashId= " + afBorrowCashDo.getRid()
+								+ ",reqInfo=" + StringUtil.appendStrs(repayNo, borrowNo, repayType, repayTime,
+										repayAmount, restAmount, tradeNo, isBalance));
+						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.FAILED);
+						return notifyRespBo;
+					}
 					// 业务处理
-					String respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo, repayType, repayTime, NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO), NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo, isBalance);
+					String respCode = afRepaymentBorrowCashService.dealOfflineRepaymentSucess(repayNo, borrowNo,
+							repayType, repayTime,
+							NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO),
+							NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo,
+							isBalance);
 					FanbeiThirdRespCode respInfo = FanbeiThirdRespCode.findByCode(respCode);
 					notifyRespBo.resetMsgInfo(respInfo);
 				} else {

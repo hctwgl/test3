@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.third.controller;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +108,8 @@ public class CollectionController {
 			}
 			String sign2=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
+				// FIXME 判断借款是否关联订单
+				
 				map.put("consumer_no", afBorrowCashDo.getUserId()+"");
 				map.put("borrow_id",afBorrowCashDo.getRid()+"");
 				map.put("borrow_no",afBorrowCashDo.getBorrowNo());

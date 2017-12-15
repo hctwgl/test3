@@ -205,6 +205,17 @@ public class AfBorrowLegalOrderDeatilVo extends AbstractSerial{
 	
 	private String goodsIcon;
 
+	private String borrowStatus;
+	
+	
+	public String getBorrowStatus() {
+		return borrowStatus;
+	}
+
+	public void setBorrowStatus(String borrowStatus) {
+		this.borrowStatus = borrowStatus;
+	}
+
 	public Date getGmtModified() {
 		return gmtModified;
 	}
