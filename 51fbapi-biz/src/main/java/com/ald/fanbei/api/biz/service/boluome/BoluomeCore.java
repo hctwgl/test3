@@ -15,6 +15,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 
 public class BoluomeCore extends AbstractThird{
@@ -157,6 +159,19 @@ public class BoluomeCore extends AbstractThird{
     	String sign = (DigestUtil.MD5(signURLEncoder.toUpperCase())).toUpperCase();
     	thirdLog.info("sign = {}", sign);
         return sign;
+    }
+    
+    public static String buildOrderDetailsQueryUrl(Map<String, String> params) throws UnsupportedEncodingException {
+	    String beforeSign = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) 
+		    + BoluomeCore.concatParams(params) + 
+		    AesUtil.decrypt((ConfigProperties.get(Constants.CONFKEY_BOLUOME_SECRET)), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
+	    beforeSign = URLEncoder.encode(beforeSign, "utf-8").toUpperCase();
+	    String sign = DigestUtil.MD5(beforeSign).toUpperCase();
+
+	    params.put("appKey", AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY)) );
+	    params.put(BoluomeCore.SIGN, sign);
+	    String paramsStr = BoluomeCore.createLinkString(params);
+	    return ConfigProperties.get(Constants.CONFKEY_BOLUOME_API_ORDER_URL) + "?" + paramsStr;
     }
     
     /**
