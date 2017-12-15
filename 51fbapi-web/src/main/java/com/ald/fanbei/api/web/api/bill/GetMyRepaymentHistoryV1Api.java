@@ -100,8 +100,32 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				query.setStrDate(strDate);
 				query.setEndDate(endDate);
 				amountList = afUserAmountService.getUserAmountByQuery(query);
-				map.put("amountList", amountList);
+				List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+				Integer strMonth = Integer.parseInt(DateUtil.getMonth(strDate));
+				for (int i = 0; i < 4; i++) {
+					Map<String, Object> timeMap = new HashMap<String, Object>();
+					if (strMonth + i - 12 > 0) {
+						timeMap.put("month", strMonth + i - 12);
+						List<AfUserAmountDo> list2 = new ArrayList<AfUserAmountDo>();
+						timeMap.put("amountList", list2);
+						list.add(timeMap);
+					}else {
+						timeMap.put("month", strMonth + i);
+						List<AfUserAmountDo> list2 = new ArrayList<AfUserAmountDo>();
+						timeMap.put("amountList", list2);
+						list.add(timeMap);
+					}
+				}
+				for (AfUserAmountDo amountDo : amountList) {
+					for (Map<String, Object> map2 : list) {
+						if (StringUtil.equals(map2.get("month").toString(), DateUtil.getMonth(amountDo.getGmtCreate()))) {
+							List<AfUserAmountDo> list2 = (List) map2.get("amountList");
+							list2.add(amountDo);
+						}
+					}
+				}
 				map.put("status", status);
+				map.put("list", list);
 				resp.setResponseData(map);
 				return resp;
 			}
