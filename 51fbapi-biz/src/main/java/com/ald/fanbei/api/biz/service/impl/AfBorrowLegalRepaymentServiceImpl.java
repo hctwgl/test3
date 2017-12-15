@@ -515,6 +515,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	}
 	
 	private void dealBorrowRepayOverdue(RepayDealBo repayDealBo, AfBorrowCashDo afBorrowCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+		
 		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
 		BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount();
 		
@@ -529,20 +531,24 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         }
 	}
 	private void dealBorrowRepayPoundage(RepayDealBo repayDealBo, AfBorrowCashDo afBorrowCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+		
 		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
 		BigDecimal poundageAmount = afBorrowCashDo.getPoundage();
 		
         if (repayAmount.compareTo(poundageAmount) > 0) {
-            afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), poundageAmount));
+            afBorrowCashDo.setSumRenewalPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), poundageAmount));
             afBorrowCashDo.setPoundage(BigDecimal.ZERO);
             repayDealBo.curRepayAmoutStub = repayAmount.subtract(poundageAmount);
         } else {
-            afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), repayAmount));
+            afBorrowCashDo.setSumRenewalPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), repayAmount));
             afBorrowCashDo.setPoundage(poundageAmount.subtract(repayAmount));
             repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
         }
 	}
 	private void dealBorrowRepayInterest(RepayDealBo repayDealBo, AfBorrowCashDo afBorrowCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+		
 		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
 		BigDecimal rateAmount = afBorrowCashDo.getRateAmount();
 		
