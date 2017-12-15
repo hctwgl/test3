@@ -166,8 +166,10 @@ public class RepayDoApi implements ApiHandle {
 		// 检查 用户 是否多还钱
 		BigDecimal shouldRepayAmount = new BigDecimal(0);
 		shouldRepayAmount = BigDecimalUtil.add(orderCashDo.getAmount(), orderCashDo.getInterestAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getOverdueAmount())
-					.subtract(orderCashDo.getRepaidAmount());
-		shouldRepayAmount = BigDecimalUtil.add(shouldRepayAmount, cashDo.getAmount(), cashDo.getSumOverdue(), cashDo.getOverdueAmount(), cashDo.getRateAmount(), cashDo.getSumRate(), cashDo.getPoundage())
+						.subtract(orderCashDo.getRepaidAmount());
+		shouldRepayAmount = BigDecimalUtil.add(shouldRepayAmount, cashDo.getAmount(), 
+					cashDo.getSumOverdue(), cashDo.getOverdueAmount(), cashDo.getRateAmount(), 
+					cashDo.getSumRate(), cashDo.getPoundage(), cashDo.getSumRenewalPoundage())
 						.subtract(cashDo.getRepayAmount());
 		if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
