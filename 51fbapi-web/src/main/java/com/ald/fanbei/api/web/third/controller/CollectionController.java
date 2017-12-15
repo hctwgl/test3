@@ -225,6 +225,8 @@ public class CollectionController {
 			if (StringUtil.equals(sign, sign1)) {	// 验签成功
 				if(afBorrowCashDo.getRepayAmount().compareTo(afBorrowCashDo.getAmount()) >= 0){
 					//平账
+					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
+					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getAmount()));
 					afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 					borrowCashService.updateBalancedDate(afBorrowCashDo);
 					logger.info("repayAmount>=amount Balanced is success,borrowNo="+borrowNo+",repayAmount="+afBorrowCashDo.getRepayAmount()+",amount="+afBorrowCashDo.getAmount());
