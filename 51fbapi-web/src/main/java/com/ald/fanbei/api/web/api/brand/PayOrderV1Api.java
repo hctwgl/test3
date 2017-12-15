@@ -127,6 +127,13 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
 
+        if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())){
+            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
+                if(afResourceDo!=null&&afResourceDo.getValue().contains(orderInfo.getGoodsName()) ){
+                    logger.error("filter shop : "+orderInfo.getGoodsName());
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+                }
+        }
         //双十一砍价添加
         if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
             AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
