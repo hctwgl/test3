@@ -56,8 +56,8 @@ public class GetRepaymentCalendarV1Api implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		try {
 			Long userId = context.getUserId();
-			String year = ObjectUtils.toString(request.getParameter("year"));
-			String status = ObjectUtils.toString(request.getParameter("status"));
+			String year = ObjectUtils.toString(requestDataVo.getParams().get("year"));
+			String status = ObjectUtils.toString(requestDataVo.getParams().get("status"));
 			if (year == null) {
 				year = DateUtil.getYear(new Date());
 			}

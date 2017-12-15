@@ -48,11 +48,11 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		try {
 			Long userId = context.getUserId();
-			String month = ObjectUtils.toString(request.getParameter("month"));
-			String year = ObjectUtils.toString(request.getParameter("year"));
-			String status = ObjectUtils.toString(request.getParameter("status"));
+			String month = ObjectUtils.toString(requestDataVo.getParams().get("month"));
+			String year = ObjectUtils.toString(requestDataVo.getParams().get("year"));
+			String status = ObjectUtils.toString(requestDataVo.getParams().get("status"));
 			// 记录上翻或者下翻
-			String operation = ObjectUtils.toString(request.getParameter("operation"));
+			String operation = ObjectUtils.toString(requestDataVo.getParams().get("operation"));
 			Date nowDate = new Date();
 			if (month == null && year == null){
 				month = DateUtil.getMonth(nowDate);
@@ -60,6 +60,11 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			}
 			if (month == null || year == null) {
 				logger.error("getMyRepaymentHistoryV1Api month or year is null ,RequestDataVo id =" + requestDataVo.getId());
+				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+				return resp;
+			}
+			if (StringUtil.isEmpty(status)) {
+				logger.error("getMyRepaymentHistoryV1Api status is null ,RequestDataVo id =" + requestDataVo.getId());
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.REQUEST_PARAM_ERROR);
 				return resp;
 			}
@@ -75,10 +80,14 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			Date strDate = new Date();
 			Date endDate = new Date();
 			List<AfUserAmountDo> amountList = new ArrayList<AfUserAmountDo>();
-			if (StringUtil.isEmpty(status)) {
+			if (StringUtil.equals(status, "repayment")) {
+				query.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
+			}else {
+				query.setBizType(AfUserAmountBizType.REFUND.getCode());
+			}
+			if (StringUtil.isEmpty(operation)) {
 				// 初始化页面
 				// 查询用户最后一条还款记录
-				query.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
 				List<AfUserAmountDo> queryList = afUserAmountService.getUserAmountByQuery(query);
 				if(queryList == null || queryList.size() < 1) {
 					resp.setResponseData(map);
@@ -92,7 +101,7 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				query.setEndDate(endDate);
 				amountList = afUserAmountService.getUserAmountByQuery(query);
 				map.put("amountList", amountList);
-				map.put("status", "repayment");
+				map.put("status", status);
 				resp.setResponseData(map);
 				return resp;
 			}
@@ -100,6 +109,7 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			if (StringUtil.equals("top", operation)) {
 				// 上翻 
 				endDate = DateUtil.parseDate(year+month, DateUtil.MONTH_SHOT_PATTERN);
+				endDate = DateUtil.addMonths(endDate, 1);
 				strDate = DateUtil.addMonths(endDate, -4);
 			}else {
 				// 下翻 bottom
@@ -108,11 +118,6 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			}
 			query.setStrDate(strDate);
 			query.setEndDate(endDate);
-			if (StringUtil.equals("repayment", status)) {
-				query.setBizType(AfUserAmountBizType.REPAYMENT.getCode());
-			}else {
-				query.setBizType(AfUserAmountBizType.REFUND.getCode());
-			}
 			amountList = afUserAmountService.getUserAmountByQuery(query);
 			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 			Integer strMonth = Integer.parseInt(DateUtil.getMonth(strDate));
