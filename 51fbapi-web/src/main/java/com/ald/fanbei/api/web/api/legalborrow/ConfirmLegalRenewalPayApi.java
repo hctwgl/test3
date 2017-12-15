@@ -234,30 +234,30 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		if(afBorrowLegalOrderCash==null){
     			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
     		}
-    		//上期总手续费
-    		BigDecimal poundage = BigDecimal.ZERO;
+
     		//上期借款手续费
-    		BigDecimal borrowPoundage = BigDecimal.ZERO;
+    		BigDecimal borrowPoundage = afBorrowCashDo.getPoundage();
     		//上期订单手续费
     		BigDecimal orderPoundage = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getPoundageAmount(),BigDecimal.ZERO);
     		//上期借款利息
-    		BigDecimal borrowRateAmount = BigDecimal.ZERO;
+    		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
     		//上期订单利息
     		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
-    		BigDecimal oneYeayDays = new BigDecimal(Constants.ONE_YEAY_DAYS);
     		
-    		if(afBorrowCashDo.getRenewalNum()>0){
-    			//续借过
-    			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
-    			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
-    			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
-    			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360
-    			borrowRateAmount = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
-    		}else {
-    			//未续借过
-    			borrowPoundage = afBorrowCashDo.getPoundage();
-    			borrowRateAmount = afBorrowCashDo.getRateAmount();
-    		}
+//    		BigDecimal oneYeayDays = new BigDecimal(Constants.ONE_YEAY_DAYS);
+//    		
+//    		if(afBorrowCashDo.getRenewalNum()>0){
+//    			//续借过
+//    			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+//    			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
+//    			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
+//    			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360
+//    			borrowRateAmount = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newRate).divide(oneYeayDays).setScale(2, RoundingMode.HALF_UP);
+//    		}else {
+//    			//未续借过
+//    			borrowPoundage = afBorrowCashDo.getPoundage();
+//    			borrowRateAmount = afBorrowCashDo.getRateAmount();
+//    		}
     		
     		// 本金（总） 
     		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),
@@ -285,7 +285,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
     		
     		
-    		//根据订单已还金额大小，重置： 订单的逾期费、手续费、利率费、订单本金
+/*    		//根据订单已还金额大小，重置： 订单的逾期费、手续费、利率费、订单本金
     		if(orderRepayAmount.compareTo(BigDecimalUtil.add(orderOverdueAmount,orderPoundage,orderRateAmount))>=0){
     			orderOverdueAmount = BigDecimal.ZERO;
     			orderPoundage = BigDecimal.ZERO;
@@ -325,9 +325,9 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     				}
     			}
     		}
-    		
+*/    		
     		//上期总手续费
-    		poundage = BigDecimalUtil.add(borrowPoundage,orderPoundage);
+    		BigDecimal poundage = BigDecimalUtil.add(borrowPoundage,orderPoundage);
     		//上期总逾期费
     		BigDecimal overdueAmount = BigDecimalUtil.add(borrowOverdueAmount,orderOverdueAmount);
     		//上期总利息
@@ -337,15 +337,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal repaymentAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital,orderAmount);
 
     		//---------
-    		
-    		//fmf_add 续借由用户手动操作    end
-
-    		/*if (context.getAppVersion() < 380) {
-                waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
-                repaymentAmount = BigDecimalUtil.add(afBorrowCashDo.getRateAmount(), poundage, afBorrowCashDo.getOverdueAmount());
-            }*/
-
-            //BigDecimal actualAmount = BigDecimalUtil.subtract(repaymentAmount, jfb).subtract(userAmount);
     		BigDecimal actualAmount = repaymentAmount;
 
             if(! yiBaoUtility.checkCanNext(userId,"",1)){
@@ -362,8 +353,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
                 resp.addResponseData("type", map.get("type"));
             } */
             if (cardId == -1) {// 微信支付
-//				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
-//				resp.setResponseData(map);
                 if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")){
                     map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
                     map.put("userNo",userDto.getUserName());
@@ -399,7 +388,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
                         throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_RENEW_LIMIT_ERROR);//提示语
                     }
                 }
-                //map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion());
                 map = afRenewalLegalDetailService.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
 
                 // 代收
