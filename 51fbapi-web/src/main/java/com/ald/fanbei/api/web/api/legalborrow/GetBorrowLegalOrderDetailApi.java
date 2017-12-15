@@ -62,6 +62,7 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
             afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
             afBorrowLegalOrderDeatilVo.setOverdueDay(afBorrowLegalOrderCashDo.getOverdueDay());
             afBorrowLegalOrderDeatilVo.setOverdueAmount(afBorrowLegalOrderCashDo.getOverdueAmount());
+            afBorrowLegalOrderDeatilVo.setBorrowId(afBorrowLegalOrderCashDo.getBorrowId());
         }
         if (afBorrowLegalOrderDo != null){
             afBorrowLegalOrderDeatilVo.setDeliveryPhone(afBorrowLegalOrderDo.getDeliveryPhone());
