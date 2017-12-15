@@ -1307,7 +1307,4 @@ public class DateUtil {
 		}
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(DateUtil.getNumberOfDayBetween(new  Date(2017, 12, 14, 0, 25, 0), new  Date(2017, 12, 15, 0, 0, 0)));
-	}
 }
