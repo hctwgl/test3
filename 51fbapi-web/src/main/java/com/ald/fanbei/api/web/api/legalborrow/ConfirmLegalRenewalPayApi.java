@@ -259,8 +259,9 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     			borrowRateAmount = afBorrowCashDo.getRateAmount();
     		}
     		
-    		// 续借本金（总） 
-    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),borrowPoundage);
+    		// 本金（总） 
+    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),
+    				afBorrowCashDo.getSumRate(),borrowRateAmount,afBorrowCashDo.getSumRenewalPoundage(),borrowPoundage);
     		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
     		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
     		
