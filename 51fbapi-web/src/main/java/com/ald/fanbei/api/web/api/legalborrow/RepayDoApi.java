@@ -98,6 +98,7 @@ public class RepayDoApi implements ApiHandle {
 		data.put("tradeTime", new Date());
 		data.put("cardNo", bo.cardNo);
 		data.put("cardName", bo.cardName);
+		data.put("succ", true);
 		resp.setResponseData(data);
 		
 		return resp;

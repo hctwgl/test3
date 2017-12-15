@@ -276,11 +276,11 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                         dealCouponAndRebate(repayDealBo);
                         doAccountLog(repayDealBo);
                         
-                        return 0L;
+                        return 1L;
                     } catch (Exception e) {
                         status.setRollbackOnly();
                         logger.info("dealRepaymentSucess error", e);
-                        return 0L;
+                        throw e;
                     }
                 }
             });
