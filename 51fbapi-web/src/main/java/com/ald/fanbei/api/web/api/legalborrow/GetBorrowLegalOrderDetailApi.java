@@ -55,7 +55,6 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
         if (afBorrowLegalOrderCashDo != null){
             afBorrowLegalOrderDeatilVo.setAmount(afBorrowLegalOrderCashDo.getAmount());
             afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
-            afBorrowLegalOrderDeatilVo.setStatus(afBorrowLegalOrderCashDo.getStatus());
             afBorrowLegalOrderDeatilVo.setType(afBorrowLegalOrderCashDo.getType());
             afBorrowLegalOrderDeatilVo.setPoundageAmount(afBorrowLegalOrderCashDo.getPoundageAmount());
             afBorrowLegalOrderDeatilVo.setInterestAmount(afBorrowLegalOrderCashDo.getInterestAmount());
@@ -76,6 +75,7 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
             afBorrowLegalOrderDeatilVo.setLogisticsInfo(afBorrowLegalOrderDo.getLogisticsInfo());
             afBorrowLegalOrderDeatilVo.setGmtCreate(afBorrowLegalOrderDo.getGmtCreate());
             afBorrowLegalOrderDeatilVo.setGmtDeliver(afBorrowLegalOrderDo.getGmtDeliver());
+            afBorrowLegalOrderDeatilVo.setStatus(afBorrowLegalOrderDo.getStatus());
             
             // 获取商品ID
             Long goodsId = afBorrowLegalOrderDo.getGoodsId();

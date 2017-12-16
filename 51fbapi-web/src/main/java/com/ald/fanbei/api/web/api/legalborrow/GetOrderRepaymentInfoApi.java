@@ -65,14 +65,19 @@ public class GetOrderRepaymentInfoApi implements ApiHandle {
 			for (AfBorrowLegalOrderRepaymentDo repaymentDo : repaymentDoList) {
 				Map<String, Object> repayInfoMap = Maps.newHashMap();
 				BigDecimal amount = repaymentDo.getRepayAmount();
+				BigDecimal couponAmount = repaymentDo.getCouponAmount();
 				String status = repaymentDo.getStatus();
-				repayInfoMap.put("repayId", repaymentDo.getId());
+				repayInfoMap.put("repayNo", repaymentDo.getId());
 				repayInfoMap.put("repayMode", repaymentDo.getName());
 				repayInfoMap.put("status", status);
 				repayInfoMap.put("gmtCreate", repaymentDo.getGmtCreate());
 				repayInfoMap.put("amount", amount);
-				repayInfoMap.put("repayType", repaymentDo.getCardName());
-
+				repayInfoMap.put("cardName", repaymentDo.getCardName());
+				repayInfoMap.put("cardNo", repaymentDo.getCardNo());
+				repayInfoMap.put("couponAmount", couponAmount);
+				repayInfoMap.put("userAmount", repaymentDo.getRebateAmount());
+				//  增加实际支付金额字段
+				repayInfoMap.put("actualAmount", repaymentDo.getActualAmount());
 				if (StringUtils.equals("Y", status)) {
 					repayAmount = repayAmount.add(amount);
 				}
