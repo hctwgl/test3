@@ -421,6 +421,9 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			// 审核通过
 			cashDo.setGmtArrival(currDate);
 			cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
+			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
+			afBorrowLegalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.APPLYING.getCode());
+			
 			AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(Long.parseLong(consumerNo));
 			// 打款
 			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
