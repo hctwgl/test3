@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
@@ -64,6 +65,9 @@ public class CollectionController {
 	
 	@Resource
 	AfIdNumberService idNumberService;
+	
+	@Resource
+	AfBorrowLegalOrderService afBorrowLegalOrderService;
 	
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
@@ -109,6 +113,10 @@ public class CollectionController {
 			String sign2=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
 				// FIXME 判断借款是否关联订单
+				Long borrowId = afBorrowCashDo.getRid();
+				
+				
+				
 				
 				map.put("consumer_no", afBorrowCashDo.getUserId()+"");
 				map.put("borrow_id",afBorrowCashDo.getRid()+"");
