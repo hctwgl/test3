@@ -234,8 +234,7 @@ public class CollectionSystemUtil extends AbstractThird {
 				String isBalance = obj.getString("is_balance");
 
 				// 参数校验
-				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo,
-						isBalance)) {
+				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance)) {
 
 					// 还款金额校验
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);

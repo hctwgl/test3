@@ -359,15 +359,6 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 					afRenewalDetailDo.setGmtModified(new Date());
 					afRenewalDetailDao.updateRenewalDetail(afRenewalDetailDo);
 					
-//					AfResourceDo bankDoubleResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CASH_BASE_BANK_DOUBLE);
-//					BigDecimal bankDouble = new BigDecimal(bankDoubleResource.getValue());// 借钱最高倍数
-//					
-//					//未还金额
-//					BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-//					BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(afRenewalDetailDo.getCapital());
-//					
-//					BigDecimal rateAmount = BigDecimalUtil.multiply(waitPaidAmount, afRenewalDetailDo.getBaseBankRate(), bankDouble, new BigDecimal(afRenewalDetailDo.getRenewalDay()).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP));
-					
 					//续期本金
 					BigDecimal waitPaidAmount =afRenewalDetailDo.getRenewalAmount();
 					// 查询新利率配置
@@ -418,8 +409,6 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);// 滞纳金置0
 					afBorrowCashDo.setSumRate(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));// 累计利息
 					afBorrowCashDo.setRateAmount(rateAmount);// 利息改成本次续期金额的利息
-					// afBorrowCashDo.setSumJfb(afBorrowCashDo.getSumJfb().add(afRenewalDetailDo.getJfbAmount()));// 累计使用集分宝
-					// afBorrowCashDo.setSumRebate(afBorrowCashDo.getSumRebate().add(afRenewalDetailDo.getRebateAmount()));// 累计使用账户余额
 					afBorrowCashDo.setSumRenewalPoundage(afBorrowCashDo.getSumRenewalPoundage().add(afRenewalDetailDo.getPriorPoundage()));// 累计续期手续费
 					afBorrowCashDo.setPoundage(poundage);
 					afBorrowCashDo.setRenewalNum(afBorrowCashDo.getRenewalNum() + 1);// 累计续期次数
@@ -460,14 +449,6 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			//当续期成功时,同步逾期天数为0
 			dealWithSynchronizeOverduedOrder(currAfBorrowCashDo);
 
-			/*try {
-				//生成续期凭据
-				afContractPdfCreateService.protocolRenewal(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
-				logger.error("生成续期凭据成功，renewId="+afRenewalDetailDo.getUserId());
-			} catch (Exception e) {
-				logger.error("生成续期凭据异常，renewId="+afRenewalDetailDo.getUserId(),e);
-			}*/
-			//返呗续期通知接口，向催收平台同步续期信息
 			try {
 				if (currAfBorrowCashDo.getOverdueStatus().equals("Y") || currAfBorrowCashDo.getOverdueDay() > 0) {
 					CollectionSystemReqRespBo respInfo = collectionSystemUtil.renewalNotify(currAfBorrowCashDo.getBorrowNo(), afRenewalDetailDo.getPayTradeNo(), afRenewalDetailDo.getRenewalDay(),(afRenewalDetailDo.getNextPoundage().multiply(BigDecimalUtil.ONE_HUNDRED))+"");
@@ -689,7 +670,6 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		AfBorrowLegalOrderCashDo borrowLegalOrderCash = new AfBorrowLegalOrderCashDo();
 		borrowLegalOrderCash.setUserId(userId);
 		borrowLegalOrderCash.setBorrowId(afBorrowCashDo.getRid());
-//		borrowLegalOrderCash.setBorrowLegalOrderId(borrowLegalOrder.getRid());
 		borrowLegalOrderCash.setCashNo(payTradeNo);
 		borrowLegalOrderCash.setType("SEVEN");
 		borrowLegalOrderCash.setAmount(goodsDo.getSaleAmount());

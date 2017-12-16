@@ -180,7 +180,7 @@ public class RepayDoApi implements ApiHandle {
 		if (bo.cardId == -2 || bo.cardId > 0) { // -1-微信支付，-3支付宝支付，-2余额支付，>0卡支付（包含组合支付）
 			String finalPwd = UserUtil.getPassword(bo.payPwd, bo.userDo.getSalt());
 			if (!StringUtils.equals(finalPwd, bo.userDo.getPassword())) {
-				throw new FanbeiException("Password is error",FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+				throw new FanbeiException("Password is error",FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 			
 			bo.cardName = Constants.DEFAULT_USER_ACCOUNT;

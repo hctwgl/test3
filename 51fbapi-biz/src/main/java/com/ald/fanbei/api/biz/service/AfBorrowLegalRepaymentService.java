@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentServiceImpl.RepayBo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
 
 /**
@@ -13,6 +14,10 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
  */
 public interface AfBorrowLegalRepaymentService extends ParentService<AfBorrowLegalOrderRepaymentDo, Long>{
 	void repay(RepayBo bo);
+	
+	void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String tradeNo, String borrowNo, 
+			String repayType, String repayTime, String repayAmount,
+			String restAmount, String outTradeNo, String isBalance);
 	
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
 	
