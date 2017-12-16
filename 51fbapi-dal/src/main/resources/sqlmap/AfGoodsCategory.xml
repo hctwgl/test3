@@ -101,7 +101,7 @@
 
 	<select id="getParentDirectoryByName" resultType="AfGoodsCategoryDo"  parameterType="java.lang.String">
 		SELECT
-			<include refid="activitySqlField"/>
+			id,SUBSTRING_INDEX(name,'@', 1) name,parent_id,is_show,sort,img_url,level
 		FROM
 			af_goods_category
 		WHERE
@@ -113,7 +113,7 @@
 	</select>
 	<select id="listByParentIdAndLevel" resultType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo"  parameterType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo">
 		SELECT
-			<include refid="activitySqlField"/>
+				id,SUBSTRING_INDEX(name, '@', 1) name,parent_id,is_show,sort,img_url,level
 		FROM
 			af_goods_category
 		WHERE
