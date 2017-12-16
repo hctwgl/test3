@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ald.fanbei.api.biz.service.AfCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsCategoryService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
@@ -35,10 +35,10 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsBuffer;
+import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -78,7 +78,7 @@ public class H5DoubleEggsController extends H5Controller {
 	@Resource
 	AfGoodsDoubleEggsUserService afGoodsDoubleEggsUserService;
 	@Resource
-	AfCategoryService afCategoryService;
+	AfGoodsCategoryService afGoodsCategoryService;
 	@Resource
 	AfGoodsService afGoodsService;
 	@Resource
@@ -86,6 +86,13 @@ public class H5DoubleEggsController extends H5Controller {
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
 
+	/**
+	 * @Title: initCoupons
+	 * @Description: 优惠券初始化
+	 * @return String
+	 * @author chenqiwei
+	 * @data 2017年12月7日
+	 */
 	@RequestMapping(value = "/initCoupons", method = RequestMethod.POST)
 	public String couponHomePage(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
@@ -228,7 +235,18 @@ public class H5DoubleEggsController extends H5Controller {
 		return result;
 	}
 	
-	@RequestMapping(value = "/getOnSaleGoods")
+	/**
+	 * 
+	 * @Title: getOnSaleGoods 
+	 * @author qiwei @date 2017年12月7日
+	 * 下午2:04:40 
+	 * @Description: 获得特卖商品（点击tap进行不同的跳转） 
+	 * @param request @param
+	 * response 
+	 * @return @return String 
+	 * @throws
+	 */
+	@RequestMapping(value = "/getOnSaleGoods",method = RequestMethod.POST)
 	public String getOnSaleGoods(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
@@ -240,10 +258,10 @@ public class H5DoubleEggsController extends H5Controller {
 			}
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			
-			AfCategoryDo  afCategoryDo = new AfCategoryDo();
-			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
-			if(afCategoryDo != null){
-			    Long primaryCategoryId =   afCategoryDo.getRid();
+			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
+			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
+			if(afGoodsCategoryDo != null){
+			    Long primaryCategoryId =   afGoodsCategoryDo.getId();
 			    Long categoryId =  secondCategoryId;
 			    //初始化时查该parentId下的该categoryId 的商品
 			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
@@ -255,7 +273,7 @@ public class H5DoubleEggsController extends H5Controller {
     			        if (array == null) {
     			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
     			        }
-    			      //  removeSecondNper(array);
+    			       // removeSecondNper(array);
     				
 				
 				for(AfGoodsDo goodsDo : afGoodsList) {

@@ -183,19 +183,19 @@
 		AND category_id = (
 				SELECT 
 				 id 
-			    FROM af_category 
+			    FROM af_goods_category 
 				WHERE parent_id =(          
 						SELECT
 						id 
-						FROM af_category 
+						FROM af_goods_category 
 						WHERE parent_id = #{parentId}
 						AND LEVEL = 2
-						AND is_show = 'Y'
+					
 						ORDER BY sort DESC 
 						LIMIT 0,1
 				)
 		AND LEVEL = 3
-		AND is_show = 'Y'
+
 		ORDER BY sort DESC 
 		LIMIT 0,1
 	 )

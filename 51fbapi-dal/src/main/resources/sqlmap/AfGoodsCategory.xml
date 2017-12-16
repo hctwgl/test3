@@ -98,5 +98,27 @@
 		order by g.gmt_create DESC
 	</select>
 
-	
+	<select id="getParentDirectoryByName" resultType="AfGoodsCategoryDo"  parameterType="java.lang.String">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods_category
+		WHERE
+			is_delete=0 
+			AND level=1 
+			AND parent_id = 0
+			and name= #{name}
+			limit 0,1
+	</select>
+	<select id="listByParentIdAndLevel" resultType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo"  parameterType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_category
+		WHERE
+			is_delete = 0 
+			AND level = #{level}
+			AND parent_id = #{parentId}
+			order by sort desc
+	</select>
 </mapper>

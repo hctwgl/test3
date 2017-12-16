@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ald.fanbei.api.biz.service.AfCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfGoodsCategoryService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
@@ -45,6 +46,7 @@ import com.ald.fanbei.api.dal.domain.AfCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsBuffer;
+import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsUserDo;
@@ -89,17 +91,17 @@ public class AppH5DoubleEggsController extends BaseController {
 	AfUserService afUserService;
 	@Resource
 	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
-
 	@Resource
 	AfGoodsDoubleEggsUserService afGoodsDoubleEggsUserService;
 	@Resource
-	AfCategoryService afCategoryService;
-	@Resource
-	AfGoodsService afGoodsService;
+	AfGoodsCategoryService afGoodsCategoryService;
 	@Resource
 	AfSchemeGoodsService afSchemeGoodsService;
 	@Resource
 	AfInterestFreeRulesService  afInterestFreeRulesService;
+	@Resource
+	AfGoodsService afGoodsService;
+	
 	/**
 	 * 
 	* @Title: initHomePage
@@ -156,10 +158,10 @@ public class AppH5DoubleEggsController extends BaseController {
 			List<Map<String,Object>> firstCategoryList = new ArrayList<Map<String,Object>>();
 			
 			//get info from afResource;
-			AfCategoryDo  afCategoryDo = new AfCategoryDo();
-			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
-			if(afCategoryDo != null){
-			    long parentId =   afCategoryDo.getRid();
+			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
+			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
+			if(afGoodsCategoryDo != null){
+			    long parentId =   afGoodsCategoryDo.getId();
 			    //初始化时查该parentId下的三级分类的排序最前的商品列表
 			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByParentIdAndFormerCategoryId(parentId);
 			    if(afGoodsList.size()>0){
@@ -170,7 +172,7 @@ public class AppH5DoubleEggsController extends BaseController {
     			        if (array == null) {
     			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
     			        }
-    			        removeSecondNper(array);
+    			       // removeSecondNper(array);
     				
 				
 				for(AfGoodsDo goodsDo : afGoodsList) {
@@ -219,31 +221,31 @@ public class AppH5DoubleEggsController extends BaseController {
 			    }
 			  //遍历parent_id = xxx的
 			    //一级分类对应数据表level=2
-			    AfCategoryDo queryAfCategory = new AfCategoryDo();
-			    queryAfCategory.setParentId(parentId);
-			    queryAfCategory.setLevel(2);
-			    List<AfCategoryDo> afFirstCategoryList = afCategoryService.listByParentIdAndLevel(queryAfCategory);
-			    if(afFirstCategoryList.size()>0){
-			        for(AfCategoryDo afFirstCategoryDo:afFirstCategoryList){
+			    AfGoodsCategoryDo queryAfGoodsCategory = new AfGoodsCategoryDo();
+			    queryAfGoodsCategory.setParentId(parentId);
+			    queryAfGoodsCategory.setLevel("2");
+			    List<AfGoodsCategoryDo> afFirstGoodsCategoryList = afGoodsCategoryService.listByParentIdAndLevel(queryAfGoodsCategory);
+			    if(afFirstGoodsCategoryList.size()>0){
+			        for(AfGoodsCategoryDo afFirstGoodsCategoryDo:afFirstGoodsCategoryList){
 				    
 				   //   secondCategoryList.add(secondCategory);
 				      //二级分类对应数据表level=3
-				      queryAfCategory.setParentId(afFirstCategoryDo.getRid());
-				      queryAfCategory.setLevel(3);
-				      List<AfCategoryDo> afSecondCategoList = afCategoryService.listByParentIdAndLevel(queryAfCategory);
-				      List<Map<String,Object>> secondCategoryList = new ArrayList<Map<String,Object>>();
+			              queryAfGoodsCategory.setParentId(queryAfGoodsCategory.getId());
+				      queryAfGoodsCategory.setLevel("3");
+				      List<AfGoodsCategoryDo> afSecondGoodsCategoList = afGoodsCategoryService.listByParentIdAndLevel(queryAfGoodsCategory);
+				      List<Map<String,Object>> secondGoodsCategoryList = new ArrayList<Map<String,Object>>();
 				      //遍历parent_id = i.id
-        			      for(AfCategoryDo afSecondCategoDo:afSecondCategoList){
-                			  Map<String, Object> secondCategory = new HashMap<String, Object>();
-                			  secondCategory.put("secondCategoryId",afSecondCategoDo.getRid());
-                			  secondCategory.put("secondCategoryName",afSecondCategoDo.getName());
-                			  secondCategoryList.add(secondCategory);
+        			      for(AfGoodsCategoryDo afSecondGoodsCategoDo:afSecondGoodsCategoList){
+                			  Map<String, Object> secondGoodsCategory = new HashMap<String, Object>();
+                			  secondGoodsCategory.put("secondCategoryId",afSecondGoodsCategoDo.getId());
+                			  secondGoodsCategory.put("secondCategoryName",afSecondGoodsCategoDo.getName());
+                			  secondGoodsCategoryList.add(secondGoodsCategory);
         			      }
-        			      Map<String, Object> firstCategory = new HashMap<String, Object>();
-				      firstCategory.put("firstCategoryId",afFirstCategoryDo.getRid());
-				      firstCategory.put("firstCategoryName",afFirstCategoryDo.getName());
-				      firstCategory.put("secondCategoryList",secondCategoryList);
-				      firstCategoryList.add(firstCategory);
+        			      Map<String, Object> firstGoodsCategory = new HashMap<String, Object>();
+        			      firstGoodsCategory.put("firstCategoryId",afFirstGoodsCategoryDo.getId());
+        			      firstGoodsCategory.put("firstCategoryName",afFirstGoodsCategoryDo.getName());
+        			      firstGoodsCategory.put("secondCategoryList",secondGoodsCategoryList);
+				      firstCategoryList.add(firstGoodsCategory);
 			         }
 			    }
 			}
@@ -281,10 +283,10 @@ public class AppH5DoubleEggsController extends BaseController {
 			}
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			
-			AfCategoryDo  afCategoryDo = new AfCategoryDo();
-			afCategoryDo = afCategoryService.getParentDirectoryByName("SHUANG_DAN");
-			if(afCategoryDo != null){
-			    Long primaryCategoryId =   afCategoryDo.getRid();
+			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
+			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
+			if(afGoodsCategoryDo != null){
+			    Long primaryCategoryId =   afGoodsCategoryDo.getId();
 			    Long categoryId =  secondCategoryId;
 			    //初始化时查该parentId下的该categoryId 的商品
 			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
@@ -362,7 +364,7 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * @Title: initCoupons
-	 * @Description: 优惠券
+	 * @Description: 优惠券初始化
 	 * @return String
 	 * @author chenqiwei
 	 * @data 2017年12月7日

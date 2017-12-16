@@ -19,10 +19,6 @@ public interface AfCategoryDao {
 	 * @return
 	 */
 	List<AfCategoryDo> getCategoryList();
-	AfCategoryDo getParentDirectoryByName(@Param("name") String name);
 
-	List<AfCategoryDo> listByParentIdAndLevel(Long parentId, Integer level);
-
-	List<AfCategoryDo> listByParentIdAndLevel(AfCategoryDo queryAfCategory);
 	List<AfCategoryDo> getHomePageCategoryInfo();
 }
