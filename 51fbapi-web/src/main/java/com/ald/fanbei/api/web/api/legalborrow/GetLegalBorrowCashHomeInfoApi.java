@@ -53,6 +53,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
@@ -117,6 +118,9 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
 	@Resource
 	AfGoodsService afGoodsService;
+
+	@Resource
+	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -334,8 +338,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("paidAmount", paidAmount);
 			data.put("overdueAmount", overdueAmount);
 			data.put("type", AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode());
-			long currentTime = System.currentTimeMillis();
-			Date now = DateUtil.getEndOfDate(new Date(currentTime));
+			Date now = DateUtil.getEndOfDate(new Date());
 
 			data.put("overdueStatus", "N");
 			// 如果预计还款日在今天之前，且为待还款状态，则已逾期，逾期天数=现在减去预计还款日
@@ -523,9 +526,13 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		// 还款处理中金额处理
 		String existRepayingMoney = YesNoStatus.NO.getCode();
 		BigDecimal repayingMoney = BigDecimal.valueOf(0.00);
+		BigDecimal repayingOrderMoney = BigDecimal.ZERO;
 		// 如果借款记录存在，统计还款处理中金额
 		if (afBorrowCashDo != null) {
 			repayingMoney = afRepaymentBorrowCashService.getRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
+			repayingOrderMoney = afBorrowLegalOrderRepaymentDao
+					.getOrderRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
+			repayingMoney = repayingMoney.add(repayingOrderMoney);
 		}
 		if (repayingMoney.compareTo(BigDecimal.ZERO) > 0) {
 			existRepayingMoney = YesNoStatus.YES.getCode();
