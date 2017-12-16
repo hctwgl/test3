@@ -21,6 +21,7 @@ public class AfBorrowLegalOrderRepaymentDo extends AbstractSerial {
 	private Long borrowId;
 	private Long borrowLegalOrderCashId;
 	private BigDecimal repayAmount;
+	private BigDecimal actualAmount;
 	private String tradeNo;
 	private String tradeNoUps;
 	private String tradeNoWx;
@@ -141,6 +142,12 @@ public class AfBorrowLegalOrderRepaymentDo extends AbstractSerial {
 	}
 	public void setBorrowId(Long borrowId) {
 		this.borrowId = borrowId;
+	}
+	public BigDecimal getActualAmount() {
+		return actualAmount;
+	}
+	public void setActualAmount(BigDecimal actualAmount) {
+		this.actualAmount = actualAmount;
 	}
 	
 }
