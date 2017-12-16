@@ -47,6 +47,7 @@ import com.ald.fanbei.api.common.enums.AfUserOperationLogRefType;
 import com.ald.fanbei.api.common.enums.AfUserOperationLogType;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -297,7 +298,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("rebateAmount", account.getRebateAmount());
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
-			// 计算总的还款金额，包括商品借款金额 
+			// 计算总的还款金额，包括商品借款金额
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
 					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),
 					afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
@@ -324,10 +325,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
 			// 计算服务费和手续费
-			BigDecimal serviceFee = new BigDecimal(newServiceRate).multiply(returnAmount)
-					.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-			BigDecimal interestFee = new BigDecimal(newInterestRate).multiply(returnAmount)
-					.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+			BigDecimal serviceFee = afBorrowCashDo.getPoundage();
+			BigDecimal interestFee = afBorrowCashDo.getRateAmount();
 			data.put("serviceFee", serviceFee);
 			data.put("interestFee", interestFee);
 
@@ -396,12 +395,13 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				data.put("renewalStatus", "N");
 			}
 		}
-		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
+		BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6,
+				RoundingMode.HALF_UP);
 
 		data.put("bankDoubleRate", bankService.toString());
 		data.put("overdueRate", rate.get("overduePoundage"));
 		data.put("maxAmount", calculateMaxAmount(maxAmount));
-		data.put("minAmount", rate.get("minAmount"));
+		data.put("minAmount", minAmount);
 		data.put("borrowCashDay", rate.get("borrowCashDay"));
 		data.put("lender", rate.get("lender"));
 
@@ -636,32 +636,39 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 
 	private void getUserPoundageRate(Long userId, Map<String, Object> data, String inRejectLoan, String poundage) {
 		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
-		if (saveRateDate == null
-				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
-			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
-			String poundageRate = riskResp.getPoundageRate();
-			if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
-				logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo()
-						+ ",poundageRate=" + poundageRate);
-				Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
-
-				BigDecimal userPoundageRate = BigDecimal.ZERO;
-				if (poundageRateCash != null) {
-					userPoundageRate = new BigDecimal(poundageRateCash.toString());
+		if (saveRateDate == null || DateUtil.compareDate(new Date(), DateUtil.addDays(saveRateDate, 1))) {
+			try {
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId + "");
+				if (riskResp == null) {
+					throw new FanbeiException("get user poundage rate error");
 				}
+				String poundageRate = riskResp.getPoundageRate();
+				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
+					logger.info("get user poundage rate from risk: consumerNo=" + riskResp.getConsumerNo()
+							+ ",poundageRate=" + poundageRate);
+					Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
 
-				if (new BigDecimal(poundageRate).compareTo(userPoundageRate) < 0
-						&& StringUtils.equals(inRejectLoan, YesNoStatus.NO.getCode())) {
-					data.put("showRatePopup", "Y");
+					BigDecimal userPoundageRate = BigDecimal.ZERO;
+					if (poundageRateCash != null) {
+						userPoundageRate = new BigDecimal(poundageRateCash.toString());
+					}
+
+					if (new BigDecimal(poundageRate).compareTo(userPoundageRate) < 0
+							&& StringUtils.equals(inRejectLoan, YesNoStatus.NO.getCode())) {
+						data.put("showRatePopup", "Y");
+					}
+					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate,
+							Constants.SECOND_OF_ONE_MONTH);
+
+					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(),
+							Constants.SECOND_OF_ONE_MONTH);
+				} else {
+					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage,
+							Constants.SECOND_OF_ONE_MONTH);
 				}
-				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate,
-						Constants.SECOND_OF_ONE_MONTH);
-
-				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId,
-						new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);
-			} else {
-				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage,
-						Constants.SECOND_OF_ONE_MONTH);
+			} catch (Exception e) {
+				logger.error("get user poundage rate error => {}", e.getMessage());
+				throw new FanbeiException("get user poundage rate error");
 			}
 		}
 	}

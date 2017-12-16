@@ -124,7 +124,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		double newInterestRate = 0;
 		if (rateInfoDo != null) {
 			String borrowRate = rateInfoDo.getValue2();
-			Map<String,Object> rateInfo = getRateInfo(borrowRate,borrowType,"borrow");
+			Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "borrow");
 			newServiceRate = (double) rateInfo.get("serviceRate");
 			newInterestRate = (double) rateInfo.get("interestRate");
 			double totalRate = (double) rateInfo.get("totalRate");
@@ -133,14 +133,16 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			newRate = BigDecimal.valueOf(0.36);
 		}
 
-		newRate = newRate.divide(BigDecimal.valueOf(360), 6, RoundingMode.HALF_UP);
+		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(new BigDecimal(borrowAmount)).multiply(borrowDay);
-
+		if (profitAmount.compareTo(BigDecimal.ZERO) < 0) {
+			profitAmount = BigDecimal.ZERO;
+		}
 		// 计算服务费和手续费
-		BigDecimal serviceFee = new BigDecimal(newServiceRate).multiply(new BigDecimal(borrowAmount))
-				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-		BigDecimal interestFee = new BigDecimal(newInterestRate).multiply(new BigDecimal(borrowAmount))
-				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+		BigDecimal serviceFee = new BigDecimal(newServiceRate / 100).multiply(new BigDecimal(borrowAmount))
+				.multiply(borrowDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+		BigDecimal interestFee = new BigDecimal(newInterestRate / 100).multiply(new BigDecimal(borrowAmount))
+				.multiply(borrowDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
 		// 应还金额 = 借款金额 + 手续费 + 利息 + 商品借款金额 + 商品手续费 + 商品利息
 		BigDecimal repayAmount = BigDecimal.ZERO;
@@ -161,16 +163,16 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				respData.put("goodsId", goodsId);
 				respData.put("goodsName", goodsInfo.getName());
 				respData.put("goodsIcon", goodsInfo.getGoodsIcon());
-				
+
 				String borrowRate = rateInfoDo.getValue3();
-				Map<String,Object> rateInfo = getRateInfo(borrowRate,borrowType,"consume");
+				Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "consume");
 				double totalRate = (double) rateInfo.get("totalRate");
-				// 计算商品借款总费用 
+				// 计算商品借款总费用
 				BigDecimal goodsRate = BigDecimal.valueOf(totalRate / 100);
-				
-				BigDecimal goodsFee = goodsRate.multiply(saleAmount)
+
+				BigDecimal goodsFee = goodsRate.multiply(saleAmount).multiply(borrowDay)
 						.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-				repayAmount = repayAmount.add(goodsFee);
+				repayAmount = repayAmount.add(goodsFee).add(saleAmount);
 			}
 			// 查询商品默认规格
 			AfGoodsPriceDo afGoodsProperty = afGoodsPriceService.getGoodsPriceByGoodsId(goodsId);
@@ -187,7 +189,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		return resp;
 	}
 
-	private Map<String, Object> getRateInfo(String borrowRate,String borrowType,String tag) {
+	private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
 		Map<String, Object> rateInfo = Maps.newHashMap();
 		double serviceRate = 0;
 		double interestRate = 0;
@@ -195,7 +197,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		double totalRate = 0;
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject info = array.getJSONObject(i);
-			String borrowTag = info.getString("borrowTag");
+			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
 				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
 					interestRate = info.getDouble(tag + "SevenDay");
