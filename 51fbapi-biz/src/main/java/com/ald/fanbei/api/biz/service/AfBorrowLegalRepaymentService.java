@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentServiceImpl.RepayBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 
 /**
  * Service
@@ -20,6 +21,7 @@ public interface AfBorrowLegalRepaymentService extends ParentService<AfBorrowLeg
 			String restAmount, String outTradeNo, String isBalance);
 	
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
+	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo, final AfBorrowLegalOrderRepaymentDo orderRepaymentDo);
 	
 	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 }

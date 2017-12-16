@@ -93,12 +93,22 @@ public class RepayDoApi implements ApiHandle {
 		
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = Maps.newHashMap();
-		data.put("repaymentAmount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-		data.put("tradeNo", bo.tradeNo);
-		data.put("tradeTime", new Date());
-		data.put("cardNo", bo.cardNo);
+		data.put("rid", bo.borrowId);
+		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
+		data.put("gmtCreate", new Date());
+		data.put("status", AfBorrowLegalRepaymentStatus.YES.getCode());
+		if(bo.userCouponDto != null) {
+			data.put("couponAmount", bo.userCouponDto.getAmount());
+		}
+		if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
+			data.put("userAmount", bo.rebateAmount);
+		}
+		data.put("actualAmount", bo.actualAmount);
 		data.put("cardName", bo.cardName);
-		data.put("succ", true);
+		data.put("cardNumber", bo.cardNo);
+		data.put("repayNo", bo.tradeNo);
+		data.put("jfbAmount", BigDecimal.ZERO);
+		
 		resp.setResponseData(data);
 		
 		return resp;

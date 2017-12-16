@@ -159,49 +159,16 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if(StringUtil.equals("sysJob",bo.remoteIp)){
-			name = "代扣付款";
+			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
 		}
 		
 		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
 		bo.tradeNo = tradeNo;
 		bo.name = name;
 		
-		AfRepaymentBorrowCashDo repayment = null;
-		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = null;
-		if(AfBorrowLegalRepayFromEnum.INDEX.name().equalsIgnoreCase(bo.from)) {
-			AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
-			bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
-			
-			BigDecimal orderSumCash = orderCashDo.getAmount().add(orderCashDo.getOverdueAmount()).add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getOverdueAmount());
-			BigDecimal orderRemainCash = orderSumCash.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
-			
-			BigDecimal orderBorrowCash = bo.repaymentAmount.subtract(orderRemainCash);
-			if(orderBorrowCash.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款到借款中
-				repayment = buildRepayment(BigDecimal.ZERO, orderBorrowCash, tradeNo, now, orderBorrowCash, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
-				afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
-				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
-					legalOrderRepayment = buildOrderRepayment(bo, orderRemainCash, name);
-					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
-				}
-			} else { //还款全部进入订单欠款中
-				legalOrderRepayment = buildOrderRepayment(bo, bo.repaymentAmount, name);
-				afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
-			}
-		}
+		generateRepayRecords(bo);
 		
-		else if (AfBorrowLegalRepayFromEnum.BORROW.name().equalsIgnoreCase(bo.from)) {
-			repayment = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
-			afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
-		}
-		
-		else if(AfBorrowLegalRepayFromEnum.ORDER.name().equalsIgnoreCase(bo.from)) {
-			legalOrderRepayment = buildOrderRepayment(bo, bo.repaymentAmount, name);
-			afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
-		}
-		
-		logger.info("repay.add repayment finish,tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(repayment) + ",legalOrderRepayment="+ JSON.toJSONString(legalOrderRepayment));
-		
-		doRepay(bo, repayment, legalOrderRepayment);
+		doRepay(bo, bo.borrowRepaymentDo, bo.orderRepaymentDo);
 		
 	}
 	
@@ -214,8 +181,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	public void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String tradeNo, String borrowNo, 
 				String repayType, String repayTime, String repayAmount,
 				String restAmount, String outTradeNo, String isBalance) {
-		Date now = new Date();
-		
 		RepayBo bo = new RepayBo();
 		bo.tradeNo = tradeNo;
 		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
@@ -224,29 +189,11 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		
 		bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
 		bo.borrowOrderCashId = orderCashDo.getRid();
+		bo.from = AfBorrowLegalRepayFromEnum.INDEX.name();
 		
-		AfRepaymentBorrowCashDo repayment = null;
-		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = null;
-		BigDecimal orderSumCash = orderCashDo.getAmount().add(orderCashDo.getOverdueAmount()).add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getOverdueAmount());
-		BigDecimal orderRemainCash = orderSumCash.subtract(orderCashDo.getRepaidAmount()); //订单剩余应还金额
-		BigDecimal borrowCash = bo.repaymentAmount.subtract(orderRemainCash);
-		if(borrowCash.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款到借款中
-			repayment = buildRepayment(BigDecimal.ZERO, borrowCash, tradeNo, now, borrowCash, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, Constants.BORROW_REPAYMENT_NAME_OFFLINE, bo.userId);
-			repayment.setStatus(AfBorrowCashRepmentStatus.PROCESS.getCode());
-			afRepaymentBorrowCashDao.addRepaymentBorrowCash(repayment);
-			if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
-				legalOrderRepayment = buildOrderRepayment(bo, orderRemainCash, Constants.BORROW_REPAYMENT_NAME_OFFLINE);
-				legalOrderRepayment.setStatus(AfBorrowLegalRepaymentStatus.PROCESS.getCode());
-				afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
-			}
-		} else { //还款全部进入订单欠款中
-			legalOrderRepayment = buildOrderRepayment(bo, bo.repaymentAmount, Constants.BORROW_REPAYMENT_NAME_OFFLINE);
-			afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
-		}
+		generateRepayRecords(bo);
 		
-		logger.info("repay.add repayment finish,tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(repayment) + ",legalOrderRepayment="+ JSON.toJSONString(legalOrderRepayment));
-		
-		dealRepaymentSucess(bo.tradeNo, "");
+		dealRepaymentSucess(bo.tradeNo, "", bo.borrowRepaymentDo, bo.orderRepaymentDo);
 		
 	}
 	
@@ -257,12 +204,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	 * @return
 	 */
 	@Override
-    public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
+    public void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo, final AfBorrowLegalOrderRepaymentDo orderRepaymentDo) {
     	try {
     		lock(tradeNo);
     		
-    		final AfRepaymentBorrowCashDo repaymentDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
-            final AfBorrowLegalOrderRepaymentDo orderRepaymentDo = afBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByPayTradeNo(tradeNo);
             logger.info("dealRepaymentSucess process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",borrowRepayment=" + JSON.toJSONString(repaymentDo) + ", orderRepayment=" + JSON.toJSONString(orderRepaymentDo));
             
             preCheck(repaymentDo, orderRepaymentDo, tradeNo);
@@ -297,6 +242,12 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     	}finally {
     		unLock(tradeNo);
 		}
+    }
+	@Override
+    public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
+		final AfRepaymentBorrowCashDo repaymentDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
+        final AfBorrowLegalOrderRepaymentDo orderRepaymentDo = afBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByPayTradeNo(tradeNo);
+        dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo, orderRepaymentDo);
     }
     
     /**
@@ -334,6 +285,51 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			smsUtil.sendRepaymentBorrowCashFail(afUserDo.getMobile(),errorMsg,errorTimes);//还款失败短信通知
 		}
 	}
+    
+    private void generateRepayRecords(RepayBo bo) {
+    	Date now = new Date();
+    	String tradeNo = bo.tradeNo;
+    	String name = bo.name;
+    	AfRepaymentBorrowCashDo borrowRepaymentDo = null;
+		AfBorrowLegalOrderRepaymentDo orderRepaymentDo = null;
+		if(AfBorrowLegalRepayFromEnum.INDEX.name().equalsIgnoreCase(bo.from)) {
+			AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
+			bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
+			
+			// TODO 拆分优惠卷抵扣信息
+			// TODO 拆分余额抵扣信息
+			
+			BigDecimal orderSumCash = orderCashDo.getAmount().add(orderCashDo.getOverdueAmount()).add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getOverdueAmount());
+			BigDecimal orderRemainCash = orderSumCash.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
+			BigDecimal orderBorrowCash = bo.repaymentAmount.subtract(orderRemainCash);
+			if(orderBorrowCash.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款到借款中
+				borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, orderBorrowCash, tradeNo, now, orderBorrowCash, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
+				afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
+				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
+					orderRepaymentDo = buildOrderRepayment(bo, orderRemainCash, name);
+					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
+				}
+			} else { //还款全部进入订单欠款中
+				orderRepaymentDo = buildOrderRepayment(bo, bo.repaymentAmount, name);
+				afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
+			}
+		}
+		
+		else if (AfBorrowLegalRepayFromEnum.BORROW.name().equalsIgnoreCase(bo.from)) {
+			borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
+			afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
+		}
+		
+		else if(AfBorrowLegalRepayFromEnum.ORDER.name().equalsIgnoreCase(bo.from)) {
+			orderRepaymentDo = buildOrderRepayment(bo, bo.repaymentAmount, name);
+			afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
+		}
+		
+		bo.orderRepaymentDo = orderRepaymentDo;
+		bo.borrowRepaymentDo = borrowRepaymentDo;
+		
+		logger.info("repay.add repayment finish,tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo) + ",legalOrderRepayment="+ JSON.toJSONString(orderRepaymentDo));
+    }
     
     private void doRepay(RepayBo bo, AfRepaymentBorrowCashDo repayment, AfBorrowLegalOrderRepaymentDo legalOrderRepayment) {
 		if (bo.cardId > 0) {// 银行卡支付
@@ -786,6 +782,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		/* request字段 */
 		
 		/* biz 业务处理字段 */
+		public AfBorrowLegalOrderRepaymentDo orderRepaymentDo;
+		public AfRepaymentBorrowCashDo borrowRepaymentDo;
 		public AfBorrowCashDo cashDo;
 		public AfBorrowLegalOrderCashDo orderCashDo;
 		public AfUserCouponDto userCouponDto; //可选字段
