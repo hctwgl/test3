@@ -230,7 +230,7 @@ public class AppH5DoubleEggsController extends BaseController {
 				    
 				   //   secondCategoryList.add(secondCategory);
 				      //二级分类对应数据表level=3
-			              queryAfGoodsCategory.setParentId(queryAfGoodsCategory.getId());
+			              queryAfGoodsCategory.setParentId(afFirstGoodsCategoryDo.getId());
 				      queryAfGoodsCategory.setLevel("3");
 				      List<AfGoodsCategoryDo> afSecondGoodsCategoList = afGoodsCategoryService.listByParentIdAndLevel(queryAfGoodsCategory);
 				      List<Map<String,Object>> secondGoodsCategoryList = new ArrayList<Map<String,Object>>();
