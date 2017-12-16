@@ -47,6 +47,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
@@ -57,6 +58,7 @@ import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
@@ -137,6 +139,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     private AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 	@Resource
     private AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
+	@Resource
+	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
 
 	
 	/**
@@ -306,11 +310,11 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, orderBorrowCash, tradeNo, now, orderBorrowCash, bo.userCouponDto, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
 				afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
-					orderRepaymentDo = buildOrderRepayment(bo, orderRemainCash, name);
+					orderRepaymentDo = buildOrderRepayment(bo, orderRemainCash);
 					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 				}
 			} else { //还款全部进入订单欠款中
-				orderRepaymentDo = buildOrderRepayment(bo, bo.repaymentAmount, name);
+				orderRepaymentDo = buildOrderRepayment(bo, bo.repaymentAmount);
 				afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 			}
 		}
@@ -321,7 +325,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		}
 		
 		else if(AfBorrowLegalRepayFromEnum.ORDER.name().equalsIgnoreCase(bo.from)) {
-			orderRepaymentDo = buildOrderRepayment(bo, bo.repaymentAmount, name);
+			AfBorrowLegalOrderDo orderDo = afBorrowLegalOrderDao.getById(bo.borrowOrderId);
+			bo.borrowId = orderDo.getBorrowId();
+			
+			orderRepaymentDo = buildOrderRepayment(bo, bo.repaymentAmount);
 			afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 		}
 		
@@ -727,13 +734,13 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		return repay;
 	}
 	
-	private AfBorrowLegalOrderRepaymentDo buildOrderRepayment(RepayBo bo, BigDecimal repayAmount, String name) {
+	private AfBorrowLegalOrderRepaymentDo buildOrderRepayment(RepayBo bo, BigDecimal repayAmount) {
 		AfBorrowLegalOrderRepaymentDo repayment = new AfBorrowLegalOrderRepaymentDo();
 		
 		repayment.setUserId(bo.userId);
 		repayment.setBorrowLegalOrderCashId(bo.borrowOrderId);
 		repayment.setRepayAmount(repayAmount);
-		repayment.setName(name);
+		repayment.setName(bo.name);
 		repayment.setTradeNo(bo.tradeNo);
 		if (null != bo.userCouponDto) {
 			repayment.setUserCouponId(bo.couponId);
@@ -761,6 +768,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		Date now = new Date();
 		repayment.setGmtCreate(now);
 		repayment.setGmtModified(now);
+		repayment.setBorrowId(bo.borrowId);
 		
 		return repayment;
 	}

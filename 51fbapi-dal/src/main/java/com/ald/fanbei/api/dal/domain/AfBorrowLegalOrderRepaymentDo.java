@@ -18,6 +18,7 @@ public class AfBorrowLegalOrderRepaymentDo extends AbstractSerial {
 	private Long id;
 	private Long userId;
 	private String name;
+	private Long borrowId;
 	private Long borrowLegalOrderCashId;
 	private BigDecimal repayAmount;
 	private String tradeNo;
@@ -134,6 +135,12 @@ public class AfBorrowLegalOrderRepaymentDo extends AbstractSerial {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Long getBorrowId() {
+		return borrowId;
+	}
+	public void setBorrowId(Long borrowId) {
+		this.borrowId = borrowId;
 	}
 	
 }
