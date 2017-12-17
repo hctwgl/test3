@@ -332,7 +332,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 					// 获取要偿还的订单 
 					AfBorrowLegalOrderDo lastBorrowLegalOrderDo = afBorrowLegalOrderDao.getLastOrderByBorrowId(afRenewalDetailDo.getBorrowId());
 					
-					// 更新上期订单借款记录为FINISHED
+					// 更新上期订单借款记录为FINISHED TODO
 					AfBorrowLegalOrderCashDo lastBorrowLegalOrderCash =  afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowLegalOrderId(lastBorrowLegalOrderDo.getRid());
 					lastBorrowLegalOrderCash.setRepaidAmount(BigDecimalUtil.add(lastBorrowLegalOrderCash.getAmount(),lastBorrowLegalOrderCash.getInterestAmount(),lastBorrowLegalOrderCash.getPoundageAmount(),lastBorrowLegalOrderCash.getOverdueAmount()));
 					lastBorrowLegalOrderCash.setStatus("FINISHED");
@@ -721,7 +721,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
 		
 		//---------
-		//订单续期记录
+		//订单还款记录
 		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = new AfBorrowLegalOrderRepaymentDo();
 		legalOrderRepayment.setUserId(userId);
 		legalOrderRepayment.setRepayAmount(BigDecimalUtil.add(afBorrowLegalOrderCash.getAmount(),afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()));// TODO+
@@ -752,7 +752,6 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 	
 	@Override
 	public AfRenewalDetailDo getLastRenewalDetailByBorrowId(Long rid) {
-		// TODO Auto-generated method stub
 		return afRenewalDetailDao.getLastRenewalDetailByBorrowId(rid);
 	}
 }

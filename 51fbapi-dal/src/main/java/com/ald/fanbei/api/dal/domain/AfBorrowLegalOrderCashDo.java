@@ -147,7 +147,45 @@ import java.math.BigDecimal;
      */
     private Long borrowId;
 
+    /**
+     * 累计已还逾期额
+     */
+    private BigDecimal sumRepaidOverdue;
+    
+    /**
+     * 累计已还手续费
+     */
+    private BigDecimal sumRepaidPoundage;
+    
+	/**
+     * 累计已还利息费
+     */
+    private BigDecimal sumRepaidInterest;
 
+    public BigDecimal getSumRepaidOverdue() {
+    	return sumRepaidOverdue;
+    }
+    
+    public void setSumRepaidOverdue(BigDecimal sumRepaidOverdue) {
+    	this.sumRepaidOverdue = sumRepaidOverdue;
+    }
+    
+    public BigDecimal getSumRepaidPoundage() {
+    	return sumRepaidPoundage;
+    }
+    
+    public void setSumRepaidPoundage(BigDecimal sumRepaidPoundage) {
+    	this.sumRepaidPoundage = sumRepaidPoundage;
+    }
+    
+    public BigDecimal getSumRepaidInterest() {
+    	return sumRepaidInterest;
+    }
+    
+    public void setSumRepaidInterest(BigDecimal sumRepaidInterest) {
+    	this.sumRepaidInterest = sumRepaidInterest;
+    }
+    
     /**
      * 获取主键Id
      *

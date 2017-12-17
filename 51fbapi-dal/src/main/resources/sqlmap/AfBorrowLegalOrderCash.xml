@@ -6,7 +6,7 @@
 	<!--基本的sql查询字段 公共引用... -->
 	<sql id="queryFields">
 		id
-		rid,is_delete,user_id,borrow_legal_order_id,cash_no,type,amount,status,remark,overdue_day,overdue_status,overdue_amount,repaid_amount,poundage_amount,interest_amount,poundage_rate,interest_rate,plan_repay_days,gmt_plan_repay,gmt_create,gmt_close,gmt_modifed,gmt_last_repayment,gmt_finish,borrow_remark,refund_remark,borrow_id
+		rid,is_delete,user_id,borrow_legal_order_id,cash_no,type,amount,status,remark,overdue_day,overdue_status,overdue_amount,sum_repaid_overdue,sum_repaid_poundage,sum_repaid_interest,repaid_amount,poundage_amount,interest_amount,poundage_rate,interest_rate,plan_repay_days,gmt_plan_repay,gmt_create,gmt_close,gmt_modifed,gmt_last_repayment,gmt_finish,borrow_remark,refund_remark,borrow_id
 	</sql>
 
 	<!-- 基本的sql查询条件公共引用 -->
@@ -89,6 +89,15 @@
 		</if>
 		<if test="borrowId != null and borrowId != ''">
 			AND borrow_id = #{borrowId,jdbcType=INTEGER}
+		</if>
+		<if test="sumRepaidOverdue != null and sumRepaidOverdue != ''">
+			AND sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL}
+		</if>
+		<if test="sumRepaidPoundage != null and sumRepaidPoundage != ''">
+			AND sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL}
+		</if>
+		<if test="sumRepaidInterest != null and sumRepaidInterest != ''">
+			AND sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL}
 		</if>
 	</sql>
 
@@ -178,6 +187,15 @@
 			<if test="borrowId != null">
 				borrow_id,
 			</if>
+			<if test="sumRepaidOverdue != null">
+				sum_repaid_overdue,
+			</if>
+			<if test="sumRepaidPoundage != null">
+				sum_repaid_poundage,
+			</if>
+			<if test="sumRepaidInterest != null">
+				sum_repaid_interest,
+			</if>
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -255,6 +273,15 @@
 			</if>
 			<if test="borrowId != null">
 				#{borrowId,jdbcType=INTEGER},
+			</if>
+			<if test="sumRepaidOverdue != null">
+				#{sumRepaidOverdue,jdbcType=DECIMAL},
+			</if>
+			<if test="sumRepaidPoundage != null">
+				#{sumRepaidPoundage,jdbcType=DECIMAL},
+			</if>
+			<if test="sumRepaidInterest != null">
+				#{sumRepaidInterest,jdbcType=DECIMAL},
 			</if>
 		</trim>
 	</insert>
@@ -336,7 +363,16 @@
 				refund_remark = #{refundRemark,jdbcType=VARCHAR},
 			</if>
 			<if test="borrowId != null and borrowId != '' ">
-				borrow_id = #{borrowId,jdbcType=INTEGER}
+				borrow_id = #{borrowId,jdbcType=INTEGER},
+			</if>
+			<if test="sumRepaidOverdue != null and sumRepaidOverdue != ''">
+				sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL},
+			</if>
+			<if test="sumRepaidPoundage != null and sumRepaidPoundage != ''">
+				sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL},
+			</if>
+			<if test="sumRepaidInterest != null and sumRepaidInterest != ''">
+				sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL}
 			</if>
 		</set>
 		WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
