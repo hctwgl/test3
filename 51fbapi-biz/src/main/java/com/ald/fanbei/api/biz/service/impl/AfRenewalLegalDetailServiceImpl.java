@@ -175,7 +175,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.info("sava record error", e);
-					return 0l;
+					throw e;
 				}
 			}
 		});
