@@ -766,6 +766,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		legalOrderRepayment.setRebateAmount(rebateAmount);
 		legalOrderRepayment.setBorrowId(afBorrowCashDo.getRid());
 		legalOrderRepayment.setBorrowLegalOrderCashId(afBorrowLegalOrderCash.getRid());
+		legalOrderRepayment.setName(Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH);
 		
 		if (cardId == -2) {
 			legalOrderRepayment.setCardNo("");
