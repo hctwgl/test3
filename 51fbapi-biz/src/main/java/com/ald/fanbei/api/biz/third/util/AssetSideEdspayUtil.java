@@ -107,9 +107,10 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
+			Integer debtType = ddspayBackCreditReqBo.getDebtType();
 			
 			//具体撤回操作
-			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos);
+			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
 			if(resultValue !=1){
 				logger.error("EdspayController giveBackCreditInfo exist error records,appId="+appId+ ",sendTime=" + timestamp);
 			}
@@ -217,7 +218,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				//消费分期
 				creditInfoList = afAssetPackageDetailService.getBorrowBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime);
 			}else{
-				creditInfoList = afAssetPackageDetailService.getBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
+				creditInfoList = afAssetPackageDetailService.getBorrowCashBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
 			}
 			if(creditInfoList!=null && creditInfoList.size()>0){
 				String sourceJsonStr = JSON.toJSONString(creditInfoList);

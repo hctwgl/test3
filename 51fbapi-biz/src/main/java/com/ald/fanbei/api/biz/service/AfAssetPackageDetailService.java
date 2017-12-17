@@ -24,8 +24,9 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	/**
 	 * 批量债权包明细撤回操作
 	 * @param orderNos
+	 * @param debtType 
 	 */
-	int batchGiveBackCreditInfo(AfAssetSideInfoDo afAssetSideInfoDo,List<String> orderNos);
+	int batchGiveBackCreditInfo(AfAssetSideInfoDo afAssetSideInfoDo,List<String> orderNos, Integer debtType);
 
 	/**
 	 * 单个债权包明细撤回操作
@@ -38,7 +39,7 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	 * @param edspayGetCreditReqBo
 	 * @return
 	 */
-	List<EdspayGetCreditRespBo> getBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo,BigDecimal money,Date startTime,Date endTime,BigDecimal sevenMoney);
+	List<EdspayGetCreditRespBo> getBorrowCashBatchCreditInfo(FanbeiBorrowBankInfoBo bankInfo,AfAssetSideInfoDo afAssetSideInfoDo,BigDecimal money,Date startTime,Date endTime,BigDecimal sevenMoney);
 
 	/**
 	 * 根据资产方对应债权订单号,获取对应用户信息

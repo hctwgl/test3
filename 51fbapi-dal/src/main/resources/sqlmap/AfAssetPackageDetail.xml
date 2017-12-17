@@ -159,11 +159,11 @@
         WHERE  borrow_no=#{borrowNo}
     </update>
     
-    <update id="invalidPackageDetail"  parameterType="java.lang.Long">
+    <update id="invalidPackageDetail"  parameterType="java.lang.String">
         UPDATE af_asset_package_detail set
                 gmt_modified = now(),                
                 status = 'N'               
-        WHERE  id = #{rid ,jdbcType=BIGINT} and status ='Y'
+        WHERE  borrow_no = #{borrowNo} and status ='Y'
     </update>
     
     <update id="updateReDisTri" parameterType="java.lang.Long">

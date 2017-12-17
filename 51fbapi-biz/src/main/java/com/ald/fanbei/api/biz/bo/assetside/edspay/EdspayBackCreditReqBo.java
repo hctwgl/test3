@@ -16,12 +16,22 @@ public class EdspayBackCreditReqBo implements Serializable {
 	 */
 	private List<String> orderNos;
 	
+	/**
+	 * 债权类型，0现金贷，1消费分期
+	 */
+	private Integer debtType;
+	
 	public List<String> getOrderNos() {
 		return orderNos;
 	}
 	public void setOrderNos(List<String> orderNos) {
 		this.orderNos = orderNos;
 	}
-	
+	public Integer getDebtType() {
+		return debtType;
+	}
+	public void setDebtType(Integer debtType) {
+		this.debtType = debtType;
+	}
 	
 }
