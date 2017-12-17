@@ -70,7 +70,7 @@ public class LegalBorrowTest  extends BaseTest{
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "xj2017121419585700922";
+		String orderNo = "xj2017121718213200951";
 		String merPriv = PayOrderSource.RENEW_CASH_LEGAL.getCode();
 		String tradeNo = "";
 		String tradeState = "00";

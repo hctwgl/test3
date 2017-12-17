@@ -298,7 +298,8 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		// 获取新增的订单还款记录
 		final AfBorrowLegalOrderRepaymentDo borrowLegalOrderRepayment = afBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByPayTradeNo(outTradeNo);
 		// 获取新增的订单借款记录
-		final AfBorrowLegalOrderCashDo borrowLegalOrderCashDo = afBorrowLegalOrderCashDao.getById(borrowLegalOrderRepayment.getBorrowLegalOrderCashId());
+//		final AfBorrowLegalOrderCashDo borrowLegalOrderCashDo = afBorrowLegalOrderCashDao.getById(borrowLegalOrderRepayment.getBorrowLegalOrderCashId());// TODO 获取新增订单错误
+		final AfBorrowLegalOrderCashDo borrowLegalOrderCashDo = afBorrowLegalOrderCashDao.getNewOrderCash(borrowLegalOrderRepayment.getBorrowId());// TODO 获取新增订单错误
 		// 获取新增的订单
 		final AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderDao.getById(borrowLegalOrderCashDo.getBorrowLegalOrderId());
 		
