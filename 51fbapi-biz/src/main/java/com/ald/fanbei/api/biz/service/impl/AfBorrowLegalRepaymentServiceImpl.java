@@ -463,6 +463,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		
 		repayDealBo.curRepayAmoutStub = orderRepaymentDo.getRepayAmount();
 		repayDealBo.curRebateAmount = orderRepaymentDo.getRebateAmount();
+		repayDealBo.curSumRebateAmount = repayDealBo.curSumRebateAmount.add(orderRepaymentDo.getRebateAmount());
 		repayDealBo.curUserCouponId = orderRepaymentDo.getUserCouponId();
 		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(orderRepaymentDo.getRepayAmount());
 		repayDealBo.curCardNo = orderRepaymentDo.getCardNo();
@@ -504,6 +505,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		
 		repayDealBo.curRepayAmoutStub = repaymentDo.getRepaymentAmount();
 		repayDealBo.curRebateAmount = repaymentDo.getRebateAmount();
+		repayDealBo.curSumRebateAmount = repayDealBo.curSumRebateAmount.add(repaymentDo.getRebateAmount());
 		repayDealBo.curUserCouponId = repaymentDo.getUserCouponId();
 		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(repaymentDo.getRepaymentAmount());
 		repayDealBo.curCardNo = repaymentDo.getCardNumber();
@@ -915,6 +917,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	public static class RepayDealBo {
 		BigDecimal curRepayAmoutStub; 	//当前还款额变化句柄
 		BigDecimal curRebateAmount; 	//当前还款使用的账户余额
+		BigDecimal curSumRebateAmount = BigDecimal.ZERO;//当前还款使用的账户余额总额
 		Long curUserCouponId;			//当前还款使用的还款优惠卷id
 		BigDecimal curSumRepayAmount = BigDecimal.ZERO;	//当前还款总额(借款还款+订单还款)
 		String curCardNo;				//当前还款卡号
