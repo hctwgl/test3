@@ -327,7 +327,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 					// 获取要偿还的订单 
 					AfBorrowLegalOrderDo lastBorrowLegalOrderDo = afBorrowLegalOrderDao.getLastOrderByBorrowId(afRenewalDetailDo.getBorrowId());
 					
-					// 更新上期订单借款记录为FINISHED TODO
+					// 更新上期订单借款记录为FINISHED 
 					AfBorrowLegalOrderCashDo lastBorrowLegalOrderCash =  afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowLegalOrderId(lastBorrowLegalOrderDo.getRid());
 					lastBorrowLegalOrderCash.setStatus("FINISHED");
 					lastBorrowLegalOrderCash.setSumRepaidPoundage(lastBorrowLegalOrderCash.getSumRepaidPoundage().add(lastBorrowLegalOrderCash.getPoundageAmount()));
@@ -681,12 +681,44 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderCash.setOverdueStatus("N");
 		borrowLegalOrderCash.setRepaidAmount(BigDecimal.ZERO);
 		borrowLegalOrderCash.setOverdueAmount(BigDecimal.ZERO);
-		borrowLegalOrderCash.setPoundageAmount(BigDecimal.ZERO);
-		borrowLegalOrderCash.setInterestAmount(BigDecimal.ZERO);
-		borrowLegalOrderCash.setSumRepaidOverdue(BigDecimal.ZERO);
 		borrowLegalOrderCash.setSumRepaidPoundage(BigDecimal.ZERO);
-		borrowLegalOrderCash.setSumRepaidInterest(BigDecimal.ZERO);
 		borrowLegalOrderCash.setPlanRepayDays(allowRenewalDay.intValue());
+
+		// 查询新利率配置
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
+		//借款利率
+		BigDecimal newRate = null;
+		//借款手续费率
+		BigDecimal newServiceRate = null;
+		
+		if (rateInfoDo != null) {
+			String orderRate = rateInfoDo.getValue3();
+			JSONArray array = JSONObject.parseArray(orderRate);
+			double rate = 0;
+			double serviceRate = 0;
+			for (int i = 0; i < array.size(); i++) {
+				JSONObject info = array.getJSONObject(i);
+				String consumeTag = info.getString("consumeTag");
+				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
+						rate = info.getDouble("consumeSevenDay");
+				}
+				if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
+					serviceRate = info.getDouble("consumeSevenDay");
+				}
+			}
+			newRate = BigDecimal.valueOf(rate / 100);
+			newServiceRate = BigDecimal.valueOf(serviceRate / 100);
+		}else{
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
+		}		
+		
+		BigDecimal orderWiteAmount = BigDecimalUtil.add(afBorrowLegalOrderCash.getAmount(),afBorrowLegalOrderCash.getSumRepaidInterest(),afBorrowLegalOrderCash.getSumRepaidPoundage(),afBorrowLegalOrderCash.getSumRepaidOverdue()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
+		
+		borrowLegalOrderCash.setPoundageAmount(orderWiteAmount.multiply(newServiceRate).multiply(allowRenewalDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
+		borrowLegalOrderCash.setInterestAmount(orderWiteAmount.multiply(newRate).multiply(allowRenewalDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
+		
+		borrowLegalOrderCash.setSumRepaidOverdue(BigDecimal.ZERO);
+		borrowLegalOrderCash.setSumRepaidInterest(BigDecimal.ZERO);
 		
 		Date date = DateUtil.addDays(new Date(), 7);
 		borrowLegalOrderCash.setGmtPlanRepay(date);
@@ -728,7 +760,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		//订单还款记录
 		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = new AfBorrowLegalOrderRepaymentDo();
 		legalOrderRepayment.setUserId(userId);
-		legalOrderRepayment.setRepayAmount(BigDecimalUtil.add(afBorrowLegalOrderCash.getAmount(),afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()));// TODO+
+		legalOrderRepayment.setRepayAmount(BigDecimalUtil.add(afBorrowLegalOrderCash.getAmount(),afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()));
 		legalOrderRepayment.setActualAmount(legalOrderRepayment.getRepayAmount());
 		legalOrderRepayment.setTradeNo(payTradeNo);
 		legalOrderRepayment.setStatus(AfBorrowLegalRepaymentStatus.APPLY.getCode());
