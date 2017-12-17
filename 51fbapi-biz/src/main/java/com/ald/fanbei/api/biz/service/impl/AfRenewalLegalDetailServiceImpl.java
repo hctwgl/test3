@@ -164,7 +164,6 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 					borrowLegalOrderCash.setBorrowLegalOrderId(borrowLegalOrder.getRid());
 					afBorrowLegalOrderCashDao.saveRecord(borrowLegalOrderCash);
 					afRenewalDetailDao.addRenewalDetail(renewalDetail);
-					legalOrderRepayment.setBorrowLegalOrderCashId(borrowLegalOrderCash.getRid());
 					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(legalOrderRepayment);
 					return 1l;
 				} catch (Exception e) {
@@ -766,6 +765,8 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		legalOrderRepayment.setStatus(AfBorrowLegalRepaymentStatus.APPLY.getCode());
 		legalOrderRepayment.setRebateAmount(rebateAmount);
 		legalOrderRepayment.setBorrowId(afBorrowCashDo.getRid());
+		legalOrderRepayment.setBorrowLegalOrderCashId(afBorrowLegalOrderCash.getRid());
+		legalOrderRepayment.setName(Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH);
 		
 		if (cardId == -2) {
 			legalOrderRepayment.setCardNo("");
