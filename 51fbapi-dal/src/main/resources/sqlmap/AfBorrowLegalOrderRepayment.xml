@@ -12,7 +12,7 @@
     <insert id="addBorrowLegalOrderRepayment" parameterType="AfBorrowLegalOrderRepaymentDo" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO af_borrow_legal_order_repayment(user_id , borrow_id, borrow_legal_order_cash_id , repay_amount , actual_amount, name , trade_no ,
          trade_no_ups , trade_no_wx , trade_no_zfb , user_coupon_id , coupon_amount , rebate_amount , status , card_name , 
-         card_no , gmt_create , gmt_modified,borrow_id)
+         card_no , gmt_create , gmt_modified)
         VALUES (
             #{userId},
             #{borrowId},
@@ -39,6 +39,9 @@
         UPDATE af_borrow_legal_order_repayment SET gmt_modified = NOW()
         <if test="userId != null">
             ,user_id=#{userId}
+        </if>
+        <if test="borrowId != null">
+            ,borrow_id=#{borrowId}
         </if>
         <if test="borrowLegalOrderCashId != null">
             ,borrow_legal_order_cash_id=#{borrowLegalOrderCashId}
@@ -78,9 +81,6 @@
         </if>
         <if test="cardNo != null">
             ,card_no=#{cardNo}
-        </if>
-         <if test="borrowId != null">
-            ,borrow_id=#{borrowId}
         </if>
         WHERE id = #{id}
     </update>
