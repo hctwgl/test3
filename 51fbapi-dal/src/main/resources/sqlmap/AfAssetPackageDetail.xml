@@ -166,9 +166,9 @@
         WHERE  borrow_no = #{borrowNo} and status ='Y'
     </update>
     
-    <update id="updateReDisTri" parameterType="java.lang.Long">
+    <update id="updateReDisTri" parameterType="java.lang.String">
 		  UPDATE af_asset_package_detail set status='R',gmt_modified=now() 
-			where status = 'Y' and is_delete=1 and borrow_cash_id=#{borrowCashId}
+			where status = 'Y' and is_delete=1 and borrow_no=#{borrowNo}
 	</update>
 	
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfAssetPackageDetailDo">
