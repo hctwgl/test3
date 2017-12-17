@@ -355,7 +355,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 				
 				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
-					orderRepaymentDo = buildOrderRepayment(bo, actualAmountForOrder, bo.couponId,  // TODO
+					orderRepaymentDo = buildOrderRepayment(bo, actualAmountForOrder, bo.couponId,
 							couponAmountForOrder, rabateAmountForOrder, orderRemainShouldRepayAmount);
 					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 				}

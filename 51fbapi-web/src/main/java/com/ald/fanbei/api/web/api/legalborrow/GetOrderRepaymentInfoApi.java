@@ -67,7 +67,7 @@ public class GetOrderRepaymentInfoApi implements ApiHandle {
 				BigDecimal amount = repaymentDo.getRepayAmount();
 				BigDecimal couponAmount = repaymentDo.getCouponAmount();
 				String status = repaymentDo.getStatus();
-				repayInfoMap.put("repayNo", repaymentDo.getId());
+				repayInfoMap.put("repayNo", repaymentDo.getTradeNo());
 				repayInfoMap.put("repayMode", repaymentDo.getName());
 				repayInfoMap.put("status", status);
 				repayInfoMap.put("gmtCreate", repaymentDo.getGmtCreate());
