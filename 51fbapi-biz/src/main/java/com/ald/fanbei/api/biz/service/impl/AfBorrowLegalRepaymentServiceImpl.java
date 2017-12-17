@@ -300,7 +300,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
 			bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
 			
-			BigDecimal orderSumAmount = orderCashDo.getAmount().add(orderCashDo.getOverdueAmount()).add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getOverdueAmount());
+			BigDecimal orderSumAmount = orderCashDo.getAmount()
+						.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue())
+						.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage())
+						.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
 			BigDecimal orderRemainShouldRepayAmount = orderSumAmount.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
 			BigDecimal borrowRepayAmount = bo.repaymentAmount.subtract(orderRemainShouldRepayAmount);
 			if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
@@ -472,15 +475,19 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.refId += orderCashDo.getRid();
 		repayDealBo.userId = cashDo.getUserId();
 		
+		dealOrderRepayOverdue(repayDealBo, orderCashDo);//逾期费
+        dealOrderRepayPoundage(repayDealBo, orderCashDo);//手续费
+        dealOrderRepayInterest(repayDealBo, orderCashDo);//利息
+		
         dealOrderRepayIfFinish(repayDealBo, orderRepaymentDo, orderCashDo);
         afBorrowLegalOrderCashDao.updateById(orderCashDo);
         
         changOrderRepaymentStatus(repayDealBo.curOutTradeNo, AfBorrowLegalRepaymentStatus.YES.getCode(), orderRepaymentDo.getId());
 		
 		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
-        repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount());
-        repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount());
-        repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount());
+        repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
+        repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage());
+        repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue());
         repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
 	}
     
@@ -628,11 +635,59 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		}
     }
 	
+    private void dealOrderRepayOverdue(RepayDealBo repayDealBo, AfBorrowLegalOrderCashDo orderCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+		
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal overdueAmount = orderCashDo.getOverdueAmount();
+		
+        if (repayAmount.compareTo(overdueAmount) > 0) {
+        	orderCashDo.setSumRepaidOverdue(BigDecimalUtil.add(orderCashDo.getSumRepaidOverdue(), overdueAmount));
+        	orderCashDo.setOverdueAmount(BigDecimal.ZERO);
+            repayDealBo.curRepayAmoutStub = repayAmount.subtract(overdueAmount);
+        } else {
+        	orderCashDo.setSumRepaidOverdue(BigDecimalUtil.add(orderCashDo.getSumRepaidOverdue(), repayAmount));
+        	orderCashDo.setOverdueAmount(overdueAmount.subtract(repayAmount));
+            repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+        }
+	}
+	private void dealOrderRepayPoundage(RepayDealBo repayDealBo, AfBorrowLegalOrderCashDo orderCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+		
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal poundageAmount = orderCashDo.getPoundageAmount();
+		
+        if (repayAmount.compareTo(poundageAmount) > 0) {
+        	orderCashDo.setSumRepaidPoundage(BigDecimalUtil.add(orderCashDo.getSumRepaidPoundage(), poundageAmount));
+        	orderCashDo.setPoundageAmount(BigDecimal.ZERO);
+            repayDealBo.curRepayAmoutStub = repayAmount.subtract(poundageAmount);
+        } else {
+        	orderCashDo.setSumRepaidPoundage(BigDecimalUtil.add(orderCashDo.getSumRepaidPoundage(), repayAmount));
+        	orderCashDo.setPoundageAmount(poundageAmount.subtract(repayAmount));
+            repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+        }
+	}
+	private void dealOrderRepayInterest(RepayDealBo repayDealBo, AfBorrowLegalOrderCashDo orderCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+		
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal rateAmount = orderCashDo.getInterestAmount();
+		
+        if (repayAmount.compareTo(rateAmount) > 0) {
+        	orderCashDo.setSumRepaidInterest(BigDecimalUtil.add(orderCashDo.getSumRepaidInterest(), rateAmount));
+        	orderCashDo.setInterestAmount(BigDecimal.ZERO);
+            repayDealBo.curRepayAmoutStub = repayAmount.subtract(rateAmount);
+        } else {
+        	orderCashDo.setSumRepaidInterest(BigDecimalUtil.add(orderCashDo.getSumRepaidInterest(), repayAmount));
+        	orderCashDo.setInterestAmount(rateAmount.subtract(repayAmount));
+            repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+        }
+	}
 	private void dealOrderRepayIfFinish(RepayDealBo repayDealBo, AfBorrowLegalOrderRepaymentDo orderRepaymentBo, AfBorrowLegalOrderCashDo orderCashDo) {
 		BigDecimal allBorrowAmount = BigDecimalUtil.add(orderCashDo.getAmount(), 
-														orderCashDo.getOverdueAmount(),
-														orderCashDo.getPoundageAmount(),
-														orderCashDo.getInterestAmount());
+														orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue(),
+														orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidPoundage(),
+														orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidInterest());
 		repayDealBo.sumAmount = repayDealBo.sumAmount.add(allBorrowAmount);
 		BigDecimal allRepayAmount = orderCashDo.getRepaidAmount().add(orderRepaymentBo.getRepayAmount());
 		Date now = new Date();
