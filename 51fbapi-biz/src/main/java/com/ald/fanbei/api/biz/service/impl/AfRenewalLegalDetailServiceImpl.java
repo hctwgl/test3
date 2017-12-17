@@ -329,8 +329,14 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 					
 					// 更新上期订单借款记录为FINISHED TODO
 					AfBorrowLegalOrderCashDo lastBorrowLegalOrderCash =  afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowLegalOrderId(lastBorrowLegalOrderDo.getRid());
-					lastBorrowLegalOrderCash.setRepaidAmount(BigDecimalUtil.add(lastBorrowLegalOrderCash.getAmount(),lastBorrowLegalOrderCash.getInterestAmount(),lastBorrowLegalOrderCash.getPoundageAmount(),lastBorrowLegalOrderCash.getOverdueAmount()));
 					lastBorrowLegalOrderCash.setStatus("FINISHED");
+					lastBorrowLegalOrderCash.setSumRepaidPoundage(lastBorrowLegalOrderCash.getSumRepaidPoundage().add(lastBorrowLegalOrderCash.getPoundageAmount()));
+					lastBorrowLegalOrderCash.setPoundageAmount(BigDecimal.ZERO);
+					lastBorrowLegalOrderCash.setSumRepaidOverdue(lastBorrowLegalOrderCash.getSumRepaidOverdue().add(lastBorrowLegalOrderCash.getOverdueAmount()));
+					lastBorrowLegalOrderCash.setOverdueAmount(BigDecimal.ZERO);
+					lastBorrowLegalOrderCash.setSumRepaidInterest(lastBorrowLegalOrderCash.getSumRepaidInterest().add(lastBorrowLegalOrderCash.getInterestAmount()));
+					lastBorrowLegalOrderCash.setInterestAmount(BigDecimal.ZERO);
+					lastBorrowLegalOrderCash.setRepaidAmount(BigDecimalUtil.add(lastBorrowLegalOrderCash.getAmount(),lastBorrowLegalOrderCash.getSumRepaidInterest(),lastBorrowLegalOrderCash.getSumRepaidPoundage(),lastBorrowLegalOrderCash.getSumRepaidOverdue()));
 					afBorrowLegalOrderCashDao.updateById(lastBorrowLegalOrderCash);
 					
 					// 更新上期订单还款记录为已结清
@@ -673,10 +679,13 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrderCash.setRefundRemark(afBorrowLegalOrderCash.getRefundRemark());
 		borrowLegalOrderCash.setOverdueDay((short)0);
 		borrowLegalOrderCash.setOverdueStatus("N");
-		borrowLegalOrderCash.setOverdueAmount(BigDecimal.ZERO);
 		borrowLegalOrderCash.setRepaidAmount(BigDecimal.ZERO);
+		borrowLegalOrderCash.setOverdueAmount(BigDecimal.ZERO);
 		borrowLegalOrderCash.setPoundageAmount(BigDecimal.ZERO);
 		borrowLegalOrderCash.setInterestAmount(BigDecimal.ZERO);
+		borrowLegalOrderCash.setSumRepaidOverdue(BigDecimal.ZERO);
+		borrowLegalOrderCash.setSumRepaidPoundage(BigDecimal.ZERO);
+		borrowLegalOrderCash.setSumRepaidInterest(BigDecimal.ZERO);
 		borrowLegalOrderCash.setPlanRepayDays(allowRenewalDay.intValue());
 		
 		Date date = DateUtil.addDays(new Date(), 7);
