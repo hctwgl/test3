@@ -301,18 +301,51 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
 			
 			BigDecimal orderSumAmount = orderCashDo.getAmount().add(orderCashDo.getOverdueAmount()).add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getOverdueAmount());
-			BigDecimal orderRemainAmount = orderSumAmount.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
-			BigDecimal borrowRepayAmount = bo.repaymentAmount.subtract(orderRemainAmount);
+			BigDecimal orderRemainShouldRepayAmount = orderSumAmount.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
+			BigDecimal borrowRepayAmount = bo.repaymentAmount.subtract(orderRemainShouldRepayAmount);
 			if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
-				// TODO 拆分实际支付现金
-				// TODO 拆分优惠卷抵扣信息
-				// TODO 拆分余额抵扣信息
-				BigDecimal actualAmountForBorrow = null;
-				BigDecimal actualAmountForOrder = null;
-				BigDecimal couponAmountForBorrow = null;
-				BigDecimal couponAmountForOrder = null;
-				BigDecimal rabateAmountForBorrow = null;
-				BigDecimal rabateAmountForOrder = null;
+				BigDecimal couponAmountForBorrow = BigDecimal.ZERO;
+				BigDecimal couponAmountForOrder = BigDecimal.ZERO;
+				BigDecimal rabateAmountForBorrow = BigDecimal.ZERO;
+				BigDecimal rabateAmountForOrder = BigDecimal.ZERO;
+				BigDecimal actualAmountForBorrow = BigDecimal.ZERO;
+				BigDecimal actualAmountForOrder = BigDecimal.ZERO;
+				
+				BigDecimal couponAmount = bo.userCouponDto != null?bo.userCouponDto.getAmount():BigDecimal.ZERO;
+				
+				BigDecimal minusAmount = couponAmount.subtract(orderRemainShouldRepayAmount);
+				if(minusAmount.compareTo(BigDecimal.ZERO) >= 0) { 		// 优惠卷面额 大于 订单应还金额
+					couponAmountForOrder = orderRemainShouldRepayAmount; 
+					if(minusAmount.compareTo(borrowRepayAmount) >= 0) { 	//拆分的优惠卷面额 大于等于 本次借款可还金额
+						couponAmountForBorrow = borrowRepayAmount;
+					} else { 													//拆分的优惠卷面额 小于 本次借款可还金额
+						couponAmountForBorrow = minusAmount;
+						BigDecimal borrowRemainRepayAmount = borrowRepayAmount.subtract(minusAmount);
+						if(bo.rebateAmount.compareTo(borrowRemainRepayAmount) >= 0) {// 账户余额 大于等于 本次借款剩余可还金额
+							rabateAmountForBorrow = borrowRemainRepayAmount;
+						} else {													 // 账户余额 小于 本次借款剩余可还金额
+							rabateAmountForBorrow = bo.rebateAmount;
+							actualAmountForBorrow = bo.actualAmount;
+						}
+					}
+				}else {														// 优惠卷面额 小于 订单应还金额
+					couponAmountForOrder = couponAmount;
+					minusAmount = minusAmount.abs();//差值
+					if(bo.rebateAmount.compareTo(minusAmount) >= 0) {		//账户余额 大于等于 订单剩余应还金额
+						rabateAmountForOrder = minusAmount;
+						rabateAmountForBorrow = bo.rebateAmount.subtract(rabateAmountForOrder);
+						actualAmountForBorrow = bo.actualAmount;
+					} else {													//账户余额 小于 订单剩余应还金额
+						rabateAmountForOrder = bo.rebateAmount;
+						minusAmount = minusAmount.subtract(rabateAmountForOrder);
+						if(bo.actualAmount.compareTo(minusAmount) >= 0) {			//现金额 大于等于 订单剩余应还金额
+							actualAmountForOrder = minusAmount;
+							actualAmountForBorrow = bo.actualAmount.subtract(actualAmountForOrder);
+						}else {
+							actualAmountForOrder = bo.actualAmount;
+						}
+					}
+				}
 				
 				borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, borrowRepayAmount, tradeNo, now, actualAmountForBorrow, bo.couponId, 
 							couponAmountForBorrow, rabateAmountForBorrow, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
@@ -320,7 +353,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				
 				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
 					orderRepaymentDo = buildOrderRepayment(bo, actualAmountForOrder, bo.couponId,  // TODO
-							couponAmountForOrder, rabateAmountForOrder, orderRemainAmount);
+							couponAmountForOrder, rabateAmountForOrder, orderRemainShouldRepayAmount);
 					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 				}
 			} else { //还款全部进入订单欠款中
@@ -439,10 +472,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.refId += orderCashDo.getRid();
 		repayDealBo.userId = cashDo.getUserId();
 		
-		changOrderRepaymentStatus(repayDealBo.curOutTradeNo, AfBorrowLegalRepaymentStatus.YES.getCode(), orderRepaymentDo.getId());
-        
         dealOrderRepayIfFinish(repayDealBo, orderRepaymentDo, orderCashDo);
         afBorrowLegalOrderCashDao.updateById(orderCashDo);
+        
+        changOrderRepaymentStatus(repayDealBo.curOutTradeNo, AfBorrowLegalRepaymentStatus.YES.getCode(), orderRepaymentDo.getId());
 		
 		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
         repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount());

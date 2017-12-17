@@ -2,9 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +38,7 @@ import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
-import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -76,7 +72,6 @@ import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.timevale.tgtext.text.pdf.da;
 
 /**  
  * @Description: 
@@ -725,6 +720,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = new AfBorrowLegalOrderRepaymentDo();
 		legalOrderRepayment.setUserId(userId);
 		legalOrderRepayment.setRepayAmount(BigDecimalUtil.add(afBorrowLegalOrderCash.getAmount(),afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()));// TODO+
+		legalOrderRepayment.setActualAmount(legalOrderRepayment.getRepayAmount());
 		legalOrderRepayment.setTradeNo(payTradeNo);
 		legalOrderRepayment.setStatus(AfBorrowLegalRepaymentStatus.APPLY.getCode());
 		legalOrderRepayment.setRebateAmount(rebateAmount);
