@@ -463,10 +463,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
 						afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
 				afUserAccountLogDao.addUserAccountLog(accountLog);
-				// 设置订单状态为待发货
-				afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.AWAIT_DELIVER.getCode());
-				// 设置订单借款状态为待还款
-				afBorrowLegalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());
 			}
 
 		} else {
@@ -578,7 +574,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowLegalOrderDo.setAddress(deliveryAddress);
 		afBorrowLegalOrderDo.setDeliveryPhone(deliveryPhone);
 		afBorrowLegalOrderDo.setDeliveryUser(deliveryUser);
-		afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
 		return afBorrowLegalOrderDo;
 	}
 
