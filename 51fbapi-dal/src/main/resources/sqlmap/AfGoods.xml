@@ -8,7 +8,7 @@
 	</sql>
 
 	<sql id="queryAllFields">
-		a.id rid,a.gmt_create,a.gmt_modified,creator,a.modifier,a.name,a.goods_icon,a.thumbnail_icon,a.goods_url,a.open_id,a.num_id,a.price_amount,
+		a.id rid,a.gmt_create,a.gmt_modified,a.creator,a.modifier,a.name,a.goods_icon,a.thumbnail_icon,a.goods_url,a.open_id,a.num_id,a.price_amount,
 		a.sale_amount,a.category_id,a.sale_count,a.gmt_start,a.gmt_end,a.status,a.source,a.rebate_amount,a.rebate_rate,a.shop_name,
 		(a.sale_amount-a.rebate_amount) real_amount,a.tags,a.goods_pic1,a.goods_pic2,a.goods_pic3,a.goods_pic4,a.goods_detail,a.remark,a.stock_count
 	</sql>
