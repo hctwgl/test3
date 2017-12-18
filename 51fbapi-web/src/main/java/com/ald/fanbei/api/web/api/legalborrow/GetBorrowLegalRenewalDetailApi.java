@@ -64,6 +64,8 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 		}
 		data.put("rid", afRenewalDetailDo.getRid());
 		data.put("renewalAmount", afRenewalDetailDo.getRenewalAmount());//续期本金
+		data.put("amount", afRenewalDetailDo.getRenewalAmount().add(afRenewalDetailDo.getPriorInterest())
+		.add(afRenewalDetailDo.getPriorOverdue()));//续期金额
 		data.put("priorInterest", afRenewalDetailDo.getPriorInterest());//上期利息
 		data.put("priorOverdue", afRenewalDetailDo.getPriorOverdue());//上期滞纳金
 		data.put("priorPoundage", afRenewalDetailDo.getPriorPoundage());//上期手续费
