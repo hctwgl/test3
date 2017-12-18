@@ -10,11 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
+import com.ald.fanbei.api.common.VersionCheckUitl;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.util.SpringBeanContextUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,6 @@ import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -46,6 +46,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	@Resource
 	AfBorrowExtendDao afBorrowExtendDao;
 
+	@Resource
+	AfUserAccountDao afUserAccountDao;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -53,6 +56,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 		Integer appVersion = context.getAppVersion();
 		Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), 0);
 		Long userId = context.getUserId();
+		VersionCheckUitl.setVersion(context.getAppVersion());
 		//用户订单检查
 		AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
 		if(null == orderInfo){
@@ -110,24 +114,28 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 
 
 	private void addBorrowBill_1(AfOrderDo afOrderDo){
-		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
-		if(afBorrowDo !=null){
-			//查询是否己产生
-			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-			if(borrowList == null || borrowList.size()==0 ){
-				AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
-				if(_aa ==null) {
-					AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
-					afBorrowExtendDo.setId(afBorrowDo.getRid());
-					afBorrowExtendDo.setInBill(0);
-					afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+		if(VersionCheckUitl.getVersion()>=VersionCheckUitl.VersionZhangDanSecond) {
+			AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrderDo.getRid());
+			if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+				//查询是否己产生
+				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+				if (borrowList == null || borrowList.size() == 0) {
+					AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+					if (_aa == null) {
+						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+						afBorrowExtendDo.setId(afBorrowDo.getRid());
+						afBorrowExtendDo.setInBill(0);
+						afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+					} else {
+						_aa.setInBill(1);
+						afBorrowExtendDao.updateBorrowExtend(_aa);
+					}
+					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+					afBorrowService.addBorrowBill(billList);
+
+					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrderDo.getUserId());
+					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrderDo.getUserId());
 				}
-				else{
-					_aa.setInBill(1);
-					afBorrowExtendDao.updateBorrowExtend(_aa);
-				}
-				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
-				afBorrowService.addBorrowBill(billList);
 			}
 		}
 	}

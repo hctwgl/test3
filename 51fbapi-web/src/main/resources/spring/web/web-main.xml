@@ -466,6 +466,9 @@
 
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
+				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
+				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>

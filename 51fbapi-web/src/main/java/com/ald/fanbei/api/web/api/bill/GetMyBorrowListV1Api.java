@@ -117,6 +117,9 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 			}
 			BigDecimal money = afBorrowBillService.getUserBillMoneyByQuery(query);
 			List<AfBorrowBillDo> billList = afBorrowBillService.getUserBillListByQuery(query);
+
+			Map<Integer, List<AfBorrowBillDo>> yearMap = new HashMap<Integer, List<AfBorrowBillDo>>();
+			List<Map<String, Object>> mapList = new ArrayList<Map<String,Object>>();
 			if (billList != null && billList.size() > 0) {
 				for (AfBorrowBillDo afBorrowBillDo : billList) {
 					Calendar calendar = Calendar.getInstance();
@@ -134,7 +137,25 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 						afBorrowBillDo.setOverdueStatus("N");
 						afBorrowBillDo.setGmtPayTime(afBorrowBillService.getPayDayByYearAndMonth(userId,afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth()));
 					}
+
+					if (yearMap.containsKey(afBorrowBillDo.getBillYear())) {
+						List<AfBorrowBillDo> monthList = yearMap.get(afBorrowBillDo.getBillYear());
+						monthList.add(afBorrowBillDo);
+						yearMap.put(afBorrowBillDo.getBillYear(), monthList);
+					}else {
+						List<AfBorrowBillDo> monthList = new ArrayList<AfBorrowBillDo>();
+						monthList.add(afBorrowBillDo);
+						yearMap.put(afBorrowBillDo.getBillYear(), monthList);
+					}
 				}
+			}
+
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			for(Integer key : yearMap.keySet()) {
+				Map<String, Object> respMaP = new HashMap<String, Object>();
+				respMaP.put("year", key);
+				respMaP.put("bills", yearMap.get(key));
+				list.add(respMaP);
 			}
 			//加入临时额度
 			double interimAmount = afBorrowBillService.selectInterimAmountByUserId(userId);

@@ -19,6 +19,8 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.huichaopay.HuichaoUtility;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
@@ -37,16 +39,6 @@ import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YeepayService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.enums.WxTradeState;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -107,6 +99,12 @@ public class PayRoutController {
 
     @Resource
     ThirdPayUtility thirdPayUtility;
+
+    @Resource
+    private AfUserAccountDao afUserAccountDao;
+
+    @Resource
+    private AfBorrowDao afBorrowDao;
 
     @Resource
     AfBankDao afBankDao;
@@ -630,6 +628,52 @@ public class PayRoutController {
         }
 
     }
+
+    /**
+     *
+     * @param orderId
+     * @param sigin
+     * @return
+     */
+    /**
+     * 订单自动收货
+     */
+    @RequestMapping(value = {"/autoCompleteOrder"})
+    @ResponseBody
+    public String autoCompleteOrder(Long orderId,String sign) throws Exception{
+
+        String data ="orderId="+orderId+"&vcode=0123654aa";
+        String salt = ConfigProperties.get("fbapi.orderFinish.key");
+        byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+        String sign1 = DigestUtil.encodeHex(pd);
+        if(!sign.equals(sign1)){
+            return "false";
+        }
+
+
+        AfOrderDo afOrder = afOrderDao.getOrderById(orderId);
+        AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderId);
+        if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+
+            AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowDo.getUserId());
+            afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afBorrowDo.getUserId());
+            List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+            if(borrowList == null || borrowList.size()==0 ){
+                List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+                afBorrowDao.addBorrowBill(billList);
+            }
+            AfOrderDo orderDoUpdate = new AfOrderDo();
+            orderDoUpdate.setRid(orderId);
+            orderDoUpdate.setStatus(OrderStatus.FINISHED.getCode());
+            orderDoUpdate.setGmtFinished(new Date());
+            orderDoUpdate.setLogisticsInfo("已签收");
+            afOrderService.updateOrder(orderDoUpdate);
+        }
+
+        return "success";
+    }
+
+
 
 
     /**

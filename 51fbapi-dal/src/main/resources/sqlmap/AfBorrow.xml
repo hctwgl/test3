@@ -213,6 +213,7 @@
 			a.is_delete = 0
 		AND a.user_id = #{userId}
 		AND b.in_bill = 0
+		order by a.gmt_create desc
 	</select>
 
 	<select id="getUserNotInBorrowCount" resultType="java.lang.Integer">
