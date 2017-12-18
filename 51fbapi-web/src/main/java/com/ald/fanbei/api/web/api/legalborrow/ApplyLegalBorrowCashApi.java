@@ -555,6 +555,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowLegalOrderCashDo.setRefundRemark(refundRemark);
 		afBorrowLegalOrderCashDo.setInterestAmount(rateAmount);
 		afBorrowLegalOrderCashDo.setPoundageAmount(poundageAmount);
+		afBorrowLegalOrderCashDo.setOverdueStatus("N");
 		// 获取借款天数
 		Integer planRepayDays = NumberUtil.objToIntDefault(type, 0);
 		Calendar cal = Calendar.getInstance();
