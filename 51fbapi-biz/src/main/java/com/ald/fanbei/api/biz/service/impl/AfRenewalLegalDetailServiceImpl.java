@@ -298,8 +298,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		// 获取新增的订单还款记录
 		final AfBorrowLegalOrderRepaymentDo borrowLegalOrderRepayment = afBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByPayTradeNo(outTradeNo);
 		// 获取新增的订单借款记录
-//		final AfBorrowLegalOrderCashDo borrowLegalOrderCashDo = afBorrowLegalOrderCashDao.getById(borrowLegalOrderRepayment.getBorrowLegalOrderCashId());// TODO 获取新增订单错误
-		final AfBorrowLegalOrderCashDo borrowLegalOrderCashDo = afBorrowLegalOrderCashDao.getNewOrderCash(borrowLegalOrderRepayment.getBorrowId());// TODO 获取新增订单错误
+		final AfBorrowLegalOrderCashDo borrowLegalOrderCashDo = afBorrowLegalOrderCashDao.getNewOrderCash(borrowLegalOrderRepayment.getBorrowId());
 		// 获取新增的订单
 		final AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderDao.getById(borrowLegalOrderCashDo.getBorrowLegalOrderId());
 		
@@ -571,8 +570,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 
 		
 		// 续借本金（总） 
-		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),
-													afBorrowCashDo.getSumRate(),borrowRateAmount,borrowPoundage);
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
 		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 		
