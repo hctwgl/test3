@@ -20,7 +20,7 @@
         })(window);
     </script>
     <!--转化代码-->
-    #set($version="201712011025")
+    #set($version="201712182005")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -49,6 +49,7 @@
             <p class="lineBox04"><span class="line04"></span></p>
         </div>
     </div>
+    <div class="logo"><img src="$src/ggFix44.png"></div>
     <p class="clickRule" @click="ruleClick()"><span>活动规则</span></p>
     <div class="alertRule" v-show="ruleShow">
         <p class="alertRuleTitle">活动规则</p>
