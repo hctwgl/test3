@@ -558,7 +558,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		// 获取借款天数
 		Integer planRepayDays = NumberUtil.objToIntDefault(type, 0);
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DAY_OF_YEAR, planRepayDays);
+		cal.add(Calendar.DAY_OF_YEAR, planRepayDays - 1);
 		afBorrowLegalOrderCashDo.setPlanRepayDays(planRepayDays);
 		afBorrowLegalOrderCashDo.setGmtPlanRepay(cal.getTime());
 		return afBorrowLegalOrderCashDo;
