@@ -58,7 +58,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	
+
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
@@ -160,7 +160,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
 			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2,
 					RoundingMode.HALF_UP);
-			
+
 			if (returnAmount.compareTo(capital) <= 0 || returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
 				data.put("renewalStatus", "N");
 			}
@@ -178,16 +178,21 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		data.put("gmtClose", afBorrowCashDo.getGmtClose());
 
 		// 查询商品借款信息 FIXME
-		AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
-		if(legalOrderCash == null) {
+		AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService
+				.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
+		if (legalOrderCash == null) {
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_BORROW_CASH_NOT_EXIST_ERROR);
 		}
-		
+
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
 				afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
-		
-		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
+		allAmount = BigDecimalUtil.add(allAmount, legalOrderCash.getInterestAmount(),
+				legalOrderCash.getPoundageAmount(), legalOrderCash.getOverdueAmount(),
+				legalOrderCash.getSumRepaidInterest(), legalOrderCash.getSumRepaidOverdue(),
+				legalOrderCash.getSumRepaidPoundage());
+		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+		showAmount = showAmount.subtract(afBorrowCashDo.getRepayAmount());
 		data.put("returnAmount", showAmount);
 
 		data.put("overdueDay", afBorrowCashDo.getOverdueDay());
