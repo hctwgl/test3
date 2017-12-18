@@ -420,6 +420,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         			status.setRollbackOnly();
         			logger.error("getBatchCreditInfo exception"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid(),e);
         			bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+        			throw new RuntimeException("getBatchCreditInfo fail");
         		}
             	return 0l;
             }
@@ -782,6 +783,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         			status.setRollbackOnly();
         			logger.error("getBatchCreditInfo exception"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid(),e);
         			bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
+        			throw new RuntimeException("getBatchCreditInfo fail");
         		}
             	return 0l;
             }

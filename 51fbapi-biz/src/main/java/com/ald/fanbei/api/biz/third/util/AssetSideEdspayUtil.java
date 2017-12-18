@@ -80,16 +80,16 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			//签名验证相关值处理
 			String realDataJson = "";
-			EdspayBackCreditReqBo ddspayBackCreditReqBo  = null;
+			EdspayBackCreditReqBo edspayBackCreditReqBo  = null;
 			try {
 				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-				ddspayBackCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
+				edspayBackCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
 			} catch (Exception e) {
 				logger.error("EdspayController giveBackCreditInfo parseJosn error", e);
 			}finally{
 				logger.info("EdspayController giveBackCreditInfo,appId="+appId+ ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
 			}
-			if(ddspayBackCreditReqBo==null){
+			if(edspayBackCreditReqBo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
 			}
@@ -102,18 +102,21 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			
 			//签名成功,业务处理
-			List<String> orderNos = ddspayBackCreditReqBo.getOrderNos();
+			List<String> orderNos = edspayBackCreditReqBo.getOrderNos();
 			if(orderNos==null || orderNos.size()==0 || orderNos.size()>100){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
-			Integer debtType = ddspayBackCreditReqBo.getDebtType();
+			Integer debtType = edspayBackCreditReqBo.getDebtType();
 			
 			//具体撤回操作
 			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
 			if(resultValue !=1){
 				logger.error("EdspayController giveBackCreditInfo exist error records,appId="+appId+ ",sendTime=" + timestamp);
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
+				return notifyRespBo;
 			}
+			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
 		} catch (Exception e) {
 			//系统异常
 			logger.error("EdspayController giveBackCreditInfo error,appId="+appId+ ",sendTime=" + timestamp, e);
