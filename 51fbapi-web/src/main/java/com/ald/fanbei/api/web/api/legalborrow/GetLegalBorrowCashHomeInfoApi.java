@@ -182,7 +182,6 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		// 获取可用额度
 		BigDecimal usableAmount = account.getAuAmount().subtract(account.getUsedAmount());
 
-		
 		// 获取搭售商品价格
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
@@ -305,7 +304,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 					afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
 			// 查询借款相关商品借款,计算总还款金额
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
-					.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
+					.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 
 			// 计算已经还款金额
 			BigDecimal paidAmount = afBorrowCashDo.getRepayAmount();
@@ -324,7 +323,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			}
 			// 减掉借款已还金额
 			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
-
+			
 			// 计算服务费和手续费
 			BigDecimal serviceFee = afBorrowCashDo.getPoundage();
 			BigDecimal interestFee = afBorrowCashDo.getRateAmount();
