@@ -23,6 +23,11 @@ public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Lon
 
 	AfBorrowLegalOrderDo getLastOrderByBorrowId(Long borrowId);
 
-    
+	/**
+	 * 查询borrowId 下是否有订单记录
+	 * @param borrowId
+	 * @return
+	 */
+	Integer tuchByBorrowId(Long borrowId);
 
 }

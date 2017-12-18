@@ -186,14 +186,18 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				String repayType, String repayTime, String repayAmount,
 				String restAmount, String outTradeNo, String isBalance) {
 		RepayBo bo = new RepayBo();
-		bo.tradeNo = tradeNo;
-		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
-		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
-		bo.outTradeNo = outTradeNo;
+		bo.userId = orderCashDo.getUserId();
+		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
 		
+		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
+		bo.actualAmount =  bo.repaymentAmount;
 		bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
 		bo.borrowOrderCashId = orderCashDo.getRid();
 		bo.from = AfBorrowLegalRepayFromEnum.INDEX.name();
+		
+		bo.tradeNo = tradeNo;
+		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
+		bo.outTradeNo = outTradeNo;
 		
 		generateRepayRecords(bo);
 		
@@ -879,9 +883,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		public Long userId;
 		
 		/* request字段 */
-		public BigDecimal repaymentAmount;
-		public BigDecimal actualAmount;
-		public BigDecimal rebateAmount; //可选字段
+		public BigDecimal repaymentAmount = BigDecimal.ZERO;
+		public BigDecimal actualAmount = BigDecimal.ZERO; //可选字段
+		public BigDecimal rebateAmount = BigDecimal.ZERO; //可选字段
 		public String payPwd;			//可选字段
 		public Long cardId;
 		public Long couponId;			//可选字段
