@@ -189,6 +189,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.userId = orderCashDo.getUserId();
 		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
 		
+		bo.cardId = (long) -4;
 		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
 		bo.actualAmount =  bo.repaymentAmount;
 		bo.borrowId = orderCashDo.getBorrowId();
@@ -834,7 +835,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (cardId == -4) {
-
+			repay.setCardNumber("");
+			repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			repay.setCardNumber(bank.getCardNumber());
@@ -868,6 +870,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			repayment.setCardNo("");
 			repayment.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (bo.cardId == -4) {
+			repayment.setCardNo("");
+			repayment.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(bo.cardId);
 			repayment.setCardNo(bank.getCardNumber());
