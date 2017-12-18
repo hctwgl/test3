@@ -221,14 +221,21 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		//上期订单利息
     		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
     		
+    		//上期逾期费（借款和订单）
+    		BigDecimal borrowOverdueAmount = afBorrowCashDo.getOverdueAmount();
+    		BigDecimal orderOverdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
+
+    		//上期订单借款金额
+    		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
+    		
     		// 本金（总） 
-    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getOverdueAmount(),
-    				afBorrowCashDo.getSumRate(),borrowRateAmount,afBorrowCashDo.getSumRenewalPoundage(),borrowPoundage);
+    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
     		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
     		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
     		
     		//判断续借金额是否大于借款金额
-    		BigDecimal allRenewalAmount= BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+    		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),orderAmount,orderOverdueAmount,orderPoundage,orderRateAmount)
+    													.subtract(afBorrowCashDo.getRepayAmount().add(afBorrowLegalOrderCash.getRepaidAmount()));
     		if (renewalAmount.compareTo(allRenewalAmount) >0) {
     			throw new FanbeiException(
     					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
@@ -239,12 +246,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		//订单已还金额
     		BigDecimal orderRepayAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getRepaidAmount(),BigDecimal.ZERO);
 
-    		//上期逾期费（借款和订单）
-    		BigDecimal borrowOverdueAmount = afBorrowCashDo.getOverdueAmount();
-    		BigDecimal orderOverdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
-
-    		//上期订单借款金额
-    		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
     		
     		//上期总手续费
     		BigDecimal poundage = BigDecimalUtil.add(borrowPoundage,orderPoundage);
