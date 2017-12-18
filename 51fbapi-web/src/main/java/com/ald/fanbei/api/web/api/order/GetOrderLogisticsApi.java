@@ -48,10 +48,9 @@ public class GetOrderLogisticsApi implements ApiHandle {
                 resp.addResponseData("logistics",afOrderLogisticsBo);
             }
         } catch (Exception e) {
-              logger.error("getOrderLogisticsApi :",e.toString());
-              resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
+            logger.error("getOrderLogisticsApi :",e);
+            resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
         }
-         System.out.println(JSON.toJSONString(resp));
         return resp;
     }
 

@@ -166,6 +166,70 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 		}
 		return resultValue;
 	}
+	
+	
+	
+	/**
+	 * 借款成功
+	 *
+	 * @param afBorrowCashDo
+	 * @return
+	 */
+	public int borrowSuccessForNew(final AfBorrowCashDo afBorrowCashDo) {
+		int resultValue = 0;
+		resultValue = transactionTemplate.execute(new TransactionCallback<Integer>() {
+			@Override
+			public Integer doInTransaction(TransactionStatus transactionStatus) {
+				logger.info("borrowSuccess--begin");
+				Date currDate = new Date(System.currentTimeMillis());
+				afBorrowCashDo.setGmtArrival(currDate);
+				Integer day = NumberUtil
+						.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+				Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtArrival());
+				Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
+				afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
+				afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+				logger.info("borrowSuccess--end");
+				return 1;
+			}
+		});
+
+		if (resultValue == 1) {
+			try {
+				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(),
+						afBorrowCashDo.getGmtCreate());
+				logger.info("updateRecommendUser=" + rr + "");
+			} catch (Exception e) {
+				logger.info(
+						"afRecommendUserService.updateRecommendByBorrow error，borrowCashId=" + afBorrowCashDo.getRid(),
+						e);
+			}
+
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(
+					ResourceType.FUND_SIDE_BORROW_CASH.getCode(),
+					AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
+			if (resourceDo != null && "1".equals(resourceDo.getValue())) {
+				// 业务处理成功,和资金方关联处理添加
+				logger.info("borrowSuccess ,begin rela fund site info,borrowCashId:" + afBorrowCashDo.getRid());
+				boolean matchResult = afFundSideBorrowCashService.matchFundAndBorrowCash(afBorrowCashDo.getRid());
+				if (matchResult) {
+					logger.info(
+							"borrowSuccess ,end rela fund site info success,borrowCashId:" + afBorrowCashDo.getRid());
+				} else {
+					logger.info("borrowSuccess ,end rela fund site info fail,borrowCashId:" + afBorrowCashDo.getRid());
+				}
+			} else {
+				// 资金方开关关闭，跳过关联
+				logger.info("borrowSuccess ,rela fund site info is off,and jump it ,borrowCashId:"
+						+ afBorrowCashDo.getRid());
+			}
+		}
+		if (resultValue == 1) {
+			contractPdfThreadPool.protocolCashLoanPdf(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(),
+					afBorrowCashDo.getUserId());// 生成凭据纸质帐单
+		}
+		return resultValue;
+	}
 
 	@Override
 	public int updateBorrowCash(final AfBorrowCashDo afBorrowCashDo) {

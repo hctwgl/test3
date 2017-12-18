@@ -1,5 +1,6 @@
 package com.ald.fanbei.web.test.api.borrowlegal;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 
 public class LegalBorrowTest  extends BaseTest{
@@ -48,7 +53,7 @@ public class LegalBorrowTest  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 
-	@Test
+//	@Test
 	public void getCashPageType() {
 		String url = urlBase + "/legalborrow/getCashPageType";
 		Map<String,String> params = new HashMap<>();
@@ -88,6 +93,29 @@ public class LegalBorrowTest  extends BaseTest{
 //        String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
 		
 		testApi(url, params, userName ,true);
+	}
+	
+	@Test
+	public void  offlineRepayment() {
+		String url = urlBase + "/third/collection/offlineRepayment";
+		 
+		Map<String,String> params = new HashMap<>();
+		params.put("repay_no", "offline" + System.currentTimeMillis());
+		params.put("borrow_no", "offline" + System.currentTimeMillis());
+		params.put("repay_type", "offline" + System.currentTimeMillis());
+		params.put("repay_time", "offline" + System.currentTimeMillis());
+		params.put("repay_amount", "100.00");
+		params.put("rest_amount", "100.00");
+		params.put("trade_no", "offline" + System.currentTimeMillis());
+		params.put("is_balance", YesNoStatus.YES.getCode());
+		
+		String data = JsonUtil.toJSONString(params);
+		String timestamp = DateUtil.getDateTimeFull(new Date());
+		String sign = DigestUtil.MD5(data);
+		String reqStr = "data=" + data + "&timestamp=" + timestamp +"&sign="+sign;
+		url += reqStr;
+		
+		testApi(url, null, userName ,true);
 	}
 	
 }
