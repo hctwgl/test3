@@ -135,6 +135,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 			Date nowDate = DateUtil.getEndOfDate(new Date());
 			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate,
 					afBorrowCashDo.getGmtPlanRepayment());
+
 			BigDecimal waitPaidAmount = BigDecimalUtil
 					.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(),
 							afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate())
@@ -177,19 +178,29 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 		data.put("gmtClose", afBorrowCashDo.getGmtClose());
 
-		// 查询商品借款信息 FIXME
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
+				afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+
+		// 查询商品借款信息
 		AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService
 				.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
-		if (legalOrderCash == null) {
-			throw new FanbeiException(FanbeiExceptionCode.ORDER_BORROW_CASH_NOT_EXIST_ERROR);
+		// FIXME
+		if (legalOrderCash != null) {
+			allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
+					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),
+					afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(), afBorrowCashDo.getPoundage(),
+					afBorrowCashDo.getSumRenewalPoundage());
+
+			showAmount = showAmount.subtract(legalOrderCash.getRepaidAmount());
+
+			BigDecimal serviceFee = afBorrowCashDo.getPoundage().add(legalOrderCash.getPoundageAmount());
+			BigDecimal interestFee = afBorrowCashDo.getRateAmount().add(legalOrderCash.getInterestAmount());
+			// 计算服务费和手续费
+			data.put("serviceFee", serviceFee);
+			data.put("serviceFee", interestFee);
 		}
 
-		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), 
-					afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount(), 
-					afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),
-					afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
-
-		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 		data.put("returnAmount", showAmount);
 
 		data.put("overdueDay", afBorrowCashDo.getOverdueDay());
