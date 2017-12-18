@@ -46,7 +46,7 @@ public class Test {
 		//System.out.println(new Date(1508998500000L));
 		
 		try {
-			BaseController.getTestUser(URLDecoder.decode("http://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=http://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=74&_appInfo=%7B%22id%22%3A%22a_867068024279399_1511925513970_www%22%2C%22time%22%3A%221511925513970%22%2C%22sign%22%3A%2226f66db053efb4d1c3ccb73ba56dc6e1d66e3c6fe3ef3bd376dab55284f0a579%22%2C%22userName%22%3A%2215669066271%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22397%22%7D","utf-8"));
+			BaseController.getTestUser(URLDecoder.decode("https://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=https://btestapp.51fanbei.com/fanbei-web/activity/doubleTwelve?groupId=74&_appInfo=%7B%22id%22%3A%22a_867068024279399_1511925513970_www%22%2C%22time%22%3A%221511925513970%22%2C%22sign%22%3A%2226f66db053efb4d1c3ccb73ba56dc6e1d66e3c6fe3ef3bd376dab55284f0a579%22%2C%22userName%22%3A%2215669066271%22%2C%22netType%22%3A%22WIFI%22%2C%22appVersion%22%3A%22397%22%7D","utf-8"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
