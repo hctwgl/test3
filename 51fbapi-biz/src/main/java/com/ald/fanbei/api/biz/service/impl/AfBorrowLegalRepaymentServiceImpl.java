@@ -191,6 +191,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		
 		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
 		bo.actualAmount =  bo.repaymentAmount;
+		bo.borrowId = orderCashDo.getBorrowId();
 		bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
 		bo.borrowOrderCashId = orderCashDo.getRid();
 		bo.from = AfBorrowLegalRepayFromEnum.INDEX.name();
