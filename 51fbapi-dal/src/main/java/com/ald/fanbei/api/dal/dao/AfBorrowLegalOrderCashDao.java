@@ -29,4 +29,11 @@ public interface AfBorrowLegalOrderCashDao extends BaseDao<AfBorrowLegalOrderCas
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoStatus(@Param("borrowId")Long borrowId);
 
 	AfBorrowLegalOrderCashDo getOrderCashByCashNo(String cashNo);
+	
+	/**
+	 * 查询borrowId 下是否有订单记录
+	 * @param borrowId
+	 * @return
+	 */
+	Long tuchByBorrowId(Long borrowId);
 }

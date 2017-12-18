@@ -32,7 +32,7 @@ import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
@@ -51,7 +51,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	private static String url = null;
 
 	@Resource
-	AfBorrowLegalOrderDao afBorrowLegalOrderDao;
+	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	@Resource
@@ -253,7 +253,7 @@ public class CollectionSystemUtil extends AbstractThird {
 					String respCode = FanbeiThirdRespCode.SUCCESS.getCode();
 					
 					//合规线下还款
-					if(afBorrowLegalOrderDao.tuchByBorrowId(afBorrowCashDo.getRid()) != null) {
+					if(afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo.getRid()) != null) {
 						AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 						afBorrowLegalOrderCashService.checkOfflineRepayment(afBorrowCashDo, orderCashDo, repayAmount ,tradeNo);
 						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance);

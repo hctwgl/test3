@@ -1,5 +1,7 @@
 package com.ald.fanbei.web.test.api.borrowlegal;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +21,8 @@ public class LegalBorrowTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://btestapp.51fanbei.com";
-	String userName = "13638668564";
+	String urlBase = "http://192.168.106.75:8180";
+	String userName = "15669066271";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -29,7 +31,6 @@ public class LegalBorrowTest  extends BaseTest{
 	public void init(){
 		super.init(userName);
 	}
-	
 	
 	
 	public void borrow() {
@@ -96,26 +97,28 @@ public class LegalBorrowTest  extends BaseTest{
 	}
 	
 	@Test
-	public void  offlineRepayment() {
-		String url = urlBase + "/third/collection/offlineRepayment";
+	public void  offlineRepayment() throws UnsupportedEncodingException {
+		String url = urlBase + "/third/collection/offlineRepayment?";
 		 
+		String tradeNo = "offline" + System.currentTimeMillis();
 		Map<String,String> params = new HashMap<>();
-		params.put("repay_no", "offline" + System.currentTimeMillis());
-		params.put("borrow_no", "offline" + System.currentTimeMillis());
-		params.put("repay_type", "offline" + System.currentTimeMillis());
-		params.put("repay_time", "offline" + System.currentTimeMillis());
-		params.put("repay_amount", "100.00");
+		params.put("repay_no", tradeNo);
+		params.put("borrow_no", "jq2017121822131800344");
+		params.put("repay_type", "BANK");
+		params.put("repay_time", DateUtil.formatDateTime(new Date()));
+		params.put("repay_amount", "2000.00");
 		params.put("rest_amount", "100.00");
-		params.put("trade_no", "offline" + System.currentTimeMillis());
+		params.put("trade_no", tradeNo);
 		params.put("is_balance", YesNoStatus.YES.getCode());
 		
 		String data = JsonUtil.toJSONString(params);
 		String timestamp = DateUtil.getDateTimeFull(new Date());
 		String sign = DigestUtil.MD5(data);
-		String reqStr = "data=" + data + "&timestamp=" + timestamp +"&sign="+sign;
+		String reqStr = "data=" + URLEncoder.encode(data, "UTF-8") + "&timestamp=" + URLEncoder.encode(timestamp, "UTF-8") +"&sign="+URLEncoder.encode(sign, "UTF-8");
 		url += reqStr;
+		Map<String,String> paramsT = new HashMap<>();
 		
-		testApi(url, null, userName ,true);
+		testApi(url, paramsT, userName ,true);
 	}
 	
 }
