@@ -333,7 +333,7 @@
         <include refid="commonCondition"/>
     </select>
     
-     <select id="getCurrDayHaveGetTotalAmount" resultType="java.math.BigDecimal">
+     <select id="getCurrDayHaveGetTotalBorrowAmount" resultType="java.math.BigDecimal">
     	SELECT
 			IFNULL(SUM(real_total_money),0)
 		FROM
@@ -341,6 +341,17 @@
 		WHERE
 			gmt_create <![CDATA[ >= ]]> CURRENT_DATE()
 		AND
-			asset_side_id = #{assetSideId ,jdbcType=BIGINT} and is_delete=0 and valid_status='Y'
+			asset_side_id = #{assetSideId ,jdbcType=BIGINT} and is_delete=0 and valid_status='Y' and busi_type=1
+    </select>
+    
+     <select id="getCurrDayHaveGetTotalBorrowCashAmount" resultType="java.math.BigDecimal">
+    	SELECT
+			IFNULL(SUM(real_total_money),0)
+		FROM
+			af_asset_package
+		WHERE
+			gmt_create <![CDATA[ >= ]]> CURRENT_DATE()
+		AND
+			asset_side_id = #{assetSideId ,jdbcType=BIGINT} and is_delete=0 and valid_status='Y' and busi_type=0
     </select>
 </mapper>

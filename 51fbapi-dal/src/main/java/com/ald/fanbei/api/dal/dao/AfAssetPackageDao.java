@@ -24,10 +24,17 @@ public interface AfAssetPackageDao extends BaseDao<AfAssetPackageDo, Long> {
 	int updateRealTotalMoneyById(AfAssetPackageDo afAssetPackageDo);
 
 	/**
-	 * 获取资产方当日已获取额度
+	 * 获取资产方当日已获取消费分期额度
 	 * @param rid
 	 * @return
 	 */
-	BigDecimal getCurrDayHaveGetTotalAmount(@Param("assetSideId")Long assetSideId);
+	
+	BigDecimal getCurrDayHaveGetTotalBorrowAmount(@Param("assetSideId")Long assetSideId);
+	/**
+	 * 获取资产方当日已获取现金贷额度
+	 * @param rid
+	 * @return
+	 */
+	BigDecimal getCurrDayHaveGetTotalBorrowCashAmount(@Param("assetSideId")Long assetSideId);
 	
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.assetside.AssetSideRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayBackCreditReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayCreditDetailInfo;
+import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditDayLimit;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditReqBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.bo.assetside.edspay.EdspayGetPlatUserInfoReqBo;
@@ -187,9 +188,16 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			
 			//校验当日限额
-			BigDecimal currDayHaveGetTotalAmount = afAssetPackageDao.getCurrDayHaveGetTotalAmount(afAssetSideInfoDo.getRid());
-			if(NumberUtil.objToBigDecimalDefault(assideResourceInfo.getValue3(), BigDecimal.ZERO).compareTo(currDayHaveGetTotalAmount.add(edspayGetCreditReqBo.getMoney()))<=0){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_AMOUNT_OVERRUN);
+			int debtType = NumberUtil.objToIntDefault(edspayGetCreditReqBo.getDebtType(), 0);
+			BigDecimal currDayHaveGetTotalBorrowAmount = afAssetPackageDao.getCurrDayHaveGetTotalBorrowAmount(afAssetSideInfoDo.getRid());
+			BigDecimal currDayHaveGetTotalBorrowCashAmount = afAssetPackageDao.getCurrDayHaveGetTotalBorrowCashAmount(afAssetSideInfoDo.getRid());
+			EdspayGetCreditDayLimit dayLimit = JSON.toJavaObject(JSON.parseObject(assideResourceInfo.getValue3()), EdspayGetCreditDayLimit.class);
+			if (debtType == 1 && dayLimit != null && dayLimit.getBorrowDayLimit().compareTo(currDayHaveGetTotalBorrowAmount.add(edspayGetCreditReqBo.getMoney()))<=0) {
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_BORROW_AMOUNT_OVERRUN);
+				return notifyRespBo;
+			}
+			if (debtType == 0 && dayLimit != null && dayLimit.getBorrowCashDayLimit().compareTo(currDayHaveGetTotalBorrowCashAmount.add(edspayGetCreditReqBo.getMoney()))<=0) {
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_BORROWCASH_AMOUNT_OVERRUN);
 				return notifyRespBo;
 			}
 			
@@ -207,7 +215,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
-			int debtType = NumberUtil.objToIntDefault(edspayGetCreditReqBo.getDebtType(), 0);
 			
 			//获取开户行信息
 			FanbeiBorrowBankInfoBo bankInfo = getAssetSideBankInfo(getAssetSideBankInfo());
