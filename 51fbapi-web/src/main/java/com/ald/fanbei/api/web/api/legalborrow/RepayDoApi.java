@@ -121,6 +121,7 @@ public class RepayDoApi implements ApiHandle {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		
+		
 		RepayBo bo = new RepayBo();
 		bo.userId = userId;
 		bo.userDo = userDo;
@@ -134,6 +135,13 @@ public class RepayDoApi implements ApiHandle {
 		bo.borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
 		bo.borrowOrderId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowOrderId")), 0l);
 		bo.from = ObjectUtils.toString(requestDataVo.getParams().get("from"), "").toString();
+		
+		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
+			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+		}
+		if (bo.cardId == -3) {// -3支付宝支付
+			throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+		}
 		
 		checkFrom(bo);
 		checkPwdAndCard(bo);
