@@ -186,7 +186,6 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
 				afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 		
-		
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
 		data.put("returnAmount", showAmount);

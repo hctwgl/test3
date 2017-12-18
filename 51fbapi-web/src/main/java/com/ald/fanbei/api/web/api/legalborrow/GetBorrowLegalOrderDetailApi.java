@@ -57,11 +57,10 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 		}
 		AfBorrowLegalOrderDeatilVo afBorrowLegalOrderDeatilVo = new AfBorrowLegalOrderDeatilVo();
 		AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
-		
+
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
 				.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
-		
-		
+
 		if (afBorrowLegalOrderCashDo != null) {
 			// FIXME 计算待还金额
 			BigDecimal amount = afBorrowLegalOrderCashDo.getAmount();
@@ -69,9 +68,13 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 			BigDecimal poundageAmount = afBorrowLegalOrderCashDo.getPoundageAmount();
 			BigDecimal repainAmount = afBorrowLegalOrderCashDo.getRepaidAmount();
 			BigDecimal overdueAmount = afBorrowLegalOrderCashDo.getOverdueAmount();
-			BigDecimal totalAmount = BigDecimalUtil.add(amount,interestAmount,poundageAmount,overdueAmount);
+			BigDecimal sumRepaidInterest = afBorrowLegalOrderCashDo.getSumRepaidInterest();
+			BigDecimal sumRepaidOverdue = afBorrowLegalOrderCashDo.getSumRepaidOverdue();
+			BigDecimal sumRepaidPoundage = afBorrowLegalOrderCashDo.getSumRepaidPoundage();
+			BigDecimal totalAmount = BigDecimalUtil.add(amount, interestAmount, poundageAmount, overdueAmount,
+					sumRepaidInterest, sumRepaidOverdue, sumRepaidPoundage);
 			BigDecimal returnAmount = totalAmount.subtract(repainAmount);
-			if(returnAmount.compareTo(BigDecimal.ZERO) < 0) {
+			if (returnAmount.compareTo(BigDecimal.ZERO) < 0) {
 				returnAmount = BigDecimal.ZERO;
 			}
 			afBorrowLegalOrderDeatilVo.setReturnAmount(returnAmount);
