@@ -262,10 +262,15 @@
 	<select id="getHomeGoodsByModelId" resultType="AfGoodsDo">
 		SELECT
 		<include refid="queryFields"/>
-		from af_goods
-		where is_delete = 0
-		AND
-		id in (select item_value from af_model_h5_item where item_value2 = #{categoryId} and item_type = 'GOODS_ID' and type = 'GOODSLIST' and is_delete = 0 ORDER BY gmt_create DESC)
+		FROM
+		af_goods a LEFT JOIN af_model_h5_item b on b.item_value = a.id
+		WHERE
+		a.is_delete = 0
+		AND b.item_value2 = #{categoryId}
+		AND b.item_type = 'GOODS_ID'
+		AND b.type = 'GOODSLIST'
+		AND b.is_delete = 0
+		ORDER BY b.gmt_create desc
 
 	</select>
 
