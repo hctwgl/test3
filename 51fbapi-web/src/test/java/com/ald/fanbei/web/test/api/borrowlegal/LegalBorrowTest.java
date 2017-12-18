@@ -50,7 +50,14 @@ public class LegalBorrowTest  extends BaseTest{
 		
 		testApi(url, params, userName ,true);
 	}
-	
+
+	//	@Test
+	public void getCashPageType() {
+		String url = urlBase + "/legalborrow/getCashPageType";
+		Map<String,String> params = new HashMap<>();
+		testApi(url, params, userName ,true);
+	}
+
 //	@Test
 	public void  repayDo() {
 		String url = urlBase + "/legalborrow/repayDo";
