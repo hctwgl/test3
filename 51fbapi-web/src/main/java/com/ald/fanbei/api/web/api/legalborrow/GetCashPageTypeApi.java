@@ -11,6 +11,8 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -33,41 +35,81 @@ public class GetCashPageTypeApi implements ApiHandle {
 	private AfBorrowCashService afBorrowCashService;
 
 	@Resource
-	AfResourceService afResourceService;
+	private AfResourceService afResourceService;
+
+	private static final String RESOURCE_TYPE = "BORROW_BACK";
+
+	private static final String SEC_TYPE = "BORROW_BACK_RESULT";
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		Long userId = context.getUserId();
-		String resourceType = "BORROW_BACK";// 从resource中获取参数判断是否为回退
-		String secType = "BORROW_BACK_RESULT";
-		boolean openStatus = false;// 判断是否为回退
-		String pageType = "old";
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(resourceType, secType);
-		if (afResourceDo != null && null != afResourceDo.getValue()) {
-			if ("true".equals(afResourceDo.getValue())) {
-				openStatus = true;// 回退
-			}
-		}
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);// 查询borrowCash中是否有借款信息
-		if (afBorrowCashDo != null) {
-			if (!"FINSH".equals(afBorrowCashDo.getStatus())) {// borrowCash存在借款信息，并且未结清
-				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-						.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
-				if (afBorrowLegalOrderCashDo != null) {// 查询是否有新版本借款
-					pageType = "new";
-				}
-			} else if (!openStatus) {
-				pageType = "new";
-			}
-		} else {
-			if (!openStatus) {// 不是回退且没有借款信息
-				pageType = "new";
-			}
-		}
+
 		Map<String, Object> data = new HashMap<>();
-		data.put("pageType", pageType);
 		resp.setResponseData(data);
+		Long userId = context.getUserId();
+		String pageType = "old";
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE, SEC_TYPE);
+
+		if (afResourceDo == null) {
+			data.put("pageType", pageType);
+			return resp;
+		}
+		String isBack = afResourceDo.getValue();
+		if (userId == null && StringUtils.equalsIgnoreCase("false", isBack)) {
+			pageType = "old";
+		} else if (userId == null && StringUtils.equalsIgnoreCase("true", isBack)) {
+			pageType = "new";
+		} else if (userId != null && StringUtils.equalsIgnoreCase("false", isBack)) {
+			// 不回退的情况
+			// 获取最后一笔借款
+			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+			if (afBorrowCashDo == null) {
+				pageType = "new";
+			} else {
+				// 判断借款状态是否为完成或关闭
+				String status = afBorrowCashDo.getStatus();
+				if (StringUtils.equalsIgnoreCase("FINSH", status) && StringUtils.equalsIgnoreCase("CLOSED", status)) {
+					pageType = "new";
+				} else {
+					// 查询用户是否有订单借款信息
+					AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
+							.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+					if (afBorrowLegalOrderCashDo != null) {
+						pageType = "new";
+					} else {
+						pageType = "old";
+					}
+				}
+			}
+
+		} else if (userId != null && StringUtils.equalsIgnoreCase("true", isBack)) {
+			// 回退的情况
+			// 获取最后一笔借款
+			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+			if (afBorrowCashDo == null) {
+				pageType = "old";
+			} else {
+				// 判断借款状态是否为完成或关闭
+				String status = afBorrowCashDo.getStatus();
+				if (StringUtils.equalsIgnoreCase("FINSH", status) && StringUtils.equalsIgnoreCase("CLOSED", status)) {
+					pageType = "old";
+				} else {
+					// 查询用户是否有订单借款信息
+					AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
+							.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+					if (afBorrowLegalOrderCashDo != null) {
+						// 如果有订单信息，则不回退
+						pageType = "new";
+					} else {
+						pageType = "old";
+					}
+				}
+			}
+
+		}
+
+		data.put("pageType", pageType);
 		return resp;
 	}
 }
