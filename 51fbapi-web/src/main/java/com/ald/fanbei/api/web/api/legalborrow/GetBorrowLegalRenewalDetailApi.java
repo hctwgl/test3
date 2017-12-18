@@ -53,8 +53,9 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 	public Map<String, Object> objectWithAfRenewalDetailDo(AfRenewalDetailDo afRenewalDetailDo,AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		BigDecimal lastRepaidamount = new BigDecimal(0);
+		BigDecimal amount = new BigDecimal(0);
 		if (afBorrowLegalOrderCashDo != null ){
-			BigDecimal amount = afBorrowLegalOrderCashDo.getAmount();
+			amount = afBorrowLegalOrderCashDo.getAmount();
 			BigDecimal sumRepaidInterest = afBorrowLegalOrderCashDo.getSumRepaidInterest();
 			BigDecimal sumRepaidOverdue = afBorrowLegalOrderCashDo.getSumRepaidOverdue();
 			BigDecimal sumRepaidPoundage = afBorrowLegalOrderCashDo.getSumRepaidPoundage();
@@ -73,6 +74,7 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());//续借编号
 		data.put("capital", afRenewalDetailDo.getCapital());//续借本金
 		data.put("lastRepaidamount", lastRepaidamount);//上期待还金额
+		data.put("goodsAmount", amount);//分期商品金额
 
 		return data;
 	}
