@@ -136,6 +136,9 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 					}
 				}
 			}
+			//加入临时额度
+			double interimAmount = afBorrowBillService.selectInterimAmountByUserId(userId);
+			map.put("interimAmount",interimAmount);
 			map.put("money", money);
 			map.put("billList", billList);
 			resp.setResponseData(map);

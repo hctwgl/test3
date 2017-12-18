@@ -441,4 +441,10 @@ public interface AfBorrowBillDao {
 	 */
 	Date getPayDayByYearAndMonth(@Param("userId")Long userId,@Param("billYear")int billYear, @Param("billMonth")int billMonth);
 
+	/**
+	 * 获取用户临时额度
+	 * @param userId
+	 * @return
+	 */
+	double selectInterimAmountByUserId(@Param("userId")Long userId);
 }

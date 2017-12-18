@@ -363,4 +363,10 @@ public interface AfBorrowBillService {
 	 */
 	Date getPayDayByYearAndMonth(Long userId, int billYear, int billMonth);
 
+	/**
+	 * 获取用户的临时额度
+	 * @param userId
+	 * @return
+	 */
+	double selectInterimAmountByUserId(Long userId);
 }

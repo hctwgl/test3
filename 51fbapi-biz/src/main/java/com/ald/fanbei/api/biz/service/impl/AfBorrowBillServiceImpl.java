@@ -619,4 +619,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public Date getPayDayByYearAndMonth(Long userId, int billYear, int billMonth) {
 		return afBorrowBillDao.getPayDayByYearAndMonth(userId,billYear,billMonth);
 	}
+
+	@Override
+	public double selectInterimAmountByUserId(Long userId) {
+		return afBorrowBillDao.selectInterimAmountByUserId(userId);
+	}
 }

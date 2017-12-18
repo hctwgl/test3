@@ -773,4 +773,8 @@
 		and is_out = 1
 		order by gmt_pay_time
 	</select>
+
+	<select id="selectInterimAmountByUserId" resultType="double">
+		SELECT interim_amount from  af_interim_au where user_id = #{userId}
+	</select>
 </mapper>
