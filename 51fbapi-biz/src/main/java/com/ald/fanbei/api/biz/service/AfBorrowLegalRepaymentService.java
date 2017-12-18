@@ -16,7 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 public interface AfBorrowLegalRepaymentService extends ParentService<AfBorrowLegalOrderRepaymentDo, Long>{
 	void repay(RepayBo bo);
 	
-	void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String tradeNo, String borrowNo, 
+	void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String borrowNo, 
 			String repayType, String repayTime, String repayAmount,
 			String restAmount, String outTradeNo, String isBalance);
 	

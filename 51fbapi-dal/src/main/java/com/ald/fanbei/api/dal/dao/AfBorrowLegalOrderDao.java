@@ -28,6 +28,6 @@ public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Lon
 	 * @param borrowId
 	 * @return
 	 */
-	Integer tuchByBorrowId(Long borrowId);
+	Long tuchByBorrowId(Long borrowId);
 
 }

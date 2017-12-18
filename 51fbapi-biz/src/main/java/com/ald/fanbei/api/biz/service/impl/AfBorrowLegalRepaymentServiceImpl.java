@@ -182,7 +182,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
      * @param restAmount 
      */
 	@Override
-	public void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String tradeNo, String borrowNo, 
+	public void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String borrowNo, 
 				String repayType, String repayTime, String repayAmount,
 				String restAmount, String outTradeNo, String isBalance) {
 		RepayBo bo = new RepayBo();
@@ -195,7 +195,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.borrowOrderCashId = orderCashDo.getRid();
 		bo.from = AfBorrowLegalRepayFromEnum.INDEX.name();
 		
-		bo.tradeNo = tradeNo;
+		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
 		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
 		bo.outTradeNo = outTradeNo;
 		

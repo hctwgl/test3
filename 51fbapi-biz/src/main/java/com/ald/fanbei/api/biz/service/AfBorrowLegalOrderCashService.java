@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 
 /**
@@ -19,5 +22,9 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 	int saveBorrowLegalOrderCash(AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo);
 
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long rid);
+	
+	BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo);
+	
+	void checkOfflineRepayment(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo, String curRepayAmount, String outTradeNo);
 
 }

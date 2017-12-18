@@ -89,8 +89,7 @@ public class CollectionController {
 		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
 		String sign = ObjectUtils.toString(request.getParameter("sign"));
 		logger.info("deal offlineRepayment begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
-		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data,
-				sign);
+		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data, sign);
 		return notifyRespBo;
 	}
 
