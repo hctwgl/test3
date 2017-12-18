@@ -202,4 +202,7 @@ public interface AfBorrowCashService {
 
 
 	int borrowSuccessForNew(AfBorrowCashDo afBorrowCashDo);
+
+
+	AfBorrowCashDo getBorrowCashByUserIdDescById(Long userId);
 }

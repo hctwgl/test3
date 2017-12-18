@@ -182,8 +182,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		// 获取可用额度
 		BigDecimal usableAmount = account.getAuAmount().subtract(account.getUsedAmount());
 
-		// 计算最高借款金额
-		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
+		
 		// 获取搭售商品价格
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
@@ -248,14 +247,16 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		}
 
 		newRate = newRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(maxAmount).multiply(BigDecimal.valueOf(14));
+		BigDecimal profitAmount = oriRate.subtract(newRate).multiply(usableAmount).multiply(BigDecimal.valueOf(14));
 		Long goodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(profitAmount);
 		if (goodsId != null) {
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
 			BigDecimal saleAmount = goodsInfo.getSaleAmount();
-			maxAmount = maxAmount.subtract(saleAmount);
+			usableAmount = usableAmount.subtract(saleAmount);
 		}
-
+		
+		// 计算最高借款金额
+		maxAmount = maxAmount.compareTo(usableAmount) < 0 ? maxAmount : usableAmount;
 		// 判断是否可借钱，用户可用额度>=最低借款金额 + 最低借款金额借14天匹配的商品金额
 		BigDecimal minProfitAmount = oriRate.subtract(newRate).multiply(minAmount).multiply(BigDecimal.valueOf(14));
 		Long tmpGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmout(minProfitAmount);
@@ -279,7 +280,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		// 增加判断，如果前面还有没有还的借款，优先还掉
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getNowTransedBorrowCashByUserId(userId);
 		if (afBorrowCashDo == null) {
-			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		}
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");

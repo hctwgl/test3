@@ -8,11 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowLegalOrderQuery;
@@ -32,6 +34,9 @@ public class GetBorrowLegalOrderInfoApi implements ApiHandle {
 
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
+
+	@Resource
+	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
 	@Resource
 	AfGoodsService afGoodsService;
@@ -59,7 +64,8 @@ public class GetBorrowLegalOrderInfoApi implements ApiHandle {
 		List<Map<String, Object>> orderList = Lists.newArrayList();
 		for (AfBorrowLegalOrderDo borrowLegalOrderDo : borrowLegalOrdersList) {
 			Map<String, Object> orderInfoMap = Maps.newHashMap();
-			orderInfoMap.put("orderId", borrowLegalOrderDo.getRid());
+			Long orderId = borrowLegalOrderDo.getRid();
+			orderInfoMap.put("orderId", orderId);
 			orderInfoMap.put("goodsName", borrowLegalOrderDo.getGoodsName());
 			orderInfoMap.put("status", borrowLegalOrderDo.getStatus());
 			orderInfoMap.put("gmtCreate", borrowLegalOrderDo.getGmtCreate());
@@ -71,6 +77,10 @@ public class GetBorrowLegalOrderInfoApi implements ApiHandle {
 				orderInfoMap.put("goodsIcon", goodsDo.getGoodsIcon());
 			}
 			orderList.add(orderInfoMap);
+			AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService
+					.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
+			orderInfoMap.put("borrowStatus", legalOrderCash.getStatus());
+
 		}
 		data.put("orderList", orderList);
 		resp.setResponseData(data);
