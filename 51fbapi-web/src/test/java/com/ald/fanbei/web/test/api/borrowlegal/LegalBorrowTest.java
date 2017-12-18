@@ -106,8 +106,8 @@ public class LegalBorrowTest  extends BaseTest{
 		params.put("borrow_no", "jq2017121822131800344");
 		params.put("repay_type", "BANK");
 		params.put("repay_time", DateUtil.formatDateTime(new Date()));
-		params.put("repay_amount", "2000.00");
-		params.put("rest_amount", "100.00");
+		params.put("repay_amount", "200000.00");
+		params.put("rest_amount", "100000.00");
 		params.put("trade_no", tradeNo);
 		params.put("is_balance", YesNoStatus.YES.getCode());
 		
