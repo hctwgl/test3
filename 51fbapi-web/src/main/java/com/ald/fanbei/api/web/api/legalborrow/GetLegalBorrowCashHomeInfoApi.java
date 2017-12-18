@@ -463,7 +463,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 		if (YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus())
-				&& !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
+				&& YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 		}
 
