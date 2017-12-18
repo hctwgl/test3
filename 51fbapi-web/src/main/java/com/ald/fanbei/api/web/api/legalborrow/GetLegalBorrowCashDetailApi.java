@@ -184,15 +184,12 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_BORROW_CASH_NOT_EXIST_ERROR);
 		}
 
-		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
-				afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), 
+					afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount(), 
+					afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),
+					afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
 
-		allAmount = BigDecimalUtil.add(allAmount, legalOrderCash.getInterestAmount(),
-				legalOrderCash.getPoundageAmount(), legalOrderCash.getOverdueAmount(),
-				legalOrderCash.getSumRepaidInterest(), legalOrderCash.getSumRepaidOverdue(),
-				legalOrderCash.getSumRepaidPoundage());
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
-		showAmount = showAmount.subtract(afBorrowCashDo.getRepayAmount());
 		data.put("returnAmount", showAmount);
 
 		data.put("overdueDay", afBorrowCashDo.getOverdueDay());
