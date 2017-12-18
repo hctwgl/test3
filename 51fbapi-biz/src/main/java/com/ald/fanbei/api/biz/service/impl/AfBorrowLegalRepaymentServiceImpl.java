@@ -544,10 +544,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
      * @param repayDealBo
      */
     private void dealCouponAndRebate(RepayDealBo repayDealBo) {
-    	if(repayDealBo.curRebateAmount != null && repayDealBo.curRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
+    	if(repayDealBo.curSumRebateAmount != null && repayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
     		AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(repayDealBo.userId);
             accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.sumBorrowAmount));
-            accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(repayDealBo.curRebateAmount));
+            accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(repayDealBo.curSumRebateAmount));
             afUserAccountDao.updateOriginalUserAccount(accountInfo);
     	}
     	
