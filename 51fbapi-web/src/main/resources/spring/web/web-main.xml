@@ -471,6 +471,7 @@
 				<entry key="/legalborrow/getBorrowLegalOrderDetail" value-ref="getBorrowLegalOrderDetailApi" />
 				<entry key="/legalborrow/repayDo" value-ref="repayDoApi" />
 				<entry key="/legalborrow/getOrderRepaymentInfo" value-ref="getOrderRepaymentInfoApi" />
+				<entry key="/legalborrow/getLegalBorrowCashDetail" value-ref="getLegalBorrowCashDetailApi" />
 				
 				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />

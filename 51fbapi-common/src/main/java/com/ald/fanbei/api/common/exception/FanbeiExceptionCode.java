@@ -260,6 +260,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
    
     
     BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2005,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
+    ORDER_BORROW_CASH_NOT_EXIST_ERROR("ORDER_BORROW_CASH_NOT_EXIST_ERROR",2006,"order borrow cash not exist","商品借款信息不存在"),
+
+    
+    
     RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",3005,"renewal cash repay more than borrow cash","续借金额大于借款金额"),
     RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED("RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED",3006,"renewal cash repay less one hundred","续借金额小于100"),
 

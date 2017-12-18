@@ -159,7 +159,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		// 获取销售商品信息
 		String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 		String goodsName = ObjectUtils.toString(requestDataVo.getParams().get("goodsName"));
-		int goodsAmount = NumberUtil.objToIntDefault(requestDataVo.getParams().get("goodsAmount"), 0);
+		double goodsAmount = NumberUtil.objToDoubleDefault(requestDataVo.getParams().get("goodsAmount"), 0);
 		// 收货地址信息
 		String deliveryAddress = ObjectUtils.toString(requestDataVo.getParams().get("deliveryAddress"));
 		String deliveryUser = ObjectUtils.toString(requestDataVo.getParams().get("deliveryUser"));
