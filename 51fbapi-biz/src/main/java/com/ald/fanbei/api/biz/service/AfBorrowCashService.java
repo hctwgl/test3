@@ -199,4 +199,7 @@ public interface AfBorrowCashService {
 	 * 宜信查询
 	 * */
 	List<AfBorrowCashDo> getListByUserId(Long userId, Long rows);
+
+
+	int borrowSuccessForNew(AfBorrowCashDo afBorrowCashDo);
 }

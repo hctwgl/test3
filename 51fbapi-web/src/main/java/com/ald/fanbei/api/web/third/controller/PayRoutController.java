@@ -240,7 +240,7 @@ public class PayRoutController {
 						afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
 					}
 					
-					afBorrowCashService.borrowSuccess(afBorrowCashDo);
+					afBorrowCashService.borrowSuccessForNew(afBorrowCashDo);
 
 				} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {// 菠萝觅银行卡退款
 					// 退款记录
