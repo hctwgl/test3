@@ -26,7 +26,7 @@ public class EdspayGetCreditRespBo implements Serializable {
 	private BigDecimal apr;//借款年化利率
 	private Integer timeLimit;//借款期限（单位：天）
 	private Long loanStartTime;//借款开始时间戳（单位：秒）
-	private Integer purpose;//借款用途
+	private String purpose;//借款用途
 	private Integer repaymentStatus;//还款状态（0：未还，1：已还）
 	private Integer repaymentType;//还款方式（具体说明）
 	private String repayName;//放款账户户名
@@ -54,7 +54,7 @@ public class EdspayGetCreditRespBo implements Serializable {
 	public EdspayGetCreditRespBo(String packageNo, String orderNo, Long userId,
 			String name, String cardId, String mobile, String bankNo,
 			String acctName, BigDecimal money, BigDecimal apr,
-			Integer timeLimit, Long loanStartTime, Integer purpose,
+			Integer timeLimit, Long loanStartTime, String purpose,
 			Integer repaymentStatus, Integer repaymentType, String repayName,
 			String repayAcct, String repayAcctBankNo, Integer repayAcctType,
 			Integer isRepayAcctOtherBank, BigDecimal manageFee, Long pushTime,
@@ -169,10 +169,10 @@ public class EdspayGetCreditRespBo implements Serializable {
 	public void setLoanStartTime(Long loanStartTime) {
 		this.loanStartTime = loanStartTime;
 	}
-	public Integer getPurpose() {
+	public String getPurpose() {
 		return purpose;
 	}
-	public void setPurpose(Integer purpose) {
+	public void setPurpose(String purpose) {
 		this.purpose = purpose;
 	}
 	public Integer getRepaymentStatus() {

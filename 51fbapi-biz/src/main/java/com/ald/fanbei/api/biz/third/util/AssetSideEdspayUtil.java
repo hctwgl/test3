@@ -148,12 +148,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			
 			//请求时间校验
-			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
+		/*	Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}
+			}*/
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGetCreditReqBo edspayGetCreditReqBo = null;
@@ -218,6 +218,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				//消费分期
 				creditInfoList = afAssetPackageDetailService.getBorrowBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime);
 			}else{
+				//现金贷
 				creditInfoList = afAssetPackageDetailService.getBorrowCashBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, sevenMoney);
 			}
 			if(creditInfoList!=null && creditInfoList.size()>0){

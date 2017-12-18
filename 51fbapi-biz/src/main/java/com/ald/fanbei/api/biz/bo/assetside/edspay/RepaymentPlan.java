@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 public class RepaymentPlan implements Serializable{
 	private static final long serialVersionUID = 4204652534348461359L;
+	private String repaymentNo;//还款编号
 	private Long repaymentTime;//还款时间
 	private Long repaymentDays;//还款天数(距借款开始时间的天数)
 	private BigDecimal repaymentAmount;//还款本金
@@ -39,6 +40,12 @@ public class RepaymentPlan implements Serializable{
 	}
 	public void setRepaymentPeriod(Integer repaymentPeriod) {
 		this.repaymentPeriod = repaymentPeriod;
+	}
+	public String getRepaymentNo() {
+		return repaymentNo;
+	}
+	public void setRepaymentNo(String repaymentNo) {
+		this.repaymentNo = repaymentNo;
 	}
 	
 }

@@ -104,7 +104,7 @@
         limit 0,1
     </select>
                
-    <!-- <select id="getListByQueryCondition" resultType="com.ald.fanbei.api.dal.domain.AfViewAssetBorrowCashDo" parameterType="com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery">
+    <select id="getListByQueryCondition" resultType="com.ald.fanbei.api.dal.domain.AfViewAssetBorrowCashDo" parameterType="com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowCashQuery">
         SELECT
         <include refid="queryFields" />
         FROM af_view_asset_borrow_cash
@@ -125,7 +125,7 @@
        <if test="limitNums !=null and limitNums != ''">
            limit #{limitNums}
         </if>
-    </select> -->
+    </select>
     
     <select id="getSumAmount" resultType="java.math.BigDecimal">
     	SELECT
@@ -202,23 +202,4 @@
         </if>
     </select>
     
-    <select id="getListByQueryCondition" resultType="com.ald.fanbei.api.dal.domain.AfViewAssetBorrowDo" parameterType="com.ald.fanbei.api.dal.domain.query.AfViewAssetBorrowQuery">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_view_asset_borrow
-        WHERE 1=1
-        <if test="gmtCreateStart !=null and gmtCreateStart != ''">
-            AND gmt_create <![CDATA[ >= ]]> #{gmtCreateStart,jdbcType=TIMESTAMP}
-        </if>
-        <if test="gmtCreateEnd !=null and gmtCreateEnd != ''">
-            AND gmt_create <![CDATA[ <= ]]> #{gmtCreateEnd,jdbcType=TIMESTAMP}
-        </if>
-        <if test="minBorrowId !=null and minBorrowId != ''">
-            AND borrow_id <![CDATA[ > ]]> #{minBorrowId}
-        </if>
-            order by borrow_id asc
-       <if test="limitNums !=null and limitNums != ''">
-           limit #{limitNums}
-        </if>
-    </select>
 </mapper>

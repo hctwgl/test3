@@ -889,6 +889,9 @@ public class DateUtil {
      * @return 分钟数
      */
     public static long getNumberOfDayBetween(final Date before, final Date end) {
+    	if (before==null|| end ==null) {
+    		return 0l;
+		}
     	long millisec = end.getTime() - before.getTime();
     	return millisec / (60 * 1000 * 60 * 24);
     }
