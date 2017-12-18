@@ -47,13 +47,10 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 		return afBorrowLegalOrderCashDao;
 	}
 
-
-		@Override
-		public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowLegalOrderId(
-				Long rid) {
-			// TODO Auto-generated method stub
-			return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowLegalOrderId(rid);
-		}
+	@Override
+	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowLegalOrderId(Long rid) {
+		return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowLegalOrderId(rid);
+	}
 
 	@Override
 	public int saveBorrowLegalOrderCash(AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo) {
@@ -67,6 +64,15 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 		return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(borrowId);
 	}
 
+	@Override
+	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoStatus(Long rid) {
+		return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowIdNoStatus(rid);
+	}
+
+	@Override
+	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo) {
+		return afBorrowLegalOrderCashDao.getOrderCashByCashNo(cashNo);
+	}
 
 	@Override
 	public BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo) {

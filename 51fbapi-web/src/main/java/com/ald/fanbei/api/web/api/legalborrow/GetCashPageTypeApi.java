@@ -53,7 +53,7 @@ public class GetCashPageTypeApi implements ApiHandle {
 		if (afBorrowCashDo != null) {
 			if (!"FINSH".equals(afBorrowCashDo.getStatus())) {// borrowCash存在借款信息，并且未结清
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-						.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
+						.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 				if (afBorrowLegalOrderCashDo != null) {// 查询是否有新版本借款
 					pageType = "new";
 				}

@@ -27,4 +27,9 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 	
 	void checkOfflineRepayment(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo, String curRepayAmount, String outTradeNo);
 
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoStatus(Long rid);
+
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo);
+
+
 }
