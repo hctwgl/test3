@@ -56,4 +56,9 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long borrowId) {
 		return afBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(borrowId);
 	}
+
+	@Override
+	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo) {
+		return afBorrowLegalOrderCashDao.getOrderCashByCashNo(cashNo);
+	}
 }
