@@ -412,6 +412,16 @@
 		LIMIT 1
 	</select>
 
+	<select id="getOrderCashByCashNo" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM af_borrow_legal_order_cash
+		WHERE is_delete = 0
+		AND cash_no = #{cashNo}
+		ORDER BY gmt_create DESC
+		LIMIT 1
+	</select>
+
 	<select id="getByCommonCondition"
 		resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo"
 		parameterType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">

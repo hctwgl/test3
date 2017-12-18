@@ -22,4 +22,7 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoStatus(Long rid);
 
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo);
+
+
 }
