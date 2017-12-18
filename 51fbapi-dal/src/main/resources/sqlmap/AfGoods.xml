@@ -259,7 +259,6 @@
 			id in (select item_value from af_model_h5_item where item_value2 = #{categoryId} and item_type = 'GOODS_ID' and type = 'GOODSLIST' and is_delete = 0)
 
 	</select>
-
 	<select id="getHomeGoodsByModelId" resultType="AfGoodsDo">
 		SELECT
 		<include refid="queryFields"/>
@@ -268,6 +267,14 @@
 		AND
 		id in (select item_value from af_model_h5_item where item_value2 = #{categoryId} and item_type = 'GOODS_ID' and type = 'GOODSLIST' and is_delete = 0)
 
+	</select>
+
+	<select id="getGoodsVerifyByCategoryId" resultType="AfGoodsDo">
+		select
+			g.source,g.rebate_amount,g.id,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,g.gmt_create,g.goods_pic1
+		from af_goods_verify v,af_goods g
+		where g.is_delete =0 and v.is_delete =0 and g.id = v.goods_id
+		and g.category_id = #{categoryId} and g.source = 'SELFSUPPORT' and  g.status = 'PUBLISH'
 	</select>
 
 </mapper>
