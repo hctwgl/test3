@@ -36,6 +36,8 @@ public interface AfBorrowLegalOrderRepaymentDao extends BaseDao<AfBorrowLegalOrd
     
     AfBorrowLegalOrderRepaymentDo getLastByOrderId(Long orderId);
     
+    Long tuchByOutTradeNo(String outTradeNo);
+    
 	List<AfBorrowLegalOrderRepaymentDo> getRepaymentByOrderCashId(@Param("orderCashId")Long rid);
 	
 	

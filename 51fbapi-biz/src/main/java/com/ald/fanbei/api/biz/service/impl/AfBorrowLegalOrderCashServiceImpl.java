@@ -1,18 +1,23 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
+import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 
 /**
@@ -29,6 +34,11 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 
 	@Resource
 	private AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
+	@Resource 
+	private AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
+	@Resource
+	private AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
+	
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
 
@@ -62,5 +72,39 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 	@Override
 	public AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo) {
 		return afBorrowLegalOrderCashDao.getOrderCashByCashNo(cashNo);
+	}
+
+	@Override
+	public BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo) {
+		BigDecimal restAmount = BigDecimal.ZERO;
+		if(cashDo != null) {
+			restAmount = BigDecimalUtil.add(restAmount, cashDo.getAmount(),
+					cashDo.getOverdueAmount(), cashDo.getSumOverdue(), 
+					cashDo.getRateAmount(),cashDo.getSumRate(),
+					cashDo.getPoundage(),cashDo.getSumRenewalPoundage())
+					.subtract(cashDo.getRepayAmount());
+		}
+		if(orderCashDo != null) {
+			restAmount = BigDecimalUtil.add(restAmount, orderCashDo.getAmount(),
+					orderCashDo.getOverdueAmount(), orderCashDo.getSumRepaidOverdue(), 
+					orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidInterest(),
+					orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidPoundage())
+					.subtract(cashDo.getRepayAmount());
+		}
+		return restAmount;
+	}
+	@Override
+	public void checkOfflineRepayment(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo, String offlineRepayAmount, String outTradeNo) {
+		if(afBorrowLegalOrderRepaymentDao.tuchByOutTradeNo(outTradeNo) != null ||
+				afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(null, outTradeNo) != null) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+		}
+		
+		BigDecimal restAmount = calculateLegalRestAmount(cashDo, orderCashDo);
+		// 因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
+		if (NumberUtil.objToBigDecimalDivideOnehundredDefault(offlineRepayAmount, BigDecimal.ZERO)
+				.compareTo(restAmount.add(BigDecimal.valueOf(10))) > 0) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+		}
 	}
 }

@@ -1,23 +1,20 @@
 package com.ald.fanbei.web.test.api.borrowlegal;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 
 public class LegalBorrowTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://192.168.96.2:80";
+	String urlBase = "http://btestapp.51fanbei.com";
 	String userName = "13638668564";
 	
 	/**
@@ -51,7 +48,7 @@ public class LegalBorrowTest  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 
-	//	@Test
+	@Test
 	public void getCashPageType() {
 		String url = urlBase + "/legalborrow/getCashPageType";
 		Map<String,String> params = new HashMap<>();
@@ -74,7 +71,7 @@ public class LegalBorrowTest  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
 		String orderNo = "xj2017121718213200951";

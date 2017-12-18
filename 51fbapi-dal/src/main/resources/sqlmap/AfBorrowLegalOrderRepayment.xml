@@ -167,11 +167,11 @@
         LIMIT 1
     </select>
     
-    <select id="getBorrowLegalOrderRepaymentByPayTradeNo" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo">
-		select 
-			<include refid="queryFields"/> 
+    <select id="tuchByOutTradeNo" resultType="java.lang.Long">
+		select id
 		from af_borrow_legal_order_repayment 
-		WHERE trade_no=#{payTradeNo}
+		WHERE trade_no_ups=#{outTradeNo} AND is_delete = 0 
+		LIMIT 1
 	</select>
     
     
