@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -25,5 +26,8 @@ public interface AfActivityGoodsService {
 
 	List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(Long activityId);
 
+	AfActivityGoodsDo getActivityGoodsByGoodsIdAndType(Long goodsId);
+
+	List<AfActivityGoodsDo> getActivityGoodsByGoodsIdAndTypeMap(List<AfEncoreGoodsDto> list);
 	
 }

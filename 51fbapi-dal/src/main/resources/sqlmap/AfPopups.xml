@@ -18,6 +18,10 @@
 		WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
 
 	</update>
-
+	<update id="updatePopupsReachAmount" parameterType="java.lang.Long">
+		UPDATE af_popups SET
+		reach_amount = reach_amount + 1
+		WHERE is_delete = 0 AND id = #{id ,jdbcType=BIGINT}
+	</update>
 	
 </mapper>

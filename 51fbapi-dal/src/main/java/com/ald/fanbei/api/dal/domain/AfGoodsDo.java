@@ -241,5 +241,5 @@ public class AfGoodsDo extends AbstractSerial{
 	public void setTags(String tags) {
 		this.tags = tags;
 	}
-	
+
 }

@@ -2,10 +2,12 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -14,6 +16,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -83,6 +87,17 @@ public class AppH5InvitationActivityController extends BaseController {
         List listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
         //用户的邀请码
         String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
+        if(invitationCode.equals("0")){
+            //生成邀请码
+            AfUserDo userDo = new AfUserDo();
+	    Long invteLong = Constants.INVITE_START_VALUE + userId;
+	    String inviteCode = Long.toString(invteLong, 36);
+	    userDo.setRecommendCode(inviteCode);
+	    userDo.setRid(userId);
+	    afUserService.updateUser(userDo);
+	    invitationCode = inviteCode;
+        }
+        
         //用户的总共奖励金额
         double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId);
         DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数

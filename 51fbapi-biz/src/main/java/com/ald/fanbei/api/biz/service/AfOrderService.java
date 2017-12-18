@@ -10,6 +10,8 @@ import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSONArray;
 
@@ -324,6 +326,10 @@ public interface AfOrderService {
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
+
+	List<AfOrderDto> selectSumCountByGoodsId(List<AfEncoreGoodsDto> list);
+
+	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 	
 	/**
      * 获取已生成的秒杀订单
