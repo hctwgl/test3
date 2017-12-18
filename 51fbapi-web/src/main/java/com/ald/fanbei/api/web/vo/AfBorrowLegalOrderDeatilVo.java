@@ -41,10 +41,6 @@ public class AfBorrowLegalOrderDeatilVo extends AbstractSerial{
 	 */
 	private String type;
 
-	/**
-	 * 借款金额
-	 */
-	private BigDecimal amount;
 
 	/**
 	 * 借款状态【APPLYING:审核中，AWAIT_REPAY:待还款,PART_REPAID: 部分还款, FINISHED:已经结清,CLOSED:借款关闭】
@@ -207,7 +203,28 @@ public class AfBorrowLegalOrderDeatilVo extends AbstractSerial{
 
 	private String borrowStatus;
 	
+	private BigDecimal userAmount;
 	
+	private BigDecimal returnAmount;
+	
+	
+	
+	public BigDecimal getReturnAmount() {
+		return returnAmount;
+	}
+
+	public void setReturnAmount(BigDecimal returnAmount) {
+		this.returnAmount = returnAmount;
+	}
+
+	public BigDecimal getUserAmount() {
+		return userAmount;
+	}
+
+	public void setUserAmount(BigDecimal userAmount) {
+		this.userAmount = userAmount;
+	}
+
 	public String getBorrowStatus() {
 		return borrowStatus;
 	}
@@ -426,23 +443,7 @@ public class AfBorrowLegalOrderDeatilVo extends AbstractSerial{
 		this.type = type;
 	}
 
-	/**
-	 * 获取借款金额
-	 *
-	 * @return 借款金额
-	 */
-	public BigDecimal getAmount(){
-		return amount;
-	}
-
-	/**
-	 * 设置借款金额
-	 *
-	 * @param amount 要设置的借款金额
-	 */
-	public void setAmount(BigDecimal amount){
-		this.amount = amount;
-	}
+	
 
 	/**
 	 * 获取借款状态【APPLYING:审核中，AWAIT_REPAY:待还款,PART_REPAID: 部分还款, FINISHED:已经结清,CLOSED:借款关闭】

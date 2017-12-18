@@ -268,27 +268,27 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
             Map<String, Object> map;
 
             if (cardId == -1) {// 微信支付
-                if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")){
-                    map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
-                    map.put("userNo",userDto.getUserName());
-                    map.put("userType","USER_ID");
-                    map.put("directPayType","WX");
-                    resp.setResponseData(map);
-                }else{
+//                if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")){
+//                    map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
+//                    map.put("userNo",userDto.getUserName());
+//                    map.put("userType","USER_ID");
+//                    map.put("directPayType","WX");
+//                    resp.setResponseData(map);
+//                }else{
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
-                }
+//                }
             }
             else  if(cardId ==-3){ //支付宝支付
-                if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
-                    map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
-                    map.put("userNo", userDto.getUserName());
-                    map.put("userType", "USER_ID");
-                    map.put("directPayType", "ZFB");
-                    resp.setResponseData(map);
-                }
-                else{
+//                if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
+//                    map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
+//                    map.put("userNo", userDto.getUserName());
+//                    map.put("userType", "USER_ID");
+//                    map.put("directPayType", "ZFB");
+//                    resp.setResponseData(map);
+//                }
+//                else{
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
-                }
+//                }
             }
 
             else if (cardId > 0) {// 银行卡支付

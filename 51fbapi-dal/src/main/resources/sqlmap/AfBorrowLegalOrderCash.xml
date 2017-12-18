@@ -402,7 +402,7 @@
 		WHERE id = #{orderId ,jdbcType=BIGINT})
 	</select>
 
-	<select id="getNewOrderCash" resultType="com.ald.fanbei.api.dal.domain.AfBorrowCashDo">
+	<select id="getNewOrderCash" resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">
 		SELECT
 		<include refid="queryFields" />
 		FROM af_borrow_legal_order_cash
