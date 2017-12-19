@@ -57,6 +57,7 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		BigDecimal lastRepaidamount = new BigDecimal(0);
 		BigDecimal amount = new BigDecimal(0);
+		BigDecimal goodsAmount = BigDecimal.ZERO;
 		if (afBorrowLegalOrderCashDo != null) {
 			amount = afBorrowLegalOrderCashDo.getAmount();
 			BigDecimal sumRepaidInterest = afBorrowLegalOrderCashDo.getSumRepaidInterest();
@@ -65,13 +66,11 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 			BigDecimal repaidAmount = afBorrowLegalOrderCashDo.getRepaidAmount();
 			lastRepaidamount = amount.add(sumRepaidInterest).add(sumRepaidOverdue).add(sumRepaidPoundage)
 					.subtract(repaidAmount);
+			goodsAmount = afBorrowLegalOrderCashDo.getAmount();
 		}
 		data.put("rid", afRenewalDetailDo.getRid());
 		data.put("renewalAmount", afRenewalDetailDo.getRenewalAmount());// 续期本金
-		data.put("amount",afRenewalDetailDo.getRenewalAmount()
-						.add(afRenewalDetailDo.getPriorInterest()
-						.add(afRenewalDetailDo.getPriorPoundage()))
-						.add(afRenewalDetailDo.getPriorOverdue()));// 续期金额
+		data.put("amount",afRenewalDetailDo.getActualAmount());// 续期金额
 		data.put("priorInterest", afRenewalDetailDo.getPriorInterest());// 上期利息
 		data.put("priorOverdue", afRenewalDetailDo.getPriorOverdue());// 上期滞纳金
 		data.put("priorPoundage", afRenewalDetailDo.getPriorPoundage());// 上期手续费
@@ -81,7 +80,7 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());// 创建时间
 		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());// 续借编号
 		data.put("lastRepaidamount", lastRepaidamount);// 上期待还金额
-		data.put("goodsAmount", amount);// 分期商品金额
+		data.put("goodsAmount", goodsAmount);// 分期商品金额
 
 		return data;
 	}
