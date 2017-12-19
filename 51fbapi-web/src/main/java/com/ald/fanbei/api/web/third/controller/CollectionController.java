@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.third.controller;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +90,8 @@ public class CollectionController {
 		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
 		String sign = ObjectUtils.toString(request.getParameter("sign"));
 		logger.info("deal offlineRepayment begin,sign=" + sign + ",data=" + data + ",timestamp=" + timestamp);
-		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data, sign);
+		CollectionOperatorNotifyRespBo notifyRespBo = collectionSystemUtil.offlineRepaymentNotify(timestamp, data,
+				sign);
 		return notifyRespBo;
 	}
 
@@ -120,11 +122,49 @@ public class CollectionController {
 			}
 			String sign2 = DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
+				BigDecimal amount = afBorrowCashDo.getAmount();
+				BigDecimal rateAmount = afBorrowCashDo.getRateAmount();
+				BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount();
+				BigDecimal repayAmount = afBorrowCashDo.getAmount()
+						.add(afBorrowCashDo.getRateAmount())
+						.add(afBorrowCashDo.getOverdueAmount())
+						.add(afBorrowCashDo.getSumRate())
+						.add(afBorrowCashDo.getSumOverdue())
+						.setScale(2, RoundingMode.HALF_UP);
+				BigDecimal restAmount = afBorrowCashDo.getAmount()
+						.add(afBorrowCashDo.getRateAmount())
+						.add(afBorrowCashDo.getOverdueAmount())
+						.add(afBorrowCashDo.getSumRate())
+						.add(afBorrowCashDo.getSumOverdue())
+						.subtract(afBorrowCashDo.getRepayAmount())
+						.setScale(2, RoundingMode.HALF_UP);
+				
+				BigDecimal repayAmountSum = afBorrowCashDo.getRepayAmount();
 				// FIXME 判断借款是否关联订单
 				Long borrowId = afBorrowCashDo.getRid();
-				AfBorrowLegalOrderDo legalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(borrowId);
-				if (legalOrder != null) {
-					return updteBo;
+				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
+				if (afBorrowLegalOrderCashDo != null) {
+					overdueAmount = overdueAmount.add(afBorrowLegalOrderCashDo.getOverdueAmount());
+					amount = amount.add(afBorrowLegalOrderCashDo.getAmount());
+					rateAmount = rateAmount.add(afBorrowLegalOrderCashDo.getInterestAmount());
+					restAmount = restAmount.add(afBorrowLegalOrderCashDo.getAmount())
+							.add(afBorrowLegalOrderCashDo.getInterestAmount())
+							.add(afBorrowLegalOrderCashDo.getOverdueAmount())
+							.add(afBorrowLegalOrderCashDo.getPoundageAmount())
+							.add(afBorrowLegalOrderCashDo.getSumRepaidInterest())
+							.add(afBorrowLegalOrderCashDo.getSumRepaidOverdue())
+							.add(afBorrowLegalOrderCashDo.getSumRepaidPoundage())
+							.subtract(afBorrowLegalOrderCashDo.getRepaidAmount());
+					
+					repayAmount = repayAmount.add(afBorrowLegalOrderCashDo.getAmount())
+							.add(afBorrowLegalOrderCashDo.getInterestAmount())
+							.add(afBorrowLegalOrderCashDo.getOverdueAmount())
+							.add(afBorrowLegalOrderCashDo.getPoundageAmount())
+							.add(afBorrowLegalOrderCashDo.getSumRepaidInterest())
+							.add(afBorrowLegalOrderCashDo.getSumRepaidOverdue())
+							.add(afBorrowLegalOrderCashDo.getSumRepaidPoundage());
+					
+					repayAmountSum = repayAmountSum.add(afBorrowLegalOrderCashDo.getRepaidAmount());
 				}
 
 				map.put("consumer_no", afBorrowCashDo.getUserId() + "");
@@ -134,29 +174,14 @@ public class CollectionController {
 				map.put("card_number", afBorrowCashDo.getCardNumber());
 				map.put("gmt_arrival", DateUtil.formatDateTime(afBorrowCashDo.getGmtArrival()));
 				map.put("type", afBorrowCashDo.getType());
-				map.put("amount", afBorrowCashDo.getAmount().multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-				map.put("rate_amount", afBorrowCashDo.getRateAmount().multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-				map.put("overdue_amount", afBorrowCashDo.getOverdueAmount().multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-				map.put("repay_amount",
-						((afBorrowCashDo.getAmount()
-								.add(afBorrowCashDo.getRateAmount()
-										.add(afBorrowCashDo.getOverdueAmount()
-												.add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))))
-														.setScale(2, RoundingMode.HALF_UP))
-																.multiply(BigDecimalUtil.ONE_HUNDRED)
-								+ "");
-				map.put("rest_amount",
-						((afBorrowCashDo.getAmount()
-								.add(afBorrowCashDo.getRateAmount()
-										.add(afBorrowCashDo.getOverdueAmount()
-												.add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue())))))
-														.subtract(afBorrowCashDo.getRepayAmount())
-														.setScale(2, RoundingMode.HALF_UP))
-																.multiply(BigDecimalUtil.ONE_HUNDRED)
-								+ "");
+				map.put("amount", amount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
+				map.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
+				map.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
+				map.put("repay_amount",repayAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
+				map.put("rest_amount", restAmount.multiply(BigDecimalUtil.ONE_HUNDRED)+ "");
 				map.put("overdue_day", afBorrowCashDo.getOverdueDay() + "");
 				map.put("renewal_num", afBorrowCashDo.getRenewalNum() + "");
-				map.put("repay_amount_sum", afBorrowCashDo.getRepayAmount().multiply(BigDecimalUtil.ONE_HUNDRED) + "");
+				map.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 				map.put("status", afBorrowCashDo.getStatus());
 				map.put("gmt_plan_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtPlanRepayment()));
 				map.put("majiabao_name", StringUtil.null2Str(afBorrowCashDo.getMajiabaoName()));
