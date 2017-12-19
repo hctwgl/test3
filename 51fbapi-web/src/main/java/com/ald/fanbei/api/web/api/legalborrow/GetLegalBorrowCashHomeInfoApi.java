@@ -290,6 +290,17 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			String borrowStatus = afBorrowCashDo.getStatus();
 			data.put("status", borrowStatus);
 
+			// 查询借款相关商品借款,计算总还款金额
+			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
+					.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+			// FIXME 判断订单借款是否结清
+			if (afBorrowLegalOrderCash != null) {
+				String status = afBorrowLegalOrderCash.getStatus();
+				if (StringUtils.equals("AWAIT_REPAY", status) || StringUtils.equals("PART_REPAID", status)) {
+					data.put("status", AfBorrowCashStatus.transed.getCode());
+				}
+			}
+
 			if (StringUtils.equals(borrowStatus, AfBorrowCashStatus.transedfail.getCode())
 					|| StringUtils.equals(borrowStatus, AfBorrowCashStatus.transeding.getCode())) {
 				data.put("status", AfBorrowCashStatus.waitTransed.getCode());
@@ -306,9 +317,6 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
 					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),
 					afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
-			// 查询借款相关商品借款,计算总还款金额
-			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
-					.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 
 			// 计算已经还款金额 = 商品借款已还金额 + 借款已换金额
 			BigDecimal paidAmount = afBorrowCashDo.getRepayAmount();
@@ -324,7 +332,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				BigDecimal sumRepaidOverdue = afBorrowLegalOrderCash.getSumRepaidOverdue();
 				BigDecimal sumRepaidPoundage = afBorrowLegalOrderCash.getSumRepaidPoundage();
 				allAmount = allAmount.add(orderCashAmount).add(orderCashOverdueAmount).add(poundageAmount)
-						.add(sumRepaidInterest).add(sumRepaidOverdue).add(sumRepaidPoundage).add(interestAmount)
+						.add(interestAmount).add(sumRepaidInterest).add(sumRepaidOverdue).add(sumRepaidPoundage)
 						.subtract(repaidAmount);
 				paidAmount = paidAmount.add(repaidAmount);
 				overdueAmount = overdueAmount.add(orderCashOverdueAmount);
@@ -392,7 +400,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 
 				long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(now,
 						afBorrowCashDo.getGmtPlanRepayment());
-				
+
 				// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 				if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0
 						&& returnAmount.compareTo(amountLimit) >= 0) {

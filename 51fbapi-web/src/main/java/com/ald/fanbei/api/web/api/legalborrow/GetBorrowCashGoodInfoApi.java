@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
@@ -63,6 +65,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 
 	@Resource
 	private AfGoodsPriceService afGoodsPriceService;
+	
+	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoApi.class);
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -194,6 +198,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			}
 		}
 		respData.put("repayAmount", repayAmount);
+		logger.info("getBorrowCashGoodInfoApi process, userid => {} , resp data => {}",userId,JSONObject.toJSONString(respData));
 		resp.setResponseData(respData);
 		return resp;
 	}
