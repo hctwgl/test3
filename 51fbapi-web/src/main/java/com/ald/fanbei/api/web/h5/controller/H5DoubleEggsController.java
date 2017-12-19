@@ -206,9 +206,15 @@ public class H5DoubleEggsController extends H5Controller {
 								startDate);
 						logger.info(log);
 
-						goodsBuffer.setStartTime(startDate);
-						goodsBuffer.setGoodsListForDate(goodsListForDate);
-						goodsList.add(goodsBuffer);
+						if (startDate != null) {
+							// format to the fix form
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							goodsBuffer.setStartDate(sdf.format(startDate));
+							goodsBuffer.setStartTime(startDate);
+							goodsBuffer.setGoodsListForDate(goodsListForDate);
+							goodsList.add(goodsBuffer);
+
+						}
 						
 					}
 				}
