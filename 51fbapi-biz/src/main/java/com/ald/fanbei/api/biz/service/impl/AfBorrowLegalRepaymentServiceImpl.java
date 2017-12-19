@@ -754,7 +754,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
 		BigDecimal rateAmount = afBorrowCashDo.getRateAmount();
 		
-        if (repayAmount.compareTo(afBorrowCashDo.getRateAmount()) > 0) {
+        if (repayAmount.compareTo(rateAmount) > 0) {
             afBorrowCashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), rateAmount));
             afBorrowCashDo.setRateAmount(BigDecimal.ZERO);
             repayDealBo.curRepayAmoutStub = repayAmount.subtract(rateAmount);
