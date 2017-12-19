@@ -19,6 +19,8 @@ public interface AfBorrowLegalOrderCashDao extends BaseDao<AfBorrowLegalOrderCas
 			Long rid);
 
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(@Param("borrowId")Long borrowId);
+	
+	AfBorrowLegalOrderCashDo getPrimaryOrderCashByBorrowId(@Param("borrowId")Long borrowId);
 
 	AfBorrowLegalOrderCashDo getByOrderId(Long orderId);
 	
