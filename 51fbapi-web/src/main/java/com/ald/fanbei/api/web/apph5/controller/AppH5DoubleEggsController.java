@@ -577,6 +577,19 @@ public class AppH5DoubleEggsController extends BaseController {
 						logger.info(log);
 						
 						if (startDate != null) {
+
+							Date temStartDate = DateUtil.formatDateToYYYYMMdd(startDate);
+							Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
+							if (DateUtil.afterDay(temStartDate, temNow)) {
+								goodsBuffer.setStatus(0);
+							}else if (DateUtil.beforeDay(temStartDate, temNow)){
+								goodsBuffer.setStatus(2);
+							}else {
+								goodsBuffer.setStatus(1);
+							}
+
+
+
 							// format to the fix form
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							goodsBuffer.setStartDate(sdf.format(startDate));

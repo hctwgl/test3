@@ -17,7 +17,7 @@ public class AfGoodsBuffer {
 	private List<GoodsForDate> goodsListForDate;
 	
 	private String startDate;
-	
+	private int status ;
 	
 
 	public String getStartDate() {
@@ -47,9 +47,15 @@ public class AfGoodsBuffer {
 	@Override
 	public String toString() {
 		return "AfGoodsBuffer [startTime=" + startTime + ", goodsListForDate=" + goodsListForDate + ", startDate="
-				+ startDate + "]";
+				+ startDate +",status=" +status+"]";
 	}
 
 
+	public int getStatus() {
+		return status;
+	}
 
+	public void setStatus(int status) {
+		this.status = status;
+	}
 }

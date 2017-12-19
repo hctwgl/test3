@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.ald.fanbei.api.common.util.DateUtil;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -207,6 +208,17 @@ public class H5DoubleEggsController extends H5Controller {
 						logger.info(log);
 
 						if (startDate != null) {
+
+							Date temStartDate = DateUtil.formatDateToYYYYMMdd(startDate);
+							Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
+							if (DateUtil.afterDay(temStartDate, temNow)) {
+								goodsBuffer.setStatus(0);
+							}else if (DateUtil.beforeDay(temStartDate, temNow)){
+								goodsBuffer.setStatus(2);
+							}else {
+								goodsBuffer.setStatus(1);
+							}
+
 							// format to the fix form
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							goodsBuffer.setStartDate(sdf.format(startDate));
