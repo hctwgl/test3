@@ -89,7 +89,7 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 					orderCashDo.getOverdueAmount(), orderCashDo.getSumRepaidOverdue(), 
 					orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidInterest(),
 					orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidPoundage())
-					.subtract(cashDo.getRepayAmount());
+					.subtract(orderCashDo.getRepaidAmount());
 		}
 		return restAmount;
 	}

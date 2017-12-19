@@ -21,8 +21,8 @@ public class LegalBorrowTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://192.168.106.75:8180";
-	String userName = "15669066271";
+	String urlBase = "http://localhost:8080";
+	String userName = "13638668564";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -65,23 +65,24 @@ public class LegalBorrowTest  extends BaseTest{
 	public void  repayDo() {
 		String url = urlBase + "/legalborrow/repayDo";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", "100");
+		params.put("repaymentAmount", "201");
 		params.put("userCouponId", "");
 		params.put("rebateAmount", "");
 		params.put("payPwd", DigestUtils.md5Hex("111111"));
 		params.put("cardId", "3111464124");
-		params.put("actualAmount", "100");
-		params.put("borrowId", "1259666");
-		params.put("from", "INDEX");
+		params.put("actualAmount", "201");
+		params.put("borrowOrderId", "243");
+//		params.put("borrowId", "1259939");
+		params.put("from", "ORDER");
 		
 		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "xj2017121718213200951";
-		String merPriv = PayOrderSource.RENEW_CASH_LEGAL.getCode();
+		String orderNo = "hq2017121918093101044";
+		String merPriv = PayOrderSource.REPAY_CASH_LEGAL.getCode();
 		String tradeNo = "";
 		String tradeState = "00";
 		
@@ -96,17 +97,17 @@ public class LegalBorrowTest  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {
 		String url = urlBase + "/third/collection/offlineRepayment?";
 		 
 		String tradeNo = "offline" + System.currentTimeMillis();
 		Map<String,String> params = new HashMap<>();
 		params.put("repay_no", tradeNo);
-		params.put("borrow_no", "jq2017121910290000366");
+		params.put("borrow_no", "jq2017121917075900521");
 		params.put("repay_type", "BANK");
 		params.put("repay_time", DateUtil.formatDateTime(new Date()));
-		params.put("repay_amount", "20000.00");
+		params.put("repay_amount", "20100.00");
 		params.put("rest_amount", "10000.00");
 		params.put("trade_no", tradeNo);
 		params.put("is_balance", YesNoStatus.NO.getCode());

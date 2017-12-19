@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentServiceImpl.Rep
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
+import com.ald.fanbei.api.common.enums.AfBorrowLegalRepayFromEnum;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
@@ -182,20 +183,25 @@ public class RepayDoApi implements ApiHandle {
 		}
 		
 		// 检查 用户 是否多还钱
-		BigDecimal shouldRepayAmount = new BigDecimal(0);
-		shouldRepayAmount = BigDecimalUtil.add(orderCashDo.getAmount(), 
-					orderCashDo.getInterestAmount(), orderCashDo.getSumRepaidInterest(),
-					orderCashDo.getPoundageAmount(), orderCashDo.getSumRepaidPoundage(),
-					orderCashDo.getOverdueAmount(), orderCashDo.getSumRepaidOverdue())
-						.subtract(orderCashDo.getRepaidAmount());
-		shouldRepayAmount = BigDecimalUtil.add(shouldRepayAmount, cashDo.getAmount(), 
-						cashDo.getSumOverdue(), cashDo.getOverdueAmount(), 
-						cashDo.getRateAmount(), cashDo.getSumRate(), 
-						cashDo.getPoundage(), cashDo.getSumRenewalPoundage())
-						.subtract(cashDo.getRepayAmount());
-		if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+		if(AfBorrowLegalRepayFromEnum.INDEX.name().equalsIgnoreCase(bo.from)) {
+			BigDecimal shouldRepayAmount = afBorrowLegalOrderCashService.calculateLegalRestAmount(cashDo, orderCashDo);
+			if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+			}
 		}
+		else if (AfBorrowLegalRepayFromEnum.BORROW.name().equalsIgnoreCase(bo.from)) {
+			BigDecimal shouldRepayAmount = afBorrowLegalOrderCashService.calculateLegalRestAmount(cashDo, null);
+			if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+			}
+		}
+		else if(AfBorrowLegalRepayFromEnum.ORDER.name().equalsIgnoreCase(bo.from)) {
+			BigDecimal shouldRepayAmount = afBorrowLegalOrderCashService.calculateLegalRestAmount(null, orderCashDo);
+			if(bo.repaymentAmount.compareTo(shouldRepayAmount) > 0) {
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+			}
+		}
+		
 	}
 	
 	private void checkPwdAndCard(RepayBo bo) {
