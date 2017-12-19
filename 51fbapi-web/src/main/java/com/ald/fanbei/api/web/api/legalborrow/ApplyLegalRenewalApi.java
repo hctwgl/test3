@@ -193,11 +193,12 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		//上期订单借款金额
 		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
 		// 上期订单待还金额
-		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
+		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,orderRateAmount,orderPoundage,orderOverdueAmount,afBorrowLegalOrderCash.getSumRepaidInterest(),
+				afBorrowLegalOrderCash.getSumRepaidOverdue(),afBorrowLegalOrderCash.getSumRepaidPoundage()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
 		
 		//判断续借金额是否大于所有待还金额
-		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),orderAmount,orderOverdueAmount,orderPoundage,orderRateAmount)
-													.subtract(afBorrowCashDo.getRepayAmount().add(afBorrowLegalOrderCash.getRepaidAmount()));
+		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),waitOrderAmount)
+													.subtract(afBorrowCashDo.getRepayAmount());
 		if (renewAmount.compareTo(allRenewalAmount) >0) {
 			throw new FanbeiException(
 					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
