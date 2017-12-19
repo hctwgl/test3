@@ -188,7 +188,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 				.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 		// FIXME
 		if (legalOrderCash != null) {
-			allAmount = BigDecimalUtil.add(allAmount, legalOrderCash.getInterestAmount(),
+			showAmount = BigDecimalUtil.add(showAmount, legalOrderCash.getInterestAmount(),
 					legalOrderCash.getPoundageAmount(), legalOrderCash.getOverdueAmount(),
 					legalOrderCash.getSumRepaidInterest(), legalOrderCash.getSumRepaidOverdue(),
 					legalOrderCash.getSumRepaidPoundage());
