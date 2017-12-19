@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -336,6 +338,21 @@ public class StringUtil extends StringUtils {
 		return tailNum + "";
 	}
 
+	/**
+     * 根据map中数据，替换短信内容
+     * 实例，假设原始短信模版中有特殊符&errorMsg,map中有对应key为errorMsg，则替换对应内容到&errorMsg
+     * @param extraChar 替换内容中的标识符号，如&
+     * @param originMessage 短信模版本
+     * @param replaceMap 数据封装map
+     * @return
+     */
+    public static String convertMessageByMapInfo(String extraChar,String originMessage,Map<String,String> replaceMapData){
+    	Set<String> keySet = replaceMapData.keySet();
+    	for (String tempKey : keySet) {
+    		originMessage = originMessage.replaceAll(extraChar+tempKey, replaceMapData.get(tempKey));
+		}
+    	return originMessage;
+    }
 	public static void main(String[] args) {
 		System.out.println(judgeClientDeviceFlag("i_EF97D566-0A4A-4492-9AEB-38C3A44AD40B_1510372484991_www"));
 	}

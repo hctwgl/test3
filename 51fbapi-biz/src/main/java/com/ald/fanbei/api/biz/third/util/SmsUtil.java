@@ -15,8 +15,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -38,8 +36,10 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -612,7 +612,44 @@ public class SmsUtil extends AbstractThird {
         }
         return false;
     }
-
+    
+    
+    
+    /**
+     * resource配置统一短信发送
+     * value:短信内容  value1:开关 1开 0关   value2:单日单个用户失败短信发送次数限制，防刷使用
+     * @param mobile
+     * @param errorMsg
+     * @param errorTimes
+     * @param resourceType
+     * @param resourceSecType
+     * @return
+     */
+    public boolean sendConfigMessageToMobile(String mobile, Map<String,String> replaceMapData, int errorTimes,String resourceType,String resourceSecType) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(resourceType, resourceSecType);
+        try {
+            //发送短信的大开关
+            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+                //单日单个用户发送次数限制校验
+                int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
+                if (maxSendTimes < errorTimes) {
+                    logger.error("sendConfigMessageToMobile false,resourceType="+resourceType+",resourceSecType="+resourceSecType+",maxSendTimes:" + maxSendTimes + ",errorTimes:" + errorTimes + ",mobile:" + mobile);
+                    return false;
+                }
+                String content = StringUtil.null2Str(resourceDo.getValue());
+                content = StringUtil.convertMessageByMapInfo("&", content, replaceMapData);
+                logger.error("sendConfigMessageToMobile success,resourceType="+resourceType+",resourceSecType="+resourceSecType+",mobile:" + mobile + "content:" + content);
+                SmsResult smsResult = sendSmsToDhst(mobile, content);
+                return smsResult.isSucc();
+            } else {
+                logger.error("sendConfigMessageToMobile false,resourceType="+resourceType+",resourceSecType="+resourceSecType+",send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
+            }
+        } catch (Exception e) {
+            logger.error("sendConfigMessageToMobile exception,resourceType="+resourceType+",resourceSecType="+resourceSecType+",send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
+        }
+        return false;
+    }
+    
     /**
      * 对单个手机号发送普通短信
      *
