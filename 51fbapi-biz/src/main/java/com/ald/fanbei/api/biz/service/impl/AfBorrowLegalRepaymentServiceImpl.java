@@ -549,9 +549,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     	AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(repayDealBo.userId);
     	if (AfBorrowCashStatus.finsh.getCode().equals(repayDealBo.cashDo.getStatus()) && 
         		AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(repayDealBo.orderCashDo.getStatus()) ) {
-    		accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.sumBorrowAmount));
+    		accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.cashDo.getAmount().add(repayDealBo.orderCashDo.getAmount())));
     	}
-    	
     	
     	if(repayDealBo.curSumRebateAmount != null && repayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
             accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(repayDealBo.curSumRebateAmount));
@@ -559,7 +558,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     	afUserAccountDao.updateOriginalUserAccount(accountInfo);
     	
     	if(repayDealBo.curUserCouponId != null && repayDealBo.curUserCouponId > 0) {
-    		afUserCouponDao.updateUserCouponSatusUsedById(repayDealBo.curUserCouponId);// 优惠券设置已使用	
+    		afUserCouponDao.updateUserCouponSatusUsedById(repayDealBo.curUserCouponId);// 优惠券设置已使用
     	}
     }
     
@@ -702,7 +701,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 														orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidPoundage(),
 														orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidInterest());
 		repayDealBo.sumAmount = repayDealBo.sumAmount.add(sumAmount);
-		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(orderCashDo.getAmount());
 		BigDecimal allRepayAmount = orderCashDo.getRepaidAmount().add(orderRepaymentBo.getRepayAmount());
 		Date now = new Date();
 		orderCashDo.setRepaidAmount(allRepayAmount);
@@ -770,7 +768,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 					cashDo.getRateAmount(), cashDo.getSumRate(),
 					cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
 		repayDealBo.sumAmount = repayDealBo.sumAmount.add(sumAmount);
-		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(cashDo.getAmount());
 		BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
 		cashDo.setRepayAmount(allRepayAmount);
 		
