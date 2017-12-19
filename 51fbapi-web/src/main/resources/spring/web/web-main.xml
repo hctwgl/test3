@@ -453,6 +453,8 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+				<!-- 漂浮窗信息 -->
+				<entry key="/floatingWindow/floatInfo" value-ref="floatInfo" />
 
 				<!-- 代扣开关 -->
 				<entry key="/Withhold/getWithholdInfo" value-ref="getWithholdInfoApi" />
