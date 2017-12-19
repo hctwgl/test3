@@ -93,7 +93,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_REGIST_IMAGE_ERROR2("USER_REGIST_IMAGE_ERROR",1145,"user regist image error","图片验证码不正确"),
     USER_REGIST_SMS_LESSDUE("USER_REGIST_SMS_LESSDUE",1147,"user regist sms lessdue","验证码60秒内已获取过"),
     USER_REGIST_FREQUENTLY_ERROR("USER_REGIST_FREQUENTLY_ERROR",1146,"user_regist_frequently_error","验证码获取过于频繁，请稍后重试"),
-    MUST_UPGRADE_NEW_VERSION_REPAY("MUST_UPGRADE_NEW_VERSION_REPAY",1147,"must_upgrade_new_version_repay","请升级到最新版APP进行还款"),
+    MUST_UPGRADE_NEW_VERSION_REPAY("MUST_UPGRADE_NEW_VERSION_REPAY",1147,"must_upgrade_new_version_repay","请升级到最新版APP进行操作"),
     // 1200 -
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     //优惠券不可用，不能修改code

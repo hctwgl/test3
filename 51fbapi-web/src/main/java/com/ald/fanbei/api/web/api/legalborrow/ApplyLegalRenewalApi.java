@@ -119,39 +119,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		//获取续期天数
 		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
 		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
-
 		
-		//借钱手续费率（日）（利润率）
-		BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
-		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
-		
-		//借款利率
-		BigDecimal newRate = null;
-		//借款手续费率
-		BigDecimal newServiceRate = null;
-		
-		if (rateInfoDo != null) {
-			String borrowRate = rateInfoDo.getValue2();
-			JSONArray array = JSONObject.parseArray(borrowRate);
-			double rate = 0;
-			double serviceRate = 0;
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject info = array.getJSONObject(i);
-				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-						rate = info.getDouble("borrowSevenDay");
-				}
-				if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-					serviceRate = info.getDouble("borrowSevenDay");
-				}
-			}
-			newRate = BigDecimal.valueOf(rate / 100);
-			newServiceRate = BigDecimal.valueOf(serviceRate / 100);
-		}else{
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
-		}		
-		logger.info("applyLegalRenewalApi borrowCash rate = {} , borrowCash serviceRate = {} " , newRate , newServiceRate);
 		//上一笔订单记录
 		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
 		if(afBorrowLegalOrder==null){

@@ -253,7 +253,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			final AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = buildBorrowLegalOrderCashDo(
 					new BigDecimal(goodsAmount), type, userId, 0l, BigDecimal.ZERO, 0l, BigDecimal.ZERO, borrowRemark,
 					refundRemark, rateInfoDo);
-
+		
 			Long borrowId = transactionTemplate.execute(new TransactionCallback<Long>() {
 				@Override
 				public Long doInTransaction(TransactionStatus arg0) {
@@ -531,13 +531,10 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				}
 			}
 		}
-		interestRate = interestRate / 100;
-		serviceRate = serviceRate / 100;
-
-		BigDecimal rateAmount = new BigDecimal(interestRate).multiply(new BigDecimal(day)).multiply(goodsAmount)
+		BigDecimal rateAmount = new BigDecimal(interestRate / 100).multiply(new BigDecimal(day)).multiply(goodsAmount)
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
-		BigDecimal poundageAmount = new BigDecimal(serviceRate).multiply(new BigDecimal(day)).multiply(goodsAmount)
+		BigDecimal poundageAmount = new BigDecimal(serviceRate / 100).multiply(new BigDecimal(day)).multiply(goodsAmount)
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new AfBorrowLegalOrderCashDo();
 		afBorrowLegalOrderCashDo.setAmount(goodsAmount);
@@ -615,13 +612,11 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				}
 			}
 		}
-		interestRate = interestRate / 100;
-		serviceRate = serviceRate / 100;
 
-		BigDecimal rateAmount = new BigDecimal(interestRate).multiply(new BigDecimal(day)).multiply(amount)
+		BigDecimal rateAmount = new BigDecimal(interestRate / 100).multiply(new BigDecimal(day)).multiply(amount)
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
-		BigDecimal poundageAmount = new BigDecimal(serviceRate).multiply(new BigDecimal(day)).multiply(amount)
+		BigDecimal poundageAmount = new BigDecimal(serviceRate / 100).multiply(new BigDecimal(day)).multiply(amount)
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();

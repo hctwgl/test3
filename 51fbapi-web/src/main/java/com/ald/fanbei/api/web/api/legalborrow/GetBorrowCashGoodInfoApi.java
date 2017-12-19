@@ -65,7 +65,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 
 	@Resource
 	private AfGoodsPriceService afGoodsPriceService;
-	
+
 	private Logger logger = LoggerFactory.getLogger(GetBorrowCashGoodInfoApi.class);
 
 	@Override
@@ -86,6 +86,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		BigDecimal borrowDay = BigDecimal.ZERO;
 		if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
 			borrowDay = BigDecimal.valueOf(7);
+		} else if  (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)){
+			borrowDay = BigDecimal.valueOf(7);
 		} else {
 			borrowDay = BigDecimal.valueOf(14);
 		}
@@ -93,7 +95,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 		Map<String, Object> rate = getObjectWithResourceDolist(borrowConfigList);
 		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
 		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
-		BigDecimal serviceRate = bankRate.multiply(bankDouble).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+		BigDecimal serviceRate = bankRate.multiply(bankDouble).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6,
+				RoundingMode.HALF_UP);
 		BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
 
 		if (userId != null) {
@@ -150,10 +153,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 
 		// 应还金额 = 借款金额 + 手续费 + 利息 + 商品借款金额 + 商品手续费 + 商品利息
 		BigDecimal repayAmount = BigDecimal.ZERO;
-		repayAmount = BigDecimalUtil.add(serviceFee, interestFee, new BigDecimal(borrowAmount));
 
-		respData.put("serviceFee", serviceFee);
-		respData.put("interestFee", interestFee);
 		// 如果用户未登录，则利润空间为0
 		if (userId == null) {
 			profitAmount = BigDecimal.ZERO;
@@ -178,13 +178,17 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 
 				BigDecimal goodsFee = goodsRate.multiply(saleAmount).multiply(borrowDay)
 						.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-				
+
 				BigDecimal goodsServiceFee = new BigDecimal(goodsServiceRate / 100).multiply(saleAmount)
 						.multiply(borrowDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 				BigDecimal goodsInterestFee = new BigDecimal(goodsInterestRate / 100).multiply(saleAmount)
 						.multiply(borrowDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 				respData.put("goodsServiceFee", goodsServiceFee);
 				respData.put("goodsInterestFee", goodsInterestFee);
+				
+				respData.put("serviceFee", serviceFee);
+				respData.put("interestFee", interestFee);
+				repayAmount = BigDecimalUtil.add(serviceFee, interestFee, new BigDecimal(borrowAmount));
 				repayAmount = repayAmount.add(goodsFee).add(saleAmount);
 			}
 			// 查询商品默认规格
@@ -198,7 +202,8 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 			}
 		}
 		respData.put("repayAmount", repayAmount);
-		logger.info("getBorrowCashGoodInfoApi process, userid => {} , resp data => {}",userId,JSONObject.toJSONString(respData));
+		logger.info("getBorrowCashGoodInfoApi process, userid => {} , resp data => {}", userId,
+				JSONObject.toJSONString(respData));
 		resp.setResponseData(respData);
 		return resp;
 	}
