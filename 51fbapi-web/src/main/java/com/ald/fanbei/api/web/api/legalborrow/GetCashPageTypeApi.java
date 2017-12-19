@@ -102,7 +102,6 @@ public class GetCashPageTypeApi implements ApiHandle {
 					}
 				}
 			}
-
 		}
 
 		data.put("pageType", pageType);
