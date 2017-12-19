@@ -797,12 +797,15 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						afOrder.setStatus(OrderStatus.REBATED.getCode());
 						afOrder.setGmtRebated(new Date());
 						afOrder.setGmtFinished(new Date());
-						AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
-						accountInfo.setRebateAmount(
-								BigDecimalUtil.add(accountInfo.getRebateAmount(), afOrder.getRebateAmount()));
+					
+						// update the table af_user_account with row lock mood
+						AfUserAccountDo accountInfo = new AfUserAccountDo();
+						accountInfo.setUserId(userId);
+						accountInfo.setRebateAmount(afOrder.getRebateAmount());
+						int updateResult = afUserAccountDao.updateRebateAmount(accountInfo);
+						
 						AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId,
 								afOrder.getRid(), AccountLogType.REBATE);
-						afUserAccountDao.updateOriginalUserAccount(accountInfo);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
 						// qiao+2017-11-14 15:30:27:the second time to light the

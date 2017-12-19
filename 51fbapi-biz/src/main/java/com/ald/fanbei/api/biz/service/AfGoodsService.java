@@ -94,7 +94,6 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsByCategoryId(Long categoryId);
 
 	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
-
 	List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(Long parentId);
 
 	List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(Long primaryCategoryId, Long categoryId);
@@ -103,4 +102,7 @@ public interface AfGoodsService {
 
 	List<AfGoodsDo> listGoodsListBySubjectId(Long subjectId);
 
+	List<AfGoodsDo> getGoodsByModelId (Long categoryId);
+
+	List<AfGoodsDo> getHomeGoodsByModelId (AfGoodsQuery query);
 }

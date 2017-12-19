@@ -123,6 +123,10 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query) {
 		return afGoodsDao.getHomeCategoryGoodsList(query);
 	}
+	@Override
+	public List<AfGoodsDo> getGoodsByModelId (Long categoryId){
+		return afGoodsDao.getGoodsByModelId(categoryId);
+	}
 
 	@Override
 	public List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query){
@@ -132,6 +136,15 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Override
 	public List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query){
 		return afGoodsDao.selectBookingRushGoods(query);
+	}
+	@Override
+	public List<AfGoodsDo> getHomeGoodsByModelId(AfGoodsQuery query){
+		return afGoodsDao.getHomeGoodsByModelId(query);
+	}
+
+	@Override
+	public List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query){
+		return afGoodsDao.getGoodsVerifyByCategoryId(query);
 	}
 	@Override
 	public List<AfGoodsDo> listGoodsListByParentIdFromSubjectGoods(long parentId) {
