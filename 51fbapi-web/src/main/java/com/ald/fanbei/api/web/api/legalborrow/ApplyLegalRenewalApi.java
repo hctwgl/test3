@@ -192,9 +192,9 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		
 		//上期订单借款金额
 		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
-		// 上期订单待还金额
-		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,orderRateAmount,orderPoundage,orderOverdueAmount,afBorrowLegalOrderCash.getSumRepaidInterest(),
-				afBorrowLegalOrderCash.getSumRepaidOverdue(),afBorrowLegalOrderCash.getSumRepaidPoundage()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
+		// 上期订单待还本金
+		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getSumRepaidInterest(),afBorrowLegalOrderCash.getSumRepaidOverdue(),
+				afBorrowLegalOrderCash.getSumRepaidPoundage()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
 		
 		//判断续借金额是否大于所有待还金额
 		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),waitOrderAmount)
