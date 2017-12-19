@@ -8,6 +8,7 @@ import java.util.List;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
@@ -368,5 +369,5 @@ public interface AfBorrowBillService {
 	 * @param userId
 	 * @return
 	 */
-	double selectInterimAmountByUserId(Long userId);
+	AfInterimAuDo selectInterimAmountByUserId(Long userId);
 }

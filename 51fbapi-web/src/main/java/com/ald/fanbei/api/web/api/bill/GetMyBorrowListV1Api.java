@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.jsoup.helper.DataUtil;
 import org.springframework.stereotype.Component;
@@ -28,11 +29,6 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -158,8 +154,19 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 				list.add(respMaP);
 			}
 			//加入临时额度
-			double interimAmount = afBorrowBillService.selectInterimAmountByUserId(userId);
-			map.put("interimAmount",interimAmount);
+			AfInterimAuDo afInterimAuDo = afBorrowBillService.selectInterimAmountByUserId(userId);
+			if(afInterimAuDo!=null){
+				map.put("interimAmount",afInterimAuDo.getInterimAmount());//临时额度
+				map.put("interimUsed",afInterimAuDo.getInterimUsed());//已使用的额度
+				int failureStatus =0;//0未失效,1失效
+				if(afInterimAuDo.getGmtFailuretime().getTime()< new Date().getTime()){
+					failureStatus=1;
+				}
+				map.put("failureStatus",failureStatus);
+			}else{
+				map.put("interimType", 0);//未获取临时额度
+			}
+			map.put("interimAmount",afInterimAuDo);
 			map.put("money", money);
 			map.put("billList", billList);
 			resp.setResponseData(map);

@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+import com.ald.fanbei.api.dal.domain.*;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
@@ -25,9 +25,6 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
@@ -621,7 +618,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	}
 
 	@Override
-	public double selectInterimAmountByUserId(Long userId) {
+	public AfInterimAuDo selectInterimAmountByUserId(Long userId) {
 		return afBorrowBillDao.selectInterimAmountByUserId(userId);
 	}
 }

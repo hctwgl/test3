@@ -775,7 +775,11 @@
 		limit 0,1
 	</select>
 
-	<select id="selectInterimAmountByUserId" resultType="double">
-		SELECT interim_amount from  af_interim_au where user_id = #{userId}
+	<select id="selectInterimAmountByUserId" resultType="afInterimAuDo">
+		SELECT
+		id rid,user_id,gmt_create,gmt_modified,interim_amount,interim_used,gmt_failuretime
+        from
+        af_interim_au
+        where user_id = #{userId}
 	</select>
 </mapper>

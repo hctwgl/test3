@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -446,5 +447,5 @@ public interface AfBorrowBillDao {
 	 * @param userId
 	 * @return
 	 */
-	double selectInterimAmountByUserId(@Param("userId")Long userId);
+	AfInterimAuDo selectInterimAmountByUserId(@Param("userId")Long userId);
 }
