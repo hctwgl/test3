@@ -360,7 +360,7 @@
 
 	<select id="getGoodsVerifyByCategoryId" resultType="AfGoodsDo">
 		select
-			g.source,g.rebate_amount,g.id,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,v.gmt_create,g.goods_pic1
+			g.source,g.rebate_amount,g.id Rid,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,v.gmt_create,g.goods_pic1
 		from af_goods_verify v,af_goods g
 		where g.is_delete =0 and v.is_delete =0 and g.id = v.goods_id
 		and g.category_id = #{categoryId} and g.source = 'SELFSUPPORT' and  g.status = 'PUBLISH' order by v.gmt_create DESC
