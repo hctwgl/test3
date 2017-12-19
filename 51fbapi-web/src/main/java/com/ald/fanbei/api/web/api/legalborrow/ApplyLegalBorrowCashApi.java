@@ -226,7 +226,9 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		if (!isGetLock) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
-
+		// 获取最后一笔借款信息
+		AfBorrowCashDo latestBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+		
 		try {
 			// 判断用户是否有借款未完成
 			boolean borrowFlag = afBorrowCashService.isCanBorrowCash(userId);
@@ -275,7 +277,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));
 
 			try {
-				AfBorrowCashDo latestBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 				if (latestBorrowCashDo != null
 						&& AfBorrowCashReviewStatus.refuse.getCode().equals(latestBorrowCashDo.getReviewStatus())) {
 					// 借款被拒绝

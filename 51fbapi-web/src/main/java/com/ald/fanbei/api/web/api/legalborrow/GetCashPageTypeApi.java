@@ -51,15 +51,11 @@ public class GetCashPageTypeApi implements ApiHandle {
 		String pageType = "old";
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE, SEC_TYPE);
 
-		if (afResourceDo == null) {
-			data.put("pageType", pageType);
-			return resp;
-		}
 		String isBack = afResourceDo.getValue();
 		if (userId == null && StringUtils.equalsIgnoreCase("false", isBack)) {
-			pageType = "old";
-		} else if (userId == null && StringUtils.equalsIgnoreCase("true", isBack)) {
 			pageType = "new";
+		} else if (userId == null && StringUtils.equalsIgnoreCase("true", isBack)) {
+			pageType = "old";
 		} else if (userId != null && StringUtils.equalsIgnoreCase("false", isBack)) {
 			// 不回退的情况
 			// 获取最后一笔借款
