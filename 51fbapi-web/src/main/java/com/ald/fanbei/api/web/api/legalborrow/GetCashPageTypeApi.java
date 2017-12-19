@@ -69,7 +69,7 @@ public class GetCashPageTypeApi implements ApiHandle {
 			} else {
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
-				if (StringUtils.equalsIgnoreCase("FINSH", status) && StringUtils.equalsIgnoreCase("CLOSED", status)) {
+				if (StringUtils.equalsIgnoreCase("FINSH", status) || StringUtils.equalsIgnoreCase("CLOSED", status)) {
 					pageType = "new";
 				} else {
 					// 查询用户是否有订单借款信息
