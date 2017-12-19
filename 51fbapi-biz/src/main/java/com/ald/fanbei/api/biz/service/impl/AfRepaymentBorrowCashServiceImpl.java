@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
@@ -101,6 +103,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     private AfResourceService afResourceService;
     @Resource
     private AfUserBankcardService afUserBankcardService;
+    @Resource
+    private AfTradeCodeInfoService afTradeCodeInfoService;
 
     @Resource
     AfUserService afUserService;
@@ -224,23 +228,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 						UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
 								bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
 						if (!respBo.isSuccess()) {
-							if(StringUtil.isNotBlank(respBo.getRespDesc())){
-								String addMsg = "";
-								try{
-									if(bank!=null){
-										String bankName = bank.getBankName();
-										String cardNum = bank.getCardNumber();
-										if(StringUtil.isNotBlank(bankName)&&StringUtil.isNotBlank(cardNum)){
-											if(cardNum.length()>4){
-												cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
-												addMsg = "{"+ bankName + cardNum + "}";
-											}
-										}
-									}
-								}catch (Exception e){
-									logger.error("BorrowCash sendMessage but addMsg error for:"+e);
-								}
-								dealRepaymentFail(payTradeNo, "",true,addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+							if(StringUtil.isNotBlank(respBo.getRespCode())){
+								dealRepaymentFail(payTradeNo, "",true,afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 							}else{
 								dealRepaymentFail(payTradeNo, "",false,"");
 							}
