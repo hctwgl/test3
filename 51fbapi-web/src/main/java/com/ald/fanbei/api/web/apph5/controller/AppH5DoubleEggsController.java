@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -98,36 +99,30 @@ public class AppH5DoubleEggsController extends BaseController {
 	@Resource
 	AfSchemeGoodsService afSchemeGoodsService;
 	@Resource
-	AfInterestFreeRulesService  afInterestFreeRulesService;
+	AfInterestFreeRulesService afInterestFreeRulesService;
 	@Resource
 	AfGoodsService afGoodsService;
-	
+
 	/**
 	 * 
-	* @Title: initHomePage
-	* @author qiwei
-	* @date 2017年12月7日 下午1:58:31
-	* @Description: 主页面的两张图片和url，此接口H5和AppH5通用，无需登录
-	* @param request
-	* @param response
-	* @return    
-	* @return String   
-	* @throws
+	 * @Title: initHomePage @author qiwei @date 2017年12月7日
+	 * 下午1:58:31 @Description: 主页面的两张图片和url，此接口H5和AppH5通用，无需登录 @param
+	 * request @param response @return @return String @throws
 	 */
-	@RequestMapping(value = "/initHomePage",method = RequestMethod.POST )
+	@RequestMapping(value = "/initHomePage", method = RequestMethod.POST)
 	public String initHomePage(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 			// get info from afResource;
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS", "INI_HOME_PAGE");
-			if(afResourceDo != null){
-			    data.put("eggsPic", afResourceDo.getValue());
-			    data.put("eggsUrl", afResourceDo.getValue1());
-			    data.put("freshManPic", afResourceDo.getValue2());
-			    data.put("freshManUrl", afResourceDo.getValue3());
+			if (afResourceDo != null) {
+				data.put("eggsPic", afResourceDo.getValue());
+				data.put("eggsUrl", afResourceDo.getValue1());
+				data.put("freshManPic", afResourceDo.getValue2());
+				data.put("freshManUrl", afResourceDo.getValue3());
 			}
-			
+
 			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
@@ -139,221 +134,217 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
-	* @Title: initOnsaleGoods
-	* @author qiwei
-	* @date 2017年12月7日 下午2:04:33
-	* @Description: 初始化特卖商品
-	* @param request
-	* @param response
-	* @return    
-	* @return String   
-	* @throws
+	 * @Title: initOnsaleGoods @author qiwei @date 2017年12月7日
+	 * 下午2:04:33 @Description: 初始化特卖商品 @param request @param
+	 * response @return @return String @throws
 	 */
-	@RequestMapping(value = "/initOnsaleGoods",method = RequestMethod.POST)
-	public String initOnsaleGoods(HttpServletRequest request,HttpServletResponse response){
+	@RequestMapping(value = "/initOnsaleGoods", method = RequestMethod.POST)
+	public String initOnsaleGoods(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
-			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-			List<Map<String,Object>> firstCategoryList = new ArrayList<Map<String,Object>>();
-			
-			//get info from afResource;
-			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
+			List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();
+			List<Map<String, Object>> firstCategoryList = new ArrayList<Map<String, Object>>();
+
+			// get info from afResource;
+			AfGoodsCategoryDo afGoodsCategoryDo = new AfGoodsCategoryDo();
 			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
-			if(afGoodsCategoryDo != null){
-			    long parentId =   afGoodsCategoryDo.getId();
-			    //初始化时查该parentId下的三级分类的排序最前的商品列表
-			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByParentIdAndFormerCategoryId(parentId);
-			    if(afGoodsList.size()>0){
-    				//获取借款分期配置信息
-    			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-    			        JSONArray array = JSON.parseArray(resource.getValue());
-    			        //删除2分期
-    			        if (array == null) {
-    			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-    			        }
-    			       // removeSecondNper(array);
-    				
-				
-				for(AfGoodsDo goodsDo : afGoodsList) {
-		    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
-		    			goodsInfo.put("goodName",goodsDo.getName());
-		    			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-		    			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-		    			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-		    			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-		    			goodsInfo.put("goodsId", goodsDo.getRid());
-		    			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-		    			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-		    			goodsInfo.put("source", goodsDo.getSource());
-		    			goodsInfo.put("goodsType", "0");
-		    			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
-		    			// 如果是分期免息商品，则计算分期
-		    			Long goodsId = goodsDo.getRid();
-						AfSchemeGoodsDo  schemeGoodsDo = null;
+			if (afGoodsCategoryDo != null) {
+				long parentId = afGoodsCategoryDo.getId();
+				// 初始化时查该parentId下的三级分类的排序最前的商品列表
+				List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByParentIdAndFormerCategoryId(parentId);
+				if (afGoodsList.size() > 0) {
+					// 获取借款分期配置信息
+					AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+							Constants.RES_BORROW_CONSUME);
+					JSONArray array = JSON.parseArray(resource.getValue());
+					// 删除2分期
+					if (array == null) {
+						throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+					}
+					// removeSecondNper(array);
+
+					for (AfGoodsDo goodsDo : afGoodsList) {
+						Map<String, Object> goodsInfo = new HashMap<String, Object>();
+						goodsInfo.put("goodName", goodsDo.getName());
+						goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+						goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+						goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+						goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+						goodsInfo.put("goodsId", goodsDo.getRid());
+						goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+						goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+						goodsInfo.put("source", goodsDo.getSource());
+						goodsInfo.put("goodsType", "0");
+						goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+						// 如果是分期免息商品，则计算分期
+						Long goodsId = goodsDo.getRid();
+						AfSchemeGoodsDo schemeGoodsDo = null;
 						try {
 							schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-						} catch(Exception e){
+						} catch (Exception e) {
 							logger.error(e.toString());
 						}
 						JSONArray interestFreeArray = null;
-						if(schemeGoodsDo != null){
-							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+						if (schemeGoodsDo != null) {
+							AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
+									.getById(schemeGoodsDo.getInterestFreeId());
 							String interestFreeJson = interestFreeRulesDo.getRuleJson();
 							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 								interestFreeArray = JSON.parseArray(interestFreeJson);
 							}
 						}
-						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-						if(nperList!= null){
+						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
+								BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(),
+								resource.getValue2());
+						if (nperList != null) {
 							goodsInfo.put("goodsType", "1");
 							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-							String isFree = (String)nperMap.get("isFree");
-							if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+							String isFree = (String) nperMap.get("isFree");
+							if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
 								nperMap.put("freeAmount", nperMap.get("amount"));
 							}
 							goodsInfo.put("nperMap", nperMap);
 						}
-						
+
 						goodsList.add(goodsInfo);
-		    		}				
-			    }
-			  //遍历parent_id = xxx的
-			    //一级分类对应数据表level=2
-			    AfGoodsCategoryDo queryAfGoodsCategory = new AfGoodsCategoryDo();
-			    queryAfGoodsCategory.setParentId(parentId);
-			    queryAfGoodsCategory.setLevel("2");
-			    List<AfGoodsCategoryDo> afFirstGoodsCategoryList = afGoodsCategoryService.listByParentIdAndLevel(queryAfGoodsCategory);
-			    if(afFirstGoodsCategoryList.size()>0){
-			        for(AfGoodsCategoryDo afFirstGoodsCategoryDo:afFirstGoodsCategoryList){
-				    
-				   //   secondCategoryList.add(secondCategory);
-				      //二级分类对应数据表level=3
-			              queryAfGoodsCategory.setParentId(afFirstGoodsCategoryDo.getId());
-				      queryAfGoodsCategory.setLevel("3");
-				      List<AfGoodsCategoryDo> afSecondGoodsCategoList = afGoodsCategoryService.listByParentIdAndLevel(queryAfGoodsCategory);
-				      List<Map<String,Object>> secondGoodsCategoryList = new ArrayList<Map<String,Object>>();
-				      //遍历parent_id = i.id
-        			      for(AfGoodsCategoryDo afSecondGoodsCategoDo:afSecondGoodsCategoList){
-                			  Map<String, Object> secondGoodsCategory = new HashMap<String, Object>();
-                			  secondGoodsCategory.put("secondCategoryId",afSecondGoodsCategoDo.getId());
-                			  secondGoodsCategory.put("secondCategoryName",afSecondGoodsCategoDo.getName());
-                			  secondGoodsCategoryList.add(secondGoodsCategory);
-        			      }
-        			      Map<String, Object> firstGoodsCategory = new HashMap<String, Object>();
-        			      firstGoodsCategory.put("firstCategoryId",afFirstGoodsCategoryDo.getId());
-        			      firstGoodsCategory.put("firstCategoryName",afFirstGoodsCategoryDo.getName());
-        			      firstGoodsCategory.put("secondCategoryList",secondGoodsCategoryList);
-				      firstCategoryList.add(firstGoodsCategory);
-			         }
-			    }
+					}
+				}
+				// 遍历parent_id = xxx的
+				// 一级分类对应数据表level=2
+				AfGoodsCategoryDo queryAfGoodsCategory = new AfGoodsCategoryDo();
+				queryAfGoodsCategory.setParentId(parentId);
+				queryAfGoodsCategory.setLevel("2");
+				List<AfGoodsCategoryDo> afFirstGoodsCategoryList = afGoodsCategoryService
+						.listByParentIdAndLevel(queryAfGoodsCategory);
+				if (afFirstGoodsCategoryList.size() > 0) {
+					for (AfGoodsCategoryDo afFirstGoodsCategoryDo : afFirstGoodsCategoryList) {
+
+						// secondCategoryList.add(secondCategory);
+						// 二级分类对应数据表level=3
+						queryAfGoodsCategory.setParentId(afFirstGoodsCategoryDo.getId());
+						queryAfGoodsCategory.setLevel("3");
+						List<AfGoodsCategoryDo> afSecondGoodsCategoList = afGoodsCategoryService
+								.listByParentIdAndLevel(queryAfGoodsCategory);
+						List<Map<String, Object>> secondGoodsCategoryList = new ArrayList<Map<String, Object>>();
+						// 遍历parent_id = i.id
+						for (AfGoodsCategoryDo afSecondGoodsCategoDo : afSecondGoodsCategoList) {
+							Map<String, Object> secondGoodsCategory = new HashMap<String, Object>();
+							secondGoodsCategory.put("secondCategoryId", afSecondGoodsCategoDo.getId());
+							secondGoodsCategory.put("secondCategoryName", afSecondGoodsCategoDo.getName());
+							secondGoodsCategoryList.add(secondGoodsCategory);
+						}
+						Map<String, Object> firstGoodsCategory = new HashMap<String, Object>();
+						firstGoodsCategory.put("firstCategoryId", afFirstGoodsCategoryDo.getId());
+						firstGoodsCategory.put("firstCategoryName", afFirstGoodsCategoryDo.getName());
+						firstGoodsCategory.put("secondCategoryList", secondGoodsCategoryList);
+						firstCategoryList.add(firstGoodsCategory);
+					}
+				}
 			}
-			   data.put("goodsList", goodsList);
-		           data.put("firstCategoryList", firstCategoryList);
-			   result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
+			data.put("goodsList", goodsList);
+			data.put("firstCategoryList", firstCategoryList);
+			result = H5CommonResponse.getNewInstance(true, "特卖商品初始化成功", "", data).toString();
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "特卖商品初始化失败", "", exception.getMessage()).toString();
 			logger.error("特卖商品初始化数据失败  e = {} , resultStr = {}", exception, result);
-			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
 		}
 		return result;
 	}
 
 	/**
 	 * 
-	 * @Title: getOnSaleGoods 
-	 * @author qiwei @date 2017年12月7日
-	 * 下午2:04:40 
-	 * @Description: 获得特卖商品（点击tap进行不同的跳转） 
-	 * @param request @param
-	 * response 
-	 * @return @return String 
-	 * @throws
+	 * @Title: getOnSaleGoods @author qiwei @date 2017年12月7日
+	 * 下午2:04:40 @Description: 获得特卖商品（点击tap进行不同的跳转） @param request @param
+	 * response @return @return String @throws
 	 */
-	@RequestMapping(value = "/getOnSaleGoods",method = RequestMethod.POST)
+	@RequestMapping(value = "/getOnSaleGoods", method = RequestMethod.POST)
 	public String getOnSaleGoods(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 
 			Long secondCategoryId = NumberUtil.objToLong(request.getParameter("secondCategoryId"));
-			if(secondCategoryId == null){
-			    return H5CommonResponse.getNewInstance(false, "参数异常", "", data).toString();
+			if (secondCategoryId == null) {
+				return H5CommonResponse.getNewInstance(false, "参数异常", "", data).toString();
 			}
-			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-			
-			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
+			List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();
+
+			AfGoodsCategoryDo afGoodsCategoryDo = new AfGoodsCategoryDo();
 			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
-			if(afGoodsCategoryDo != null){
-			    Long primaryCategoryId =   afGoodsCategoryDo.getId();
-			    Long categoryId =  secondCategoryId;
-			    //初始化时查该parentId下的该categoryId 的商品
-			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
-			    if(afGoodsList.size()>0){
-    				//获取借款分期配置信息
-    			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-    			        JSONArray array = JSON.parseArray(resource.getValue());
-    			        //删除2分期
-    			        if (array == null) {
-    			            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-    			        }
-    			       // removeSecondNper(array);
-    				
-				
-				for(AfGoodsDo goodsDo : afGoodsList) {
-		    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
-		    			goodsInfo.put("goodName",goodsDo.getName());
-		    			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-		    			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-		    			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-		    			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-		    			goodsInfo.put("goodsId", goodsDo.getRid());
-		    			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-		    			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-		    			goodsInfo.put("source", goodsDo.getSource());
-		    			goodsInfo.put("goodsType", "0");
-		    			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
-		    			// 如果是分期免息商品，则计算分期
-		    			Long goodsId = goodsDo.getRid();
-						AfSchemeGoodsDo  schemeGoodsDo = null;
+			if (afGoodsCategoryDo != null) {
+				Long primaryCategoryId = afGoodsCategoryDo.getId();
+				Long categoryId = secondCategoryId;
+				// 初始化时查该parentId下的该categoryId 的商品
+				List<AfGoodsDo> afGoodsList = afGoodsService
+						.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId, categoryId);
+				if (afGoodsList.size() > 0) {
+					// 获取借款分期配置信息
+					AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+							Constants.RES_BORROW_CONSUME);
+					JSONArray array = JSON.parseArray(resource.getValue());
+					// 删除2分期
+					if (array == null) {
+						throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+					}
+					// removeSecondNper(array);
+
+					for (AfGoodsDo goodsDo : afGoodsList) {
+						Map<String, Object> goodsInfo = new HashMap<String, Object>();
+						goodsInfo.put("goodName", goodsDo.getName());
+						goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+						goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+						goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+						goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+						goodsInfo.put("goodsId", goodsDo.getRid());
+						goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+						goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+						goodsInfo.put("source", goodsDo.getSource());
+						goodsInfo.put("goodsType", "0");
+						goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+						// 如果是分期免息商品，则计算分期
+						Long goodsId = goodsDo.getRid();
+						AfSchemeGoodsDo schemeGoodsDo = null;
 						try {
 							schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-						} catch(Exception e){
+						} catch (Exception e) {
 							logger.error(e.toString());
 						}
 						JSONArray interestFreeArray = null;
-						if(schemeGoodsDo != null){
-							AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+						if (schemeGoodsDo != null) {
+							AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
+									.getById(schemeGoodsDo.getInterestFreeId());
 							String interestFreeJson = interestFreeRulesDo.getRuleJson();
 							if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 								interestFreeArray = JSON.parseArray(interestFreeJson);
 							}
 						}
-						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-								goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
-						if(nperList!= null){
+						List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
+								BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(),
+								resource.getValue2());
+						if (nperList != null) {
 							goodsInfo.put("goodsType", "1");
 							Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-							String isFree = (String)nperMap.get("isFree");
-							if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+							String isFree = (String) nperMap.get("isFree");
+							if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
 								nperMap.put("freeAmount", nperMap.get("amount"));
 							}
 							goodsInfo.put("nperMap", nperMap);
 						}
-						
+
 						goodsList.add(goodsInfo);
-		    		}				
-			    }
+					}
+				}
 			}
-			 data.put("goodsList", goodsList);
+			data.put("goodsList", goodsList);
 			result = H5CommonResponse.getNewInstance(true, "获取特卖商品成功", "", data).toString();
-			} catch (Exception exception) {
-				result = H5CommonResponse.getNewInstance(false, "获取特卖商品失败", "", exception.getMessage()).toString();
-				logger.error("获取特卖商品失败  e = {} , resultStr = {}", exception, result);
-				doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"),result);
-			}
-			return result;
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "获取特卖商品失败", "", exception.getMessage()).toString();
+			logger.error("获取特卖商品失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+		}
+		return result;
 	}
 
 	@Override
@@ -401,14 +392,15 @@ public class AppH5DoubleEggsController extends BaseController {
 					// 当前时间
 					Date currentTime = new Date();
 
-					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS", "COUPON_TIME");
+					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS",
+							"COUPON_TIME");
 					if (afResourceDo == null) {
 						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
 					}
 					String[] times = afResourceDo.getValue3().split(",");
 
 					if (currentTime.before(dateFormat.parse(times[0]))) {
-							//2017-12-5 10:00号之前
+						// 2017-12-5 10:00号之前
 						afCouponDouble12Vo.setIsShow("N");// 活动未开始
 					}
 
@@ -456,9 +448,8 @@ public class AppH5DoubleEggsController extends BaseController {
 			logger.info(JSON.toJSONString(couponVoList));
 			data.put("couponList", couponVoList);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
-		
-		} 
-		catch (Exception e) {
+
+		} catch (Exception e) {
 			logger.error("/appH5DoubleEggs/initCoupons error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
 		}
@@ -484,87 +475,91 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
-	* @Title: getSecondKillGoodsList
-	* @author qiao
-	* @date 2017年12月7日 下午2:27:13
-	* @Description: 获得秒杀商品
-	* @param request
-	* @param response
-	* @return    
-	* @return String   
-	* @throws
+	 * @Title: getSecondKillGoodsList @author qiao @date 2017年12月7日
+	 * 下午2:27:13 @Description: 获得秒杀商品 @param request @param
+	 * response @return @return String @throws
 	 */
-	@RequestMapping(value = "/getSecondKillGoodsList",method = RequestMethod.POST)
+	@RequestMapping(value = "/getSecondKillGoodsList", method = RequestMethod.POST)
 	public String getSecondKillGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
 
-			Date now = new Date() ;
-			
+			Date now = new Date();
+
 			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
-			
+
 			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
 			if (CollectionUtil.isNotEmpty(dateList)) {
-				
+
 				log = log + String.format("middle params dateList.size() = %s", dateList.size());
 				logger.info(log);
-				
-			//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
+
+				// AfGoodsForSecondKill afGoodsForSecondKill = new
+				// AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
-				
+
 				for (Date startDate : dateList) {
-					
+
 					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate);
 					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
-						
+
 						AfGoodsBuffer goodsBuffer = new AfGoodsBuffer();
-						
-						// if this user has already login in then add status to goods. goodsListForDate
+
+						// if this user has already login in then add status to
+						// goods. goodsListForDate
 						String userName = context.getUserName();
-						
+
 						long userId = 0L;
 						if (StringUtil.isNotBlank(userName) && convertUserNameToUserId(userName) != null) {
-							for(GoodsForDate goodsForDate :goodsListForDate){
+							for (GoodsForDate goodsForDate : goodsListForDate) {
 								userId = convertUserNameToUserId(userName);
-								// change status according to different users(change the status for goodsListForDate)
-								int num = afGoodsDoubleEggsUserService.isSubscribed(userId,goodsForDate.getDoubleGoodsId());
-								
-								log = log + String.format("num = %s",num);
+								// change status according to different
+								// users(change the status for goodsListForDate)
+								int num = afGoodsDoubleEggsUserService.isSubscribed(userId,
+										goodsForDate.getDoubleGoodsId());
+
+								log = log + String.format("num = %s", num);
 								logger.info(log);
-								
-								//only to make sure if this user has already subscribed this goods
-								if (now.before(startDate) && num > 0 ) {
+
+								// only to make sure if this user has already
+								// subscribed this goods
+								if (now.before(startDate) && num > 0) {
 									goodsForDate.setStatus(1);
 								}
 							}
 						}
-						
-						log = log + String.format("goodsListForDate=%s, userName = %s,startDate = %s",goodsListForDate.toString(), userName,startDate);
+
+						log = log + String.format("goodsListForDate=%s, userName = %s,startDate = %s",
+								goodsListForDate.toString(), userName, startDate);
 						logger.info(log);
-						
-						goodsBuffer.setStartTime(startDate);
-						goodsBuffer.setGoodsListForDate(goodsListForDate);
-						goodsList.add(goodsBuffer);
-						
+
+						if (startDate != null) {
+							// format to the fix form
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							goodsBuffer.setStartDate(sdf.format(startDate));
+							goodsBuffer.setStartTime(startDate);
+							goodsBuffer.setGoodsListForDate(goodsListForDate);
+							goodsList.add(goodsBuffer);
+
+						}
+
 					}
-		
+
 				}
-				
-				
+
 				java.util.Map<String, Object> data = new HashMap<>();
-				
 
 				data.put("goodsList", goodsList);
 				data.put("serviceDate", new Date());
 
-				log = log + String.format("goodsList = %s",goodsList.toString());
+				log = log + String.format("goodsList = %s", goodsList.toString());
 				logger.info(log);
-				
+
 				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 				return result;
-				
+
 			}
 			result = H5CommonResponse.getNewInstance(false, "初始化失败").toString();
 
@@ -578,43 +573,36 @@ public class AppH5DoubleEggsController extends BaseController {
 
 	/**
 	 * 
-	* @Title: subscribe
-	* @author qiao
-	* @date 2017年12月7日 下午2:26:48
-	* @Description: 预约
-	* @param request
-	* @param response
-	* @return    
-	* @return String   
-	* @throws
+	 * @Title: subscribe @author qiao @date 2017年12月7日 下午2:26:48 @Description:
+	 * 预约 @param request @param response @return @return String @throws
 	 */
-	@RequestMapping(value = "/subscribe",method = RequestMethod.POST)
+	@RequestMapping(value = "/subscribe", method = RequestMethod.POST)
 	public String subscribe(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
-			
+
 			String log = "/appH5DoubleEggs/subscribe";
-			
+
 			context = doWebCheck(request, true);
 			if (context != null) {
 				Long userId = convertUserNameToUserId(context.getUserName());
 				java.util.Map<String, Object> data = new HashMap<>();
 
 				Long goodsId = NumberUtil.objToLong(request.getParameter("goodsId"));
-				
-				log = log + String.format("goodsId = %s",goodsId);
+
+				log = log + String.format("goodsId = %s", goodsId);
 				logger.info(log);
-				
+
 				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByDoubleGoodsId(goodsId);
 
-				log = log + String.format("goodsDo = %s",goodsDo.toString());
+				log = log + String.format("goodsDo = %s", goodsDo.toString());
 				logger.info(log);
-				
+
 				if (goodsDo != null) {
 
-					//String time = "10";
-					int preTime = 10;//Integer.parseInt(time);
+					// String time = "10";
+					int preTime = 10;// Integer.parseInt(time);
 					Date now = new Date();
 
 					// if now + preTime >= goods start time then throw
@@ -639,9 +627,9 @@ public class AppH5DoubleEggsController extends BaseController {
 					userDo.setIsOrdered(1);
 					userDo.setUserId(userId);
 
-					log = log + String.format("afGoodsDoubleEggsUserDo for saving = %s",userDo.toString());
+					log = log + String.format("afGoodsDoubleEggsUserDo for saving = %s", userDo.toString());
 					logger.info(log);
-					
+
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
 
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
@@ -650,8 +638,9 @@ public class AppH5DoubleEggsController extends BaseController {
 			}
 			result = H5CommonResponse.getNewInstance(false, "预约失败").toString();
 
-		}catch (FanbeiException e) {
-			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR) || e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
 				Map<String, Object> data = new HashMap<>();
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
@@ -663,7 +652,7 @@ public class AppH5DoubleEggsController extends BaseController {
 			logger.error("resultStr = {}", result);
 			logger.error("初始化数据失败  e = {} , resultStr = {}", e, result);
 		}
-		
+
 		catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "预约化失败", "", exception.getMessage()).toString();
 			logger.error("预约失败 context = {},  e = {} ", context, exception);
@@ -671,7 +660,9 @@ public class AppH5DoubleEggsController extends BaseController {
 		}
 		return result;
 	}
+
 	String opennative = "/fanbei-web/opennative?name=";
+
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
 		try {
@@ -695,18 +686,19 @@ public class AppH5DoubleEggsController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	 private void removeSecondNper(JSONArray array) {
-	        if (array == null) {
-	            return;
-	        }
-	        Iterator<Object> it = array.iterator();
-	        while (it.hasNext()) {
-	            JSONObject json = (JSONObject) it.next();
-	            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-	                it.remove();
-	                break;
-	            }
-	        }
-	    }
+
+	private void removeSecondNper(JSONArray array) {
+		if (array == null) {
+			return;
+		}
+		Iterator<Object> it = array.iterator();
+		while (it.hasNext()) {
+			JSONObject json = (JSONObject) it.next();
+			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+				it.remove();
+				break;
+			}
+		}
+	}
 
 }
