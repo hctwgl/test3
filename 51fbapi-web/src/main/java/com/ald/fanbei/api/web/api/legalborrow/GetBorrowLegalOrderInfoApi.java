@@ -79,7 +79,9 @@ public class GetBorrowLegalOrderInfoApi implements ApiHandle {
 			orderList.add(orderInfoMap);
 			AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService
 					.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
-			orderInfoMap.put("borrowStatus", legalOrderCash.getStatus());
+			if( legalOrderCash != null) {
+				orderInfoMap.put("borrowStatus", legalOrderCash.getStatus());
+			}
 
 		}
 		data.put("orderList", orderList);

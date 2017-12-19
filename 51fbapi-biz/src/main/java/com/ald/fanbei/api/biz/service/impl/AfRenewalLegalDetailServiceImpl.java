@@ -174,9 +174,10 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			}
 		});
 		
-		if (cardId == -1) {// 微信支付
+		/*if (cardId == -1) {// 微信支付
 			map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.RENEWAL_PAY.getCode());
-		} else if (cardId > 0) {// 银行卡支付
+		} else*/ 
+		if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid(),legalOrderRepayment.getId());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL.getCode());
@@ -185,6 +186,8 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
+		}else{
+			throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 		}
 		map.put("refId", renewalDetail.getRid());
 		map.put("refOrderRepaymentId", legalOrderRepayment.getId());
@@ -302,7 +305,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		// 获取新增的订单
 		final AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderDao.getById(borrowLegalOrderCashDo.getBorrowLegalOrderId());
 		
-		logger.info("afRenewalDetailDo=" + afRenewalDetailDo);
+		logger.info("afRenewalLegalDetailService : afRenewalDetailDo=" + afRenewalDetailDo+"; borrowLegalOrderRepayment="+borrowLegalOrderRepayment+"; borrowLegalOrderCashDo"+borrowLegalOrderCashDo+"; borrowLegalOrderDo="+borrowLegalOrderDo);
 		if (YesNoStatus.YES.getCode().equals(afRenewalDetailDo.getStatus())) {
 			redisTemplate.delete(key);
 			return 0l;
@@ -613,7 +616,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			afRenewalDetailDo.setCardNumber(bank.getCardNumber());
 			afRenewalDetailDo.setCardName(bank.getBankName());
 		}
-
+		logger.info("buildRenewalDetailDo :",afRenewalDetailDo);
 		return afRenewalDetailDo;
 	}
 	
@@ -639,6 +642,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		borrowLegalOrder.setStatus("UNPAID");//未支付
 		borrowLegalOrder.setPriceAmount(goodsDo.getSaleAmount());
 		borrowLegalOrder.setGoodsName(goodsDo.getName());
+		logger.info("buildAfBorrowLegalOrderDo :",borrowLegalOrder);
 		return borrowLegalOrder;
 	}
 
@@ -720,7 +724,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		
 		Date date = DateUtil.addDays(afBorrowLegalOrderCash.getGmtPlanRepay(), 7);
 		borrowLegalOrderCash.setGmtPlanRepay(date);
-				
+		logger.info("buildAfBorrowLegalOrderCashDo :",borrowLegalOrderCash);
 		return borrowLegalOrderCash;
 	}
 	
@@ -783,7 +787,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			legalOrderRepayment.setCardNo(bank.getCardNumber());
 			legalOrderRepayment.setCardName(bank.getBankName());
 		}
-
+		logger.info("buildBorrowLegalOrderRepaymentDo :",legalOrderRepayment);
 		return legalOrderRepayment;
 	}
 	
