@@ -226,11 +226,13 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		if (!isGetLock) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 		}
-
+		// 获取最后一笔借款信息
+		AfBorrowCashDo latestBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+		
 		try {
 			// 判断用户是否有借款未完成
-			boolean isCanBorrow = afBorrowCashService.isCanBorrowCash(userId);
-			if (!isCanBorrow) {
+			boolean borrowFlag = afBorrowCashService.isCanBorrowCash(userId);
+			if (!borrowFlag) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 			}
 			int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
@@ -273,10 +275,8 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			}
 			// 借过款的放入缓存，借钱按钮不需要高亮显示
 			bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));
-			final AfBorrowCashDo cashDo = new AfBorrowCashDo();
-			cashDo.setRid(borrowId);
+
 			try {
-				AfBorrowCashDo latestBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
 				if (latestBorrowCashDo != null
 						&& AfBorrowCashReviewStatus.refuse.getCode().equals(latestBorrowCashDo.getReviewStatus())) {
 					// 借款被拒绝
@@ -303,11 +303,11 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				}
 				String riskOrderNo = riskUtil.getOrderNo("vefy",
 						cardNo.substring(cardNo.length() - 4, cardNo.length()));
-				cashDo.setUserId(userId);
-				cashDo.setGmtCreate(new Date());
-				cashDo.setRishOrderNo(riskOrderNo);
-				cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
-				afBorrowCashService.updateBorrowCash(cashDo);
+				afBorrowCashDo.setUserId(userId);
+				afBorrowCashDo.setGmtCreate(new Date());
+				afBorrowCashDo.setRishOrderNo(riskOrderNo);
+				afBorrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
+				afBorrowCashService.updateBorrowCash(afBorrowCashDo);
 				// 更新订单借款状态为“申请/待风控审核”
 				afBorrowLegalOrderCashDo.setStatus(AfBorrowCashReviewStatus.apply.getCode());
 				afBorrowLegalOrderCashService.updateById(afBorrowLegalOrderCashDo);
@@ -327,8 +327,8 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
 				} else {
 					// 风控拒绝
-					cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-					cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+					afBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+					afBorrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 
 					// 更新订单借款状态
 					afBorrowLegalOrderCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
@@ -343,7 +343,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				transactionTemplate.execute(new TransactionCallback<String>() {
 					@Override
 					public String doInTransaction(TransactionStatus ts) {
-						afBorrowCashService.updateBorrowCash(cashDo);
+						afBorrowCashService.updateBorrowCash(afBorrowCashDo);
 						afBorrowLegalOrderCashService.updateById(afBorrowLegalOrderCashDo);
 						afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
 						return "success";
@@ -354,25 +354,25 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			} catch (Exception e) {
 				logger.error("apply legal borrow cash  error", e);
 				// 关闭借款
-				cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+				afBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
 				// 关闭搭售商品订单
 				afBorrowLegalOrderDo.setStatus(AfBorrowLegalOrderCashStatus.CLOSED.getCode());
 				// 关闭搭售商品借款
 				afBorrowLegalOrderCashDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
 
-				cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+				afBorrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 				// 如果属于非返呗自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
 				if (e instanceof FanbeiException) {
-					cashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
+					afBorrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.refuse.getCode());
 				} else {
 					logger.error("apply legal borrow cash exist unexpected exception,cause:" + e.getCause());
-					cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
-					cashDo.setReviewDetails("弱风控认证存在捕获外异常");
+					afBorrowCashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
+					afBorrowCashDo.setReviewDetails("弱风控认证存在捕获外异常");
 				}
 				transactionTemplate.execute(new TransactionCallback<String>() {
 					@Override
 					public String doInTransaction(TransactionStatus ts) {
-						afBorrowCashService.updateBorrowCash(cashDo);
+						afBorrowCashService.updateBorrowCash(afBorrowCashDo);
 						afBorrowLegalOrderCashService.updateById(afBorrowLegalOrderCashDo);
 						afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
 						return "success";
@@ -423,7 +423,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
 			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
 			afBorrowLegalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.APPLYING.getCode());
-			
+
 			AfUserAccountDto userDto = afUserAccountService.getUserAndAccountByUserId(Long.parseLong(consumerNo));
 			// 打款
 			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),

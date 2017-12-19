@@ -51,15 +51,11 @@ public class GetCashPageTypeApi implements ApiHandle {
 		String pageType = "old";
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE, SEC_TYPE);
 
-		if (afResourceDo == null) {
-			data.put("pageType", pageType);
-			return resp;
-		}
 		String isBack = afResourceDo.getValue();
 		if (userId == null && StringUtils.equalsIgnoreCase("false", isBack)) {
-			pageType = "old";
-		} else if (userId == null && StringUtils.equalsIgnoreCase("true", isBack)) {
 			pageType = "new";
+		} else if (userId == null && StringUtils.equalsIgnoreCase("true", isBack)) {
+			pageType = "old";
 		} else if (userId != null && StringUtils.equalsIgnoreCase("false", isBack)) {
 			// 不回退的情况
 			// 获取最后一笔借款
@@ -69,7 +65,7 @@ public class GetCashPageTypeApi implements ApiHandle {
 			} else {
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
-				if (StringUtils.equalsIgnoreCase("FINSH", status) && StringUtils.equalsIgnoreCase("CLOSED", status)) {
+				if (StringUtils.equalsIgnoreCase("FINSH", status) || StringUtils.equalsIgnoreCase("CLOSED", status)) {
 					pageType = "new";
 				} else {
 					// 查询用户是否有订单借款信息
@@ -92,7 +88,7 @@ public class GetCashPageTypeApi implements ApiHandle {
 			} else {
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
-				if (StringUtils.equalsIgnoreCase("FINSH", status) && StringUtils.equalsIgnoreCase("CLOSED", status)) {
+				if (StringUtils.equalsIgnoreCase("FINSH", status) || StringUtils.equalsIgnoreCase("CLOSED", status)) {
 					pageType = "old";
 				} else {
 					// 查询用户是否有订单借款信息
