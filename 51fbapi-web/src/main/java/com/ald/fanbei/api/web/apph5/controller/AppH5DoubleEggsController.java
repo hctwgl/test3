@@ -576,9 +576,15 @@ public class AppH5DoubleEggsController extends BaseController {
 						log = log + String.format("goodsListForDate=%s, userName = %s,startDate = %s",goodsListForDate.toString(), userName,startDate);
 						logger.info(log);
 						
-						goodsBuffer.setStartTime(startDate);
-						goodsBuffer.setGoodsListForDate(goodsListForDate);
-						goodsList.add(goodsBuffer);
+						if (startDate != null) {
+							// format to the fix form
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							goodsBuffer.setStartDate(sdf.format(startDate));
+							goodsBuffer.setStartTime(startDate);
+							goodsBuffer.setGoodsListForDate(goodsListForDate);
+							goodsList.add(goodsBuffer);
+
+						}
 						
 					}
 		
