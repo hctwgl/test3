@@ -160,8 +160,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
             AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
             BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
             
-            // 借钱手续费率（日）
-            BigDecimal borrowCashPoundage = afBorrowCashDo.getPoundageRate();
             // 查询新利率配置
     		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,Constants.BORROW_CASH_INFO_LEGAL);
     		
@@ -190,7 +188,8 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		}else{
     			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
     		}		
-            
+    		logger.info("confirmLegalRenewalPayApi borrowCash rate = {}, borrowCash serviceRate = {}" ,newRate, newServiceRate);
+    		
             BigDecimal capital =BigDecimal.ZERO;
 
             //续借需还本金比例
@@ -212,7 +211,8 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		if(afBorrowLegalOrderCash==null){
     			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
     		}
-
+    		logger.info("confirmLegalRenewalPayApi last afBorrowLegalOrderCash record = {}" ,afBorrowLegalOrderCash);
+    		
     		//上期借款手续费
     		BigDecimal borrowPoundage = afBorrowCashDo.getPoundage();
     		//上期订单手续费
@@ -228,6 +228,8 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
 
     		//上期订单借款金额
     		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
+    		// 上期订单待还金额
+    		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
     		
     		// 本金（总） 
     		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
@@ -256,7 +258,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal rateAmount = BigDecimalUtil.add(borrowRateAmount,orderRateAmount);
 
     		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
-    		BigDecimal repaymentAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital,orderAmount);
+    		BigDecimal repaymentAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
 
     		BigDecimal actualAmount = repaymentAmount;
 
@@ -319,11 +321,13 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
                 newMap.put("type", map.get("type"));
 
                 resp.setResponseData(newMap);
+                logger.info("confirmLegalRenewalPayApi result = {}" ,resp);
             }
 
             return resp;
         }
        catch (Exception e){
+    	   logger.error("confirmLegalRenewalPayApi error: "+e);
             throw  e;
        }
         finally {
