@@ -47,6 +47,7 @@ public enum AfResourceSecType {
 		RejectPageBannerUrl("REJECT_PAGE_BANNER_URL","拒绝借款期后不通过页面内图对应地址"),
 		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置"),
 		BORROW_CASH_COMPANY_NAME("BORROW_CASH_COMPANY_NAME","借款公司名称"),
+		BORROW_CASH_INFO_LEGAL("BORROW_CASH_INFO_LEGAL","借款利率信息"),
 		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
