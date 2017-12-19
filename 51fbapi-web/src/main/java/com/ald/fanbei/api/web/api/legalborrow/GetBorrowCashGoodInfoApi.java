@@ -185,8 +185,7 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 						.multiply(borrowDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 				respData.put("goodsServiceFee", goodsServiceFee);
 				respData.put("goodsInterestFee", goodsInterestFee);
-				serviceFee = serviceFee.add(goodsServiceFee);
-				interestFee = interestFee.add(goodsInterestFee);
+				
 				respData.put("serviceFee", serviceFee);
 				respData.put("interestFee", interestFee);
 				repayAmount = BigDecimalUtil.add(serviceFee, interestFee, new BigDecimal(borrowAmount));
