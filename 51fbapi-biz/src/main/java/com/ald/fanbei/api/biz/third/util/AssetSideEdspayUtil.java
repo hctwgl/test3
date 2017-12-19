@@ -152,12 +152,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			
 			//请求时间校验
-		/*	Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
+			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}*/
+			}
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGetCreditReqBo edspayGetCreditReqBo = null;
@@ -375,5 +375,4 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		return bankInfoList.get(0);
 	}
 
-	
 }

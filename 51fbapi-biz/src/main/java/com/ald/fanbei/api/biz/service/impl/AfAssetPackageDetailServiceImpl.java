@@ -175,7 +175,6 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			    			totalMoneyList.add(cancelMoney);
 			    			AfAssetPackageDo modifyPackageDo = new AfAssetPackageDo();
 			    			modifyPackageDo.setRid(packageDo.getRid());
-			    			modifyPackageDo.setGmtModified(currDate);
 			    			modifyPackageDo.setRealTotalMoney(cancelMoney.negate());
 			    			afAssetPackageDao.updateRealTotalMoneyById(modifyPackageDo);
 			    			return 1;
@@ -289,7 +288,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	@Override
 	public List<EdspayGetCreditRespBo> getBorrowCashBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart,final Date gmtCreateEnd,final BigDecimal sevenMoney){
 		final List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
-		transactionTemplate.execute(new TransactionCallback<Long>() {
+		Long result = transactionTemplate.execute(new TransactionCallback<Long>() {
 	        @Override
             public Long doInTransaction(TransactionStatus status) {
             	BigDecimal sevenMoneyNew = sevenMoney;
@@ -349,9 +348,9 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				afAssetPackageDo.setStatus(AfAssetPackageStatus.SENDED.getCode());
         				String packageName = "";
         				if(totalMoney.intValue()/10000>0){
-        					packageName = afAssetSideInfoDo.getName()+totalMoney.intValue()/10000+"万资产包"+DateUtil.formatDate(new Date());
+        					packageName = afAssetSideInfoDo.getName()+totalMoney.intValue()/10000+"万现金贷资产包"+DateUtil.formatDate(new Date());
         				}else{
-        					packageName = afAssetSideInfoDo.getName()+totalMoney+"元资产包"+DateUtil.formatDate(new Date());
+        					packageName = afAssetSideInfoDo.getName()+totalMoney+"元现金贷资产包"+DateUtil.formatDate(new Date());
         				}
         				afAssetPackageDo.setAssetName(packageName);
         				afAssetPackageDo.setAssetNo("zcb"+System.currentTimeMillis());
@@ -408,7 +407,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				afAssetPackageDao.updateById(afAssetPackageDo);
         				
         				//资产方操作日志添加
-        				AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GET_ASSET.getCode(), afAssetPackageDo.getRealTotalMoney(), afAssetPackageDo.getRid()+"","", "请求资产包金额totalMoney="+totalMoney+",实际7天："+realSevenAmount+",14天"+realFourteenAmount);
+        				AfAssetSideOperaLogDo operaLogDo = new AfAssetSideOperaLogDo(afAssetSideInfoDo.getRid(), currDate, AfAssetOperaLogChangeType.GET_ASSET.getCode(), afAssetPackageDo.getRealTotalMoney(), afAssetPackageDo.getRid()+"","", "请求现金贷资产包金额totalMoney="+totalMoney+",实际7天："+realSevenAmount+",14天"+realFourteenAmount);
         				afAssetSideOperaLogDao.saveRecord(operaLogDo);
         				
         				bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
@@ -420,13 +419,16 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         			status.setRollbackOnly();
         			logger.error("getBatchCreditInfo exception"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid(),e);
         			bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        			throw new RuntimeException("getBatchCreditInfo fail");
         		}
             	return 0l;
             }
 	    });
 		//释放锁Lock完成,结束
-		return creditInfos;
+		if (result == 1) {
+			return creditInfos;
+		}else{
+			return new ArrayList<EdspayGetCreditRespBo>();
+		}
 	}
 	
 	/**
@@ -559,7 +561,6 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setRepayAcctType(bankInfo.getRepayAcctType());
 		creditRespBo.setIsRepayAcctOtherBank(bankInfo.getIsRepayAcctOtherBank());
 		creditRespBo.setManageFee(afAssetPackageDo.getAnnualRate());
-		creditRespBo.setPushTime(DateUtil.getCurrSecondTimeStamp());
 		creditRespBo.setRepaymentSource("月工资还款");
 		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROWCASH.getCode());
 		creditRespBo.setIsPeriod(0);
@@ -621,7 +622,6 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setRepayAcctType(bankInfo.getRepayAcctType());
 		creditRespBo.setIsRepayAcctOtherBank(bankInfo.getIsRepayAcctOtherBank());
 		creditRespBo.setManageFee(afAssetPackageDo.getAnnualRate());
-		creditRespBo.setPushTime(DateUtil.getCurrSecondTimeStamp());
 		creditRespBo.setRepaymentSource("月工资还款");
 		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROW.getCode());
 		creditRespBo.setIsPeriod(1);
@@ -706,7 +706,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	@Override
 	public List<EdspayGetCreditRespBo> getBorrowBatchCreditInfo(final FanbeiBorrowBankInfoBo bankInfo,final AfAssetSideInfoDo afAssetSideInfoDo,final BigDecimal totalMoney,final Date gmtCreateStart, final Date gmtCreateEnd) {
 		final List<EdspayGetCreditRespBo> creditInfos = new ArrayList<EdspayGetCreditRespBo>();
-		transactionTemplate.execute(new TransactionCallback<Long>() {
+		Long result = transactionTemplate.execute(new TransactionCallback<Long>() {
 	        @Override
             public Long doInTransaction(TransactionStatus status) {
             	List<AfViewAssetBorrowDo> debtList= new ArrayList<AfViewAssetBorrowDo>();
@@ -749,7 +749,6 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         				afAssetPackageDo.setType(AfAssetPackageType.ASSET_REQ.getCode());
         				afAssetPackageDo.setBusiType(AfAssetPackageBusiType.BORROW.getCode());
         				int result=afAssetPackageDao.saveRecord(afAssetPackageDo);
-        				logger.info("result");
         				
         				BigDecimal realAmount = BigDecimal.ZERO;
         				for (AfViewAssetBorrowDo afViewAssetBorrowDo : debtList) {
@@ -783,13 +782,16 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         			status.setRollbackOnly();
         			logger.error("getBatchCreditInfo exception"+",afAssetSideInfoDoId="+afAssetSideInfoDo.getRid(),e);
         			bizCacheUtil.delCache(Constants.CACHEKEY_ASSETPACKAGE_LOCK);
-        			throw new RuntimeException("getBatchCreditInfo fail");
         		}
             	return 0l;
             }
 	    });
 		//释放锁Lock完成,结束
-		return creditInfos;
+		if (result == 1) {
+			return creditInfos;
+		}else{
+			return new ArrayList<EdspayGetCreditRespBo>();
+		}
 	}
 
 

@@ -54,7 +54,7 @@ public class EdspayController {
 	}
 	
 	/**
-	 * 资产方债权订单回传接口
+	 * 资产方获取债权订单接口
 	 * @param request
 	 * @param response
 	 * @return
