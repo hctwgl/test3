@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -70,6 +72,8 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
     AfResourceService afResourceService;
     @Resource
     AfUserAuthService afUserAuthService;
+    @Resource
+    AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
     @Resource
     YiBaoUtility yiBaoUtility;
@@ -92,6 +96,20 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 //        if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 //        }
+        
+        // 对402版本借钱，低版本还款情况做控制
+	    try {
+	      Integer appVersion = context.getAppVersion();
+	      if (appVersion <= 401) {
+	        AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
+	        if (orderCashDo != null) {
+	          return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
+	        }
+	      }
+	    } catch (Exception e) {
+	      // ignore error
+	    }
+		
 
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
