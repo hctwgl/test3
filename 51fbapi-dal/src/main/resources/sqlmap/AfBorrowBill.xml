@@ -782,4 +782,26 @@
         af_interim_au
         where user_id = #{userId}
 	</select>
+	
+	<select id="getBillIdListByQuery" resultType="java.lang.Long">
+		SELECT
+			id
+		from
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND overdue_status = #{overdueStatus}
+		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+		</if>
+		AND user_id = #{userId}
+	</select>
 </mapper>

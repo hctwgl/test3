@@ -621,4 +621,9 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public AfInterimAuDo selectInterimAmountByUserId(Long userId) {
 		return afBorrowBillDao.selectInterimAmountByUserId(userId);
 	}
+
+	@Override
+	public List<Long> getBillIdListByQuery(AfBorrowBillQuery query) {
+		return afBorrowBillDao.getBillIdListByQuery(query);
+	}
 }

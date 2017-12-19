@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-
 import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -448,4 +448,13 @@ public interface AfBorrowBillDao {
 	 * @return
 	 */
 	AfInterimAuDo selectInterimAmountByUserId(@Param("userId")Long userId);
+
+	/**
+	 * 根据条件查询billId
+	 * @author yuyue
+	 * @Time 2017年12月19日 下午3:40:38
+	 * @param query
+	 * @return
+	 */
+	List<Long> getBillIdListByQuery(AfBorrowBillQuery query);
 }

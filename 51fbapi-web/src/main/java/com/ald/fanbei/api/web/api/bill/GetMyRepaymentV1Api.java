@@ -86,6 +86,10 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 			query.setOverdueStatus("Y");
 			query.setStatus(BorrowBillStatus.NO.getCode());
 			BigDecimal overdueMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+			if (overdueMoney.compareTo(new BigDecimal(0)) == 1) {
+				List<Long> overdueBills = afBorrowBillService.getBillIdListByQuery(query);
+				map.put("overdueBills", overdueBills);
+			}
 			map.put("overdueMoney", overdueMoney);
 			// 获取已出未逾期
 			query.setOverdueStatus("N");
@@ -93,9 +97,11 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 			map.put("outMoney", outMoney);
 			if (outMoney.compareTo(new BigDecimal(0)) == 1) {
 				List<AfBorrowBillDto> billList = afBorrowBillService.getBillListByQuery(query);
+				List<Long> outBills = afBorrowBillService.getBillIdListByQuery(query);
 				AfBorrowBillDto billDto = billList.get(0);
 				String month = DateUtil.getMonth(billDto.getGmtOutDay());
 				map.put("month", month);
+				map.put("outBills", outBills);
 			}
 			// 获取下月未出账单
 			Date strOutDay = DateUtil.getFirstOfMonth(new Date());
@@ -112,6 +118,8 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 			BigDecimal notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
 			if (notOutMoney.compareTo(new BigDecimal(0)) == 1) {
 				String month = DateUtil.getMonth(strOutDay);
+				List<Long> notOutBills = afBorrowBillService.getBillIdListByQuery(query);
+				map.put("notOutBills", notOutBills);
 				map.put("nextMonth", month);
 			}
 			map.put("notOutMoney", notOutMoney);

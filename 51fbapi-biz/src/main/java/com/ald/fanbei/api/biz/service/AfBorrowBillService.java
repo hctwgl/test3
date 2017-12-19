@@ -370,4 +370,13 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	AfInterimAuDo selectInterimAmountByUserId(Long userId);
+
+	/**
+	 * 根据条件查询billId
+	 * @author yuyue
+	 * @Time 2017年12月19日 下午3:40:38
+	 * @param query
+	 * @return
+	 */
+	List<Long> getBillIdListByQuery(AfBorrowBillQuery query);
 }
