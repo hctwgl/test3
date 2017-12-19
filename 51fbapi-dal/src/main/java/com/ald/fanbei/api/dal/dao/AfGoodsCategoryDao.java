@@ -4,6 +4,7 @@ import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -49,4 +50,18 @@ public interface AfGoodsCategoryDao {
 	List<AfGoodsCategoryDo> selectThirdLevel(Long rid);
 
 	List<AfGoodsCategoryDto> selectGoodsInformation(AfGoodsCategoryQuery query);
+	
+	/**
+	 * 根据名字查询一级分类
+	 * @param name
+	 * @return
+	 */
+	AfGoodsCategoryDo getParentDirectoryByName(String name);
+	
+	/**
+	 * 根据级别id和父类id查询列表
+	 * @param rid
+	 * @return
+	 */
+	List<AfGoodsCategoryDo> listByParentIdAndLevel(AfGoodsCategoryDo queryAfGoodsCategory);
 }
