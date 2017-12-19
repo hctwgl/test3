@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -36,6 +37,8 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -73,10 +76,35 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 	@Resource
 	AfUserCouponService afUserCouponService;
 
+	@Resource
+	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+
+		// FIXME 控制402版本借钱商品未还款，不能通过低版本借钱
+		try {
+			Integer version = context.getAppVersion();
+			if (version <= 401) {
+				// 查询是否与订单借款未还完
+				AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+				if (borrowCashDo != null) {
+					AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService
+							.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowCashDo.getRid());
+					if (orderCashDo != null) {
+						String status = orderCashDo.getStatus();
+						if (StringUtils.equals(status, "AWAIT_REPAY") || StringUtils.equals(status, "PART_REPAID")) {
+							return new ApiHandleResponse(requestDataVo.getId(),
+									FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			// ignore error
+		}
 
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		if (StringUtils.equals(YesNoStatus.NO.getCode(), authDo.getZmStatus())) {

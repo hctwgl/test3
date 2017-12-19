@@ -475,6 +475,9 @@
 				<entry key="/legalborrow/getResourceCompanyName" value-ref="getResourceCompanyNameApi" />
 				<entry key="/legalborrow/getLegalBorrowCashDetail" value-ref="getLegalBorrowCashDetailApi" />
 				<entry key="/legalborrow/getConfirmBorrowLegalInfo" value-ref="getConfirmBorrowLegalInfoApi" />
+				<entry key="/legalborrow/getLegalOrderLogistics" value-ref="getLegalOrderLogisticsApi" />
+				
+				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
 			</map>
