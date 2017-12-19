@@ -92,4 +92,6 @@ public interface AfGoodsDao {
 	List<AfGoodsDo> getGoodsByModelId(@Param("categoryId")Long categoryId);
 
 	List<AfGoodsDo> getHomeGoodsByModelId(AfGoodsQuery query);
+
+	List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query);
 }

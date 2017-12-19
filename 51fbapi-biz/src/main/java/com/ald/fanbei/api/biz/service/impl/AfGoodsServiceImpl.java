@@ -130,4 +130,9 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfGoodsDo> getHomeGoodsByModelId(AfGoodsQuery query){
 		return afGoodsDao.getHomeGoodsByModelId(query);
 	}
+
+	@Override
+	public List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query){
+		return afGoodsDao.getGoodsVerifyByCategoryId(query);
+	}
 }

@@ -98,4 +98,6 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsByModelId (Long categoryId);
 
 	List<AfGoodsDo> getHomeGoodsByModelId (AfGoodsQuery query);
+
+	List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query);
 }
