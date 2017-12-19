@@ -82,6 +82,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
 import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
@@ -99,6 +100,7 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
@@ -208,6 +210,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
     @Resource
     AfContractPdfCreateService afContractPdfCreateService;
+
+    @Resource
+    AfInterimAuDao afInterimAuDao;
 
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
@@ -854,7 +859,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
                         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
 
-                        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+                        //获取临时额度
+                        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+                        //获取当前用户可用临时额度
+                        BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+                        //可使用额度
+                        BigDecimal useableAmount = BigDecimal.ZERO;
+                        //判断临时额度是否到期
+                        if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+                        {
+                            useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount()).add(interim);
+                        }
+                        else
+                        {
+                            useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+                        }
 
                         BigDecimal leftAmount = useableAmount;
                         BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(virtualMap);
@@ -1813,18 +1832,44 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
      * @param userAccountInfo
      */
     private void checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountDo userAccountInfo) {
+        //获取临时额度
+        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
         if (afOrderService.isVirtualGoods(resultMap)) {
             BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(resultMap);
             String virtualCode = afOrderService.getVirtualCode(resultMap);
             BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
-            BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+            BigDecimal useableAmount = BigDecimal.ZERO;
+            //判断临时额度是否到期
+            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+            {
+                //获取当前用户可用临时额度
+                BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+                //用户额度加上临时额度
+                useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount()).add(interim);
+            }
+            else
+            {
+                useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+            }
             //虚拟剩余额度大于信用可用额度 则为可用额度
             leftAmount = leftAmount.compareTo(useableAmount) > 0 ? useableAmount : leftAmount;
             if (leftAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
             }
         } else {
-            BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+            BigDecimal useableAmount = BigDecimal.ZERO;
+            //判断临时额度是否到期
+            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+            {
+                //获取当前用户可用临时额度
+                BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+                //用户额度加上临时额度
+                useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount()).add(interim);
+            }
+            else
+            {
+                useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+            }
             if (useableAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_MONEY_ERROR);
             }

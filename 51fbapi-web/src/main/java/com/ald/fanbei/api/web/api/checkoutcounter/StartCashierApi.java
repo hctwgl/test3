@@ -69,6 +69,8 @@ public class StartCashierApi implements ApiHandle {
     AfBorrowCashService afBorrowCashService;
     @Resource
     AfCheckoutCounterService afCheckoutCounterService;
+    @Resource
+    AfInterimAuService afInterimAuService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -263,8 +265,20 @@ public class StartCashierApi implements ApiHandle {
             if (orderInfo.getActualAmount().compareTo(minAmount) <= 0) {
                 return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
             }
+            //获取临时额度
+            AfInterimAuDo afInterimAuDo = afInterimAuService.getByUserId(orderInfo.getUserId());
+            //获取当前用户可用临时额度
+            BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+            BigDecimal userabledAmount = BigDecimal.ZERO;
             //额度判断
-            BigDecimal userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+            {
+                userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);
+            }
+            else
+            {
+                userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+            }
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
             if (userabledAmount.compareTo(usabledMinAmount) < 0) {
@@ -274,11 +288,11 @@ public class StartCashierApi implements ApiHandle {
             if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 //额度不够
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode());
-                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount);
+                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount,afInterimAuDo);
                 return cashierTypeVo;
             } else {
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
-                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount);
+                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount,afInterimAuDo);
                 return cashierTypeVo;
             }
         } else {
@@ -343,7 +357,7 @@ public class StartCashierApi implements ApiHandle {
      * @param orderInfo     订单信息
      * @param userDto       用户账户信息
      */
-    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto,BigDecimal usabledMinAmount) {
+    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto,BigDecimal usabledMinAmount,AfInterimAuDo afInterimAuDo) {
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
         String rejectCode =  resp.getRejectCode();
@@ -406,7 +420,18 @@ public class StartCashierApi implements ApiHandle {
             }
         }
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-        BigDecimal useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+        //获取当前用户可用临时额度
+        BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+        BigDecimal useableAmount = BigDecimal.ZERO;
+        //额度判断
+        if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+        {
+            useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);
+        }
+        else
+        {
+            useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
+        }
         if (afOrderService.isVirtualGoods(virtualMap)) {
             cashierTypeVo.setIsVirtualGoods(YesNoStatus.YES.getCode());
             String virtualCode = afOrderService.getVirtualCode(virtualMap);

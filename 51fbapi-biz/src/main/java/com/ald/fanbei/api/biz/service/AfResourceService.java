@@ -207,4 +207,6 @@ public interface AfResourceService {
 	List<AfResourceDo> getEcommercePositionUpRescoure();
 
 	List<AfResourceDo> getEcommercePositionDownRescoure();
+
+	AfResourceDo getConfigByTypesAndValue(String type,String value);
 }
