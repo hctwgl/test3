@@ -209,7 +209,7 @@
 	
 	<select id="listGoodsListByParentIdFromSubjectGoods"  resultType="AfGoodsDo" parameterType="java.lang.Long">
 	SELECT
-		*
+		<include refid="queryFields"/>
 		FROM af_goods
 		WHERE is_delete = 0
 		AND STATUS = 'PUBLISH'
