@@ -515,14 +515,14 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		double serviceRate = 0; // 手续费率
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject info = array.getJSONObject(i);
-			String borrowTag = info.getString("borrowTag");
-			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+			String consumeTag = info.getString("consumeTag");
+			if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
 				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), type)) {
 					interestRate = info.getDouble("consumeSevenDay");
 				} else {
 					interestRate = info.getDouble("consumeFourteenDay");
 				}
-			} else if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
+			} else if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
 				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), type)) {
 					serviceRate = info.getDouble("consumeSevenDay");
 				} else {
