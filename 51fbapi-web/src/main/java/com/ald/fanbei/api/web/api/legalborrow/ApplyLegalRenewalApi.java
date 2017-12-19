@@ -83,6 +83,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		if (afBorrowCashDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
+		logger.info("applyLegalRenewalApi afBorrowCashDo record = {} " , afBorrowCashDo);
 
 		//还款记录
 		AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
@@ -96,7 +97,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 
 		data.put("rebateAmount", userDto.getRebateAmount());
 		data.put("jfbAmount", userDto.getJfbAmount());
-
+		logger.info("applyLegalRenewalApi data = {} " , data);
 		resp.setResponseData(data);
 
 		// fmf  add续期前逾期状态
@@ -150,7 +151,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
 		}		
-		
+		logger.info("applyLegalRenewalApi borrowCash rate = {} , borrowCash serviceRate = {} " , newRate , newServiceRate);
 		//上一笔订单记录
 		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
 		if(afBorrowLegalOrder==null){
@@ -160,6 +161,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		if(afBorrowLegalOrderCash == null){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
 		}
+		logger.info("applyLegalRenewalApi last afBorrowLegalOrderCash record = {} " , afBorrowLegalOrderCash);
 		//续借需要支付本金
 		BigDecimal capital =BigDecimal.ZERO;
 		
@@ -190,6 +192,8 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		
 		//上期订单借款金额
 		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
+		// 上期订单待还金额
+		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
 		
 		//判断续借金额是否大于所有待还金额
 		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),orderAmount,orderOverdueAmount,orderPoundage,orderRateAmount)
@@ -207,7 +211,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		BigDecimal rateAmount = BigDecimalUtil.add(borrowRateAmount,orderRateAmount);
 
 		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
-		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital,orderAmount);
+		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
 
 		data.put("rid", afBorrowCashDo.getRid());
 		data.put("rateAmount", rateAmount);// 上期利息
@@ -217,7 +221,7 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		data.put("renewalPayAmount", renewalPayAmount);// 续期应缴费用
 		data.put("renewalAmount", waitPaidAmount);// 续期金额
 		data.put("renewalDay", allowRenewalDay);// 续期天数
-		data.put("goodsOrderAmount", orderAmount);// 上期借款订单的待还本金
+		data.put("goodsOrderAmount", waitOrderAmount);// 上期借款订单的待还本金
 		
 		data.put("allRenewalAmount", allRenewalAmount);//所有续借的金额
 		return data;
