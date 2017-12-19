@@ -237,8 +237,8 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
     		
     		//判断续借金额是否大于借款金额
-    		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),orderAmount,orderOverdueAmount,orderPoundage,orderRateAmount)
-    													.subtract(afBorrowCashDo.getRepayAmount().add(afBorrowLegalOrderCash.getRepaidAmount()));
+    		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),waitOrderAmount,orderOverdueAmount,orderPoundage,orderRateAmount)
+    													.subtract(afBorrowCashDo.getRepayAmount());
     		if (renewalAmount.compareTo(allRenewalAmount) >0) {
     			throw new FanbeiException(
     					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
