@@ -549,7 +549,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     	AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(repayDealBo.userId);
     	if (AfBorrowCashStatus.finsh.getCode().equals(repayDealBo.cashDo.getStatus()) && 
         		AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(repayDealBo.orderCashDo.getStatus()) ) {
-    		accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.cashDo.getAmount().add(repayDealBo.orderCashDo.getAmount())));
+    		AfBorrowLegalOrderCashDo primaryOrderCashDo = afBorrowLegalOrderCashDao.getPrimaryOrderCashByBorrowId(repayDealBo.cashDo.getRid());
+    		accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.cashDo.getAmount().add(primaryOrderCashDo.getAmount())));
     	}
     	
     	if(repayDealBo.curSumRebateAmount != null && repayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
