@@ -202,8 +202,8 @@
 
 	<select id="getUserSummary" resultType="java.util.HashMap">
 		SELECT
-time_format(timediff((SELECT gmt_create  FROM af_borrow_cash WHERE user_id =c.user_id  and `status`='FINSH'  order by gmt_create desc LIMIT 1 ) ,
-(SELECT gmt_risk  FROM af_user_auth WHERE user_id =c.user_id   order by gmt_create desc LIMIT 1 )),'%H') hourBetweenVerifyBorrow,
+time_format(timediff((SELECT min(gmt_create)  FROM af_borrow_cash WHERE user_id =c.user_id  and `status`='FINSH' ) ,
+(SELECT gmt_risk  FROM af_user_auth WHERE user_id =c.user_id   LIMIT 1 )),'%H') hourBetweenVerifyBorrow,
 COUNT(if(overdue_day>=4,true,null))/COUNT(id)*100 as rateAfter4Day,
 datediff(MAX(gmt_create),MIN(gmt_create))/COUNT(id)*100 frequency,
 COUNT(if(type='SEVEN',true,null))/COUNT(id)*100 as rateBorrow7d,
