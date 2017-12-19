@@ -175,7 +175,7 @@
     <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" parameterType="java.util.Date">
 		SELECT
 			de.id as double_goods_id,
-			IF(now() > de.start_time,'2','0') as `status`,
+			case when CURRENT_DATE > date(de.start_time) then '4' when de.start_time<now() then '2' else '0' end as status,
 			de.goods_id,
 			g.stock_count,
 			g.stock_count - de.already_count AS count,
