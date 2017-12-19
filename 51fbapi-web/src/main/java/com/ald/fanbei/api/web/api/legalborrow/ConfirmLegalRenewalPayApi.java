@@ -228,8 +228,8 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
 
     		//上期订单借款金额
     		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
-    		// 上期订单待还金额
-    		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
+    		// 上期订单待还本金
+    		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getSumRepaidInterest(),afBorrowLegalOrderCash.getSumRepaidOverdue(),afBorrowLegalOrderCash.getSumRepaidPoundage()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
     		
     		// 本金（总） 
     		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
@@ -257,7 +257,7 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		//上期总利息
     		BigDecimal rateAmount = BigDecimalUtil.add(borrowRateAmount,orderRateAmount);
 
-    		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
+    		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单本金)
     		BigDecimal repaymentAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
 
     		BigDecimal actualAmount = repaymentAmount;
