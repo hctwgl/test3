@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.jsoup.helper.DataUtil;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.mysql.fabric.xmlrpc.base.Data;
+import com.timevale.esign.sdk.tech.service.impl.l;
 
 /**
  * 
@@ -115,7 +117,6 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 			List<AfBorrowBillDo> billList = afBorrowBillService.getUserBillListByQuery(query);
 
 			Map<Integer, List<AfBorrowBillDo>> yearMap = new HashMap<Integer, List<AfBorrowBillDo>>();
-			List<Map<String, Object>> mapList = new ArrayList<Map<String,Object>>();
 			if (billList != null && billList.size() > 0) {
 				for (AfBorrowBillDo afBorrowBillDo : billList) {
 					Calendar calendar = Calendar.getInstance();
@@ -168,7 +169,7 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 			}
 			map.put("interimAmount",afInterimAuDo);
 			map.put("money", money);
-			map.put("billList", billList);
+			map.put("billList", list);
 			resp.setResponseData(map);
 		} catch (Exception e) {
 			logger.error("getMyBorrowListV1Api error :" , e);
