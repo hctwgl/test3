@@ -252,19 +252,20 @@ public class H5DoubleEggsController extends H5Controller {
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
 
-			Long secondCategoryId = NumberUtil.objToLong(request.getParameter("secondCategoryId"));
-			if(secondCategoryId == null){
+			Long subjectId = NumberUtil.objToLong(request.getParameter("secondCategoryId"));
+			if(subjectId == null){
 			    return H5CommonResponse.getNewInstance(false, "参数异常", "", data).toString();
 			}
 			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
 			
-			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
-			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
-			if(afGoodsCategoryDo != null){
-			    Long primaryCategoryId =   afGoodsCategoryDo.getId();
-			    Long categoryId =  secondCategoryId;
+//			AfGoodsCategoryDo  afGoodsCategoryDo = new AfGoodsCategoryDo();
+//			afGoodsCategoryDo = afGoodsCategoryService.getParentDirectoryByName("SHUANG_DAN");
+			
+//			    Long primaryCategoryId =   afGoodsCategoryDo.getId();
+//			    Long categoryId =  secondCategoryId;
 			    //初始化时查该parentId下的该categoryId 的商品
-			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
+			    //List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListByPrimaryCategoryIdAndCategoryId(primaryCategoryId,categoryId);
+			    List<AfGoodsDo> afGoodsList = afGoodsService.listGoodsListBySubjectId(subjectId);
 			    if(afGoodsList.size()>0){
     				//获取借款分期配置信息
     			        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -319,7 +320,7 @@ public class H5DoubleEggsController extends H5Controller {
 						
 						goodsList.add(goodsInfo);
 		    		}				
-			    }
+			    
 			}
 			 data.put("goodsList", goodsList);
 			result = H5CommonResponse.getNewInstance(true, "获取特卖商品成功", "", data).toString();
@@ -330,6 +331,7 @@ public class H5DoubleEggsController extends H5Controller {
 			}
 			return result;
 	}
+
 	
 	
 }

@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -131,6 +132,16 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	@Override
 	public List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query){
 		return afGoodsDao.selectBookingRushGoods(query);
+	}
+	@Override
+	public List<AfGoodsDo> listGoodsListByParentIdFromSubjectGoods(long parentId) {
+	    // TODO Auto-generated method stub
+	    	return afGoodsDao.listGoodsListByParentIdFromSubjectGoods(parentId);
+	}
+	@Override
+	public List<AfGoodsDo> listGoodsListBySubjectId(Long subjectId) {
+	    // TODO Auto-generated method stub
+	    return afGoodsDao.listGoodsListBySubjectId(subjectId);
 	}
 
 }

@@ -201,6 +201,31 @@
 	 )
 	</select>
 	
+	<select id="listGoodsListByParentIdFromSubjectGoods"  resultType="AfGoodsDo" parameterType="java.lang.Long">
+	SELECT
+		*
+		FROM af_goods
+		WHERE is_delete = 0
+		AND STATUS = 'PUBLISH'
+		AND id IN (	
+			SELECT 
+				 goods_id 
+				FROM af_subject_goods 
+				WHERE subject_id =(          
+						SELECT
+						id 
+						FROM af_subject 
+						WHERE parent_id = #{parentId}
+						AND LEVEL = 2
+						ORDER BY gmt_create ASC
+						LIMIT 0,1
+				)
+				AND parent_subject_id = #{parentId}
+			)
+		ORDER BY gmt_create
+	</select>		
+				
+	
 	<select id="listGoodsListByPrimaryCategoryIdAndCategoryId"  resultType="AfGoodsDo" parameterType="java.lang.Long">
 		SELECT
 			<include refid="queryFields"/>
@@ -286,5 +311,21 @@
 			category_id = #{categoryId}
 		LIMIT 50
 	</select>
-
+	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">
+	SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE 
+			is_delete = 0
+		AND
+			id in  (
+			select goods_id 
+			  from af_subject_goods
+			  where subject_id  = #{subjectId}
+			  and is_delete = 0
+			  
+			)
+			
+			
+	</select>
 </mapper>

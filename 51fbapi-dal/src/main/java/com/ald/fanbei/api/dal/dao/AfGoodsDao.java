@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -90,5 +91,9 @@ public interface AfGoodsDao {
 	List<AfGoodsDo> getGoodsByCategoryId(Long categoryId);
 
 	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
+
+	List<AfGoodsDo> listGoodsListByParentIdFromSubjectGoods(long parentId);
+
+	List<AfGoodsDo> listGoodsListBySubjectId(@Param("subjectId")Long subjectId);
 
 }

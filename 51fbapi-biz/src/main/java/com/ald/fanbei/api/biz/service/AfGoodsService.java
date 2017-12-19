@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 
+
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -97,5 +98,9 @@ public interface AfGoodsService {
 	List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(Long parentId);
 
 	List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(Long primaryCategoryId, Long categoryId);
+
+	List<AfGoodsDo> listGoodsListByParentIdFromSubjectGoods(long parentId);
+
+	List<AfGoodsDo> listGoodsListBySubjectId(Long subjectId);
 
 }
