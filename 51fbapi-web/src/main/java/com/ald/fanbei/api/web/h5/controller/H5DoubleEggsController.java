@@ -60,7 +60,7 @@ import com.alibaba.fastjson.JSONArray;
  * @version V1.0
  */
 @RestController
-@RequestMapping(value = "/H5DoubleEggs", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+@RequestMapping(value = "/H5DoubleEggs",produces = "application/json;charset=UTF-8")
 public class H5DoubleEggsController extends H5Controller {
 	@Resource
 	AfCouponCategoryService afCouponCategoryService;
@@ -179,7 +179,7 @@ public class H5DoubleEggsController extends H5Controller {
 		return result;
 	}
 
-	@RequestMapping(value = "/getSecondKillGoodsList")
+	@RequestMapping(value = "/getSecondKillGoodsList",method = RequestMethod.POST)
 	public String getSecondKillGoodsList(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
 		try {
