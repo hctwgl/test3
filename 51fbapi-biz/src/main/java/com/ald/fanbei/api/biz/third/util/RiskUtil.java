@@ -509,6 +509,14 @@ public class RiskUtil extends AbstractThird {
         reqBo.setEventInfo(JSON.toJSONString(eventObj));
         //12-13 弱风控加入用户借款信息
         HashMap summaryData= afBorrowDao.getUserSummary(userAuth.getUserId());
+        if(summaryData==null){
+            summaryData=new HashMap();
+            summaryData.put("hourBetweenVerifyBorrow","0");
+            summaryData.put("rateAfter4Day","0");
+            summaryData.put("frequency","0");
+            summaryData.put("rateBorrow7d","0");
+            summaryData.put("rateOverdue","0");
+        }
         reqBo.setSummaryData(JSON.toJSONString(summaryData));
         reqBo.setReqExt("");
 
