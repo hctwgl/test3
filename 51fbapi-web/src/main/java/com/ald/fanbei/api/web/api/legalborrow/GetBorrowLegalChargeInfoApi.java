@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.api.legalborrow;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -25,9 +27,6 @@ public class GetBorrowLegalChargeInfoApi implements ApiHandle {
     @Resource
     private AfResourceService afResourceService;
 
-    private static final String BORROW_RATE = "BORROW_RATE";
-    private static final String BORROW_CASH_INFO_LEGAL = "BORROW_CASH_INFO_LEGAL";
-
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
@@ -35,11 +34,13 @@ public class GetBorrowLegalChargeInfoApi implements ApiHandle {
         Map<String, Object> data = Maps.newHashMap();
         resp.setResponseData(data);
 
-        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(BORROW_RATE, BORROW_CASH_INFO_LEGAL);
+        AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
         if (afResourceDo != null) {
-            data.put("description", afResourceDo.getDescription());
+            data.put("sevenDayDescription", afResourceDo.getDescription());
+            data.put("fourteenDayDescription", afResourceDo.getPic1());
         } else {
-            data.put("description", "");
+            data.put("sevenDayDescription", "");
+            data.put("fourteenDayDescription", "");
         }
         return resp;
     }
