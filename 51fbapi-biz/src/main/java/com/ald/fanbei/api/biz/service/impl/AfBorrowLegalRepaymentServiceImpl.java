@@ -547,7 +547,11 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
      */
     private void dealCouponAndRebate(RepayDealBo repayDealBo) {
     	AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(repayDealBo.userId);
-    	accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.sumBorrowAmount));
+    	if (AfBorrowCashStatus.finsh.getCode().equals(repayDealBo.cashDo.getStatus()) && 
+        		AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(repayDealBo.orderCashDo.getStatus()) ) {
+    		accountInfo.setUsedAmount(accountInfo.getUsedAmount().subtract(repayDealBo.sumBorrowAmount));
+    	}
+    	
     	
     	if(repayDealBo.curSumRebateAmount != null && repayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
             accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(repayDealBo.curSumRebateAmount));
@@ -602,7 +606,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         /**------------------------------------fmai风控提额begin------------------------------------------------*/
         try {
             if (AfBorrowCashStatus.finsh.getCode().equals(repayDealBo.cashDo.getStatus()) && 
-            		AfBorrowCashStatus.finsh.getCode().equals(repayDealBo.orderCashDo.getStatus()) ) {
+            		AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(repayDealBo.orderCashDo.getStatus()) ) {
             	String riskOrderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
                 int overdueCount = 0;
                 if (StringUtil.equals("Y", repayDealBo.cashDo.getOverdueStatus())) {
