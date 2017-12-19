@@ -74,7 +74,11 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
+import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
+import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -163,6 +167,11 @@ public class RiskUtil extends AbstractThird {
 
 	@Resource
 	AfBorrowExtendDao afBorrowExtendDao;
+
+    @Resource
+    AfInterimAuDao afInterimAuDao;
+    @Resource
+    AfInterimDetailDao afInterimDetailDao;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -750,11 +759,49 @@ public class RiskUtil extends AbstractThird {
             afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
             afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(), orderInfo.getOrderType());
         }
+        //获取临时额度
+        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+        //获取可使用额度
+        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
         // 修改用户账户信息
         AfUserAccountDo account = new AfUserAccountDo();
-        account.setUsedAmount(orderInfo.getActualAmount());
-        account.setUserId(userAccountInfo.getUserId());
-        afUserAccountDao.updateUserAccount(account);
+        if(useableAmount.compareTo(orderInfo.getActualAmount()) == -1)
+        {
+            //使用的临时额度
+            BigDecimal usedInterim = BigDecimal.ZERO;
+            if(useableAmount.compareTo(BigDecimal.ZERO) == 1)
+            {
+                //增加账户使用额度
+                account.setUsedAmount(useableAmount);
+                account.setUserId(userAccountInfo.getUserId());
+                afUserAccountDao.updateUserAccount(account);
+                //增加临时使用额度
+                usedInterim = orderInfo.getActualAmount().subtract(useableAmount);
+                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
+            }
+            else
+            {
+                //增加临时使用额度
+                usedInterim = orderInfo.getActualAmount();
+                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
+            }
+            //增加临时额度使用记录
+            AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
+            afInterimDetailDo.setAmount(usedInterim.multiply(new BigDecimal(-1)));
+            afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().add(usedInterim));
+            afInterimDetailDo.setUserId(userAccountInfo.getUserId());
+            afInterimDetailDo.setType(1);
+            afInterimDetailDo.setOrderId(orderInfo.getRid());
+            afInterimDetailDo.setUserId(userAccountInfo.getUserId());
+            afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
+        }
+        else
+        {
+            //增加账户使用额度
+            account.setUsedAmount(orderInfo.getActualAmount());
+            account.setUserId(userAccountInfo.getUserId());
+            afUserAccountDao.updateUserAccount(account);
+        }
 
         logger.info("updateOrder orderInfo = {}", orderInfo);
         orderDao.updateOrder(orderInfo);
@@ -894,11 +941,48 @@ public class RiskUtil extends AbstractThird {
             afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
             afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(), orderInfo.getOrderType());
         }
+        //获取临时额度
+        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+        //获取可使用额度
+        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
+
         // 修改用户账户信息
         AfUserAccountDo account = new AfUserAccountDo();
-        account.setUsedAmount(orderInfo.getBorrowAmount());
-        account.setUserId(userAccountInfo.getUserId());
-        afUserAccountDao.updateUserAccount(account);
+        if(useableAmount.compareTo(orderInfo.getActualAmount()) == -1)
+        {
+            //使用的临时额度
+            BigDecimal usedInterim = BigDecimal.ZERO;
+            if(useableAmount.compareTo(BigDecimal.ZERO) == 1)
+            {
+                //增加账户使用额度
+                account.setUsedAmount(useableAmount);
+                account.setUserId(userAccountInfo.getUserId());
+                afUserAccountDao.updateUserAccount(account);
+                //增加临时使用额度
+                usedInterim = orderInfo.getActualAmount().subtract(useableAmount);
+                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
+            }
+            else
+            {
+                //增加临时使用额度
+                usedInterim = orderInfo.getActualAmount();
+                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
+            }
+            //增加临时额度使用记录
+            AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
+            afInterimDetailDo.setAmount(usedInterim.multiply(new BigDecimal(-1)));
+            afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().add(usedInterim));
+            afInterimDetailDo.setType(1);
+            afInterimDetailDo.setOrderId(orderInfo.getRid());
+            afInterimDetailDo.setUserId(userAccountInfo.getUserId());
+            afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
+        }
+        else
+        {
+            account.setUsedAmount(orderInfo.getBorrowAmount());
+            account.setUserId(userAccountInfo.getUserId());
+            afUserAccountDao.updateUserAccount(account);
+        }
 
         logger.info("updateOrder orderInfo = {}", orderInfo);
         orderDao.updateOrder(orderInfo);
@@ -2145,6 +2229,67 @@ public class RiskUtil extends AbstractThird {
         auth.setZhengxinStatus(SupplyCertifyStatus.WAIT.getCode());
         afUserAuthService.updateUserAuth(auth);
 
+    }
+
+    /**
+     * 用户临时额度获取
+     * @param userId 用户id
+     * @return
+     * 用户临时额度,返回0为没有额度
+     */
+    public BigDecimal userTempQuota(Long userId) {
+        HashMap<String, String> reqBo = new HashMap<String, String>();
+        try {
+            //获取风控单号
+            AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+            String cardNo = card.getCardNumber();
+            String riskOrderNo = riskUtil.getOrderNo("tmqa", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+            //风控申请临时额度参数
+            reqBo.put("consumerNo",userId.toString());
+            reqBo.put("orderNo",riskOrderNo);
+
+            //获取details信息
+            JSONObject details = new JSONObject();
+            //现金贷最小还款时间至今天数
+            Integer loanMinRepayDay = afInterimAuDao.getLoanMinRepayDay(userId);
+            loanMinRepayDay = loanMinRepayDay == null ? 0 : loanMinRepayDay;
+            details.put("loanMinRepayDay",loanMinRepayDay);
+            //消费分期最小还款时间至今天数
+            Integer consumeMinRepayDay = afInterimAuDao.getConsumeMinRepayDay(userId);
+            consumeMinRepayDay = consumeMinRepayDay == null ? 0 : consumeMinRepayDay;
+            details.put("consumeMinRepayDay",consumeMinRepayDay);
+            //现金贷续借次数
+            details.put("loanRenewCount",afInterimAuDao.getLoanRenewCount(userId));
+            //发生当天借款当天还款行为次数
+            details.put("borrowRepayCount",afInterimAuDao.getBorrowRepayCount(userId));
+            //消费分期已出账单数
+            details.put("consumeBillCount",afInterimAuDao.getConsumeBillCount(userId));
+            //累计现金贷次数 累计现金贷金额
+            HashMap sumLoan = afInterimAuDao.getSumLoan(userId);
+            details.put("sumLoanCount",sumLoan.get("sumLoanCount"));
+            details.put("sumLoanAmount",sumLoan.get("sumLoanAmount"));
+            //累计分期次数 累计分期次数
+            HashMap sumConsume = afInterimAuDao.getSumConsume(userId);
+            details.put("sumConsumeCount",sumConsume.get("sumConsumeCount"));
+            details.put("sumConsumeAmount",sumConsume.get("sumConsumeAmount"));
+
+            reqBo.put("details", Base64.encodeString(JSON.toJSONString(details)));
+            reqBo.put("signInfo",SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+            String url = getUrl() + "/modules/api/risk/userTempQuota.htm";
+            String reqResult = requestProxy.post(url, reqBo);
+
+            JSONObject riskResp = JSONObject.parseObject(reqResult);
+            if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getString("code"))) {
+                JSONObject data = JSONObject.parseObject(riskResp.getString("data"));
+                return data.getBigDecimal("amount");
+            } else {
+                return new BigDecimal(0);
+            }
+        } catch (Exception e) {
+            logger.error("userTempQuota", e,reqBo);
+            return new BigDecimal(0)  ;
+        }
     }
 
     public int taskFinishNotify(String code, String data, String msg, String signInfo) {
