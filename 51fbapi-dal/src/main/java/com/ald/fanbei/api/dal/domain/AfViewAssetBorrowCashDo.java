@@ -144,30 +144,29 @@ import java.math.BigDecimal;
     /**
      * 借款用途
      */
-    private String borrow_remark;
+    private String borrowRemark;
     
     /**
      * 还款来源
      */
-    private String refund_remark;
+    private String refundRemark;
 
 
-    public String getBorrow_remark() {
-		return borrow_remark;
+	public String getBorrowRemark() {
+		return borrowRemark;
 	}
 
-	public void setBorrow_remark(String borrow_remark) {
-		this.borrow_remark = borrow_remark;
+	public void setBorrowRemark(String borrowRemark) {
+		this.borrowRemark = borrowRemark;
 	}
 
-	public String getRefund_remark() {
-		return refund_remark;
+	public String getRefundRemark() {
+		return refundRemark;
 	}
 
-	public void setRefund_remark(String refund_remark) {
-		this.refund_remark = refund_remark;
+	public void setRefundRemark(String refundRemark) {
+		this.refundRemark = refundRemark;
 	}
-
 	/**
      * 获取
      *

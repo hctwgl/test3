@@ -552,10 +552,10 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setApr(afAssetPackageDo.getBorrowRate());
 		creditRespBo.setTimeLimit(timeLimit.intValue());
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetBorrowCashDo.getGmtCreate()));
-		if (StringUtil.isNotBlank(afViewAssetBorrowCashDo.getBorrow_remark())) {
-			creditRespBo.setPurpose(afViewAssetBorrowCashDo.getBorrow_remark());
+		if (StringUtil.isNotBlank(afViewAssetBorrowCashDo.getBorrowRemark())) {
+			creditRespBo.setPurpose(afViewAssetBorrowCashDo.getBorrowRemark());
 		}else {
-			creditRespBo.setPurpose("现金贷个人借款");
+			creditRespBo.setPurpose("个人消费");
 		}
 		creditRespBo.setRepaymentStatus(0);
 		creditRespBo.setRepaymentType(repayTypeEnum!=null?repayTypeEnum.getEdsCode():afAssetPackageDo.getRepaymentMethod());
@@ -565,10 +565,10 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setRepayAcctType(bankInfo.getRepayAcctType());
 		creditRespBo.setIsRepayAcctOtherBank(bankInfo.getIsRepayAcctOtherBank());
 		creditRespBo.setManageFee(afAssetPackageDo.getAnnualRate());
-		if (StringUtil.isNotBlank(afViewAssetBorrowCashDo.getRefund_remark())) {
-			creditRespBo.setRepaymentSource(afViewAssetBorrowCashDo.getRefund_remark());
+		if (StringUtil.isNotBlank(afViewAssetBorrowCashDo.getRefundRemark())) {
+			creditRespBo.setRepaymentSource(afViewAssetBorrowCashDo.getRefundRemark());
 		}else {
-			creditRespBo.setRepaymentSource("月工资还款");
+			creditRespBo.setRepaymentSource("工资收入");
 		}
 		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROWCASH.getCode());
 		creditRespBo.setIsPeriod(0);
@@ -621,7 +621,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setApr(afAssetPackageDo.getBorrowRate());
 		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(afViewAssetBorrowDo.getGmtCreate(), lastBorrowBillGmtPayTime));
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(afViewAssetBorrowDo.getGmtCreate()));
-		creditRespBo.setPurpose("消费分期借款");
+		creditRespBo.setPurpose("个人消费");
 		creditRespBo.setRepaymentStatus(0);
 		creditRespBo.setRepaymentType(repayTypeEnum!=null?repayTypeEnum.getEdsCode():afAssetPackageDo.getRepaymentMethod());
 		creditRespBo.setRepayName(bankInfo.getRepayName());
@@ -630,7 +630,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		creditRespBo.setRepayAcctType(bankInfo.getRepayAcctType());
 		creditRespBo.setIsRepayAcctOtherBank(bankInfo.getIsRepayAcctOtherBank());
 		creditRespBo.setManageFee(afAssetPackageDo.getAnnualRate());
-		creditRespBo.setRepaymentSource("月工资还款");
+		creditRespBo.setRepaymentSource("工资收入");
 		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROW.getCode());
 		creditRespBo.setIsPeriod(1);
 		creditRespBo.setTotalPeriod(afViewAssetBorrowDo.getNper());
