@@ -118,6 +118,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 			if (afBorrowLegalOrderCashDo != null){
 				model.put("instalmentGmtCreate", afBorrowLegalOrderCashDo.getGmtCreate());
 				model.put("instalmentRepayDay", afBorrowLegalOrderCashDo.getGmtPlanRepay());
+				model.put("gmtEnd", afBorrowLegalOrderCashDo.getGmtPlanRepay());
 				model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
 				model.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate());//利率
 			}
