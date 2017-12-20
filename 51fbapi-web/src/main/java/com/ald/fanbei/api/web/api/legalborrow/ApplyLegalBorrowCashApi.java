@@ -518,13 +518,13 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			JSONObject info = array.getJSONObject(i);
 			String consumeTag = info.getString("consumeTag");
 			if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), type)) {
+				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
 					interestRate = info.getDouble("consumeSevenDay");
 				} else {
 					interestRate = info.getDouble("consumeFourteenDay");
 				}
 			} else if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), type)) {
+				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
 					serviceRate = info.getDouble("consumeSevenDay");
 				} else {
 					serviceRate = info.getDouble("consumeFourteenDay");
@@ -599,24 +599,24 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString("borrowTag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), type)) {
+				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
 					interestRate = info.getDouble("borrowSevenDay");
 				} else {
 					interestRate = info.getDouble("borrowFourteenDay");
 				}
 			} else if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), type)) {
+				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), type)) {
 					serviceRate = info.getDouble("borrowSevenDay");
 				} else {
 					serviceRate = info.getDouble("borrowFourteenDay");
 				}
 			}
 		}
-
-		BigDecimal rateAmount = new BigDecimal(interestRate / 100).multiply(new BigDecimal(day)).multiply(amount)
+		// FIXME
+		BigDecimal rateAmount = new BigDecimal(interestRate / 100).multiply(amount).multiply(new BigDecimal(day))
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
-		BigDecimal poundageAmount = new BigDecimal(serviceRate / 100).multiply(new BigDecimal(day)).multiply(amount)
+		BigDecimal poundageAmount = new BigDecimal(serviceRate / 100).multiply(amount).multiply(new BigDecimal(day))
 				.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
 		AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
