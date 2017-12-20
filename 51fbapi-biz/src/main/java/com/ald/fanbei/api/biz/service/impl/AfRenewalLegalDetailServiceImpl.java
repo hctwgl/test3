@@ -768,7 +768,8 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		//订单还款记录
 		AfBorrowLegalOrderRepaymentDo legalOrderRepayment = new AfBorrowLegalOrderRepaymentDo();
 		legalOrderRepayment.setUserId(userId);
-		legalOrderRepayment.setRepayAmount(BigDecimalUtil.add(afBorrowLegalOrderCash.getAmount(),afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount()).subtract(afBorrowLegalOrderCash.getRepaidAmount()));
+		legalOrderRepayment.setRepayAmount(BigDecimalUtil.add(afBorrowLegalOrderCash.getAmount(),afBorrowLegalOrderCash.getInterestAmount(),afBorrowLegalOrderCash.getPoundageAmount(),afBorrowLegalOrderCash.getOverdueAmount(),
+				afBorrowLegalOrderCash.getSumRepaidInterest(),afBorrowLegalOrderCash.getSumRepaidOverdue(),afBorrowLegalOrderCash.getSumRepaidPoundage()).subtract(afBorrowLegalOrderCash.getRepaidAmount()));
 		legalOrderRepayment.setActualAmount(legalOrderRepayment.getRepayAmount());
 		legalOrderRepayment.setTradeNo(payTradeNo);
 		legalOrderRepayment.setStatus(AfBorrowLegalRepaymentStatus.APPLY.getCode());
