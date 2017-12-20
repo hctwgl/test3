@@ -303,7 +303,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			BigDecimal interestFee = afBorrowCashDo.getRateAmount();
 
 			// 续借申请中或失败时，不计算订单手续费和利息
-			if (afBorrowLegalOrderCash != null && !StringUtils.equalsIgnoreCase("CLOSED", afBorrowLegalOrderCash.getStatus()) && !StringUtils.equalsIgnoreCase("APPLYING", afBorrowLegalOrderCash.getStatus())) {
+			if (afBorrowLegalOrderCash != null && !StringUtils.equalsIgnoreCase("CLOSED", afBorrowLegalOrderCash.getStatus())) {
 				BigDecimal orderCashAmount = afBorrowLegalOrderCash.getAmount();
 				BigDecimal orderCashOverdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
 				BigDecimal repaidAmount = afBorrowLegalOrderCash.getRepaidAmount();
