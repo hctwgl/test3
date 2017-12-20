@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712201832")
+    #set($version="201712202252")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -38,7 +38,7 @@
         <p class="closeRule" @click="closeClick()">X</p>
     </div>
     <div class="mask" v-show="ruleShow"  @click="closeClick()"></div>
-    <div class="signTitle"><span>注册立领15元无门槛外卖券使用即返10元现金</span></div>
+    <div class="signTitle"><span>注册立领15元无门槛外卖券使用即返30元</span></div>
     <!--注册--start-->
     <div class="login clearFix" id="register">
         <div class="phone">
