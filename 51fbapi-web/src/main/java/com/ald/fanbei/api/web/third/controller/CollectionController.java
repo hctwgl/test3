@@ -109,6 +109,17 @@ public class CollectionController {
 			}
 			String sign2=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
+				
+				BigDecimal rateAmount = afBorrowCashDo.getRateAmount().multiply(BigDecimalUtil.ONE_HUNDRED);
+				BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount().multiply(BigDecimalUtil.ONE_HUNDRED);
+				BigDecimal repayAmount = ((afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue()))))).setScale(2, RoundingMode.HALF_UP)).multiply(BigDecimalUtil.ONE_HUNDRED);
+				BigDecimal restAmount = ((afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue()))))).subtract(afBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)).multiply(BigDecimalUtil.ONE_HUNDRED);
+				BigDecimal repayAmountSum = afBorrowCashDo.getRepayAmount().multiply(BigDecimalUtil.ONE_HUNDRED);
+				if(AfBorrowCashStatus.finsh.getCode().equals(afBorrowCashDo.getStatus())){
+					overdueAmount = BigDecimal.ZERO;
+					repayAmount = repayAmountSum;
+					restAmount = BigDecimal.ZERO;
+				}
 				map.put("consumer_no", afBorrowCashDo.getUserId()+"");
 				map.put("borrow_id",afBorrowCashDo.getRid()+"");
 				map.put("borrow_no",afBorrowCashDo.getBorrowNo());
@@ -117,13 +128,13 @@ public class CollectionController {
 				map.put("gmt_arrival",  DateUtil.formatDateTime(afBorrowCashDo.getGmtArrival()));
 				map.put("type", afBorrowCashDo.getType());
 				map.put("amount",afBorrowCashDo.getAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
-				map.put("rate_amount", afBorrowCashDo.getRateAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
-				map.put("overdue_amount",afBorrowCashDo.getOverdueAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
-				map.put("repay_amount", ((afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue()))))).setScale(2, RoundingMode.HALF_UP)).multiply(BigDecimalUtil.ONE_HUNDRED)+"");
-				map.put("rest_amount", ((afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue()))))).subtract(afBorrowCashDo.getRepayAmount()).setScale(2, RoundingMode.HALF_UP)).multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				map.put("rate_amount", rateAmount+"");
+				map.put("overdue_amount",overdueAmount+"");
+				map.put("repay_amount", repayAmount+"");
+				map.put("rest_amount", restAmount+"");
 				map.put("overdue_day",afBorrowCashDo.getOverdueDay()+"");
 				map.put("renewal_num",afBorrowCashDo.getRenewalNum()+"");
-				map.put("repay_amount_sum",afBorrowCashDo.getRepayAmount().multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				map.put("repay_amount_sum",repayAmountSum+"");
 				map.put("status",afBorrowCashDo.getStatus());
 				map.put("gmt_plan_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtPlanRepayment()));
 				map.put("majiabao_name", StringUtil.null2Str(afBorrowCashDo.getMajiabaoName()));
@@ -225,6 +236,8 @@ public class CollectionController {
 			if (StringUtil.equals(sign, sign1)) {	// 验签成功
 				if(afBorrowCashDo.getRepayAmount().compareTo(afBorrowCashDo.getAmount()) >= 0){
 					//平账
+					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
+					afBorrowCashDo.setSumOverdue(afBorrowCashDo.getRepayAmount().subtract(afBorrowCashDo.getAmount()));
 					afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 					borrowCashService.updateBalancedDate(afBorrowCashDo);
 					logger.info("repayAmount>=amount Balanced is success,borrowNo="+borrowNo+",repayAmount="+afBorrowCashDo.getRepayAmount()+",amount="+afBorrowCashDo.getAmount());

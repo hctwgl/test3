@@ -278,12 +278,8 @@
 			rebate_amount , 
 			commission_amount ,
 			bank_id,
-			<if test="auAmount != null">
-	            au_amount,
-	        </if>
-	        <if test="usedAmount != null">
-	            used_amount,
-	        </if>
+            au_amount,
+            used_amount,
 			gmt_pay_end
 			)
 		VALUES
@@ -322,12 +318,22 @@
     		#{item.rebateAmount},
     		#{item.commissionAmount},
     		#{item.bankId},
-    		<if test="auAmount != null">
-	            #{auAmount},
-		     </if>
-			<if test="usedAmount != null">
-	            #{usedAmount},
-	        </if>
+    		<choose>
+		        <when test="item.auAmount !=null and item.auAmount != ''">
+		            #{item.auAmount},
+		        </when>
+		        <otherwise>
+		            0,
+		        </otherwise>
+		    </choose>
+		    <choose>
+		        <when test="item.usedAmount !=null and item.usedAmount != ''">
+		            #{item.usedAmount},
+		        </when>
+		        <otherwise>
+		            0,
+		        </otherwise>
+		    </choose>
     		#{item.gmtPayEnd}
 		)
 		</foreach>
@@ -1032,6 +1038,27 @@
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
 	</select>
+	<select id="findFirstOrder" parameterType="java.lang.Long" resultType = "java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_order ao
+		INNER JOIN af_boluome_rebate br ON br.order_id = ao.id AND ao.user_id = #{userId} 
+		INNER JOIN (
+			SELECT
+				o.order_type,
+				o.sec_type
+			FROM
+				af_order o
+			WHERE
+				o.id = #{orderId}
+		) t ON t.order_type = ao.order_type
+		AND t.sec_type = ao.sec_type
+		AND br.is_delete = 0
+		AND ao.is_delete = 0
+		AND ao.`status` in ('FINISHED','REBATED');
+	</select>
+	
 	<select id="getOverOrderByUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
 		SELECT
 		<include refid="queryFields"/>
@@ -1039,6 +1066,19 @@
 		WHERE
 			user_id=#{userId}
 		AND status IN ('DEALING','PAID','REVIEW','AGENCYCOMPLETED','FINISHED','REBATED','DELIVERED','WAIT_REFUND','DEAL_REFUNDING')
+	</select>
+
+	<select id="selectSumCountByGoodsId" resultType="AfOrderDto" parameterType="list" >
+		SELECT sum(count) num ,goods_id from af_order where is_delete = 0
+		AND goods_id in
+		<foreach item="item" collection="list" separator="," open="(" close=")">
+			#{item.rid}
+		</foreach>
+		and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) GROUP BY goods_id
+	</select>
+
+	<select id="selectSumCountByGoodsIdAndType" resultType="java.lang.Integer" parameterType="AfOrderDo">
+		SELECT sum(count) from af_order where is_delete = 0 and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId} AND user_id = #{userId}
 	</select>
 	
 	<select id="getOrderByOrderNo" resultType="AfOrderDo">
@@ -1063,5 +1103,4 @@
 		AND
 			user_id=#{userId}
 	</select>
-	
 </mapper>

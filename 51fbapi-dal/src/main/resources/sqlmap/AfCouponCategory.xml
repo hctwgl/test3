@@ -78,6 +78,17 @@
 		AND tag != 'ALL'
 		AND type = 0
 	</select>
+		<select id="getCouponCategoryByTag" parameterType="java.lang.String" resultType="AfCouponCategoryDo">
+		SELECT
+			<include refid="couponCategorySqlField"/>
+		FROM
+			af_coupon_category 
+		WHERE
+			is_delete=0
+		AND tag = #{tag}
+		
+	</select>
+	
 	
 	<select id="getCouponCategoryAll"  resultType="AfCouponCategoryDo">
 		SELECT

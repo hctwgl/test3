@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.CertificateException;
@@ -22,9 +23,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import com.ald.fanbei.api.common.SSLClient;
+
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.util.HttpURLConnection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -71,7 +72,16 @@ public class HttpUtil {
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestProperty("content-type", "application/json");
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
+            
+            HttpURLConnection httpConn = (HttpURLConnection)conn;
+            InputStream is;
+            if (httpConn.getResponseCode() >= 400) {
+                is = httpConn.getErrorStream();
+            } else {
+                is = httpConn.getInputStream();
+            }
+            
+            in = new BufferedReader(new InputStreamReader(is,"UTF-8"));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
@@ -329,56 +339,6 @@ public class HttpUtil {
         return result;
     }
     
-    /**
-     * 发送POST请求，将参数放置到BODY里边
-     * 
-     * @param url
-     * @param param
-     * @return
-     */
-    public static String ttt(String url, String param) {
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
-        String result = "";
-        try {
-            URL realUrl = new URL(url);
-            HttpURLConnection conn = new HttpURLConnection(new PostMethod(), realUrl);
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            byte[] data = "api_key=vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5&api_secret=Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm".getBytes();
-
-            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=ABCD");
-
-
-            conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-            out = new OutputStreamWriter(conn.getOutputStream());
-            // 把数据写入请求的Body
-            out.write(param);
-            out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            logger.error("发送失败" + e);
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-
     /**
      * 发送POST请求，将参数放置到BODY里边
      * 

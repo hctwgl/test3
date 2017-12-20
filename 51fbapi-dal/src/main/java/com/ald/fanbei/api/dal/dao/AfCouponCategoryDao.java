@@ -27,6 +27,8 @@ public interface AfCouponCategoryDao {
 	List<AfCouponCategoryDo> getCouponCategoryByCouponId(@Param("couponId") Long couponId);
 
 	AfCouponCategoryDo getCouponCategoryAll();
+
+	AfCouponCategoryDo getCouponCategoryByTag(String tag);
 	
 	
 }

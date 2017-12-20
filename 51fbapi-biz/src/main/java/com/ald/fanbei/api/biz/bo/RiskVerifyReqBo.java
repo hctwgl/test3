@@ -27,6 +27,7 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 	private String reqExt;
 	private String notifyUrl;
 	private String signInfo;
+	private String summaryData;
 	
 	public String getOrderNo() {
 		return orderNo;
@@ -105,5 +106,13 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 		this.borrowType = borrowType;
 		this.put("borrowType", borrowType);
 	}
-	
+
+	public String getSummaryData() {
+		return summaryData;
+	}
+
+	public void setSummaryData(String summaryData) {
+		this.summaryData = summaryData;
+		this.put("summaryData", summaryData);
+	}
 }

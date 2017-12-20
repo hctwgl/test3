@@ -91,8 +91,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHANGE_MOBILE_TARGET_LOST("CHANGE_MOBILE_TARGET_LOST", 1143, "change mobile target lost", "要更换的新手机号已丢失，请重新操作"),
     USER_REGIST_IMAGE_ERROR("USER_REGIST_IMAGE_ERROR",1144,"user regist image error","图片验证码不正确"),
     USER_REGIST_IMAGE_ERROR2("USER_REGIST_IMAGE_ERROR",1145,"user regist image error","图片验证码不正确"),
-    USER_REGIST_SMS_LESSDUE("USER_REGIST_SMS_LESSDUE",1147,"user regist sms lessdue","验证码60秒内已获取过"),
     USER_REGIST_FREQUENTLY_ERROR("USER_REGIST_FREQUENTLY_ERROR",1146,"user_regist_frequently_error","验证码获取过于频繁，请稍后重试"),
+    USER_REGIST_SMS_LESSDUE("USER_REGIST_SMS_LESSDUE",1147,"user regist sms lessdue","验证码60秒内已获取过"),
+    BOLUOME_UNTRUST_SHOPGOODS("BOLUOME_UNTRUST_SHOPGOODS",1148,"boluome untrust shopgoods","支付维护中，请选择其他商户购买!"),
 
     // 1200 -
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
@@ -129,6 +130,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ALIPAY_CERTIFIED_UNDER_MAINTENANCE("ALIPAY_CERTIFIED_UNDER_MAINTENANCE",1318,"alipay certified under maintenance","支付宝认证正在维护中，请等待！"),
     ZM_STATUS_EXPIRED("ZM_STATUS_EXPIRED",1319,"zm status expired","芝麻信用已过期，请至信用中心-基础认证中重新认证芝麻信用分！"),
     CREDIT_CERTIFIED_UNDER_MAINTENANCE("CREDIT_CERTIFIED_UNDER_MAINTENANCE",1320,"credit certified under maintenance","信用卡认证正在维护中，请等待！"),
+    CHSI_CERTIFIED_UNDER_MAINTENANCE("CHSI_CERTIFIED_UNDER_MAINTENANCE",1321,"chsi certified under maintenance","学信网认证正在维护中，请等待！"),
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
     
@@ -190,9 +192,13 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     GOODS_COLLECTION_ALREADY_EXIST_ERROR("GOODS_COLLECTION_ALREADY_EXIST_ERROR",1602,"goods not exist error","商品已经收藏"),
     ORDER_NOFINISH_CANNOT_DELETE("ORDER_NOFINISH_CANNOT_DELETE",1603,"order not finish cannot delete","订单未完成，删除失败"),
     GOODS_HAVE_CANCEL("GOODS_HAVE_CANCEL",1604,"goods have cancel","商品已下架"),
-    
+    GOODS_HAVE_BEEN_RESERVED("GOODS_HAVE_BEEN_RESERVED",1605,"goods have been reserved","商品已预约"),
+    SOLD_OUT("SOLD_OUT",1607,"sold out","您来晚了，商品已抢光"),
+    GOODS_ARE_NOT_IN_STOCK("GOODS_ARE_NOT_IN_STOCK",1608,"goods are not in stock","商品库存不足，请重新购买"),
+    EXCEED_THE_LIMIT_OF_PURCHASE("EXCEED_THE_LIMIT_OF_PURCHASE",1609,"exceed the limit of purchase","超过限购数量，请修改商品数量"),
+
     //borrow model 1700-1799 
-    USER_ORDER_HAVE_CLOSED("USER_ORDER_HAVE_CLOSED",1604,"user order have closed","用户订单已关闭"),
+    USER_ORDER_HAVE_CLOSED("USER_ORDER_HAVE_CLOSED",1606,"user order have closed","用户订单已关闭"),
     BORROW_CONSUME_NOT_EXIST_ERROR("BORROW_CONSUME_NOT_EXIST_ERROR",1701,"borrow consume not exist error","分期未配置"),
     BORROW_CONSUME_MONEY_ERROR("BORROW_CONSUME_MONEY_ERROR",1702,"borrow consume money error","分期金额超过上限"),
     BORROW_BILL_NOT_EXIST_ERROR("BORROW_BILL_NOT_EXIST_ERROR",1703,"borrow bill not exist error","账单不存在"),
@@ -291,6 +297,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     NOT_CHANCE_TEAR_PACKET_ERROR("NOT_CHANCE_TEAR_PACKET_ERROR",4033,"not chance tear packet error","无抽红包机会"),
     ONLY_ONE_GOODS_ACCEPTED("ONLY_ONE_GOODS_ACCEPTED",4034,"only one goods could be accepted","新人专享只能购买一件商品"),
     ONLY_ONE_DOUBLE12GOODS_ACCEPTED("ONLY_ONE_DOUBLE12GOODS_ACCEPTED",4035,"only one double12Goods could be accepted","亲，每个账号限购1件，不要太贪心哦"),
+    DOUBLE_EGGS_EXPIRE("DOUBLE_EGGS_EXPIRE",4038,"double eggs goods expired","亲，已经过了秒杀时间哦，请准备下一场秒杀吧！"),
     NO_DOUBLE12GOODS_ACCEPTED("NO_DOUBLE12GOODS_ACCEPTED",4036,"only one double12Goods could be accepted","秒杀商品已售空"),
     DOUBLE12ORDER_ERROR("DOUBLE12ORDER_ERROR",4037,"double12 activity order error","秒杀商品下单异常"),
 

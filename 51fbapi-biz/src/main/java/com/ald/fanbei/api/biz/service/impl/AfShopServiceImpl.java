@@ -63,6 +63,12 @@ public class AfShopServiceImpl extends BaseService implements AfShopService {
 	return afShopDao.getShopInfoBySecTypeOpen(afShopDo);
     }
 
+    @Override
+    public Long getWaiMainShopId() {
+
+	return afShopDao.getWaiMainShopId();
+    }
+
     // 根据测试，线上环境区别地址
     @Override
     public String parseBoluomeUrl(String shopUrl, String platform, String shopType, Long userId, String mobile) {
@@ -90,5 +96,4 @@ public class AfShopServiceImpl extends BaseService implements AfShopService {
 
 	return shopUrl;
     }
-
 }

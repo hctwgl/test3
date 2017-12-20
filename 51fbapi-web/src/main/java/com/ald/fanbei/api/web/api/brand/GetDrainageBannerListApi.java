@@ -35,7 +35,7 @@ import com.ald.fanbei.api.web.vo.AfShopVo;
 
 /**
  * 
- * @类描述：
+ * @类描述：引流页轮播图
  * @author chenqiwei 2017年11月23日下午15:17:22
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -50,6 +50,7 @@ public class GetDrainageBannerListApi implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
 	         String resourceType =  ObjectUtils.toString(requestDataVo.getParams().get("type"), "").toString();
 		 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		 logger.info("getDrainageBannerListApi and type = {}", type);
 		 List<AfResourceDo> bannerList1 = new ArrayList<AfResourceDo>();
 		//线上为开启状态
 		 if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
@@ -58,9 +59,10 @@ public class GetDrainageBannerListApi implements ApiHandle {
 		 }
 		 else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
 		//预发不区分状态
-		 bannerList1 = afResourceService
+		 bannerList1 =  afResourceService
 				.getResourceHomeListByTypeOrderByOnPreEnv(resourceType);
 		 }
+		logger.info("getDrainageBannerListApi and bannerList1 = {}", bannerList1);
 		List<Object> bannerList = getObjectWithResourceDolist(bannerList1);
 		resp.addResponseData("bannerList", bannerList);
 

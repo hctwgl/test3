@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -66,7 +68,23 @@ public class GetHomeGoodsListApi implements ApiHandle {
 		query.setCategoryId(categoryId);
 		query.setPageNo(pageNo);
 		query.setPageSize(50);
-		List<AfGoodsDo> goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+		List<AfGoodsDo> goodsDoList = null;
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
+		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
+			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
+				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+			}else if(StringUtils.equals(afResourceDo.getValue1(),"Y")){
+				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+			}
+		}else{
+			if(StringUtils.equals(afResourceDo.getValue2(),"N")){
+				goodsDoList = afGoodsService.getHomeGoodsByModelId(query);
+			}else if(StringUtils.equals(afResourceDo.getValue2(),"Y")){
+				goodsDoList = afGoodsService.getHomeCategoryGoodsList(query);
+			}
+		}
+
+
 
 		List<Map<String, Object>> goodsInfoList = new ArrayList<Map<String, Object>>();
 		// 获取借款分期配置信息
@@ -77,14 +95,14 @@ public class GetHomeGoodsListApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
 
-		Iterator<Object> it = array.iterator();
-		while (it.hasNext()) {
-			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-				it.remove();
-				break;
-			}
-		}
+//		Iterator<Object> it = array.iterator();
+//		while (it.hasNext()) {
+//			JSONObject json = (JSONObject) it.next();
+//			if (json.getString(Constants.DEFAULT_NPER).equals("2")) { //mark
+//				it.remove();
+//				break;
+//			}
+//		}
 		for (AfGoodsDo goodsDo : goodsDoList) {
 			Map<String, Object> goodsInfo = new HashMap<String, Object>();
 			goodsInfo.put("goodName", goodsDo.getName());

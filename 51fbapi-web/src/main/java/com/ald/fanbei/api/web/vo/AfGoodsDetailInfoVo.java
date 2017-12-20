@@ -30,6 +30,7 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private Integer saleCount;
 	private List<String> goodsPics;
 	private Map<String,Object> nperMap;
+	private  Integer limitedPurchase;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -116,4 +117,11 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 		this.nperMap = nperMap;
 	}
 
+	public Integer getLimitedPurchase() {
+		return limitedPurchase;
+	}
+
+	public void setLimitedPurchase(Integer limitedPurchase) {
+		this.limitedPurchase = limitedPurchase;
+	}
 }
