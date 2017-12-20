@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -42,6 +45,11 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 	AfGoodsService afGoodsService;
 	@Resource
 	AfUserAccountService afUserAccountService;
+	
+	@Resource 
+	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
+	@Resource
+	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -58,8 +66,7 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 		AfBorrowLegalOrderDeatilVo afBorrowLegalOrderDeatilVo = new AfBorrowLegalOrderDeatilVo();
 		AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
 
-		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-				.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
+		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
 
 		if (afBorrowLegalOrderCashDo != null) {
 			// FIXME 计算待还金额
@@ -71,8 +78,7 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 			BigDecimal sumRepaidInterest = afBorrowLegalOrderCashDo.getSumRepaidInterest();
 			BigDecimal sumRepaidOverdue = afBorrowLegalOrderCashDo.getSumRepaidOverdue();
 			BigDecimal sumRepaidPoundage = afBorrowLegalOrderCashDo.getSumRepaidPoundage();
-			BigDecimal totalAmount = BigDecimalUtil.add(amount, interestAmount, poundageAmount, overdueAmount,
-					sumRepaidInterest, sumRepaidOverdue, sumRepaidPoundage);
+			BigDecimal totalAmount = BigDecimalUtil.add(amount, interestAmount, poundageAmount, overdueAmount, sumRepaidInterest, sumRepaidOverdue, sumRepaidPoundage);
 			BigDecimal returnAmount = totalAmount.subtract(repainAmount);
 			if (returnAmount.compareTo(BigDecimal.ZERO) < 0) {
 				returnAmount = BigDecimal.ZERO;
@@ -114,7 +120,20 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 				afBorrowLegalOrderDeatilVo.setUserAmount(accountInfo.getRebateAmount());
 			}
 
+			// 还款处理中金额处理
+			String existRepayingMoney = YesNoStatus.NO.getCode();
+			BigDecimal repayingMoney = BigDecimal.valueOf(0.00);
+			BigDecimal repayingOrderMoney = BigDecimal.ZERO;
+			// 如果借款记录存在，统计还款处理中金额
+			repayingMoney = afRepaymentBorrowCashService.getRepayingTotalAmountByBorrowId(afBorrowLegalOrderDo.getBorrowId());
+			repayingOrderMoney = afBorrowLegalOrderRepaymentDao.getOrderRepayingTotalAmountByBorrowId(afBorrowLegalOrderDo.getBorrowId());
+			repayingMoney = repayingMoney.add(repayingOrderMoney);
+			if (repayingMoney.compareTo(BigDecimal.ZERO) > 0) {
+				existRepayingMoney = YesNoStatus.YES.getCode();
+			}
+			afBorrowLegalOrderDeatilVo.setExistRepayingMoney(existRepayingMoney);
 		}
+
 		data.put("afBorrowLegalOrderDeatilVo", afBorrowLegalOrderDeatilVo);
 		resp.setResponseData(data);
 		return resp;

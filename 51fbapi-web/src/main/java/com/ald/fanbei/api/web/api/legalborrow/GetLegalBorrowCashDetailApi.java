@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.api.legalborrow;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +26,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
@@ -59,6 +59,8 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+	@Resource
+	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -80,6 +82,18 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		data.put("rebateAmount", account.getRebateAmount());
 		data.put("jfbAmount", account.getJfbAmount());
 
+		// 还款处理中金额处理
+		String existRepayingMoney = YesNoStatus.NO.getCode();
+		BigDecimal repayingMoney = BigDecimal.valueOf(0.00);
+		BigDecimal repayingOrderMoney = BigDecimal.ZERO;
+		// 如果借款记录存在，统计还款处理中金额
+		repayingMoney = afRepaymentBorrowCashService.getRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
+		repayingOrderMoney = afBorrowLegalOrderRepaymentDao.getOrderRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
+		repayingMoney = repayingMoney.add(repayingOrderMoney);
+		if (repayingMoney.compareTo(BigDecimal.ZERO) > 0) {
+			existRepayingMoney = YesNoStatus.YES.getCode();
+		}
+		data.put("existRepayingMoney", existRepayingMoney);
 		resp.setResponseData(data);
 
 		return resp;
@@ -88,8 +102,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo, Integer appVersion) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		if (afBorrowCashDo.getGmtPlanRepayment() == null) {
-			Integer day = NumberUtil
-					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
+			Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
 			Date createEnd = DateUtil.getEndOfDatePrecisionSecond(afBorrowCashDo.getGmtCreate());
 			Date repaymentDay = DateUtil.addDays(createEnd, day - 1);
 			afBorrowCashDo.setGmtPlanRepayment(repaymentDay);
@@ -99,8 +112,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		data.put("gmtCreate", afBorrowCashDo.getGmtCreate());
 		data.put("status", afBorrowCashDo.getStatus());
 
-		if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode())
-				|| StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
+		if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transedfail.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transeding.getCode())) {
 			data.put("status", AfBorrowCashStatus.waitTransed.getCode());
 		}
 
@@ -109,44 +121,32 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		data.put("gmtLastRepay", afBorrowCashDo.getGmtPlanRepayment());
 
 		data.put("renewalStatus", "N");
-		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService
-				.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 		if (afRenewalDetailDo != null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
 			data.put("renewalStatus", "P");
 		} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
-			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT,
-					Constants.RES_ALLOW_RENEWAL_DAY);
+			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
 			BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
-			AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT,
-					Constants.RES_BETWEEN_DUEDATE);
+			AfResourceDo duedateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_BETWEEN_DUEDATE);
 			BigDecimal betweenDuedate = new BigDecimal(duedateResource.getValue());// 续期的距离预计还款日的最小天数差
-			AfResourceDo amountResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT,
-					Constants.RES_AMOUNT_LIMIT);
+			AfResourceDo amountResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_AMOUNT_LIMIT);
 			BigDecimal amountLimit = new BigDecimal(amountResource.getValue());// 配置的未还金额限制
 			// 如果借款记录存在，统计还款处理中金额
-			BigDecimal repayingMoney = afRepaymentBorrowCashService
-					.getRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
+			BigDecimal repayingMoney = afRepaymentBorrowCashService.getRepayingTotalAmountByBorrowId(afBorrowCashDo.getRid());
 			if (repayingMoney.compareTo(BigDecimal.ZERO) > 0) {
 				data.put("status", AfBorrowCashStatus.repaying.getCode());
 			}
 
 			Date nowDate = DateUtil.getEndOfDate(new Date());
-			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate,
-					afBorrowCashDo.getGmtPlanRepayment());
+			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate, afBorrowCashDo.getGmtPlanRepayment());
 
-			BigDecimal waitPaidAmount = BigDecimalUtil
-					.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(),
-							afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate())
-					.subtract(afBorrowCashDo.getRepayAmount());
+			BigDecimal waitPaidAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
 			// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
-			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0
-					&& waitPaidAmount.compareTo(amountLimit) >= 0) {
+			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amountLimit) >= 0) {
 				data.put("renewalDay", allowRenewalDay);
 				data.put("renewalAmount", waitPaidAmount);
-				AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService
-						.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
-				if (null == afRepaymentBorrowCashDo
-						|| (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
+				AfRepaymentBorrowCashDo afRepaymentBorrowCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(afBorrowCashDo.getRid());
+				if (null == afRepaymentBorrowCashDo || (null != afRepaymentBorrowCashDo && !StringUtils.equals(afBorrowCashDo.getStatus(), "P"))) {
 					data.put("renewalStatus", "Y");
 				}
 			}
@@ -164,19 +164,15 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		data.put("gmtArrival", afBorrowCashDo.getGmtArrival());
 		data.put("gmtClose", afBorrowCashDo.getGmtClose());
 
-		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
-				afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(),
-				afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
+		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(), afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
 		// 查询新利率配置
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-				Constants.BORROW_CASH_INFO_LEGAL);
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, Constants.BORROW_CASH_INFO_LEGAL);
 		// 判断是否显示续借按钮
 		String renewalRate = rateInfoDo.getValue();
 
-		BigDecimal tmpAmount = afBorrowCashDo.getAmount()
-				.multiply(new BigDecimal(Double.valueOf(renewalRate) / 100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+		BigDecimal tmpAmount = afBorrowCashDo.getAmount().multiply(new BigDecimal(Double.valueOf(renewalRate) / 100)).setScale(2, BigDecimal.ROUND_HALF_UP);
 		tmpAmount = tmpAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) > 0 ? tmpAmount : BigDecimalUtil.ONE_HUNDRED;
 
 		if (showAmount.compareTo(tmpAmount) <= 0) {
@@ -184,7 +180,7 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		}
 		// 服务费和手续费
 		data.put("serviceFee", afBorrowCashDo.getSumRenewalPoundage().add(afBorrowCashDo.getPoundage()));
-		
+
 		data.put("interestFee", afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));
 
 		data.put("returnAmount", showAmount);

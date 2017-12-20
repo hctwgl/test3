@@ -207,8 +207,18 @@ public class AfBorrowLegalOrderDeatilVo extends AbstractSerial{
 	
 	private BigDecimal returnAmount;
 	
+	private String existRepayingMoney;
 	
 	
+	
+	public String getExistRepayingMoney() {
+		return existRepayingMoney;
+	}
+
+	public void setExistRepayingMoney(String existRepayingMoney) {
+		this.existRepayingMoney = existRepayingMoney;
+	}
+
 	public BigDecimal getReturnAmount() {
 		return returnAmount;
 	}
