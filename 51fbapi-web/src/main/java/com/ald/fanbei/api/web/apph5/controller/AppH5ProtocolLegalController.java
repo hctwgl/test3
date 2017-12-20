@@ -298,7 +298,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 			AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 			model.put("lender", lenderDo.getValue());// 出借人
 		}*/
-		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
+		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 		model.put("lender", lenderDo.getValue());// 出借人
 		AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
 		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
