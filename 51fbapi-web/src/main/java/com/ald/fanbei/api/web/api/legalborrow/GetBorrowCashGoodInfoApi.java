@@ -183,15 +183,16 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 						.multiply(borrowDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 				BigDecimal goodsInterestFee = new BigDecimal(goodsInterestRate / 100).multiply(saleAmount)
 						.multiply(borrowDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+				
+				serviceFee = serviceFee.setScale(2, BigDecimal.ROUND_HALF_UP);
+				interestFee = interestFee.setScale(2, BigDecimal.ROUND_HALF_UP);
+				goodsServiceFee = goodsServiceFee.setScale(2, BigDecimal.ROUND_HALF_UP);
+				goodsInterestFee = goodsInterestFee.setScale(2, BigDecimal.ROUND_HALF_UP);
 				respData.put("goodsServiceFee", goodsServiceFee);
 				respData.put("goodsInterestFee", goodsInterestFee);
 				
 				respData.put("serviceFee", serviceFee);
 				respData.put("interestFee", interestFee);
-				serviceFee = serviceFee.setScale(2, BigDecimal.ROUND_HALF_UP);
-				interestFee = interestFee.setScale(2, BigDecimal.ROUND_HALF_UP);
-				goodsServiceFee = goodsServiceFee.setScale(2, BigDecimal.ROUND_HALF_UP);
-				goodsInterestFee = goodsInterestFee.setScale(2, BigDecimal.ROUND_HALF_UP);
 				repayAmount = BigDecimalUtil.add(serviceFee, interestFee, new BigDecimal(borrowAmount));
 				repayAmount = repayAmount.add(goodsServiceFee).add(goodsInterestFee).add(saleAmount);
 			}
