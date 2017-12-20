@@ -3,13 +3,11 @@
 <html lang="en">
 
 <head>
-    #set($version="2017112702")
-    #set($src="https://f.51fanbei.com/h5/app/activity/12")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>51返呗注册</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/12/doubleTwelveRegister.css?version=$version">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/12/doubleeggRegister.css">
 </head>
 
 <body>
@@ -21,14 +19,13 @@
             <div class="phone flex fd-row ai-c">
                 <div class="phone-icon"></div>
                 <div class="box">
-                    <input type="tel" onfocus="maidianFun('phone')" maxLength=11 placeholder="请输入注册手机号" id="mobile" class="pinp mobile">
+                    <input type="tel" onfocus="maidianFun('phone')" maxLength=11  placeholder="请输入注册手机号" id="mobile" class="pinp mobile">
                 </div>
             </div>
             <div class="phone password flex fd-row ai-c">
                 <div class="pwd-icon"></div>
                 <div class="box">
-                    <input type="password" maxLength=18 minLength=6 onfocus="maidianFun('pwd')" placeholder="密码长度为6-20位数字和英文" class="pinp mobile"
-                        id="password">
+                    <input type="password" maxLength=18 minLength=6  onfocus="maidianFun('pwd')" placeholder="密码长度为6-20位数字和英文" class="pinp mobile" id="password">
                 </div>
             </div>
             <div class="pcheck phone flex fd-row ai-c">
@@ -40,7 +37,7 @@
             </div>
 
         </div>
-        <div class="loginbtn">
+        <div class="loginbtn" onclick="maidianFun('registerBtn')">
             立即注册
         </div>
         <div class="agree flex fd-row ai-c">
@@ -49,19 +46,18 @@
             <a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a>
         </div>
         <p class="registered clearfix">
-            <a onclick="toLogin()">已有账号登录</a>
+            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" onclick="maidianFun('toLogin')">已有账号登录</a>
         </p>
     </div>
 
 
 </body>
-<script type="text/javascript" src="/dist/js/core.js"></script>
-<script type="text/javascript" src="/dist/js/md5.js"></script>
+<script type="text/javascript" src="/common/js/core.js"></script>
+<script type="text/javascript" src="/common/js/md5.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/gt.js"></script>
-<script type="text/javascript" src="/dist/activity/12/doubleTwelveRegister.js?version=$version"></script>
-<div style="display:none">
+<script type="text/javascript" src="/dist/activity/12/doubleEggRegister.js"></script>
+<!-- <div style="display:none">
     <script src="https://s4.cnzz.com/z_stat.php?id=1261759898&web_id=1261759898" language="JavaScript"></script>
-</div>
+</div> -->
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
-<script type="text/javascript" src="/dist/activity/12/wxshare.js?version=$version"></script>
 </html>

@@ -19,11 +19,11 @@ public class Create {
 		// 数据库及数据表名称
 		String database = "51fanbei_app";
 
-		String tables = "af_boluome_activity_msg_index";
+		String tables = "af_goods_double_eggs";
 
 		// 配置作者及Domain说明
-		String classAuthor = "gaojibin_temple";
-		String functionName = "点亮活动新版";
+		String classAuthor = "maqiaopan_temple";
+		String functionName = "双蛋活动";
 
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";

@@ -56,6 +56,12 @@ public class AfCouponCategoryServiceImpl implements AfCouponCategoryService {
 	public AfCouponCategoryDo getCouponCategoryAll() {
 		return afCouponCategoryDao.getCouponCategoryAll();
 	}
+
+	@Override
+	public AfCouponCategoryDo getCouponCategoryByTag(String tag) {
+	    // TODO Auto-generated method stub
+	        return afCouponCategoryDao.getCouponCategoryByTag(tag);
+	}
 	
 	
 
