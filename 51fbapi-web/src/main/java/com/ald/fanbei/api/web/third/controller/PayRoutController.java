@@ -23,6 +23,7 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.foroutapi.service.HomeBorrowService;
 import com.alibaba.fastjson.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -90,7 +91,8 @@ public class PayRoutController {
     private AfTradeWithdrawRecordService afTradeWithdrawRecordService;
     @Resource
     private AfYibaoOrderDao afYibaoOrderDao;
-
+    @Resource
+    private AfTradeCodeInfoService afTradeCodeInfoService;
 
 	@Resource
 	private HuichaoUtility huichaoUtility;
@@ -283,7 +285,7 @@ public class PayRoutController {
                 if (PayOrderSource.ORDER.getCode().equals(attach)) {
                     afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
                 } else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-                    afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
+                    afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId,false);
                 } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                     afOrderService.dealBrandOrderSucc(outTradeNo, transactionId, PayType.WECHAT.getCode());
                 } else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
@@ -327,14 +329,7 @@ public class PayRoutController {
                 if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
                     afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
                 } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
-                    afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
-                    //回调成功发送短信
-                    try{
-                        String userNo = StringUtil.null2Str(request.getParameter("userNo"));
-                        afRepaymentService.sendSuccessMessage(Long.valueOf(userNo),outTradeNo,tradeNo);
-                    }catch (Exception e){
-                        logger.error("send borrowbill send message error for:" + e);
-                    }
+                    afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true);
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
                     afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
                 } else if (OrderType.AGENTCPBUY.getCode().equals(merPriv)) {
@@ -353,72 +348,13 @@ public class PayRoutController {
                     afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
                 }
             } else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
-                String errorWarnMsg = "";
+                String errorWarnMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respCode);
                 if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-                    if (StringUtil.isNotBlank(respDesc)) {
-                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-                    } else {
-                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-                    }
-                    //加上银行卡信息
-                    try{
-                        String addMsg = "";
-                        String bankCode = StringUtil.null2Str(request.getParameter("bankCode"));
-                        String cardNum = StringUtil.null2Str(request.getParameter("cardNo"));
-                        logger.info("发送短信增加银行卡信息,bankCode:"+bankCode+",cardNum:"+cardNum);
-                        if(StringUtil.isNotBlank(errorWarnMsg)&&StringUtil.isNotBlank(bankCode)&&StringUtil.isNotBlank(cardNum)){
-                            if(cardNum.length()>4){
-                                cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
-                                String bankName =afBankDao.getBankNameByCode(bankCode);
-                                if(StringUtil.isNotBlank(bankName)){
-                                    addMsg = "{"+ bankName + cardNum + "}";
-                                    errorWarnMsg = addMsg + errorWarnMsg;
-                                }
-                            }
-                        }
-                    }catch (Exception e){
-                        logger.error("get cardName error for:" + e);
-                    }
-
                     afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
                 } else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
-
-
-                    if (StringUtil.isNotBlank(respDesc)) {
-                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-                    } else {
-                        errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-                    }
                     afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo,errorWarnMsg);
                 } else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败	311
-                    afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
-                    //加上银行卡信息，发送短信
-                    try{
-                        if (StringUtil.isNotBlank(respDesc)) {
-                            errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-                        } else {
-                            errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-                        }
-                        String addMsg = "";
-                        String bankCode = StringUtil.null2Str(request.getParameter("bankCode"));
-                        String cardNum = StringUtil.null2Str(request.getParameter("cardNo"));
-                        String userNo = StringUtil.null2Str(request.getParameter("userNo"));
-                        logger.info("发送短信增加银行卡信息,bankCode:"+bankCode+",cardNum:"+cardNum+",userNo"+userNo);
-                        if(StringUtil.isNotBlank(errorWarnMsg)&&StringUtil.isNotBlank(bankCode)&&StringUtil.isNotBlank(cardNum)&&StringUtil.isNotBlank(userNo)){
-                            if(cardNum.length()>4){
-                                cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
-                                String bankName =afBankDao.getBankNameByCode(bankCode);
-                                if(StringUtil.isNotBlank(bankName)){
-                                    addMsg = "{"+ bankName + cardNum + "}";
-                                    errorWarnMsg = addMsg + errorWarnMsg;
-                                    //还款失败短信通知
-                                    afRepaymentService.sendFailMessage(Long.valueOf(userNo), errorWarnMsg, outTradeNo, tradeNo);
-                                }
-                            }
-                        }
-                    }catch (Exception e){
-                        logger.error("get cardName error for:" + e);
-                    }
+                    afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
                 } else if (OrderType.BOLUOME.getCode().equals(merPriv) || OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
                     int result= afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
                     if (result <= 0) {
@@ -486,7 +422,7 @@ public class PayRoutController {
             } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
                 afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
             } else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-                afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
+                afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo,false,"");
             }
 
             return "SUCCESS";
@@ -496,7 +432,7 @@ public class PayRoutController {
         if (PayOrderSource.ORDER.getCode().equals(attach)) {
             afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
         } else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-            afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+            afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo,false);
         } else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach) || PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
             afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
         } else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
@@ -584,7 +520,7 @@ public class PayRoutController {
 				if (PayOrderSource.ORDER.getCode().equals(attach)) {
 					afOrderService.dealMobileChargeOrder(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-					afRepaymentService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo());
+					afRepaymentService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo(),false);
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)||PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 					//afOrderService.dealBrandOrderSucc(afHuicaoOrderDo.getOrderNo(), afHuicaoOrderDo.getThirdOrderNo(), PayType.WECHAT.getCode());
 				} else if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
