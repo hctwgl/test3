@@ -21,5 +21,5 @@ public interface AfOrderLogisticsService extends ParentService<AfOrderLogisticsD
 
     AfOrderLogisticsBo getOrderLogisticsBo(long orderId, long isOutTraces);
 
-	AfOrderLogisticsBo getLegalOrderLogisticsBo(long orderId, long isOutTraces);
+
 }

@@ -14,10 +14,12 @@ import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
 import com.ald.fanbei.api.biz.service.AfOrderLogisticsService;
 import com.ald.fanbei.api.common.kdniao.KdniaoReqDataDataTraces;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderLogisticsDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderLogisticsDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderLogisticsDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo;
 import com.alibaba.fastjson.JSONObject;
@@ -39,6 +41,9 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
 
     @Resource
     private AfOrderLogisticsDao afOrderLogisticsDao;
+    
+    @Resource
+    private AfBorrowLegalOrderLogisticsDao afBorrowLegalOrderLogisticsDao;
     @Resource
     private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
     
@@ -54,7 +59,8 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
     public AfOrderLogisticsDo getByOrderId(Long orderId) {
         return afOrderLogisticsDao.getByOrderId(orderId);
     }
-
+    
+  
     @Override
     public AfOrderLogisticsBo getOrderLogisticsBo(long orderId, long isOutTraces) {
         AfOrderLogisticsDo afOrderLogisticsDo = getByOrderId(orderId);
@@ -101,53 +107,7 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
     
     
     
-    @Override
-    public AfOrderLogisticsBo getLegalOrderLogisticsBo(long orderId, long isOutTraces) {
-        AfOrderLogisticsDo afOrderLogisticsDo = getByOrderId(orderId);
-        AfOrderLogisticsBo afOrderLogisticsBo = new AfOrderLogisticsBo();
-        if (afOrderLogisticsDo != null) {
-            afOrderLogisticsBo.setStateDesc(convertState(afOrderLogisticsDo.getState()));
-            afOrderLogisticsBo.setShipperName(afOrderLogisticsDo.getShipperName());
-            afOrderLogisticsBo.setShipperCode(afOrderLogisticsDo.getLogisticCode());
-            List<KdniaoReqDataDataTraces> traces = JSONObject.parseArray(afOrderLogisticsDo.getTraces(), KdniaoReqDataDataTraces.class);
-            if (traces.size() > 0) {
-                KdniaoReqDataDataTraces last = new KdniaoReqDataDataTraces();
-                KdniaoReqDataDataTraces listLast = traces.get(traces.size() - 1);
-                last.setAcceptStation(listLast.getAcceptStation());
-                last.setAcceptTime(listLast.getAcceptTime());
-                afOrderLogisticsBo.setNewestInfo(last);
-            } else {
-                //如果没有就虚拟一条空的轨迹
-                KdniaoReqDataDataTraces empty = new KdniaoReqDataDataTraces();
-                empty.setAcceptTime(new Date());
-                empty.setAcceptStation("暂无物流轨迹");
-                afOrderLogisticsBo.setNewestInfo(empty);
-            }
-            if (isOutTraces > 0) {
-
-                List<KdniaoReqDataDataTraces> sortTraces = new ArrayList<KdniaoReqDataDataTraces>();
-                for (int i = traces.size() - 1; i >= 0; i--) {
-                    sortTraces.add(traces.get(i));
-                }
-                afOrderLogisticsBo.setTracesInfo(sortTraces);
-            }
-            return afOrderLogisticsBo;
-        } else {
-            List<KdniaoReqDataDataTraces> emptyTraces = new ArrayList<KdniaoReqDataDataTraces>();
-            KdniaoReqDataDataTraces empty = new KdniaoReqDataDataTraces();
-            empty.setAcceptTime(new Date());
-            empty.setAcceptStation("暂无物流轨迹");
-            AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderDao.getById(orderId);
-            String logisticsNo = "";
-            if(afBorrowLegalOrderDo != null) {
-            	logisticsNo = afBorrowLegalOrderDo.getLogisticsNo();
-            }
-            afOrderLogisticsBo.setShipperCode(logisticsNo);
-            afOrderLogisticsBo.setNewestInfo(empty);
-            afOrderLogisticsBo.setTracesInfo(emptyTraces);
-            return afOrderLogisticsBo;
-        }
-    }
+   
 
     /**
      * 枚举转换
