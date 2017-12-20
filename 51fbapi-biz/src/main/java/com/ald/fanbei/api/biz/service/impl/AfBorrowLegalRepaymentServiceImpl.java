@@ -323,9 +323,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				BigDecimal couponAmount = bo.userCouponDto != null?bo.userCouponDto.getAmount():BigDecimal.ZERO;
 				
 				BigDecimal minusAmount = couponAmount.subtract(orderRemainShouldRepayAmount);
-				if(minusAmount.compareTo(BigDecimal.ZERO) >= 0) { 		// 优惠卷面额 大于 订单应还金额
+				if(minusAmount.compareTo(BigDecimal.ZERO) >= 0) { 			// 优惠卷面额 大于 订单应还金额
 					couponAmountForOrder = orderRemainShouldRepayAmount; 
-					if(minusAmount.compareTo(borrowRepayAmount) >= 0) { 	//拆分的优惠卷面额 大于等于 本次借款可还金额
+					if(minusAmount.compareTo(borrowRepayAmount) >= 0) { 		//拆分的优惠卷面额 大于等于 本次借款可还金额
 						couponAmountForBorrow = borrowRepayAmount;
 					} else { 													//拆分的优惠卷面额 小于 本次借款可还金额
 						couponAmountForBorrow = minusAmount;
@@ -340,7 +340,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				}else {														// 优惠卷面额 小于 订单应还金额
 					couponAmountForOrder = couponAmount;
 					minusAmount = minusAmount.abs();//差值
-					if(bo.rebateAmount.compareTo(minusAmount) >= 0) {		//账户余额 大于等于 订单剩余应还金额
+					if(bo.rebateAmount.compareTo(minusAmount) >= 0) {			//账户余额 大于等于 订单剩余应还金额
 						rabateAmountForOrder = minusAmount;
 						rabateAmountForBorrow = bo.rebateAmount.subtract(rabateAmountForOrder);
 						actualAmountForBorrow = bo.actualAmount;

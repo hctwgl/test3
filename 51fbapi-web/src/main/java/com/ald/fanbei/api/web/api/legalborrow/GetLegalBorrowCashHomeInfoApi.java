@@ -281,7 +281,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			// 查询借款相关商品借款,计算总还款金额
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
 					.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
-			//  判断订单借款是否结清
+			// 判断订单借款是否结清
 			if (afBorrowLegalOrderCash != null) {
 				String status = afBorrowLegalOrderCash.getStatus();
 				if (StringUtils.equals("AWAIT_REPAY", status) || StringUtils.equals("PART_REPAID", status)) {
@@ -308,6 +308,9 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 
 			// 计算已经还款金额 = 商品借款已还金额 + 借款已换金额
 			BigDecimal paidAmount = afBorrowCashDo.getRepayAmount();
+			allAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+			BigDecimal borrowReturnAmount = new BigDecimal(allAmount.doubleValue());
+
 			// 计算逾期金额 = 商品借款逾期费 + 借款逾期费
 			BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount();
 			if (afBorrowLegalOrderCash != null) {
@@ -326,7 +329,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 				overdueAmount = overdueAmount.add(orderCashOverdueAmount);
 			}
 			// 减掉借款已还金额
-			BigDecimal returnAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
+			BigDecimal returnAmount = allAmount;
 
 			// 计算服务费和手续费
 			BigDecimal serviceFee = afBorrowCashDo.getPoundage();
@@ -402,9 +405,13 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			}
 
 			// 判断是否显示续借按钮
-			BigDecimal tmpAmount = afBorrowCashDo.getAmount().multiply(new BigDecimal(0.06)).setScale(2,BigDecimal.ROUND_HALF_UP);
+			String renewalRate = rateInfoDo.getValue();
+
+			BigDecimal tmpAmount = afBorrowCashDo.getAmount()
+					.multiply(new BigDecimal(Double.valueOf(renewalRate) / 100)).setScale(2, BigDecimal.ROUND_HALF_UP);
 			tmpAmount = tmpAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) > 0 ? tmpAmount : BigDecimalUtil.ONE_HUNDRED;
-			if (returnAmount.compareTo(tmpAmount) < 0) {
+
+			if (borrowReturnAmount.compareTo(tmpAmount) <= 0) {
 				data.put("renewalStatus", "N");
 			}
 		}
@@ -630,7 +637,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
-		
+
 		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
 				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			data.put("canBorrow", "N");
