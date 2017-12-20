@@ -10,7 +10,11 @@
 	<insert id="addRenewalDetail" parameterType="AfRenewalDetailDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_renewal_detail(gmt_create, gmt_modified, borrow_id, status, gmt_plan_repayment, 
 		renewal_amount, prior_interest, prior_overdue, next_poundage, jfb_amount, rebate_amount,
-		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate, capital, prior_poundage)
+		actual_amount, user_id, card_name,card_number, pay_trade_no, trade_no, renewal_day, poundage_rate, base_bank_rate, capital
+		<if test="priorPoundage != null">
+			, prior_poundage
+		</if>
+		)
 		VALUES (
 		NOW(),
 		NOW(),
@@ -32,8 +36,11 @@
 		#{renewalDay},
 		#{poundageRate},
 		#{baseBankRate},
-		#{capital},
-		#{priorPoundage}
+		#{capital}
+		<if test="priorPoundage != null">
+			,#{priorPoundage}
+		</if>
+		
 		)
 	</insert>
 	
