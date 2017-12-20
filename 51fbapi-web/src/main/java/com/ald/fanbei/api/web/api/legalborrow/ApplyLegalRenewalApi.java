@@ -164,13 +164,9 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getSumRepaidInterest(),afBorrowLegalOrderCash.getSumRepaidOverdue(),
 				afBorrowLegalOrderCash.getSumRepaidPoundage()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
 		
-		//判断续借金额是否大于所有待还金额
+		//所有续借的金额
 		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),waitOrderAmount,orderOverdueAmount,orderPoundage,orderRateAmount)
 													.subtract(afBorrowCashDo.getRepayAmount());
-		if (renewAmount.compareTo(allRenewalAmount) >0) {
-			throw new FanbeiException(
-					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
-		}
 
 		//上期总手续费
 		BigDecimal poundage = BigDecimalUtil.add(borrowPoundage,orderPoundage);

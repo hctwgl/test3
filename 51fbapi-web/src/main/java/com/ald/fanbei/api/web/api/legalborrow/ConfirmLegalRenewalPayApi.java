@@ -168,11 +168,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal renewalCapitalRate = (new BigDecimal(capitalRateResource.getValue())).divide(new BigDecimal(100));// 续借需还本金比例
             capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
        
-            if (renewalAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {   //判断续借金额是否大于100
-                throw new FanbeiException(
-                        FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED);
-            }
-           
             //上一笔订单记录
     		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
     		if(afBorrowLegalOrder==null){
@@ -206,14 +201,6 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
     		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
     		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
     		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
-    		
-    		//判断续借金额是否大于借款金额
-    		BigDecimal allRenewalAmount= BigDecimalUtil.add(allAmount,borrowPoundage,borrowRateAmount,afBorrowCashDo.getOverdueAmount(),waitOrderAmount,orderOverdueAmount,orderPoundage,orderRateAmount)
-    													.subtract(afBorrowCashDo.getRepayAmount());
-    		if (renewalAmount.compareTo(allRenewalAmount) >0) {
-    			throw new FanbeiException(
-    					FanbeiExceptionCode.RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
-    		}
     		
     		//借款已还金额
     		BigDecimal borrowRepayAmount = afBorrowCashDo.getRepayAmount();
