@@ -135,7 +135,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 		
 		model.put("gmtStart", date);
 		if ("SEVEN".equals(type)){
-			model.put("gmtEnd", DateUtil.addDays(date, 7));
+			model.put("gmtEnd", DateUtil.addDays(date, 6));
 		}else if ("FOURTEEN".equals(type)){
 			model.put("gmtEnd", DateUtil.addDays(date, 14));
 		}
