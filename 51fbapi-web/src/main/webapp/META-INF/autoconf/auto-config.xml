@@ -110,7 +110,8 @@
 		
 		<property name="third.offer.boluome.appKey" defaultValue="1d397480-dbce-4d87-b48c-a34b55ee310d" description="平台提供菠萝觅第三方appkey" />
 		<property name="third.offer.boluome.appSecret" defaultValue="coMMRJDVF/Nmy+U0TCHXbAPPD1LEftSOb248JtzvaXOdGnCapk8yRekWqTFXGtLh" description="平台提供菠萝觅第三方appSecret" />
-	
+		<property name="fbapi.boluome.api.order.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/detail" description="菠萝觅订单详情地址" />
+		
 		<!-- 依图 -->
 		<property name="fbapi.yitu.url" defaultValue="http://staging.yitutech.com" description="服务地址"/>
 		<property name="fbapi.yitu.id" defaultValue="13079" description="客户标识"/>

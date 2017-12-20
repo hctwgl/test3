@@ -315,6 +315,7 @@ public class Constants {
 	public static final String CONFKEY_BOLUOME_ORDER_SEARCH_URL = "fbapi.boluome.order.search.url";
 	public static final String CONFKEY_BOLUOME_ORDER_CANCEL_URL = "fbapi.boluome.order.cancel.url";
 	public static final String CONFKEY_BOLUOME_COUPON_URL = "fbapi.boluome.coupon.url";
+	public static final String CONFKEY_BOLUOME_API_ORDER_URL = "fbapi.boluome.api.order.url";
 
 	// 依图
 	public static final String CONFKEY_YITU_URL = "fbapi.yitu.url";
@@ -401,6 +402,9 @@ public class Constants {
 	public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
 	public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
 	public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
+	  //逛逛惊喜返礼金
+	  public static final String GG_SURPRISE_LOCK = "gg_suprise_lock";
+	  public static final String GG_COUPON_LOCK = "gg_coupon_lock";
 
 	// 双十二秒杀抢券活动
 	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";

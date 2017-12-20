@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -81,7 +82,9 @@ public interface AfGoodsDao {
 	 * @return
 	 */
 	AfGoodsDo checkIsSelfBuild(String numId);
+	List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(@Param("parentId")Long parentId);
 
+	List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(@Param("primaryCategoryId")Long primaryCategoryId,@Param("categoryId") Long categoryId);
 	List<AfEncoreGoodsDto> selectFlashSaleGoods(AfGoodsQuery query);
 
 	List<AfEncoreGoodsDto> selectBookingRushGoods(AfGoodsQuery query);
@@ -89,4 +92,13 @@ public interface AfGoodsDao {
 
 	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
 
+	List<AfGoodsDo> getGoodsByModelId(@Param("categoryId")Long categoryId);
+
+	List<AfGoodsDo> getHomeGoodsByModelId(AfGoodsQuery query);
+
+	List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query);
+	
+	List<AfGoodsDo> listGoodsListByParentIdFromSubjectGoods(long parentId);
+
+	List<AfGoodsDo> listGoodsListBySubjectId(@Param("subjectId")Long subjectId);
 }

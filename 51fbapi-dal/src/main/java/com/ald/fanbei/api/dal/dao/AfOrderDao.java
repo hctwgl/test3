@@ -3,6 +3,8 @@ package com.ald.fanbei.api.dal.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -180,19 +182,20 @@ public interface AfOrderDao {
 	 */
 	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 	/**
-	 * @param userId 
-	 * judge the first_order during the second time to light the activity 
+	 * @param userId
+	 * judge the first_order during the second time to light the activity
 	* @Title: findFirstOrder
-	* @Description: 
+	* @Description:
 	* @param orderId
-	* @return    
-	* @return int   
+	* @return
+	* @return int
 	* @throws
 	 */
 	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
-	Integer selectSumCountByGoodsId(Long goodsId);
+	List<AfOrderDto> selectSumCountByGoodsId(List<AfEncoreGoodsDto> list);
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
+
 }

@@ -6,6 +6,7 @@
 		id,gmt_create,gmt_modified,creator,modifier,name,parent_id,is_show,sort,img_url,level
 	</sql>
 
+
 	<insert id="addGoodsCategory" parameterType="AfGoodsCategoryDo" useGeneratedKeys="true" keyProperty="rid">
 		INSERT INTO af_goods_category(gmt_create , gmt_modified , creator , modifier , name , parent_id , is_show , sort , imgUrl , level)
 		VALUES (
@@ -98,5 +99,27 @@
 		order by g.gmt_create DESC
 	</select>
 
-	
+	<select id="getParentDirectoryByName" resultType="AfGoodsCategoryDo"  parameterType="java.lang.String">
+		SELECT
+			id,SUBSTRING_INDEX(name,'@', 1) name,parent_id,is_show,sort,img_url,level
+		FROM
+			af_goods_category
+		WHERE
+			is_delete=0 
+			AND level=1 
+			AND parent_id = 0
+			and name= #{name}
+			limit 0,1
+	</select>
+	<select id="listByParentIdAndLevel" resultType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo"  parameterType="com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo">
+		SELECT
+				id,SUBSTRING_INDEX(name, '@', 1) name,parent_id,is_show,sort,img_url,level
+		FROM
+			af_goods_category
+		WHERE
+			is_delete = 0 
+			AND level = #{level}
+			AND parent_id = #{parentId}
+			order by sort desc
+	</select>
 </mapper>

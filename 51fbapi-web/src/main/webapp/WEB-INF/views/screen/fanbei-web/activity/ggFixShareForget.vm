@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201711211954")
+    #set($version="201712151826")
     #set($src="https://f.51fanbei.com/h5/app/activity/08")
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>忘记密码</title>
-    <link rel="stylesheet" type="text/css" href="/dist/activity/11/ggFixShareForget.css?$version">
+    <link rel="stylesheet" type="text/css" href="/dist/activity/11/ggFixShareForget.css?version=$version">
 </head>
 <body>
     <div id="lock">
