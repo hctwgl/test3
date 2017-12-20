@@ -23,13 +23,32 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long rid);
 	
-	BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo);
-	
-	void checkOfflineRepayment(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo, String curRepayAmount, String outTradeNo);
-
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoStatus(Long rid);
 
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo);
 
-
+	/**
+	 * 计算剩余应还的金额
+	 * @param cashDo
+	 * @param orderCashDo
+	 * @return
+	 */
+	BigDecimal calculateLegalRestAmount(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo);
+	
+	/**
+	 * 检查离线还款的金额是否合法
+	 * @param cashDo
+	 * @param orderCashDo
+	 * @param curRepayAmount
+	 * @param outTradeNo
+	 */
+	void checkOfflineRepayment(AfBorrowCashDo cashDo, AfBorrowLegalOrderCashDo orderCashDo, String curRepayAmount, String outTradeNo);
+	
+	/**
+	 * 检查旧版客户端是否存在新版借钱数据
+	 * @param version
+	 * @param borrowId
+	 */
+	void checkIllegalVersionInvoke(Integer version, Long borrowId);
+	
 }

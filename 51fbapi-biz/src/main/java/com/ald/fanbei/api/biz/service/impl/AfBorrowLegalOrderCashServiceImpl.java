@@ -107,4 +107,14 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 		}
 	}
+
+	@Override
+	public void checkIllegalVersionInvoke(Integer version, Long borrowId) {
+		if (version <= 401) {
+			Long id = afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId);
+			if (id != null) {
+				throw new FanbeiException(FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
+			}
+		}
+	}
 }

@@ -83,17 +83,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 		BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
 		
 		// 对402版本借钱，低版本还款情况做控制
-	    try {
-	      Integer appVersion = context.getAppVersion();
-	      if (appVersion <= 401) {
-	        AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
-	        if (orderCashDo != null) {
-	          return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
-	        }
-	      }
-	    } catch (Exception e) {
-	      // ignore error
-	    }
+		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
 		
 		if (borrowId == 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);

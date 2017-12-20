@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -59,6 +60,8 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+	@Resource
+	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
 	@Resource
 	AfBorrowCashService afBorrowCashService;
@@ -92,6 +95,10 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 		if (rbCashDo != null && StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
+		
+		// 对402版本借钱，低版本还款情况做控制
+		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId); 
+		
 		// 判断是否存在续期处理中的记录,防止续期和还款交叉,导致最后记录更新失败
 		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(borrowId);
 		if (lastAfRenewalDetailDo != null

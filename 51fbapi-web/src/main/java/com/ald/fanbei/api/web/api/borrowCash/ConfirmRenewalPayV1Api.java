@@ -98,18 +98,7 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 //        }
         
         // 对402版本借钱，低版本还款情况做控制
-	    try {
-	      Integer appVersion = context.getAppVersion();
-	      if (appVersion <= 401) {
-	        AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
-	        if (orderCashDo != null) {
-	          return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
-	        }
-	      }
-	    } catch (Exception e) {
-	      // ignore error
-	    }
-		
+        afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId); 
 
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");

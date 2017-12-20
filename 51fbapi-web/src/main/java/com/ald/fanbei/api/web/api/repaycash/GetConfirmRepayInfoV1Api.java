@@ -1,12 +1,32 @@
 package com.ald.fanbei.api.web.api.repaycash;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserWithholdService;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
@@ -16,27 +36,17 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author honghzengpei 2017/9/7 13:48
@@ -93,20 +103,8 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(
 				ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
 
-		// FIXME 对402版本借钱，低版本还款情况做控制
-		try {
-			Integer appVersion = context.getAppVersion();
-			if (appVersion <= 401) {
-				AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService
-						.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
-				if (orderCashDo != null) {
-					return new ApiHandleResponse(requestDataVo.getId(),
-							FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
-				}
-			}
-		} catch (Exception e) {
-			// ignore error
-		}
+		// 对402版本借钱，低版本还款情况做控制
+		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
 
 		AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
 		if (borrowId == 0) {
