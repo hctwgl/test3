@@ -365,12 +365,11 @@ public class AppH5ProtocolLegalController extends BaseController {
 //				AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 //				BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 借钱手续费率（日）
 				String yearRate = afResourceDo.getValue();
-				BigDecimal capital = new BigDecimal("");
 				if (yearRate != null && !"".equals(yearRate)){
-					capital = afBorrowCashDo.getAmount().divide(BigDecimal.valueOf(100)).multiply(new BigDecimal(yearRate)).setScale(2, RoundingMode.HALF_UP);
+					BigDecimal capital = afBorrowCashDo.getAmount().divide(BigDecimal.valueOf(100)).multiply(new BigDecimal(yearRate)).setScale(2, RoundingMode.HALF_UP);
+					model.put("repayAmountLower", capital);//续借金额小写
+					model.put("repayAmountCapital", toCapital(capital.doubleValue()));//续借金额大写
 				}
-				model.put("repayAmountLower", capital);//续借金额小写
-				model.put("repayAmountCapital", toCapital(capital.doubleValue()));//续借金额大写	
 			}
 		}
 		

@@ -117,8 +117,8 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 
 		//获取续期天数
-		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
+		//AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+		BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
 		
 		//上一笔订单记录
 		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());

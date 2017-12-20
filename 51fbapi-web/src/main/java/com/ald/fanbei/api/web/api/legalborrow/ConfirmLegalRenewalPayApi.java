@@ -157,8 +157,8 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
 
 
             // 续期天数
-            AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-            BigDecimal allowRenewalDay = new BigDecimal(resource.getValue());// 允许续期天数
+            //AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
+            BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
             
             //续借需要支付本金
             BigDecimal capital =BigDecimal.ZERO;
