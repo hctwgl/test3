@@ -402,7 +402,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			}
 
 			// 判断是否显示续借按钮
-			BigDecimal tmpAmount = afBorrowCashDo.getAmount().multiply(new BigDecimal(0.06));
+			BigDecimal tmpAmount = afBorrowCashDo.getAmount().multiply(new BigDecimal(0.06)).setScale(2,BigDecimal.ROUND_HALF_UP);
 			tmpAmount = tmpAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) > 0 ? tmpAmount : BigDecimalUtil.ONE_HUNDRED;
 			if (returnAmount.compareTo(tmpAmount) < 0) {
 				data.put("renewalStatus", "N");
@@ -428,7 +428,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
-
+		data.put("canBorrow", "Y");
 		// 是否放款总开关
 		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
 				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
@@ -630,6 +630,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			afBorrowCacheAmountPerdayService.addBorrowCacheAmountPerday(temp);
 			currentAmount = temp;
 		}
+		
 		if (!StringUtils.equals(rate.get("supuerSwitch").toString(), YesNoStatus.YES.getCode())
 				|| currentAmount.getAmount().compareTo(new BigDecimal((String) rate.get("amountPerDay"))) >= 0) {
 			data.put("canBorrow", "N");
