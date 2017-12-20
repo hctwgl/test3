@@ -512,7 +512,7 @@ public class APPH5GgActivityController extends BaseController {
 					cardList = convertItemsListToCardList(itemsList, false);
 
 					// if the user has already login
-				/*	if (userName != null) {
+				if (userName != null) {
 						Long userId = convertUserNameToUserId(userName);
 						if (userId != null) {
 
@@ -547,7 +547,7 @@ public class APPH5GgActivityController extends BaseController {
 
 
 						}
-					}*/
+					}
 					Long shopId = afShopService.getWaiMainShopId();
 					data.put("waiMaiShopId", shopId);
 					data.put("image", image);
