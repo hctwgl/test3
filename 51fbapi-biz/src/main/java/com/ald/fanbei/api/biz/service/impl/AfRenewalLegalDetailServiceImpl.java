@@ -741,8 +741,8 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		
 		borrowLegalOrderCash.setPoundageAmount(goodsDo.getSaleAmount().multiply(newServiceRate).multiply(allowRenewalDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
 		borrowLegalOrderCash.setInterestAmount(goodsDo.getSaleAmount().multiply(newRate).multiply(allowRenewalDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
-		borrowLegalOrderCash.setPoundageRate(newServiceRate);
-		borrowLegalOrderCash.setInterestRate(newRate);
+		borrowLegalOrderCash.setPoundageRate(newServiceRate.multiply(new BigDecimal(100)));
+		borrowLegalOrderCash.setInterestRate(newRate.multiply(new BigDecimal(100)));
 		borrowLegalOrderCash.setSumRepaidOverdue(BigDecimal.ZERO);
 		borrowLegalOrderCash.setSumRepaidInterest(BigDecimal.ZERO);
 		
