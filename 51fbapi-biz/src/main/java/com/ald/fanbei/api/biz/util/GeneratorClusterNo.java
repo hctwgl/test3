@@ -130,10 +130,12 @@ public class GeneratorClusterNo {
 	 * @return
 	 */
 	public String getRepaymentBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
-		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
-		StringBuffer orderSb = new StringBuffer("hq");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "hq")));
-		return orderSb.toString();
+		synchronized (this){
+			String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+			StringBuffer orderSb = new StringBuffer("hq");
+			orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "hq")));
+			return orderSb.toString();
+		}
 	}
 
 	/**

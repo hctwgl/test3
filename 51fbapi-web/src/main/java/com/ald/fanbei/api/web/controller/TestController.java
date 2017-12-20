@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -282,7 +284,18 @@ public class TestController {
     @RequestMapping("/cuishou")
     @ResponseBody
     public String cuishou() {
-        AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
+        //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
+        ExecutorService pool = Executors.newFixedThreadPool(16);
+        for (int i=0;i<1000;i++){
+            pool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(new Date());
+                    System.out.println("---"+repayNo);
+                }
+            });
+        }
+
 
        // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
         return "调用处理中^";
