@@ -257,11 +257,15 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 						AfBorrowLegalOrderDo borrowLegalOrderDo = afBorrowLegalOrderDao.getById(borrowLegalOrderCashDo.getBorrowLegalOrderId());
 			
 						//关闭新增订单借款记录
-						borrowLegalOrderCashDo.setStatus("CLOSED");
-						afBorrowLegalOrderCashDao.updateById(borrowLegalOrderCashDo);
+						if(borrowLegalOrderCashDo.getStatus().equals("APPLYING")){ // 只对新增订单借款操作
+							borrowLegalOrderCashDo.setStatus("CLOSED");
+							afBorrowLegalOrderCashDao.updateById(borrowLegalOrderCashDo);
+						}
 						//关闭新增订单记录
-						borrowLegalOrderDo.setStatus("CLOSED");
-						afBorrowLegalOrderDao.updateById(borrowLegalOrderDo);
+						if(borrowLegalOrderDo.getStatus().equals("UNPAID")){ // 只对新增订单操作
+							borrowLegalOrderDo.setStatus("CLOSED");
+							afBorrowLegalOrderDao.updateById(borrowLegalOrderDo);
+						}
 					}
 					
 					return 1l;
