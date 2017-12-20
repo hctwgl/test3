@@ -714,19 +714,19 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		if (rateInfoDo != null) {
 			String orderRate = rateInfoDo.getValue3();
 			JSONArray array = JSONObject.parseArray(orderRate);
-			double rate = 0;
+			double interestRate = 0;
 			double serviceRate = 0;
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject info = array.getJSONObject(i);
 				String consumeTag = info.getString("consumeTag");
 				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-						rate = info.getDouble("consumeSevenDay");
+						interestRate = info.getDouble("consumeSevenDay");
 				}
 				if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
 					serviceRate = info.getDouble("consumeSevenDay");
 				}
 			}
-			newRate = BigDecimal.valueOf(rate / 100);
+			newRate = BigDecimal.valueOf(interestRate / 100);
 			newServiceRate = BigDecimal.valueOf(serviceRate / 100);
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
