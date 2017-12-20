@@ -188,8 +188,12 @@ public class GetBorrowCashGoodInfoApi extends GetBorrowCashBase implements ApiHa
 				
 				respData.put("serviceFee", serviceFee);
 				respData.put("interestFee", interestFee);
+				serviceFee = serviceFee.setScale(2, BigDecimal.ROUND_HALF_UP);
+				interestFee = interestFee.setScale(2, BigDecimal.ROUND_HALF_UP);
+				goodsServiceFee = goodsServiceFee.setScale(2, BigDecimal.ROUND_HALF_UP);
+				goodsInterestFee = goodsInterestFee.setScale(2, BigDecimal.ROUND_HALF_UP);
 				repayAmount = BigDecimalUtil.add(serviceFee, interestFee, new BigDecimal(borrowAmount));
-				repayAmount = repayAmount.add(goodsFee).add(saleAmount);
+				repayAmount = repayAmount.add(goodsServiceFee).add(goodsInterestFee).add(saleAmount);
 			}
 			// 查询商品默认规格
 			AfGoodsPriceDo afGoodsProperty = afGoodsPriceService.getGoodsPriceByGoodsId(goodsId);
