@@ -97,6 +97,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
 		if (afBorrowLegalOrderCashDo != null){
 			model.put("instalmentGmtCreate", afBorrowLegalOrderCashDo.getGmtCreate());
+			model.put("instalmentRepayDay", afBorrowLegalOrderCashDo.getGmtPlanRepay());
 		}
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
 		getResourceRate(model, type,afResourceDo);
