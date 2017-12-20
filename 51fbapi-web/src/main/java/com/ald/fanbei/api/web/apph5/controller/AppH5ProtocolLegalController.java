@@ -180,7 +180,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
-		getResourceRate(model, type,afResourceDo,"borrow");
+
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		model.put("email", afUserDo.getEmail());//电子邮箱	 
@@ -194,6 +194,15 @@ public class AppH5ProtocolLegalController extends BaseController {
 		if (borrowId > 0) {
             afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
+				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
+				if (afBorrowLegalOrderCashDo != null){
+					model.put("useType",afBorrowLegalOrderCashDo.getBorrowRemark());
+					model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
+					model.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate());//利率
+					model.put("overdueRate","36");
+				}else {
+					getResourceRate(model, type,afResourceDo,"borrow");
+				}
 				model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借时间
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
@@ -210,7 +219,11 @@ public class AppH5ProtocolLegalController extends BaseController {
 					GetSeal(model, afUserDo, accountDo);
 					lender(model, fundSideInfo);
 				}
+			}else {
+				getResourceRate(model, type,afResourceDo,"borrow");
 			}
+		}else {
+			getResourceRate(model, type,afResourceDo,"borrow");
 		}
 
 		logger.info(JSON.toJSONString(model));
