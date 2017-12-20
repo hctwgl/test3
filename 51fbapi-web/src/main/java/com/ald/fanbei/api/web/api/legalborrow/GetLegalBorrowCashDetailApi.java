@@ -151,16 +151,19 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 				}
 			}
 
-			// 当待还本金小于等于第一次续期时待还本金的10%时，不再显示续期入口
 			BigDecimal returnAmount = BigDecimalUtil.subtract(waitPaidAmount, afBorrowCashDo.getOverdueAmount())
 					.subtract(afBorrowCashDo.getRateAmount());
-			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
-					Constants.RENEWAL_CAPITAL_RATE);
-			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
-			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2,
-					RoundingMode.HALF_UP);
+			// 查询新利率配置
+			AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
+					Constants.BORROW_CASH_INFO_LEGAL);
+			// 判断是否显示续借按钮
+			String renewalRate = rateInfoDo.getValue();
 
-			if (returnAmount.compareTo(capital) <= 0 || returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
+			BigDecimal tmpAmount = afBorrowCashDo.getAmount()
+					.multiply(new BigDecimal(Double.valueOf(renewalRate) / 100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+			tmpAmount = tmpAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) > 0 ? tmpAmount : BigDecimalUtil.ONE_HUNDRED;
+
+			if (returnAmount.compareTo(tmpAmount) <= 0) {
 				data.put("renewalStatus", "N");
 			}
 		}
