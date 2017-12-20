@@ -99,7 +99,11 @@ public class GetNperListApi implements ApiHandle {
             if(orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())){
                 String numId = orderInfo.getGoodsId() + "";
                 interestFreeArray = getInterestFreeArray(numId, orderType);
-            }else{
+            }else if (orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())){
+                interestFreeArray= JSON.parseArray(orderInfo.getInterestFreeJson());
+            }
+
+            else{
                 if (orderInfo.getGoodsId()!=0&&orderInfo.getGoodsId() != null&&!orderInfo.getGoodsId().equals("")) {
                     String numId = orderInfo.getGoodsId() + "";
                     interestFreeArray = getInterestFreeArray(numId, orderType);
@@ -125,9 +129,14 @@ public class GetNperListApi implements ApiHandle {
             //分期金额限制
             String oneNper = checkMoneyLimit(array,orderInfo.getOrderType(),nperAmount);
 
-            List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                    nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
-            resp.addResponseData("nperList", nperList);
+            try{
+                List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                        nperAmount.compareTo(BigDecimal.ZERO) == 0 ? orderInfo.getActualAmount() : nperAmount, resource.getValue1(), resource.getValue2());
+                resp.addResponseData("nperList", nperList);
+            }catch (Exception e){
+                logger.error("get nperList error:",e);
+            }
+
             return resp;
         }
 

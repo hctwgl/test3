@@ -541,7 +541,8 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		afBorrowLegalOrderCashDo.setType(AfBorrowCashType.findRoleTypeByCode(type).getName());
 		afBorrowLegalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.APPLYING.getCode());
 		afBorrowLegalOrderCashDo.setUserId(userId);
-		afBorrowLegalOrderCashDo.setPoundageRate(poundage);
+		afBorrowLegalOrderCashDo.setPoundageRate(BigDecimal.valueOf(serviceRate));
+		afBorrowLegalOrderCashDo.setInterestRate(BigDecimal.valueOf(interestRate));
 		afBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
 		afBorrowLegalOrderCashDo.setBorrowId(borrowId);
 		afBorrowLegalOrderCashDo.setOverdueAmount(overdueAmount);

@@ -62,5 +62,11 @@ public interface AfModelH5ItemService {
 
 	List<AfModelH5ItemDo> getModelH5ItemByGoodsId(Long goodsId);
 
+	/**
+	 * 首页商品分类
+	 * @return
+	 */
+	List<AfModelH5ItemDo> selectModelByTag();
+
 	
 }

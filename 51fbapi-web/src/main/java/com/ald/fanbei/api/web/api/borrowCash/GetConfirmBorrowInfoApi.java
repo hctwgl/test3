@@ -202,7 +202,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 
 			// BigDecimal serviceRate =bankService.add(poundageRate);
 			// BigDecimal serviceAmountDay = serviceRate.multiply(amount);
-			Object poundageRateCash = getUserPoundageRate(userId);
+			Object poundageRateCash = getUserPoundageRate(userId,context.getUserName());
 			if (poundageRateCash != null) {
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
@@ -242,7 +242,28 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 		return resp;
 	}
 
-	private Object getUserPoundageRate(Long userId) {
+	private Object getUserPoundageRate(Long userId,String userName) {
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RISK_POUNDAGE_USERNAME_LIST.getCode(), AfResourceSecType.RISK_POUNDAGE_USERNAME_LIST.getCode());
+		if(resourceDo!=null && "O".equals(resourceDo.getValue4()) && resourceDo.getValue().contains(userName)){
+			//直接从风控系统取，没的话，走之前逻辑
+			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+			String poundageRate = riskResp!=null?riskResp.getPoundageRate():"";
+			if (!StringUtils.isBlank(poundageRate)) {
+				logger.info("direct get user poundage rate from risk,not null: userName=" + userName + ",poundageRate=" + poundageRate);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);		
+				return poundageRate;
+			}else{
+				logger.info("direct get user poundage rate from risk,is null,getUserPoundageRateByUserId:.userName=" + userName);
+				return getUserPoundageRateByUserId(userId);
+			}
+		}else{
+			logger.info("getUserPoundageRateByUserId from risk: userName=" + userName );
+			return getUserPoundageRateByUserId(userId);
+		}
+	}
+	
+	private Object getUserPoundageRateByUserId(Long userId){
 		Date saveRateDate = (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 		if (saveRateDate == null
 				|| DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {

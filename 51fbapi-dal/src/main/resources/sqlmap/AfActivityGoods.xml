@@ -217,4 +217,21 @@
 		AND
 			goods_id = #{goodsId}
 	</select>
+
+	<select id="getActivityGoodsByGoodsIdAndTypeMap" resultType="AfActivityGoodsDo" parameterType="list">
+		SELECT
+			goods_id,initial_count
+		FROM
+		af_activity_goods
+		WHERE
+		is_delete = 0
+		AND
+		type = 'LIMIT'
+		AND
+		goods_id in
+		<foreach item="item" collection="list" separator="," open="(" close=")">
+			#{item.rid}
+		</foreach>
+		 GROUP BY goods_id
+	</select>
 </mapper>

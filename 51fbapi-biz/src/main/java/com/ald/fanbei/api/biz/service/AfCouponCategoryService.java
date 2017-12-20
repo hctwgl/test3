@@ -27,5 +27,7 @@ public interface AfCouponCategoryService {
 
 	AfCouponCategoryDo getCouponCategoryAll();
 
+	AfCouponCategoryDo getCouponCategoryByTag(String tag);
+
 	
 }

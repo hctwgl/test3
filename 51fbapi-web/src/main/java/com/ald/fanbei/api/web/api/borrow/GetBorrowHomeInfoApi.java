@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.api.borrow;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -24,7 +26,11 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -51,6 +57,11 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 	
 	@Resource
 	private AfBorrowBillService afBorrowBillService;
+	
+	@Resource
+	private AfBorrowBillDao afBorrowBillDao;
+	@Resource
+	private AfUserOutDayDao afUserOutDayDao;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {
@@ -88,7 +99,26 @@ public class GetBorrowHomeInfoApi implements ApiHandle{
 //			}
 		}
 		vo.setRealNameStatus(authDo.getRealnameStatus());
-		vo.setRepayLimitTime(afBorrowService.getReyLimitDate("",now));
+
+		// 设置还款时间
+		vo.setRepayLimitTime(afBorrowService.getReyLimitDate("C",now));
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar n = Calendar.getInstance();
+		n.setTime(now);
+        n.add(Calendar.MONTH,-1);
+        String _n =simpleDateFormat.format(n.getTime());
+        String[] __n = _n.split("-");
+		AfBorrowTotalBillDo afBorrowTotalBillDo = afBorrowBillDao.getBorrowBillTotalNow(userDto.getUserId(),Integer.parseInt( __n[0]),Integer.parseInt(__n[1]));
+        if(afBorrowTotalBillDo !=null){
+        	vo.setRepayLimitTime(afBorrowTotalBillDo.getGmtPayTime());
+        }else {
+            AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userDto.getUserId());
+            if (afUserOutDayDo != null) {
+            	n.setTime(now);
+                n.set(Calendar.DATE, afUserOutDayDo.getPayDay());
+                vo.setRepayLimitTime(n.getTime());
+            }
+		}
 		vo.setTeldirStatus(authDo.getTeldirStatus());
 		vo.setTotalAmount(userDto.getAuAmount());
 		BigDecimal usableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());

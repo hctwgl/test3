@@ -270,8 +270,7 @@ public class CollectionSystemUtil extends AbstractThird {
 								NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO),
 								NumberUtil.objToBigDecimalDivideOnehundredDefault(restAmount, BigDecimal.ZERO), tradeNo,
 								isBalance);
-						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.findByCode(respCode));
-					}
+						notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.findByCode(respCode));					}
 				} else {
 					notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST);
 				}

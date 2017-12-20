@@ -3,6 +3,8 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
 
 /**
  * '第三方-上树请求记录Service
@@ -18,6 +20,8 @@ public interface AfGoodsPriceService extends ParentService<AfGoodsPriceDo, Long>
 
 	Integer selectSumStock(Long goodsId);
 	AfGoodsPriceDo getGoodsPriceByGoodsId(Long goodsId);
+	List<AfGoodsPriceDto> selectSumStockMap(List<AfEncoreGoodsDto> list);
+
 	int updateNewStockAndSaleByPriceId(Long priceId,Integer count, boolean isSold);
 
 }
