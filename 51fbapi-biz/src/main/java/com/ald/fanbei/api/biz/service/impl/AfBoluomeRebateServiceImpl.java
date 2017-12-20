@@ -178,7 +178,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 									logger.info(log);
 									
 									//if this user Rebate amount is 20 than send a coupon 
-									if (rebateDo.getRebateAmount().equals(new BigDecimal(twenty))) {
+									if (rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0) {
 										if (StringUtil.isNotBlank(couponId)) {
 											
 											//add coupon to user 
@@ -194,7 +194,7 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 										}
 									}
 									
-									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount().equals(new BigDecimal(twenty))?new BigDecimal(thirty):rebateDo.getRebateAmount());
+									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0?new BigDecimal(thirty):rebateDo.getRebateAmount());
 								}
 							}
 						}
