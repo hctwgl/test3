@@ -71,9 +71,9 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 		data.put("rid", afRenewalDetailDo.getRid());
 		data.put("renewalAmount", afRenewalDetailDo.getRenewalAmount());// 续期本金
 		data.put("amount",afRenewalDetailDo.getActualAmount());// 续期金额
-		data.put("priorInterest", afRenewalDetailDo.getPriorInterest().add(afBorrowLegalOrderCashDo.getInterestAmount()));// 上期利息
-		data.put("priorOverdue", afRenewalDetailDo.getPriorOverdue().add(afBorrowLegalOrderCashDo.getOverdueAmount()));// 上期滞纳金
-		data.put("priorPoundage", afRenewalDetailDo.getPriorPoundage().add(afBorrowLegalOrderCashDo.getPoundageAmount()));// 上期手续费
+		data.put("priorInterest", afRenewalDetailDo.getPriorInterest().add(afBorrowLegalOrderCashDo.getSumRepaidInterest()));// 上期利息
+		data.put("priorOverdue", afRenewalDetailDo.getPriorOverdue().add(afBorrowLegalOrderCashDo.getSumRepaidOverdue()));// 上期滞纳金
+		data.put("priorPoundage", afRenewalDetailDo.getPriorPoundage().add(afBorrowLegalOrderCashDo.getSumRepaidPoundage()));// 上期手续费
 		data.put("capital", afRenewalDetailDo.getCapital());// 本金还款部分
 		data.put("cardName", afRenewalDetailDo.getCardName());// 支付方式（卡名称）
 		data.put("tradeNo", afRenewalDetailDo.getTradeNo());// 支付编号
