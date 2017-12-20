@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -20,8 +21,8 @@ public class LegalBorrowTest  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
-	String userName = "13638668564";
+	String urlBase = "http://localhost:80";
+	String userName = "15669066271";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -77,11 +78,11 @@ public class LegalBorrowTest  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2017121918093101044";
-		String merPriv = PayOrderSource.REPAY_CASH_LEGAL.getCode();
+		String orderNo = "xj2017122018091400239";
+		String merPriv = PayOrderSource.RENEW_CASH_LEGAL.getCode();
 		String tradeNo = "";
 		String tradeState = "00";
 		

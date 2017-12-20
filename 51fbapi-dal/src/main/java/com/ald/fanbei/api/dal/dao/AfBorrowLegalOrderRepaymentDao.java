@@ -42,4 +42,5 @@ public interface AfBorrowLegalOrderRepaymentDao extends BaseDao<AfBorrowLegalOrd
 	
 	
 	BigDecimal getOrderRepayingTotalAmountByBorrowId(@Param("borrowId")Long rid);
+	AfBorrowLegalOrderRepaymentDo getNewOrderRepayment(@Param("borrowId")Long borrowId);
 }
