@@ -968,6 +968,37 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 	}
 	
+	
+	/**
+	 * 获取物流信息
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
+	@RequestMapping(value = { "/getLegalOrderLogistics" }, method =
+			RequestMethod.POST,produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String getLegalOrderLogistics(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext context = null;
+		try {
+			long orderId = NumberUtil.strToLong(request.getParameter("orderId").toString());
+			long isOutTraces = NumberUtil.strToLong(request.getParameter("traces")==null?
+					String.valueOf(0) :request.getParameter("traces").toString());
+			AfOrderLogisticsBo afOrderLogisticsBo= afOrderLogisticsService.getLegalOrderLogisticsBo
+					(orderId,isOutTraces);
+			if(afOrderLogisticsBo!=null){
+				return H5CommonResponse.getNewInstance(true,"","",afOrderLogisticsBo).toString();
+			}else{
+				return H5CommonResponse.getNewInstance
+						(false,FanbeiExceptionCode.LOGISTICS_NOT_EXIST.getErrorMsg()).toString();
+			}
+
+		}catch(Exception e){
+			return H5CommonResponse.getNewInstance(false,e.toString()).toString();
+		}
+	}
+	
+	
 	/**
 	 * 第三方链接跳转，记录pv，uv
 	 * @param request
