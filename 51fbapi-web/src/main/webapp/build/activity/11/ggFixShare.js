@@ -369,7 +369,7 @@ var shareInfo;
 if(pageName=='ggFix'){
     shareInfo = {
         title: "有人@你~你有最高188元惊喜金待领取！",
-        desc: "16元外卖1元购，下单即返10元现金（可提现）~",
+        desc: "16元外卖1元购，下单即返30元~",
         link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+"&pageName=ggFix",
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {
