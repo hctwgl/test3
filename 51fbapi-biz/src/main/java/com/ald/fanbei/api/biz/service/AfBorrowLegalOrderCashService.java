@@ -22,7 +22,9 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 	int saveBorrowLegalOrderCash(AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo);
 
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long rid);
-	
+
+	AfBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long rid);
+
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoStatus(Long rid);
 
 	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByCashNo(String cashNo);

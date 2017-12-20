@@ -43,7 +43,7 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-				.getBorrowLegalOrderCashByCashNo(afRenewalDetailDo.getPayTradeNo());
+				.getLastOrderCashByBorrowId(afRenewalDetailDo.getBorrowId());
 
 		Map<String, Object> data = objectWithAfRenewalDetailDo(afRenewalDetailDo, afBorrowLegalOrderCashDo);
 
