@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
+import com.ald.fanbei.api.dal.domain.AfCardDo;
 
 /**
  * '第三方-上树请求记录Service
@@ -13,5 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 public interface AfBoluomeActivityItemsService extends ParentService<AfBoluomeActivityItemsDo, Long>{
 
     AfBoluomeActivityItemsDo getItemsInfoByOrderId(long orderId);
+
+	List<AfCardDo> getUserCards(Long userId);
 
 }

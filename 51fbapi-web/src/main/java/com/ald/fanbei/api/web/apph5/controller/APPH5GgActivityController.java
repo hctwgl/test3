@@ -483,7 +483,7 @@ public class APPH5GgActivityController extends BaseController {
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "HOME_PAGE_INFO");
 			AfResourceDo resourceInfo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "HOME_PAGE_RULE");
 			log = log + String.format("middle business params: resourceDo = %s", resourceDo.toString());
-			
+
 			logger.info(log);
 			logger.info("/h5GgActivity/homePage resourceInfo = {}",resourceInfo);
 			Map<String, Object> data = new HashMap<>();
@@ -512,21 +512,24 @@ public class APPH5GgActivityController extends BaseController {
 					cardList = convertItemsListToCardList(itemsList, false);
 
 					// if the user has already login
-					if (userName != null) {
+				/*	if (userName != null) {
 						Long userId = convertUserNameToUserId(userName);
 						if (userId != null) {
-							
+
 							AfResourceDo do1 = afResourceService.getConfigByTypesAndSecType("GG_TWICE_LIGHT", "GET_START_TIME");
 							logger.info("/h5GgActivity/homePage do1 = {}",do1);
 							if(do1 != null){
 								String startTime = do1.getValue();
 								if (StringUtil.isNotBlank(startTime)) {
-									
+
 								List<AfBoluomeRebateDo> rebateList = new ArrayList<>();
 								rebateList = afBoluomeRebateService.getListByUserId(userId);
 								// the status of items
 								logger.info("/h5GgActivity/homePage rebateList = {}",rebateList);
-								List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
+								//List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
+								
+								List<AfCardDo> cardsList = afBoluomeActivityItemsService.getUserCards(userId);
+								
 								if (cardsList != null && cardsList.size() > 0) {
 									cardList = cardsList;
 								} else {
@@ -541,10 +544,10 @@ public class APPH5GgActivityController extends BaseController {
 								data.put("rebateList", rebateeList);
 								}
 							}
-							
-							
+
+
 						}
-					}
+					}*/
 					Long shopId = afShopService.getWaiMainShopId();
 					data.put("waiMaiShopId", shopId);
 					data.put("image", image);

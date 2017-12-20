@@ -528,10 +528,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.REPAYMENTCASH,
                                 afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
                         afUserAccountLogDao.addUserAccountLog(accountLog);
-
+                        afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                         bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                         //fmf 增加还款成功为FINSH的时间
                         try {
+                            afBorrowCashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
                             bcashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
                         } catch (Exception e) {
                             logger.error("bcashDo.setFinishDate is fail", e);
@@ -577,12 +578,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     overdueCount = 1;
                 }
                 //11-17号加入,还清了才能调用提额
-                AfBorrowCashDo afterRepaymentBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
-                if (afterRepaymentBorrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
-                    logger.info("还完了调用提额接口 ：" + afterRepaymentBorrowCashDo.getBorrowNo());
+                if (afBorrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
+                    logger.info("还完了调用提额接口 ：" + afBorrowCashDo.getBorrowNo());
                     riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "50", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
                 }
-                logger.info("没还完不调用提额接口 ：" + afterRepaymentBorrowCashDo.getBorrowNo());
+                logger.info("没还完不调用提额接口 ：" + afBorrowCashDo.getBorrowNo());
             } catch (Exception e) {
                 logger.error("风控提额提额失败", e);
             }
