@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.alibaba.fastjson.JSON;
@@ -66,6 +68,8 @@ public class CollectionController {
 	@Resource
 	AfIdNumberService idNumberService;
 	
+	@Resource
+	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
 	 * @param request
@@ -107,9 +111,16 @@ public class CollectionController {
 				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
 				return updteBo;
 			}
+			
+			
 			String sign2=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
-				
+				// 查询订单借款 FIXME
+				AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
+						.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
+				if (legalOrderCashDo != null) {
+					return updteBo;
+				}
 				BigDecimal rateAmount = afBorrowCashDo.getRateAmount().multiply(BigDecimalUtil.ONE_HUNDRED);
 				BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount().multiply(BigDecimalUtil.ONE_HUNDRED);
 				BigDecimal repayAmount = ((afBorrowCashDo.getAmount().add(afBorrowCashDo.getRateAmount().add(afBorrowCashDo.getOverdueAmount().add(afBorrowCashDo.getSumRate().add(afBorrowCashDo.getSumOverdue()))))).setScale(2, RoundingMode.HALF_UP)).multiply(BigDecimalUtil.ONE_HUNDRED);
@@ -234,6 +245,12 @@ public class CollectionController {
 		}
 		String sign1=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign, sign1)) {	// 验签成功
+				// 查询订单借款 FIXME
+				AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
+						.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
+				if (legalOrderCashDo != null) {
+					return updteBo;
+				}
 				if(afBorrowCashDo.getRepayAmount().compareTo(afBorrowCashDo.getAmount()) >= 0){
 					//平账
 					afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
