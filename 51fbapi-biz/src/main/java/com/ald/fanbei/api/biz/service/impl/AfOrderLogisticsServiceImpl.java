@@ -138,7 +138,11 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
             empty.setAcceptTime(new Date());
             empty.setAcceptStation("暂无物流轨迹");
             AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderDao.getById(orderId);
-            afOrderLogisticsBo.setShipperCode(afBorrowLegalOrderDo.getLogisticsNo());
+            String logisticsNo = "";
+            if(afBorrowLegalOrderDo != null) {
+            	logisticsNo = afBorrowLegalOrderDo.getLogisticsNo();
+            }
+            afOrderLogisticsBo.setShipperCode(logisticsNo);
             afOrderLogisticsBo.setNewestInfo(empty);
             afOrderLogisticsBo.setTracesInfo(emptyTraces);
             return afOrderLogisticsBo;

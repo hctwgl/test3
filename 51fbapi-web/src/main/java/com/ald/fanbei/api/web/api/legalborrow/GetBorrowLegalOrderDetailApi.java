@@ -80,11 +80,11 @@ public class GetBorrowLegalOrderDetailApi implements ApiHandle {
 			afBorrowLegalOrderDeatilVo.setReturnAmount(returnAmount);
 			afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
 			afBorrowLegalOrderDeatilVo.setType(afBorrowLegalOrderCashDo.getType());
-			afBorrowLegalOrderDeatilVo.setPoundageAmount(afBorrowLegalOrderCashDo.getPoundageAmount());
-			afBorrowLegalOrderDeatilVo.setInterestAmount(afBorrowLegalOrderCashDo.getInterestAmount());
+			afBorrowLegalOrderDeatilVo.setPoundageAmount(afBorrowLegalOrderCashDo.getSumRepaidPoundage());
+			afBorrowLegalOrderDeatilVo.setInterestAmount(afBorrowLegalOrderCashDo.getSumRepaidInterest());
 			afBorrowLegalOrderDeatilVo.setGmtPlanRepay(afBorrowLegalOrderCashDo.getGmtPlanRepay());
 			afBorrowLegalOrderDeatilVo.setOverdueDay(afBorrowLegalOrderCashDo.getOverdueDay());
-			afBorrowLegalOrderDeatilVo.setOverdueAmount(afBorrowLegalOrderCashDo.getOverdueAmount());
+			afBorrowLegalOrderDeatilVo.setOverdueAmount(afBorrowLegalOrderCashDo.getSumRepaidOverdue());
 			afBorrowLegalOrderDeatilVo.setBorrowId(afBorrowLegalOrderCashDo.getBorrowId());
 			afBorrowLegalOrderDeatilVo.setBorrowStatus(afBorrowLegalOrderCashDo.getStatus());
 			afBorrowLegalOrderDeatilVo.setGmtLastRepayment(afBorrowLegalOrderCashDo.getGmtLastRepayment());
