@@ -97,6 +97,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
 		if (afBorrowLegalOrderCashDo != null){
 			model.put("instalmentGmtCreate", afBorrowLegalOrderCashDo.getGmtCreate());
+			model.put("instalmentRepayDay", afBorrowLegalOrderCashDo.getGmtPlanRepay());
 		}
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
 		getResourceRate(model, type,afResourceDo);
@@ -232,12 +233,14 @@ public class AppH5ProtocolLegalController extends BaseController {
 	}
 
 	private void lender(ModelMap model, AfFundSideInfoDo fundSideInfo) {
-		if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
+		/*if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
 			model.put("lender", fundSideInfo.getName());// 出借人
 		} else {
 			AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 			model.put("lender", lenderDo.getValue());// 出借人
-		}
+		}*/
+		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
+		model.put("lender", lenderDo.getValue());// 出借人
 		AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
 		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 			model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
