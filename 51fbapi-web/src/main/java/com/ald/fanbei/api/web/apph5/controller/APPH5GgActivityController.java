@@ -526,7 +526,10 @@ public class APPH5GgActivityController extends BaseController {
 								rebateList = afBoluomeRebateService.getListByUserId(userId);
 								// the status of items
 								logger.info("/h5GgActivity/homePage rebateList = {}",rebateList);
-								List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
+								//List<AfCardDo> cardsList = convertItemsListToCardList(rebateList, itemsList,userId);
+								
+								List<AfCardDo> cardsList = afBoluomeActivityItemsService.getUserCards(userId);
+								
 								if (cardsList != null && cardsList.size() > 0) {
 									cardList = cardsList;
 								} else {
