@@ -182,14 +182,14 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
 		// 服务费和手续费
-		data.put("serviceFee", afBorrowCashDo.getSumRenewalPoundage());
+		data.put("serviceFee", afBorrowCashDo.getSumRenewalPoundage().add(afBorrowCashDo.getPoundage()));
 		
-		data.put("interestFee", afBorrowCashDo.getSumRate());
+		data.put("interestFee", afBorrowCashDo.getSumRate().add(afBorrowCashDo.getRateAmount()));
 
 		data.put("returnAmount", showAmount);
 
 		data.put("overdueDay", afBorrowCashDo.getOverdueDay());
-		data.put("overdueAmount", afBorrowCashDo.getSumOverdue());
+		data.put("overdueAmount", afBorrowCashDo.getSumOverdue().add(afBorrowCashDo.getOverdueAmount()));
 		// overdueStatus处理，根据预计还款时间来做，主要用于前端app展示
 		if (DateUtil.afterDay(afBorrowCashDo.getGmtPlanRepayment(), new Date())) {
 			data.put("overdueStatus", YesNoStatus.NO.getCode());
