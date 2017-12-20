@@ -256,10 +256,8 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			BigDecimal saleAmount = goodsInfo.getSaleAmount();
 			tmpLimitAmount = saleAmount.add(minAmount);
 		}
-		if (usableAmount.compareTo(tmpLimitAmount) >= 0) {
-			data.put("canBorrow", "Y");
-		} else {
-			data.put("canBorrow", "N");
+		if (usableAmount.compareTo(tmpLimitAmount) < 0) {
+			inRejectLoan = YesNoStatus.YES.getCode();
 		}
 		AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(
 				ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
@@ -283,7 +281,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			// 查询借款相关商品借款,计算总还款金额
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService
 					.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
-			// FIXME 判断订单借款是否结清
+			//  判断订单借款是否结清
 			if (afBorrowLegalOrderCash != null) {
 				String status = afBorrowLegalOrderCash.getStatus();
 				if (StringUtils.equals("AWAIT_REPAY", status) || StringUtils.equals("PART_REPAID", status)) {
