@@ -48,7 +48,7 @@
         <li><i>借款期限</i><i>#if($!{gmtArrival})$dateUtil.formatDate($!{gmtArrival},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{repaymentDay},"yyyy-MM-dd")#end</i></li>
         <li><i>还款方式</i><i>到期一次性还本付息</i></li>
         <li><i>还款日</i><i>#if($!{gmtPlanRepayment})$dateUtil.formatDate($!{gmtPlanRepayment},"yyyy-MM-dd")#end</i></li>
-        <li><i>借款用途</i><i>个人消费</i></li>
+        <li><i>借款用途</i><i>$!{useType}</i></li>
         <li><i>手续费率（年化）</i><i>#if($!{poundageRate})$!{poundageRate}%#end</i></li>
         <li><i>逾期手续费率（年化）</i><i>#if($!{overdueRate})$!{overdueRate}%#end</i></li>
     </ul><br>
