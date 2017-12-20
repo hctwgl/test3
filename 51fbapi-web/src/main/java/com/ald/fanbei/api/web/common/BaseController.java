@@ -193,7 +193,7 @@ public abstract class BaseController {
                             "	", "",
                             "	", "",
                             "	", "",
-                            "	", req,
+                            "	", req.replace("\t",""),
                             "	", requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod())) ? resultStr.length() + "" : resultStr));
 
                     biLogger.info(StringUtil.appendStrs(

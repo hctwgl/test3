@@ -7,6 +7,12 @@
 		(sale_amount-rebate_amount) real_amount,tags,goods_pic1,goods_pic2,goods_pic3,goods_pic4,goods_detail,remark,stock_count
 	</sql>
 
+	<sql id="queryAllFields">
+		a.id rid,a.gmt_create,a.gmt_modified,a.creator,a.modifier,a.name,a.goods_icon,a.thumbnail_icon,a.goods_url,a.open_id,a.num_id,a.price_amount,
+		a.sale_amount,a.category_id,a.sale_count,a.gmt_start,a.gmt_end,a.status,a.source,a.rebate_amount,a.rebate_rate,a.shop_name,
+		(a.sale_amount-a.rebate_amount) real_amount,a.tags,a.goods_pic1,a.goods_pic2,a.goods_pic3,a.goods_pic4,a.goods_detail,a.remark,a.stock_count
+	</sql>
+
 	<sql id="queryFlashFields">
 		id rid,s.gmt_create,gmt_modified,creator,modifier,name,goods_icon,thumbnail_icon,goods_url,open_id,num_id,price_amount,
 		sale_amount,category_id,sale_count,gmt_start,gmt_end,status,source,rebate_amount,rebate_rate,shop_name,
@@ -173,6 +179,68 @@
 		AND is_grab_success = 0
 		AND num_id = #{numId}
 	</select>
+	<select id="listGoodsListByParentIdAndFormerCategoryId"  resultType="AfGoodsDo" parameterType="java.lang.Long">
+		SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE is_delete = 0
+		AND STATUS = 'PUBLISH'
+		AND primary_category_id = #{parentId}
+		AND category_id = (
+				SELECT 
+				 id 
+			    FROM af_goods_category 
+				WHERE parent_id =(          
+						SELECT
+						id 
+						FROM af_goods_category 
+						WHERE parent_id = #{parentId}
+						AND LEVEL = 2
+					
+						ORDER BY sort DESC 
+						LIMIT 0,1
+				)
+		AND LEVEL = 3
+
+		ORDER BY sort DESC 
+		LIMIT 0,1
+	 )
+	</select>
+	
+	<select id="listGoodsListByParentIdFromSubjectGoods"  resultType="AfGoodsDo" parameterType="java.lang.Long">
+	SELECT
+		<include refid="queryFields"/>
+		FROM af_goods
+		WHERE is_delete = 0
+		AND STATUS = 'PUBLISH'
+		AND id IN (	
+			SELECT 
+				 goods_id 
+				FROM af_subject_goods 
+				WHERE subject_id =(          
+						SELECT
+						id 
+						FROM af_subject 
+						WHERE parent_id = #{parentId}
+						AND LEVEL = 2
+						ORDER BY gmt_create ASC
+						LIMIT 0,1
+				)
+				AND parent_subject_id = #{parentId}
+			)
+		ORDER BY gmt_create
+	</select>		
+				
+	
+	<select id="listGoodsListByPrimaryCategoryIdAndCategoryId"  resultType="AfGoodsDo" parameterType="java.lang.Long">
+		SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE is_delete = 0
+		AND STATUS = 'PUBLISH'
+		AND primary_category_id = #{primaryCategoryId}
+		AND category_id = #{categoryId}
+	</select>
 
 	<select id="selectFlashSaleGoods" resultType="AfEncoreGoodsDto" parameterType="AfGoodsQuery" >
 		SELECT
@@ -249,8 +317,24 @@
 			category_id = #{categoryId}
 		LIMIT 50
 	</select>
-
-	<select id="getGoodsByModelId" resultType="AfGoodsDo">
+	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">
+	SELECT
+			<include refid="queryFields"/>
+		FROM af_goods
+		WHERE 
+			is_delete = 0
+		AND
+			id in  (
+			select goods_id 
+			  from af_subject_goods
+			  where subject_id  = #{subjectId}
+			  and is_delete = 0
+			  
+			)
+			
+			
+	</select>
+		<select id="getGoodsByModelId" resultType="AfGoodsDo">
 		SELECT
 			<include refid="queryFields"/>
 		from af_goods
@@ -259,15 +343,28 @@
 			id in (select item_value from af_model_h5_item where item_value2 = #{categoryId} and item_type = 'GOODS_ID' and type = 'GOODSLIST' and is_delete = 0)
 
 	</select>
-
 	<select id="getHomeGoodsByModelId" resultType="AfGoodsDo">
 		SELECT
-		<include refid="queryFields"/>
-		from af_goods
-		where is_delete = 0
-		AND
-		id in (select item_value from af_model_h5_item where item_value2 = #{categoryId} and item_type = 'GOODS_ID' and type = 'GOODSLIST' and is_delete = 0)
+		<include refid="queryAllFields"/>
+		FROM
+		af_goods a LEFT JOIN af_model_h5_item b on b.item_value = a.id
+		WHERE
+		a.is_delete = 0
+		AND b.item_value2 = #{categoryId}
+		AND b.item_type = 'GOODS_ID'
+		AND b.type = 'GOODSLIST'
+		AND b.is_delete = 0
+		ORDER BY b.gmt_create desc
 
 	</select>
+
+	<select id="getGoodsVerifyByCategoryId" resultType="AfGoodsDo">
+		select
+			g.source,g.rebate_amount,g.id Rid,g.name,g.goods_icon,g.goods_url,g.num_id,g.price_amount,g.sale_amount,g.sale_count,v.gmt_create,g.goods_pic1
+		from af_goods_verify v,af_goods g
+		where g.is_delete =0 and v.is_delete =0 and g.id = v.goods_id
+		and g.category_id = #{categoryId} and g.source = 'SELFSUPPORT' and  g.status = 'PUBLISH' order by v.gmt_create DESC
+	</select>
+	
 
 </mapper>

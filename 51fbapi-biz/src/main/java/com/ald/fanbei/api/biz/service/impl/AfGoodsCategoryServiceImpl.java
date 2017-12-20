@@ -11,9 +11,11 @@ import com.ald.fanbei.api.dal.domain.AfActivityModelDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
+
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
 import java.util.List;
 
 /**
@@ -54,4 +56,16 @@ public class AfGoodsCategoryServiceImpl implements AfGoodsCategoryService {
 
 	@Override
 	public List<AfGoodsCategoryDto> selectGoodsInformation(AfGoodsCategoryQuery query) {return afGoodsCategoryDao.selectGoodsInformation(query);}
+
+	@Override
+	public AfGoodsCategoryDo getParentDirectoryByName(String name) {
+	    // TODO Auto-generated method stub
+	    	return afGoodsCategoryDao.getParentDirectoryByName(name);
+	}
+
+	@Override
+	public List<AfGoodsCategoryDo> listByParentIdAndLevel(AfGoodsCategoryDo queryAfGoodsCategory) {
+	    // TODO Auto-generated method stub
+	    	return afGoodsCategoryDao.listByParentIdAndLevel(queryAfGoodsCategory);
+	}
 }

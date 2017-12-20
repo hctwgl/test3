@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 
+
 import com.ald.fanbei.api.dal.domain.AfActivityDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -83,7 +84,6 @@ public interface AfGoodsService {
 	 * @return
 	 */
 	AfGoodsDo checkIsSelfBuild(String numId);
-
 /**
 	 * 限时抢购 的 商品列表
 	 * @return
@@ -94,8 +94,17 @@ public interface AfGoodsService {
 	List<AfGoodsDo> getGoodsByCategoryId(Long categoryId);
 
 	List<AfGoodsDo> getHomeCategoryGoodsList(AfGoodsQuery query);
+	List<AfGoodsDo> listGoodsListByParentIdAndFormerCategoryId(Long parentId);
+
+	List<AfGoodsDo> listGoodsListByPrimaryCategoryIdAndCategoryId(Long primaryCategoryId, Long categoryId);
+
+	List<AfGoodsDo> listGoodsListByParentIdFromSubjectGoods(long parentId);
+
+	List<AfGoodsDo> listGoodsListBySubjectId(Long subjectId);
 
 	List<AfGoodsDo> getGoodsByModelId (Long categoryId);
 
 	List<AfGoodsDo> getHomeGoodsByModelId (AfGoodsQuery query);
+
+	List<AfGoodsDo> getGoodsVerifyByCategoryId(AfGoodsQuery query);
 }
