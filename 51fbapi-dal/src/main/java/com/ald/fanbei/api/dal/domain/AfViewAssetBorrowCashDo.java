@@ -140,9 +140,35 @@ import java.math.BigDecimal;
      * 阿里云pdf存储路径
      */
     private String contractPdfUrl;
-
-
+    
     /**
+     * 借款用途
+     */
+    private String borrow_remark;
+    
+    /**
+     * 还款来源
+     */
+    private String refund_remark;
+
+
+    public String getBorrow_remark() {
+		return borrow_remark;
+	}
+
+	public void setBorrow_remark(String borrow_remark) {
+		this.borrow_remark = borrow_remark;
+	}
+
+	public String getRefund_remark() {
+		return refund_remark;
+	}
+
+	public void setRefund_remark(String refund_remark) {
+		this.refund_remark = refund_remark;
+	}
+
+	/**
      * 获取
      *
      * @return 
