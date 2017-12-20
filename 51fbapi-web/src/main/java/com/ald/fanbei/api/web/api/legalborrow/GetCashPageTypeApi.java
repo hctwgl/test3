@@ -83,23 +83,33 @@ public class GetCashPageTypeApi implements ApiHandle {
 			// 回退的情况
 			// 获取最后一笔借款
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+
 			if (afBorrowCashDo == null) {
 				pageType = "old";
 			} else {
+				// 查询用户是否有订单借款信息
+				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
+						.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
-				if (StringUtils.equalsIgnoreCase("FINSH", status) || StringUtils.equalsIgnoreCase("CLOSED", status)) {
+				if ((StringUtils.equalsIgnoreCase("FINSH", status))) {
+					if (afBorrowLegalOrderCashDo == null) {
+						pageType = "old";
+					} else if (afBorrowLegalOrderCashDo != null
+							&& StringUtils.equalsIgnoreCase(afBorrowLegalOrderCashDo.getStatus(), "FINISHED")) {
+						pageType = "old";
+					} else {
+						pageType = "new";
+					}
+				} else if (StringUtils.equalsIgnoreCase("CLOSED", status)) {
 					pageType = "old";
 				} else {
-					// 查询用户是否有订单借款信息
-					AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-							.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 					if (afBorrowLegalOrderCashDo != null) {
-						// 如果有订单信息，则不回退
 						pageType = "new";
 					} else {
 						pageType = "old";
 					}
+
 				}
 			}
 		}
