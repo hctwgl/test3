@@ -30,7 +30,7 @@
         联系方式：$!{mobile}<br><br>
         电子邮箱：$!{email}<br><br>
 
-        乙方（出借人）：深圳阿拉丁商业保理有限公司<br>
+        乙方（出借人）：$!{lender}<br>
         丙方：浙江阿拉丁电子商务股份有限公司<br><br>
 
         <span>鉴于：</span><br>
@@ -47,8 +47,8 @@
         <li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")#end</i></li>
         <li><i>还款日</i><i>每月$!{repayDay}日</i></li>
         <li><i>借款用途</i><i>个人消费</i></li>
-        <li><i>手续费率</i><i>#if($!{poundageRate})$!{poundageRate}%#end</i></li>
-        <li><i>逾期费率</i><i>#if($!{overdueRate})$!{overdueRate}%#end</i></li>
+        <li><i>手续费率（年化）</i><i>#if($!{poundageRate})$!{poundageRate}%#end</i></li>
+        <li><i>逾期手续费率（年化）</i><i>#if($!{overdueRate})$!{overdueRate}%#end</i></li>
 
     </ul><br>
 
