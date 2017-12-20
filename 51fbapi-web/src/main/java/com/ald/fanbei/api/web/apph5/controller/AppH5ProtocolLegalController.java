@@ -180,7 +180,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
-
+		getResourceRate(model, type,afResourceDo,"borrow");
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		model.put("email", afUserDo.getEmail());//电子邮箱	 
@@ -197,9 +197,9 @@ public class AppH5ProtocolLegalController extends BaseController {
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
 				if (afBorrowLegalOrderCashDo != null){
 					model.put("useType",afBorrowLegalOrderCashDo.getBorrowRemark());
-					model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
+					/*model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
 					model.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate());//利率
-					model.put("overdueRate","36");
+					model.put("overdueRate","36");*/
 				}else {
 					getResourceRate(model, type,afResourceDo,"borrow");
 				}
@@ -345,7 +345,9 @@ public class AppH5ProtocolLegalController extends BaseController {
 			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
+
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		getResourceRate(model, type,afResourceDo,"borrow");
 		model.put("realName", accountDo.getRealName());//借款人
 		model.put("idNumber", accountDo.getIdNumber());//身份证号
 		model.put("mobile", afUserDo.getMobile());// 联系电话
@@ -384,7 +386,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 				Date gmtCreate = afRenewalDetailDo.getGmtCreate();
 				Date gmtPlanRepayment = afRenewalDetailDo.getGmtPlanRepayment();
 				if (afRenewalDetailDo != null){
-					AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getLastOrderCashByBorrowId(afRenewalDetailDo.getBorrowId());
+					/*AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getLastOrderCashByBorrowId(afRenewalDetailDo.getBorrowId());
 					if (afBorrowLegalOrderCashDo != null){
 						model.put("useType",afBorrowLegalOrderCashDo.getBorrowRemark());
 						model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
@@ -392,7 +394,7 @@ public class AppH5ProtocolLegalController extends BaseController {
 						model.put("overdueRate","36");
 					}else {
 						getResourceRate(model, type,afResourceDo,"borrow");
-					}
+					}*/
 				}
 				// 如果预计还款时间在申请日期之后，则在原预计还款时间的基础上加上续期天数，否则在申请日期的基础上加上续期天数，作为新的续期截止时间
 				if (gmtPlanRepayment.after(gmtCreate)) {
