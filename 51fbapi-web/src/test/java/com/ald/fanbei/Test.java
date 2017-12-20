@@ -72,8 +72,8 @@ public class Test {
         	    
         	   // System.out.println(afBoluomeJiudianDo.toString());
         	    Map<String, String> params = new HashMap<String, String>();
-        	    params.put(BoluomeCore.ORDER_ID, "ala202895912378377");
-        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime() / 1000));
+        	    params.put(BoluomeCore.ORDER_ID, "ala202984855614619");
+        	    params.put(BoluomeCore.TIME_STAMP, String.valueOf(new Date().getTime()));
         
         	    // String beforeSign = AesUtil.decrypt("6aSsbSMMhKBe8+bH5wmhBw==",
         	    // "testC1b6x@6aH$2dlw") + BoluomeCore.concatParams(params) +
@@ -89,7 +89,7 @@ public class Test {
         	    params.put(BoluomeCore.SIGN, sign);
         	    String paramsStr = BoluomeCore.createLinkString(params);
         
-        	    String urlString = "https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr;
+        	    String urlString = "https://api.otosaas.com/91ala/orders/v1/detail?appKey=7887978286&orderId=ala202984909354292&sign=51EED26F1F954FBE0635F56D6DD02BA2&timestamp=1513748955";//"https://api.otosaas.com/91ala/orders/v1/detail?" + paramsStr;
         	    System.out.println(HttpUtil.doGet(urlString, 100));
         	} catch (Exception e) {
         	    // TODO Auto-generated catch block
