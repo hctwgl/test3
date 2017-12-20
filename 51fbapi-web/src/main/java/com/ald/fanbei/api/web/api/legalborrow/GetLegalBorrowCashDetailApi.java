@@ -151,21 +151,6 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 				}
 			}
 
-			BigDecimal returnAmount = BigDecimalUtil.subtract(waitPaidAmount, afBorrowCashDo.getOverdueAmount())
-					.subtract(afBorrowCashDo.getRateAmount());
-			// 查询新利率配置
-			AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
-					Constants.BORROW_CASH_INFO_LEGAL);
-			// 判断是否显示续借按钮
-			String renewalRate = rateInfoDo.getValue();
-
-			BigDecimal tmpAmount = afBorrowCashDo.getAmount()
-					.multiply(new BigDecimal(Double.valueOf(renewalRate) / 100)).setScale(2, BigDecimal.ROUND_HALF_UP);
-			tmpAmount = tmpAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) > 0 ? tmpAmount : BigDecimalUtil.ONE_HUNDRED;
-
-			if (returnAmount.compareTo(tmpAmount) <= 0) {
-				data.put("renewalStatus", "N");
-			}
 		}
 
 		data.put("type", borrowCashType.getCode());
@@ -184,6 +169,19 @@ public class GetLegalBorrowCashDetailApi extends GetBorrowCashBase implements Ap
 				afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage());
 		BigDecimal showAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 
+		// 查询新利率配置
+		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE,
+				Constants.BORROW_CASH_INFO_LEGAL);
+		// 判断是否显示续借按钮
+		String renewalRate = rateInfoDo.getValue();
+
+		BigDecimal tmpAmount = afBorrowCashDo.getAmount()
+				.multiply(new BigDecimal(Double.valueOf(renewalRate) / 100)).setScale(2, BigDecimal.ROUND_HALF_UP);
+		tmpAmount = tmpAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) > 0 ? tmpAmount : BigDecimalUtil.ONE_HUNDRED;
+
+		if (showAmount.compareTo(tmpAmount) <= 0) {
+			data.put("renewalStatus", "N");
+		}
 		// 服务费和手续费
 		data.put("serviceFee", afBorrowCashDo.getSumRenewalPoundage().add(afBorrowCashDo.getPoundage()));
 		
