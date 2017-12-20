@@ -15,19 +15,20 @@
 <body>
     <div class="login flex fd-column ai-c" id="register">
         <div class="topdiv">
-            <img src="$src/double12_regBg.png" alt="">
+            <!-- <img src="https://f.51fanbei.com/h5/app/activity/12/doubleEgg_register.png" alt=""> -->
         </div>
         <div class="content">
             <div class="phone flex fd-row ai-c">
                 <div class="phone-icon"></div>
                 <div class="box">
-                    <input type="tel" onfocus="maidianFun('phone')" maxLength=11  placeholder="请输入注册手机号" id="mobile" class="pinp mobile">
+                    <input type="tel" onfocus="maidianFun('phone')" maxLength=11 placeholder="请输入注册手机号" id="mobile" class="pinp mobile">
                 </div>
             </div>
             <div class="phone password flex fd-row ai-c">
                 <div class="pwd-icon"></div>
                 <div class="box">
-                    <input type="password" maxLength=18 minLength=6  onfocus="maidianFun('pwd')" placeholder="密码长度为6-20位数字和英文" class="pinp mobile" id="password">
+                    <input type="password" maxLength=18 minLength=6 onfocus="maidianFun('pwd')" placeholder="密码长度为6-20位数字和英文" class="pinp mobile"
+                        id="password">
                 </div>
             </div>
             <div class="pcheck phone flex fd-row ai-c">
@@ -39,7 +40,7 @@
             </div>
 
         </div>
-        <div class="loginbtn" onclick="maidianFun('registerBtn')">
+        <div class="loginbtn">
             立即注册
         </div>
         <div class="agree flex fd-row ai-c">
@@ -48,7 +49,7 @@
             <a href="/fanbei-web/app/protocolRegister">《51返呗用户注册协议》</a>
         </div>
         <p class="registered clearfix">
-            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" onclick="maidianFun('toLogin')">已有账号登录</a>
+            <a onclick="toLogin()">已有账号登录</a>
         </p>
     </div>
 

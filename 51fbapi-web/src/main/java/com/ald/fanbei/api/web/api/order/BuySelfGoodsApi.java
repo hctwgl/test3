@@ -88,8 +88,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 	BizCacheUtil bizCacheUtil;
 
 	@Resource
+	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+	@Resource
 	AfActivityGoodsService afActivityGoodsService;
-
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -184,6 +185,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 			//mqp_新人专享活动增加逻辑
 			if (userId != null) {
+				
+				// ------------------------------------begin mqp doubleEggs------------------------------------
+				if(afGoodsDoubleEggsService.getByGoodsId(goodsId) != null){
+					doubleEggsGoodsCheck(userId, goodsId,count);
+				}
+				// ------------------------------------end mqp doubleEggs------------------------------------
 
 				// 双十二秒杀新增逻辑+++++++++++++>
 				if(afGoodsDouble12Service.getByGoodsId(goodsId).size()!=0){
@@ -370,6 +377,61 @@ public class BuySelfGoodsApi implements ApiHandle {
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error("double12 activity order error = {}", e.getStackTrace());
+			throw new FanbeiException(FanbeiExceptionCode.DOUBLE12ORDER_ERROR);
+		} finally{
+			bizCacheUtil.delCache(key);
+		}
+		
+	}
+	
+	/**
+	 * 
+	* @Title: doubleEggsGoodsCheck
+	* @author qiao
+	* @date 2017年12月8日 下午3:43:33
+	* @Description: 双蛋活动校验，是否是一件，是否是一件
+	* @param userId
+	* @param goodsId
+	* @param count    
+	* @return void   
+	* @throws
+	 */
+	private void doubleEggsGoodsCheck(Long userId, Long goodsId, Integer count){
+		String key = Constants.CACHKEY_BUY_GOODS_LOCK + ":" + userId + ":" + goodsId;
+		try {
+			boolean isNotLock = bizCacheUtil.getLockTryTimes(key, "1", 1000);
+			if (isNotLock) {
+				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+				if(doubleEggsDo != null){
+					if (doubleEggsDo.getEndTime().before(new Date())) {
+						//expire
+						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_EXPIRE);
+					}
+					
+					if (count != 1||afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId).size()>0) {
+						//报错提示只能买一件商品
+						throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+					//根据goodsId查询商品信息
+					AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+					int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
+					if(goodsDouble12Count<=0){
+						//报错提示秒杀商品已售空
+						throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+					}
+					
+	            	//---->update 更新 已被秒杀的商品数量（count+1）
+	            	afGoodsDoubleEggsService.updateCountById(goodsId);
+		            
+				}
+			}
+		} catch(FanbeiException e){
+			logger.error("double1Egg activity order error = {}", e.getStackTrace());
+			throw e;
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("double1Egg activity order error = {}", e.getStackTrace());
 			throw new FanbeiException(FanbeiExceptionCode.DOUBLE12ORDER_ERROR);
 		} finally{
 			bizCacheUtil.delCache(key);

@@ -504,7 +504,7 @@ public class APPH5GgActivityController extends BaseController {
 				// the dark list
 				List<AfCardDo> cardList = new ArrayList<>();
 				AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
-				t.setStatus("O");
+				//t.setStatus("O");
 				t.setBoluomeActivityId(1000L);
 
 				List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService.getListByCommonCondition(t);

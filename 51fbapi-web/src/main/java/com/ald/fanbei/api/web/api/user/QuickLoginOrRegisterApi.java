@@ -22,6 +22,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.vo.AfUserVo;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.security.Credential.MD5;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -79,6 +81,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	AfPromotionChannelPointService afPromotionChannelPointService;
 	@Resource
 	AfAbTestDeviceService afAbTestDeviceService;
+	@Resource
+	AfBoluomeActivityService afBoluomeActivityService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -270,7 +274,13 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		}
 
 		resp.setResponseData(jo);
-
+		 //吃玩住行活动被邀请的新用户登录送券
+		try{
+			  afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
+			  logger.info("sentNewUserBoluomeCouponForDineDash success");
+		   }catch (Exception e){
+			  logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
+		   }
 		if (failCount == -1) {
 			new Timer().schedule(new TimerTask() {
 				public void run() {

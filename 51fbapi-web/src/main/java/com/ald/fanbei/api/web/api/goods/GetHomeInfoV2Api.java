@@ -10,32 +10,18 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
-import com.ald.fanbei.api.biz.service.AfActivityService;
-import com.ald.fanbei.api.biz.service.AfCategoryService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.ImageType;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -74,12 +60,19 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	@Resource
 	AfGoodsService afGoodsService;
 
+	@Resource
+	AfModelH5ItemService afModelH5ItemService;
+
+	@Resource
+	AfModelH5Service afModelH5Service;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("homePageType", "NEW");
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		Integer appVersion = context.getAppVersion();
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
@@ -140,7 +133,24 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// JSONObject.toJSONString(ecommerceAreaInfo));
 
 		// 获取首页商品信息
-		List<Map<String, Object>> categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+		List<Map<String, Object>> categoryGoodsInfo = null;
+		//做线上和预发开关
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
+		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
+			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+			}else if(StringUtils.equals(afResourceDo.getValue1(),"Y")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+			}
+		}else{
+			if(StringUtils.equals(afResourceDo.getValue2(),"N")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+			}else if(StringUtils.equals(afResourceDo.getValue2(),"Y")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+			}
+		}
+
+
 		// logger.info("home page category goods info => {}" +
 		// JSONObject.toJSONString(categoryGoodsInfo));
 
@@ -242,6 +252,89 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			Long categoryId = (Long) infoMap.get("categoryId");
 			// 第一个类目下查询商品
 			List<AfGoodsDo> goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			for (AfGoodsDo goodsDo : goodsDoList) {
+				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				goodsInfo.put("goodName", goodsDo.getName());
+				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+				goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+				goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+				goodsInfo.put("goodsId", goodsDo.getRid());
+				goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+				goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+				goodsInfo.put("source", goodsDo.getSource());
+				goodsInfo.put("goodsType", "0");
+				goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+				goodsInfo.put("isWorm", isWorm);
+				// 如果是分期免息商品，则计算分期
+				Long goodsId = goodsDo.getRid();
+				AfSchemeGoodsDo schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch (Exception e) {
+					logger.error(e.toString());
+				}
+				JSONArray interestFreeArray = null;
+				if (schemeGoodsDo != null) {
+					AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
+							.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+
+				if (nperList != null) {
+					goodsInfo.put("goodsType", "1");
+					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+					String isFree = (String) nperMap.get("isFree");
+					if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+						nperMap.put("freeAmount", nperMap.get("amount"));
+					}
+					goodsInfo.put("nperMap", nperMap);
+				}
+				goodsInfoList.add(goodsInfo);
+				infoMap.put("goodsInfoList", goodsInfoList);
+			}
+		}
+		return categoryInfoList;
+	}
+
+	private List<Map<String, Object>> getHomePageGoodsCategoryInfoV1() {
+		List<AfModelH5ItemDo> categoryList = afModelH5ItemService.selectModelByTag();
+		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
+		for (AfModelH5ItemDo modelH5ItemDo : categoryList) {
+			Map<String, Object> categoryInfoMap = Maps.newHashMap();
+			categoryInfoMap.put("categoryId", modelH5ItemDo.getRid());
+			categoryInfoMap.put("categoryName", modelH5ItemDo.getItemValue());
+			categoryInfoList.add(categoryInfoMap);
+		}
+		// 爬取商品开关
+		AfResourceDo isWormResc = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,
+				Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		String isWorm = "0";
+		if (null != isWormResc) {
+			isWorm = isWormResc.getValue();
+		}
+		// 获取借款分期配置信息
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+				Constants.RES_BORROW_CONSUME);
+		JSONArray array = JSON.parseArray(resource.getValue());
+		// 删除2分期
+		if (array == null) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+		}
+		removeSecondNper(array);
+		if (null != categoryList && !categoryList.isEmpty()){
+			Map<String, Object> infoMap = categoryInfoList.get(0);
+			List<AfGoodsDo> goodsDoList = null;
+			if(null != categoryInfoList.get(0)){
+				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
+				goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+			}
 			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
 			for (AfGoodsDo goodsDo : goodsDoList) {
 				Map<String, Object> goodsInfo = new HashMap<String, Object>();

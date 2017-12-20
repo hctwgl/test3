@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -503,7 +504,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
 
                     account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
-                    afUserAccountDao.updateUserAccount(account);
+                    int result=afUserAccountDao.updateUserAccount(account);
+                    if(result<=0){
+                        logger.info("update account error,details:repayNo"+repayment.getRepayNo(), JSON.toJSONString(account));
+                        throw new Exception("update account error,details");
+                    }
                     afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
 
                     AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();

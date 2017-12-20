@@ -205,7 +205,7 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
 			FROM
 				af_boluome_activity_user_login
 			WHERE
-				user_id = #{userId}
+				user_id = #{userId} and boluome_activity_id=1000
 			LIMIT 1;
     </select>
      <select id = "getByRefUserIdAndActivityId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo" parameterType="java.lang.Long">

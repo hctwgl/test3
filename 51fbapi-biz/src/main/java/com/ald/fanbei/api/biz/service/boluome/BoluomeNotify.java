@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.boluome;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -7,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 
 /**
  * 
@@ -28,11 +33,18 @@ public class BoluomeNotify extends AbstractThird {
 	public static boolean verify(Map<String, String> params) {
 		thirdLog.info("verify begin params = {}", params);
 		// mqp: free of sign if the environment is local or test
-		String url = params.get("detailUrl");
-		String tem = getEnv(url);
-		if (StringUtil.isAllNotEmpty(tem) && tem.equals("dev-91ala.otosaas.com")) {
-			return true;
-		}
+//		String url = params.get("detailUrl");
+//		String tem = getEnv(url);
+//		if (StringUtil.isAllNotEmpty(tem) && tem.equals("dev-91ala.otosaas.com")) {
+//			return true;
+//		}
+		
+		// free of sign if the environment is local or test
+		 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		 if (Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+		     return true;
+		 }
+		
 		String sign = params.get("sign");
 		if (StringUtils.isEmpty(sign)) {
 			return false;
@@ -41,14 +53,14 @@ public class BoluomeNotify extends AbstractThird {
 		return getSignVeryfy(params, sign);
 	}
 
-	private static  String getEnv(String partlyUrl) {
-		String result ="";
-		if (StringUtil.isNotEmpty(partlyUrl)) {
-			String[] arrayStr = partlyUrl.split("/");
-			result = arrayStr[2];
-		}
-		return result;
-	}
+//	private static  String getEnv(String partlyUrl) {
+//		String result ="";
+//		if (StringUtil.isNotEmpty(partlyUrl)) {
+//			String[] arrayStr = partlyUrl.split("/");
+//			result = arrayStr[2];
+//		}
+//		return result;
+//	}
 
 	/**
 	 * 根据反馈回来的信息，生成签名结果

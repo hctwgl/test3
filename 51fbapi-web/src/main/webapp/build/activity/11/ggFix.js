@@ -40,6 +40,17 @@ let vm = new Vue({
         //获取页面初始化信息
         logData() {
             let self = this;
+            /*图片预加载*/
+            $(".first").each(function() {
+                var img = $(this);
+                img.load(function () {
+                    $(".loadingMask").fadeOut();
+                });
+                setTimeout(function () {
+                    $(".loadingMask").fadeOut();
+                },1000)
+            });
+            $(".loadingMask").fadeOut();
             //初始化数据
             $.ajax({
                 type: 'post',
@@ -68,19 +79,6 @@ let vm = new Vue({
                             });
                         }
                     }
-                    /*图片预加载*/
-                    self.$nextTick(function () {
-                        $(".first").each(function() {
-                            var img = $(this);
-                            img.load(function () {
-                                $(".loadingMask").fadeOut();
-                            });
-                            setTimeout(function () {
-                                $(".loadingMask").fadeOut();
-                            },1000)
-                        });
-                        $(".loadingMask").fadeOut();
-                    })
                 },
                 error:function(){
                     requestMsg('哎呀，出错了！')
