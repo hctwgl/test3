@@ -25,4 +25,10 @@ public interface AfSubjectService {
 
 	AfSubjectDo getParentSubjectInfoById(String subjectId);
 
+
+	List<AfSubjectDo>  listAllParentSubjectByTag(String tag);
+
+	List<AfSubjectDo> listByParentIdAndLevel(AfSubjectDo queryAfSubject);
+
+
 }

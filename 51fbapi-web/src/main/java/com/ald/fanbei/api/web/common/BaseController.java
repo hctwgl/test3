@@ -102,7 +102,7 @@ public abstract class BaseController {
         Calendar calStart = Calendar.getInstance();
         RequestDataVo requestDataVo = null;
         try {
-            // 检查参数是否为空
+            // 检查参	数是否为空
             reqData = checkCommonParam(reqData, request, isForQQ);
 
             // if (StringUtils.isBlank(reqData)) {
@@ -193,7 +193,7 @@ public abstract class BaseController {
                             "	", "",
                             "	", "",
                             "	", "",
-                            "	", req,
+                            "	", req.replace("\t",""),
                             "	", requestDataVo != null && ("/system/getArea".equals(requestDataVo.getMethod())) ? resultStr.length() + "" : resultStr));
 
                     biLogger.info(StringUtil.appendStrs(
@@ -459,7 +459,7 @@ public abstract class BaseController {
 
             } else if (userInfo == null) {
 
-                throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+                throw new FanbeiException(requestDataVo.getId() + " user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
             }
             context.setUserId(userInfo.getRid());
             context.setNick(userInfo.getNick());

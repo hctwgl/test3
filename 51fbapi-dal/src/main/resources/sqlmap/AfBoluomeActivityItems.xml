@@ -219,4 +219,26 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
          );
     </select>
     
+    <select id ="getUserCards" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfCardDo">
+		SELECT DISTINCT  t1.id as shopId,1 as activityId,t1.`name`,
+		case when t2.status=1 then t1.icon_url else t1.logo end as image,
+		t1.sort,t1.activityId as rid
+		FROM 
+		(SELECT
+		       s.id,s.`name`,s.`icon`,s.`type`,i.`id` as activityId,i.`sort` ,a.`icon_url` ,a.`logo` 
+		FROM af_boluome_activity_items a join `af_shop` s on a.`ref_id` = s.`id` 
+		 join af_boluome_activity_items i on s.`id` = i.`ref_id` and i.`boluome_activity_id` =1000
+		WHERE a.boluome_activity_id = 1000) t1
+		LEFT JOIN
+		(SELECT 
+		  IF(o.sec_type = 'HUAFEI' OR o.sec_type = 'LIULIANG', 'CHONGZHI', o.sec_type) AS type,1 as status
+		from 
+		  af_boluome_rebate t JOIN af_order o on o.id = t.order_id
+		WHERE
+		  t.user_id = #{userId} AND o.is_delete = 0 AND t.is_delete = 0
+		GROUP BY o.sec_type) t2
+		on t1.type = t2.type
+		ORDER BY `sort` ;
+    </select>
+    
 </mapper>

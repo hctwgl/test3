@@ -10,6 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -32,7 +34,6 @@ import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -492,7 +493,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
 
                     account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
-                    afUserAccountDao.updateUserAccount(account);
+                    int result=afUserAccountDao.updateUserAccount(account);
+                    if(result<=0){
+                        logger.info("update account error,details:repayNo"+repayment.getRepayNo(), JSON.toJSONString(account));
+                        throw new Exception("update account error,details");
+                    }
                     afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
 
                     AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
@@ -512,10 +517,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.REPAYMENTCASH,
                                 afBorrowCashDo.getAmount(), userId, afBorrowCashDo.getRid());
                         afUserAccountLogDao.addUserAccountLog(accountLog);
-
+                        afBorrowCashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                         bcashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
                         //fmf 增加还款成功为FINSH的时间
                         try {
+                            afBorrowCashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
                             bcashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
                         } catch (Exception e) {
                             logger.error("bcashDo.setFinishDate is fail", e);
@@ -560,12 +566,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     overdueCount = 1;
                 }
                 //11-17号加入,还清了才能调用提额
-                AfBorrowCashDo afterRepaymentBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
-                if (afterRepaymentBorrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
-                    logger.info("还完了调用提额接口 ：" + afterRepaymentBorrowCashDo.getBorrowNo());
+                if (afBorrowCashDo.getStatus().equals(AfBorrowCashStatus.finsh.getCode())) {
+                    logger.info("还完了调用提额接口 ：" + afBorrowCashDo.getBorrowNo());
                     riskUtil.raiseQuota(afBorrowCashDo.getUserId().toString(), afBorrowCashDo.getBorrowNo(), "50", riskOrderNo, afBorrowCashDo.getAmount(), income, afBorrowCashDo.getOverdueDay(), overdueCount);
                 }
-                logger.info("没还完不调用提额接口 ：" + afterRepaymentBorrowCashDo.getBorrowNo());
+                logger.info("没还完不调用提额接口 ：" + afBorrowCashDo.getBorrowNo());
             } catch (Exception e) {
                 logger.error("风控提额提额失败", e);
             }

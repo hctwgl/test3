@@ -63,6 +63,16 @@ public class BuildInfoUtil {
 		return accountLog;
 	}
 	
+	public static AfUserAccountLogDo buildUserAccountLogDo(UserAccountLogType logType,BigDecimal amount,Long userId,String orderId){
+		//增加account变更日志
+		AfUserAccountLogDo accountLog = new AfUserAccountLogDo();
+		accountLog.setAmount(amount);
+		accountLog.setUserId(userId);
+		accountLog.setRefId(orderId);
+		accountLog.setType(logType.getCode());
+		return accountLog;
+	}
+	
 	public static AfUserVirtualAccountDo buildUserVirtualAccountDo(Long userId, BigDecimal amount, BigDecimal totalAmount,Long orderId, String orderNo, String virtualCode){
 		//增加虚拟商品使用日志
 		AfUserVirtualAccountDo virtualAccountInfo = new AfUserVirtualAccountDo();
