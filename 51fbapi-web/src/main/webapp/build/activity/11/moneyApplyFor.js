@@ -19,9 +19,10 @@ $(function(){
     if(applySuccess){//当检测到这个参数的时候 改变相应的功能
         $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
         $('.applyButton').html('暂时无法再次提额');//改变按钮文字
-        upMoney.addEventListener('click',function(e){//禁止点击事件
+        /* upMoney.addEventListener('click',function(e){//禁止点击事件
         　　e.preventDefault();
-        }); 
+
+        });  */
         if(failureStatus==1){//判断临时额度是否失效
             $('.useless').show();//失效显示文字
         }
@@ -32,16 +33,25 @@ $(function(){
     if(unapprove){//当检测到这个参数的时候 改变相应的功能
         $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
         $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字
-        upMoney.addEventListener('click',function(e){//禁止点击事件
+        /* upMoney.addEventListener('click',function(e){//禁止点击事件
         　　e.preventDefault();
-        });   
+        }); */   
 
     }
     
     //点击申请提额
     $('.applyButton').click(function(){ 
+
+        if(unapprove || applySuccess){//判断当有这个参数的时候禁止点击事件
+        upMoney.addEventListener('click',function(e){
+        　　e.preventDefault();
+           
+        });
+       return false;
+
+    }
  
-           //跳转正在审核页面
+        //跳转正在审核页面
         $('.applyButton').hide();
         $('.verirication').show();   
 
