@@ -432,7 +432,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			
 			bo.outTradeNo = respBo.getTradeNo();
 		} else if (bo.cardId == -2) {// 余额支付
-			dealRepaymentSucess(bo.tradeNo, "");
+			dealRepaymentSucess(bo.tradeNo, "",repayment,legalOrderRepayment);
 		}
 		
 	}
