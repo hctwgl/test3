@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -145,7 +146,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     private AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 	@Resource
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
-
+	@Resource
+    private AfTradeCodeInfoService afTradeCodeInfoService;
 	
 	/**
 	 * 新版还钱函
@@ -418,23 +420,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				changOrderRepaymentStatus(respBo.getTradeNo(), AfBorrowLegalRepaymentStatus.PROCESS.getCode(), legalOrderRepayment.getId());
 			}
 			if (!respBo.isSuccess()) {
-				if(StringUtil.isNotBlank(respBo.getRespDesc())){
-					String addMsg = "";
-					try{
-						if(bank!=null){
-							String bankName = bank.getBankName();
-							String cardNum = bank.getCardNumber();
-							if(StringUtil.isNotBlank(bankName)&&StringUtil.isNotBlank(cardNum)){
-								if(cardNum.length()>4){
-									cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
-									addMsg = "{"+ bankName + cardNum + "}";
-								}
-							}
-						}
-					}catch (Exception e){
-						logger.error("BorrowCash sendMessage but addMsg error for:"+e);
-					}
-					dealRepaymentFail(bo.tradeNo, "", true, addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+				if(StringUtil.isNotBlank(respBo.getRespCode())){
+					dealRepaymentFail(bo.tradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				}else{
 					dealRepaymentFail(bo.tradeNo, "", false, "");
 				}
