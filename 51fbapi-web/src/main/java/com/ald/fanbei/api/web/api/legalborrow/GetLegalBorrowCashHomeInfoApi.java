@@ -247,9 +247,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			BigDecimal saleAmount = goodsInfo.getSaleAmount();
 			tmpLimitAmount = saleAmount.add(minAmount);
 		}
-		if (usableAmount.compareTo(tmpLimitAmount) < 0) {
-			inRejectLoan = YesNoStatus.YES.getCode();
-		}
+
 		AfResourceDo companyInfo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_COMPANY_NAME.getCode(), AfResourceSecType.BORROW_CASH_COMPANY_NAME.getCode());
 		if (companyInfo != null) {
 			data.put("companyName", companyInfo.getValue());
@@ -263,6 +261,9 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		}
 		if (afBorrowCashDo == null) {
+			if (usableAmount.compareTo(tmpLimitAmount) < 0) {
+				inRejectLoan = YesNoStatus.YES.getCode();
+			}
 			data.put("status", "DEFAULT");
 		} else {
 			String borrowStatus = afBorrowCashDo.getStatus();
