@@ -44,12 +44,32 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 		}
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
 				.getLastOrderCashByBorrowId(afRenewalDetailDo.getBorrowId());
-
-		Map<String, Object> data = objectWithAfRenewalDetailDo(afRenewalDetailDo, afBorrowLegalOrderCashDo);
+		Map<String, Object> data = new HashMap<>();
+		if (afBorrowLegalOrderCashDo == null){
+			data = objectWithAfRenewalDetailDo(afRenewalDetailDo);
+		}else {
+			data = objectWithAfRenewalDetailDo(afRenewalDetailDo, afBorrowLegalOrderCashDo);
+		}
 
 		resp.setResponseData(data);
 
 		return resp;
+	}
+
+	public Map<String, Object> objectWithAfRenewalDetailDo(AfRenewalDetailDo afRenewalDetailDo) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("rid", afRenewalDetailDo.getRid());
+		data.put("renewalAmount", afRenewalDetailDo.getRenewalAmount());//续期本金
+		data.put("priorInterest", afRenewalDetailDo.getPriorInterest());//上期利息
+		data.put("priorOverdue", afRenewalDetailDo.getPriorOverdue());//上期滞纳金
+		data.put("nextPoundage", afRenewalDetailDo.getNextPoundage());//下期手续费
+		data.put("cardName", afRenewalDetailDo.getCardName());//支付方式（卡名称）
+		data.put("tradeNo", afRenewalDetailDo.getTradeNo());//支付编号
+		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());//创建时间
+		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());//续借编号
+		data.put("capital", afRenewalDetailDo.getCapital());//续借本金
+		data.put("type","old");
+		return data;
 	}
 
 	public Map<String, Object> objectWithAfRenewalDetailDo(AfRenewalDetailDo afRenewalDetailDo,
@@ -81,7 +101,7 @@ public class GetBorrowLegalRenewalDetailApi implements ApiHandle {
 		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());// 续借编号
 		data.put("lastRepaidamount", lastRepaidamount);// 上期待还金额
 		data.put("goodsAmount", goodsAmount);// 分期商品金额
-
+		data.put("type","new");
 		return data;
 	}
 
