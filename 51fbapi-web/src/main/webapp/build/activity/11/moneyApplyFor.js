@@ -8,6 +8,15 @@ let interimAmount;
 let rule;
 let ruleTitle;
 let upMoney=document.getElementById('upMoney');
+let unapprove = getUrl("unapprove");//获取地址栏后面的approve参数； //提额失败
+
+function jundge() {
+    //提额申请失败
+    if(unapprove){//当检测到这个参数的时候 改变相应的功能
+        $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
+        $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字 
+    }
+}
 
 
 $(function(){
@@ -19,39 +28,17 @@ $(function(){
     if(applySuccess){//当检测到这个参数的时候 改变相应的功能
         $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
         $('.applyButton').html('暂时无法再次提额');//改变按钮文字
-        /* upMoney.addEventListener('click',function(e){//禁止点击事件
-        　　e.preventDefault();
-
-        });  */
         if(failureStatus==1){//判断临时额度是否失效
             $('.useless').show();//失效显示文字
         }
     } 
-
-    //提额申请失败
-    let unapprove = getUrl("unapprove");//获取地址栏后面的approve参数；
-    if(unapprove){//当检测到这个参数的时候 改变相应的功能
-        $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
-        setTimeout(function() {
-            $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字
-        }, 0)
-        // $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字
-        /* upMoney.addEventListener('click',function(e){//禁止点击事件
-        　　e.preventDefault();
-        }); */   
-
-    }
     
     //点击申请提额
     $('.applyButton').click(function(){ 
 
-         if(unapprove || applySuccess){//判断当有这个参数的时候禁止点击事件
-            upMoney.addEventListener('click',function(e){
-            　　e.preventDefault();
-            
-            });
-            return false;
-
+        if(unapprove || applySuccess){//判断当有这个参数的时候禁止点击事件
+            console.log(1111)
+            return
         }
  
         //跳转正在审核页面
@@ -64,7 +51,6 @@ $(function(){
                 type:'post',
                 success:function(data){
                     let applyDate=JSON.parse(data);
-                    console.log(applyDate,'applyDate')
                     //审核页面跳转判断
                     setTimeout(function () {//让判断延迟6秒执行
                              if(applyDate.data.type==3){//3申请失败
@@ -164,7 +150,6 @@ function getIntitalData(callback){
         type:'post',
         success:function(data){
             allDate=JSON.parse(data);
-            console.log(allDate,'allDateff');
             if(allDate.success==false){
                 window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳转登录页面
             } 
@@ -173,7 +158,7 @@ function getIntitalData(callback){
             gmtFailuretime=allDate.data.gmtFailuretime;//失效日期
             amount=allDate.data.amount;//当前额度
             againApplyDesc =allDate.data.againApplyDesc;//申请按钮上的描述
-            console.log(againApplyDesc,'againApplyDesc');
+            jundge()
             type=allDate.data.type;//类型
             rule=allDate.data.rule;//规则
             ruleTitle=allDate.data.ruleTitle;//规则标题
@@ -182,7 +167,6 @@ function getIntitalData(callback){
             $('.detailDate').append(`<span class="detailDate">${gmtFailuretime}</span>`);//失效日期
             $('.moneyApply-rule').append(`<div class="ruleWord">${rule}</div>`);//规则
             $('.wordTitle').append(`<div class="wordTitle">${ruleTitle}</div>`);//规则标题 
-            console.log(allDate.success,'allDate.success') 
 
             callback(type);
 
