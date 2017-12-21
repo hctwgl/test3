@@ -516,6 +516,11 @@ public class RiskUtil extends AbstractThird {
             summaryData.put("frequency","0");
             summaryData.put("rateBorrow7d","0");
             summaryData.put("rateOverdue","0");
+            summaryData.put("totalAmount","0");
+            summaryData.put("countOverdue","0");
+            summaryData.put("lastAmount","0");
+            summaryData.put("lastOverdueDay","0");
+            summaryData.put("maxOverdueDay","0");
         }
         reqBo.setSummaryData(JSON.toJSONString(summaryData));
         reqBo.setReqExt("");
