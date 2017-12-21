@@ -66,6 +66,13 @@ public class AppH5AllSearchController extends BaseController {
 		String result = "";
 		try {
 			java.util.Map<String, Object> data = new HashMap<>();
+			//parameters from 
+			
+			
+			
+			
+			
+			
 
 			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 		} catch (Exception exception) {
