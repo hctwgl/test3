@@ -441,7 +441,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 */
 	private List<AfViewAssetBorrowCashDo> matchingBorrowCashDebt(BigDecimal amount, Date gmtCreateStart,Date gmtCreateEnd,String type) {
 		//匹配初始记录;
-		Integer limitNums = BigDecimalUtil.divide(amount, new BigDecimal(1500)).intValue();
+		Integer limitNums = amount.intValue()/Constants.AVG_BORROWCASH_AMOUNT;
 		AfViewAssetBorrowCashQuery query = new AfViewAssetBorrowCashQuery();
 		query.setGmtCreateStart(gmtCreateStart);
 		query.setGmtCreateEnd(gmtCreateEnd);
@@ -484,7 +484,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 	 */
 	private List<AfViewAssetBorrowDo> matchingBorrowDebt(BigDecimal totalMoney, Date gmtCreateStart, Date gmtCreateEnd) {
 		//匹配初始记录;
-		Integer limitNums = BigDecimalUtil.divide(totalMoney, new BigDecimal(1500)).intValue();
+		Integer limitNums = totalMoney.intValue()/Constants.AVG_BORROW_AMOUNT;
 		AfViewAssetBorrowQuery query = new AfViewAssetBorrowQuery();
 		query.setGmtCreateStart(gmtCreateStart);
 		query.setGmtCreateEnd(gmtCreateEnd);

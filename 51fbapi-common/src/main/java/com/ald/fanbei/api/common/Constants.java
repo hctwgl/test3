@@ -437,7 +437,9 @@ public class Constants {
 	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
 	  //资产方查询用户借款及逾期信息redis中的key前缀
 	  public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
-	//资产包
-    public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
-    public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
+	  //资产包
+	  public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
+	  public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
+	  public static final Integer AVG_BORROWCASH_AMOUNT = 1500;//现金贷平均每单金额
+	  public static final Integer AVG_BORROW_AMOUNT = 300;//消费分期平均每单金额
 }
