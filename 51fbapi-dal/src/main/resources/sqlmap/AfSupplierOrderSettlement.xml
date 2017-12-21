@@ -6,6 +6,7 @@
 	<update id="updateSettlementOrderPayStatus" parameterType="AfSupplierOrderSettlementDo">
 		UPDATE af_shop_sup_settle_order_result
 		SET gmt_modified = now(),
+		finish_date = now(),
 		`status` = #{status}
 		WHERE id = #{rid}
 	</update>
