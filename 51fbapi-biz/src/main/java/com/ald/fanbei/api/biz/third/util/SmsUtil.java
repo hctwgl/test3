@@ -532,7 +532,7 @@ public class SmsUtil extends AbstractThird {
             }
         }
         if (StringUtil.isNotBlank(content)) {
-            logger.error("sendRepaymentBorrowCashSuccess success,mobile:" + mobile + "content:" + content);
+            logger.info("sendRepaymentBorrowCashSuccess success,mobile:" + mobile + "content:" + content);
             SmsResult smsResult = sendSmsToDhst(mobile, content);
             return smsResult.isSucc();
         }

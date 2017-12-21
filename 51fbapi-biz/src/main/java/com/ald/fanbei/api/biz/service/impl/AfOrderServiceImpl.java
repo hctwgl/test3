@@ -619,8 +619,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	 */
 	private AfOrderDo buildOrder(Date now, String orderNo, String payTradeNo, Long userId, AfUserCouponDto couponDto,
 			BigDecimal money, BigDecimal saleAmount, String mobile, BigDecimal rebateAmount, String orderType,
-			BigDecimal actualAmount, Long goodsId, String openId, String goodsName, String goodsIcon, int count,
-			String shopName, Long bankId) {
+            BigDecimal actualAmount,Long goodsId, String openId, String goodsName, String goodsIcon, int count,
+			 String shopName, Long bankId) {
 		AfOrderDo orderDo = new AfOrderDo();
 		orderDo.setGmtCreate(now);
 		orderDo.setUserId(userId);
@@ -732,17 +732,16 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	}
 
 	@Override
-	public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, final Long userId,
-			final AfUserCouponDto couponDto, final BigDecimal money, final String mobile, final BigDecimal rebateAmount,
-			final Long bankId, String clientIp, AfUserAccountDo afUserAccountDo) {
+	public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId,
+			AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId,
+			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox) {
 		final Date now = new Date();
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 		final BigDecimal actualAmount = couponDto == null ? money : money.subtract(couponDto.getAmount());
 		Map<String, Object> map;
 		// 订单创建
 		orderDao.createOrder(buildOrder(now, orderNo, orderNo, userId, couponDto, money, money, mobile, rebateAmount,
-				OrderType.MOBILE.getCode(), actualAmount, 0l, "", Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "",
-				bankId));
+                OrderType.MOBILE.getCode(), actualAmount, 0l, "", Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "", bankId));
 		if (bankId < 0) {// 微信支付
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,
 					PayOrderSource.ORDER.getCode());
@@ -2421,5 +2420,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		// TODO Auto-generated method stub
 		return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
 	}
+
 
 }

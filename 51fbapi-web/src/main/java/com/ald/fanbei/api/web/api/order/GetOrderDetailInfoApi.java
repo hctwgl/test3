@@ -121,7 +121,7 @@ public class GetOrderDetailInfoApi implements ApiHandle{
 			//有物流单号就显示物流信息
 			vo.setShowLogistics(1);
 		}
-		vo.setAddress(order.getAddress());
+		vo.setAddress(StringUtil.appendStrs(order.getProvince(),order.getCity(),order.getDistrict(),order.getAddress()));
 		vo.setConsignee(order.getConsignee());
 		vo.setConsigneeMobile(order.getConsigneeMobile());
 		vo.setInvoiceHeader(order.getInvoiceHeader());

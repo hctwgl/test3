@@ -53,8 +53,6 @@ public class GetBankCardListApi implements ApiHandle {
 		}
         List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId);
     
-//        Map<String, Object> data = new HashMap<String, Object>();
-//        data.put("bankCardList", list);
         resp.addResponseData("bankCardList", list);
         String bankcardStatus = "N";
         if(CollectionUtil.isNotEmpty(list)){

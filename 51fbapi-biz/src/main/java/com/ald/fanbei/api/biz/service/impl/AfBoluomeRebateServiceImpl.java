@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,9 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.UserCouponSource;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRebateDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketDao;
 import com.ald.fanbei.api.dal.dao.AfBoluomeRedpacketRelationDao;
@@ -29,6 +35,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -63,6 +70,10 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	AfUserDao afUserDao;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfUserCouponService afUserCouponService;
+	@Resource
+	AfResourceService afResourceService;
 
 	@Override
 	public BaseDao<AfBoluomeRebateDo, Long> getDao() {
@@ -153,7 +164,37 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 									String scence = afBoluomeRebateDao.getScence(orderId);
 									log = log + String.format(" rebateAmount = %s", rebateDo.getRebateAmount());
 									logger.info(log);
-									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount());
+									
+									//get couponId and couponName from afResource
+									AfResourceDo resourceDo = new AfResourceDo();
+									
+									resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "COUPON_AND_AMOUNT");
+									
+									String couponId = resourceDo.getValue();
+									String twenty = resourceDo.getValue1();
+									String thirty = resourceDo.getValue2();
+									
+									log = log + String.format(" afResource = %s", resourceDo.toString());
+									logger.info(log);
+									
+									//if this user Rebate amount is 20 than send a coupon 
+									if (rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0) {
+										if (StringUtil.isNotBlank(couponId)) {
+											
+											//add coupon to user 
+											Long couponIdL = NumberUtil.objToLong(couponId);
+											
+											log = log + String.format(" before grantCoupon parameters userId = %s ,couponId = %s ", userId.toString(),couponId.toString());
+											logger.info(log);
+											
+											afUserCouponService.grantCoupon(userId, couponIdL, UserCouponSource.GG_ACTIVITY.getName(), orderId.toString());
+											
+											log = log + String.format(" before grantCoupon");
+											logger.info(log);
+										}
+									}
+									
+									jpushService.sendRebateMsg(userName, scence, rebateDo.getRebateAmount().compareTo(new BigDecimal(twenty)) == 0?new BigDecimal(thirty):rebateDo.getRebateAmount());
 								}
 							}
 						}
