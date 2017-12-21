@@ -8,12 +8,10 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
@@ -21,9 +19,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -51,6 +46,9 @@ public class GetMyBorrowV1Api implements ApiHandle{
 	
 	@Resource
 	AfUserAccountService afUserAccountService;
+
+	@Resource
+	AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
@@ -101,6 +99,32 @@ public class GetMyBorrowV1Api implements ApiHandle{
 						map.put("lastPayDay", DateUtil.formatMonthAndDay(lastPayDay));
 					}
 				}
+				//加入临时额度
+				AfInterimAuDo afInterimAuDo = afBorrowBillService.selectInterimAmountByUserId(userId);
+				if(afInterimAuDo!=null){
+					map.put("interimType", 1);//已获取临时额度
+					map.put("interimAmount",afInterimAuDo.getInterimAmount());//临时额度
+					map.put("interimUsed",afInterimAuDo.getInterimUsed());//已使用的额度
+					int failureStatus =0;//0未失效,1失效
+					if(afInterimAuDo.getGmtFailuretime().getTime()< new Date().getTime()){
+						failureStatus=1;
+					}
+					map.put("failureStatus",failureStatus);
+				}else{
+					map.put("interimType", 0);//未获取临时额度
+				}
+
+				//加入漂浮窗信息
+				AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndValue("SUSPENSION_FRAME_SETTING","0");
+				if(afResourceDo!=null){
+					map.put("floatType",1);//开启悬浮窗
+					map.put("name",afResourceDo.getName());
+					map.put("pic1",afResourceDo.getPic1()+"?testUser="+afUserDo.getUserName());
+					map.put("pic2",afResourceDo.getPic2());
+				}else{
+					map.put("floatType",0);//未开启悬浮窗
+				}
+
 				map.put("auAmount", auAmount);
 				map.put("amount", amount);
 				map.put("overduedMonth", overduedMonth);

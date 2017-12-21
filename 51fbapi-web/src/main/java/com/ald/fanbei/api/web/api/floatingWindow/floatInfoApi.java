@@ -33,9 +33,11 @@ public class floatInfoApi implements ApiHandle{
 		//Long userId = context.getUserId();
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndValue("SUSPENSION_FRAME_SETTING","0");
 		Map<String,Object> newMap = new HashMap<String,Object>();
-		newMap.put("name",afResourceDo.getName());
-		newMap.put("pic1",afResourceDo.getPic1());
-		newMap.put("pic2",afResourceDo.getPic2());
+		if(afResourceDo!=null){
+			newMap.put("name",afResourceDo.getName());
+			newMap.put("pic1",afResourceDo.getPic1());
+			newMap.put("pic2",afResourceDo.getPic2());
+		}
 		resp.setResponseData(newMap);
 		return resp;
 	}

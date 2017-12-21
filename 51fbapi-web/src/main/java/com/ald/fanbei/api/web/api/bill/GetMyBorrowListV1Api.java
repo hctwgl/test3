@@ -11,16 +11,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.jsoup.helper.DataUtil;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
@@ -154,20 +151,6 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 				respMaP.put("bills", yearMap.get(key));
 				list.add(respMaP);
 			}
-			//加入临时额度
-			AfInterimAuDo afInterimAuDo = afBorrowBillService.selectInterimAmountByUserId(userId);
-			if(afInterimAuDo!=null){
-				map.put("interimAmount",afInterimAuDo.getInterimAmount());//临时额度
-				map.put("interimUsed",afInterimAuDo.getInterimUsed());//已使用的额度
-				int failureStatus =0;//0未失效,1失效
-				if(afInterimAuDo.getGmtFailuretime().getTime()< new Date().getTime()){
-					failureStatus=1;
-				}
-				map.put("failureStatus",failureStatus);
-			}else{
-				map.put("interimType", 0);//未获取临时额度
-			}
-			map.put("interimAmount",afInterimAuDo);
 			map.put("money", money);
 			map.put("billList", list);
 			resp.setResponseData(map);

@@ -214,7 +214,7 @@ public class AppH5InterimAuController extends BaseController {
                                 String msg="";
                                 AfUserAuthDo afUserAuthDo=afUserAuthService.getUserAuthInfoByUserId(userId);
                                 if("Y".equals(afUserAuthDo.getRiskStatus())){
-                                    //推送用户信息给风控 todo
+                                    //推送用户信息给风控
                                     Date date = new Date();//取时间
                                     boolean isSuccess =true;//调用风控接口 默认成功
                                     BigDecimal interimAmount = riskUtil.userTempQuota(userId);
