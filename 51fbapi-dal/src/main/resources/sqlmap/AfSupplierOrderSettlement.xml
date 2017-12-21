@@ -16,7 +16,7 @@
 		af_shop_sup_settle_order
 		SET gmt_modified = NOW(),
 		`status` = #{status}
-		WHERE settlement_no = #{settlementNo}
+		WHERE result_id = #{rid}
 	</update>
 	
 </mapper>
