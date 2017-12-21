@@ -106,7 +106,7 @@ public class CollectionController {
 		try{
 			AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 			if(afBorrowCashDo==null) {
-				logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null" );
+				logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null,borrowNo="+borrowNo );
 				updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
 				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
 				return updteBo;
@@ -119,6 +119,9 @@ public class CollectionController {
 				AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
 						.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 				if (legalOrderCashDo != null) {
+					logger.error("findBorrowCashByBorrowNo afBorrowCashDo is new borrowCash,not process now,borrowNo="+borrowNo );
+					updteBo.setCode(FanbeiThirdRespCode.NEW_BORROW_CASH_NOT_PROCESS.getCode());
+					updteBo.setMsg(FanbeiThirdRespCode.NEW_BORROW_CASH_NOT_PROCESS.getMsg());
 					return updteBo;
 				}
 				BigDecimal rateAmount = afBorrowCashDo.getRateAmount().multiply(BigDecimalUtil.ONE_HUNDRED);
@@ -249,6 +252,9 @@ public class CollectionController {
 				AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
 						.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 				if (legalOrderCashDo != null) {
+					logger.error("updateBalancedDate afBorrowCashDo is new borrowCash,not process now,borrowNo="+borrowNo );
+					updteBo.setCode(FanbeiThirdRespCode.NEW_BORROW_CASH_NOT_PROCESS.getCode());
+					updteBo.setMsg(FanbeiThirdRespCode.NEW_BORROW_CASH_NOT_PROCESS.getMsg());
 					return updteBo;
 				}
 				if(afBorrowCashDo.getRepayAmount().compareTo(afBorrowCashDo.getAmount()) >= 0){
