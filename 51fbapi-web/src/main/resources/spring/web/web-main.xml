@@ -145,6 +145,10 @@
 
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
+				<value>/legalborrow/getBorrowCashGoodInfo</value>
+				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
+				<value>/legalborrow/getCashPageType</value>
+				<value>/legalborrow/getBorrowLegalChargeInfo</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -452,7 +456,27 @@
 
 				<!-- 首页滚动条 -->
 				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
-
+				
+				<!-- legalborrow -->
+				<entry key="/legalborrow/applyLegalBorrowCash" value-ref="applyLegalBorrowCashApi" />
+				<entry key="/legalborrow/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoApi" />
+				<entry key="/legalborrow/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalOrderInfo" value-ref="getBorrowLegalOrderInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalRenewalDetail" value-ref="getBorrowLegalRenewalDetailApi" />
+				<entry key="/legalborrow/getCashPageType" value-ref="getCashPageTypeApi" />
+				<entry key="/legalborrow/applyLegalRenewal" value-ref="applyLegalRenewalApi" />
+				<entry key="/legalborrow/confirmLegalRenewalPay" value-ref="confirmLegalRenewalPayApi" />
+				<entry key="/legalborrow/getBorrowLegalChargeInfo" value-ref="getBorrowLegalChargeInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalOrderDetail" value-ref="getBorrowLegalOrderDetailApi" />
+				<entry key="/legalborrow/repayDo" value-ref="repayDoApi" />
+				<entry key="/legalborrow/getOrderRepaymentInfo" value-ref="getOrderRepaymentInfoApi" />
+				<entry key="/legalborrow/getResourceCompanyName" value-ref="getResourceCompanyNameApi" />
+				<entry key="/legalborrow/getLegalBorrowCashDetail" value-ref="getLegalBorrowCashDetailApi" />
+				<entry key="/legalborrow/getConfirmBorrowLegalInfo" value-ref="getConfirmBorrowLegalInfoApi" />
+				<entry key="/legalborrow/getLegalOrderLogistics" value-ref="getLegalOrderLogisticsApi" />
+				<entry key="/legalborrow/getLegalRenewalList" value-ref="getLegalRenewalListApi" />
+				
+				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
 			</map>

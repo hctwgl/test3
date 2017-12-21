@@ -30,6 +30,7 @@ import com.ald.fanbei.api.biz.service.impl.BoluomeOrderInfoThread;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.enums.OrderSecType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.ShopPlantFormType;
@@ -216,7 +217,13 @@ public class BoluomeController extends AbstractThird {
 	    // 有可能没有价格
 	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : BigDecimal.ZERO;
 	    orderInfo.setPriceAmount(priceAmount);
-	    orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : null);
+	    if(OrderSecType.WAI_MAI.getCode().equals(orderType))
+	    {
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)*2/3) : null);		
+	    }
+	    else {
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : null);		
+	    }
 	    orderInfo.setThirdDetailUrl(detailUrl);
 	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
 	    orderInfo.setGmtCreate(StringUtils.isNotEmpty(createdTime) ? new Date(Long.parseLong(createdTime)) : null);

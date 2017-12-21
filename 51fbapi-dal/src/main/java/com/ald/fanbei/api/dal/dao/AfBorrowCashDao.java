@@ -206,7 +206,6 @@ public interface AfBorrowCashDao {
     AfBorrowCashDo getBorrowCashByStatus(@Param("userId")Long userId);
 
 	int updateAfBorrowCashPlanTime(@Param("userId")Long userId);
-	
 	/**
 	 * 获取最近一次借钱信息
 	 * 
@@ -219,4 +218,6 @@ public interface AfBorrowCashDao {
 	 * 宜信查询
 	 * */
 	List<AfBorrowCashDo> getListByUserId(@Param("userId")Long userId, @Param("rows")Long rows);
+
+	AfBorrowCashDo getBorrowCashByUserIdDescById(@Param("userId")Long userId);
 }

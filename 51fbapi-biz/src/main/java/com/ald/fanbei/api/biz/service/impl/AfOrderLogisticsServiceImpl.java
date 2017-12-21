@@ -1,24 +1,28 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
-import com.ald.fanbei.api.common.kdniao.KdniaoReqDataDataTraces;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.AfOrderLogisticsDao;
-import com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo;
-import com.ald.fanbei.api.biz.service.AfOrderLogisticsService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import com.ald.fanbei.api.biz.bo.AfOrderLogisticsBo;
+import com.ald.fanbei.api.biz.service.AfOrderLogisticsService;
+import com.ald.fanbei.api.common.kdniao.KdniaoReqDataDataTraces;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderLogisticsDao;
+import com.ald.fanbei.api.dal.dao.AfOrderDao;
+import com.ald.fanbei.api.dal.dao.AfOrderLogisticsDao;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderLogisticsDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderLogisticsDo;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -37,6 +41,12 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
 
     @Resource
     private AfOrderLogisticsDao afOrderLogisticsDao;
+    
+    @Resource
+    private AfBorrowLegalOrderLogisticsDao afBorrowLegalOrderLogisticsDao;
+    @Resource
+    private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
+    
     @Resource
     private AfOrderDao afOrderDao;
 
@@ -49,7 +59,8 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
     public AfOrderLogisticsDo getByOrderId(Long orderId) {
         return afOrderLogisticsDao.getByOrderId(orderId);
     }
-
+    
+  
     @Override
     public AfOrderLogisticsBo getOrderLogisticsBo(long orderId, long isOutTraces) {
         AfOrderLogisticsDo afOrderLogisticsDo = getByOrderId(orderId);
@@ -93,6 +104,10 @@ public class AfOrderLogisticsServiceImpl extends ParentServiceImpl<AfOrderLogist
             return afOrderLogisticsBo;
         }
     }
+    
+    
+    
+   
 
     /**
      * 枚举转换
