@@ -24,7 +24,7 @@ public class DemoTest extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void demoApiNoLogin(){
 		String url = urlBase + "/resource/getRedRainRounds";
 		Map<String,String> params = new HashMap<>();
@@ -33,7 +33,7 @@ public class DemoTest extends BaseTest{
 		testApi(url, params, userName, false);
 	}
 	
-	@Test
+//	@Test
 	public void  demoApi() {
 		String url = urlBase + "/pushClickAmout/clickPushAmountNum";
 		Map<String,String> params = new HashMap<>();
@@ -41,7 +41,7 @@ public class DemoTest extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void  demoH5() {
 		String url = urlBase + "/fanbei-web/redRain/applyHit";
 		Map<String,String> params = new HashMap<>();

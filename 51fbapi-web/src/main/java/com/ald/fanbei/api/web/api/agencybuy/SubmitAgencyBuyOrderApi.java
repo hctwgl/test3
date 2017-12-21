@@ -126,19 +126,28 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 		}
 		afOrder.setConsignee(addressDo.getConsignee());
-		String address = addressDo.getProvince() !=null?addressDo.getProvince():"";
+		//新增下单时记录 省、 市、 区 、详细地址 、IP 、设备指纹 2017年12月12日11:17:51 cxk
+		String province = addressDo.getProvince() !=null?addressDo.getProvince():"";
+		String city = addressDo.getCity() !=null?addressDo.getCity():"";
+		String district = addressDo.getCounty() !=null?addressDo.getCounty():"";
+		String address = addressDo.getAddress() !=null?addressDo.getAddress():"";
+		afOrder.setProvince(province);//省
+		afOrder.setCity(city);//市
+		afOrder.setDistrict(district);//区
+		afOrder.setAddress(address);//详细地址
+		/*
 		if(addressDo.getCity()!=null){
-			address=address.concat(addressDo.getCity());
-
+			//address=address.concat(addressDo.getCity());			
 		}
 		if(addressDo.getCounty()!=null){
-			address=address.concat(addressDo.getCounty());
-
+			//address=address.concat(addressDo.getCounty());			
 		}
 		if(addressDo.getAddress()!=null){
-			address=address.concat(addressDo.getAddress());
-		}
-		afOrder.setAddress(address);//将地址添加到订单表里
+			//address=address.concat(addressDo.getAddress());			
+		}**/
+		afOrder.setIp(request.getRemoteAddr());//用户ip地址		
+		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
+		
 		afOrder.setConsigneeMobile(addressDo.getMobile());
 		afAgentOrderDo.setAddress(addressDo.getAddress());
 		afAgentOrderDo.setProvince(addressDo.getProvince());

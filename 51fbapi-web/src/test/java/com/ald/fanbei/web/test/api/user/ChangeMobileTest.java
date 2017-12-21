@@ -33,7 +33,7 @@ public class ChangeMobileTest extends BaseTest{
 		super.init(userName);
 	}
 	
-	@Test
+//	@Test
 	public void  testChangeMobileIfAbleApi() {
 		String url = urlBase + "/user/changeMobileIfAble";
 		testApi(url, null, userName, true);
@@ -58,7 +58,7 @@ public class ChangeMobileTest extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-//	@Test
+	@Test
 	public void  testChangeMobileCheckVerifyCodeApi() {
 		String url = urlBase + "/user/changeMobileCheckVerifyCode";
 		Map<String,String> params = new HashMap<>();
@@ -105,7 +105,7 @@ public class ChangeMobileTest extends BaseTest{
 		testApi(url, params, userName, true);
 	}
 	
-	@Test
+//	@Test
 	public void doFlow() throws InterruptedException {
 		testGetVerifyCodeApi();
 		TimeUnit.SECONDS.sleep(2);

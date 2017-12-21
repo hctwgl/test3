@@ -112,6 +112,12 @@ public class RiskController {
 		}
 	}
 
+	/**
+	 * 强风控回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = { "/registerStrongRiskV1" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String registerStrongRiskV1(HttpServletRequest request, HttpServletResponse response) {
@@ -242,7 +248,7 @@ public class RiskController {
 	
 	
 	/**
-	 * 
+	 * 征信
 	 */
 	@RequestMapping(value = { "/zhengxin/applyReport" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -261,7 +267,7 @@ public class RiskController {
 	}
 	
 	/**
-	 * 
+	 * 征信
 	 */
 	@RequestMapping(value = { "/zhengxin/createTask" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -280,7 +286,7 @@ public class RiskController {
 	}
 	
 	/**
-	 * 
+	 * 征信
 	 */
 	@RequestMapping(value = { "/zhengxin/taskFinish" }, method = RequestMethod.POST)
 	@ResponseBody
