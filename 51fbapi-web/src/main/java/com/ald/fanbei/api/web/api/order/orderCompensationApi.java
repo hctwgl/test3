@@ -37,7 +37,7 @@ public class orderCompensationApi {
 			AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
 			if(null == orderInfo){
 				//查询接口
-				boluomeUtil.pushPayStatus(orderId, null, null, null, thirdOrderNo, null);
+				boluomeUtil.pushPayStatus(orderId, null, null, null, thirdOrderNo, null,null);
 				
 				
 				//保存订单afOrderService.createOrder

@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.serializer.JSONSerializer;
 
 /**
  * 
@@ -43,6 +42,17 @@ public class AfOrderListVo extends AbstractSerial {
 	private int showLogistics;
 	private int count;
 	private Date rebateTime;
+	
+	private String secType;	
+	
+	public String getSecType() {
+	    return secType;
+	}
+
+	public void setSecType(String secType) {
+	    this.secType = secType;
+	}
+
 	public String getBusinessName() {
 		return businessName;
 	}

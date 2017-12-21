@@ -267,6 +267,11 @@
 			<version>4.9</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>jiazhiyi.web.com</groupId>
+			<artifactId>ComInterface</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>
