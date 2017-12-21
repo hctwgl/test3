@@ -215,7 +215,7 @@ $(function () {
                         $.ajax({
                             url:'/fanbei-web/postMaidianInfo',
                             type:'post',
-                            data:{maidianInfo:'/fanbei-web/activity/ggFixShareqt?type=new_success&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum},
+                            data:{maidianInfo:'/fanbei-web/activity/ggFixShareqt?type=new_success&typeFrom='+typeFrom+'&typeFromNum='+typeFromNum,'maidianInfo1':registerMobile},
                             success:function (data) {
                                 console.log(data)
                             }
