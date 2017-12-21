@@ -32,7 +32,10 @@ $(function(){
     let unapprove = getUrl("unapprove");//获取地址栏后面的approve参数；
     if(unapprove){//当检测到这个参数的时候 改变相应的功能
         $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
-        $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字
+        setTimeout(function() {
+            $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字
+        }, 0)
+        // $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字
         /* upMoney.addEventListener('click',function(e){//禁止点击事件
         　　e.preventDefault();
         }); */   
@@ -42,14 +45,14 @@ $(function(){
     //点击申请提额
     $('.applyButton').click(function(){ 
 
-        if(unapprove || applySuccess){//判断当有这个参数的时候禁止点击事件
-        upMoney.addEventListener('click',function(e){
-        　　e.preventDefault();
-           
-        });
-       return false;
+         if(unapprove || applySuccess){//判断当有这个参数的时候禁止点击事件
+            upMoney.addEventListener('click',function(e){
+            　　e.preventDefault();
+            
+            });
+            return false;
 
-    }
+        }
  
         //跳转正在审核页面
         $('.applyButton').hide();
@@ -90,7 +93,7 @@ $(function(){
                 data:{maidianInfo:'/fanbei-web/activity/moneyApplyFor?type=applyMoney'},
                 success:function (data) {
                 }
-            });     
+            });      
     })
 
     //点击弹窗确定按钮隐藏整个弹窗
