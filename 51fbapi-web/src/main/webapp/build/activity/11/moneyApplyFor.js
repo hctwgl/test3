@@ -7,6 +7,7 @@ let gmtFailuretime;
 let interimAmount;
 let rule;
 let ruleTitle;
+let againApplyTime;
 let upMoney=document.getElementById('upMoney');
 let unapprove = getUrl("unapprove");//获取地址栏后面的approve参数； //提额失败
 
@@ -19,9 +20,11 @@ function jundge() {
 }
 
 
+
 $(function(){
     //初始化信息请求
-    getIntitalData(dataloadcb);
+    // getIntitalData(dataloadcb);
+    getIntitalData();
 
     //提额成功
     let applySuccess = getUrl("applySuccess");//获取地址栏后面的approve参数；
@@ -37,7 +40,6 @@ $(function(){
     $('.applyButton').click(function(){ 
 
         if(unapprove || applySuccess){//判断当有这个参数的时候禁止点击事件
-            console.log(1111)
             return
         }
  
@@ -90,7 +92,7 @@ $(function(){
 })
 
 
-function dataloadcb(type) {
+/* function dataloadcb(type) {
     switch(type) {
         case 0: 
             applysuccess()
@@ -104,13 +106,13 @@ function dataloadcb(type) {
         default:
             initPage()
     }
-}
+} */
 
 /**
  * 区分页面状态执行不同的逻辑
  */
 //-------------初始化页-------------------
-function initPage(){
+/* function initPage(){
     //临时额度和失效日期字段没有时显示的文字
     if(interimAmount==undefined || gmtFailuretime==undefined){
         $('.limitMoney').html('0.00');//临时额度
@@ -140,7 +142,7 @@ function applysuccess(){
             $('.detailDate').css({'color':'#999','font-size':'0.42rem','line-height':'0.4rem'});//设置字体颜色大小
     } 
     
-}
+} */
 
 
 //---------------//初始化信息请求--------------
@@ -150,6 +152,7 @@ function getIntitalData(callback){
         type:'post',
         success:function(data){
             allDate=JSON.parse(data);
+            console.log(allDate,'allDate')
             if(allDate.success==false){
                 window.location.href='http://testapp.51fanbei.com/fanbei-web/opennative?name=APP_LOGIN';//未登录跳转登录页面
             } 
@@ -158,7 +161,8 @@ function getIntitalData(callback){
             gmtFailuretime=allDate.data.gmtFailuretime;//失效日期
             amount=allDate.data.amount;//当前额度
             againApplyDesc =allDate.data.againApplyDesc;//申请按钮上的描述
-            jundge()
+            againApplyTime=allDate.data.againApplyTime//显示的天数
+            jundge();
             type=allDate.data.type;//类型
             rule=allDate.data.rule;//规则
             ruleTitle=allDate.data.ruleTitle;//规则标题
@@ -168,7 +172,22 @@ function getIntitalData(callback){
             $('.moneyApply-rule').append(`<div class="ruleWord">${rule}</div>`);//规则
             $('.wordTitle').append(`<div class="wordTitle">${ruleTitle}</div>`);//规则标题 
 
-            callback(type);
+
+            if(interimAmount==undefined || gmtFailuretime==undefined){
+                $('.limitMoney').html('0.00');//临时额度
+                $('.detailDate').html('----');//失效日期
+                $('.detailDate').css({'color':'#999','font-size':'0.42rem','line-height':'0.4rem'});//设置字体颜色大小
+            } 
+            if(type==1 && againApplyTime>0){//判断页面初始化没有申请资格的时候
+                $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
+                $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字 
+                $('.applyButton').unbind('click')//禁止点击事件
+                return false;
+               
+
+            }
+
+            /* callback(type); */
 
         }
     })
