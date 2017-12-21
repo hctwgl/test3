@@ -110,6 +110,9 @@ public class PayRoutController {
     private static String TRADE_STATUE_SUCC = "00";
     private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
+    @Resource
+    private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
+
     @RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
     @ResponseBody
     public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
@@ -183,7 +186,6 @@ public class PayRoutController {
                     Long rid = NumberUtil.objToLong(result);
                     AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
                     afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-//        			afBorrowCashService.updateBorrowCash(afBorrowCashDo);
                     afBorrowCashService.borrowSuccess(afBorrowCashDo);
                 } else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {//菠萝觅银行卡退款
                     //退款记录
@@ -205,6 +207,10 @@ public class PayRoutController {
                     afOrderRefundService.dealWithTradeOrderRefund(refundInfo, orderInfo);
                 } else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
                     afTradeWithdrawRecordService.dealWithDrawSuccess(result);
+                }else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+                    AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+                    afSupDo.setRid(result);
+                    afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
                 }
                 return "SUCCESS";
             } else if (TRADE_STATUE_FAIL.equals(tradeState)) {//只处理失败代付
