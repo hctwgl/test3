@@ -134,7 +134,7 @@ public class AfOrderRefundServiceImpl extends BaseService implements AfOrderRefu
 						saleDo.setStatus(AfAftersaleApplyStatus.FINISH.getCode());
 						afAftersaleApplyDao.updateById(saleDo);
 					}
-					afSupplierOrderSettlementDao.updateStatusByOrderId(orderInfo.getRid());
+					//afSupplierOrderSettlementDao.updateStatusByOrderId(orderInfo.getRid());
 				} catch (Exception e) {
 					logger.error("dealWithSelfGoodsOrderRefund  error: {}",e);
 					status.setRollbackOnly();
