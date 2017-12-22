@@ -137,8 +137,8 @@ public class GetMyBorrowV1Api implements ApiHandle{
 				map.put("overduedMonth", overduedMonth);
 				map.put("outMoney", outMoney);
 				map.put("notOutMoeny", notOutMoeny);
-				resp.setResponseData(map);
 			}
+            resp.setResponseData(map);
 		} catch (Exception e) {
 			logger.error("getMyBorrowV1Api error :" , e);
 			resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.CALCULATE_SHA_256_ERROR);
