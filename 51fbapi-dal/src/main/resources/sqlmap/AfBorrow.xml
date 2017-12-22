@@ -201,16 +201,16 @@
 
 
 	<select id="getUserSummary" resultType="java.util.HashMap">
-		SELECT TIMESTAMPDIFF(HOUR,(SELECT gmt_risk  FROM af_user_auth WHERE user_id =c.user_id   LIMIT 1 ),(SELECT min(gmt_create)  FROM af_borrow_cash WHERE user_id =c.user_id  and `status`='FINSH' )) hourBetweenVerifyBorrow,
-COUNT(if(overdue_day>=4,true,null))/COUNT(id) as rateAfter4Day,
-TIMESTAMPDIFF(HOUR,MIN(gmt_create),MAX(gmt_create))/COUNT(id) frequency,
-COUNT(if(type='SEVEN',true,null))/COUNT(id) as rateBorrow7d,
-COUNT(if(overdue_status='Y',true,null))/COUNT(id) as rateOverdue,
-sum(c.repay_amount)  totalAmount  ,
+		SELECT IFNULL(TIMESTAMPDIFF(HOUR,(SELECT gmt_risk  FROM af_user_auth WHERE user_id =c.user_id   LIMIT 1 ),(SELECT min(gmt_create)  FROM af_borrow_cash WHERE user_id =c.user_id  and `status`='FINSH' )),0) hourBetweenVerifyBorrow,
+IFNULL(COUNT(if(overdue_day>=4,true,null))/COUNT(id),0) as rateAfter4Day,
+IFNULL(TIMESTAMPDIFF(HOUR,MIN(gmt_create),MAX(gmt_create))/COUNT(id),0) frequency,
+IFNULL(COUNT(if(type='SEVEN',true,null))/COUNT(id),0) as rateBorrow7d,
+IFNULL(COUNT(if(overdue_status='Y',true,null))/COUNT(id),0) as rateOverdue,
+IFNULL(sum(c.repay_amount),0)  totalAmount  ,
 COUNT(if(overdue_status='Y',true,null))   countOverdue  ,
-(SELECT  c1.amount    FROM  af_borrow_cash c1 WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  )  lastAmount,
-(SELECT  c1.overdue_day    FROM  af_borrow_cash c1  WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  )  lastOverdueDay,
-MAX(c.overdue_day  )  maxOverdueDay
+IFNULL((SELECT  c1.amount    FROM  af_borrow_cash c1 WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  ) ,0) lastAmount,
+IFNULL((SELECT  c1.overdue_day    FROM  af_borrow_cash c1  WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  ),0)  lastOverdueDay,
+IFNULL(MAX(c.overdue_day  ),0)  maxOverdueDay
 FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 	</select>
 
