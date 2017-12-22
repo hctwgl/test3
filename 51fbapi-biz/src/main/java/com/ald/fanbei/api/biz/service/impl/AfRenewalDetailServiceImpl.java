@@ -146,7 +146,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 			dealChangStatus(payTradeNo, "", AfRenewalDetailStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.RENEWAL_PAY.getCode());
 			if (!respBo.isSuccess()) {
-				dealRenewalFail(payTradeNo, "","");
+				dealRenewalFail(payTradeNo, "",afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);

@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
-
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +46,7 @@ import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -67,6 +68,7 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.AfGoodsReservationStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
@@ -240,7 +242,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	AfBoluomeRebateService afBoluomeRebateService;
 	@Resource
 	AfBoluomeUserCouponService afBoluomeUserCouponService;
-
+	@Resource
+    private AfTradeCodeInfoService afTradeCodeInfoService;
+	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
 		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -754,6 +758,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					card.getMobile(), card.getBankCode(), card.getCardNumber(), afUserAccountDo.getIdNumber(),
 					Constants.DEFAULT_MOBILE_CHARGE_NAME, "手机充值", "02", OrderType.MOBILE.getCode());
 			if (!respBo.isSuccess()) {
+				if(StringUtil.isNotBlank(respBo.getRespCode())){
+					//模版数据map处理
+					Map<String,String> replaceMapData = new HashMap<String, String>();
+					replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+					try {
+						AfUserDo userDo = afUserService.getUserById(userId);
+						smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+					} catch (Exception e) {
+						logger.error("pay order rela bank pay error,userId="+userId,e);
+					}
+				}
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
@@ -1162,6 +1177,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 									Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02",
 									isSelf ? OrderType.SELFSUPPORT.getCode() : OrderType.BOLUOME.getCode());
 							if (!respBo.isSuccess()) {
+								if(StringUtil.isNotBlank(respBo.getRespCode())){
+									//模版数据map处理
+									Map<String,String> replaceMapData = new HashMap<String, String>();
+									replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+									try {
+										AfUserDo userDo = afUserService.getUserById(userId);
+										smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+									} catch (Exception e) {
+										logger.error("pay order rela bank pay error,userId="+userId,e);
+									}
+								}
 								throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 							}
 							newMap.put("outTradeNo", respBo.getOrderNo());
@@ -1440,6 +1466,17 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP,
 								"品牌订单支付", "02", OrderType.BOLUOME.getCode());
 						if (!respBo.isSuccess()) {
+							if(StringUtil.isNotBlank(respBo.getRespCode())){
+								//模版数据map处理
+								Map<String,String> replaceMapData = new HashMap<String, String>();
+								replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+								try {
+									AfUserDo userDo = afUserService.getUserById(userId);
+									smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+								} catch (Exception e) {
+									logger.error("pay order rela bank pay error,userId="+userId,e);
+								}
+							}
 							throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 						}
 						Map<String, Object> newMap = new HashMap<String, Object>();

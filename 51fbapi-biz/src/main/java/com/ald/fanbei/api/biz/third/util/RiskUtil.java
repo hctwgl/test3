@@ -15,8 +15,8 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
-
 import com.ald.fanbei.api.common.util.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -54,6 +55,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderStatus;
@@ -171,6 +174,8 @@ public class RiskUtil extends AbstractThird {
     GeneratorClusterNo generatorClusterNo;
     @Resource
     AsyLoginService asyLoginService;
+    @Resource
+    AfTradeCodeInfoService afTradeCodeInfoService;
 
     private static String getUrl() {
         if (url == null) {
@@ -858,7 +863,18 @@ public class RiskUtil extends AbstractThird {
         // 银行卡支付 代收
         UpsCollectRespBo respBo = upsUtil.collect(tradeNo, bankAmount, userId + "", userAccountInfo.getRealName(), cardInfo.getMobile(), cardInfo.getBankCode(), cardInfo.getCardNumber(), userAccountInfo.getIdNumber(), Constants.DEFAULT_BRAND_SHOP, isSelf ? "自营商品订单支付" : "品牌订单支付", "02", orderType);
         if (!respBo.isSuccess()) {
-            throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+        	if(StringUtil.isNotBlank(respBo.getRespCode())){
+				//模版数据map处理
+				Map<String,String> replaceMapData = new HashMap<String, String>();
+				replaceMapData.put("errorMsg", afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
+				try {
+					AfUserDo userDo = afUserService.getUserById(userId);
+					smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BANK_PAY_ORDER_FAIL.getCode());
+				} catch (Exception e) {
+					logger.error("pay order rela bank pay error,userId="+userId,e);
+				}
+			}
+        	throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
         }
         String virtualCode = afOrderService.getVirtualCode(virtualMap);
         //是虚拟商品

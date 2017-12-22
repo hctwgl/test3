@@ -74,6 +74,7 @@ public enum AfResourceSecType {
 		FUND_SIDE_BORROW_CASH_ONOFF("FUND_SIDE_BORROW_CASH_ONOFF", "打款时引入资金方配置开关"),
 		YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询限制配置"),
 		RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
+		SMS_BANK_PAY_ORDER_FAIL("SMS_BANK_PAY_ORDER_FAIL","下单涉及银行卡支付失败短信提示"),
 		BORROW_CASH_AMOUNT_CHANNEL_ERROR("BORROW_CASH_AMOUNT_CHANNEL_ERROR","用户借钱时渠道包问题给用户的短信内容");
 		
 	 	private String code;

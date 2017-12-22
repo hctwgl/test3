@@ -187,6 +187,12 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
 //			}
 			if (!respBo.isSuccess()) {
+				try{
+					//还款失败短信通知
+					sendFailMessage(userId,afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), repayment.getName());
+				}catch (Exception e){
+					logger.error("BorrowCash sendMessage but addMsg error for:"+e);
+				}
 				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
