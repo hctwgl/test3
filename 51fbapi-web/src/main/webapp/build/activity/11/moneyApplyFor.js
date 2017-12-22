@@ -7,6 +7,7 @@ let gmtFailuretime;
 let interimAmount;
 let rule;
 let ruleTitle;
+let interimUsed;
 let againApplyTime;
 let upMoney=document.getElementById('upMoney');
 let unapprove = getUrl("unapprove");//获取地址栏后面的approve参数； //提额失败
@@ -162,6 +163,7 @@ function getIntitalData(callback){
             amount=allDate.data.amount;//当前额度
             againApplyDesc =allDate.data.againApplyDesc;//申请按钮上的描述
             againApplyTime=allDate.data.againApplyTime//显示的天数
+            interimUsed=allDate.data.interimUsed
             jundge();
             type=allDate.data.type;//类型
             rule=allDate.data.rule;//规则
@@ -184,8 +186,16 @@ function getIntitalData(callback){
                 $('.applyButton').unbind('click')//禁止点击事件
                 return false;
                
-
             }
+            if(type==0 && interimUsed==0 && failureStatus==1){//申请成功之后判断额度还清且额度失效的状态
+                $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
+                $('.applyButton').html('暂时无法再次提额');//改变按钮文字
+                $('.applyButton').unbind('click')//禁止点击事件
+                if(failureStatus==1){//判断临时额度是否失效
+                    $('.useless').show();//失效显示文字
+                }
+            }
+
 
             /* callback(type); */
 
