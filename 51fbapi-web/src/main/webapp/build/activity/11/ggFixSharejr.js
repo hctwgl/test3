@@ -280,7 +280,7 @@ let vm = new Vue({
         logData() {
             //倒计时
             let currentStamp=Date.parse(new Date());
-            let endStamp=Date.parse(new Date("2017-12-22 18:00:00"));
+            let endStamp=Date.parse(new Date("2017/12/22 16:00:00"));
             let diff=(endStamp-currentStamp)/1000;
             showTimerS(diff);
             diff--;
