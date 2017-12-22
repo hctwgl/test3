@@ -1075,6 +1075,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
                         //获取临时额度
                         AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+						if (afInterimAuDo == null) {
+							afInterimAuDo = new AfInterimAuDo();
+							afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
+						}
                         //获取当前用户可用临时额度
                         BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                         //可使用额度
@@ -2203,6 +2207,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     private void checkUsedAmount(Map<String, Object> resultMap, AfOrderDo orderInfo, AfUserAccountDo userAccountInfo) {
         //获取临时额度
         AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+		if (afInterimAuDo == null) {
+			afInterimAuDo = new AfInterimAuDo();
+			afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
+		}
         if (afOrderService.isVirtualGoods(resultMap)) {
             BigDecimal virtualTotalAmount = afOrderService.getVirtualAmount(resultMap);
             String virtualCode = afOrderService.getVirtualCode(resultMap);

@@ -270,16 +270,17 @@ public class StartCashierApi implements ApiHandle {
             }
             //获取临时额度
             AfInterimAuDo afInterimAuDo = afInterimAuService.getByUserId(orderInfo.getUserId());
-            //获取当前用户可用临时额度
-            BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
+            if (afInterimAuDo == null) {
+                afInterimAuDo = new AfInterimAuDo();
+                afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
+            }
             BigDecimal userabledAmount = BigDecimal.ZERO;
             //额度判断
-            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
-            {
+            if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
+                //获取当前用户可用临时额度
+                BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                 userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);
-            }
-            else
-            {
+            } else {
                 userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
             }
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
@@ -291,11 +292,11 @@ public class StartCashierApi implements ApiHandle {
             if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 //额度不够
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode());
-                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount,afInterimAuDo);
+                riskProcess(cashierTypeVo, orderInfo, userDto, usabledMinAmount, afInterimAuDo);
                 return cashierTypeVo;
             } else {
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
-                riskProcess(cashierTypeVo, orderInfo, userDto,usabledMinAmount,afInterimAuDo);
+                riskProcess(cashierTypeVo, orderInfo, userDto, usabledMinAmount, afInterimAuDo);
                 return cashierTypeVo;
             }
         } else {
@@ -317,7 +318,7 @@ public class StartCashierApi implements ApiHandle {
             return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
         }
         //分期金额限制
-        String nper = getNperListApi.checkMoneyLimit(new JSONArray(),orderInfo.getOrderType(),orderInfo.getActualAmount());
+        String nper = getNperListApi.checkMoneyLimit(new JSONArray(), orderInfo.getOrderType(), orderInfo.getActualAmount());
         if ("0".equals(nper)) {
             return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
         }
@@ -325,12 +326,12 @@ public class StartCashierApi implements ApiHandle {
         String cardNo = card.getCardNumber();
         String riskOrderNo = riskUtil.getOrderNo("crep", cardNo.substring(cardNo.length() - 4, cardNo.length()));
         String state = riskUtil.creditPayment(userDto.getUserId().toString(), riskOrderNo);
-        if(state.equals(YesNoStatus.YES.getCode())){
+        if (state.equals(YesNoStatus.YES.getCode())) {
             CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
             cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
             return cashierTypeVo;
-        }  else{
-            CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(),CashierReasonType.RISK_CREDIT_PAYMENT.getCode());
+        } else {
+            CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.RISK_CREDIT_PAYMENT.getCode());
             return cashierTypeVo;
         }
 
@@ -348,7 +349,7 @@ public class StartCashierApi implements ApiHandle {
         String status = YesNoStatus.NO.getCode();
         if (userDto.getAuAmount().compareTo(BigDecimal.ZERO) > 0) {
             //StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getIvsStatus())// 反欺诈分已验证&&
-            if ( StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
+            if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
                     && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
                     && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
                     && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
@@ -365,15 +366,15 @@ public class StartCashierApi implements ApiHandle {
      * @param orderInfo     订单信息
      * @param userDto       用户账户信息
      */
-    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto,BigDecimal usabledMinAmount,AfInterimAuDo afInterimAuDo) {
+    private void riskProcess(CashierTypeVo cashierTypeVo, AfOrderDo orderInfo, AfUserAccountDto userDto, BigDecimal usabledMinAmount, AfInterimAuDo afInterimAuDo) {
         // 风控逾期订单处理
         RiskQueryOverdueOrderRespBo resp = riskUtil.queryOverdueOrder(orderInfo.getUserId() + StringUtil.EMPTY);
-        String rejectCode =  resp.getRejectCode();
+        String rejectCode = resp.getRejectCode();
         //region 测试借钱逾期白名单
         List<AfResourceDo> afResourceList = afResourceService.getConfigByTypes("overduecash_test_user");
         if (afResourceList.size() > 0) {
-            if (afResourceList.get(0).getValue()!=null&&afResourceList.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
-                rejectCode=RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
+            if (afResourceList.get(0).getValue() != null && afResourceList.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+                rejectCode = RiskErrorCode.OVERDUE_BORROW_CASH.getCode();
             }
         }
 //        if(userDto.getUserName().equals("13656648524")){
@@ -387,8 +388,8 @@ public class StartCashierApi implements ApiHandle {
         //region 测试分期逾期白名单
         List<AfResourceDo> afResourceList1 = afResourceService.getConfigByTypes("overdue_test_user");
         if (afResourceList1.size() > 0) {
-            if (afResourceList1.get(0).getValue()!=null&&afResourceList1.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
-                rejectCode=RiskErrorCode.OVERDUE_BORROW.getCode();
+            if (afResourceList1.get(0).getValue() != null && afResourceList1.get(0).getValue().contains(String.valueOf(userDto.getUserName()))) {
+                rejectCode = RiskErrorCode.OVERDUE_BORROW.getCode();
             }
         }
         //endregion
@@ -428,16 +429,13 @@ public class StartCashierApi implements ApiHandle {
             }
         }
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
-        //获取当前用户可用临时额度
-        BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
         BigDecimal useableAmount = BigDecimal.ZERO;
         //额度判断
-        if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
-        {
+        if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
+            //获取当前用户可用临时额度
+            BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
             useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);
-        }
-        else
-        {
+        } else {
             useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount());
         }
         if (afOrderService.isVirtualGoods(virtualMap)) {
@@ -457,17 +455,17 @@ public class StartCashierApi implements ApiHandle {
                 cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 cashierTypeVo.setReasonType(CashierReasonType.VIRTUAL_GOODS_LIMIT.getCode());
             } else {
-                if(leftAmount.compareTo(orderInfo.getActualAmount()) >= 0){
+                if (leftAmount.compareTo(orderInfo.getActualAmount()) >= 0) {
                     cashierTypeVo.setUseableAmount(leftAmount);
                     cashierTypeVo.setPayAmount(orderInfo.getActualAmount());
                     cashierTypeVo.setStatus(YesNoStatus.YES.getCode());
-                }else{
+                } else {
                     cashierTypeVo.setUseableAmount(leftAmount);
                     cashierTypeVo.setPayAmount(leftAmount);
                     cashierTypeVo.setReasonType(CashierReasonType.USE_ABLED_LESS.getCode());
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 }
-                if(leftAmount.compareTo(usabledMinAmount)<=0 ){
+                if (leftAmount.compareTo(usabledMinAmount) <= 0) {
                     cashierTypeVo.setReasonType(CashierReasonType.NEEDUP_VIRTUAL.getCode());
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                 }

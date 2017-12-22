@@ -510,6 +510,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					BigDecimal backAmount = billDo.getPrincipleAmount().subtract(houseAmount);
 					//获取临时额度
 					AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(repayment.getUserId());
+					if (afInterimAuDo == null) {
+						afInterimAuDo = new AfInterimAuDo();
+						afInterimAuDo.setInterimAmount(new BigDecimal(0));
+						afInterimAuDo.setInterimUsed(new BigDecimal(0));
+					}
 					//判断临时额度是否使用
 					if(afInterimAuDo.getInterimUsed().compareTo(BigDecimal.ZERO) == 1)
 					{
