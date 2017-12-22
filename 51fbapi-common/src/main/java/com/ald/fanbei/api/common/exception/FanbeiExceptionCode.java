@@ -69,6 +69,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_FROZEN_ERROR("USER_FROZEN_ERROR",1124,"user frozen error","用户冻结中"),
     USER_SMS_FAIL_MAX_ERROR("USER_SMS_FAIL_MAX_ERROR",1125,"user  sms check more than max","验证码输入错误次数过多"),
     APPLY_CASHED_AMOUNT_TOO_SMALL("APPLY_CASHED_AMOUNT_TOO_SMALL",1126,"apply cash amount more than account money","至少提现20元"),
+    APPLY_CASHED_AMOUNT_SMALL("APPLY_CASHED_AMOUNT_TOO_SMALL",111291,"apply cash amount more than account money","提现金额太少,无法提现"),
     APPLY_CASHED_AMOUNT_TOO_SMALL_JFB("APPLY_CASHED_AMOUNT_TOO_SMALL_JFB",1127,"apply cash amount jfb to small","至少提现2000集分宝"),
     RENEWAL_ORDER_NOT_EXIST_ERROR("RENEWAL_ORDER_NOT_EXIST_ERROR",1128,"nothing order can renewal","无可续期的订单"),
     HAVE_A_REPAYMENT_PROCESSING_ERROR("HAVE_A_REPAYMENT_PROCESSING_ERROR",1129,"There is a repayment is processing","有一笔还款正在处理中"),
@@ -94,7 +95,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_REGIST_FREQUENTLY_ERROR("USER_REGIST_FREQUENTLY_ERROR",1146,"user_regist_frequently_error","验证码获取过于频繁，请稍后重试"),
     USER_REGIST_SMS_LESSDUE("USER_REGIST_SMS_LESSDUE",1147,"user regist sms lessdue","验证码60秒内已获取过"),
     BOLUOME_UNTRUST_SHOPGOODS("BOLUOME_UNTRUST_SHOPGOODS",1148,"boluome untrust shopgoods","支付维护中，请选择其他商户购买!"),
-
+    MUST_UPGRADE_NEW_VERSION_REPAY("MUST_UPGRADE_NEW_VERSION_REPAY",1147,"must_upgrade_new_version_repay","请升级到最新版APP进行操作"),
     // 1200 -
     USER_GET_COUPON_ERROR("USER_GET_COUPON_ERROR",1200,"user coupon error ","优惠券已领取"),
     //优惠券不可用，不能修改code
@@ -154,7 +155,8 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),
     AUTH_CARD_ERROR("AUTH_CARD_ERROR",1541,"auth card error","银行卡认证失败"),
     AUTH_BINDCARD_ERROR("AUTH_BINDCARD_ERROR",1542,"bind card error","绑定银行卡失败"),
-
+    
+    UPS_REPEAT_NOTIFY("UPS_REPEAT_NOTIFY",1549,"ups repeat notify","重复UPS回调"),
     UPS_AUTH_BF_SIGN_ERROR("UPS_AUTH_BF_SIGN_ERROR",1550,"bao fu auth error","银行卡认证失败"),
     UPS_AUTH_YSB_SIGN_ERROR("UPS_AUTH_YSB_SIGN_ERROR",1551,"bao fu auth error","银行卡认证失败"),
     UPS_DELEGATE_PAY_ERROR("UPS_DELEGATE_PAY_ERROR",1552,"ups delegate pay error","单笔代付失败"),
@@ -261,19 +263,29 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
    
     
     BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2005,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
+    ORDER_BORROW_CASH_NOT_EXIST_ERROR("ORDER_BORROW_CASH_NOT_EXIST_ERROR",2006,"order borrow cash not exist","商品借款信息不存在"),
+
+    
+    
     RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",3005,"renewal cash repay more than borrow cash","续借金额大于借款金额"),
     RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED("RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED",3006,"renewal cash repay less one hundred","续借金额小于100"),
 
     BORROW_CASH_REPAY_AMOUNT__ERROR("BORROW_CASH_REPAY_AMOUNT_BORROW_ERROR",2006,"borrow cash repay  borrow cash error","还款金额有误请重新检查"),
     BORROW_CASH_SWITCH_NO("BORROW_CASH_SWITCH_NO",2007,"borrow cash switch error","今日放款已达上限， 明天尽早哦！"),
     BORROW_CASH_MORE_ACCOUNT_ERROR("BORROW_CASH_MORE_ACCOUNT_ERROR",2008,"borrow cash  more  account  borrow error","借款金额超过可借金额，请下拉刷新后重新提交"),
+
     HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2009,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
     
     STRONG_RISK_STATUS_ERROR("STRONG_RISK_STATUS_ERROR",2010,"strong risk apply status error","您的风控审核正在提交"),
-    
+    ADD_BORROW_CASH_INFO_FAIL("ADD_BORROW_CASH_INFO_FAIL",2011,"add borrow cash info fail","生成借款信息失败"),
+    BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
+
     //3000-3999
     BOLUOME_ORDER_NOT_EXIST("BOLUOME_ORDER_NOT_EXIST",3000,"order don't exist","该订单暂时未同步"),
     ORDER_REFUND_TYPE_ERROR("ORDER_REFUND_TYPE_ERROR",3001,"order refund type error","此订单类型暂不支持"),
+    BORROW_CASH_ORDER_NOT_EXIST_ERROR("BORROW_CASH_ORDER_NOT_EXIST_ERROR",3002,"borrow cash order not exist","借钱订单信息不存在"),
+    BORROW_CASH_RATE_ERROR("BORROW_CASH_RATE_ERROR",3003,"borrow cash rate not exist","获取利率失败，请联系客服"),
+    BORROW_CASH_GOOD_NOT_EXIST_ERROR("BORROW_CASH_GOOD_NOT_EXIST_ERROR",3004,"borrow cash goods not exist","商品信息不存在"),
 
     //4000-4999
     PICK_BRAND_COUPON_NOT_START("PICK_BRAND_COUPON_NOT_START",4000,"pick brand not start","领取活动还未开始,敬请期待"),
@@ -334,7 +346,11 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     //租房使用
     TENEMENT_USER_INVALID("TENEMENT_USER_INVALID",7002,"tenement_user_invalid","对不起，该用户尚未进行注册/身份证认证"),
     //信息已审核
-    TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改");
+    TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改"),
+
+    //游戏充值
+    GAME_IS_NOT_EXIST("GAME_IS_NOT_EXIST",8001,"game_is_not_exist","游戏信息不存在，请确认后操作"),
+    GAME_IS_ILLEGAL("GAME_IS_NOT_EXIST",8002,"game_name_is_illegal","游戏名称错误，请确认后操作");
 
 	/**
      * 错误码

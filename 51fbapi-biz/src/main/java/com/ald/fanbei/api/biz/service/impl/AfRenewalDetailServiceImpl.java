@@ -14,8 +14,8 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.biz.third.util.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -502,4 +502,5 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 	public AfRenewalDetailDo getRenewalDetailHoursByBorrowId(Long borrowId) {
 		return afRenewalDetailDao.getRenewalDetailHoursByBorrowId(borrowId);
 	}
+
 }

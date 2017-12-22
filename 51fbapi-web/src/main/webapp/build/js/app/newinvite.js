@@ -57,7 +57,7 @@ function _init() {
 
 window.onload = ()=>{
     _init()
-    let clipboard = new Clipboard('.invitecode');
+    let clipboard = new Clipboard('.invitecode')
 
     clipboard.on('success', function(e) {
         console.log(e)
@@ -80,18 +80,16 @@ window.onload = ()=>{
         $('.rulewindow .content').append(rulehtml.join(''))
         $('.invitecode').text(invitationCode)
         $('.invitecode')[0].dataset.clipboardText = invitationCode
-        $('.myreward').find('.firstSpan').text(sum);
+        $('.myreward span').text(sum)
 
-        let protocol = window.location.protocol;
-        let host = window.location.host;
-        let domainName = protocol+'//'+host;
+
 
         $('.rightown').on('click', ()=>{
             var dat = {
                 shareAppTitle: shareinfo.listTitle,
                 shareAppContent: shareinfo.listDesc,
                 shareAppImage: shareinfo.listPic,
-                shareAppUrl: domainName+'/fanbei-web/app/inviteregister?recommendCode='+invitationCode,
+                shareAppUrl: location.origin + '/fanbei-web/app/inviteregister',
                 isSubmit: 'Y',
                 sharePage: 'inviteShare'
             }
@@ -200,7 +198,7 @@ window.onload = ()=>{
 
     getlist(1, 1, replacehtml)
 
-    $('.buttons .sameLevel').on('click', (e)=>{
+    $('.buttons div').on('click', (e)=>{
         $('.loading').show()
         var nodecl = e.target.className
         if(nodecl.indexOf('levelone') > -1) {
@@ -233,9 +231,9 @@ window.onload = ()=>{
 
 function maidian(scene) {
     $.ajax({
-        url: '/fanbei-web/shareActivity',
+        url: '/fanbei-web/postMaidianInfo',
         data: {
-            'shareWith': 'sharewith'+ scene
+            'maidianInfo': 'sharewith'+ scene
         },
         type: 'POST',
         succuess: (data) => {
@@ -250,79 +248,4 @@ window.postshareex = (incase)=>{
 
 window.postshareaf = (incase)=>{
     // maidian(incase)
-};
-$(function(){
-    //初始化数据
-    $.ajax({
-        type: 'post',
-        url: "/h5GgActivity/inviteCeremony",
-        success: function (data) {
-            console.log(data);
-            /*图片预加载*/
-            $(".first").each(function() {
-                var img = $(this);
-                img.load(function () {
-                    $(".loadingMask").fadeOut();
-                });
-                setTimeout(function () {
-                    $(".loadingMask").fadeOut();
-                },1000)
-            });
-            $(".loadingMask").fadeOut();
-            let content=data.data;
-            $('.specialPrizeTitle span').html(content.spePreference);
-            $('.specialCoupon span').html(content.couponAmount);
-            $('.limitRule').html(content.activityRule);
-            $('.exampleRule').html(content.example);
-        },
-        error:function(){
-            requestMsg('哎呀，出错了！')
-        }
-    });
-    $.ajax({
-        type: 'post',
-        url: "/h5GgActivity/returnCoupon",
-        success: function (data) {
-            $('.secondSpan').html('+'+data.data.couponAmount+'元外卖券');
-        },
-        error:function(){
-            requestMsg('哎呀，出错了！')
-        }
-    });
-    //点击外卖券
-    $('.levelthree').click(function(){
-        $('.loading').show();
-        $('.list').empty();
-        $.ajax({
-            type: 'post',
-            url: "/h5GgActivity/returnCoupon",
-            success: function (data) {
-                $('.loading').hide();
-                //console.log(data);
-                let takeOutMoney=data.data.returnCouponList;
-                let str='';
-                if(takeOutMoney && takeOutMoney.length>0){
-                    for(let i=0;i<takeOutMoney.length;i++){
-                        if(takeOutMoney[i].status=='已完成'){
-                            str+=`<div class="takeOutMoney"><span>${takeOutMoney[i].inviteeMobile}</span>
-                    <span>${takeOutMoney[i].registerTime}</span>
-                    <span style="color:#f0110e">${takeOutMoney[i].status}</span>
-                    <span>${takeOutMoney[i].reward}</span></div>`;
-                        }else{
-                            str+=`<div class="takeOutMoney"><span>${takeOutMoney[i].inviteeMobile}</span>
-                    <span>${takeOutMoney[i].registerTime}</span>
-                    <span>${takeOutMoney[i].status}</span>
-                    <span>${takeOutMoney[i].reward}</span></div>`;
-                        }
-                    }
-                    $('.list').append(str);
-                }else{
-                    $('.list').append('<div class="nodata">您暂无邀请！</div>');
-                }
-            },
-            error:function(){
-                requestMsg('哎呀，出错了！')
-            }
-        });
-    });
-});
+}

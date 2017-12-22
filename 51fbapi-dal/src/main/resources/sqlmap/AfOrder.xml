@@ -126,6 +126,21 @@
 	        </if>
 	        <if test="usedAmount != null">
 	            used_amount,
+	        </if>	        
+	        <if test="province != null">
+	            province,
+	        </if>
+	        <if test="city != null">
+	            city,
+	        </if>
+	        <if test="district != null">
+	            district,
+	        </if>
+	        <if test="blackBox != null">
+	            black_box,
+	        </if>
+	        <if test="ip != null">
+	            ip,
 	        </if>
 			gmt_create ,
 			gmt_modified
@@ -237,6 +252,21 @@
 		     </if>
 			<if test="usedAmount != null">
 	            #{usedAmount},
+	        </if>
+			<if test="province != null">
+	            #{province},
+	        </if>
+			<if test="city != null">
+	            #{city},
+	        </if>
+			<if test="district != null">
+	            #{district},
+	        </if>
+			<if test="blackBox != null">
+	            #{blackBox},
+	        </if>
+			<if test="ip != null">
+	            #{ip},
 	        </if>
 			NOW(),
 			NOW()
@@ -1079,6 +1109,17 @@
 
 	<select id="selectSumCountByGoodsIdAndType" resultType="java.lang.Integer" parameterType="AfOrderDo">
 		SELECT sum(count) from af_order where is_delete = 0 and CAST(CAST(gmt_create AS DATE)AS DATETIME) = CAST(CAST(SYSDATE()AS DATE)AS DATETIME) AND goods_id = #{goodsId} AND user_id = #{userId}
+	</select>
+	
+	<select id="getOrderByOrderNo" resultType="AfOrderDo">
+		SELECT
+			<include refid="queryAllFields"/>
+		FROM
+			af_order 
+		WHERE
+			is_delete=0 
+		AND
+			order_no=#{orderNo}
 	</select>
 	
 	<select id="getDouble12OrderByGoodsIdAndUserId" parameterType="java.lang.Long" resultType="AfOrderDo">

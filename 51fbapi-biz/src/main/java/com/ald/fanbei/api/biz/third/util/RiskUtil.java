@@ -1072,7 +1072,7 @@ public class RiskUtil extends AbstractThird {
      * @param method   接口标识（固定4位）
      * @param identity 身份标识（固定4位）
      */
-    public static String getOrderNo(String method, String identity) {
+    public String getOrderNo(String method, String identity) {
         if (StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity)
                 || identity.length() != 4) {
             throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);
@@ -1413,7 +1413,7 @@ public class RiskUtil extends AbstractThird {
                             rebateContext.rebate(orderInfo);
                         }
                         if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
                         }
                         // TODO:返回值
                         return 1L;
@@ -1565,7 +1565,7 @@ public class RiskUtil extends AbstractThird {
         AfOrderDo orderInfo = orderDao.getOrderById(rid);
         logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
         if (orderInfo != null && StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount());
+            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
         }
     }
 

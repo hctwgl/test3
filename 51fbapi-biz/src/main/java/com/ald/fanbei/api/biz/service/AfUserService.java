@@ -18,7 +18,7 @@ public interface AfUserService {
 	 * @param afUserDo
 	 * @return
 	 */
-	int addUser(AfUserDo afUserDo);
+	Long addUser(AfUserDo afUserDo);
 	/**
 	 * 添加快速登录用户
 	 * @param afUserDo

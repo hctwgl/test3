@@ -1,8 +1,38 @@
 @url: "http://f.51fanbei.com/h5/app/activity/11";
 .clearFix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
 .clearFix{zoom:1}
+/*公告左右移动--start*/
+.ggOverlord{
+  overflow-x: hidden;
+  .personAmount{
+    width:100%;
+    height:.54rem;
+    overflow:hidden;
+    background: #f15e26;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index: 5;
+    .amountCont{
+      width:36rem;
+      height:.54rem;
+      .cont{
+        float:left;
+        width:14rem;
+        height:.54rem;
+        p{
+          color:#fff;
+          font-size:.26rem;
+          line-height:.54rem;
+          margin-left:4rem;
+        }
+      }
+    }
+  }
+}
 .ggOverlord .banner{
   width:100%;
+  margin-top:.54rem;
 }
 #invitecode{
   display: none;

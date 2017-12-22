@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +36,6 @@ import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
-import com.ald.fanbei.api.biz.bo.CollectionDataBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
@@ -68,7 +69,6 @@ import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfRepayCollectionType;
 import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
@@ -84,8 +84,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -282,7 +280,18 @@ public class TestController {
     @RequestMapping("/cuishou")
     @ResponseBody
     public String cuishou() {
-        AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
+        //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
+        ExecutorService pool = Executors.newFixedThreadPool(16);
+        for (int i=0;i<1000;i++){
+            pool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(new Date());
+                    System.out.println("---"+repayNo);
+                }
+            });
+        }
+
 
        // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
         return "调用处理中^";
@@ -815,7 +824,7 @@ public class TestController {
     public BoluomePushPayResponseBo testOrderPay(HttpServletRequest request, HttpServletResponse response) {
         long orderId = 198649;
         AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
-        BoluomePushPayResponseBo b = boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+        BoluomePushPayResponseBo b = boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount() ,orderInfo.getSecType());
 
         return b;
     }

@@ -41,7 +41,7 @@ public class BoluomeNotify extends AbstractThird {
 		
 		// free of sign if the environment is local or test
 		 String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		 if (Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+		 if (Constants.INVELOMENT_TYPE_TEST.equals(type) || Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ) {
 		     return true;
 		 }
 		

@@ -1,36 +1,51 @@
 package com.ald.fanbei.api.web.api.borrowCash;
 
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
+import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
+import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
+import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
 
 /**
  * @author honghzengpei 2017/9/8 11:33
@@ -57,6 +72,8 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
     AfResourceService afResourceService;
     @Resource
     AfUserAuthService afUserAuthService;
+    @Resource
+    AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
     @Resource
     YiBaoUtility yiBaoUtility;
@@ -79,6 +96,9 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 //        if(StringUtils.equals(YesNoStatus.NO.getCode(), afUserAuthDo.getZmStatus())){
 //            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
 //        }
+        
+        // 对402版本借钱，低版本还款情况做控制
+        afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId); 
 
         List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
         List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
@@ -275,9 +295,10 @@ public class ConfirmRenewalPayV1Api implements ApiHandle {
 
             return resp;
         }
-       catch (Exception e){
+        catch (Exception e){
+        	logger.error("ConfirmRenewalPayV1 fail!", e);
             throw  e;
-       }
+        }
         finally {
             bizCacheUtil.delCache(lockKey);
         }

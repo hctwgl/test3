@@ -82,10 +82,12 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 
 	@Override
 	public List<AfGoodsPriceDo> getByGoodsId(Long goodsId) {
-		// TODO Auto-generated method stub
 		return afGoodsPriceDao.getByGoodsId(goodsId);
 	}
-
+	@Override
+	public AfGoodsPriceDo getGoodsPriceByGoodsId(Long goodsId) {
+		return afGoodsPriceDao.getGoodsPriceByGoodsId(goodsId);
+	}
 	@Override
 	public Integer selectSumStock(Long goodsId){
 		return afGoodsPriceDao.selectSumStock(goodsId);
