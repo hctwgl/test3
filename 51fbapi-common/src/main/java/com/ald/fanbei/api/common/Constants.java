@@ -315,6 +315,8 @@ public class Constants {
 	public static final String CONFKEY_BOLUOME_ORDER_SEARCH_URL = "fbapi.boluome.order.search.url";
 	public static final String CONFKEY_BOLUOME_ORDER_CANCEL_URL = "fbapi.boluome.order.cancel.url";
 	public static final String CONFKEY_BOLUOME_COUPON_URL = "fbapi.boluome.coupon.url";
+	public static final String CONFKEY_BOLUOME_ORDER_URL = "fbapi.boluome.api.order.url";
+	
 	public static final String CONFKEY_BOLUOME_API_ORDER_URL = "fbapi.boluome.api.order.url";
 
 	// 依图
@@ -424,7 +426,12 @@ public class Constants {
 	// 宜信阿福RC4秘钥
 	public static final String YIXIN_AFU_PASSWORD = "fbapi.yixinafu.password";
 	// 宜信阿福查询用户逾期信息redis中的key前缀
-	public static final String YIXIN_AFU_SEARCH_KEY = "yxafu_";
-	
+	public static final String YIXIN_AFU_SEARCH_KEY = "yxafu_";	  
+
+	//	sup游戏充值
+	public static final String CONFKEY_SUP_BUSINESS_ID = "fbapi.sup.business.id";
+	public static final String CONFKEY_SUP_BUSINESS_KEY = "fbapi.sup.business.key";
+	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";	
+
 	public static final int ONE_YEAY_DAYS = 360;
 }

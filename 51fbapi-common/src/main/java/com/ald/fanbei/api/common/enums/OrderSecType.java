@@ -21,7 +21,8 @@ public enum OrderSecType {
 	PAO_TUI("PAOTUI", "随意购"),
 	DAI_JIA("DAIJIA", "代驾"),
 	JIA_DIAN_QING_XI("JIADIANQINGXI", "家电清洗"),
-	JIA_DIAN_WEI_XIU("JIADIANWEIXIU", "家电维修");
+	JIA_DIAN_WEI_XIU("JIADIANWEIXIU", "家电维修"),
+	SUP_GAME("SUPGAME","游戏产品");
     
     private String code;
     private String name;

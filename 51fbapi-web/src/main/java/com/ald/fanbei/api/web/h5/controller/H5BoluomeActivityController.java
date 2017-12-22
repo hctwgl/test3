@@ -311,9 +311,13 @@ public class H5BoluomeActivityController extends BaseController {
 	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
 	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
 	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
-
+	    	
+	    String log = "/H5GGShare/boluomeActivityRegisterLogin";
+		
+	    
 	    AfUserDo eUserDo = afUserService.getUserByUserName(mobile);
-	    logger.info("boluomeActivityRegisterLogin eUserDo",eUserDo,mobile); 
+	    log = log + String.format("mobile:inviteer = %s", mobile+"inviteer:"+inviteer);
+	    logger.info(log);
 	    if (eUserDo != null) {
 		logger.error("boluomeActivityRegisterLogin user regist account exist",mobile);
 		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_ACCOUNT_EXIST.getDesc(), "Register", null).toString();
@@ -370,7 +374,7 @@ public class H5BoluomeActivityController extends BaseController {
 		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
-	    logger.info("boluomeActivityRegisterLogin userDo",userDo,mobile);
+	    logger.info("boluomeActivityRegisterLogin userDo",JSONObject.toJSONString(userDo),mobile);
 	    int result = afUserService.addUser(userDo);
 	    logger.info("boluomeActivityRegisterLogin result",result,mobile);
 	    Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
@@ -384,7 +388,7 @@ public class H5BoluomeActivityController extends BaseController {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
-	   
+	    log = log + String.format("注册成功", mobile+"inviteer:"+inviteer);
 	    // save token to cache
             String  token1 = UserUtil.generateToken(mobile);
 	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + mobile;
@@ -393,7 +397,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
 //	    //进行相应的埋点
 	    if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
-		 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),typeFrom,typeFromNum,mobile);
+		 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),typeFrom,typeFromNum,mobile,inviteer);
 	    }
 	    try{
         	    if (inviteer != null && !"".equals(inviteer)){
