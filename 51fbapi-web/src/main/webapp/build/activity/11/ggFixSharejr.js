@@ -278,6 +278,21 @@ let vm = new Vue({
     methods: {
         //获取页面初始化信息
         logData() {
+            //倒计时
+            let currentStamp=Date.parse(new Date());
+            let endStamp=Date.parse(new Date("2017/12/22 16:00:00"));
+            let diff=(endStamp-currentStamp)/1000;
+            showTimerS(diff);
+            diff--;
+            window.setInterval(function(){
+                showTimerS(diff);
+                $('.timeOut').html(showTimerS(diff));
+                diff--;
+            }, 1000);
+            //左右移动动画
+            let cont = $(".cont1").html();
+            $(".cont2").html(cont);
+            wordMove();
             let self = this;
             //初始化数据
             $.ajax({
@@ -369,3 +384,38 @@ function bombBox () {
         }, 2000);
     }
 };
+//首页顶部栏动画-------------------------
+var speed = 30;
+function wordMove(){
+    var left = $(".personAmount").scrollLeft();
+    if(left >= $(".cont1").width()){
+        left = 0;
+    }else{
+        left++;
+    }
+    $(".personAmount").scrollLeft(left);
+    setTimeout("wordMove()",speed);
+}
+//倒计时
+function showTimerS( diff ){
+    let hour=0,
+        minute=0,
+        second=0;//时间默认值
+
+    if(diff > 0){
+        hour = Math.floor(diff / (60 * 60));
+        minute = Math.floor(diff / 60) - (hour * 60);
+        second = Math.floor(diff) - (hour * 60 * 60) - (minute * 60);
+    }
+    if (hour <= 9){
+        hour = '0' + hour;
+    }
+    if (minute <= 9){
+        minute = '0' + minute;
+    }
+    if (second <= 9) {
+        second = '0' + second;
+    }
+
+    return hour+':'+minute+':'+second
+}
