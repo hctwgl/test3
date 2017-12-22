@@ -83,9 +83,15 @@ public class GetMyBorrowV1Api implements ApiHandle{
 				BigDecimal amount = BigDecimalUtil.subtract(auAmount, userAccount.getUsedAmount());
 				// 获取逾期账单月数量
 				int overduedMonth = afBorrowBillService.getOverduedMonthByUserId(userId);
-				// 已出账单
 				AfBorrowBillQuery query = new AfBorrowBillQuery();
 				query.setUserId(userId);
+				int billCount = afBorrowBillService.countBillByQuery(query);
+				if (billCount < 1) {
+					map.put("status", "noBill");
+				}else {
+					map.put("status", "bill");
+				}
+				// 已出账单
 				query.setIsOut(1);
 				query.setStatus(BorrowBillStatus.NO.getCode());
 				BigDecimal outMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
