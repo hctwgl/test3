@@ -3,6 +3,8 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -21,6 +23,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -37,6 +40,8 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalRepayFromEnum;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -141,7 +146,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     private AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 	@Resource
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
-
+	@Resource
+    private AfTradeCodeInfoService afTradeCodeInfoService;
 	
 	/**
 	 * 新版还钱函
@@ -284,16 +290,23 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		}
         
 		if(isNeedMsgNotice){
-			int errorTimes = 0;//用户信息及当日还款失败次数校验
+			//用户信息及当日还款失败次数校验
+			int errorTimes = 0;
+			AfUserDo afUserDo = afUserService.getUserById(repaymentDo.getUserId());
+			//如果是代扣，不校验次数
 			String payType = repaymentDo.getName();
-			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){ //如果是代扣，不校验次数
-				errorTimes = 0;
+			//模版数据map处理
+			Map<String,String> replaceMapData = new HashMap<String, String>();
+			replaceMapData.put("errorMsg", errorMsg);
+			//还款失败短信通知
+			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
 			}else{
 				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repaymentDo.getUserId());
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
 			}
-			AfUserDo afUserDo = afUserService.getUserById(repaymentDo.getUserId());
-			smsUtil.sendRepaymentBorrowCashFail(afUserDo.getMobile(),errorMsg,errorTimes);//还款失败短信通知
 		}
+		
 	}
     
     private void generateRepayRecords(RepayBo bo) {
@@ -407,23 +420,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				changOrderRepaymentStatus(respBo.getTradeNo(), AfBorrowLegalRepaymentStatus.PROCESS.getCode(), legalOrderRepayment.getId());
 			}
 			if (!respBo.isSuccess()) {
-				if(StringUtil.isNotBlank(respBo.getRespDesc())){
-					String addMsg = "";
-					try{
-						if(bank!=null){
-							String bankName = bank.getBankName();
-							String cardNum = bank.getCardNumber();
-							if(StringUtil.isNotBlank(bankName)&&StringUtil.isNotBlank(cardNum)){
-								if(cardNum.length()>4){
-									cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
-									addMsg = "{"+ bankName + cardNum + "}";
-								}
-							}
-						}
-					}catch (Exception e){
-						logger.error("BorrowCash sendMessage but addMsg error for:"+e);
-					}
-					dealRepaymentFail(bo.tradeNo, "", true, addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+				if(StringUtil.isNotBlank(respBo.getRespCode())){
+					dealRepaymentFail(bo.tradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				}else{
 					dealRepaymentFail(bo.tradeNo, "", false, "");
 				}
@@ -569,17 +567,47 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     }
     
     private void notifyUserBySms(RepayDealBo repayDealBo) {
+    	logger.info("notifyUserBySms info begin,sumAmount="+repayDealBo.sumAmount+",curSumRepayAmount="+repayDealBo.curSumRepayAmount+",sumRepaidAmount="+repayDealBo.sumRepaidAmount);
         try {
             AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
             if(repayDealBo.curName.equals("代扣付款")){
-                String content= "代扣还款"+repayDealBo.sumAmount+"元，该笔借款已结清。";
-                smsUtil.sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), content);
+                sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), repayDealBo.sumAmount);
             }else{
-                smsUtil.sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount.toString(), repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount).toString());
+            	sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount, repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount));
             }
         } catch (Exception e) {
             logger.error("Sms notify user error, userId:" + repayDealBo.userId + ",nowRepayAmount:" + repayDealBo.curSumRepayAmount + ",notRepayMoney" + repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount), e);
         }
+    }
+    
+    /**
+     * 代扣现金贷还款成功短信发送
+     * @param mobile
+     * @param nowRepayAmountStr
+     */
+    private boolean sendRepaymentBorrowCashWithHold(String mobile,BigDecimal nowRepayAmount){
+    	//模版数据map处理
+		Map<String,String> replaceMapData = new HashMap<String, String>();
+		replaceMapData.put("nowRepayAmountStr", nowRepayAmount+"");
+		return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_SUCCESS.getCode());
+    }
+    
+    
+    /**
+     * 用户手动现金贷还款成功短信发送
+     * @param mobile
+     * @param nowRepayAmountStr
+     */
+    private boolean sendRepaymentBorrowCashWarnMsg(String mobile,BigDecimal repayMoney,BigDecimal notRepayMoney){
+    	//模版数据map处理
+    	Map<String,String> replaceMapData = new HashMap<String, String>();
+ 		replaceMapData.put("repayMoney", repayMoney+"");
+ 		replaceMapData.put("remainAmount", notRepayMoney+"");
+         if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
+             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+         } else {
+             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
+         }
     }
     
     private void nofityRisk(RepayDealBo repayDealBo) {

@@ -596,11 +596,11 @@ public class HuichaoUtility implements ThirdInterface {
             }
         }
         else if(resultStatus.equals(HuiCaoOrderStatus.SUCCESS.getCode())){
-            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo);
+            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo,false);
         }
         else{
             //关闭
-            afRepaymentService.dealRepaymentFail(orderNo, thirdOrderNo);
+            afRepaymentService.dealRepaymentFail(orderNo, thirdOrderNo,false,"");
         }
     }
 
