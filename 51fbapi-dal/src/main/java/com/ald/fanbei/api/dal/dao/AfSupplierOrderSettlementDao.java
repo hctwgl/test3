@@ -3,8 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 
 
 import com.ald.fanbei.api.dal.domain.AfSupplierOrderSettlementDo;
-
-
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -19,5 +18,5 @@ public interface AfSupplierOrderSettlementDao {
 
 	Integer updateSettlementOrderPayStatus(AfSupplierOrderSettlementDo afSupplierOrderSettlementDo);//修改结算单打款状态
 
-    int updateStatusByOrderId(Long rid);
+    int updateStatusByOrderId(@Param("rid") Long rid);
 }
