@@ -57,7 +57,7 @@
 		WHERE
 		is_delete = 0
 		AND
-		type = #{type}
+		type = #{type} ORDER BY sort DESC
 	</select>
 	<select id="getConfigByTypesAndSecType" resultType="AfResourceDo">
 		SELECT
@@ -186,7 +186,7 @@
 		type = #{type}
 		AND is_delete = 0
 		order by
-		sort
+		sort DESC
 	</select>
 
 	<select id="getOneToManyResourceOrderByBytype" resultType="AfResourceDo">
@@ -371,30 +371,120 @@
 	</select>
 
 	<select id="getEcommercePositionUpRescoure" resultType="AfResourceDo">
+	
 		SELECT
-		<include refid="queryAllFields"></include>
+		<include refid="queryManyAllFieldsTwo"></include>
 		FROM
-		af_resource
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
 		WHERE
-		type = 'HOME_IMAGE_ECOMMERCE_POSITION'
+		r1.type = 'HOME_IMAGE_ECOMMERCE_POSITION'
 		AND
-		value_3
+		r1.value_3
 		IN
 		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_UP','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_UP','HOME_IMAGE_ECOMMERCE_POSITION_MID_MID','HOME_IMAGE_ECOMMERCE_POSITION_LEFT_MID')
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
 	</select>
 
 	<select id="getEcommercePositionDownRescoure" resultType="AfResourceDo">
 		SELECT
-		<include refid="queryAllFields"></include>
+		<include refid="queryManyAllFieldsTwo"></include>
 		FROM
-		af_resource
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
 		WHERE
-		type = 'HOME_IMAGE_ECOMMERCE_POSITION'
+		r1.type = 'HOME_IMAGE_ECOMMERCE_POSITION'
 		AND
-		value_3
+		r1.value_3
 		IN
 		('HOME_IMAGE_ECOMMERCE_POSITION_LEFT_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_MID_DOWN','HOME_IMAGE_ECOMMERCE_POSITION_RIGHT_DOWN')
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
 	</select>
+
+	<select id="getEcommerceFloorImgRes" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_ONE_IMAGE_ECOMMERCE'
+		AND
+		r1.value_3 = 'ONE_IMAGE_ECOMMERCE_ONE'
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+		LIMIT 1
+	</select>
+	
+	<select id="getFinancialEntranceInfo" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_ONE_IMAGE_FINANCIAL'
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+		LIMIT 1
+	</select>
+	
+
+	<select id="getBrandFloorImgRes" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_ONE_IMAGE_BRAND'
+		AND
+		r1.value_3 = 'ONE_IMAGE_BRAND_ONE'
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+		LIMIT 1
+	</select>
+	
+	<select id="getHomeNomalPositionList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_FOUR_IMAGE_NOMAL_POSITION'
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
+	
+	<select id="getHomeBrandPositonInfoList" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryManyAllFieldsTwo"></include>
+		FROM
+		af_resource r1
+		LEFT JOIN af_resource r2
+		ON r1.value_4 = r2.id
+		WHERE
+		r1.type = 'HOME_FOUR_IMAGE_BRAND_POSITION'
+		AND r1.is_delete = 0
+		AND r2.is_delete = 0
+		AND r2.value_4 = 'O'
+	</select>
+	
 
 	<select id="getScrollbarListByType" resultType="AfResourceDo">
 		SELECT

@@ -17,7 +17,8 @@ public enum UserCouponSource {
     SIGNIN("SIGNIN", "签到"),
 
     SPECIAL("SPECIAL", "邀请"),
-    RED_RAIN("RED_RAIN", "红包雨");
+    RED_RAIN("RED_RAIN", "红包雨"),
+	GG_ACTIVITY("GG_ACTIVITY", "逛逛活动");
 	
     private String code;
     private String name;

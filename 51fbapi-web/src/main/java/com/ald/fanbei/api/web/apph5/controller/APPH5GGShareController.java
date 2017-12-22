@@ -534,6 +534,7 @@ public class APPH5GGShareController extends BaseController {
 	private List<AfBoluomeActivityItemsDo> addNumber(Long activityId, Long userId) {
 		AfBoluomeActivityItemsDo t = new AfBoluomeActivityItemsDo();
 		t.setBoluomeActivityId(activityId);
+		t.setStatus("O");
 		List<AfBoluomeActivityItemsDo> resultList = afBoluomeActivityItemsService.getListByCommonCondition(t);
 		// 选出特殊的那个itemsDo
 		AfBoluomeActivityItemsDo specificDo = null;
@@ -581,6 +582,7 @@ public class APPH5GGShareController extends BaseController {
 		AfBoluomeActivityItemsDo iDo = new AfBoluomeActivityItemsDo();
 		iDo.setBoluomeActivityId(activityId);
 		iDo.setType("CARD");
+		iDo.setStatus("O");
 		List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService.getListByCommonCondition(iDo);
 		return itemsList;
 	}
@@ -1339,6 +1341,7 @@ public class APPH5GGShareController extends BaseController {
 				// 活动卡片
 				AfBoluomeActivityItemsDo activityItemsDo = new AfBoluomeActivityItemsDo();
 				activityItemsDo.setBoluomeActivityId(activityId);
+				activityItemsDo.setStatus("O");
 				List<AfBoluomeActivityItemsDo> itemsList = afBoluomeActivityItemsService
 						.getListByCommonCondition(activityItemsDo);
 

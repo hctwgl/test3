@@ -112,6 +112,19 @@ public class GeneratorClusterNo {
 	}
 
 	/**
+	 * 获取购买搭售商品借款编号
+	 *
+	 * @param currDate
+	 * @return
+	 */
+	public String geBorrowLegalOrderCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+		StringBuffer orderSb = new StringBuffer("lg");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowCashSequenceNum(currDate, "lg")));
+		return orderSb.toString();
+	}
+
+	/**
 	 * 获还款款号
 	 * 
 	 * @param currDate
@@ -141,9 +154,27 @@ public class GeneratorClusterNo {
 	 * @return
 	 */
 	public String getRepaymentBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		synchronized (this){
+			String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+			StringBuffer orderSb = new StringBuffer("hq");
+			orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "hq")));
+			return orderSb.toString();
+		}
+	}
+
+	/**
+	 * 获取现金还款编号
+	 *
+	 * @param currDate
+	 * @return
+	 */
+	public String getOfflineRepaymentBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
-		StringBuffer orderSb = new StringBuffer("hq");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum( "hq",dateStr)));
+		StringBuffer orderSb = new StringBuffer("offline");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "offline")));
+//		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+//		StringBuffer orderSb = new StringBuffer("hq");
+//		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum( "hq",dateStr)));
 		return orderSb.toString();
 	}
 

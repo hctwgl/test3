@@ -44,6 +44,9 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <if test="logo != null and logo != ''">
             AND logo = #{logo,jdbcType=VARCHAR}
         </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
     </sql>
 
     
@@ -161,7 +164,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
                 logo = #{sort,jdbcType=VARCHAR}                
             </if>
         </set>    
-        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}  AND status = 'O'
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}  
     </update>
 
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
@@ -177,8 +180,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/> 
-         AND status = 'O'
-        limit 0,1
+        limit 0,1;
     </select>
                
     <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
@@ -186,7 +188,7 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/>
-         AND status = 'O'
+        
     </select>
     
       <select id="getItemsInfo" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo">
@@ -194,7 +196,49 @@ id rid,gmt_create,gmt_modified,boluome_activity_id,name,icon_url,type,ref_id,sor
         <include refid="queryFields" />
         FROM af_boluome_activity_items
         <include refid="commonCondition"/>
-         AND status = 'O'
+    </select>
+    
+     <select id="getItemsInfoByOrderId" resultType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo" parameterType="java.lang.Long">
+       SELECT
+      <include refid="queryFields" />
+         FROM af_boluome_activity_items
+         WHERE is_delete = 0
+         AND boluome_activity_id = 1000
+        
+	         AND ref_id = (
+	         SELECT id FROM af_shop 
+	         WHERE TYPE = (
+		         SELECT  CASE sec_type 
+		         WHEN 'HUAFEI'  THEN 'CHONGZHI'
+		         WHEN 'LIULIANG' THEN 'CHONGZHI' 
+		         ELSE sec_type END AS type 
+		         FROM af_order WHERE id = #{orderId}
+	         )
+         AND is_delete = 0
+         LIMIT 0 ,1
+         );
+    </select>
+    
+    <select id ="getUserCards" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfCardDo">
+		SELECT DISTINCT  t1.id as shopId,1 as activityId,t1.`name`,
+		case when t2.status=1 then t1.icon_url else t1.logo end as image,
+		t1.sort,t1.activityId as rid
+		FROM 
+		(SELECT
+		       s.id,s.`name`,s.`icon`,s.`type`,i.`id` as activityId,i.`sort` ,a.`icon_url` ,a.`logo` 
+		FROM af_boluome_activity_items a join `af_shop` s on a.`ref_id` = s.`id` 
+		 join af_boluome_activity_items i on s.`id` = i.`ref_id` and i.`boluome_activity_id` =1000
+		WHERE a.boluome_activity_id = 1000) t1
+		LEFT JOIN
+		(SELECT 
+		  IF(o.sec_type = 'HUAFEI' OR o.sec_type = 'LIULIANG', 'CHONGZHI', o.sec_type) AS type,1 as status
+		from 
+		  af_boluome_rebate t JOIN af_order o on o.id = t.order_id
+		WHERE
+		  t.user_id = #{userId} AND o.is_delete = 0 AND t.is_delete = 0
+		GROUP BY o.sec_type) t2
+		on t1.type = t2.type
+		ORDER BY `sort` ;
     </select>
     
 </mapper>

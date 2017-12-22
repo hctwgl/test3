@@ -14,6 +14,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfHuicaoOrderDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
@@ -21,6 +22,7 @@ import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.helper.DataUtil;
 import org.slf4j.Logger;
@@ -32,6 +34,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -82,6 +85,12 @@ public class HuichaoUtility implements ThirdInterface {
     private AfRepaymentService afRepaymentService;
 
     public HashMap<String,String > createOrderZFB(String orderNo, String orderMoney, long userId, PayOrderSource payOrderSource){
+
+        BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(orderMoney), BigDecimal.ZERO);
+        if(repaymentAmount.compareTo(BigDecimal.ONE)<0){
+            throw new FanbeiException(FanbeiExceptionCode.BACK_MONEY_CHECK);
+        }
+
         int checkType = 2;
         if(payOrderSource.getCode().equals(PayOrderSource.RENEWAL_PAY.getCode())){
             checkType =1;
@@ -102,8 +111,8 @@ public class HuichaoUtility implements ThirdInterface {
         HashMap<String,String> map = new HashMap();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String sdate=sdf.format(new Date());
-//        String stringA=step1(thirdNo,orderMoney,sdate);
-        String stringA=step1(thirdNo,"1",sdate);
+        String stringA=step1(thirdNo,orderMoney,sdate);
+        //String stringA=step1(thirdNo,"1",sdate);
         
         String stringsignTemp=stringA+"&key="+key;
         String sign= getMD5(stringsignTemp);
@@ -602,27 +611,30 @@ public class HuichaoUtility implements ThirdInterface {
     public void updateAllNotCheck(){
         List<AfHuicaoOrderDo> list = afHuicaoOrderDao.getHuicaoUnFinishOrderAll();
         for(AfHuicaoOrderDo afHuicaoOrderDo:list){
-            Map<String, String> result  = getHuiCaoOrder(afHuicaoOrderDo.getThirdOrderNo());
-            String sendStatus = HuiCaoOrderStatus.PROCESSING.getCode();
-            if(result.containsKey("code")){
-                afHuicaoOrderDao.updateHuicaoOrderStatusLock(5,afHuicaoOrderDo.getId(),afHuicaoOrderDo.getGmtModified());
-            }
-            else{
+            try {
+                Map<String, String> result = getHuiCaoOrder(afHuicaoOrderDo.getThirdOrderNo());
+                String sendStatus = HuiCaoOrderStatus.PROCESSING.getCode();
+                if (result.containsKey("code")) {
+                    afHuicaoOrderDao.updateHuicaoOrderStatusLock(5, afHuicaoOrderDo.getId(), afHuicaoOrderDo.getGmtModified());
+                } else {
 
-                String _payResult = String .valueOf( result.get("payResult"));
-                if(_payResult.equals("0")){
-                    if(DateUtil.addMins( afHuicaoOrderDo.getGmtCreate(),10).compareTo(new Date())>0) {
-                        //处理中
-                    }else{
-                        sendStatus = HuiCaoOrderStatus.FAIL.getCode();
+                    String _payResult = String.valueOf(result.get("payResult"));
+                    if (_payResult.equals("0")) {
+                        if (DateUtil.addMins(afHuicaoOrderDo.getGmtCreate(), 10).compareTo(new Date()) > 0) {
+                            //处理中
+                        } else {
+                            sendStatus = HuiCaoOrderStatus.FAIL.getCode();
+                        }
+                    } else {
+                        sendStatus = HuiCaoOrderStatus.SUCCESS.getCode();
                     }
-                }
-                else{
-                    sendStatus = HuiCaoOrderStatus.SUCCESS.getCode();
-                }
 
-                //要获取处理中状态
-                proessUpdate(afHuicaoOrderDo,sendStatus,getBizType(afHuicaoOrderDo.getPayType()));
+                    //要获取处理中状态
+                    proessUpdate(afHuicaoOrderDo, sendStatus, getBizType(afHuicaoOrderDo.getPayType()));
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
             }
         }
     }

@@ -171,6 +171,16 @@ public interface AfResourceDao {
 
 	List<AfResourceDo> getEcommercePositionDownRescoure();
 
+	AfResourceDo getEcommerceFloorImgRes();
+
+	AfResourceDo getBrandFloorImgRes();
+
+	List<AfResourceDo> getHomeNomalPositionList();
+
+	List<AfResourceDo> getHomeBrandPositonInfoList();
+
+	AfResourceDo getFinancialEntranceInfo();
+
 	/**
 	 * 根据type和value获取一个resoueceDo
 	 * @param type

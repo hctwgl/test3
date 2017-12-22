@@ -17,11 +17,13 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -118,6 +120,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	AfBorrowBillDao afBorrowBillDao;
 	@Resource
 	SmsUtil smsUtil;
+	@Resource
+	FenqiCuishouUtil fenqiCuishouUtil;
 
 	@Resource
 	AfUserAmountDetailDao afUserAmountDetailDao;
@@ -540,7 +544,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
 					account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
 					logger.info("account=" + account);
-					afUserAccountDao.updateUserAccount(account);
+					int result=afUserAccountDao.updateUserAccount(account);
+					if(result<=0){
+						logger.info("update account error,details:repayNo"+repayment.getRepayNo(), JSON.toJSONString(account));
+						//throw new Exception("update account error,details");
+					}
 //					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, backAmount, repayment.getUserId(), repayment.getRid()));
 					dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
@@ -560,6 +568,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 
 
 					afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.SUCCESS,repayment);
+					fenqiCuishouUtil.postReapymentMoney(repayment.getRid());
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();

@@ -1,6 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
+import com.ald.fanbei.api.dal.domain.AfCardDo;
 
 /**
  * '第三方-上树请求记录Dao
@@ -13,6 +18,12 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeActivityItemsDo;
 public interface AfBoluomeActivityItemsDao extends BaseDao<AfBoluomeActivityItemsDo, Long> {
 
 	AfBoluomeActivityItemsDo getItemsInfo(AfBoluomeActivityItemsDo itemsMessageSet);
+
+
+	AfBoluomeActivityItemsDo getItemsInfoByOrderId(@Param("orderId") long orderId);
+
+
+	List<AfCardDo> getUserCards(@Param("userId")Long userId);
 
     
 

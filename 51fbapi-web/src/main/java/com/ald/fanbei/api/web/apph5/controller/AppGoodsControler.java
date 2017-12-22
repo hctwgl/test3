@@ -163,7 +163,7 @@ public class AppGoodsControler extends BaseController {
 					goodsList.add(goodsInfoMap);
 					continue;
 				}
-				removeSecondNper(array);
+				//removeSecondNper(array);
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 						BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),
 						resource.getValue2());
@@ -192,7 +192,7 @@ public class AppGoodsControler extends BaseController {
 		Iterator<Object> it = array.iterator();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
 				it.remove();
 				break;
 			}
@@ -251,7 +251,7 @@ public class AppGoodsControler extends BaseController {
 						goodsList.add(goodsInfoMap);
 						continue;
 					}
-					removeSecondNper(array);
+					//removeSecondNper(array);
 
 					List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
 							BigDecimal.ONE.intValue(), goodsDto.getSaleAmount(), resource.getValue1(),

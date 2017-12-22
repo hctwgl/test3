@@ -22,6 +22,7 @@ public class AfRenewalDetailDo extends AbstractSerial {
 	private BigDecimal renewalAmount;// 续期本金
 	private BigDecimal priorInterest;// 上期利息
 	private BigDecimal priorOverdue;// 上期滞纳金
+	private BigDecimal priorPoundage;// 上期手续费
 	private BigDecimal nextPoundage;// 下期手续费
 	private BigDecimal jfbAmount;// 集分宝个数
 	private BigDecimal rebateAmount;// 账户余额
@@ -36,6 +37,15 @@ public class AfRenewalDetailDo extends AbstractSerial {
 	private BigDecimal poundageRate;// 借钱手续费率（日）
 	private BigDecimal baseBankRate;// 央行基准利率
 	private BigDecimal capital;//每次续期需缴本金
+	
+	
+	public BigDecimal getPriorPoundage() {
+		return priorPoundage;
+	}
+	
+	public void setPriorPoundage(BigDecimal priorPoundage) {
+		this.priorPoundage = priorPoundage;
+	}
 	
 	public Long getRid() {
 		return rid;

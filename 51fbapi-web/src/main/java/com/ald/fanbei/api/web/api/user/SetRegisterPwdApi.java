@@ -10,6 +10,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
+import com.ald.fanbei.api.biz.service.AfH5BoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -25,6 +27,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfPromotionChannelPointDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -54,7 +57,11 @@ public class SetRegisterPwdApi implements ApiHandle {
 	SmsUtil smsUtil;
 	@Resource
 	RiskUtil riskUtil;
-
+	@Resource
+	AfBoluomeActivityService afBoluomeActivityService;
+	@Resource
+	AfH5BoluomeActivityService afH5BoluomeActivityService;
+	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -170,7 +177,6 @@ public class SetRegisterPwdApi implements ApiHandle {
 
 		// 注册完成,给用户发送注册成功的短信
 		// smsUtil.sendRegisterSuccessSms(userDo.getUserName());
-
 		afUserDo = afUserService.getUserByUserName(userName);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String registerTime = sdf.format(new Date(System.currentTimeMillis()));
@@ -179,6 +185,36 @@ public class SetRegisterPwdApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
 		}
+		
+		// 吃玩住行活动， 注册成功后。如果被邀请了(有邀请码)，则添加绑定记录
+		  if (!StringUtils.isBlank(recommendCode) && !recommendCode.equals("0") ) {
+		       AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+		       if(userRecommendDo != null ){
+        		      try{
+        			        long  boluomeActivityId  = 1000L;  //该活动默认值
+                			AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
+                			afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
+                			afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
+                			afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
+                			afBoluomeActivityUserLogin.setRefUserId(userRecommendDo.getRid());
+                			afBoluomeActivityUserLogin.setRefUserName(userRecommendDo.getUserName());
+                			afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+                			logger.info("setRegisterPwdApi gg activity add binding record afBoluomeActivityUserLogin = {}",afBoluomeActivityUserLogin);
+        					    
+        			}catch(Exception e){
+        			        logger.error("setRegisterPwdApi gg activity add binding record error",e);
+        			}	
+		        }
+		      }
+					
+		
+		 //吃玩住行活动被邀请的新用户登录送券
+		try{
+			  afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
+			  logger.info("sentNewUserBoluomeCouponForDineDash success");
+		   }catch (Exception e){
+			  logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
+		   }
 		return resp;
 	}
 

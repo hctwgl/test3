@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +89,13 @@ public class PayOrderV1Api implements ApiHandle {
     AfShareUserGoodsService afShareUserGoodsService;
     @Resource
     AfShareGoodsService afShareGoodsService;
+    @Resource
+	AfGoodsDouble12Service afGoodsDouble12Service;
+    @Resource
+    AfGoodsService afGoodsService;
+    @Resource
+    AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+    
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -126,6 +134,13 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
 
+        if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())){
+            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
+                if(afResourceDo!=null&&afResourceDo.getValue().contains(orderInfo.getGoodsName()) ){
+                    logger.error("filter shop : "+orderInfo.getGoodsName());
+                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BOLUOME_UNTRUST_SHOPGOODS);
+                }
+        }
         //双十一砍价添加
         if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
             AfDeUserGoodsDo afDeUserGoodsDo = afDeUserGoodsService.getById(Long.parseLong(orderInfo.getThirdOrderNo()));
@@ -163,8 +178,13 @@ public class PayOrderV1Api implements ApiHandle {
     		}
         }
         
-        // ----------------
-
+        //-------------mqp doubleEggs-------------
+        doubleEggsGoodsCheck(userId, orderInfo.getGoodsId());
+        
+        // 双十二秒杀新增逻辑+++++++++++++>
+		double12GoodsCheck(userId, orderInfo.getGoodsId());
+		// +++++++++++++++++++++++++<
+        
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
@@ -228,7 +248,7 @@ public class PayOrderV1Api implements ApiHandle {
                         orderInfo.setRebateAmount(rebateAmount);
                     }
                 } else {
-                    borrowRate = afResourceService.borrowRateWithResource(nper);
+                    borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
                     orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                 }
 
@@ -338,7 +358,7 @@ public class PayOrderV1Api implements ApiHandle {
                         if (payId.intValue() == 0) {
                             riskUtil.payOrderChangeAmount(orderInfo.getRid());
                         } else if (payId > 0 && PayStatus.DEALING.getCode().equals(payStatus.toString())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
+                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
                         }
                     }
 
@@ -349,6 +369,7 @@ public class PayOrderV1Api implements ApiHandle {
                         afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
+                    
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
                     ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
@@ -367,4 +388,66 @@ public class PayOrderV1Api implements ApiHandle {
         return resp;
     }
 
+    
+    /**
+	 * 
+	 * @Title: double12GoodsCheck
+	 * @Description:  双十二秒杀新增逻辑 —— 秒杀商品校验
+	 * @return  void  
+	 * @author yanghailong
+	 * @data  2017年11月21日
+	 */
+	private void double12GoodsCheck(Long userId, Long goodsId){
+		
+		List<AfGoodsDouble12Do> afGoodsDouble12DoList = afGoodsDouble12Service.getByGoodsId(goodsId);
+		if(afGoodsDouble12DoList.size()!=0){
+			//这个商品是双十二秒杀商品
+			List<AfOrderDo> overOrder = afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
+			//对于同一天已秒杀过得商品，提示只能买一件商品
+			if(overOrder.size()>1){
+				//报错提示只能买一件商品
+				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+			}
+			
+			//根据goodsId查询商品信息
+			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+			int goodsDouble12Count = Integer.parseInt(afGoodsDo.getStockCount())-afGoodsDouble12DoList.get(0).getAlreadyCount();//秒杀商品余量
+			if(goodsDouble12Count<0){
+				//报错提示秒杀商品已售空
+				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	* @Title: doubleEggsGoodsCheck
+	* @author qiao
+	* @date 2017年12月8日 下午4:33:02
+	* @Description: 双蛋活动秒杀
+	* @param userId
+	* @param goodsId    
+	* @return void   
+	* @throws
+	 */
+	private void doubleEggsGoodsCheck(Long userId, Long goodsId){
+		AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
+		if(doubleEggsDo != null){
+			//双蛋
+			List<AfOrderDo> overOrder = afOrderService.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
+			//对于同一天已秒杀过得商品，提示只能买一件商品
+			if(overOrder.size()>1){
+				//报错提示只能买一件商品
+				throw new FanbeiException(FanbeiExceptionCode.ONLY_ONE_DOUBLE12GOODS_ACCEPTED);
+			}
+			
+			//根据goodsId查询商品信息
+			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
+			int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
+			if(goodsDouble12Count<0){
+				//报错提示秒杀商品已售空
+				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
+			}
+		}
+	}
 }

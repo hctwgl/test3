@@ -7,14 +7,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -24,14 +22,16 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.ald.fanbei.api.common.SSLClient;
+
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.util.HttpURLConnection;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -71,8 +71,17 @@ public class HttpUtil {
             URLConnection conn = realUrl.openConnection();
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
+            conn.setRequestProperty("content-type", "application/json");
+            
+            HttpURLConnection httpConn = (HttpURLConnection)conn;
+            InputStream is;
+            if (httpConn.getResponseCode() >= 400) {
+                is = httpConn.getErrorStream();
+            } else {
+                is = httpConn.getInputStream();
+            }
+            
+            in = new BufferedReader(new InputStreamReader(is,"UTF-8"));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
@@ -139,6 +148,41 @@ public class HttpUtil {
         }
         return result;
     }
+
+
+
+    public static String doHttpsPost(String url,Map<String,String> map,String charset){
+        HttpClient httpClient = null;
+        HttpPost httpPost = null;
+        String result = null;
+        try{
+            httpClient = new SSLClient();
+            httpPost = new HttpPost(url);
+            //设置参数
+            List<NameValuePair> list = new ArrayList<NameValuePair>();
+            Iterator iterator = map.entrySet().iterator();
+            while(iterator.hasNext()){
+                Map.Entry<String,String> elem = (Map.Entry<String, String>) iterator.next();
+                list.add(new BasicNameValuePair(elem.getKey(),elem.getValue()));
+            }
+            if(list.size() > 0){
+                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list,charset);
+                httpPost.setEntity(entity);
+            }
+            HttpResponse response = httpClient.execute(httpPost);
+            if(response != null){
+                HttpEntity resEntity = response.getEntity();
+                if(resEntity != null){
+                    result = EntityUtils.toString(resEntity,charset);
+                }
+            }
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return result;
+    }
+
+
 
 //    /**
 //     * 发送post请求
@@ -295,56 +339,6 @@ public class HttpUtil {
         return result;
     }
     
-    /**
-     * 发送POST请求，将参数放置到BODY里边
-     * 
-     * @param url
-     * @param param
-     * @return
-     */
-    public static String ttt(String url, String param) {
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
-        String result = "";
-        try {
-            URL realUrl = new URL(url);
-            HttpURLConnection conn = new HttpURLConnection(new PostMethod(), realUrl);
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            byte[] data = "api_key=vYdfhZ0iR6eP5FPXhVLGg_uUfoe_T9a5&api_secret=Zk6jMac1vTIln1Qe_2Ymo3J9hQzignpm".getBytes();
-
-            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=ABCD");
-
-
-            conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-            out = new OutputStreamWriter(conn.getOutputStream());
-            // 把数据写入请求的Body
-            out.write(param);
-            out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            logger.error("发送失败" + e);
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-
     /**
      * 发送POST请求，将参数放置到BODY里边
      * 

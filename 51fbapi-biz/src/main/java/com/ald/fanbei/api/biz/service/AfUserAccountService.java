@@ -140,4 +140,6 @@ public interface AfUserAccountService {
 	BigDecimal getAuAmountByUserId(long userId);
 
     int updateUserAccountByUserId(Long userId,int money);
+
+	AfUserAccountDo findByIdNo(String idNo);
 }

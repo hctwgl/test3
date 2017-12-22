@@ -359,7 +359,7 @@ $(function () {
                         }, 1500);
 
                     } else if (a.url == "Register") {
-                        maidianFn("registerFail");
+                        maidianFnNew("registerFail",a.msg);
                         requestMsg(a.msg);
                     }
                 },

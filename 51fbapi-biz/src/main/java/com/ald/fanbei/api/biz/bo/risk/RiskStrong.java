@@ -41,6 +41,8 @@ public class RiskStrong extends RiskRegisterStrongReqBo {
 		userInfo.put("alipayNo", accountDo.getAlipayAccount());
 		userInfo.put("openId", accountDo.getOpenId());
 		userInfo.put("address", afUserDo.getAddress());
+		//同时传递similarDegree
+		userInfo.put("similarDegree",afUserAuthDo.getSimilarDegree());
 		userInfo.put("channel", CHANNEL);
 		userInfo.put("reqExt", "");
 		userInfo.put("realName", RSAUtil.encrypt(PRIVATE_KEY, afUserDo.getRealName()));

@@ -198,7 +198,7 @@
 			<include refid="queryFields"/>
 		FROM af_borrow WHERE is_delete = 0 AND borrow_no = #{borrowNo} LIMIT 1
 	</select>
-	
+
 	<select id="getUserNotInBorrow" resultType="AfBorrowDto">
 		SELECT
 			a.id rid,
@@ -216,6 +216,14 @@
 		order by a.gmt_create desc
 	</select>
 
+	<select id="getUserSummary" resultType="java.util.HashMap">
+		SELECT TIMESTAMPDIFF(HOUR,(SELECT gmt_risk  FROM af_user_auth WHERE user_id =c.user_id   LIMIT 1 ),(SELECT min(gmt_create)  FROM af_borrow_cash WHERE user_id =c.user_id  and `status`='FINSH' )) hourBetweenVerifyBorrow,
+COUNT(if(overdue_day>=4,true,null))/COUNT(id) as rateAfter4Day,
+TIMESTAMPDIFF(HOUR,MIN(gmt_create),MAX(gmt_create))/COUNT(id) frequency,
+COUNT(if(type='SEVEN',true,null))/COUNT(id) as rateBorrow7d,
+COUNT(if(overdue_status='Y',true,null))/COUNT(id) as rateOverdue
+FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
+	</select>
 	<select id="getUserNotInBorrowCount" resultType="java.lang.Integer">
 		SELECT
 			count(1)
@@ -228,7 +236,7 @@
 		AND a.user_id = #{userId}
 		AND b.in_bill = 0
 	</select>
-	
+
 	<select id="getUserNotInBorrowMoney" resultType="java.math.BigDecimal">
 		SELECT
 			COALESCE (SUM(a.amount), 0)

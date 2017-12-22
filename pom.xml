@@ -267,6 +267,11 @@
 			<version>4.9</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>jiazhiyi.web.com</groupId>
+			<artifactId>ComInterface</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>
@@ -300,7 +305,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArguments>
 						<verbose />
-                        <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
+                        <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>

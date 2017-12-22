@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -81,7 +82,7 @@ public interface AfBorrowDao {
 	 */
 	AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo);
 
-	
+
 	/**
 	 * 获取用户所有未入账账单
 	 * @author yuyue
@@ -108,4 +109,6 @@ public interface AfBorrowDao {
 	 * @return
 	 */
 	BigDecimal getUserNotInBorrowMoney(@Param("userId")Long userId);
+
+    HashMap getUserSummary(@Param("userId") Long userId);
 }

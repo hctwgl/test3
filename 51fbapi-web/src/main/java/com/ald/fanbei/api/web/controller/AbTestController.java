@@ -26,7 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 /**
  *
  *@类描述：AbTestController
- *@author 陈金虎 2017年1月17日 下午6:15:06
+ *@author 江荣波 2017年1月17日 下午6:15:06
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller

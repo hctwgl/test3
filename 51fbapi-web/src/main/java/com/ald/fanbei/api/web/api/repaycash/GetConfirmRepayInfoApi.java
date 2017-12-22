@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -59,6 +60,8 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+	@Resource
+	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 
 	@Resource
 	AfBorrowCashService afBorrowCashService;
@@ -66,106 +69,76 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 	AfRenewalDetailService afRenewalDetailService;
 
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo,
-			FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
-				FanbeiExceptionCode.SUCCESS);
+	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(
-				ObjectUtils.toString(requestDataVo.getParams().get(
-						"repaymentAmount")), BigDecimal.ZERO);
+				ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);
 		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(
-				ObjectUtils.toString(requestDataVo.getParams().get(
-						"actualAmount")), BigDecimal.ZERO);
+				ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
 
-		Long couponId = NumberUtil
-				.objToLongDefault(
-						ObjectUtils.toString(requestDataVo.getParams().get(
-								"couponId")), 0l);
-		BigDecimal userAmount = NumberUtil.objToBigDecimalDefault(
-				ObjectUtils.toString(requestDataVo.getParams().get(
-						"rebateAmount")), BigDecimal.ZERO);
-		Long borrowId = NumberUtil
-				.objToLongDefault(
-						ObjectUtils.toString(requestDataVo.getParams().get(
-								"borrowId")), 0l);
-		String payPwd = ObjectUtils.toString(
-				requestDataVo.getParams().get("payPwd"), "").toString();
-		Long cardId = NumberUtil.objToLongDefault(
-				ObjectUtils.toString(requestDataVo.getParams().get("cardId")),
+		Long couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")),
 				0l);
-		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils
-				.toString(requestDataVo.getParams().get("jfbAmount")),
-				BigDecimal.ZERO);
+		BigDecimal userAmount = NumberUtil.objToBigDecimalDefault(
+				ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
+		Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")),
+				0l);
+		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
+		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
+		BigDecimal jfbAmount = NumberUtil.objToBigDecimalDefault(
+				ObjectUtils.toString(requestDataVo.getParams().get("jfbAmount")), BigDecimal.ZERO);
 
-		AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService
-				.getLastRepaymentBorrowCashByBorrowId(borrowId);
+		AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(borrowId);
 		if (borrowId == 0) {
-			throw new FanbeiException(
-					FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
-		if (rbCashDo != null
-				&& StringUtils.equals(rbCashDo.getStatus(),
-						AfBorrowCashRepmentStatus.PROCESS.getCode())) {
-			throw new FanbeiException(
-					FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
+		if (rbCashDo != null && StringUtils.equals(rbCashDo.getStatus(), AfBorrowCashRepmentStatus.PROCESS.getCode())) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
 		}
+		
+		// 对402版本借钱，低版本还款情况做控制
+		afBorrowLegalOrderCashService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId); 
+		
 		// 判断是否存在续期处理中的记录,防止续期和还款交叉,导致最后记录更新失败
-		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService
-				.getRenewalDetailByBorrowId(borrowId);
+		AfRenewalDetailDo lastAfRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(borrowId);
 		if (lastAfRenewalDetailDo != null
-				&& AfRenewalDetailStatus.PROCESS.getCode().equals(
-						lastAfRenewalDetailDo.getStatus())) {
-			throw new FanbeiException(
-					FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
+				&& AfRenewalDetailStatus.PROCESS.getCode().equals(lastAfRenewalDetailDo.getStatus())) {
+			throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
 		}
 
-		AfUserAccountDo userDto = afUserAccountService
-				.getUserAccountByUserId(userId);
+		AfUserAccountDo userDto = afUserAccountService.getUserAccountByUserId(userId);
 		if (userDto == null) {
-			throw new FanbeiException("Account is invalid",
-					FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		if (cardId != -1) {
-			String inputOldPwd = UserUtil
-					.getPassword(payPwd, userDto.getSalt());
+			String inputOldPwd = UserUtil.getPassword(payPwd, userDto.getSalt());
 			if (!StringUtils.equals(inputOldPwd, userDto.getPassword())) {
 				return new ApiHandleResponse(requestDataVo.getId(),
 						FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
 			}
 		}
 
-		AfUserCouponDto coupon = afUserCouponService
-				.getUserCouponById(couponId);
-		if (null != coupon
-				&& !coupon.getStatus().equals(CouponStatus.NOUSE.getCode())) {
+		AfUserCouponDto coupon = afUserCouponService.getUserCouponById(couponId);
+		if (null != coupon && !coupon.getStatus().equals(CouponStatus.NOUSE.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_COUPON_ERROR);
 		}
 
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService
-				.getBorrowCashByrid(borrowId);
+		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 		if (afBorrowCashDo != null) {
 
-			BigDecimal allAmount = BigDecimalUtil
-					.add(afBorrowCashDo.getAmount(),
-							afBorrowCashDo.getSumOverdue(),
-							afBorrowCashDo.getOverdueAmount(),
-							afBorrowCashDo.getRateAmount(),
-							afBorrowCashDo.getSumRate());
+			BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),
+					afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate());
 
-			BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
-					afBorrowCashDo.getRepayAmount());
+			BigDecimal temAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());
 			if (temAmount.compareTo(repaymentAmount) < 0) {
-				throw new FanbeiException(
-						FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
 			}
 		}
 
 		showAmount = repaymentAmount;
 		// 使用优惠券结算金额
 		if (coupon != null) {
-			showAmount = BigDecimalUtil.subtract(repaymentAmount,
-					coupon.getAmount());
+			showAmount = BigDecimalUtil.subtract(repaymentAmount, coupon.getAmount());
 		}
 		// 优惠券金额大于还款金额其他数据处理
 		if (showAmount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -174,54 +147,44 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			userAmount = BigDecimal.ZERO;
 			showAmount = BigDecimal.ZERO;
 		}
-		BigDecimal myjfb = BigDecimalUtil.divide(userDto.getJfbAmount(),
-				new BigDecimal(100));
+		BigDecimal myjfb = BigDecimalUtil.divide(userDto.getJfbAmount(), new BigDecimal(100));
 		// 使用集分宝处理
-		if (jfbAmount.compareTo(BigDecimal.ZERO) > 0
-				&& showAmount.compareTo(myjfb) > 0) {
+		if (jfbAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(myjfb) > 0) {
 
 			showAmount = BigDecimalUtil.subtract(showAmount, myjfb);
 			jfbAmount = userDto.getJfbAmount();
-		} else if (jfbAmount.compareTo(BigDecimal.ZERO) > 0
-				&& showAmount.compareTo(myjfb) <= 0) {
+		} else if (jfbAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(myjfb) <= 0) {
 			// 集分宝金额大于还款金额
-			jfbAmount = BigDecimalUtil
-					.multiply(showAmount, new BigDecimal(100));
+			jfbAmount = BigDecimalUtil.multiply(showAmount, new BigDecimal(100));
 			userAmount = BigDecimal.ZERO;
 			showAmount = BigDecimal.ZERO;
 		}
 		// 余额处理
-		if (userAmount.compareTo(BigDecimal.ZERO) > 0
-				&& showAmount.compareTo(userDto.getRebateAmount()) > 0) {
-			showAmount = BigDecimalUtil.subtract(showAmount,
-					userDto.getRebateAmount());
+		if (userAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(userDto.getRebateAmount()) > 0) {
+			showAmount = BigDecimalUtil.subtract(showAmount, userDto.getRebateAmount());
 			userAmount = userDto.getRebateAmount();
-		} else if (userAmount.compareTo(BigDecimal.ZERO) > 0
-				&& showAmount.compareTo(userDto.getRebateAmount()) <= 0) {
+		} else if (userAmount.compareTo(BigDecimal.ZERO) > 0 && showAmount.compareTo(userDto.getRebateAmount()) <= 0) {
 			userAmount = showAmount;
 			showAmount = BigDecimal.ZERO;
 		}
 
 		if (actualAmount.compareTo(showAmount) != 0) {
-			throw new FanbeiException(
-					FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT__ERROR);
 		}
 
 		Map<String, Object> map = null;
 		if (cardId == -2) {// 余额支付
-			//用户账户余额校验添加
-            if(userDto.getRebateAmount().compareTo(actualAmount)<0){
-                return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
-            }
-			map = afRepaymentBorrowCashService.createRepayment(jfbAmount,
-					repaymentAmount, actualAmount, coupon, userAmount,
-					borrowId, cardId, userId, "", userDto);
+			// 用户账户余额校验添加
+			if (userDto.getRebateAmount().compareTo(actualAmount) < 0) {
+				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_ACCOUNT_MONEY_LESS);
+			}
+			map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
+					userAmount, borrowId, cardId, userId, "", userDto);
 
 			resp.addResponseData("refId", map.get("refId"));
 			resp.addResponseData("type", map.get("type"));
 		} else if (cardId == -1) {// 微信支付
-			return new ApiHandleResponse(requestDataVo.getId(),
-					FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
 			// map
 			// =afRepaymentBorrowCashService.createRepayment(jfbAmount,repaymentAmount,
 			// actualAmount, coupon, userAmount, borrowId, cardId, userId, "",
@@ -229,27 +192,22 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 			//
 			// resp.setResponseData(map);
 		} else if (cardId > 0) {// 银行卡支付
-			AfUserBankcardDo card = afUserBankcardService
-					.getUserBankcardById(cardId);
+			AfUserBankcardDo card = afUserBankcardService.getUserBankcardById(cardId);
 			if (null == card) {
-				throw new FanbeiException(
-						FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
-			map = afRepaymentBorrowCashService.createRepayment(jfbAmount,
-					repaymentAmount, actualAmount, coupon, userAmount,
-					borrowId, cardId, userId, request.getRemoteAddr(), userDto);
+			map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
+					userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto);
 
 			validThirdReqExistFanbeiError(map);
 			// 代收
 			UpsCollectRespBo upsResult = null;
-			if (map.get("resp") != null
-					&& map.get("resp") instanceof UpsCollectRespBo) {
+			if (map.get("resp") != null && map.get("resp") instanceof UpsCollectRespBo) {
 				upsResult = (UpsCollectRespBo) map.get("resp");
 			}
 
 			if (upsResult == null || !upsResult.isSuccess()) {
-				throw new FanbeiException("bank card pay error",
-						FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			Map<String, Object> newMap = new HashMap<String, Object>();
 			newMap.put("outTradeNo", upsResult.getOrderNo());
@@ -267,14 +225,12 @@ public class GetConfirmRepayInfoApi implements ApiHandle {
 	}
 
 	private void validThirdReqExistFanbeiError(Map<String, Object> map) {
-		if (map != null
-				&& map.get(Constants.THIRD_REQ_EXCEP_KEY) != null
+		if (map != null && map.get(Constants.THIRD_REQ_EXCEP_KEY) != null
 				&& (map.get(Constants.THIRD_REQ_EXCEP_KEY) instanceof FanbeiException)) {
-			FanbeiException reqExp = (FanbeiException) map
-					.get(Constants.THIRD_REQ_EXCEP_KEY);
-			logger.error("validThirdReqExistFanbeiError exist error and throw,reqExpmessage="
-					+ reqExp.getErrorCode() != null ? reqExp.getErrorCode()
-					.getDesc() : "");
+			FanbeiException reqExp = (FanbeiException) map.get(Constants.THIRD_REQ_EXCEP_KEY);
+			logger.error(
+					"validThirdReqExistFanbeiError exist error and throw,reqExpmessage=" + reqExp.getErrorCode() != null
+							? reqExp.getErrorCode().getDesc() : "");
 			throw reqExp;
 		}
 	}
