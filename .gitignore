@@ -28,7 +28,6 @@ node_modules
 *.iml
 *.cache
 *.map
-resources/staging.public.pem
 .metadata/
 /51fbapi-biz/target/*
 /51fbapi-common/target/*
