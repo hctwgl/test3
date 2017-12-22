@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfTradeCodeInfoDao;
 import com.ald.fanbei.api.dal.domain.AfTradeCodeInfoDo;
@@ -46,9 +47,15 @@ public class AfTradeCodeInfoServiceImpl extends ParentServiceImpl<AfTradeCodeInf
 		if(afTradeCodeInfoDo!=null){
 			//配置非空则返回配置描述 
 			return afTradeCodeInfoDo.getRespDesc();
-		}else{
-			//配置为空，则返回默认描述，交易失败
-			return "交易失败";
 		}
+		
+		afTradeCodeInfoDo = afTradeCodeInfoDao.getRecordByTradeCode(Constants.TRADE_CODE_INFO_DEFAULT_KEY);
+		if(afTradeCodeInfoDo!=null){
+			//返回默认配置描述 
+			return afTradeCodeInfoDo.getRespDesc();
+		}
+		
+		//配置为空，则返回默认描述，交易失败
+		return "交易失败";
 	}
 }

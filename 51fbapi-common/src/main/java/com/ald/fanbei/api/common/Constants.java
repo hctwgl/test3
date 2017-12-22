@@ -434,4 +434,5 @@ public class Constants {
 	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";	
 
 	public static final int ONE_YEAY_DAYS = 360;
+	public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
 }
