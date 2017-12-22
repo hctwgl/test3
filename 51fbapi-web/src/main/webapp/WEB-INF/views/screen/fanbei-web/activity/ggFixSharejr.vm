@@ -20,7 +20,7 @@
         })(window);
     </script>
     <!--转化代码-->
-    #set($version="201712202252")
+    #set($version="201712211351")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>

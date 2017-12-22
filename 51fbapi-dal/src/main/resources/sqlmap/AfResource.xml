@@ -23,7 +23,6 @@
 		rid,r1.gmt_create,r1.gmt_modified,r1.creator,r1.modifier,r1.data_type,r1.type,r1.type_desc,r1.name,r1.value,r1.description,
 		r1.sec_type,r1.value_1,r1.value_2,r1.value_3,r1.value_4,r1.sort
 	</sql>
-	
 	<select id="selectHomeConfigByAllTypes" resultType="AfResourceDo">
 		SELECT
 		<include refid="queryAllFields" />

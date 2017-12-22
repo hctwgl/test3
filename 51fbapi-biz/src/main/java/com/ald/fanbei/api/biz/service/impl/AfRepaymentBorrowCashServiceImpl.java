@@ -496,7 +496,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     int result=afUserAccountDao.updateUserAccount(account);
                     if(result<=0){
                         logger.info("update account error,details:repayNo"+repayment.getRepayNo(), JSON.toJSONString(account));
-                        throw new Exception("update account error,details");
+                        //throw new Exception("update account error,details");
                     }
                     afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
 
