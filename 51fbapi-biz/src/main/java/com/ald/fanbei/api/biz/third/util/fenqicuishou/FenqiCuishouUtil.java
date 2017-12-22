@@ -205,7 +205,7 @@ public class FenqiCuishouUtil {
                     afRepaymentDo.setJfbAmount(BigDecimal.ZERO);
                     afRepaymentDo.setCouponAmount(BigDecimal.ZERO);
                     afRepaymentDao.addRepayment(afRepaymentDo);
-                    long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(),afRepaymentDo.getTradeNo());
+                    long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(),afRepaymentDo.getTradeNo(),false);
                     if(i>0){
                         postChuiSohiu(afRepaymentDo.getRepayNo(),"200","还款成功");
                     }
