@@ -375,9 +375,11 @@ public class H5BoluomeActivityController extends BaseController {
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
 	    logger.info("boluomeActivityRegisterLogin userDo",JSONObject.toJSONString(userDo),mobile);
-	    int result = afUserService.addUser(userDo);
-	    logger.info("boluomeActivityRegisterLogin result",result,mobile);
-	    Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+	    Long userId = afUserService.addUser(userDo);
+	    logger.info("boluomeActivityRegisterLogin userId,mobile",userId,mobile);
+	  
+	    
+	    Long invteLong = Constants.INVITE_START_VALUE + userId;
 	    String inviteCode = Long.toString(invteLong, 36);
 	    userDo.setRecommendCode(inviteCode);
 	    afUserService.updateUser(userDo);
@@ -388,23 +390,30 @@ public class H5BoluomeActivityController extends BaseController {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "注册成功", appDownLoadUrl, null).toString();
-	    log = log + String.format("注册成功", mobile+"inviteer:"+inviteer);
+	
 	    // save token to cache
             String  token1 = UserUtil.generateToken(mobile);
 	    String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + mobile;
 	    CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, mobile, Constants.SECOND_OF_HALF_HOUR_INT);
 	    CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
 	    bizCacheUtil.saveObject(tokenKey, token1, Constants.SECOND_OF_HALF_HOUR);
-//	    //进行相应的埋点
-	    if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
-		 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),typeFrom,typeFromNum,mobile,inviteer);
-	    }
+//	    //进行相应的埋点.前端已做
+//	    if(typeFrom != null  && StringUtil.isNotBlank(typeFrom) && typeFromNum != null && StringUtil.isNotBlank(typeFromNum) ){
+//		 doMaidianLog(request, H5CommonResponse.getNewInstance(true, "注册成功"),typeFrom,typeFromNum,mobile,inviteer);
+//	    }
+
+	    log = log + String.format(mobile+"注册成功"+"inviteer:"+inviteer);
 	    try{
-        	    if (inviteer != null && !"".equals(inviteer)){
-        		    if (!inviteer.equals(mobile)) {
+		//绑定关系开关
+		  AfResourceDo biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
+		    if(biddingSwitch != null){
+			if("O".equals(biddingSwitch.getValue())){
+			    if (inviteer != null && !"".equals(inviteer)){
+				if (!inviteer.equals(mobile)) {
         		  	       	// 绑定关系mobile
         			        AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
         			        AfUserDo refUserDo =  afUserService.getUserByUserName(inviteer);
+        			        logger.info("/H5GGShare/boluomeActivityRegisterLogin afUserDo = {}, refUserDo = {}",JSONObject.toJSONString(afUserDo),JSONObject.toJSONString(refUserDo));
         			        if(StringUtils.isEmpty(boluomeActivityId.toString())){
         			            boluomeActivityId  = 1000L;
         			        }
@@ -416,13 +425,17 @@ public class H5BoluomeActivityController extends BaseController {
                 		  		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
                 		  		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
                 		  		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+                		  		logger.info("/H5GGShare/boluomeActivityRegisterLogin saveUserLoginInfo afBoluomeActivityUserLogin = {}",JSONObject.toJSONString(afBoluomeActivityUserLogin));
         		  		}
         		    }
         	    }
+		}
+	      }
 	    }catch (FanbeiException e) {
         	logger.error("save boluomeActivity user binding exception" + e.getMessage());
         		  
             } 
+	    
 	    return resultStr;
 
 	} catch (FanbeiException e) {
@@ -711,9 +724,9 @@ public class H5BoluomeActivityController extends BaseController {
 		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
-	    afUserService.addUser(userDo);
+	    long userId =   afUserService.addUser(userDo);
 
-	    Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+	    Long invteLong = Constants.INVITE_START_VALUE + userId;
 	    String inviteCode = Long.toString(invteLong, 36);
 	    userDo.setRecommendCode(inviteCode);
 	    afUserService.updateUser(userDo);
@@ -725,40 +738,40 @@ public class H5BoluomeActivityController extends BaseController {
 //		appDownLoadUrl = resourceCodeDo.getValue();
 //	    }
 	    resultStr = H5CommonResponse.getNewInstance(true, "成功", appDownLoadUrl, null).toString();
-	    AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
+//	    AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
 	
 	    
 	    // 注册成功进行埋点
-	    if (registerSource != null) {
-		String register = "";
-		if ("ggpresents".equals(registerSource)) {
-		    register = "zengsong";
-		}
-		if ("ggIndexShare".equals(registerSource)) {
-		    register = "fenxiang";
-		}
-		if ("ggdemand".equals(registerSource)) {
-		    register = "suoyao";
-		}
-		String reqData = request.toString();
-		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", null), request.getMethod(), rmtIp, exeT, "/H5GGShare/commitBouomeActivityRegister", request.getParameter("registerMobile"), register, "", "", "", "");
-	    }
-	   //非渠道的可以绑定关系
-	    if (refUserName != null && !"".equals(refUserName)){
-	    if (!refUserName.equals(mobile)) {
-	  		// 绑定关系mobile
-		        AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
-	  		if(afUserDo !=  null && refUserDo != null){
-	  		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
-	  		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
-	  		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
-	  		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
-	  		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
-	  		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
-	  		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
-	  		}
-	  	    }
-	    }
+//	    if (registerSource != null) {
+//		String register = "";
+//		if ("ggpresents".equals(registerSource)) {
+//		    register = "zengsong";
+//		}
+//		if ("ggIndexShare".equals(registerSource)) {
+//		    register = "fenxiang";
+//		}
+//		if ("ggdemand".equals(registerSource)) {
+//		    register = "suoyao";
+//		}
+//		String reqData = request.toString();
+//		doLog(reqData, H5CommonResponse.getNewInstance(true, "成功", "", null), request.getMethod(), rmtIp, exeT, "/H5GGShare/commitBouomeActivityRegister", request.getParameter("registerMobile"), register, "", "", "", "");
+//	    }
+//	   //非渠道的可以绑定关系
+//	    if (refUserName != null && !"".equals(refUserName)){
+//	    if (!refUserName.equals(mobile)) {
+//	  		// 绑定关系mobile
+//		        AfUserDo refUserDo =  afUserService.getUserByUserName(refUserName);
+//	  		if(afUserDo !=  null && refUserDo != null){
+//	  		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
+//	  		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
+//	  		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
+//	  		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
+//	  		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
+//	  		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
+//	  		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+//	  		}
+//	  	    }
+//	    }
 	    
 //           else {
 //		return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "Register", "").toString();
@@ -766,7 +779,7 @@ public class H5BoluomeActivityController extends BaseController {
 	    // 注册成功给用户发送注册短信
 	    // smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 	    //兼容菠萝觅活动外的埋点
-	    doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
+	   // doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"),referer);
  	    return resultStr;
 
 	} catch (FanbeiException e) {

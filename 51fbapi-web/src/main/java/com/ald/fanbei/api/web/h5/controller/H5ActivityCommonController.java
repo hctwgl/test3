@@ -237,9 +237,9 @@ public class H5ActivityCommonController extends BaseController {
 		AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
 		userDo.setRecommendId(userRecommendDo.getRid());
 	    }
-	    afUserService.addUser(userDo);
+	    long userId = afUserService.addUser(userDo);
 
-	    Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+	    Long invteLong = Constants.INVITE_START_VALUE + userId;
 	    String inviteCode = Long.toString(invteLong, 36);
 	    userDo.setRecommendCode(inviteCode);
 	    afUserService.updateUser(userDo);
