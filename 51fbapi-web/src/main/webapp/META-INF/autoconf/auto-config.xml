@@ -99,15 +99,15 @@
 		<!-- 菠萝觅 -->
 		<property name="fbapi.boluome.appkey" defaultValue="6aSsbSMMhKBe8+bH5wmhBw==" description="菠萝觅 key" />
 		<property name="fbapi.boluome.secret" defaultValue="OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B" description="菠萝觅 certpath" />
-		<property name="fbapi.boluome.api.url" defaultValue="http://91ala.test.otosaas.com" description="菠萝觅 前端交互" />
+		<property name="fbapi.boluome.api.url" defaultValue="https://dev-api.otosaas.com" description="菠萝觅 前端交互" />
 		<property name="fbapi.boluome.server.api.url" defaultValue="https://dev-api.otosaas.com/91ala" description="菠萝觅服务端" />
 		<property name="fbapi.boluome.order.cancel.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/cancel" description="菠萝觅 订单取消订单" />
 		<property name="fbapi.boluome.order.search.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/info" description="菠萝觅 订单补偿查询" />
 		<property name="fbapi.boluome.coupon.url" defaultValue="https://dev-api.otosaas.com/bss/v1/apps/campaigns/coupons" description="菠萝觅 用户优惠券获取"/>
 		<property name="fbapi.boluome.api.order.url" defaultValue="https://dev-api.otosaas.com/91ala" description="菠萝觅订单相关地址"/>
 		
-		<property name="fbapi.boluome.push.pay.url" defaultValue="http://91ala.test.otosaas.com/api/validation/v1" description="菠萝觅 支付推送消息" />
-		<property name="fbapi.boluome.push.refund.url" defaultValue="http://91ala.test.otosaas.com/api/refundment/v1" description="菠萝觅 certpath" />
+		<property name="fbapi.boluome.push.pay.url" defaultValue="https://dev-api.otosaas.com/api/validation/v1" description="菠萝觅 支付推送消息" />
+		<property name="fbapi.boluome.push.refund.url" defaultValue="https://dev-api.otosaas.com/api/refundment/v1" description="菠萝觅 certpath" />
 		
 		<property name="third.offer.boluome.appKey" defaultValue="1d397480-dbce-4d87-b48c-a34b55ee310d" description="平台提供菠萝觅第三方appkey" />
 		<property name="third.offer.boluome.appSecret" defaultValue="coMMRJDVF/Nmy+U0TCHXbAPPD1LEftSOb248JtzvaXOdGnCapk8yRekWqTFXGtLh" description="平台提供菠萝觅第三方appSecret" />

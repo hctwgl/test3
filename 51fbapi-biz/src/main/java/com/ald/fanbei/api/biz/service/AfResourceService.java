@@ -10,9 +10,9 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 
+ *
  * @类描述：
- * 
+ *
  * @author Xiaotianjian 2017年1月20日上午10:08:53
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -20,7 +20,7 @@ public interface AfResourceService {
 
 	/**
 	 * 本地缓存取配置
-	 * 
+	 *
 	 * @return
 	 */
 	List<AfResourceDo> getLocalByType(String type);
@@ -32,7 +32,7 @@ public interface AfResourceService {
 
 	/**
 	 * 获取首页配置信息
-	 * 
+	 *
 	 * @param allTypes
 	 * @return
 	 */
@@ -40,7 +40,7 @@ public interface AfResourceService {
 
 	/**
 	 * 获取type类型的配置信息
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -48,7 +48,7 @@ public interface AfResourceService {
 
 	/**
 	 * 根据id获取资源配置
-	 * 
+	 *
 	 * @param rid
 	 * @return
 	 */
@@ -56,7 +56,7 @@ public interface AfResourceService {
 
 	/**
 	 * 获取type类型的配置信息
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -64,7 +64,7 @@ public interface AfResourceService {
 
 	/**
 	 * 根据type获取资源列表
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -72,7 +72,7 @@ public interface AfResourceService {
 
 	/**
 	 * 根据type获取资源排序列表
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -80,7 +80,7 @@ public interface AfResourceService {
 
 	/**
 	 * 根据type获取资源排序列表
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -88,7 +88,7 @@ public interface AfResourceService {
 
 	/**
 	 * 根据type获取资源排序列表 在预发布环境，禁用的也可以显示
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -96,7 +96,7 @@ public interface AfResourceService {
 
 	/**
 	 * 根据type获取一个资源信息
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -106,7 +106,7 @@ public interface AfResourceService {
 
 	/**
 	 * 借钱模块配置信息
-	 * 
+	 *
 	 * @return
 	 */
 	List<AfResourceDo> selectBorrowHomeConfigByAllTypes();
@@ -122,7 +122,7 @@ public interface AfResourceService {
 	BorrowRateBo borrowRateWithResourceCredit(Integer realTotalNper);
 	/**
 	 * 获取首页导航栏配置
-	 * 
+	 *
 	 * @return
 	 */
 	List<AfResourceDo> getHomeIndexListByOrderby(String type);
@@ -130,7 +130,7 @@ public interface AfResourceService {
 	JSONObject borrowRateWithResourceOld(Integer realTotalNper);
 
 	/**
-	 * 
+	 *
 	 * @说明：根据活动的类型和活动有效期查找配置信息
 	 * @param: @return
 	 * @return: List<AfResourceDo>
@@ -142,9 +142,9 @@ public interface AfResourceService {
 	 */
 
 	BorrowRateBo borrowRateWithResourceForTrade(Integer realTotalNper);
-	
+
 	/**
-	 * 
+	 *
 	 * @说明：借贷超市的滚动条显示
 	 * @param: @param code
 	 * @param: @return
@@ -156,23 +156,23 @@ public interface AfResourceService {
 
 //	List<AfResourceDo> getHomeIndexListByOrderbyOnPreEnv(String code);
 	/**
-	 * 
+	 *
 	 * @说明：在活动点亮中根据活动id获取假的人数
 	 * @param: @param string
 	 * @param: @return
 	 * @return: AfResourceDo
 	 */
 	AfResourceDo getFakePersonByActivityId(String string);
-	
+
 	AfResourceDo getGGSpecificBanner(String value2);
 	/**
 	 * 获取type类型的配置信息
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
 	List<AfResourceDo> getConfigsByTypesAndSecType(String type, String secType);
-	
+
 	List<AfResourceDo> getCarouselToManyResourceOrderByType(String code);
 
 	List<AfResourceDo> getManyPricutresResourceDoList(String code);

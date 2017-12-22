@@ -445,4 +445,5 @@ public class Constants {
 	  public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
 	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
+	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
 }

@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -39,6 +40,8 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -46,7 +49,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
@@ -137,7 +139,9 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
     AfGoodsDao afGoodsDao;
     @Resource
     AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
-
+    @Resource
+    private AfTradeCodeInfoService afTradeCodeInfoService;
+    
 	@Override
 	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address) {
 		Date now = new Date();
@@ -197,7 +201,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL.getCode());
 			if (!respBo.isSuccess()) {
-				dealLegalRenewalFail(payTradeNo, repayNo,StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+				dealLegalRenewalFail(payTradeNo, repayNo,afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
@@ -286,23 +290,27 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		if (YesNoStatus.YES.getCode().equals(afRenewalDetailDo.getStatus())) {
 			return 0l;
 		}
+		long result = dealChangStatus(outTradeNo, tradeNo, AfBorrowLegalRepaymentStatus.NO.getCode(), afRenewalDetailDo.getRid());
+		
 		AfUserDo userDo = afUserService.getUserById(afRenewalDetailDo.getUserId());
 		try {
 			pushService.repayRenewalFail(userDo.getUserName());
-		}
-		catch (Exception e){
-
+		}catch (Exception e){
+			logger.error("dealLegalRenewalFail push exception.",e);
 		}
 		//fmf_add 续借失败短信通知
+		//模版数据map处理
+		Map<String,String> replaceMapData = new HashMap<String, String>();
+		replaceMapData.put("errorMsg", errorMsg);
 		//用户信息及当日还款失败次数校验
 		int errorTimes = afRenewalDetailDao.getCurrDayRepayErrorTimes(afRenewalDetailDo.getUserId());
 		try {
-			smsUtil.sendRenewalFailWarnMsg(userDo.getUserName(), errorMsg, errorTimes);
+			smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
 		} catch (Exception e) {
-			logger.error("sendRenewalFailWarnMsg is Fail, e"+e);
+			logger.error("sendRenewalFailWarnMsg is Fail.",e);
 		}
 
-		return dealChangStatus(outTradeNo, tradeNo, AfBorrowLegalRepaymentStatus.NO.getCode(), afRenewalDetailDo.getRid());
+		return result;
 	}
 
 	@Override

@@ -10,8 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayNameEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
@@ -35,6 +33,8 @@ import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.BorrowStatus;
 import com.ald.fanbei.api.common.enums.BorrowType;
@@ -50,6 +50,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
 import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -130,7 +131,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	SmsUtil smsUtil;
 	@Resource
 	FenqiCuishouUtil fenqiCuishouUtil;
-
+	@Resource
+	private AfTradeCodeInfoService afTradeCodeInfoService;
+	 
 	public Map<String,Object> createRepaymentYiBao(final BigDecimal jfbAmount,BigDecimal repaymentAmount,
 												   final BigDecimal actualAmount,AfUserCouponDto coupon,
 												   BigDecimal rebateAmount,String billIds,final Long cardId,final Long userId,final AfBorrowBillDo billDo,final String clientIp,
@@ -184,12 +187,18 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 //				afRepaymentDao.updateRepaymentByAfRepaymentDo(repaymentD);
 //			}
 			if (!respBo.isSuccess()) {
+				try{
+					//还款失败短信通知
+					sendFailMessage(userId,afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), repayment.getName());
+				}catch (Exception e){
+					logger.error("BorrowCash sendMessage but addMsg error for:"+e);
+				}
 				throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
 		}else if(cardId==-2){//余额支付
 			afRepaymentDao.addRepayment(repayment);
-			dealRepaymentSucess(repayment.getPayTradeNo(), "");
+			dealRepaymentSucess(repayment.getPayTradeNo(), "",true);
 		}
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENT.getCode());
@@ -258,23 +267,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					logger.info("createRepayment ups response fail,bug syn have process success.repayNo:"+repayNo+",repaymentId:"+repayment.getRid());
 				}
 				try{
-					if(StringUtil.equals("sysJob",clientIp)&&StringUtil.isNotBlank(respBo.getRespDesc())){
-						//处理代扣短信
-						String addMsg = "";
-						if(bank!=null){
-							String bankName = bank.getBankName();
-							String cardNum = bank.getCardNumber();
-							if(StringUtil.isNotBlank(bankName)&&StringUtil.isNotBlank(cardNum)){
-								if(cardNum.length()>4){
-									cardNum = cardNum.substring(cardNum.length()- 4,cardNum.length());
-									addMsg = "{"+ bankName + cardNum + "}";
-									//AfUserDo afUserDo = afUserService.getUserById(userId);
-									//还款失败短信通知
-									sendFailMessage(userId,addMsg+StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()), payTradeNo,"");
-								}
-							}
-						}
-					}
+					//还款失败短信通知
+					sendFailMessage(userId,afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()), currRepayment.getName());
 				}catch (Exception e){
 					logger.error("BorrowCash sendMessage but addMsg error for:"+e);
 				}
@@ -284,38 +278,30 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		}else if(cardId==-2){//余额支付
 			afRepaymentDao.addRepayment(repayment);
 			//addRepaymentyDetail(totalAmount,repaymentAmount,repayment.getRid());
-			dealRepaymentSucess(repayment.getPayTradeNo(), "");
-			try{
-				if(StringUtil.equals("sysJob",clientIp)){
-					//处理代扣短信
-					//AfUserDo afUserDo = afUserService.getUserById(userId);
-					sendSuccessMessage(userId,payTradeNo,"");
-				}
-			}catch (Exception e){
-				logger.error("BorrowCash sendMessage error for:"+e);
-			}
+			dealRepaymentSucess(repayment.getPayTradeNo(), "",true);
 		}
 		map.put("refId", repayment.getRid());
 		map.put("type", UserAccountLogType.REPAYMENT.getCode());
 		return map;
 	}
 
-	 public boolean sendFailMessage(Long userId, String content, String outTradeNo, String tradeNo) {
+	/**
+	 * 消费分期还款失败短信通知
+	 */
+	private boolean sendFailMessage(Long userId, String errorMsg, String payType) {
+		AfUserDo afUserDo = afUserService.getUserById(userId);
+		int errorTimes = 0;
+		//模版数据map处理
+		Map<String,String> replaceMapData = new HashMap<String, String>();
+		replaceMapData.put("errorMsg", errorMsg);
 		try{
-			if(userId!=null&&StringUtil.isNotBlank(content)){
-				AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
-				String payType = repayment.getName();
-				if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
-					int errorTimes = 0;
-					/*int errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
-					if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
-						errorTimes = 0;
-					}*/
-					AfUserDo afUserDo = afUserService.getUserById(userId);
-					//还款失败短信通知
-					smsUtil.sendRepaymentBorrowBillFail(afUserDo.getMobile(),content,errorTimes);
-				}
-
+			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+				//代扣还款失败短信通知
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_WITHHOLD_FAIL.getCode());
+			}else{
+				errorTimes = afRepaymentDao.getCurrDayRepayErrorTimes(userId);
+				//用户手动还款失败短信通知
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_FAIL.getCode());
 			}
 		}catch (Exception e ){
 			logger.error("sendRepaymentBorrowBillFail exception:" + e);
@@ -323,20 +309,23 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		return true;
 	}
 
-	@Override
-	public boolean sendSuccessMessage(Long userId, String outTradeNo, String tradeNo) {
+	/**
+	 * 消费分期还款成功短信通知
+	 */
+	private boolean sendSuccessMessage(Long userId, String payType) {
+		AfUserDo afUserDo = afUserService.getUserById(userId);
+		//模版数据map处理
+		Date date = DateUtil.addMonths(new Date(), -1);
+        String month = DateUtil.getMonth(date);
+		Map<String,String> replaceMapData = new HashMap<String, String>();
+		replaceMapData.put("month", month);
 		try{
-			if(userId!=null){
-				AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
-				String payType = repayment.getName();
-				if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
-					//还款成功短信通知
-					AfUserDo afUserDo = afUserService.getUserById(userId);
-					smsUtil.sendRepaymentBorrowBillSuccess(afUserDo.getMobile());
-				}
+			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
+				//自动代扣还款成功短信通知
+	            return smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWBILL_WITHHOLD_SUCCESS.getCode());
 			}
 		}catch (Exception e ){
-			logger.error("sendRepaymentBorrowBillFail exception:" + e);
+			logger.error("sendRepaymentBorrowBillSuccess exception:" , e);
 		}
 		return false;
 	}
@@ -413,7 +402,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	}
 
 	@Override
-	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo) {
+	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo,boolean isNeedNoticeMsg) {
 
 		final String key = outTradeNo +"_success_repay";
 		long count = redisTemplate.opsForValue().increment(key, 1);
@@ -422,7 +411,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			return -1;
 		}
 
-		return transactionTemplate.execute(new TransactionCallback<Long>() {
+		final AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+		
+		Long result =  transactionTemplate.execute(new TransactionCallback<Long>() {
 
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -441,7 +432,6 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 						return 1L;
 					}
 
-					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
 					logger.info("updateBorrowBillStatusByIds repayment  = {}",repayment);
 					if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 						return 0l;
@@ -517,6 +507,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 				}
 			}
 		});
+		
+		if(result==1 && isNeedNoticeMsg){
+			//回调成功发送还款成功短信
+            sendSuccessMessage(repayment.getUserId(), repayment.getName());
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -635,13 +632,13 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 	    }
 
 	@Override
-	public int dealRepaymentFail(final String outTradeNo,final String tradeNo) {
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
-
+	public int dealRepaymentFail(final String outTradeNo,final String tradeNo,boolean isNeedNoticeMsg,String errorWarnMsg) {
+		final AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
+		
+		Integer result = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			@Override
 			public Integer doInTransaction(TransactionStatus status) {
 				try {
-					AfRepaymentDo repayment = afRepaymentDao.getRepaymentByPayTradeNo(outTradeNo);
 					logger.info("dealRepaymentFail repayment  = {}",repayment);
 					if(repayment == null){
 						return 0;
@@ -687,6 +684,11 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 			}
 		});
 		
+		if(result==1 && isNeedNoticeMsg){
+			//还款失败短信通知
+	        sendFailMessage(repayment.getUserId(), errorWarnMsg, repayment.getName());
+		}
+		return result;
 	}
 
 	@Override
