@@ -26,6 +26,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.biz.service.JpushService;
@@ -138,7 +139,9 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
     AfGoodsDao afGoodsDao;
     @Resource
     AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
-
+    @Resource
+    private AfTradeCodeInfoService afTradeCodeInfoService;
+    
 	@Override
 	public Map<String, Object> createLegalRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion, Long goodsId, String deliveryUser, String deliveryPhone, String address) {
 		Date now = new Date();
@@ -198,7 +201,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
 			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL.getCode());
 			if (!respBo.isSuccess()) {
-				dealLegalRenewalFail(payTradeNo, repayNo,StringUtil.processRepayFailThirdMsg(respBo.getRespDesc()));
+				dealLegalRenewalFail(payTradeNo, repayNo,afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
 			}
 			map.put("resp", respBo);
