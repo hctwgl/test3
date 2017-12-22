@@ -6,9 +6,7 @@
 .button{
   background:#ef4e40;
 }
-.banner{
-  height:5.8rem;
-}
+
 /* 精品推荐 */
 h2{
   width: 7.5rem;
@@ -44,14 +42,12 @@ li{
     word-break: break-all;
     .price{
       margin-top: .1rem;
-      color:#ed5a4d;
       position: absolute;
       bottom: 1.3rem;
       left: 0.3rem;
     }
-    s{
+    .fanPrice{
       font-size:.24rem;
-      color:#bcbcbc;
       position: absolute;
       bottom: 0.9rem;
       left: 0.3rem;
@@ -95,7 +91,8 @@ li{
     font-size:.28rem;
     color:#3c3c3c;
     line-height: .35rem;
-    text-align: justify;
+    text-align: left;
+    word-break: break-all;
   }
   .goodPrice{
     width: 100%;
@@ -104,7 +101,6 @@ li{
     bottom: 0.66rem;
     .fanPrice{
       font-size:.26rem;
-      color:#ef6d61;
       display:inline-block;
       line-height: .55rem;
       padding-left:.2rem;
@@ -112,8 +108,6 @@ li{
     }
     .originPrice{
       font-size:.26rem;
-      color:#bdbdbd;
-      text-decoration: line-through;
       display:inline-block;
       line-height: .55rem;
       padding-right:.2rem;
@@ -150,4 +144,15 @@ li{
   p:nth-child(2){
     font-size:.16rem;
   }
+}
+.fan{
+  width:.3rem;
+  height: .3rem;
+  line-height: .3rem;
+  text-align: center;
+  color:white;
+  font-size: .2rem;
+  background:#e45454;
+  margin-right: .15rem;
+  border-radius: .3rem;
 }

@@ -291,4 +291,14 @@
 		WHERE
 		`user_id`=#{userId}
 	</update>
+	
+	<select id = "findByIdNo" parameterType = "java.lang.String" resultType = "com.ald.fanbei.api.dal.domain.AfUserAccountDo">
+		SELECT
+			*
+		FROM
+		af_user_account
+		WHERE
+		id_number = #{idNo}
+		limit 1;
+	</select>
 </mapper>

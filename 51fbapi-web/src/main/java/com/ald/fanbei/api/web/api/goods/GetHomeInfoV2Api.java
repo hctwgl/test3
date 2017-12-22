@@ -10,32 +10,18 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
-import com.ald.fanbei.api.biz.service.AfActivityService;
-import com.ald.fanbei.api.biz.service.AfCategoryService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.ImageType;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -74,12 +60,19 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	@Resource
 	AfGoodsService afGoodsService;
 
+	@Resource
+	AfModelH5ItemService afModelH5ItemService;
+
+	@Resource
+	AfModelH5Service afModelH5Service;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("homePageType", "NEW");
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+		Integer appVersion = context.getAppVersion();
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
@@ -106,6 +99,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// 快速导航信息
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
+		
 		// logger.info("home page fast nav info => {}",
 		// JSONObject.toJSONString(topBannerList));
 
@@ -124,7 +118,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 		// 获取常驻运营位信息
 		List<Object> homeNomalPositionList = getHomeNomalPositonInfoResourceDoList(
-				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeFourImageNomalPositon.getCode()));
+				afResourceService.getHomeNomalPositionList());
 		// logger.info("home page nomal ad position info => {}" +
 		// JSONObject.toJSONString(homeNomalPositionList));
 
@@ -139,45 +133,85 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		// JSONObject.toJSONString(ecommerceAreaInfo));
 
 		// 获取首页商品信息
-		List<Map<String, Object>> categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+		List<Map<String, Object>> categoryGoodsInfo = null;
+		//做线上和预发开关
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(ResourceType.HOME_PAGE.getCode());
+		if(StringUtils.equals(afResourceDo.getValue(), YesNoStatus.YES.getCode()) && request.getRequestURL().indexOf("//app")!=-1){
+			if(StringUtils.equals(afResourceDo.getValue1(),"N")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+			}else if(StringUtils.equals(afResourceDo.getValue1(),"Y")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+			}
+		}else{
+			if(StringUtils.equals(afResourceDo.getValue2(),"N")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfoV1();
+			}else if(StringUtils.equals(afResourceDo.getValue2(),"Y")){
+				categoryGoodsInfo = getHomePageGoodsCategoryInfo();
+			}
+		}
+
+
 		// logger.info("home page category goods info => {}" +
 		// JSONObject.toJSONString(categoryGoodsInfo));
 
 		// 背景图配置
 		List<AfResourceDo> backgroundList = afResourceService
-				.getBackGroundByType(ResourceType.HOMEPAGE_BACKGROUND.getCode());
+				.getBackGroundByType(ResourceType.CUBE_HOMEPAGE_BACKGROUND.getCode());
 
 		// 获取金融服务入口
 		Map<String, Object> financialEntranceInfo = getFinancialEntranceInfo();
 
 		// 顶部轮播
-		data.put("topBannerList", topBannerList);
+		if(!topBannerList.isEmpty()) {
+			data.put("topBannerList", topBannerList);
+		}
 		// 快速导航
-		data.put("navigationInfo", navigationInfo);
+		if(!navigationInfo.isEmpty()) {
+			data.put("navigationInfo", navigationInfo);
+		}
 		// 新增运营位1,快捷导航上方活动专场
-		data.put("navigationUpOne", navigationUpOne);
+		if(!navigationUpOne.isEmpty()) {
+			data.put("navigationUpOne", navigationUpOne);
+		}
+		
 		// 新增运营位2,快捷导航下方活动专场
-		data.put("navigationDownOne", navigationDownOne);
+		if(!navigationDownOne.isEmpty()) {
+			data.put("navigationDownOne", navigationDownOne);
+		}
+		
 		// 常驻运营位
-		data.put("nomalPositionList", homeNomalPositionList);
+		if(!homeNomalPositionList.isEmpty()) {
+			data.put("nomalPositionList", homeNomalPositionList);
+		}
 		// 逛逛板块信息
-		data.put("brandAreaInfo", brandAreaInfo);
+		if(!brandAreaInfo.isEmpty()) {
+			data.put("brandAreaInfo", brandAreaInfo);
+		}
 		// 电商板块信息
-		data.put("ecommerceAreaInfo", ecommerceAreaInfo);
+		if(!ecommerceAreaInfo.isEmpty()) {
+			data.put("ecommerceAreaInfo", ecommerceAreaInfo);
+		}
+		
 		// 首页分类商品信息
-		data.put("categoryGoodsInfo", categoryGoodsInfo);
+		if(!categoryGoodsInfo.isEmpty()) {
+			data.put("categoryGoodsInfo", categoryGoodsInfo);
+		}
 		// 首页背景图
-		data.put("backgroundList", backgroundList);
+		if(!backgroundList.isEmpty()) {
+			data.put("backgroundList", backgroundList);
+		}
+		
 		// 金融服务入口
-		data.put("financialEntranceInfo", financialEntranceInfo);
+		if(!financialEntranceInfo.isEmpty()) {
+			data.put("financialEntranceInfo", financialEntranceInfo);
+		}
 		resp.setResponseData(data);
 		return resp;
 	}
 
 	private Map<String, Object> getFinancialEntranceInfo() {
 		Map<String, Object> financialEntranceInfo = Maps.newHashMap();
-		AfResourceDo rescDo = afResourceService.getConfigByTypesAndSecType(
-				ResourceType.HOME_ONE_IMAGE_FINANCIAL.getCode(), ImageType.MAIN_IMAGE.getCode());
+		AfResourceDo rescDo = afResourceService.getFinancialEntranceInfo();
 		if (rescDo != null) {
 			financialEntranceInfo.put("imageUrl", rescDo.getValue());
 			financialEntranceInfo.put("type", rescDo.getValue1());
@@ -210,7 +244,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		if (array == null) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
-		removeSecondNper(array);
+		//removeSecondNper(array);
 
 		if (categoryInfoList != null && !categoryInfoList.isEmpty()) {
 
@@ -265,7 +299,89 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				goodsInfoList.add(goodsInfo);
 				infoMap.put("goodsInfoList", goodsInfoList);
 			}
+		}
+		return categoryInfoList;
+	}
 
+	private List<Map<String, Object>> getHomePageGoodsCategoryInfoV1() {
+		List<AfModelH5ItemDo> categoryList = afModelH5ItemService.selectModelByTag();
+		List<Map<String, Object>> categoryInfoList = Lists.newArrayList();
+		for (AfModelH5ItemDo modelH5ItemDo : categoryList) {
+			Map<String, Object> categoryInfoMap = Maps.newHashMap();
+			categoryInfoMap.put("categoryId", modelH5ItemDo.getRid());
+			categoryInfoMap.put("categoryName", modelH5ItemDo.getItemValue());
+			categoryInfoList.add(categoryInfoMap);
+		}
+		// 爬取商品开关
+		AfResourceDo isWormResc = afResourceService.getConfigByTypesAndSecType(Constants.THIRD_GOODS_TYPE,
+				Constants.THIRD_GOODS_IS_WORM_SECTYPE);
+		String isWorm = "0";
+		if (null != isWormResc) {
+			isWorm = isWormResc.getValue();
+		}
+		// 获取借款分期配置信息
+		AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE,
+				Constants.RES_BORROW_CONSUME);
+		JSONArray array = JSON.parseArray(resource.getValue());
+		// 删除2分期
+		if (array == null) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+		}
+		removeSecondNper(array);
+		if (null != categoryList && !categoryList.isEmpty()){
+			Map<String, Object> infoMap = categoryInfoList.get(0);
+			List<AfGoodsDo> goodsDoList = null;
+			if(null != categoryInfoList.get(0)){
+				Long categoryId = Long.valueOf(String.valueOf(infoMap.get("categoryId")));
+				goodsDoList = afGoodsService.getGoodsByCategoryId(categoryId);
+			}
+			List<Map<String, Object>> goodsInfoList = Lists.newArrayList();
+			for (AfGoodsDo goodsDo : goodsDoList) {
+				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				goodsInfo.put("goodName", goodsDo.getName());
+				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+				goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+				goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+				goodsInfo.put("goodsId", goodsDo.getRid());
+				goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+				goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+				goodsInfo.put("source", goodsDo.getSource());
+				goodsInfo.put("goodsType", "0");
+				goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+				goodsInfo.put("isWorm", isWorm);
+				// 如果是分期免息商品，则计算分期
+				Long goodsId = goodsDo.getRid();
+				AfSchemeGoodsDo schemeGoodsDo = null;
+				try {
+					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+				} catch (Exception e) {
+					logger.error(e.toString());
+				}
+				JSONArray interestFreeArray = null;
+				if (schemeGoodsDo != null) {
+					AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService
+							.getById(schemeGoodsDo.getInterestFreeId());
+					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+						interestFreeArray = JSON.parseArray(interestFreeJson);
+					}
+				}
+				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray,
+						BigDecimal.ONE.intValue(), goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+
+				if (nperList != null) {
+					goodsInfo.put("goodsType", "1");
+					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+					String isFree = (String) nperMap.get("isFree");
+					if (InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+						nperMap.put("freeAmount", nperMap.get("amount"));
+					}
+					goodsInfo.put("nperMap", nperMap);
+				}
+				goodsInfoList.add(goodsInfo);
+				infoMap.put("goodsInfoList", goodsInfoList);
+			}
 		}
 		return categoryInfoList;
 	}
@@ -273,8 +389,8 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	private Map<String, Object> getEcommerceAreaInfo() {
 		Map<String, Object> ecommerceAreaInfoMap = Maps.newHashMap();
 		// 获取电商楼层图信息
-		AfResourceDo ecommerceFloorImgRes = afResourceService.getConfigByTypesAndSecType(
-				ResourceType.HOME_ONE_IMAGE_BRAND.getCode(), ImageType.MAIN_IMAGE.getCode());
+		AfResourceDo ecommerceFloorImgRes = afResourceService.getEcommerceFloorImgRes();
+
 		if (ecommerceFloorImgRes != null) {
 			Map<String, Object> ecommerceFloorInfo = Maps.newHashMap();
 			ecommerceFloorInfo.put("imageUrl", ecommerceFloorImgRes.getValue());
@@ -286,26 +402,31 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		List<AfResourceDo> ecommercePosUpRescList = afResourceService.getEcommercePositionUpRescoure();
 		if (ecommercePosUpRescList != null && ecommercePosUpRescList.size() == 4) {
 			List<Object> ecommercePositionUpInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosUpRescList);
-			ecommerceAreaInfoMap.put("ecommercePosUpInfoList", ecommercePositionUpInfoList);
+			if(!ecommercePositionUpInfoList.isEmpty()) {
+				ecommerceAreaInfoMap.put("ecommercePosUpInfoList", ecommercePositionUpInfoList);
+			}
 		}
 		// 获取下方3个电商运营位置，如果不全，则不显示
 		List<AfResourceDo> ecommercePosDownRescList = afResourceService.getEcommercePositionDownRescoure();
 		if (ecommercePosDownRescList != null && ecommercePosDownRescList.size() == 3) {
 			List<Object> ecommercePositionDownInfoList = getHomeObjectInfoWithResourceDolist(ecommercePosDownRescList);
-			ecommerceAreaInfoMap.put("ecommercePosDownInfoList", ecommercePositionDownInfoList);
+			if(!ecommercePositionDownInfoList.isEmpty()) {
+				ecommerceAreaInfoMap.put("ecommercePosDownInfoList", ecommercePositionDownInfoList);
+			}
 		}
 		// 获取电商轮播图片
 		List<Object> ecommerceBannerList = getBannerInfoWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerEcommerce.getCode()));
-		ecommerceAreaInfoMap.put("ecommerceBannerList", ecommerceBannerList);
+		if(!ecommerceBannerList.isEmpty()) {
+			ecommerceAreaInfoMap.put("ecommerceBannerList", ecommerceBannerList);
+		}
 		return ecommerceAreaInfoMap;
 	}
 
 	private Map<String, Object> getBrandAreaInfo() {
 		Map<String, Object> brandAreaInfoMap = Maps.newHashMap();
 		// 获取逛逛楼层图信息
-		AfResourceDo brandFloorImgRes = afResourceService.getConfigByTypesAndSecType(
-				ResourceType.HOME_ONE_IMAGE_BRAND.getCode(), ImageType.MAIN_IMAGE.getCode());
+		AfResourceDo brandFloorImgRes = afResourceService.getBrandFloorImgRes();
 		if (brandFloorImgRes != null) {
 			Map<String, Object> brandFloorInfo = Maps.newHashMap();
 			brandFloorInfo.put("imageUrl", brandFloorImgRes.getValue());
@@ -314,13 +435,17 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			brandAreaInfoMap.put("brandFloorInfo", brandFloorInfo);
 		}
 		// 逛逛运营位置
-		List<Object> brandPositionInfoList = getHomeBrandPositonInfoResourceDoList(afResourceService
-				.getResourceHomeListByTypeOrderBy(ResourceType.HOME_FOUR_IMAGE_BRAND_POSITION.getCode()));
-		brandAreaInfoMap.put("brandPositionInfoList", brandPositionInfoList);
+		List<Object> brandPositionInfoList = getHomeBrandPositonInfoResourceDoList(
+				afResourceService.getHomeBrandPositonInfoList());
+		if(!brandPositionInfoList.isEmpty()) {
+			brandAreaInfoMap.put("brandPositionInfoList", brandPositionInfoList);
+		}
 		// 逛逛轮播图
 		List<Object> brandBannerList = getBannerInfoWithResourceDolist(
 				afResourceService.getResourceHomeListByTypeOrderBy(AfResourceType.HomeBannerBrand.getCode()));
-		brandAreaInfoMap.put("brandBannerList", brandBannerList);
+		if(!brandBannerList.isEmpty()) {
+			brandAreaInfoMap.put("brandBannerList", brandBannerList);
+		}
 		return brandAreaInfoMap;
 	}
 
@@ -387,16 +512,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	private Map<String, Object> getNavigationInfoWithResourceDolist(List<AfResourceDo> navResclist) {
 		Map<String, Object> navigationInfo = new HashMap<String, Object>();
 		List<Object> navigationList = new ArrayList<Object>();
-
-		Map<String, Object> backgroundInfo = new HashMap<String, Object>();
-		// 查询快速导航背景图信息
-		List<AfResourceDo> bgRescList = afResourceService
-				.getConfigByTypes(ResourceType.HOME_NAVIGATION_BACKGROUND.getCode());
-		if (bgRescList != null && !bgRescList.isEmpty()) {
-			AfResourceDo afResourceDo = bgRescList.get(0);
-			backgroundInfo.put("imageUrl", afResourceDo.getValue());
-			backgroundInfo.put("type", AfResourceSecType.NAVIGATION_BACKGROUND.getCode());
-		}
 		int navCount = navResclist.size();
 		for (int i = 0; i < navCount; i++) {
 			// 如果配置大于5个，小于10个，则只显示5个
@@ -422,7 +537,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			navigationList.add(dataMap);
 		}
 		navigationInfo.put("navigationList", navigationList);
-		navigationInfo.put("backgroundInfo", backgroundInfo);
 		return navigationInfo;
 	}
 
@@ -433,7 +547,7 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Iterator<Object> it = array.iterator();
 		while (it.hasNext()) {
 			JSONObject json = (JSONObject) it.next();
-			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
+			if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
 				it.remove();
 				break;
 			}

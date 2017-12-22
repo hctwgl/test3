@@ -23,4 +23,8 @@ public interface AfShopService {
 	AfShopDo getShopInfoBySecType(AfShopDo afShopDo);
 
 	AfShopDo getShopInfoBySecTypeOpen(AfShopDo afShopDo);
+
+	Long getWaiMainShopId();
+	
+	String parseBoluomeUrl(String shopUrl, String platform, String shopType, Long userId, String mobile);
 }

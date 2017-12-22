@@ -144,4 +144,8 @@
 			is_delete = 0
 	</select>
 
+	<select id="selectModelByTag" resultType="AfModelH5ItemDo">
+		select <include refid = "queryAllFields" /> from af_model_h5_item where model_id = (select id from af_model_h5  where  tag = 'HOMEPAGE') and type = 'CATEGORY';
+	</select>
+
 </mapper>

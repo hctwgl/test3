@@ -23,6 +23,7 @@ public enum SmsType {
     QUICK_LOGIN("Q", "快捷登录"),
     QUICK_REGIST("QR", "快捷注册"),
     QUICK_SET_PWD("QSP", "设置快捷登录密码"),
+    QUICK_SET("S", "设置快捷登录密码"),
     COMMON("C","通用");
 
     private String code;

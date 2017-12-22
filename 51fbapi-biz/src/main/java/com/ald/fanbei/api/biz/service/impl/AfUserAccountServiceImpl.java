@@ -291,4 +291,10 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 		return afUserAccountDao.updateUserAccountByUserId(userId,money);
 	}
 
+	@Override
+	public AfUserAccountDo findByIdNo(String idNo) {
+		
+		return afUserAccountDao.findByIdNo(idNo);
+	}
+
 }

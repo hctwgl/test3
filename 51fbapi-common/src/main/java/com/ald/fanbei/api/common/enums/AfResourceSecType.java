@@ -46,7 +46,8 @@ public enum AfResourceSecType {
         RejectTimePeriod("REJECT_TIME_PERIOD","拒绝借款期后指定周期内不可在本平台发起借款"),
 		RejectPageBannerUrl("REJECT_PAGE_BANNER_URL","拒绝借款期后不通过页面内图对应地址"),
 		SelfSupportGoodsPaytypes("SELFSUPPORT_GOODS_PAYTYPES","自营商品支付方式相关配置"),
-
+		BORROW_CASH_COMPANY_NAME("BORROW_CASH_COMPANY_NAME","借款公司名称"),
+		BORROW_CASH_INFO_LEGAL("BORROW_CASH_INFO_LEGAL","借款利率信息"),
 		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
@@ -66,6 +67,8 @@ public enum AfResourceSecType {
 		SMS_APPLY_BORROWCASH_TRANSED_FAIL("SMS_APPLY_BORROWCASH_TRANSED_FAIL","现金借贷放款失败通知用户"),
 		SMS_MOBILE_OPERATE_FAIL("SMS_MOBILE_OPERATE_FAIL","运营商认证异步失败通知用户"),
 		FUND_SIDE_BORROW_CASH_ONOFF("FUND_SIDE_BORROW_CASH_ONOFF", "打款时引入资金方配置开关"),
+		YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询限制配置"),
+		RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
 		BORROW_CASH_AMOUNT_CHANNEL_ERROR("BORROW_CASH_AMOUNT_CHANNEL_ERROR","用户借钱时渠道包问题给用户的短信内容");
 		
 	 	private String code;

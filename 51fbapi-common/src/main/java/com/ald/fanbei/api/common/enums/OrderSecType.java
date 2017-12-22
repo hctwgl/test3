@@ -14,11 +14,15 @@ public enum OrderSecType {
 
 	JIU_DIAN("JIUDIAN", "酒店"), 
 	WAI_MAI("WAIMAI", "外卖"),
-	DAI_JIA("DAIJIA", "代驾"),
 	DIAN_YING("DIANYING", "电影"),
+	HUA_FEI("HUAFEI", "话费"),
+	LIU_LIANG("LIULIANG", "流量"),
+	JIA_YOU_KA("JIAYOUKA", "加油卡"),
 	PAO_TUI("PAOTUI", "随意购"),
+	DAI_JIA("DAIJIA", "代驾"),
 	JIA_DIAN_QING_XI("JIADIANQINGXI", "家电清洗"),
-	JIA_DIAN_WEI_XIU("JIADIANWEIXIU", "家电维修");
+	JIA_DIAN_WEI_XIU("JIADIANWEIXIU", "家电维修"),
+	SUP_GAME("SUPGAME","游戏产品");
     
     private String code;
     private String name;

@@ -50,7 +50,6 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
     @Resource
     private AfUserBankcardService afUserBankcardService;
 
-    private BigDecimal showAmount;
 
     @Resource
     private YiBaoUtility yiBaoUtility;
@@ -66,6 +65,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo,
                                      FanbeiContext context, HttpServletRequest request) {
+        BigDecimal showAmount;
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
         BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);
@@ -192,6 +192,7 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
                 resp.addResponseData("refId", map.get("refId"));
                 resp.addResponseData("type", map.get("type"));
             } else if (cardId.longValue() == -1) {//微信支付
+
                 if (context.getAppVersion() < 395) {
                     throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
                 }
@@ -199,12 +200,18 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
                     throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
                 }
 
-
                 map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
                 map.put("directPayType", "WX");
                 resp.setResponseData(map);
+            } else if (cardId.longValue() == -3) {
+                if (context.getAppVersion() < 395) {
+                    throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+                }
+                if (!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.ZFBPAY)) {
+                    throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+                }
 
             } else if (cardId.longValue() == -3) {
                 if (context.getAppVersion() < 395) {

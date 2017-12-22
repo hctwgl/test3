@@ -216,10 +216,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 			AfResourceDo capitalRateResource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RENEWAL_CAPITAL_RATE);
 			BigDecimal renewalCapitalRate = new BigDecimal(capitalRateResource.getValue());// 续借应还借钱金额比例
 			BigDecimal capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-			/*if (returnAmount.compareTo(capital) <= 0) {
-				data.put("renewalStatus", "N");
-			}*/
-			if (returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
+			if (returnAmount.compareTo(capital) <= 0 || returnAmount.compareTo(BigDecimalUtil.ONE_HUNDRED) < 0) {
 				data.put("renewalStatus", "N");
 			}
 		}
@@ -294,7 +291,9 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		} else if (!StringUtils.equals(RiskStatus.YES.getCode(), afUserAuthDo.getRiskStatus())) {
 			data.put("maxAmount", resource.getValue());
 		}
-
+//		if(YesNoStatus.NO.getCode().equals(afUserAuthDo.getZmStatus()) && !YesNoStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())){
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
+//		}
 		/* 如果设置金额小于可用金额，则将设置金额作为最大可借金额 add by fmai */
 		BigDecimal setMaxAmount = new BigDecimal(resource.getValue());
 		if (setMaxAmount.compareTo(calculateMaxAmount(usableAmount)) < 0) {
@@ -448,7 +447,7 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		}
 		try {
 			/**add by fmai 用户点击借钱页面时去风控获取用户的借钱手续费*/
-			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString());
+			getUserPoundageRate(userId, data, inRejectLoan, rate.get("poundage").toString(),context.getUserName());
 		} catch (Exception e) {
 			bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, rate.get("poundage").toString(), Constants.SECOND_OF_ONE_MONTH);
 			logger.info(userId + "从风控获取分层用户额度失败："  + e);
@@ -473,7 +472,27 @@ public class GetBowCashLogInInfoApi extends GetBorrowCashBase implements ApiHand
 		return resp;
 	}
 
-	private void getUserPoundageRate(Long userId, Map<String, Object> data, String inRejectLoan, String poundage) {
+	private void getUserPoundageRate(Long userId, Map<String, Object> data, String inRejectLoan, String poundage,String userName) {
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RISK_POUNDAGE_USERNAME_LIST.getCode(), AfResourceSecType.RISK_POUNDAGE_USERNAME_LIST.getCode());
+		if(resourceDo!=null && "O".equals(resourceDo.getValue4()) && resourceDo.getValue().contains(userName)){
+			//直接从风控系统取，没的话，走之前逻辑
+			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+			String poundageRate = riskResp!=null?riskResp.getPoundageRate():"";
+			if (!StringUtils.isBlank(poundageRate)) {
+				logger.info("getBowCashLogInInfoApi direct get user poundage rate from risk,not null: userName=" + userName + ",poundageRate=" + poundageRate);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundageRate, Constants.SECOND_OF_ONE_MONTH);
+				bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(System.currentTimeMillis()), Constants.SECOND_OF_ONE_MONTH);		
+			}else{
+				logger.info("getBowCashLogInInfoApi direct get user poundage rate from risk,is null,getUserPoundageRateByUserId:.userName=" + userName);
+				getUserPoundageRateByUserId(userId,data,inRejectLoan,poundage);
+			}
+		}else{
+			logger.info("getBowCashLogInInfoApi getUserPoundageRateByUserId from risk: userName=" + userName );
+			getUserPoundageRateByUserId(userId,data,inRejectLoan,poundage);
+		}
+	}
+	
+	private void getUserPoundageRateByUserId(Long userId, Map<String, Object> data, String inRejectLoan, String poundage) {
 		Date saveRateDate =  (Date) bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId);
 		if (saveRateDate==null || DateUtil.compareDate(new Date(System.currentTimeMillis()), DateUtil.addDays(saveRateDate, 1))) {
 			RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());

@@ -8,10 +8,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfGoodsCategoryDo;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsCategoryDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsCategoryQuery;
@@ -38,7 +35,8 @@ public class GetGoodsListApi implements ApiHandle {
 
     @Resource
     AfGoodsTbkService afGoodsTbkService;
-
+    @Resource
+    AfGoodsService afGoodsService;
     @Resource
     AfGoodsCategoryService afGoodsCategoryService;
     @Resource
@@ -54,7 +52,10 @@ public class GetGoodsListApi implements ApiHandle {
         Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
         Map<String,Object> activityData = new HashMap<String,Object> ();
         AfGoodsCategoryQuery query = getCheckParam(requestDataVo);
+        AfGoodsQuery goodsQuery = getCheckParams(requestDataVo);
+
         List<AfGoodsCategoryDto> list = afGoodsCategoryService.selectGoodsInformation(query);
+        List<AfGoodsDo> goodList = afGoodsService.getGoodsVerifyByCategoryId(goodsQuery);
         List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
         //获取借款分期配置信息
         AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
@@ -62,14 +63,72 @@ public class GetGoodsListApi implements ApiHandle {
         if (array == null) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
-        Iterator<Object> it = array.iterator();
-        while (it.hasNext()) {
-            JSONObject json = (JSONObject) it.next();
-            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {
-                it.remove();
-                break;
+//        Iterator<Object> it = array.iterator();
+//        while (it.hasNext()) {
+//            JSONObject json = (JSONObject) it.next();
+//            if (json.getString(Constants.DEFAULT_NPER).equals("2")) {//mark
+//                it.remove();
+//                break;
+//            }
+//        }
+
+        for(AfGoodsDo goodsDo : goodList) {
+//            double volume = new Long(goodsDo.getVolume()).intValue();
+            Map<String, Object> goodsInfo = new HashMap<String, Object>();
+            String url = "";
+            goodsInfo.put("goodName",goodsDo.getName());
+            goodsInfo.put("rebateAmount",goodsDo.getRebateAmount());
+            goodsInfo.put("saleAmount",goodsDo.getSaleAmount());
+            goodsInfo.put("priceAmount",goodsDo.getPriceAmount());
+            if(!StringUtil.isEmpty(goodsDo.getGoodsPic1())){
+                url = goodsDo.getGoodsPic1();
+            }else{
+                url = goodsDo.getGoodsIcon();
             }
+            goodsInfo.put("goodsIcon",url);
+            goodsInfo.put("goodsId",goodsDo.getRid());
+            goodsInfo.put("goodsUrl",goodsDo.getGoodsUrl());
+            goodsInfo.put("source",goodsDo.getSource());
+            goodsInfo.put("numId",goodsDo.getNumId());
+//            if(volume>10000){
+//                DecimalFormat df = new DecimalFormat("0.00");
+//                BigDecimal bigDecimal = new BigDecimal(df.format(volume/10000));
+//                bigDecimal.setScale(3,bigDecimal.ROUND_HALF_UP).doubleValue();
+//                goodsInfo.put("volume",bigDecimal.toString()+"万");
+//            }else{
+            goodsInfo.put("volume",goodsDo.getSaleCount());
+//            }
+            goodsInfo.put("goodsType", "0");
+            // 如果是分期免息商品，则计算分期
+            Long goodsId = goodsDo.getRid();
+            AfSchemeGoodsDo schemeGoodsDo = null;
+            try {
+                schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+            } catch(Exception e){
+                logger.error(e.toString());
+            }
+            JSONArray interestFreeArray = null;
+            if(schemeGoodsDo != null){
+                AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+                String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                    interestFreeArray = JSON.parseArray(interestFreeJson);
+                }
+            }
+            List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                    goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+            if(nperList!= null){
+                goodsInfo.put("goodsType", "1");
+                Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+                String isFree = (String)nperMap.get("isFree");
+                if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+                    nperMap.put("freeAmount", nperMap.get("amount"));
+                }
+                goodsInfo.put("nperMap", nperMap);
+            }
+            goodsList.add(goodsInfo);
         }
+
         for(AfGoodsCategoryDto goodsDo : list) {
 //            double volume = new Long(goodsDo.getVolume()).intValue();
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
@@ -138,6 +197,15 @@ public class GetGoodsListApi implements ApiHandle {
         AfGoodsCategoryQuery query = new AfGoodsCategoryQuery();
         query.setPageNo(pageNo);
         query.setId(id);
+        return query;
+    }
+
+    private AfGoodsQuery getCheckParams(RequestDataVo requestDataVo){
+        Integer pageNo = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("pageNo")), 1);
+        Long id = NumberUtil.objToLongDefault(requestDataVo.getParams().get("id"),0l);
+        AfGoodsQuery query = new AfGoodsQuery();
+        query.setPageNo(pageNo);
+        query.setCategoryId(id);
         return query;
     }
 

@@ -168,6 +168,22 @@
 		LIMIT
 		1
 	</select>
+	
+	<select id="getBorrowCashByUserIdDescById" parameterType="java.lang.Long"
+		resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		ORDER BY
+		id DESC
+		LIMIT
+		1
+	</select>
 
 	<select id="getBorrowCashByrid" parameterType="java.lang.Long"
 		resultType="AfBorrowCashDo">
@@ -444,4 +460,22 @@
 		UPDATE
 		af_borrow_cash SET gmt_plan_repayment = NOW() WHERE user_id=#{userId} and  `status` = 'TRANSED'
 	</update>
+	
+	<!-- 宜信查询 -->
+	<select id="getListByUserId" resultType="AfBorrowCashDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM
+		af_borrow_cash
+		WHERE
+		is_delete = 0
+		AND
+		user_id = #{userId}
+		and status not in('APPLY','TRANSEDING','WAITTRANSED')
+		ORDER BY
+		gmt_create DESC
+		<if test="rows != null">
+			limit #{rows}
+		</if>
+	</select>
 </mapper>

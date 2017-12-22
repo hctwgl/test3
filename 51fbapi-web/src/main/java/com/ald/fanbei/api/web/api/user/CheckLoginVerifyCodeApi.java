@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.TokenBo;
+import com.ald.fanbei.api.biz.service.AfAbTestDeviceService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -27,7 +28,9 @@ import com.ald.fanbei.api.common.enums.UserStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfAbTestDeviceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserLoginLogDo;
@@ -65,6 +68,8 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 	RiskUtil riskUtil;
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
+	@Resource
+	AfAbTestDeviceService afAbTestDeviceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -90,6 +95,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		if (afUserDo == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
+		Long userId = afUserDo.getRid();
 		if (StringUtils.equals(afUserDo.getStatus(), UserStatus.FROZEN.getCode())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_FROZEN_ERROR);
 		}
@@ -179,16 +185,39 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0",
 				loginTime, ip, phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
 		resp.setResponseData(jo);
-		//逛逛活动新用户送券
-		try{
-		  int  result =  afBoluomeActivityService.sentNewUserBoluomeCoupon(afUserDo);
-		  if(result==0){
-		      logger.info("sentNewUserBoluomeCoupon success");
-		    }
-		}catch (Exception e){
-			logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
-		}
+		//逛逛点亮活动新用户送券(下架)
+//		try{
+//		  int  result =  afBoluomeActivityService.sentNewUserBoluomeCoupon(afUserDo);
+//		  if(result==0){
+//		      logger.info("sentNewUserBoluomeCoupon success");
+//		    }
+//		}catch (Exception e){
+//			logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
+//		}
 		
+		//吃玩住行活动被邀请的新用户登录送券
+		try{
+			    afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
+			    logger.info("sentNewUserBoluomeCouponForDineDash success");
+			
+			}catch (Exception e){
+					logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
+			}
+		
+		// 记录用户设备信息
+		try {
+			String deviceId = ObjectUtils.toString(requestDataVo.getParams().get("deviceId"));
+			if (StringUtils.isNotEmpty(deviceId)) {
+				String deviceIdTail = StringUtil.getDeviceTailNum(deviceId);
+				AfAbTestDeviceDo abTestDeviceDo = new AfAbTestDeviceDo();
+				abTestDeviceDo.setUserId(userId);
+				abTestDeviceDo.setDeviceNum(deviceIdTail);
+				// 通过唯一组合索引控制数据不重复
+				afAbTestDeviceService.addUserDeviceInfo(abTestDeviceDo);
+			}
+		}  catch (Exception e) {
+			// ignore error.
+		}
 		return resp;
 	}
 	

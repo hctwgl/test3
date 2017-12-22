@@ -409,8 +409,7 @@
 		  LEFT JOIN `af_borrow` ab on ab.`order_id`= ao.`id`
 		  LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
 		  LEFT JOIN `af_user_bankcard` aub on aub.`user_id` = ao.`user_id` 
-			WHERE ao.`is_delete` = 0
-			AND ab.`is_delete` = 0
+			WHERE ab.`is_delete` = 0
 			AND abb.`is_delete` = 0
 			AND aub.`is_delete` = 0
 			AND aub.`is_main` = 'Y'
@@ -478,8 +477,7 @@
 		LEFT JOIN `af_borrow` ab on ab.`order_id`= ao.`id`
 		LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
 		LEFT JOIN `af_user_bankcard` aub on aub.`user_id` = ao.`user_id`
-		WHERE ao.`is_delete` = 0
-		AND ab.`is_delete` = 0
+		WHERE ab.`is_delete` = 0
 		AND abb.`is_delete` = 0
 		AND aub.`is_delete` = 0
 		AND aub.`is_main` = 'Y'

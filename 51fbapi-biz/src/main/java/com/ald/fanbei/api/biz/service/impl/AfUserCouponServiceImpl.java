@@ -133,6 +133,7 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 				userCoupon.setGmtStart(couponDo.getGmtStart());
 			}
 			userCoupon.setSourceType(sourceType);
+			userCoupon.setSourceRef(sourceRef);
 			userCoupon.setUserId(userId);
 			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
 			afUserCouponDao.addUserCoupon(userCoupon);
@@ -187,6 +188,7 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 				userCoupon.setGmtStart(couponDo.getGmtStart());
 			}
 			userCoupon.setSourceType(sourceType);
+			userCoupon.setSourceRef(sourceRef);
 			userCoupon.setUserId(userId);
 			userCoupon.setStatus(CouponStatus.NOUSE.getCode());
 			afUserCouponDao.addUserCoupon(userCoupon);

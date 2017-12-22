@@ -3,6 +3,8 @@ package com.ald.fanbei.api.dal.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
+import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
@@ -179,6 +181,30 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	List<AfOrderDo> getOverOrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
+	
+	/**
+	 * 根据订单号，查询订单信息
+	 * @author gaojb
+	 * @Time 2017年11月24日 下午5:10:47
+	 * @param orderNo
+	 * @return
+	 */
+	AfOrderDo getOrderByOrderNo(String orderNo);
+	/**
+	 * @param userId
+	 * judge the first_order during the second time to light the activity
+	* @Title: findFirstOrder
+	* @Description:
+	* @param orderId
+	* @return
+	* @return int
+	* @throws
+	 */
+	int findFirstOrder(@Param("orderId")Long orderId, @Param("userId")Long userId);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
+	List<AfOrderDto> selectSumCountByGoodsId(List<AfEncoreGoodsDto> list);
+	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
+	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
+
 }

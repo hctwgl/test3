@@ -124,7 +124,31 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
 		}
 
-		
+		try{
+			//纬度3.86~53.55,经度73.66~135.05
+			AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("latitude_longitude_limit");
+			if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())){
+				BigDecimal latitudeDecimal =  new BigDecimal(latitude) ;
+				BigDecimal longitudeDecimal =  new BigDecimal(longitude) ;
+				BigDecimal laMin= new BigDecimal( afResourceDo.getValue1().split(",")[0]);
+				BigDecimal laMax= new BigDecimal( afResourceDo.getValue1().split(",")[1]);
+				BigDecimal loMin= new BigDecimal( afResourceDo.getValue2().split(",")[0]);
+				BigDecimal loMax= new BigDecimal( afResourceDo.getValue2().split(",")[1]);
+				if(latitudeDecimal.compareTo(laMin)==-1 ||latitudeDecimal.compareTo(laMax)==1 ){
+					logger.error("position exception,user_name:"+accountDo.getUserName());
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.POSITION_EXCEPTION);
+				}
+				if(longitudeDecimal.compareTo(loMin)==-1 ||longitudeDecimal.compareTo(loMax)==1 ){
+					logger.error("position exception,user_name:"+accountDo.getUserName()+",at:"+latitudeDecimal+","+longitudeDecimal);
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.POSITION_EXCEPTION);
+				}
+			}
+		}catch (Exception e){
+			logger.error("position limit exception,user_name:"+accountDo.getUserName(),e);
+		}
+
+
+
 		String inputOldPwd = UserUtil.getPassword(pwd, accountDo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);

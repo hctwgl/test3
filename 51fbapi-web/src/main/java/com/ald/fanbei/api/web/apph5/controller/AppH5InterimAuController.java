@@ -202,57 +202,68 @@ public class AppH5InterimAuController extends BaseController {
                             }
                         }
                         if(judge){
-                            //判断是否已提过额,还清状态,有效状态
+                            //判断是否已提过额,还清状态,无效状态
                             if(afInterimAuService.selectExistAuByUserId(userId)>0){
-                                BigDecimal interimAmount =afInterimAuService.selectAuByUserId(userId);
-                                data.put("type",0);
-                                data.put("interimAmount",interimAmount);
-                                resp = H5CommonResponse.getNewInstance(false, "您当前已有临时额度,无法再次申请!", "", data);
-                                return resp.toString();
-                            }else{
-                                //判断是否已经过强风控
-                                String msg="";
-                                AfUserAuthDo afUserAuthDo=afUserAuthService.getUserAuthInfoByUserId(userId);
-                                if("Y".equals(afUserAuthDo.getRiskStatus())){
-                                    //推送用户信息给风控
-                                    Date date = new Date();//取时间
-                                    boolean isSuccess =true;//调用风控接口 默认成功
-                                    BigDecimal interimAmount = riskUtil.userTempQuota(userId);
-                             //       BigDecimal interimAmount = new BigDecimal(1000);
-                                    int i =interimAmount.compareTo(BigDecimal.ZERO);
-                                    if(i==1){
-                                        Calendar calendar  =   Calendar.getInstance();
-                                        calendar.setTime(date); //需要将date数据转移到Calender对象中操作
-                                        calendar.add(calendar.DATE, Integer.parseInt(afResourceDo.getValue1()));//把日期往后增加n天.正数往后推,负数往前移动
-                                        date=calendar.getTime();   //这个时间就是日期往后推多少天的结果
-                                    }else{
-                                        isSuccess= false;
-                                    }
-                                    //向表里写入数据
-                                    if(afInterimAuService.insertInterimAmountAndLog(isSuccess,userId,interimAmount,date)>0){
-                                        if(isSuccess){
-                                            data.put("type",1);
-                                            data.put("interimAmount",interimAmount);
-                                            resp = H5CommonResponse.getNewInstance(true, "申请成功！", "", data);
-                                            return resp.toString();
-                                        }else{
-                                            data.put("type",3);
-                                            resp = H5CommonResponse.getNewInstance(false, "申请失败！", "", data);
-                                            return resp.toString();
-                                        }
+                                int failureStatus =0;//0未失效,1失效
+                                int i =1;
+                                AfInterimAuDo afInterimAuDo= afInterimAuService.getAfInterimAuByUserId(userId);
+                                i =afInterimAuDo.getInterimUsed().compareTo(BigDecimal.ZERO);
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                                data.put("gmtFailuretime",sdf.format(afInterimAuDo.getGmtFailuretime()));//失效时间
+                                if(afInterimAuDo.getGmtFailuretime().getTime()< new Date().getTime()){
+                                    failureStatus=1;
+                                }
+                                if(failureStatus!=1&&i==0){
+                                    data.put("type",0);
+                                    data.put("interimAmount",afInterimAuDo.getInterimAmount());
+                                    resp = H5CommonResponse.getNewInstance(false, "您当前已有临时额度,无法再次申请!", "", data);
+                                    return resp.toString();
+                                }
+                            }
 
+                            //判断是否已经过强风控
+                            String msg="";
+                            AfUserAuthDo afUserAuthDo=afUserAuthService.getUserAuthInfoByUserId(userId);
+                            if("Y".equals(afUserAuthDo.getRiskStatus())){
+                                //推送用户信息给风控
+                                Date date = new Date();//取时间
+                                boolean isSuccess =true;//调用风控接口 默认成功
+                                BigDecimal interimAmount = riskUtil.userTempQuota(userId);
+                         //       BigDecimal interimAmount = new BigDecimal(1000);
+                                int i =interimAmount.compareTo(BigDecimal.ZERO);
+                                if(i==1){
+                                    Calendar calendar  =   Calendar.getInstance();
+                                    calendar.setTime(date); //需要将date数据转移到Calender对象中操作
+                                    calendar.add(calendar.DATE, Integer.parseInt(afResourceDo.getValue1()));//把日期往后增加n天.正数往后推,负数往前移动
+                                    date=calendar.getTime();   //这个时间就是日期往后推多少天的结果
+                                }else{
+                                    isSuccess= false;
+                                }
+                                //向表里写入数据
+                                if(afInterimAuService.insertInterimAmountAndLog(isSuccess,userId,interimAmount,date)>0){
+                                    if(isSuccess){
+                                        data.put("type",1);
+                                        data.put("interimAmount",interimAmount);
+                                        resp = H5CommonResponse.getNewInstance(true, "申请成功！", "", data);
+                                        return resp.toString();
                                     }else{
-                                        resp = H5CommonResponse.getNewInstance(false, "插入数据失败！", "", data);
+                                        data.put("type",3);
+                                        resp = H5CommonResponse.getNewInstance(false, "申请失败！", "", data);
                                         return resp.toString();
                                     }
 
                                 }else{
-                                    data.put("type",2); //未经过强风控
-                                    msg= "请先提交基础认证审核!";
+                                    resp = H5CommonResponse.getNewInstance(false, "插入数据失败！", "", data);
+                                    return resp.toString();
                                 }
-                                resp = H5CommonResponse.getNewInstance(false, msg, "", data);
-                                return resp.toString();
+
+                            }else{
+                                data.put("type",2); //未经过强风控
+                                msg= "请先提交基础认证审核!";
                             }
+                            resp = H5CommonResponse.getNewInstance(false, msg, "", data);
+                            return resp.toString();
+
                         }else{
                             resp = H5CommonResponse.getNewInstance(false, "未到风控审核拒绝后申请天数!", "", data);
                             return resp.toString();
