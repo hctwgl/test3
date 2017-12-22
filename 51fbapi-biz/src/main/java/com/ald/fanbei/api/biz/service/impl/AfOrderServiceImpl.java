@@ -861,22 +861,29 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								afOrder.getRid(), AccountLogType.REBATE);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
-						// qiao+2017-11-14 15:30:27:the second time to light the
-						// activity
+						
+						//----------------------------------------------mqp add a switch--------------------------------------------------
+						AfResourceDo afResourceDo = new AfResourceDo();
+						afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
+						if (afResourceDo != null ) {
+							String swtich = afResourceDo.getValue();
+							
+							if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
+								// qiao+2017-11-14 15:30:27:the second time to light the activity
+								logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",
+										afOrder.getRid(), userId);
+								// send red packet
+								afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
 
-						logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",
-								afOrder.getRid(), userId);
-						// send red packet
-						afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
-
-						// qiao+2017-11-14 15:30:27:the second time to light the
-						// activity
-
-						logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",
-								afOrder.getRid(), userId);
-						// send coupon
-						boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
-
+								// qiao+2017-11-14 15:30:27:the second time to light the activity
+								logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",
+										afOrder.getRid(), userId);
+								// send coupon
+								boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+							}
+						}
+						
+						//----------------------------------------------mqp end add a switch--------------------------------------------------
 						break;
 					default:
 						logger.info(" status is {} ", afOrder.getStatus());
