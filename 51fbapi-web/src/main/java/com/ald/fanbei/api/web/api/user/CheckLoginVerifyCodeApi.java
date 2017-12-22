@@ -185,7 +185,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 		riskUtil.verifyASyLogin(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid, "0",
 				loginTime, ip, phoneType, networkType, osType,SUCC,Constants.EVENT_LOGIN_ASY);
 		resp.setResponseData(jo);
-		//逛逛点亮活动新用户送券(下架)
+		//逛逛点亮活动新用户送券第一版(下架)
 //		try{
 //		  int  result =  afBoluomeActivityService.sentNewUserBoluomeCoupon(afUserDo);
 //		  if(result==0){
@@ -195,7 +195,7 @@ public class CheckLoginVerifyCodeApi implements ApiHandle{
 //			logger.error("sentNewUserBoluomeCoupon error",e.getMessage());
 //		}
 		
-		//吃玩住行活动被邀请的新用户登录送券
+		//吃玩住行活动被邀请的新用户登录送券（第二版）
 		try{
 			    afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
 			    logger.info("sentNewUserBoluomeCouponForDineDash success");
