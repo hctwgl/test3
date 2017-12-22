@@ -125,7 +125,7 @@ public class GetMyBorrowV1Api implements ApiHandle{
 				if(afResourceDo!=null){
 					map.put("floatType",1);//开启悬浮窗
 					map.put("name",afResourceDo.getName());
-					map.put("pic1",afResourceDo.getPic1()+"?testUser="+afUserDo.getUserName());
+					map.put("pic1",afResourceDo.getPic1());
 					map.put("pic2",afResourceDo.getPic2());
 				}else{
 					map.put("floatType",0);//未开启悬浮窗
