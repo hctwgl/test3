@@ -269,6 +269,11 @@ public class PayRoutController {
                 }
 				return "SUCCESS";
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
+				if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+					afSupDo.setRid(result);
+					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
+				}
 				if (afUserAccountService.dealUserDelegatePayError(merPriv, result) > 0) {
 					return "SUCCESS";
 				}
