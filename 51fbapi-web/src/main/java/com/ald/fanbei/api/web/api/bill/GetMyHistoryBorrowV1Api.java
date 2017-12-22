@@ -72,8 +72,10 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 				return resp;
 			}
+			Map<String, Object> respMap = new HashMap<String, Object>();
 			List<AfBorrowBillDo> monthBills = afBorrowBillService.getUserAllMonthBill(userId,page,pageSize);
 			if (monthBills == null || monthBills.size() < 1) {
+				resp.setResponseData(respMap);
 				return resp;
 			}
 			Map<Integer, List<AfBorrowBillDo>> yearMap = new HashMap<Integer, List<AfBorrowBillDo>>();
@@ -123,7 +125,6 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 				map.put("bills", yearMap.get(key));
 				list.add(map);
 			}
-			Map<String, Object> respMap = new HashMap<String, Object>();
 			respMap.put("list", list);
 			resp.setResponseData(respMap);
 			return resp;
