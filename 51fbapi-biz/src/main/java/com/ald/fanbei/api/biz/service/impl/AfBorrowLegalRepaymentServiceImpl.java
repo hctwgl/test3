@@ -567,6 +567,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
     }
     
     private void notifyUserBySms(RepayDealBo repayDealBo) {
+    	logger.info("notifyUserBySms info begin,sumAmount="+repayDealBo.sumAmount+",curSumRepayAmount="+repayDealBo.curSumRepayAmount+",sumRepaidAmount="+repayDealBo.sumRepaidAmount);
         try {
             AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
             if(repayDealBo.curName.equals("代扣付款")){
