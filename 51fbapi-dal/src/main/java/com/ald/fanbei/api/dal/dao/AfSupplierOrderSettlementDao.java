@@ -19,4 +19,5 @@ public interface AfSupplierOrderSettlementDao {
 
 	Integer updateSettlementOrderPayStatus(AfSupplierOrderSettlementDo afSupplierOrderSettlementDo);//修改结算单打款状态
 
+    int updateStatusByOrderId(Long rid);
 }
