@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    #set($version="201712181135")
+    #set($version="201712201649")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/sys")
     <meta charset="UTF-8">
     <title>还款方式</title>
@@ -42,6 +42,11 @@
            <img src="$commonUrl/repay06.png">
            <p><span></span>支付宝、银行卡还款会在2-3个工作日处理完成，处理期间如产生逾期费用和记录，系统将进行自动减免和处理，请耐心等待；</p>
            <p><span></span>若有疑问请联系客服电话：400-002-5151<br/>QQ：3423256211</p>
+       </div>
+       <div class="warmTips otherTips">
+           <img id="otherTipsImg" src="$commonUrl/repay09.png">
+           <p><span></span>51返呗还款优先选择App还款，支付宝及银行卡收款账号均为公司账号（浙江阿拉丁电子商务股份有限公司），不支持微信，QQ、支付宝个人账号收款；</p>
+           <p><span></span>注意信息安全，不泄漏任何验证码，银行卡密码，身份信息，不要相信任何个人发送的借款链接及转账至个人账号还款，如遇此情况，请联系51返呗客服<a href="tel:400-002-5151">400-002-5151</a>。</p>
        </div>
    </div>
 </body>

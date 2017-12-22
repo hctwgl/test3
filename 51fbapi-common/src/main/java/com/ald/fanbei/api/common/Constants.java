@@ -13,7 +13,7 @@ public class Constants {
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;
 	public static final long SECOND_OF_FIFTEEN = 15l;//15秒
-	public static final long SECOND_OF_THREE = 30l;//30秒
+	public static final long SECOND_OF_THREE = 30l;// 30秒
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
 	public static final long SECOND_OF_AN_HOUR = 60 * 60l;
 	public static final long SECOND_OF_ONE_DAY = 24 * 60 * 60l;
@@ -55,7 +55,6 @@ public class Constants {
 	public static final String REQ_SYS_NODE_SIGN_FOR_QQ = "sign";
 	public static final String REQ_SYS_NODE_TIME_FOR_QQ = "time";
 	public static final String REQ_SYS_NODE_NETTYPE_FOR_QQ = "nettype";
-	
 
 	public static final String DEFAULT_ENCODE = "UTF-8";
 	public static final String SWITCH_ON = "1";
@@ -318,6 +317,8 @@ public class Constants {
 	public static final String CONFKEY_BOLUOME_ORDER_SEARCH_URL = "fbapi.boluome.order.search.url";
 	public static final String CONFKEY_BOLUOME_ORDER_CANCEL_URL = "fbapi.boluome.order.cancel.url";
 	public static final String CONFKEY_BOLUOME_COUPON_URL = "fbapi.boluome.coupon.url";
+	public static final String CONFKEY_BOLUOME_ORDER_URL = "fbapi.boluome.api.order.url";
+	
 	public static final String CONFKEY_BOLUOME_API_ORDER_URL = "fbapi.boluome.api.order.url";
 
 	// 依图
@@ -413,17 +414,29 @@ public class Constants {
 	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
 	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
 
-	//首页滚动条
-	  public static final String HOMEPAGE_TOP_SCROLLBAR="HOMEPAGE_TOP_SCROLLBAR";
-	  public static final String BORROW_TOP_SCROLLBAR="H5_URL";
-	  
-	//代扣
-	  public static final String WITH_HOLD_SWITCH="WITH_HOLD_SWITCH";
-	//宜信阿福RC4秘钥
-	  public static final String YIXIN_AFU_PASSWORD="fbapi.yixinafu.password";
-	  //宜信阿福查询用户逾期信息redis中的key前缀
-	  public static final String YIXIN_AFU_SEARCH_KEY="yxafu_";
-	  //返呗与资产方对接时的平台标识
+	// 借钱费率配置相关
+	public static final String BORROW_RATE = "BORROW_RATE";
+	public static final String BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
+	public static final String BORROW_CASH_OVERDUE_POUNDAGE = "BORROW_CASH_OVERDUE_POUNDAGE";
+	public static final String BORROW_CASH_INFO_LEGAL = "BORROW_CASH_INFO_LEGAL";
+	// 首页滚动条
+	public static final String HOMEPAGE_TOP_SCROLLBAR = "HOMEPAGE_TOP_SCROLLBAR";
+	public static final String BORROW_TOP_SCROLLBAR = "H5_URL";
+
+	// 代扣
+	public static final String WITH_HOLD_SWITCH = "WITH_HOLD_SWITCH";
+	// 宜信阿福RC4秘钥
+	public static final String YIXIN_AFU_PASSWORD = "fbapi.yixinafu.password";
+	// 宜信阿福查询用户逾期信息redis中的key前缀
+	public static final String YIXIN_AFU_SEARCH_KEY = "yxafu_";	  
+
+	//	sup游戏充值
+	public static final String CONFKEY_SUP_BUSINESS_ID = "fbapi.sup.business.id";
+	public static final String CONFKEY_SUP_BUSINESS_KEY = "fbapi.sup.business.key";
+	public static final String CONFKEY_SUP_ORDER_DETAILS = "fbapi.sup.order.details";	
+
+	public static final int ONE_YEAY_DAYS = 360;
+	//返呗与资产方对接时的平台标识
 	  public static final String ASSET_SIDE_FANBEI_FLAG = "51fanbei";
 	  //资产方查询用户借款及逾期信息redis中的key前缀
 	  public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
@@ -432,11 +445,4 @@ public class Constants {
 	  public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
 	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
-	// 借钱费率配置相关
-		public static final String BORROW_RATE = "BORROW_RATE";
-		public static final String BORROW_CASH_POUNDAGE = "BORROW_CASH_POUNDAGE";
-		public static final String BORROW_CASH_OVERDUE_POUNDAGE = "BORROW_CASH_OVERDUE_POUNDAGE";
-		public static final String BORROW_CASH_INFO_LEGAL = "BORROW_CASH_INFO_LEGAL";
-		
-		public static final int ONE_YEAY_DAYS = 360;
 }

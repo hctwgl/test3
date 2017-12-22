@@ -80,7 +80,7 @@
 		<property name="fbapi.wx.key" defaultValue="ERz7b1fycFebv+EV0bVbSVOmT9sOHL2QxO/p8da/4uPQroYLtEIaqFC8Jmft4E4B" description="weixin key" />
 		<property name="fbapi.wx.certpath" defaultValue="D:/cert/apiclient_cert.p12" description="weixin certpath" />
 		
-		<property name="fbapi.notify.host" defaultValue="https://btestapp.51fanbei.com" description="异步回调地址" />
+		<property name="fbapi.notify.host" defaultValue="https://dtestapp.51fanbei.com" description="异步回调地址" />
 
 <!-- 		<property name="fbapi.ups.url" defaultValue="http://testpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
   		<property name="fbapi.risk.url" defaultValue="http://arc.edushi.erongyun.net" description="risk请求地址" />
@@ -104,6 +104,7 @@
 		<property name="fbapi.boluome.order.cancel.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/cancel" description="菠萝觅 订单取消订单" />
 		<property name="fbapi.boluome.order.search.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/info" description="菠萝觅 订单补偿查询" />
 		<property name="fbapi.boluome.coupon.url" defaultValue="https://dev-api.otosaas.com/bss/v1/apps/campaigns/coupons" description="菠萝觅 用户优惠券获取"/>
+		<property name="fbapi.boluome.api.order.url" defaultValue="https://dev-api.otosaas.com/91ala" description="菠萝觅订单相关地址"/>
 		
 		<property name="fbapi.boluome.push.pay.url" defaultValue="http://91ala.test.otosaas.com/api/validation/v1" description="菠萝觅 支付推送消息" />
 		<property name="fbapi.boluome.push.refund.url" defaultValue="http://91ala.test.otosaas.com/api/refundment/v1" description="菠萝觅 certpath" />
@@ -131,6 +132,10 @@
 		<property name="fbapi.esign.retry" defaultValue="5"/>
 		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
 		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
+		
+		<!-- sup 游戏充值 -->
+		<property name="fbapi.sup.business.id" defaultValue="dyJWJi0P+WVLTsslHUgVlw=="  description="sup 游戏充值配置ID"/>
+		<property name="fbapi.sup.business.key" defaultValue="/C9w1LBJUPi3u26ULHnu+EtRQUOeJywL1jRGe/PuasXQroYLtEIaqFC8Jmft4E4B" description="sup 游戏充值配置KEY"/>
 	</group>
 
 	<script>

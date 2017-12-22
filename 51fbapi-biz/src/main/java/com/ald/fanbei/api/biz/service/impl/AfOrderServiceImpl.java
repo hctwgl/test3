@@ -32,6 +32,7 @@ import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeCore;
 import com.ald.fanbei.api.biz.service.AfAgentOrderService;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
@@ -74,6 +75,7 @@ import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.MobileStatus;
 import com.ald.fanbei.api.common.enums.OrderRefundStatus;
+import com.ald.fanbei.api.common.enums.OrderSecType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.OrderTypeSecSence;
@@ -130,6 +132,7 @@ import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
 
@@ -775,6 +778,54 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.updateOrder(afOrder);
 	}
 
+
+//    @Override
+//    public int dealBoluomeOrder(final AfOrderDo afOrder) {
+//	try {
+//	    OrderStatus orderStatus = OrderStatus.findRoleTypeByCode(afOrder.getStatus());
+//	    switch (orderStatus) {
+//	    case FINISHED:
+//		callbackCompleteOrder(afOrder);
+//		break;
+//	    default:
+//		logger.info(" status is {} ", afOrder.getStatus());
+//		orderDao.updateOrder(afOrder);
+//		break;
+//	    }
+//	    logger.info("dealBoluomeOrder complete!");
+//	    return 1;
+//	} catch (Exception e) {
+//	    logger.info("dealBoluomeOrder error:", e);
+//	    return 0;
+//	}
+//    }
+
+    @Override
+    public int callbackCompleteOrder(final AfOrderDo afOrder) {
+	logger.info("callbackCompleteOrder begin , afOrder = {}" + afOrder);
+	return transactionTemplate.execute(new TransactionCallback<Integer>() {
+	    @Override
+	    public Integer doInTransaction(TransactionStatus status) {
+		try {
+		    Long userId = afOrder.getUserId();
+		    afOrder.setStatus(OrderStatus.REBATED.getCode());
+		    afOrder.setGmtRebated(new Date());
+		    afOrder.setGmtFinished(new Date());
+		    AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
+		    accountInfo.setRebateAmount(BigDecimalUtil.add(accountInfo.getRebateAmount(), afOrder.getRebateAmount()));
+		    AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId, afOrder.getRid(), AccountLogType.REBATE);
+		    afUserAccountDao.updateOriginalUserAccount(accountInfo);
+		    afUserAccountLogDao.addUserAccountLog(accountLog);
+		    orderDao.updateOrder(afOrder);
+		    return 1;
+		} catch (Exception e) {
+		    status.setRollbackOnly();
+		    logger.info("callbackCompleteOrder error:", e);
+		    return 0;
+		}
+	    }
+	});
+    }
 	@Resource
 	RedisTemplate redisTemplate;
 	@Override
@@ -810,22 +861,29 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								afOrder.getRid(), AccountLogType.REBATE);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
-						// qiao+2017-11-14 15:30:27:the second time to light the
-						// activity
+						
+						//----------------------------------------------mqp add a switch--------------------------------------------------
+						AfResourceDo afResourceDo = new AfResourceDo();
+						afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
+						if (afResourceDo != null ) {
+							String swtich = afResourceDo.getValue();
+							
+							if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
+								// qiao+2017-11-14 15:30:27:the second time to light the activity
+								logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",
+										afOrder.getRid(), userId);
+								// send red packet
+								afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
 
-						logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",
-								afOrder.getRid(), userId);
-						// send red packet
-						afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
-
-						// qiao+2017-11-14 15:30:27:the second time to light the
-						// activity
-
-						logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",
-								afOrder.getRid(), userId);
-						// send coupon
-						boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
-
+								// qiao+2017-11-14 15:30:27:the second time to light the activity
+								logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",
+										afOrder.getRid(), userId);
+								// send coupon
+								boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+							}
+						}
+						
+						//----------------------------------------------mqp end add a switch--------------------------------------------------
 						break;
 					default:
 						logger.info(" status is {} ", afOrder.getStatus());
@@ -855,15 +913,50 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return accountLog;
 	}
 
+    @Override
+    public void deleteOrder(Long userId,Long orderId) {
+
+	// 参数基本检查
+	if (orderId == null) {
+	    throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+	}
+
+	// 用户订单检查
+	AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId, userId);
+	if (null == orderInfo) {
+	    throw new FanbeiException(FanbeiExceptionCode.USER_ORDER_NOT_EXIST_ERROR);
+	}
+
+	// 校验订单状态是否满足删除条件
+	List<String> canDelStatus = new ArrayList<String>();
+	canDelStatus.add(OrderStatus.NEW.getCode());
+	canDelStatus.add(OrderStatus.FINISHED.getCode());
+	canDelStatus.add(OrderStatus.REBATED.getCode());
+	canDelStatus.add(OrderStatus.CLOSED.getCode());
+	if (canDelStatus.contains(orderInfo.getStatus())) {
+	    // 订单状态改为删除
+	    int nums = orderDao.deleteOrder(orderId);
+	    if (nums <= 0) {
+		throw new FanbeiException(FanbeiExceptionCode.FAILED);
+	    }
+	    // 如果为待支付定单，在删除时减少商品销量
+	    if (OrderStatus.NEW.getCode().equals(orderInfo.getStatus())) {
+		afGoodsService.updateSelfSupportGoods(orderInfo.getGoodsId(), -orderInfo.getCount());
+	    }
+	} else {
+	    throw new FanbeiException(FanbeiExceptionCode.ORDER_NOFINISH_CANNOT_DELETE);
+	}
+    }
+
 	@Override
 	public AfOrderDo getOrderById(Long id) {
 		return orderDao.getOrderById(id);
 	}
 
-	@Override
-	public int deleteOrder(Long id) {
-		return orderDao.deleteOrder(id);
-	}
+//	@Override
+//	public int deleteOrder(Long id) {
+//		return orderDao.deleteOrder(id);
+//	}
 
 	@Override
 	public Map<String, Object> payBrandOrder(final Long payId, final String payType, final Long orderId,
@@ -1196,7 +1289,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
 		}
 		// removeSecondNper(array);
-
 		JSONArray interestFreeArray = null;
 		if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
 			interestFreeArray = JSON.parseArray(interestFreeJson);
@@ -1256,7 +1348,6 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 				break;
 			}
 		}
-
 	}
 
 	@Override
@@ -1417,7 +1508,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		});
 		if (result == 1) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
-					PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
+					PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 			// iPhonX预约
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
 			logger.info("iPhone8 reservationActivity" + (goods != null ? goods.getRid() : 0L));
@@ -1586,7 +1677,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
-					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 		return result;
 	}
@@ -2153,7 +2244,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
-					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 		return result;
 	}
@@ -2233,7 +2324,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
-					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount());
+					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 
 		return result;
@@ -2282,6 +2373,41 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		// TODO Auto-generated method stub
 		return orderDao.getOverOrderByGoodsIdAndUserId(goodsId, userId);
 	}
+
+    @Override
+    public String getBoluomeOrderDetailUrl(AfOrderDo orderInfo) {
+	logger.info("getBoluomeOrderDetailUrl :" + orderInfo.toString());
+	if (!orderInfo.getSecType().equals(OrderSecType.SUP_GAME.getCode())) {
+	    Map<String, String> buildParams = new HashMap<String, String>();
+
+	    buildParams.put(BoluomeCore.CUSTOMER_USER_ID, orderInfo.getUserId() + StringUtils.EMPTY);
+	    buildParams.put(BoluomeCore.CUSTOMER_USER_PHONE, orderInfo.getMobile());
+	    buildParams.put(BoluomeCore.TIME_STAMP, System.currentTimeMillis() / 1000 + StringUtils.EMPTY);
+
+	    String sign = BoluomeCore.buildSignStr(buildParams);
+	    buildParams.put(BoluomeCore.SIGN, sign);
+
+	    String paramsStr = BoluomeCore.createLinkString(buildParams);
+
+	    return orderInfo.getThirdDetailUrl() + "?" + paramsStr;
+	} else {
+	    return orderInfo.getThirdDetailUrl();
+	}
+    }
+    
+    /**
+     * 根据订单号，查询订单信息
+     * 
+     * @author gaojb
+     * @Time 2017年11月24日 下午5:10:47
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public AfOrderDo getOrderByOrderNo(String orderNo) {
+
+	return orderDao.getOrderByOrderNo(orderNo);
+    }
 
 	@Override
 	public List<AfOrderDo> getOverOrderByUserId(Long userId) {

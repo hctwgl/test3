@@ -488,7 +488,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 					int result=afUserAccountDao.updateUserAccount(account);
 					if(result<=0){
 						logger.info("update account error,details:repayNo"+repayment.getRepayNo(), JSON.toJSONString(account));
-						throw new Exception("update account error,details");
+						//throw new Exception("update account error,details");
 					}
 //					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, backAmount, repayment.getUserId(), repayment.getRid()));

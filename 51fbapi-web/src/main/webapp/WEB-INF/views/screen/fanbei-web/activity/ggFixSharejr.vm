@@ -20,7 +20,7 @@
         })(window);
     </script>
     <!--转化代码-->
-    #set($version="201712202252")
+    #set($version="201712221346")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -28,6 +28,15 @@
 </head>
 <body>
 <div id="ggFixSharejr" class="ggFixSharejm">
+    <!--公告左右移动--start-->
+    <div class="personAmount">
+        <div class="amountCont">
+            <div class="cont cont1">
+                <p>第二波活动还剩 <span class="timeOut"></span> 结束，第三波福利加码即将开启，敬请期待！</p>
+            </div>
+            <div class="cont cont2"></div>
+        </div>
+    </div><!--公告左右移动--end-->
     <!--首页轮播图-->
     <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner first">

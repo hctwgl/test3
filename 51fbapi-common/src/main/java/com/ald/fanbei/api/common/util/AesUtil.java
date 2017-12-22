@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -14,6 +15,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,19 +160,26 @@ public class AesUtil {
         return result;
     }
     
-    
     public static void main(String[] args) {
-    	byte[] encrypt = AesUtil.encrypt("你好", "test123");
-    	String str = new  String(encrypt);
-    	System.out.println(str);
-    	System.out.println(new String(AesUtil.decrypt(encrypt, "test123")));
+    	String str = StringUtils.EMPTY;
+    	for (int i = 0 ; i < 10; i ++) {
+    		str = str + new Random().nextInt(10);
+    	}
     	
+    	String msg = new String(Base64.encodeBase64(encrypt("Num10428","testC1b6x@6aH$2dlw")));
+    	String msg2 = new String(Base64.encodeBase64(encrypt("2d477a24ec9c4d4ba65403f031cd5d9f","testC1b6x@6aH$2dlw")));
+    	System.out.println(msg);
+    	System.out.println(msg2);
     	
-    	System.out.println("-------------------------------------------------");
-    	
-        String encryptStr2 = new String(encryptToBase64("你好", "testC1b6x@6aH$2dlw"));
-        System.out.println(encryptStr2);
-        String encryptStr3 = decryptFromBase64(encryptStr2, "testC1b6x@6aH$2dlw");
-        System.out.println(encryptStr3);
+      /*  String encryptStr = new String(Base64.encodeBase64(encrypt("92e14df48e375e5f115b421d84305866", "testC1b6x@6aH$2dlw")));
+        System.out.println(encryptStr);*/
+//        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
+        //String sec = decryptFromBase64("4r1JFuNNEHg2RU3jUAOr0IYC9KMPZSbw1S7bhCBACSw=", "testC1b6x@6aH$2dlw");
+        //System.out.println(sec);
+   /*     String online = decryptFromBase64("vxVgjHkkSr/7aDMAdf/+H8yCEM0qlkFiyolnb01k57o=", "testC1b6x@6aH$2dlw");
+        System.out.println(online);*/
+//    	AesUtil.decryptFromBase64("", "testC1b6x");
+ /*       System.out.println(new String(Base64.encodeBase64(encrypt("wpD1QcUHaXY0aydcRw4X", "testC1b6x@6aH$2dlw"))));*/
+    
     }
 }

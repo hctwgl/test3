@@ -74,7 +74,7 @@ public class SmsUtil extends AbstractThird {
     private static String TRADE_HOME_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
     private static String TEST_VERIFY_CODE = "888888";
     private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
-
+    private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
@@ -949,7 +949,16 @@ public class SmsUtil extends AbstractThird {
         }
 
     }
-
+    
+    public void sendGamePayResultToUser(String mobile, String gameName, String status) {
+	try {
+	    SmsResult smsResult = sendSmsToDhst(mobile, String.format(GAME_PAY_RESULT, gameName, status));
+	    logger.error("sendGamePayResultToUser success,mobile:" + mobile + "gameName:" + gameName);
+	} catch (Exception e) {
+	    logger.error("sendGamePayResultToUser error:", e);
+	}
+    }
+    
     public void sendTenementNotify(String mobiles, String content) {
         try {
             SmsResult smsResult = sendSmsToDhst(mobiles, content);
