@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -59,6 +60,8 @@ public class AppH5InterimAuController extends BaseController {
 
     @Resource
     RiskUtil riskUtil;
+
+    DecimalFormat   df   =new DecimalFormat("#.00");
 
 
     /**
@@ -121,13 +124,13 @@ public class AppH5InterimAuController extends BaseController {
                 //Long userId = 520l; //666
 
             //可用额度
-                data.put("amount", afUserAccountService.getAuAmountByUserId(userId));
+                data.put("amount", df.format(afUserAccountService.getAuAmountByUserId(userId)));
                 //判断是否已提过额,还清状态,有效状态
                 if(afInterimAuService.selectExistAuByUserId(userId)>0){
                     AfInterimAuDo afInterimAuDo= afInterimAuService.getAfInterimAuByUserId(userId);
                     data.put("type",0);//临时额度
-                    data.put("interimAmount",afInterimAuDo.getInterimAmount());//临时额度
-                    data.put("interimUsed",afInterimAuDo.getInterimUsed());//已使用的额度
+                    data.put("interimAmount",df.format(afInterimAuDo.getInterimAmount()));//临时额度
+                    data.put("interimUsed",df.format(afInterimAuDo.getInterimUsed()));//已使用的额度
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                     data.put("gmtFailuretime",sdf.format(afInterimAuDo.getGmtFailuretime()));//失效时间
                     int failureStatus =0;//0未失效,1失效
@@ -243,12 +246,12 @@ public class AppH5InterimAuController extends BaseController {
                                 if(afInterimAuService.insertInterimAmountAndLog(isSuccess,userId,interimAmount,date)>0){
                                     if(isSuccess){
                                         data.put("type",1);
-                                        data.put("interimAmount",interimAmount);
+                                        data.put("interimAmount",df.format(interimAmount));
                                         resp = H5CommonResponse.getNewInstance(true, "申请成功！", "", data);
                                         return resp.toString();
                                     }else{
                                         data.put("type",3);
-                                        resp = H5CommonResponse.getNewInstance(false, "申请失败！", "", data);
+                                        resp = H5CommonResponse.getNewInstance(false, "抱歉，您此次申请不符合提额要求，听说多分期和借钱能提高通过率~！", "", data);
                                         return resp.toString();
                                     }
 
