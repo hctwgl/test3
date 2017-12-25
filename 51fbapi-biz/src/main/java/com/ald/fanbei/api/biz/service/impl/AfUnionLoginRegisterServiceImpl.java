@@ -60,7 +60,7 @@ public class AfUnionLoginRegisterServiceImpl extends ParentServiceImpl<AfUnionLo
         userDo.setPassword(password);
         userDo.setRecommendId(0l);
         long userId=0;
-        int i = afUserService.addUser(userDo);
+        long i = afUserService.addUser(userDo);
         if (i > 0) {
             userId = userDo.getRid();
             AfUnionLoginRegisterDo afUnionLoginRegisterDo=new AfUnionLoginRegisterDo();

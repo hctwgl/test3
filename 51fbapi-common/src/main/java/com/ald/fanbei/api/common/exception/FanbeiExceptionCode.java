@@ -379,7 +379,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
      */
     private String desc;
 
-    private FanbeiExceptionCode(String code, int errorCode, String errorMsg, String desc) {
+    FanbeiExceptionCode(String code, int errorCode, String errorMsg, String desc) {
         this.code = code;
         this.errorCode = errorCode;
         this.errorMsg = errorMsg;

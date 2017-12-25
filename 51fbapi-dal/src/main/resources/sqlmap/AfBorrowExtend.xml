@@ -25,7 +25,7 @@
 	</update>
 
 
-	<select id="getAfBorrowExtendDoByBorrowId" resultType="AfBorrowCashDo">
+	<select id="getAfBorrowExtendDoByBorrowId" resultType="AfBorrowExtendDo">
 		select <include refid="queryFields" /> from af_borrow_extend
 		where id =#{borrowId}
 	</select>
