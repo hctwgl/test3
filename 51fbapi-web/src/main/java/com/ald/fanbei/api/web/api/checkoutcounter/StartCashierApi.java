@@ -389,23 +389,33 @@ public class StartCashierApi implements ApiHandle {
 //                        borrowNo="jk2017111218003479890";
 //                    }
                     AfBorrowDo borrowInfo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
-                    Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
-                    cashierTypeVo.setBillId(billId);
-                    cashierTypeVo.setOverduedCode(erorrCode.getCode());
-                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-                    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
+                    if(borrowInfo!=null){
+                        Long billId = afBorrowBillService.getOverduedAndNotRepayBillId(borrowInfo.getRid());
+                        cashierTypeVo.setBillId(billId);
+                        cashierTypeVo.setOverduedCode(erorrCode.getCode());
+                        cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+                        cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
+                    }else{
+                        logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:"+borrowNo);
+                    }
+
                     return;
                 case OVERDUE_BORROW_CASH:
                     AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
-                    cashierTypeVo.setOverduedCode(erorrCode.getCode());
-                    cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
-                    cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
-                    BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(), cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
-                    BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
-                    cashierTypeVo.setRepaymentAmount(repaymentAmount);
-                    cashierTypeVo.setBorrowId(cashInfo.getRid());
-                    cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
-                    cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
+                    if(cashInfo!=null){
+                        cashierTypeVo.setOverduedCode(erorrCode.getCode());
+                        cashierTypeVo.setJfbAmount(userDto.getJfbAmount());
+                        cashierTypeVo.setUserRebateAmount(userDto.getRebateAmount());
+                        BigDecimal allAmount = BigDecimalUtil.add(cashInfo.getAmount(), cashInfo.getSumOverdue(), cashInfo.getOverdueAmount(), cashInfo.getRateAmount(), cashInfo.getSumRate());
+                        BigDecimal repaymentAmount = BigDecimalUtil.subtract(allAmount, cashInfo.getRepayAmount());
+                        cashierTypeVo.setRepaymentAmount(repaymentAmount);
+                        cashierTypeVo.setBorrowId(cashInfo.getRid());
+                        cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
+                        cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
+                    }else{
+                        logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:"+userDto.getUserId());
+                    }
+
                     return;
                 default:
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
