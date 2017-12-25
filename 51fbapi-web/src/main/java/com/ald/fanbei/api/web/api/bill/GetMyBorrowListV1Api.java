@@ -122,16 +122,15 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 					afBorrowBillDo.setBillYear(calendar.get(Calendar.YEAR));
 					if (StringUtil.equals("notOutBill", status)) {
 						afBorrowBillDo.setIsOut(0);
-						continue;
-					}
-					afBorrowBillDo.setIsOut(1);
-					if (new BigDecimal(0).compareTo(afBorrowBillDo.getOverdueInterestAmount()) != 0) {
-						afBorrowBillDo.setOverdueStatus("Y");
 					}else {
-						afBorrowBillDo.setOverdueStatus("N");
-						afBorrowBillDo.setGmtPayTime(afBorrowBillService.getPayDayByYearAndMonth(userId,afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth()));
+						afBorrowBillDo.setIsOut(1);
+						if (new BigDecimal(0).compareTo(afBorrowBillDo.getOverdueInterestAmount()) != 0) {
+							afBorrowBillDo.setOverdueStatus("Y");
+						}else {
+							afBorrowBillDo.setOverdueStatus("N");
+							afBorrowBillDo.setGmtPayTime(afBorrowBillService.getPayDayByYearAndMonth(userId,afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth()));
+						}
 					}
-
 					if (yearMap.containsKey(afBorrowBillDo.getBillYear())) {
 						List<AfBorrowBillDo> monthList = yearMap.get(afBorrowBillDo.getBillYear());
 						monthList.add(afBorrowBillDo);
