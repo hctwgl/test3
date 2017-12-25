@@ -187,14 +187,22 @@ function getIntitalData(callback){
                 return false;
                
             }
-            if(type==0 && interimUsed==0 && failureStatus==0){//申请成功之后判断额度还清且额度失效的状态
+             if(interimUsed!==0 || failureStatus==0){//申请成功之后判断不能再次申请的状态
                 $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
                 $('.applyButton').html('暂时无法再次提额');//改变按钮文字
                 $('.applyButton').unbind('click')//禁止点击事件
                 if(failureStatus==1){//判断临时额度是否失效
                     $('.useless').show();//失效显示文字
                 }
-            }
+            } 
+            /* if(type==0 && interimUsed==0 && failureStatus==0){//申请成功之后判断不能再次申请的状态
+                $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
+                $('.applyButton').html('暂时无法再次提额');//改变按钮文字
+                $('.applyButton').unbind('click')//禁止点击事件
+                if(failureStatus==1){//判断临时额度是否失效
+                    $('.useless').show();//失效显示文字
+                }
+            } */
 
 
             /* callback(type); */
