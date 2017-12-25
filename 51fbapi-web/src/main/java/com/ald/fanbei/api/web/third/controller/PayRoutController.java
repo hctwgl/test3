@@ -46,6 +46,7 @@ import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
@@ -76,16 +77,6 @@ import com.ald.fanbei.api.dal.dao.AfHuicaoOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
-import com.ald.fanbei.api.dal.domain.AfHuicaoOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -164,19 +155,26 @@ public class PayRoutController {
     private AfBorrowDao afBorrowDao;
 
 	@Resource
+	private AfTradeCodeInfoService afTradeCodeInfoService;
+
+	@Resource
 	private AfBankDao afBankDao;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
-	@RequestMapping(value = { "/authSignReturn" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
-		for (String paramKey : request.getParameterMap().keySet()) {
-			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-		}
-		return "succ";
-	}
+    @Resource
+    private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
+
+    @RequestMapping(value = {"/authSignReturn"}, method = RequestMethod.POST)
+    @ResponseBody
+    public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
+        for (String paramKey : request.getParameterMap().keySet()) {
+            thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+        }
+        return "succ";
+    }
+
 
 	@RequestMapping(value = { "/authSignNotify" }, method = RequestMethod.POST)
 	@ResponseBody
@@ -271,20 +269,33 @@ public class PayRoutController {
 					// 退款记录
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-					afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, false);
+					if(afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, false)<=0){
+						return "ERROR";
+					}
 				} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-					afOrderRefundService.dealWithSelfGoodsOrderRefund(refundInfo, orderInfo);
+					if(afOrderRefundService.dealWithSelfGoodsOrderRefund(refundInfo, orderInfo)<=0){
+						return "ERROR";
+					}
 				} else if (UserAccountLogType.TRADE_BANK_REFUND.getCode().equals(merPriv)) {
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
 					afOrderRefundService.dealWithTradeOrderRefund(refundInfo, orderInfo);
 				} else if (UserAccountLogType.TRADE_WITHDRAW.getCode().equals(merPriv)) {
 					afTradeWithdrawRecordService.dealWithDrawSuccess(result);
-				}
+				}else if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+                    AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+                    afSupDo.setRid(result);
+                    afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
+                }
 				return "SUCCESS";
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
+				if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+					afSupDo.setRid(result);
+					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
+				}
 				if (afUserAccountService.dealUserDelegatePayError(merPriv, result) > 0) {
 					return "SUCCESS";
 				}
@@ -360,7 +371,7 @@ public class PayRoutController {
 				if (PayOrderSource.ORDER.getCode().equals(attach)) {
 					afOrderService.dealMobileChargeOrder(outTradeNo, transactionId);
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-					afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId);
+					afRepaymentService.dealRepaymentSucess(outTradeNo, transactionId,false);
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
 						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, transactionId, PayType.WECHAT.getCode());
@@ -408,14 +419,7 @@ public class PayRoutController {
 				if (OrderType.MOBILE.getCode().equals(merPriv)) {// 手机充值订单处理
 					afOrderService.dealMobileChargeOrder(outTradeNo, tradeNo);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) {// 还款成功处理
-					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
-					// 回调成功发送短信
-					try {
-						String userNo = StringUtil.null2Str(request.getParameter("userNo"));
-						afRepaymentService.sendSuccessMessage(Long.valueOf(userNo), outTradeNo, tradeNo);
-					} catch (Exception e) {
-						logger.error("send borrowbill send message error for:" + e);
-					}
+					afRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,true);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					afOrderService.dealBrandOrderSucc(outTradeNo, tradeNo, PayType.BANK.getCode());
@@ -443,75 +447,13 @@ public class PayRoutController {
 					afRenewalLegalDetailService.dealLegalRenewalSucess(outTradeNo, tradeNo);
 				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
-				String errorWarnMsg = "";
+				String errorWarnMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respCode);
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					if (StringUtil.isNotBlank(respDesc)) {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-					} else {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-					}
-					// 加上银行卡信息
-					try {
-						String addMsg = "";
-						String bankCode = StringUtil.null2Str(request.getParameter("bankCode"));
-						String cardNum = StringUtil.null2Str(request.getParameter("cardNo"));
-						logger.info("发送短信增加银行卡信息,bankCode:" + bankCode + ",cardNum:" + cardNum);
-						if (StringUtil.isNotBlank(errorWarnMsg) && StringUtil.isNotBlank(bankCode)
-								&& StringUtil.isNotBlank(cardNum)) {
-							if (cardNum.length() > 4) {
-								cardNum = cardNum.substring(cardNum.length() - 4, cardNum.length());
-								String bankName = afBankDao.getBankNameByCode(bankCode);
-								if (StringUtil.isNotBlank(bankName)) {
-									addMsg = "{" + bankName + cardNum + "}";
-									errorWarnMsg = addMsg + errorWarnMsg;
-								}
-							}
-						}
-					} catch (Exception e) {
-						logger.error("get cardName error for:" + e);
-					}
-
 					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
-
-					if (StringUtil.isNotBlank(respDesc)) {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-					} else {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-					}
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
-																						// 311
-					afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo);
-					// 加上银行卡信息，发送短信
-					try {
-						if (StringUtil.isNotBlank(respDesc)) {
-							errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-						} else {
-							errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-						}
-						String addMsg = "";
-						String bankCode = StringUtil.null2Str(request.getParameter("bankCode"));
-						String cardNum = StringUtil.null2Str(request.getParameter("cardNo"));
-						String userNo = StringUtil.null2Str(request.getParameter("userNo"));
-						logger.info("发送短信增加银行卡信息,bankCode:" + bankCode + ",cardNum:" + cardNum + ",userNo" + userNo);
-						if (StringUtil.isNotBlank(errorWarnMsg) && StringUtil.isNotBlank(bankCode)
-								&& StringUtil.isNotBlank(cardNum) && StringUtil.isNotBlank(userNo)) {
-							if (cardNum.length() > 4) {
-								cardNum = cardNum.substring(cardNum.length() - 4, cardNum.length());
-								String bankName = afBankDao.getBankNameByCode(bankCode);
-								if (StringUtil.isNotBlank(bankName)) {
-									addMsg = "{" + bankName + cardNum + "}";
-									errorWarnMsg = addMsg + errorWarnMsg;
-									// 还款失败短信通知
-									afRepaymentService.sendFailMessage(Long.valueOf(userNo), errorWarnMsg, outTradeNo,
-											tradeNo);
-								}
-							}
-						}
-					} catch (Exception e) {
-						logger.error("get cardName error for:" + e);
-					}
+					 afRepaymentService.dealRepaymentFail(outTradeNo, tradeNo,true,errorWarnMsg);
 				} else if (OrderType.BOLUOME.getCode().equals(merPriv)
 						|| OrderType.SELFSUPPORT.getCode().equals(merPriv)) {
 					int result = afOrderService.dealBrandOrderFail(outTradeNo, tradeNo, PayType.BANK.getCode());
@@ -527,20 +469,8 @@ public class PayRoutController {
 						return "ERROR";
 					}
 				} else if (PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款失败
-					if (StringUtil.isNotBlank(respDesc)) {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-					} else {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-					}
-
 					afBorrowLegalRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
 				} else if (PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期失败
-					if (StringUtil.isNotBlank(respDesc)) {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(respDesc);
-					} else {
-						errorWarnMsg = StringUtil.processRepayFailThirdMsg(tradeDesc);
-					}
-
 					afRenewalLegalDetailService.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				}
 			}
@@ -598,7 +528,7 @@ public class PayRoutController {
 					|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 				afOrderService.dealBrandOrderFail(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
 			} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo);
+				afRepaymentService.dealRepaymentFail(orderId, uniqueOrderNo,false,"");
 			}
 
 			return "SUCCESS";
@@ -607,7 +537,7 @@ public class PayRoutController {
 		if (PayOrderSource.ORDER.getCode().equals(attach)) {
 			afOrderService.dealMobileChargeOrder(orderId, uniqueOrderNo);
 		} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
-			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo);
+			afRepaymentService.dealRepaymentSucess(orderId, uniqueOrderNo,false);
 		} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
 				|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 			afOrderService.dealBrandOrderSucc(orderId, uniqueOrderNo, PayType.WECHAT.getCode());
@@ -705,7 +635,7 @@ public class PayRoutController {
 							afHuicaoOrderDo.getThirdOrderNo());
 				} else if (PayOrderSource.REPAYMENT.getCode().equals(attach)) {
 					afRepaymentService.dealRepaymentSucess(afHuicaoOrderDo.getOrderNo(),
-							afHuicaoOrderDo.getThirdOrderNo());
+							afHuicaoOrderDo.getThirdOrderNo(),false);
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
 						|| PayOrderSource.SELFSUPPORT_ORDER.getCode().equals(attach)) {
 					// afOrderService.dealBrandOrderSucc(afHuicaoOrderDo.getOrderNo(),
@@ -748,71 +678,7 @@ public class PayRoutController {
 
 	}
 
-
-
-    /**
-     *
-     * @param orderId
-     * @param sigin
-     * @return
-     */
-    /**
-     * 订单自动收货
-     */
-    @RequestMapping(value = {"/autoCompleteOrder"})
-    @ResponseBody
-    public String autoCompleteOrder(Long orderId,String sign) throws Exception{
-
-        String data ="orderId="+orderId+"&vcode=0123654aa";
-        String salt = ConfigProperties.get("fbapi.orderFinish.key");
-        byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
-        String sign1 = DigestUtil.encodeHex(pd);
-        if(!sign.equals(sign1)){
-            return "false";
-        }
-
-
-        AfOrderDo afOrder = afOrderDao.getOrderById(orderId);
-        AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderId);
-        if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
-
-            AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowDo.getUserId());
-            afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afBorrowDo.getUserId());
-            List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-            if(borrowList == null || borrowList.size()==0 ){
-                List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-                afBorrowDao.addBorrowBill(billList);
-            }
-            AfOrderDo orderDoUpdate = new AfOrderDo();
-            orderDoUpdate.setRid(orderId);
-            orderDoUpdate.setStatus(OrderStatus.FINISHED.getCode());
-            orderDoUpdate.setGmtFinished(new Date());
-            orderDoUpdate.setLogisticsInfo("已签收");
-            afOrderService.updateOrder(orderDoUpdate);
-        }
-
-        return "success";
-    }
-
-
-
-
-    /**
-     * 生成退款详情
-     * @param orderId
-     * @return
-     */
-    @RequestMapping(value = {"/addRefundDetail"})
-    @ResponseBody
-    public int addRefundDetail(long orderId){
-        return afUserAmountService.refundOrder(orderId);
-    }
-
-
-
-
-
-    /**
+	/**
 	 * 处理错误数据
 	 */
 	@RequestMapping(value = { "/updateOrderLen" })
