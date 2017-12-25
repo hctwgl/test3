@@ -251,11 +251,15 @@ public class PayRoutController {
 					// 退款记录
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-					afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, false);
+					if(afOrderRefundService.dealWithOrderRefund(refundInfo, orderInfo, false)<=0){
+						return "ERROR";
+					}
 				} else if (UserAccountLogType.NORMAL_BANK_REFUND.getCode().equals(merPriv)) {
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
-					afOrderRefundService.dealWithSelfGoodsOrderRefund(refundInfo, orderInfo);
+					if(afOrderRefundService.dealWithSelfGoodsOrderRefund(refundInfo, orderInfo)<=0){
+						return "ERROR";
+					}
 				} else if (UserAccountLogType.TRADE_BANK_REFUND.getCode().equals(merPriv)) {
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
@@ -269,6 +273,11 @@ public class PayRoutController {
                 }
 				return "SUCCESS";
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
+				if(UserAccountLogType.SETTLEMENT_PAY.getCode().equals(merPriv)){//结算单划账回调
+					AfSupplierOrderSettlementDo afSupDo = new AfSupplierOrderSettlementDo();
+					afSupDo.setRid(result);
+					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
+				}
 				if (afUserAccountService.dealUserDelegatePayError(merPriv, result) > 0) {
 					return "SUCCESS";
 				}
