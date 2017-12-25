@@ -201,35 +201,38 @@
 						LIMIT 0,1
 				)
 		AND LEVEL = 3
-
 		ORDER BY sort DESC 
 		LIMIT 0,1
 	 )
 	</select>
 	
 	<select id="listGoodsListByParentIdFromSubjectGoods"  resultType="AfGoodsDo" parameterType="java.lang.Long">
-	SELECT
-		<include refid="queryFields"/>
-		FROM af_goods
-		WHERE is_delete = 0
-		AND STATUS = 'PUBLISH'
-		AND id IN (	
-			SELECT 
-				 goods_id 
-				FROM af_subject_goods 
-				WHERE subject_id =(          
-						SELECT
-						id 
-						FROM af_subject 
-						WHERE parent_id = #{parentId}
-						AND LEVEL = 2
-						ORDER BY gmt_create ASC
-						LIMIT 0,1
-				)
-				AND parent_subject_id = #{parentId}
-			)
-		ORDER BY gmt_create
+			 	select 
+					<include refid="queryFields"/>
+					FROM af_goods g
+						 inner join 
+						(
+							  SELECT 
+								 goods_id 
+								FROM af_subject_goods 
+								WHERE subject_id =(          
+										SELECT
+										min(id) id
+										FROM af_subject 
+										WHERE parent_id = #{parentId}
+										AND LEVEL = 2
+								)
+								AND parent_subject_id = #{parentId}
+								and is_delete  = 0
+			
+						)as asg
+						on asg.goods_id = g.id
+						and g.is_delete = 0
+						and g.status = 'PUBLISH'
+ 			
 	</select>		
+				
+				
 				
 	
 	<select id="listGoodsListByPrimaryCategoryIdAndCategoryId"  resultType="AfGoodsDo" parameterType="java.lang.Long">
@@ -317,22 +320,16 @@
 			category_id = #{categoryId}
 		LIMIT 50
 	</select>
-	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">
-	SELECT
+	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">			
+		select 
 			<include refid="queryFields"/>
-		FROM af_goods
-		WHERE 
-			is_delete = 0
-		AND
-			id in  (
-			select goods_id 
-			  from af_subject_goods
-			  where subject_id  = #{subjectId}
-			  and is_delete = 0
-			  
-			)
-			
-			
+		from af_goods g 
+		inner join af_subject_goods sg
+		on sg.`goods_id`  = g.id  
+		and sg.`subject_id`  = #{subjectId}
+		and sg.`is_delete` = 0 
+		and g.`is_delete`  = 0
+		and g.status = 'PUBLISH'	
 	</select>
 		<select id="getGoodsByModelId" resultType="AfGoodsDo">
 		SELECT
