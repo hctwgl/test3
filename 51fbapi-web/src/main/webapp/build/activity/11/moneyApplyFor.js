@@ -187,7 +187,7 @@ function getIntitalData(callback){
                 return false;
                
             }
-             if(interimUsed!==0 || failureStatus==0){//申请成功之后判断不能再次申请的状态
+             if(type!==2 && (interimUsed!==0 || failureStatus==0)){//申请成功之后判断不能再次申请的状态
                 $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
                 $('.applyButton').html('暂时无法再次提额');//改变按钮文字
                 $('.applyButton').unbind('click')//禁止点击事件
