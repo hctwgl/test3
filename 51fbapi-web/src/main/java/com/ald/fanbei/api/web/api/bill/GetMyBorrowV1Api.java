@@ -70,8 +70,10 @@ public class GetMyBorrowV1Api implements ApiHandle {
             //加入临时额度
             AfInterimAuDo afInterimAuDo = afBorrowBillService.selectInterimAmountByUserId(userId);
             BigDecimal interimAmount = new BigDecimal(0);
+            BigDecimal usableAmount = new BigDecimal(0);
             if (afInterimAuDo != null) {
                 interimAmount = afInterimAuDo.getInterimAmount();
+                usableAmount = interimAmount.subtract(afInterimAuDo.getInterimUsed());
                 map.put("interimType", 1);//已获取临时额度
                 map.put("interimAmount", afInterimAuDo.getInterimAmount());//临时额度
                 map.put("interimUsed", afInterimAuDo.getInterimUsed());//已使用的额度
@@ -79,6 +81,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 if (afInterimAuDo.getGmtFailuretime().getTime() < new Date().getTime()) {
                     failureStatus = 1;
                     interimAmount = new BigDecimal(0);
+                    usableAmount = new BigDecimal(0);
                 }
                 map.put("failureStatus", failureStatus);
             } else {
@@ -134,7 +137,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
 
 
                 map.put("auAmount", auAmount.add(interimAmount));
-                map.put("amount", amount);
+                map.put("amount", amount.add(usableAmount));
                 map.put("overduedMonth", overduedMonth);
                 map.put("outMoney", outMoney);
                 map.put("notOutMoeny", notOutMoeny);
