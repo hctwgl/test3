@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.dal.domain.AfContractPdfDo;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +38,6 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -61,7 +58,10 @@ public class CollectionController {
 	
 	@Resource
 	AfBorrowCashService borrowCashService;
-	
+
+	@Resource
+	AfBorrowService afBorrowService;
+
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
@@ -340,17 +340,36 @@ public class CollectionController {
 	@ResponseBody
 	public CollectionUpdateResqBo getContractProtocolPdf(HttpServletRequest request, HttpServletResponse response){
 		String data = ObjectUtils.toString(request.getParameter("data"));
-		JSONObject object = JSONObject.parseObject(data);
-		Long id = NumberUtil.objToLongDefault(object.getString("id"),0l);
-		int type = NumberUtil.objToIntDefault(object.getString("type"),0);
+		JSONObject object = JSON.parseObject(data);
+		String borrowNo = object.getString("no");
+		int type = NumberUtil.objToIntDefault(object.getString("type"),0);//1:现金借款协议 2:普通商品分期协议 3:续借协议
 		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
 		String sign = ObjectUtils.toString(request.getParameter("sign"));
-		logger.info("getContractProtocolPdf id="+id+",timestamp="+timestamp+",sign1="+sign+",type="+type);
-
-		AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id,(byte)type);
+		logger.info("getContractProtocolPdf id="+borrowNo+",timestamp="+timestamp+",sign1="+sign+",type="+type);
 		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
+		Long id = 0l;
+		if (type == 1){
+			AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+			if (afBorrowCashDo == null){
+				logger.error("getContractProtocolPdf afBorrowCashDo is null,no =>{}",borrowNo);
+				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
+				return updteBo;
+			}
+			id = afBorrowCashDo.getRid();
+		}else if (type == 2){
+			AfBorrowDo afBorrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+			if (afBorrowDo == null){
+				logger.error("getContractProtocolPdf afBorrowDo is null,no =>{}",borrowNo);
+				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
+				return updteBo;
+			}
+			id = afBorrowDo.getRid();
+		}
+		AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id,(byte)type);
 		if(afContractPdfDo==null) {
-			logger.error("getContractProtocolPdf afContractPdfDo is null" );
+			logger.error("getContractProtocolPdf afContractPdfDo is null,id =>{}",id);
 			updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
 			updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
 			return updteBo;
