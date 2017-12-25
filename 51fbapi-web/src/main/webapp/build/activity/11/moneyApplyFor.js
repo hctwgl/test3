@@ -180,7 +180,7 @@ function getIntitalData(callback){
                 $('.detailDate').html('----');//失效日期
                 $('.detailDate').css({'color':'#999','font-size':'0.42rem','line-height':'0.4rem'});//设置字体颜色大小
             } 
-            if(type==1 && againApplyTime>0){//判断页面初始化没有申请资格的时候
+            if(type==1 && againApplyTime>0){//申请失败再次进来判断没有申请资格的时候
                 $('.applyButton').css({'background-color':'#999','box-shadow':'none'});//隐改变按钮颜色
                 $('.applyButton').html(`${againApplyDesc}`);//改变按钮文字 
                 $('.applyButton').unbind('click')//禁止点击事件
