@@ -395,11 +395,11 @@ public class StartCashierApi implements ApiHandle {
                         cashierTypeVo.setOverduedCode(erorrCode.getCode());
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW.getCode());
+                        return;
                     }else{
                         logger.error("cashier error: risk overdueBorrow not found in fanbei,risk borrowBo:"+borrowNo);
                     }
-
-                    return;
+                    break;
                 case OVERDUE_BORROW_CASH:
                     AfBorrowCashDo cashInfo = afBorrowCashService.getNowTransedBorrowCashByUserId(userDto.getUserId());
                     if(cashInfo!=null){
@@ -412,11 +412,11 @@ public class StartCashierApi implements ApiHandle {
                         cashierTypeVo.setBorrowId(cashInfo.getRid());
                         cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                         cashierTypeVo.setReasonType(CashierReasonType.OVERDUE_BORROW_CASH.getCode());
+                        return;
                     }else{
                         logger.error("cashier error: risk overdueBorrowCash not found in fanbei,risk userId:"+userDto.getUserId());
                     }
-
-                    return;
+                    break;
                 default:
                     cashierTypeVo.setStatus(YesNoStatus.NO.getCode());
                     cashierTypeVo.setReasonType("未知原因：" + rejectCode);
