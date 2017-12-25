@@ -333,11 +333,13 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
         					for (AfViewAssetBorrowCashDo afViewAssetBorrowCashDo : debtList) {
         						if (AfBorrowCashType.SEVEN.getName().equals(afViewAssetBorrowCashDo.getType())) {
         							sevenDebtList.add(afViewAssetBorrowCashDo);
+        							sevenMoneyNew=sevenMoneyNew.add(afViewAssetBorrowCashDo.getAmount());
         						}
         						if (AfBorrowCashType.FOURTEEN.getName().equals(afViewAssetBorrowCashDo.getType())) {
         							fourteenDebtList.add(afViewAssetBorrowCashDo);
         						}
         					}
+        					fourteenMoney = BigDecimalUtil.subtract(totalMoney,sevenMoneyNew);
         				}
         				
         				//生成资产包
