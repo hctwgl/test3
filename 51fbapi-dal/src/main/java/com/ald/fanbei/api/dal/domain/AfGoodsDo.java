@@ -241,5 +241,18 @@ public class AfGoodsDo extends AbstractSerial{
 	public void setTags(String tags) {
 		this.tags = tags;
 	}
+	@Override
+	public String toString() {
+		return "AfGoodsDo [rid=" + rid + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified + ", creator="
+				+ creator + ", modifier=" + modifier + ", name=" + name + ", goodsIcon=" + goodsIcon
+				+ ", thumbnailIcon=" + thumbnailIcon + ", goodsUrl=" + goodsUrl + ", openId=" + openId + ", numId="
+				+ numId + ", priceAmount=" + priceAmount + ", saleAmount=" + saleAmount + ", categoryId=" + categoryId
+				+ ", saleCount=" + saleCount + ", gmtStart=" + gmtStart + ", gmtEnd=" + gmtEnd + ", status=" + status
+				+ ", source=" + source + ", rebateAmount=" + rebateAmount + ", rebateRate=" + rebateRate + ", shopName="
+				+ shopName + ", realAmount=" + realAmount + ", goodsPic1=" + goodsPic1 + ", goodsPic2=" + goodsPic2
+				+ ", goodsPic3=" + goodsPic3 + ", goodsPic4=" + goodsPic4 + ", goodsDetail=" + goodsDetail + ", remark="
+				+ remark + ", tags=" + tags + ", stockCount=" + stockCount + "]";
+	}
 
+	
 }

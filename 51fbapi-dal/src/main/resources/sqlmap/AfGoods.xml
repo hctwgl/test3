@@ -365,6 +365,26 @@
 		where g.is_delete =0 and v.is_delete =0 and g.id = v.goods_id
 		and g.category_id = #{categoryId} and g.source = 'SELFSUPPORT' and  g.status = 'PUBLISH' order by v.gmt_create DESC
 	</select>
-	
+
+	<select id="getAvaliableSelfGoods" parameterType="com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDo">
+		SELECT
+			<include refid="queryFields"/>
+		FROM
+			af_goods
+		WHERE
+			is_delete = 0
+		AND `status` = 'PUBLISH'
+		AND source = 'SELFSUPPORT'
+		<if test="keyword != null and keyword != ''">
+		AND name LIKE CONCAT('%',#{keyword},'%')
+		</if>
+		<if test="sortword != null and sortword != ''">
+		order by #{sortword}
+		</if>
+		<if test="sort != null and sort != ''">
+		#{sort}
+		</if>
+		
+	</select>	
 
 </mapper>

@@ -79,6 +79,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
 
 	    final AfResourceDo resource = afResourceService.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
 
+
 	    if (CollectionUtils.isNotEmpty(list)) {
 
 		List<AfSearchGoodsVo> result = CollectionConverterUtil.convertToListFromList(list, new Converter<NTbkItem, AfSearchGoodsVo>() {
@@ -174,7 +175,7 @@ public class GetThirdGoodsListApi implements ApiHandle {
     }
 
     private AfSearchGoodsVo parseToVo(NTbkItem item, BigDecimal minRate, BigDecimal maxRate) {
-	BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(item.getZkFinalPrice(), BigDecimal.ZERO);
+	BigDecimal saleAmount = NumberUtil.objToBigDecimalDefault(item.getZkFinalPrice(),  BigDecimal.ZERO);
 	BigDecimal minRebateAmount = saleAmount.multiply(minRate).setScale(2, BigDecimal.ROUND_HALF_UP);
 	BigDecimal maxRebateAmount = saleAmount.multiply(maxRate).setScale(2, BigDecimal.ROUND_HALF_UP);
 	AfSearchGoodsVo vo = new AfSearchGoodsVo();
