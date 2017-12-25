@@ -322,7 +322,10 @@
 	</select>
 	<select id="listGoodsListBySubjectId" resultType="AfGoodsDo" parameterType="java.lang.Long">			
 		select 
-			<include refid="queryFields"/>
+				g.id rid,g.gmt_create,g.gmt_modified,g.creator,g.modifier,g.name,g.goods_icon,g.thumbnail_icon,g.goods_url,g.open_id,g.num_id,g.price_amount,
+		g.sale_amount,g.category_id,g.sale_count,g.gmt_start,g.gmt_end,g.status,g.source,g.rebate_amount,g.rebate_rate,g.shop_name,
+		(g.sale_amount-g.rebate_amount) real_amount,g.tags,g.goods_pic1,g.goods_pic2,g.goods_pic3,g.goods_pic4,g.goods_detail,g.remark,g.stock_count
+		
 		from af_goods g 
 		inner join af_subject_goods sg
 		on sg.`goods_id`  = g.id  
