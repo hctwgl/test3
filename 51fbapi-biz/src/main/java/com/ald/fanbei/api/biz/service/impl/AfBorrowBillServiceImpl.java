@@ -406,8 +406,25 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 				detailList.add(allBarlyClearanceDetailBo);
 			}
 		}
+		orderBynper(l); //排序
 		return  l;
 	}
+
+	private void orderBynper(List<AllBarlyClearanceBo> list){
+		for(AllBarlyClearanceBo allBarlyClearanceBo:list){
+			List<AllBarlyClearanceDetailBo> dlist = allBarlyClearanceBo.getDetailList();
+			Collections.sort(dlist,new Comparator<AllBarlyClearanceDetailBo>(){
+				public int compare(AllBarlyClearanceDetailBo arg0, AllBarlyClearanceDetailBo arg1) {
+					if(arg0.getNper()> arg1.getNper()) return 1;
+					if(arg0.getNper()< arg1.getNper()) return -1;
+					return 0;
+				}
+			});
+			allBarlyClearanceBo.setDetailList(dlist);
+		}
+	}
+
+
 
 	private AllBarlyClearanceBo getAllBarlyBo(List<AllBarlyClearanceBo> list,Long borrowId){
 		AllBarlyClearanceBo allBarlyClearanceBo = null;
