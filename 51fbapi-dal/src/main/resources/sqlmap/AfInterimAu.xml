@@ -118,11 +118,11 @@
     </select>
     <!--累计分期次数 累计分期金额-->
     <select id="getSumConsume" resultType="HashMap">
-        SELECT COUNT(1) as sumConsumeCount,SUM(amount) as sumConsumeAmount FROM af_borrow WHERE is_delete = 0  AND `status` IN ('FINISH','TRANSED') AND amount>=1 AND user_id=#{userId}
+        SELECT COUNT(1) as sumConsumeCount,IFNULL(SUM(amount),0) as sumConsumeAmount FROM af_borrow WHERE is_delete = 0  AND `status` IN ('FINISH','TRANSED') AND amount>=1 AND user_id=#{userId}
     </select>
     <!--累计现金贷次数	累计现金贷金额-->
     <select id="getSumLoan" resultType="HashMap">
-        SELECT COUNT(1) as sumLoanCount,SUM(amount) as sumLoanAmount FROM af_borrow_cash WHERE is_delete = 0 AND `status` IN ('FINSH','TRANSED') AND user_id=#{userId}
+        SELECT COUNT(1) as sumLoanCount,IFNULL(SUM(amount),0) as sumLoanAmount FROM af_borrow_cash WHERE is_delete = 0 AND `status` IN ('FINSH','TRANSED') AND user_id=#{userId}
     </select>
     <!--消费分期已出账单数-->
     <select id="getConsumeBillCount" resultType="java.lang.Integer">
