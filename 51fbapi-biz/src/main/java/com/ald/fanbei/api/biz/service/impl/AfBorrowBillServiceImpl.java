@@ -30,6 +30,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 
 /**
  * 
@@ -270,27 +271,27 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	}
 
 	@Override
-	public BigDecimal getUserBillMoneyByQuery(AfBorrowBillQuery query) {
+	public BigDecimal getUserBillMoneyByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.getUserBillMoneyByQuery(query);
 	}
 
 	@Override
-	public List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQuery query) {
+	public List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.getUserBillListByQuery(query);
 	}
 
 	@Override
-	public int countBillByQuery(AfBorrowBillQuery query) {
+	public int countBillByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.countBillByQuery(query);
 	}
 
 	@Override
-	public List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQuery query) {
+	public List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.getBillListByQuery(query);
 	}
 
 	@Override
-	public BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQuery query) {
+	public BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.getUserOverdeuInterestByQuery(query);
 	}
 
@@ -405,8 +406,25 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 				detailList.add(allBarlyClearanceDetailBo);
 			}
 		}
+		orderBynper(l); //排序
 		return  l;
 	}
+
+	private void orderBynper(List<AllBarlyClearanceBo> list){
+		for(AllBarlyClearanceBo allBarlyClearanceBo:list){
+			List<AllBarlyClearanceDetailBo> dlist = allBarlyClearanceBo.getDetailList();
+			Collections.sort(dlist,new Comparator<AllBarlyClearanceDetailBo>(){
+				public int compare(AllBarlyClearanceDetailBo arg0, AllBarlyClearanceDetailBo arg1) {
+					if(arg0.getNper()> arg1.getNper()) return 1;
+					if(arg0.getNper()< arg1.getNper()) return -1;
+					return 0;
+				}
+			});
+			allBarlyClearanceBo.setDetailList(dlist);
+		}
+	}
+
+
 
 	private AllBarlyClearanceBo getAllBarlyBo(List<AllBarlyClearanceBo> list,Long borrowId){
 		AllBarlyClearanceBo allBarlyClearanceBo = null;
@@ -623,7 +641,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	}
 
 	@Override
-	public List<Long> getBillIdListByQuery(AfBorrowBillQuery query) {
+	public List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.getBillIdListByQuery(query);
 	}
 }

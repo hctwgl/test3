@@ -34,6 +34,7 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -79,7 +80,7 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 				return resp;
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
-			AfBorrowBillQuery query = new AfBorrowBillQuery();
+			AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
 			// 获取所有逾期数据
 			query.setUserId(userId);
 			query.setIsOut(1);

@@ -29,6 +29,7 @@ import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -105,7 +106,7 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 			calendar.add(Calendar.SECOND, -1);
 			endOutDay = calendar.getTime();
 			// 展示逻辑上先已出，再未出
-			AfBorrowBillQuery query = new AfBorrowBillQuery();
+			AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
 			query.setUserId(userId);
 			query.setOutDayStr(strOutDay);
 			query.setOutDayEnd(endOutDay);

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -20,6 +21,7 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -112,7 +114,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 BigDecimal amount = BigDecimalUtil.subtract(auAmount, userAccount.getUsedAmount());
                 // 获取逾期账单月数量
                 int overduedMonth = afBorrowBillService.getOverduedMonthByUserId(userId);
-                AfBorrowBillQuery query = new AfBorrowBillQuery();
+                AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
                 query.setUserId(userId);
                 int billCount = afBorrowBillService.countBillByQuery(query);
                 if (billCount < 1) {
