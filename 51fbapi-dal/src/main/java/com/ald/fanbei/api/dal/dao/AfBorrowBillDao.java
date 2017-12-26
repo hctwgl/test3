@@ -16,6 +16,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 
 /**
  * @类现描述：AfBorrowBillDao
@@ -364,7 +365,7 @@ public interface AfBorrowBillDao {
 	 * @param query
 	 * @return
 	 */
-	BigDecimal getUserBillMoneyByQuery(AfBorrowBillQuery query);
+	BigDecimal getUserBillMoneyByQuery(AfBorrowBillQueryNoPage query);
 
 	/**
 	 * 根据条件获取用户月账单金额
@@ -373,7 +374,7 @@ public interface AfBorrowBillDao {
 	 * @param query
 	 * @return
 	 */
-	List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQuery query);
+	List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQueryNoPage query);
 
 	/**
 	 * 根据条件查询子账单个数
@@ -382,7 +383,7 @@ public interface AfBorrowBillDao {
 	 * @param query
 	 * @return
 	 */
-	int countBillByQuery(AfBorrowBillQuery query);
+	int countBillByQuery(AfBorrowBillQueryNoPage query);
 
 	/**
 	 * 根据条件查询子账单详情
@@ -391,7 +392,7 @@ public interface AfBorrowBillDao {
 	 * @param query
 	 * @return
 	 */
-	List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQuery query);
+	List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQueryNoPage query);
 
 	/**
 	 * 根据条件查询月账单逾期利息
@@ -400,7 +401,7 @@ public interface AfBorrowBillDao {
 	 * @param query
 	 * @return
 	 */
-	BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQuery query);
+	BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQueryNoPage query);
 
 	/**
 	 * 根据borrowId查询账单利息
@@ -456,5 +457,5 @@ public interface AfBorrowBillDao {
 	 * @param query
 	 * @return
 	 */
-	List<Long> getBillIdListByQuery(AfBorrowBillQuery query);
+	List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query);
 }

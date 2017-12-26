@@ -22,6 +22,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -97,7 +98,7 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 		        Date endDate = calendar.getTime();
 		        
 		        // 查询是否有逾期账单
-		        AfBorrowBillQuery query = new AfBorrowBillQuery();
+		        AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
 		        query.setUserId(userId);
 		        query.setOutDayStr(strDate);
 		        query.setOutDayEnd(endDate);

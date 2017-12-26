@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -78,7 +79,7 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 				return resp;
 			}
 			Map<String, Object> map = new HashMap<String, Object>();
-			AfBorrowBillQuery query = new AfBorrowBillQuery();
+			AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
 			query.setUserId(userId);
 			query.setStatus(BorrowBillStatus.NO.getCode());
 			if (StringUtil.isEmpty(status)) {

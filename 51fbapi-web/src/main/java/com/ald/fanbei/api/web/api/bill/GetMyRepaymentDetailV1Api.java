@@ -24,9 +24,11 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.timevale.tgtext.awt.geom.q;
 
 /**
  * 
@@ -71,7 +73,7 @@ public class GetMyRepaymentDetailV1Api implements ApiHandle{
 			List<AfBorrowBillDto> billList = new ArrayList<AfBorrowBillDto>();
 			BigDecimal moneny = new BigDecimal(0);
 			String month = "";
-			AfBorrowBillQuery query = new AfBorrowBillQuery();
+			AfBorrowBillQueryNoPage query = new AfBorrowBillQueryNoPage();
 			query.setUserId(userId);
 			query.setStatus(BorrowBillStatus.NO.getCode());
 			if (StringUtil.equals("overdue", status)) {
