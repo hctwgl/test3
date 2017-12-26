@@ -4,15 +4,18 @@ import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
 import sun.awt.geom.AreaOp;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -370,6 +373,20 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 
 	public HashMap getRecommendSharedById(String id) {
 		return afRecommendUserDao.getRecommendSharedById(id);
+	}
+
+
+	@Override
+	public List<AfRecommendUserDo> getListByParentIdAndType(AfRecommendUserDo queryRecommendUser) {
+	    // TODO Auto-generated method stub
+	    	return afRecommendUserDao.getListByParentIdAndType(queryRecommendUser);
+	}
+
+
+	@Override
+	public Long findRefUserId(AfRecommendUserDo queryRecommendUser) {
+	    // TODO Auto-generated method stub
+	    	return afRecommendUserDao.findRefUserId(queryRecommendUser);
 	}
 
 }

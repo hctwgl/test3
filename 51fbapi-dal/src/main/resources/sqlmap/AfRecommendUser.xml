@@ -161,5 +161,27 @@
 		INSERT INTO af_recommend_shared(id,gmt_create,user_id,type,recommend_code)
 		VALUES(#{uuid},NOW(),#{userId},#{type},#{invitationCode})
 	</insert>
-
+	
+	<select id="getListByParentIdAndType" parameterType="AfRecommendUserDo" resultType="AfRecommendUserDo">
+	   	SELECT
+		        a.id,a.user_id,a.parentId,a.is_delete,a.origin,a.is_loan,a.loan_time,a.gmt_create,a.prize_money,
+                a.loan_user_count,a.recommend_count,a.gmt_modified,b.user_name
+		FROM af_recommend_user a  
+		LEFT JOIN af_user b 
+		ON a.user_id = b.id
+		WHERE a.parentId = #{parentId}
+		and type = #{type}
+		ORDER BY a.gmt_create DESC
+	  
+	</select>
+	
+	<select id="findRefUserId" parameterType="AfRecommendUserDo" resultType="java.lang.Long">
+	    select 
+	   <include refid="queryFields" />
+	   from af_recommend_user
+	   where is_delete =0 
+	   and user_id = #{userId}
+	   and type =#{type}
+	   and gmt_create > #{gmtCreate}
+	</select>
 </mapper>

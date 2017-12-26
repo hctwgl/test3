@@ -60,6 +60,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfCardDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
@@ -117,8 +118,9 @@ public class APPH5GgActivityController extends BaseController {
 	AfBoluomeRebateService afBoluomeRebateService;
 	@Resource
 	AfBoluomeActivityItemsService afBoluomeActivityItemsService;
-	@Resource
-	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
+//	@Resource
+//	AfBoluomeActivityUserLoginService afBoluomeActivityUserLoginService;
+	
 
 	String opennative = "/fanbei-web/opennative?name=";
 
@@ -165,14 +167,19 @@ public class APPH5GgActivityController extends BaseController {
 
 			// 从登录表取数据，遍历list.查询是否有订单，没有订单：未消费。有订单未完成：未完成。有订单且已完成：已消费
 
-			long activityId = 1000L;
-			List<AfBoluomeActivityUserLoginDo> afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService
-					.getByRefUserIdAndActivityId(userId, activityId);
-			if (afBoluomeActivityUserLoginList.size() > 0) {
-				for (AfBoluomeActivityUserLoginDo uDo : afBoluomeActivityUserLoginList) {
+//			long activityId = 1000L;
+//			List<AfBoluomeActivityUserLoginDo> afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService
+//					.getByRefUserIdAndActivityId(userId, activityId);
+			AfRecommendUserDo queryRecommendUser = new AfRecommendUserDo();
+			queryRecommendUser.setParentId(userId);
+			queryRecommendUser.setType(1);
+			List<AfRecommendUserDo> afRecommendUserDoList = afRecommendUserService.getListByParentIdAndType(queryRecommendUser);
+			
+			if (afRecommendUserDoList.size() > 0) {
+				for (AfRecommendUserDo uDo : afRecommendUserDoList) {
 					userReturnBoluomeCouponVo returnCouponVo = new userReturnBoluomeCouponVo();
 					returnCouponVo.setInviteeMobile(changePhone(uDo.getUserName()));
-					returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmtCreate()));
+					returnCouponVo.setRegisterTime(DateUtil.formatDateForPatternWithHyhen(uDo.getGmt_create()));
 					returnCouponVo.setReward("0");
 					// 订单状态
 					AfOrderDo order = new AfOrderDo();
@@ -194,7 +201,7 @@ public class APPH5GgActivityController extends BaseController {
 							returnCouponVo.setStatus(H5GgActivity.ALREADY_FINISH.getDescription());
 							// 查询该优惠券金额
 							AfBoluomeUserCouponDo queryUserCoupon = new AfBoluomeUserCouponDo();
-							queryUserCoupon.setUserId(uDo.getRefUserId());
+							queryUserCoupon.setUserId(uDo.getParentId());
 							queryUserCoupon.setRefId(uDo.getUserId());
 							queryUserCoupon.setChannel(H5GgActivity.RECOMMEND.getCode());
 

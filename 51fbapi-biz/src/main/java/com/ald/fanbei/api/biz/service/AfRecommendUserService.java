@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -105,4 +106,15 @@ public interface AfRecommendUserService {
      * @return
      */
     int insertShareWithData(String uuid,long userId,Integer type,String invitationCode);
+
+
+    /**
+     * 获取邀请记录
+     * @param parentId
+     * @param type
+     * @return
+     */
+    List<AfRecommendUserDo> getListByParentIdAndType(AfRecommendUserDo queryRecommendUser);
+
+    Long findRefUserId(AfRecommendUserDo queryRecommendUser);
 }

@@ -86,6 +86,27 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
         </if>
         </trim>
     </insert>
+    <insert id="saveUserLoginInfo" parameterType="AfBoluomeActivityUserLoginDo" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO af_boluome_activity_user_login
+		(
+		gmt_create,
+		user_id,
+		user_name,
+		ref_user_id,
+		ref_user_name,
+		boluome_activity_id
+		)
+		VALUES
+		(
+		 NOW(),
+		 #{userId},
+		 #{userName},
+		 #{refUserId},
+		 #{refUserName},
+		 #{boluomeActivityId}
+		)
+		
+	</insert>
     
      <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo">
         UPDATE af_boluome_activity_user_login
@@ -219,5 +240,7 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
 			AND boluome_activity_id = #{activityId}
 			ORDER BY gmt_create DESC
     </select>
+    
+    
     
 </mapper>

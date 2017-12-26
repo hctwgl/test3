@@ -24,7 +24,6 @@ import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityCouponService;
-import com.ald.fanbei.api.biz.service.AfH5BoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -97,8 +96,6 @@ public class H5BoluomeActivityController extends BaseController {
     SmsUtil smsUtil;
     @Resource
     AfBoluomeActivityCouponService afBoluomeActivityCouponService;
-    @Resource
-    AfH5BoluomeActivityService afH5BoluomeActivityService;
     @Resource
     BoluomeUtil boluomeUtil;
     private static String couponUrl = null;

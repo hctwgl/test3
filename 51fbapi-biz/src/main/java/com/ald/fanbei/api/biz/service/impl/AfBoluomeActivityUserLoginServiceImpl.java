@@ -48,4 +48,10 @@ public class AfBoluomeActivityUserLoginServiceImpl extends ParentServiceImpl<AfB
 		    // TODO Auto-generated method stub
 		    return afBoluomeActivityUserLoginDao.getByRefUserIdAndActivityId(userId,activityId);
 		}
+
+		@Override
+		public int saveUserLoginInfo(AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin) {
+		    // TODO Auto-generated method stub
+		    return afBoluomeActivityUserLoginDao.saveUserLoginInfo(afBoluomeActivityUserLogin);
+		}
 }

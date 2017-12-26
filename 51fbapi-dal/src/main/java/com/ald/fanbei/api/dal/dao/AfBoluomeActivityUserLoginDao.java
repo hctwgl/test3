@@ -32,6 +32,8 @@ public interface AfBoluomeActivityUserLoginDao extends BaseDao<AfBoluomeActivity
 
 	List<AfBoluomeActivityUserLoginDo> getByRefUserIdAndActivityId(@Param("userId") Long userId,@Param("activityId") Long activityId);
 
+	int saveUserLoginInfo(AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin);
+
     
 
 }

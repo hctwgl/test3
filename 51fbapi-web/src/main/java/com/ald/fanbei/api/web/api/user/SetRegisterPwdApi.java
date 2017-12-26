@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
-import com.ald.fanbei.api.biz.service.AfH5BoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
@@ -62,8 +61,6 @@ public class SetRegisterPwdApi implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	AfBoluomeActivityService afBoluomeActivityService;
-	@Resource
-	AfH5BoluomeActivityService afH5BoluomeActivityService;
 	@Resource
 	AfResourceService afResourceService;
 	

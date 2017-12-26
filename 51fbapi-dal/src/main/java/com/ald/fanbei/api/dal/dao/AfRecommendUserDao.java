@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfRecommendMoneyDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -38,4 +39,8 @@ public interface AfRecommendUserDao {
     AfRecommendUserDo  getARecommendUserByIdAndType(@Param("user_id") Long user_id,@Param("type") int type);
 
     int insertShareWithData(@Param("uuid")String uuid, @Param("userId")long userId, @Param("type")Integer type, @Param("invitationCode")String invitationCode);
+    
+    List<AfRecommendUserDo> getListByParentIdAndType(AfRecommendUserDo queryRecommendUser);
+   
+    Long findRefUserId(AfRecommendUserDo queryRecommendUser);
 }

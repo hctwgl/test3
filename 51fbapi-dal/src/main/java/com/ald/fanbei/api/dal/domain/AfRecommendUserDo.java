@@ -93,6 +93,11 @@ public class AfRecommendUserDo extends AbstractSerial {
      * userName 手机号码 前台展示用的
      */
     private String userName;
+    
+    /**
+     * type 活动类型  0 默认，1新的
+     */
+    private Integer type;
 
     public String getUserName() {
         return userName;
@@ -220,4 +225,13 @@ public class AfRecommendUserDo extends AbstractSerial {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+    
 }
