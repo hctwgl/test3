@@ -113,6 +113,17 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
             poundageAmount = poundageAmount.add(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));
         }
 
+        if(yohuijuang ==null){
+            yohuijuang = BigDecimal.ZERO;
+        }
+
+        if(yuer==null){
+            yuer =BigDecimal.ZERO;
+        }
+        if(zifu ==null){
+            zifu =BigDecimal.ZERO;
+        }
+
         AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
         afUserAmountDo.setAmount(afRepaymentDo.getRepaymentAmount());
         afUserAmountDo.setBizOrderNo(afRepaymentDo.getRepayNo());
