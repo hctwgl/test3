@@ -53,6 +53,7 @@ $(function(){
                 url:'/fanbei-web/applyInterimAu',
                 type:'post',
                 success:function(data){
+                    console.log(data);
                     let applyDate=JSON.parse(data);
                     //审核页面跳转判断
                     setTimeout(function () {//让判断延迟6秒执行

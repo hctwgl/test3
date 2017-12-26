@@ -16,7 +16,7 @@
     </div>
     <div id="approve">
         <div><img class="correct" src="$src/applyFor-01.png" alt=""></div>
-        <div><span class="congratulation"><i class="approveMoney">+1,000.00</i><br/><i class="congratulationWord">恭喜，提额成功！</i></span></div>
+        <div><span class="congratulation"><i class="approveMoney">+</i><br/><i class="congratulationWord">恭喜，提额成功！</i></span></div>
     </div>
 </body>
 <script type="text/javascript" src="/dist/activity/11/unapprove.js?version=$version"></script>
