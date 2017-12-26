@@ -39,6 +39,7 @@ var userName=param['userName'];
 var typeFrom=param['typeFrom'];//渠道类型
 var typeFromNum=param['typeFromNum'];//渠道类型数
 var pageName=param['pageName'];//获取文件来源名称
+var recommendCode=param['recommendCode'];//获取邀请码
 $(function () {
     // 密碼叉叉點擊清楚所有文字
     $('.clearValOne').click(function(){
@@ -385,7 +386,7 @@ if(pageName=='ggFix'){
     shareInfo = {
         title: "有人@你~你有最高188元惊喜金待领取！",
         desc: "16元外卖1元购，下单即返30元~",
-        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+"&pageName=ggFix",
+        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+'&pageName=ggFix'+'&recommendCode='+recommendCode,
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {
             requestMsg("分享成功！");
@@ -403,7 +404,7 @@ if(pageName=='ggOverlord'){
     shareInfo = {
         title: "老铁~快来吃霸王餐啦~",
         desc: "节日剁手不吃土，来51返呗点餐立减15元，有福同享，你也快来>>>",
-        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+"&pageName=ggOverlord",
+        link: domainName+'/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName='+userName+'&pageName=ggOverlord'+'&recommendCode='+recommendCode,
         imgUrl: "https://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",
         success: function() {
             requestMsg("分享成功！");

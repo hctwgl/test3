@@ -17,6 +17,7 @@ function GetPageName(url){
     return tmp[0];
 }
 let pageName=GetPageName(url);
+let recommendCode;
 //获取数据
 let vm = new Vue({
     el: '#ggFix',
@@ -145,6 +146,20 @@ let vm = new Vue({
                     console.log(data)
                 }
             });
+            //邀请码初始化
+            $.ajax({
+                url: '/fanbei-web/activityUserInfo',
+                type: 'POST',
+                dataType: 'JSON',
+                success: (data) => {
+                    console.log(data,'邀请码');
+                    recommendCode=data[0].invitationCode;
+                    //console.log(recommendCode)
+                },
+                error: (err) => {
+                    requestMsg(err);
+                }
+            })
         },
         //点击领取优惠券
         couponClick:function(index){
@@ -325,7 +340,7 @@ function alaShareData(){
         "shareAppTitle": "有人@你~你有最高188元惊喜金待领取！",  // 分享的title
         'shareAppContent': "16元外卖1元购，下单即返30元~",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",  // 分享右边小图
-        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName+"&pageName="+pageName,  // 分享后的链接
+        "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName+"&pageName="+pageName+"&recommendCode="+recommendCode,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
         "sharePage": "ggFixShare" // 分享的页面
     };
