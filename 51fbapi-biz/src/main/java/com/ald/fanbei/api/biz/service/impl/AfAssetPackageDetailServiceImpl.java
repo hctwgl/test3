@@ -602,7 +602,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			repaymentPlan.setRepaymentNo(afBorrowBillDos.get(i).getRid()+"");
 			repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(afBorrowBillDos.get(i).getGmtPayTime()));
 			repaymentPlan.setRepaymentDays(DateUtil.getNumberOfDayBetween(afViewAssetBorrowDo.getGmtCreate(), afBorrowBillDos.get(i).getGmtPayTime()));
-			repaymentPlan.setRepaymentAmount(afViewAssetBorrowDo.getNperAmount());
+			repaymentPlan.setRepaymentAmount(afBorrowBillDos.get(i).getPrincipleAmount());
 			repaymentPlan.setRepaymentInterest(afBorrowBillDos.get(i).getInterestAmount());
 			repaymentPlan.setRepaymentPeriod(afBorrowBillDos.get(i).getBillNper()-1);
 			repaymentPlans.add(repaymentPlan);
