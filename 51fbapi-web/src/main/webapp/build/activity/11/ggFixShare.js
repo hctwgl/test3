@@ -198,7 +198,8 @@ $(function () {
                     'inviteer':userName,
                     'activityId':'1000',
                     'typeFrom':typeFrom,
-                    'typeFromNum':typeFromNum
+                    'typeFromNum':typeFromNum,
+                    'recommendCode':recommendCode
                 },
                 success: function (returnData) {
                     console.log(0);
