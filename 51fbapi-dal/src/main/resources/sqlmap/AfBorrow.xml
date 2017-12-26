@@ -213,6 +213,7 @@
 			a.is_delete = 0
 		AND a.user_id = #{userId}
 		AND b.in_bill = 0
+		AND a.status in ('TRANSED','FINISH')
 		order by a.gmt_create desc
 	</select>
 
