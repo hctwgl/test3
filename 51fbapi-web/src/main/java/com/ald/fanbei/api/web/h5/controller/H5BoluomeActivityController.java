@@ -279,19 +279,19 @@ public class H5BoluomeActivityController extends BaseController {
 //	return null;
 //    }
 
-    /**
-     * 
-     * @说明：获得用户优惠券列表
-     * @param: @return
-     * @return: String
-     */
-    private static String getCouponUrl() {
-	if (couponUrl == null) {
-	    couponUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_COUPON_URL);
-	    return couponUrl;
-	}
-	return couponUrl;
-    }
+//    /**
+//     * 
+//     * @说明：获得用户优惠券列表
+//     * @param: @return
+//     * @return: String
+//     */
+//    private static String getCouponUrl() {
+//	if (couponUrl == null) {
+//	    couponUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_COUPON_URL);
+//	    return couponUrl;
+//	}
+//	return couponUrl;
+//    }
 
     // 提交菠萝觅活动注册
     @ResponseBody
@@ -308,9 +308,9 @@ public class H5BoluomeActivityController extends BaseController {
 	    String passwordSrc = ObjectUtils.toString(request.getParameter("password"), "").toString();
 	    String recommendCode = ObjectUtils.toString(request.getParameter("recommendCode"), "").toString();
 	    String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
-	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
-	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
+//	    Long boluomeActivityId = NumberUtil.objToLong(request.getParameter("activityId"));
+//	    String typeFrom = ObjectUtils.toString(request.getParameter("typeFrom"), "").toString();
+//	    String typeFromNum = ObjectUtils.toString(request.getParameter("typeFromNum"), "").toString();
 	    	
 	    String log = "/H5GGShare/boluomeActivityRegisterLogin";
 		
@@ -403,38 +403,38 @@ public class H5BoluomeActivityController extends BaseController {
 //	    }
 
 	    log = log + String.format(mobile+"注册成功"+"inviteer:"+inviteer);
-	    try{
-		//绑定关系开关
-		  AfResourceDo biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
-		    if(biddingSwitch != null){
-			if("O".equals(biddingSwitch.getValue())){
-			    if (inviteer != null && !"".equals(inviteer)){
-				if (!inviteer.equals(mobile)) {
-        		  	       	// 绑定关系mobile
-        			        AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
-        			        AfUserDo refUserDo =  afUserService.getUserByUserName(inviteer);
-        			        logger.info("/H5GGShare/boluomeActivityRegisterLogin afUserDo = {}, refUserDo = {}",JSONObject.toJSONString(afUserDo),JSONObject.toJSONString(refUserDo));
-        			        if(StringUtils.isEmpty(boluomeActivityId.toString())){
-        			            boluomeActivityId  = 1000L;
-        			        }
-        		  		if(afUserDo !=  null && refUserDo != null){
-                		  		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
-                		  		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
-                		  		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
-                		  		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
-                		  		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
-                		  		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
-                		  		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
-                		  		logger.info("/H5GGShare/boluomeActivityRegisterLogin saveUserLoginInfo afBoluomeActivityUserLogin = {}",JSONObject.toJSONString(afBoluomeActivityUserLogin));
-        		  		}
-        		    }
-        	    }
-		}
-	      }
-	    }catch (FanbeiException e) {
-        	logger.error("save boluomeActivity user binding exception" + e.getMessage());
-        		  
-            } 
+//	    try{
+//		//绑定关系开关
+//		  AfResourceDo biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
+//		    if(biddingSwitch != null){
+//			if("O".equals(biddingSwitch.getValue())){
+//			    if (inviteer != null && !"".equals(inviteer)){
+//				if (!inviteer.equals(mobile)) {
+//        		  	       	// 绑定关系mobile
+//        			        AfUserDo afUserDo =  afUserService.getUserByUserName(mobile);
+//        			        AfUserDo refUserDo =  afUserService.getUserByUserName(inviteer);
+//        			        logger.info("/H5GGShare/boluomeActivityRegisterLogin afUserDo = {}, refUserDo = {}",JSONObject.toJSONString(afUserDo),JSONObject.toJSONString(refUserDo));
+//        			        if(StringUtils.isEmpty(boluomeActivityId.toString())){
+//        			            boluomeActivityId  = 1000L;
+//        			        }
+//        		  		if(afUserDo !=  null && refUserDo != null){
+//                		  		AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
+//                		  		afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
+//                		  		afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
+//                		  		afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
+//                		  		afBoluomeActivityUserLogin.setRefUserId(refUserDo.getRid());
+//                		  		afBoluomeActivityUserLogin.setRefUserName(refUserDo.getUserName());
+//                		  		afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+//                		  		logger.info("/H5GGShare/boluomeActivityRegisterLogin saveUserLoginInfo afBoluomeActivityUserLogin = {}",JSONObject.toJSONString(afBoluomeActivityUserLogin));
+//        		  		}
+//        		    }
+//        	    }
+//		}
+//	      }
+//	    }catch (FanbeiException e) {
+//        	logger.error("save boluomeActivity user binding exception" + e.getMessage());
+//        		  
+//            } 
 	    
 	    return resultStr;
 

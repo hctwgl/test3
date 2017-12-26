@@ -189,7 +189,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
 		}
-		//--------------------------------------------霸王餐活动start--------------------------------------------
+/*		//--------------------------------------------霸王餐活动start--------------------------------------------
 		//霸王餐活动绑定关系开关
 		  AfResourceDo biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
 		    if(biddingSwitch != null){
@@ -217,7 +217,7 @@ public class SetRegisterPwdApi implements ApiHandle {
       		      }
 			}
 		    }
-		
+*/
 		 //吃玩住行活动被邀请的新用户登录送券
 		try{
 			  afBoluomeActivityService.sentNewUserBoluomeCouponForDineDash(afUserDo);
@@ -226,7 +226,7 @@ public class SetRegisterPwdApi implements ApiHandle {
 			  logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
 		   }
 		//------------------------------------------霸王餐活动end----------------------------------------
-		
+
 		return resp;
 	}
 
