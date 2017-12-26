@@ -108,58 +108,66 @@ public class BoluomeUtil extends AbstractThird {
     private static String activityCouponListUrl = null;
     private static Long SUCCESS_CODE = 1000L;
 
-    public BoluomePushPayResponseBo pushPayStatus(Long orderId, String orderNo, String thirdOrderNo, PushStatus pushStatus, Long userId, BigDecimal amount, String secType) {
+    public void pushPayStatus(Long orderId, String orderType, String orderNo, String thirdOrderNo, PushStatus pushStatus, Long userId, BigDecimal amount, String secType) {
 	if (!OrderSecType.SUP_GAME.getCode().equals(secType)) {
-	    // 菠萝觅订单
-	    BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
-	    reqBo.setOrderId(thirdOrderNo);
-	    reqBo.setStatus(pushStatus.getCode());
-	    reqBo.setAmount(amount);
-	    reqBo.setUserId(userId);
-	    reqBo.setTimestamp(System.currentTimeMillis());
-	    reqBo.setSign(BoluomeCore.builSign(reqBo));
-	    logger.info("pushPayStatus begin, reqBo = {}", reqBo);
-	    String reqResult = HttpUtil.doHttpPostJsonParam(getPushPayUrl(), JSONObject.toJSONString(reqBo));
-	    logThird(reqResult, "pushPayStatus", reqBo);
-	    if (StringUtil.isBlank(reqResult)) {
-		throw new FanbeiException(FanbeiExceptionCode.PUSH_BRAND_ORDER_STATUS_FAILED);
+	    if (OrderType.BOLUOME.getCode().equals(orderType)) {
+		// 菠萝觅订单
+		BoluomePushPayRequestBo reqBo = new BoluomePushPayRequestBo();
+		reqBo.setOrderId(thirdOrderNo);
+		reqBo.setStatus(pushStatus.getCode());
+		reqBo.setAmount(amount);
+		reqBo.setUserId(userId);
+		reqBo.setTimestamp(System.currentTimeMillis());
+		reqBo.setSign(BoluomeCore.builSign(reqBo));
+		logger.info("pushPayStatus begin, reqBo = {}", reqBo);
+
+		BoluomePushPayResponseBo responseBo = null;
+		int loopCount = 0;
+		do {
+		    String reqResult = HttpUtil.doHttpPostJsonParam(getPushPayUrl(), JSONObject.toJSONString(reqBo));
+		    if (StringUtils.isNotBlank(reqResult)) {
+			responseBo = JSONObject.parseObject(reqResult, BoluomePushPayResponseBo.class);
+			logger.info("pushPayStatus result , responseBo = {}", responseBo);
+			if (responseBo != null && responseBo.getCode().equals(SUCCESS_CODE)) {
+			    responseBo.setSuccess(true);
+			    afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, true, JSONObject.toJSONString(reqBo), reqResult));
+			} else {
+			    responseBo.setSuccess(false);
+			    afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
+			}
+
+			break;
+		    }
+		    try {
+			Thread.sleep(500);
+		    } catch (InterruptedException e) {
+			logger.error("pushPayStatus sleep error:", e);
+		    }
+
+		    loopCount++;
+		} while (loopCount < 4);
 	    }
-	    BoluomePushPayResponseBo responseBo = JSONObject.parseObject(reqResult, BoluomePushPayResponseBo.class);
-	    logger.info("pushPayStatus result , responseBo = {}", responseBo);
-	    if (responseBo != null && responseBo.getCode().equals(SUCCESS_CODE)) {
-		responseBo.setSuccess(true);
-		afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, true, JSONObject.toJSONString(reqBo), reqResult));
-	    } else {
-		responseBo.setSuccess(false);
-		afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, false, JSONObject.toJSONString(reqBo), reqResult));
-	    }
-	    return responseBo;
 	} else { // 游戏充值业务订单
 	    if (PushStatus.PAY_SUC.equals(pushStatus)) {// 充值成功提交订单信息到sup
 		AfSupOrderDo supOrderDo = afSupOrderService.getByOrderNo(orderNo);
 		String resultXml = afSupOrderService.sendOrderToSup(orderNo, supOrderDo.getGoodsCode(), supOrderDo.getUserName(), supOrderDo.getGameName(), supOrderDo.getGameAcct(), supOrderDo.getGameArea(), supOrderDo.getGameType(), supOrderDo.getAcctType(), supOrderDo.getGoodsNum(), supOrderDo.getGameSrv(), supOrderDo.getUserIp());
-		//记录sup返回xml数据
+		// 记录sup返回xml数据
 		afSupOrderService.updateMsgByOrder(orderNo, resultXml);
-		//解析xml，获取充值受理结果
+		// 解析xml，获取充值受理结果
 		String resultNodeValue = "";
 		try {
 		    Document document = DocumentHelper.parseText(resultXml);
 		    resultNodeValue = document.selectSingleNode("/root/result").getStringValue();
 		} catch (Exception e) {
 		    logger.error("sup pushPayStatus error:", e);
-		}		
-		//受理失败，则执行对款关闭订单
+		}
+		// 受理失败，则执行对款关闭订单
 		if (!resultNodeValue.equals("01")) {
 		    // 退款
 		    AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
 		    afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getActualAmount(), orderInfo.getActualAmount(), orderInfo.getPayType(), orderInfo.getPayTradeNo(), orderInfo.getOrderNo(), "SUP");
 		}
 	    }
-
-	    //业务处理完成（即使失败，已执行完退款逻辑）
-	    BoluomePushPayResponseBo responseBo = new BoluomePushPayResponseBo();
-	    responseBo.setSuccess(true);
-	    return responseBo;
 	}
     }
 
@@ -565,6 +573,9 @@ public class BoluomeUtil extends AbstractThird {
 	    status = OrderStatus.CLOSED;
 	} else if (orderStatus == 12) {
 	    status = OrderStatus.DEALING;
+	}
+	else if(orderStatus == 9){
+	    status= OrderStatus.PROCESSING;
 	}
 
 	return status;

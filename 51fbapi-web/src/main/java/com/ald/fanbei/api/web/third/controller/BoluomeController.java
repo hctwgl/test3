@@ -104,7 +104,7 @@ public class BoluomeController extends AbstractThird {
 	    try {
 		String status = params.get(BoluomeCore.STATUS);
 		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
-		if (orderStatus != null && orderStatus != OrderStatus.DEALING) {
+		if (orderStatus != null && orderStatus != OrderStatus.DEALING && orderStatus != OrderStatus.PAID && orderStatus != OrderStatus.PAYFAIL && orderStatus != OrderStatus.DEAL_REFUNDING) {
 		    AfOrderDo orderInfo = buildOrderInfo(params);
 		    if (orderInfo != null) {
 			if (orderInfo.getRid() == null) {
@@ -198,6 +198,7 @@ public class BoluomeController extends AbstractThird {
 	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
 	;
 
+
 	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
 
 	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderInfo != null ? orderInfo.getSecType() : orderType, orderInfo != null ? orderInfo.getServiceProvider() : channel);
@@ -255,13 +256,13 @@ public class BoluomeController extends AbstractThird {
 	    }
 	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	} else {
-
-	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : orderInfo.getPriceAmount();
-	    orderInfo.setPriceAmount(priceAmount);
-	    orderInfo.setSaleAmount(priceAmount);
+//	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : orderInfo.getPriceAmount();
+//	    orderInfo.setPriceAmount(priceAmount);
+//	    orderInfo.setSaleAmount(priceAmount);
 	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
-	    orderInfo.setPayStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parsePayStatus(status).getCode() : null);
-	    calculateOrderRebateAmount(orderInfo, shopInfo);
+	    orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
+//	    orderInfo.setPayStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parsePayStatus(status).getCode() : null);
+//	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	}
 	return orderInfo;
     }
