@@ -1533,7 +1533,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						return 0;
 					}
 					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+
+						logger.info("dealBrandOrder cp begin , payOrderNo = {} and tradeNo = {} and type = {}",
+								new Object[] { payOrderNo, tradeNo, payType });
+
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
+
+						logger.info("dealBrandOrder cp borrowId= "+afBorrowDo.getRid());
+
 						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(),
 								BorrowBillStatus.NO.getCode());
