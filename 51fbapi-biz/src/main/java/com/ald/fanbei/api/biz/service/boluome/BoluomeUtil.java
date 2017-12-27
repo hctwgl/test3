@@ -124,10 +124,11 @@ public class BoluomeUtil extends AbstractThird {
 		BoluomePushPayResponseBo responseBo = null;
 		int loopCount = 0;
 		do {
+		    logger.info("pushPayStatus loopCount：" + String.valueOf(loopCount));
 		    String reqResult = HttpUtil.doHttpPostJsonParam(getPushPayUrl(), JSONObject.toJSONString(reqBo));
+		    logger.info("pushPayStatus result , responseBo = {}", responseBo);
 		    if (StringUtils.isNotBlank(reqResult)) {
 			responseBo = JSONObject.parseObject(reqResult, BoluomePushPayResponseBo.class);
-			logger.info("pushPayStatus result , responseBo = {}", responseBo);
 			if (responseBo != null && responseBo.getCode().equals(SUCCESS_CODE)) {
 			    responseBo.setSuccess(true);
 			    afOrderPushLogService.addOrderPushLog(buildPushLog(orderId, orderNo, pushStatus, true, JSONObject.toJSONString(reqBo), reqResult));

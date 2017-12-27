@@ -104,7 +104,10 @@ public class BoluomeController extends AbstractThird {
 	    try {
 		String status = params.get(BoluomeCore.STATUS);
 		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
-		if (orderStatus != null && orderStatus != OrderStatus.DEALING && orderStatus != OrderStatus.PAID && orderStatus != OrderStatus.PAYFAIL && orderStatus != OrderStatus.DEAL_REFUNDING) {
+		if (orderStatus != null && orderStatus != OrderStatus.DEALING 
+			&& orderStatus != OrderStatus.PAID 
+			&& orderStatus != OrderStatus.PAYFAIL 
+			&& orderStatus != OrderStatus.DEAL_REFUNDING) {
 		    AfOrderDo orderInfo = buildOrderInfo(params);
 		    if (orderInfo != null) {
 			if (orderInfo.getRid() == null) {
