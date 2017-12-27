@@ -940,7 +940,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 	 */
 	@Override
 	public void pushUtil(String title,String msgContent,String userName){
-		userName = "18258023758";
+		userName = "13370127054";
 		String pid =userName + System.currentTimeMillis();
 		logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
 		Map<String,String> extras = new HashMap<String,String>();
