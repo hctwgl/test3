@@ -61,7 +61,7 @@ public class AppH5InterimAuController extends BaseController {
     @Resource
     RiskUtil riskUtil;
 
-    DecimalFormat   df   =new DecimalFormat("#.00");
+    DecimalFormat   df   =new DecimalFormat("0.00");
 
 
     /**
@@ -123,8 +123,7 @@ public class AppH5InterimAuController extends BaseController {
                 Long userId = afUser.getRid();
                 //Long userId = 520l; //666
 
-            //可用额度
-                data.put("amount", df.format(afUserAccountService.getAuAmountByUserId(userId)));
+                BigDecimal interimAmount=new BigDecimal(0);
                 //判断是否已提过额,还清状态,有效状态
                 if(afInterimAuService.selectExistAuByUserId(userId)>0){
                     AfInterimAuDo afInterimAuDo= afInterimAuService.getAfInterimAuByUserId(userId);
@@ -138,6 +137,7 @@ public class AppH5InterimAuController extends BaseController {
                         failureStatus=1;
                     }
                     data.put("failureStatus",failureStatus);
+                    interimAmount =afInterimAuDo.getInterimAmount();
                 }else{
                     //是否申请失败记录
                     List<AfInterimAuDo> applyFailList =afInterimAuService.selectApplyFailByUserId(userId);
@@ -157,6 +157,9 @@ public class AppH5InterimAuController extends BaseController {
                     }
 
                 }
+                //可用额度=可用额度+临时额度
+                data.put("amount", df.format(afUserAccountService.getAuAmountByUserId(userId).add(interimAmount)));
+
                 resp = H5CommonResponse.getNewInstance(true, "请求成功", "", data);
                 return resp.toString();
             }else{
