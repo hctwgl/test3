@@ -146,7 +146,7 @@ public abstract class BaseController {
             exceptionresponse = doProcess(requestDataVo, contex, request);
             resultStr = JSON.toJSONString(exceptionresponse);
         } catch (FanbeiException e) {
-            exceptionresponse = buildErrorResult(e.getErrorCode(), request);
+            exceptionresponse = buildErrorResult(e, request);
             resultStr = JSON.toJSONString(exceptionresponse);
             logger.error("o2oapp exception id=" + (requestDataVo == null ? reqData : requestDataVo.getId()), e);
         } catch (Exception e) {
@@ -262,7 +262,28 @@ public abstract class BaseController {
         resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode);
         return resp;
     }
+    protected BaseResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
+        FanbeiExceptionCode exceptionCode=e.getErrorCode();
+        ApiHandleResponse resp = new ApiHandleResponse();
+        resp.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
+        if (exceptionCode == null) {
+            exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
+        }
+        if(e.getDynamicMsg()!=null&&e.getDynamicMsg()){
+            resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID),exceptionCode,e.getMessage());
+        }else if(!StringUtil.isEmpty(e.getResourceType())){
+            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype(e.getResourceType());
+            String msgTemplate=afResourceDo.getValue();
+            for (String paramsKey :e.paramsMap.keySet()) {
+                msgTemplate= msgTemplate.replace(paramsKey,e.paramsMap.get(paramsKey));
+            }
+            resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID),exceptionCode,msgTemplate);
+        }else{
+            resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode);
+        }
 
+        return resp;
+    }
     /**
      * 解析请求参数
      *

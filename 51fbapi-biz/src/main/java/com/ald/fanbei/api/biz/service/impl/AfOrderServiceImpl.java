@@ -1544,7 +1544,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(),orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 			// iPhonX预约
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
@@ -1713,7 +1713,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 		return result;
@@ -2280,7 +2280,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 		return result;
@@ -2360,7 +2360,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 
