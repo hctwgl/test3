@@ -158,8 +158,8 @@ public class AppH5AllSearchController extends BaseController {
 					Map<String, Object> buildParams = new HashMap<String, Object>();
 					buildParams.put("q", keyword);
 					buildParams.put("pageNo", pageNo);
-					buildParams.put("pageSize", 20);
-					if (sort != null) {
+					buildParams.put("pageSize", numNeeded);
+					if (StringUtil.isAllNotEmpty(sort)) {
 						buildParams.put("sort", sort);
 					}
 					List<NTbkItem> list = taobaoApiUtil.executeTaobaokeSearch(buildParams).getResults();
@@ -183,14 +183,10 @@ public class AppH5AllSearchController extends BaseController {
 								}
 							});
 					
-					if (CollectionUtil.isNotEmpty(resultlist)) {
-						for(int i = 0 ;i < numNeeded ; i ++){
-							goodsList.add(resultlist.get(i));
-						}
-					}
+			
+					goodsList.addAll(resultlist);
 					data.put("goodsList", goodsList);
 					
-
 					// TODO:return;
 					return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 				}
@@ -208,6 +204,7 @@ public class AppH5AllSearchController extends BaseController {
 				Map<String, Object> buildParams = new HashMap<String, Object>();
 				buildParams.put("q", keyword);
 				buildParams.put("pageNo", taobaoPageNo);
+				buildParams.put("pageSize", 20);
 				if (sort != null) {
 					buildParams.put("sort", sort);
 				}
