@@ -210,5 +210,74 @@ public class JpushUtil extends AbstractThird{
 		build.setApnsProduction(on_line);
 		return build.build();
 	}
+
+	/**
+	 * 向用户推送通知，通过别名
+	 *@param title
+	 *@param msgContent
+	 *@param extras
+	 *@param alias
+	 *@param type 1-指定用户 2-全部用户
+	 */
+	public PushResult pushNotifyByAlias(String title,String msgContent,Map<String,String> extras,String[] alias,String type,String system,String pushType){
+		PushResult result;
+		try{
+			extras.put("title", title);
+			extras.put("content", msgContent);
+			cn.jpush.api.push.model.PushPayload.Builder pushBuilder = PushPayload.newBuilder();
+			cn.jpush.api.push.model.notification.Notification.Builder notifyBuilder = this.getNotifycationBuilder(title, msgContent, extras,system);
+			if("2".equals(type)){
+				pushBuilder.setAudience(Audience.all());
+			}else if("1".equals(type) || "3".equals(type) || "4".equals(type)){
+				pushBuilder.setAudience(Audience.alias(alias));
+			}
+			if("1".equals(pushType)){
+				pushBuilder.setMessage(Message.newBuilder().setMsgContent(msgContent).setTitle(title).addExtras(extras).setContentType(MESSAGE_CONTENT_TYPE).build());
+			}else if("2".equals(pushType)){
+				pushBuilder.setNotification(notifyBuilder.build());
+			}else if ("3".equals(pushType)){
+				pushBuilder.setMessage(Message.newBuilder().setMsgContent(msgContent).setTitle(title).addExtras(extras).setContentType(MESSAGE_CONTENT_TYPE).build());
+				pushBuilder.setNotification(notifyBuilder.build());
+			}
+			pushBuilder.setOptions(getOptions());
+			if (null != system && "ios".equals(system)){
+				pushBuilder.setPlatform(Platform.ios());
+			}else if (null != system && "android".equals(system)){
+				pushBuilder.setPlatform(Platform.android());
+			}else{
+				pushBuilder.setPlatform(Platform.all());
+			}
+//			pushBuilder.setPlatform(Platform.all());
+			PushPayload ppl = pushBuilder.build();
+
+			result = getPushClient().sendPush(ppl);
+		}catch(Exception e){
+			throw new RuntimeException(e);
+		}
+		return result;
+	}
+
+	private cn.jpush.api.push.model.notification.Notification.Builder getNotifycationBuilder(String title,String msgContent,Map<String,String> extras,String system){
+		cn.jpush.api.push.model.notification.Notification.Builder notifyBuilder = Notification.newBuilder();
+		cn.jpush.api.push.model.notification.AndroidNotification.Builder androidBuilder = AndroidNotification.newBuilder();
+		androidBuilder.setTitle(title);
+		androidBuilder.setAlert(msgContent);
+		androidBuilder.addExtras(extras);
+		cn.jpush.api.push.model.notification.IosNotification.Builder iosBuilder = IosNotification.newBuilder();
+		iosBuilder.setAlert(msgContent);
+		iosBuilder.setSound(IOS_SOUND);
+		iosBuilder.autoBadge();
+		iosBuilder.addExtras(extras);
+		notifyBuilder.setAlert(title);
+		if (null != system && "ios".equals(system)){
+			notifyBuilder.addPlatformNotification(iosBuilder.build());
+		}else if (null != system && "android".equals(system)){
+			notifyBuilder.addPlatformNotification(androidBuilder.build());
+		}else{
+			notifyBuilder.addPlatformNotification(androidBuilder.build());
+			notifyBuilder.addPlatformNotification(iosBuilder.build());
+		}
+		return notifyBuilder;
+	}
 	
 }
