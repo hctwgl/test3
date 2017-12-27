@@ -1123,6 +1123,8 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 			}
 		});
 	}
+	@Resource
+	AfBorrowExtendDao afBorrowExtendDao;
 
 	@Override
 	public Long dealAgentPayBorrowAndBill(final AfBorrowDo borrow, final Long userId, final String userName, final BigDecimal amount,final String payType,final String orderType) {
@@ -1145,6 +1147,11 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 
 //					if(!(orderType.equals(OrderType.AGENTBUY.getCode()) ||orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
 //					if(!(orderType.equals(OrderType.BOLUOME.getCode()) || orderType.equals(OrderType.BOLUOMECP.getCode()))){
+
+						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+						afBorrowExtendDo.setId(borrow.getRid());
+						afBorrowExtendDo.setInBill(1);
+						afBorrowExtendDao.updateBorrowExtend(afBorrowExtendDo);
 						List<AfBorrowBillDo> billList = buildBorrowBillForNewInterest(borrow, payType);
 						afBorrowDao.addBorrowBill(billList);
 //					}
