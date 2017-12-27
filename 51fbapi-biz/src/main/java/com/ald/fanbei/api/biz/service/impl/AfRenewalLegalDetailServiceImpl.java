@@ -469,7 +469,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 								content = content.replace("D",day+"");
 								smsUtil.sendMessageToMobile(afUserDo.getUserName(),content);
 								String title = "恭喜您，续借成功";
-								String msgcontent = "恭喜，您已经续借成功，最新还款日为X月X日，请按时还款，保持良好信用。";
+								String msgcontent = "恭喜，您已经续借成功，最新还款日为M月D日，请按时还款，保持良好信用。";
 								msgcontent = msgcontent.replace("M",month+"");
 								msgcontent = msgcontent.replace("D",day+"");
 								pushService.pushUtil(title,msgcontent,afUserDo.getUserName());
