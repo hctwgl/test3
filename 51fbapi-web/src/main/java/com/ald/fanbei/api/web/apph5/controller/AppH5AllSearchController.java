@@ -158,6 +158,7 @@ public class AppH5AllSearchController extends BaseController {
 					Map<String, Object> buildParams = new HashMap<String, Object>();
 					buildParams.put("q", keyword);
 					buildParams.put("pageNo", pageNo);
+					buildParams.put("pageSize", 20);
 					if (sort != null) {
 						buildParams.put("sort", sort);
 					}
