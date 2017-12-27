@@ -175,10 +175,10 @@ public class CollectionController {
 				
 				//根据催收传来的时间计算应还金额
 				long numberOfDatesBetween = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(),date);
-				if(numberOfDatesBetween<1){
+				if(numberOfDatesBetween<1){   //没有逾期时计算应还金额
 					BigDecimal actual_amount= BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getRateAmount(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getSumOverdue()).subtract(afBorrowCashDo.getRepayAmount());
 					map.put("actual_amount", actual_amount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
-				} else {
+				} else {   //逾期时计算应还金额
 					BigDecimal amount = afBorrowCashOverdueService.getAfBorrowCashOverdueDoByBorrowId(afBorrowCashDo.getRid(), numberOfDatesBetween);
 					BigDecimal actual_amount= BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getRateAmount(),afBorrowCashDo.getSumRate(),amount).subtract(afBorrowCashDo.getRepayAmount());
 					map.put("actual_amount", actual_amount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
