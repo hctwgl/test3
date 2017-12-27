@@ -186,7 +186,10 @@ $(function(){
         $(".swiper-slide").hide();
         $("div[data-type="+typeCurrentNum+"]").show();
         var isUl = $("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent");
+        finished=0;
         if(isUl.find('li').length<=0){
+            $('.current').attr('data-page',1);
+            page=1;
             $.ajax({
                 url: "/app/goods/categoryGoodsList",
                 type: "POST",
@@ -207,16 +210,19 @@ $(function(){
                     requestMsg("请求失败");
                 }
             });
+        }else{
+            page=$('.current').attr('data-page');
         }
     });
     //滚动加载更多商品
     $(window).on('scroll',function () {
-        if(finished==0){
+        if(finished==0 && !$('.current').attr('data-over')){
             var scrollTop = $(this).scrollTop();
             var allHeight = $(document).height();
             var windowHeight = $(this).height();
             if (allHeight-windowHeight<=scrollTop+400) {
                 page++;
+                $('.current').attr('data-page',page);
                 finished=1; //防止未加载完再次执行
                 $.ajax({
                     url: "/app/goods/categoryGoodsList",
@@ -232,6 +238,7 @@ $(function(){
                             if(returnData.data["goodsList"]==""){
                                 var txt='<div class="loadOver"><span>没有更多了...</span></div>';
                                 $("div[data-type="+typeCurrentNum+"]").append(txt);
+                                $('.current').attr('data-over','true');
                             }else{
                                 var goodsList = returnData.data["goodsList"];
                                 addModel(goodsList,$("div[data-type="+typeCurrentNum+"] .goodsListModel_mainContent"),1);
