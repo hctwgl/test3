@@ -21,6 +21,7 @@ public enum FanbeiThirdRespCode {
     COLLECTION_NOT_Balanced("302","Balanced is fail","平账失败"),
     COLLECTION_REQUEST_SIGN("304","sign is fail","验签失败"),
     COLLECTION_THIRD_NO_EXIST("305","collection thirdno exist","第三方交易单号已被使用，不要进行重复操作"),
+    COLLECTION_CONTRACT_PDF_CREATE_ERROR("306", "collection contract pdf create error", "原有借款协议生成失败"),
 	// BORROW_CASH_CODE 201-299
     BORROW_CASH_HAVE_FINISHED("201", "borrowcash have finished", "借款已还款完成"),
     BORROW_CASH_NOT_EXISTS("202", "borrowcash not exists", "借款记录不存在"),
