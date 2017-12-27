@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -170,9 +171,19 @@ public class APPH5GgActivityController extends BaseController {
 //			long activityId = 1000L;
 //			List<AfBoluomeActivityUserLoginDo> afBoluomeActivityUserLoginList = afBoluomeActivityUserLoginService
 //					.getByRefUserIdAndActivityId(userId, activityId);
+			
+			
 			AfRecommendUserDo queryRecommendUser = new AfRecommendUserDo();
-			queryRecommendUser.setParentId(userId);
-			queryRecommendUser.setType(1);
+        			queryRecommendUser.setParentId(userId);
+        			queryRecommendUser.setType(1);
+        			AfResourceDo startTime = new  AfResourceDo();
+        		    	startTime = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+		    	   if(startTime != null){
+		    	        SimpleDateFormat parser = new SimpleDateFormat(DateUtil.DATE_TIME_SHORT);
+		    	        Date gmtCreate =  parser.parse(startTime.getValue());
+        		        queryRecommendUser.setGmt_create(gmtCreate);
+		    	   }
+		    	
 			List<AfRecommendUserDo> afRecommendUserDoList = afRecommendUserService.getListByParentIdAndType(queryRecommendUser);
 			
 			if (afRecommendUserDoList.size() > 0) {

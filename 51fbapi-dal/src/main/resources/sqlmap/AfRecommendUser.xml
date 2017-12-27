@@ -171,6 +171,9 @@
 		ON a.user_id = b.id
 		WHERE a.parentId = #{parentId}
 		and type = #{type}
+		<if test="gmtCreate != null">
+		and a.gmt_create <![CDATA[ >= ]]> #{gmtCreate}
+		</if>
 		ORDER BY a.gmt_create DESC
 	  
 	</select>
@@ -182,6 +185,8 @@
 	   where is_delete =0 
 	   and user_id = #{userId}
 	   and type =#{type}
-	   and gmt_create > #{gmtCreate}
+	   <if test="gmtCreate != null">
+		  and gmt_create <![CDATA[ >= ]]> #{gmtCreate}
+		</if>
 	</select>
 </mapper>

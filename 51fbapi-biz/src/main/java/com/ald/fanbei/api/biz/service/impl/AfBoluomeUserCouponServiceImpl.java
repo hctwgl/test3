@@ -1,6 +1,7 @@
 
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -15,6 +16,7 @@ import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBoluomeActivityUserLoginDao;
@@ -83,17 +85,17 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 				if (isHave == 0) {
 					// have never sent coupon before , right now send it .
 					//Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
-				        //绑定记录必须在活动时间之后
+				        //绑定记录必须在活动开始时间之后
 				    	AfResourceDo startTime = new  AfResourceDo();
 				    	startTime = afResourceDao.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
 				    	   if(startTime != null){
         				        AfRecommendUserDo queryRecommendUser = new AfRecommendUserDo();
         					queryRecommendUser.setUser_id(userId);
         					queryRecommendUser.setType(1);
-        					queryRecommendUser.setCreateTime(startTime.getValue());
+ 				    	        SimpleDateFormat parser = new SimpleDateFormat(DateUtil.DATE_TIME_SHORT);
+ 				    	        Date gmtCreate =  parser.parse(startTime.getValue());
+ 				    	        queryRecommendUser.setGmt_create(gmtCreate);
         					Long refUserIdTemp = afRecommendUserService.findRefUserId(queryRecommendUser);
-        				    
-        				    
         				   //   Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
         					log = log + String.format("refUserIdTemp =  %s", refUserIdTemp);
         					logger.info(log);

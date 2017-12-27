@@ -882,19 +882,29 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
 						if (afResourceDo != null ) {
 							String swtich = afResourceDo.getValue();
-							
 							if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
-								// qiao+2017-11-14 15:30:27:the second time to light the activity
-								logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",
-										afOrder.getRid(), userId);
-								// send red packet
-								afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
-
-								// qiao+2017-11-14 15:30:27:the second time to light the activity
-								logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",
-										afOrder.getRid(), userId);
-								// send coupon
-								boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+							  //该订单在活动时间内
+								AfResourceDo activityTime = new  AfResourceDo();
+								activityTime = afResourceDao.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_TIME");
+							        if(activityTime != null){
+							               SimpleDateFormat parser = new SimpleDateFormat(DateUtil.DATE_TIME_SHORT);
+			 				    	        Date startTime =  parser.parse(activityTime.getValue());
+			 				    	        Date endTime =  parser.parse(activityTime.getValue1());
+							            	Date createTime = afOrder.getGmtCreate();
+							            	if(DateUtil.afterDay(createTime, startTime) && DateUtil.afterDay(endTime,createTime)){
+							            	    	// qiao+2017-11-14 15:30:27:the second time to light the activity
+                								logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",
+                										afOrder.getRid(), userId);
+                								// send red packet
+                								afBoluomeRebateService.addRedPacket(afOrder.getRid(), userId);
+                
+                								// qiao+2017-11-14 15:30:27:the second time to light the activity
+                								logger.info("afBoluomeRebateService.sendCoupon params orderId = {} , userId = {}",
+                										afOrder.getRid(), userId);
+                								// send coupon
+                								boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
+							            	}
+							        }
 							}
 						}
 						
