@@ -179,8 +179,7 @@
 	</select>
 	
 	<select id="findRefUserId" parameterType="AfRecommendUserDo" resultType="java.lang.Long">
-	    select 
-	   <include refid="queryFields" />
+	    select  parentId
 	   from af_recommend_user
 	   where is_delete =0 
 	   and user_id = #{userId}
