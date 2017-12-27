@@ -7,7 +7,7 @@
 	</sql>
 	
 	<sql id="detailSqlField">
-		id,user_amount_id,remark,title,title,amount,count,gmt_create,gmt_modified
+		id,user_amount_id,remark,title,type,amount,count,gmt_create,gmt_modified
 	</sql>
 
 	<insert id="addUserAmount" parameterType="AfUserAmountDo" useGeneratedKeys="true" keyProperty="id">
