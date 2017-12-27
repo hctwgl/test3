@@ -885,6 +885,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
 								if(borrowList == null || borrowList.size()==0 ){
 									List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+									for(AfBorrowBillDo _afBorrowExtendDo:billList){
+										_afBorrowExtendDo.setStatus("N");
+									}
 									afBorrowDao.addBorrowBill(billList);
 									AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
 									if(_aa ==null){
@@ -1539,7 +1542,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
 
-						logger.info("dealBrandOrder cp borrowId= "+afBorrowDo.getRid());
+						logger.info("dealBrandOrder cp = "+afBorrowDo.getRid());
 
 						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(),

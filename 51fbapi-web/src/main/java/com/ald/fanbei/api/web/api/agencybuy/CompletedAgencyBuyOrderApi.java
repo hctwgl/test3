@@ -131,6 +131,9 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 						afBorrowExtendDao.updateBorrowExtend(_aa);
 					}
 					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+					for(AfBorrowBillDo _afBorrowExtendDo:billList){
+						_afBorrowExtendDo.setStatus("N");
+					}
 					afBorrowService.addBorrowBill(billList);
 
 					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrderDo.getUserId());
