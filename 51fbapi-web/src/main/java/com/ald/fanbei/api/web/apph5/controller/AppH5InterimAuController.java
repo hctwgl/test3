@@ -61,7 +61,7 @@ public class AppH5InterimAuController extends BaseController {
     @Resource
     RiskUtil riskUtil;
 
-    DecimalFormat   df   =new DecimalFormat("#.00");
+    DecimalFormat   df   =new DecimalFormat("0.00");
 
 
     /**
