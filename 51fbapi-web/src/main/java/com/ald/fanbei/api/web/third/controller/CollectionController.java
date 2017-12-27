@@ -358,13 +358,6 @@ public class CollectionController {
 				return updteBo;
 			}
 			id = afBorrowDo.getRid();
-			afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(afBorrowDo.getBorrowNo());
-			if (afBorrowCashDo == null){
-				logger.error("getContractProtocolPdf afBorrowCashDo is null,no =>{}",borrowNo);
-				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
-				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
-				return updteBo;
-			}
 		}else {
 			logger.error("getContractProtocolPdf type is error,type =>{}",type);
 			updteBo.setCode(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getCode());
@@ -376,7 +369,7 @@ public class CollectionController {
 			if (type == 1){
 				afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());
 			}else if (type == 2){
-				afContractPdfCreateService.protocolInstalment(afBorrowDo.getUserId(),afBorrowDo.getNper(),afBorrowDo.getAmount(),afBorrowCashDo.getRid());
+				afContractPdfCreateService.protocolInstalment(afBorrowDo.getUserId(),afBorrowDo.getNper(),afBorrowDo.getAmount(),afBorrowDo.getRid());
 			}
 			afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id,(byte)type);
 			if (afContractPdfDo == null){
