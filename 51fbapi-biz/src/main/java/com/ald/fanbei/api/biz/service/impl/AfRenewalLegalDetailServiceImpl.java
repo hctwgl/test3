@@ -463,7 +463,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 								String content = resourceDo.getValue();
 								Calendar c = Calendar.getInstance();
 								c.setTime(afBorrowCashDo.getGmtPlanRepayment());
-								int month = c.get(Calendar.MONTH);
+								int month = c.get(Calendar.MONTH)+1;
 								int day = c.get(Calendar.DATE);
 								content = content.replace("M",month+"");
 								content = content.replace("D",day+"");
