@@ -307,9 +307,8 @@ public class AppH5AllSearchController extends BaseController {
 		vo.setNperMap(getNper(new BigDecimal(item.getZkFinalPrice())));
 
 		vo.setVolume(item.getVolume());
-		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).append("~")
-				.append(saleAmount.subtract(minRebateAmount)).toString());
-		vo.setRebateAmount(new StringBuffer("").append(minRebateAmount).append("~").append(maxRebateAmount).toString());
+		vo.setRealAmount(new StringBuffer("").append(saleAmount.subtract(maxRebateAmount)).toString());
+		vo.setRebateAmount(new StringBuffer("").append(maxRebateAmount).toString());
 		vo.setSaleAmount(saleAmount);
 		List<String> icons = item.getSmallImages();
 		if (icons != null && icons.size() > 0) {
