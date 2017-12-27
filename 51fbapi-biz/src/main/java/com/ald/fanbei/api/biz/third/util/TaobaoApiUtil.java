@@ -86,6 +86,7 @@ public class TaobaoApiUtil extends AbstractThird {
 		String sort = ObjectUtils.toString(params.get("sort"), null);
 		Boolean isTmall = NumberUtil.objToBooleanDefault(params.get("isTmall"), false);
 		Long pageNo = NumberUtil.objToPageLongDefault(params.get("pageNo"), 1L);
+		Long pageSize = NumberUtil.objToPageLongDefault(params.get("pageSize"), null);
 		if (q != null) {
 			req.setQ(q);
 		}
@@ -96,7 +97,7 @@ public class TaobaoApiUtil extends AbstractThird {
 			req.setPageNo(pageNo);
 		}
 		req.setFields(ConfigProperties.get(Constants.CONFKEY_TAOBAO_TBK_SHOP_GET_FIELDS));
-		req.setPageSize(PAGE_SIZE);
+		req.setPageSize(pageSize==null?PAGE_SIZE:pageSize);
 		req.setIsTmall(isTmall);
 		logger.info("executeTaobaokeSearch complete");
 		return client.execute(req);
