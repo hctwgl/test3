@@ -362,6 +362,21 @@
 		</if>
 		WHERE id=#{rid}
 	</update>
+	
+	
+	<update id="updateLegalOrderCashBalanced" parameterType="AfBorrowCashDo">
+		UPDATE af_borrow_legal_order_cash SET gmt_modified = NOW()
+		<if test="status != null">
+			,status=#{status}
+		</if>
+		<if test="overdueAmount != null">
+			,overdue_amount=#{overdueAmount}
+		</if>
+		<if test="sumRepaidOverdue != null">
+			,sum_repaid_overdue=#{sumRepaidOverdue}
+		</if>
+		WHERE id=#{rid}
+	</update>
 
 	<select id="getCurrDayTransFailTimes" resultType="java.lang.Integer">
 		SELECT
