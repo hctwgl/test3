@@ -2,6 +2,10 @@ package com.ald.fanbei.api.web.third.controller;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
+import com.ald.fanbei.api.biz.service.AfBorrowCashOverdueService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfIdNumberService;
@@ -70,6 +75,9 @@ public class CollectionController {
 	
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+	
+	@Resource
+	AfBorrowCashOverdueService afBorrowCashOverdueService;
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
 	 * @param request
@@ -96,11 +104,24 @@ public class CollectionController {
 	@RequestMapping(value = { "/findBorrowCashByBorrowNo"}, method = RequestMethod.POST)
 	@ResponseBody
 	public CollectionUpdateResqBo findBorrowCashByBorrowNo(HttpServletRequest request, HttpServletResponse response){
-		String borrowNo = ObjectUtils.toString(request.getParameter("data"));
+		String data = ObjectUtils.toString(request.getParameter("data"));
 		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
 		String sign1 = ObjectUtils.toString(request.getParameter("sign"));
-		logger.info("findBorrowCashByBorrowNo data="+borrowNo+",timestamp="+timestamp+",sign1="+sign1+"");
 		
+		logger.info("findBorrowCashByBorrowNo data="+data+",timestamp="+timestamp+",sign1="+sign1+"");
+	
+		//解析参数
+		JSONObject obj = JSON.parseObject(data);
+        String borrowNo = obj.getString("borrowNo");
+        String time = obj.getString("repay_time");
+        Date date = null;
+		try {
+			date = DateUtil.stringToDate(time);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+			logger.error("findBorrowCashByBorrowNo stringToDate is fail" + e1);
+		}
+        
 		Map<String,String> map=new HashMap<String,String>();
 		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
 		try{
@@ -151,6 +172,19 @@ public class CollectionController {
 				map.put("repay_amount_sum",repayAmountSum+"");
 				map.put("status",afBorrowCashDo.getStatus());
 				map.put("gmt_plan_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtPlanRepayment()));
+				
+				//根据催收传来的时间计算应还金额
+				long numberOfDatesBetween = DateUtil.getNumberOfDatesBetween(afBorrowCashDo.getGmtPlanRepayment(),date);
+				if(numberOfDatesBetween<1){
+					BigDecimal actual_amount= BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getRateAmount(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getOverdueAmount(),afBorrowCashDo.getSumOverdue()).subtract(afBorrowCashDo.getRepayAmount());
+					map.put("actual_amount", actual_amount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				} else {
+					BigDecimal amount = afBorrowCashOverdueService.getAfBorrowCashOverdueDoByBorrowId(afBorrowCashDo.getRid(), numberOfDatesBetween);
+					BigDecimal actual_amount= BigDecimalUtil.add(afBorrowCashDo.getAmount(),afBorrowCashDo.getRateAmount(),afBorrowCashDo.getSumRate(),amount).subtract(afBorrowCashDo.getRepayAmount());
+					map.put("actual_amount", actual_amount.multiply(BigDecimalUtil.ONE_HUNDRED)+"");
+				}
+				//
+				
 				map.put("majiabao_name", StringUtil.null2Str(afBorrowCashDo.getMajiabaoName()));
 				if (StringUtil.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
 					map.put("gmt_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtModified()) + "");
