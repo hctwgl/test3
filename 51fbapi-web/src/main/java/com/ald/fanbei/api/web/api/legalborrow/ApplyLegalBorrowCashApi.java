@@ -418,7 +418,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			String title = "恭喜您，审核通过啦！";
 			String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
 			AfUserBankcardDo bankinfo = afUserBankcardService.getUserMainBankcardByUserId(userId);
-			logger.info("title="+title+"&bankCardNo="+bankinfo.getBankCode().substring(bankinfo.getBankCode().length()-4));
 			msgContent.replace("&bankCardNo", bankinfo.getBankCode().substring(bankinfo.getBankCode().length()-4));
 			jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
 //			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
