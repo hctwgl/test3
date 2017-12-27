@@ -152,8 +152,7 @@ public class AppH5AllSearchController extends BaseController {
 						goodsList.add(vo);
 					}
 
-					// partly from the first one page from taobao add to the
-					// list
+					// partly from the first one page from taobao add to the list
 					int numNeeded = totalPage * 20 - totalCount;
 
 					Map<String, Object> buildParams = new HashMap<String, Object>();
@@ -166,12 +165,11 @@ public class AppH5AllSearchController extends BaseController {
 
 					final AfResourceDo resource = afResourceService
 							.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
-
-					List<AfSearchGoodsVo> resultlist = CollectionConverterUtil.convertToListFromList(list,
+					List<AfSearchGoodsVo> resultlist = new ArrayList<>();
+					resultlist = CollectionConverterUtil.convertToListFromList(list,
 							new Converter<NTbkItem, AfSearchGoodsVo>() {
 								@Override
 								public AfSearchGoodsVo convert(NTbkItem source) {
-									// System.out.println(source.getTitle());
 
 									if (null == resource) {
 										return convertFromTaobaoToVo(source, BigDecimal.ZERO, BigDecimal.ZERO);
@@ -183,6 +181,14 @@ public class AppH5AllSearchController extends BaseController {
 									}
 								}
 							});
+					
+					if (CollectionUtil.isNotEmpty(resultlist)) {
+						for(int i = 0 ;i < numNeeded ; i ++){
+							goodsList.add(resultlist.get(i));
+						}
+					}
+					data.put("goodsList", goodsList);
+					
 
 					// TODO:return;
 					return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
@@ -200,12 +206,33 @@ public class AppH5AllSearchController extends BaseController {
 				// for taobao
 				Map<String, Object> buildParams = new HashMap<String, Object>();
 				buildParams.put("q", keyword);
-				buildParams.put("pageNo", pageNo);
+				buildParams.put("pageNo", taobaoPageNo);
 				if (sort != null) {
 					buildParams.put("sort", sort);
 				}
+				
+				List<NTbkItem> list = taobaoApiUtil.executeTaobaokeSearch(buildParams).getResults();
 
-				// TODO:return;
+				final AfResourceDo resource = afResourceService
+						.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
+				List<AfSearchGoodsVo> resultlist = new ArrayList<>();
+				resultlist = CollectionConverterUtil.convertToListFromList(list,
+						new Converter<NTbkItem, AfSearchGoodsVo>() {
+							@Override
+							public AfSearchGoodsVo convert(NTbkItem source) {
+
+								if (null == resource) {
+									return convertFromTaobaoToVo(source, BigDecimal.ZERO, BigDecimal.ZERO);
+								} else {
+									return convertFromTaobaoToVo(source,
+											NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
+											NumberUtil.objToBigDecimalDefault(resource.getValue1(),
+													BigDecimal.ZERO));
+								}
+							}
+						});
+				
+				data.put("goodsList", resultlist);
 				return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 			}
 
