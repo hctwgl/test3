@@ -14,6 +14,8 @@ public class AfBorrowDto extends AfBorrowDo {
 	private BigDecimal priceAmount;
 	
 	private BigDecimal bankAmount;
+	
+	private BigDecimal saleAmount;
 
 	public Date getPayDate() {
 		return payDate;
@@ -38,5 +40,12 @@ public class AfBorrowDto extends AfBorrowDo {
 	public void setBankAmount(BigDecimal bankAmount) {
 		this.bankAmount = bankAmount;
 	}
-	
+
+	public BigDecimal getSaleAmount() {
+		return saleAmount;
+	}
+
+	public void setSaleAmount(BigDecimal saleAmount) {
+		this.saleAmount = saleAmount;
+	}
 }
