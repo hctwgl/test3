@@ -406,6 +406,31 @@ public class NumberUtil {
     	return interests;
     }
     
+    /**
+     * 方法说明: 判断输入的数值是否为空或者0
+     * @param num
+     * @return
+     */
+    public static boolean isNullOrZeroOrNegative(BigDecimal num){
+    	if(num==null || BigDecimal.ZERO.compareTo(num)>=0){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
+    
+    /**
+     * 方法说明: 判断输入的数值是否为空或者0
+     * @param num
+     * @return
+     */
+    public static boolean isNullOrZeroOrNegative(Long num){
+    	if(num==null || num<=0){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
     
     
     public static void main(String[] args) {

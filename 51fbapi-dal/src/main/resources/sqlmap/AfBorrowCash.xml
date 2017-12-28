@@ -478,4 +478,14 @@
 			limit #{rows}
 		</if>
 	</select>
+		
+	<select id="getOverdueInfoByUserId" resultType="com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto">
+		SELECT
+			COUNT(1) overdueNums,ifnull(sum(amount),0) overdueAmount
+		FROM
+			af_borrow_cash
+		WHERE
+			`status` IN ('TRANSED', 'FINSH') and overdue_status='Y' 
+		 and user_id = #{userId}
+	</select>
 </mapper>

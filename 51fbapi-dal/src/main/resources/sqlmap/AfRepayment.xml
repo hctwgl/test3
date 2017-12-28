@@ -55,7 +55,10 @@
 	<select id="getCurrentLastRepayNo" resultType="java.lang.String">
 		select repay_no from af_repayment WHERE repay_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
 	</select>
-	
+
+	<select id="getProcessingRepayNo" resultType="java.lang.String">
+		select repay_no from af_repayment WHERE `status` ='P' and `rebate_amount` >0 and `user_id` =#{userId} limit 1;
+	</select>
 	<select id="getRepaymentById" resultType="AfRepaymentDo">
 		select 
 			<include refid="queryFields"/> 
