@@ -259,13 +259,19 @@ public class BoluomeController extends AbstractThird {
 	    }
 	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	} else {
-//	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : orderInfo.getPriceAmount();
-//	    orderInfo.setPriceAmount(priceAmount);
-//	    orderInfo.setSaleAmount(priceAmount);
-	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
-	    orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
-//	    orderInfo.setPayStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parsePayStatus(status).getCode() : null);
-//	    calculateOrderRebateAmount(orderInfo, shopInfo);
+	    if (StringUtils.isNotBlank(status)) {
+		String orderStatus = BoluomeUtil.parseOrderType(status).getCode();
+		//只有NEW状态的订单才处理菠萝觅的关闭请求
+		if (OrderStatus.CLOSED.getCode().equals(orderStatus)) {
+		    if (OrderStatus.NEW.getCode().equals(orderInfo.getStatus())) {
+			orderInfo.setStatus(orderStatus);
+			orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
+		    }
+		} else {
+		    orderInfo.setStatus(orderStatus);
+		    orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
+		}
+	    }
 	}
 	return orderInfo;
     }
