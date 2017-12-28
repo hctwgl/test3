@@ -1059,7 +1059,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						logger.info("verify userId" + userId);
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
 								borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
-								ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(),
+								ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(),
 								orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
 								orderInfo.getOrderType(), orderInfo.getSecType());
 						logger.info("verybo=" + verybo);
@@ -1120,7 +1120,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						// 通过弱风控后才进行后续操作
 						RiskVerifyRespBo verybo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
 								borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
-								ipAddress, StringUtil.EMPTY, riskOrderNo, userAccountInfo.getUserName(), leftAmount,
+								ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(), leftAmount,
 								BigDecimal.ZERO, borrowTime,
 								OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())
 										? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(),
@@ -1544,7 +1544,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(),orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 			// iPhonX预约
 			AfGoodsDo goods = afGoodsService.getGoodsById(orderInfo.getGoodsId());
@@ -1713,7 +1713,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 		return result;
@@ -2280,7 +2280,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 		return result;
@@ -2360,7 +2360,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1 && OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
+			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_FAIL, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 		}
 
