@@ -37,10 +37,10 @@ public class GetOverdueStatusApi implements ApiHandle {
 
 	@Resource
 	private AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
-	
+
 	@Resource
 	private AfBorrowBillService afBorrowBillService;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
@@ -59,8 +59,8 @@ public class GetOverdueStatusApi implements ApiHandle {
 					loanOverdueStatus = "Y";
 				} else {
 					AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowCashDo.getRid());
-					if(legalOrderCashDo != null) {
-						if(StringUtils.equals(legalOrderCashDo.getOverdueStatus(), "Y")) {
+					if (legalOrderCashDo != null) {
+						if (StringUtils.equals(legalOrderCashDo.getOverdueStatus(), "Y")) {
 							loanOverdueStatus = "Y";
 						}
 					}
@@ -68,7 +68,7 @@ public class GetOverdueStatusApi implements ApiHandle {
 			}
 			// 查询是否有消费分期账单逾期
 			int overdueBillCount = afBorrowBillService.countNotPayOverdueBill(userId);
-			if(overdueBillCount > 0) {
+			if (overdueBillCount > 0) {
 				consumeOverdueStatus = "Y";
 			}
 		}
