@@ -259,11 +259,11 @@ public class BoluomeController extends AbstractThird {
 		//只有NEW状态的订单才处理菠萝觅的关闭请求
 		if (OrderStatus.CLOSED.getCode().equals(orderStatus)) {
 		    if (OrderStatus.NEW.getCode().equals(orderInfo.getStatus())) {
-			orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
+			orderInfo.setStatus(orderStatus);
 			orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
 		    }
 		} else {
-		    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
+		    orderInfo.setStatus(orderStatus);
 		    orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
 		}
 	    }
