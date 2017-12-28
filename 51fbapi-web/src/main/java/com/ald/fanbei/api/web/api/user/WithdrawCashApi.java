@@ -103,8 +103,7 @@ public class WithdrawCashApi implements ApiHandle {
                 AfResourceDo withDrawLimit = afResourceService.getSingleResourceBytype("config_withdraw_limit");
                 if(withDrawLimit!=null){
                     if (amount.compareTo(new BigDecimal(withDrawLimit.getValue())) < 0) {
-                        throw new FanbeiException("apply cash amount too samll",
-                                FanbeiExceptionCode.APPLY_CASHED_AMOUNT_SMALL);
+                        throw new FanbeiException("提现金额必须大于"+withDrawLimit.getValue(),true);
                     }
                 }
                 afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
