@@ -934,4 +934,20 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 		
 	}
+
+	/**
+	 * 新版借款流程消息和通知推送
+	 */
+	@Override
+	public void pushUtil(String title,String msgContent,String userName){
+		userName = "13370127054";
+		String pid =userName + System.currentTimeMillis();
+		logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
+		Map<String,String> extras = new HashMap<String,String>();
+		extras.put(PID, pid);
+		extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+		extras.put(PUSH_JUMP_TYPE, "1");
+		jpushUtil.pushNotifyByAlias(title,msgContent,extras,new String[]{userName},"1","","3");
+	}
+
 }
