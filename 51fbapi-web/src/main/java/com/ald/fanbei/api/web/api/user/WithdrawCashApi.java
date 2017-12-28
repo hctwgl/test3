@@ -8,14 +8,12 @@ import java.math.BigDecimal;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.util.StringUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfCashRecordService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -52,6 +50,10 @@ public class WithdrawCashApi implements ApiHandle {
     @Resource
     AfUserBankcardService afUserBankcardService;
     @Resource
+    AfRepaymentService afRepaymentService;
+    @Resource
+    AfRepaymentBorrowCashService afRepaymentBorrowCashService;
+    @Resource
     AfResourceService afResourceService;
 
     @Override
@@ -81,6 +83,17 @@ public class WithdrawCashApi implements ApiHandle {
         if (userAccountDo == null) {
             throw new FanbeiException("account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
+        String cashProcessingNO= afRepaymentBorrowCashService.getProcessingRepayNo(userId);
+        if(StringUtil.isEmpty(cashProcessingNO)){
+            String borrowProcessingNO= afRepaymentService.getProcessingRepayNo(userId);
+            if(!StringUtil.isEmpty(borrowProcessingNO)){
+                throw new FanbeiException("还款处理中,无法进行提现",true);
+            }
+        }else{
+            throw new FanbeiException("还款处理中,无法进行提现",true);
+        }
+
+
         AfUserBankcardDo afUserBankcardDo = null;
         if (StringUtils.equals(type, UserAccountLogType.CASH.getCode())) {
              if (userAccountDo.getRebateAmount().compareTo(amount) < 0) {

@@ -99,4 +99,6 @@ public interface AfRepaymentBorrowCashService {
 	int updateRepaymentBorrowCashName(Long refId);
 
     AfRepaymentBorrowCashDo getRepaymentBorrowCashByTradeNo(Long borrowId, String tradeNo);
+
+	String getProcessingRepayNo(Long userId);
 }
