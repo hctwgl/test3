@@ -48,6 +48,7 @@ import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.timevale.tgtext.text.pdf.fi;
 
 /**
  * 菠萝觅第三方接口
@@ -104,10 +105,7 @@ public class BoluomeController extends AbstractThird {
 	    try {
 		String status = params.get(BoluomeCore.STATUS);
 		OrderStatus orderStatus = BoluomeUtil.parseOrderType(status);
-		if (orderStatus != null && orderStatus != OrderStatus.DEALING 
-			&& orderStatus != OrderStatus.PAID 
-			&& orderStatus != OrderStatus.PAYFAIL 
-			&& orderStatus != OrderStatus.DEAL_REFUNDING) {
+		if (orderStatus != null && orderStatus != OrderStatus.DEALING && orderStatus != OrderStatus.PAID && orderStatus != OrderStatus.PAYFAIL && orderStatus != OrderStatus.DEAL_REFUNDING) {
 		    AfOrderDo orderInfo = buildOrderInfo(params);
 		    if (orderInfo != null) {
 			if (orderInfo.getRid() == null) {
@@ -201,7 +199,6 @@ public class BoluomeController extends AbstractThird {
 	AfOrderDo orderInfo = afOrderService.getThirdOrderInfoByOrderTypeAndOrderNo(OrderType.BOLUOME.getCode(), orderId);
 	;
 
-
 	thirdLog.info("buildOrderInfo begin orderInfo = {}" + orderInfo);
 
 	AfShopDo shopInfo = afShopService.getShopByPlantNameAndTypeAndServiceProvider(ShopPlantFormType.BOLUOME.getCode(), orderInfo != null ? orderInfo.getSecType() : orderType, orderInfo != null ? orderInfo.getServiceProvider() : channel);
@@ -221,12 +218,10 @@ public class BoluomeController extends AbstractThird {
 	    // 有可能没有价格
 	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : BigDecimal.ZERO;
 	    orderInfo.setPriceAmount(priceAmount);
-	    if(OrderSecType.WAI_MAI.getCode().equals(orderType))
-	    {
-		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)*2/3) : null);		
-	    }
-	    else {
-		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : null);		
+	    if (OrderSecType.WAI_MAI.getCode().equals(orderType)) {
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime) * 2 / 3) : null);
+	    } else {
+		orderInfo.setGmtPayEnd(StringUtils.isNotEmpty(expiredTime) ? new Date(System.currentTimeMillis() + Long.parseLong(expiredTime)) : null);
 	    }
 	    orderInfo.setThirdDetailUrl(detailUrl);
 	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
@@ -259,13 +254,19 @@ public class BoluomeController extends AbstractThird {
 	    }
 	    calculateOrderRebateAmount(orderInfo, shopInfo);
 	} else {
-//	    BigDecimal priceAmount = StringUtils.isNotBlank(price) ? new BigDecimal(price) : orderInfo.getPriceAmount();
-//	    orderInfo.setPriceAmount(priceAmount);
-//	    orderInfo.setSaleAmount(priceAmount);
-	    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
-	    orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
-//	    orderInfo.setPayStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parsePayStatus(status).getCode() : null);
-//	    calculateOrderRebateAmount(orderInfo, shopInfo);
+	    if (StringUtils.isNotBlank(status)) {
+		String orderStatus = BoluomeUtil.parseOrderType(status).getCode();
+		//只有NEW状态的订单才处理菠萝觅的关闭请求
+		if (OrderStatus.CLOSED.getCode().equals(orderStatus)) {
+		    if (OrderStatus.NEW.getCode().equals(orderInfo.getStatus())) {
+			orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
+			orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
+		    }
+		} else {
+		    orderInfo.setStatus(StringUtils.isNotBlank(status) ? BoluomeUtil.parseOrderType(status).getCode() : null);
+		    orderInfo.setStatusRemark(params.get(BoluomeCore.DISPLAY_STATUS));
+		}
+	    }
 	}
 	return orderInfo;
     }
@@ -309,4 +310,3 @@ public class BoluomeController extends AbstractThird {
     }
 
 }
-
