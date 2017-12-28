@@ -303,7 +303,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		try {
 			smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
 			String title = "本次续借支付失败";
-			String content = "续借支付失败：&errorMsg，您可更换银行卡或采用其他支付方式。";
+			String content = "续借支付失败：&errorMsg。";
 			content = content.replace("&errorMsg",errorMsg);
 			pushService.pushUtil(title,content,userDo.getMobile());
 		} catch (Exception e) {
