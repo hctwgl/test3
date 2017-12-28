@@ -538,7 +538,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 		repaymentPlan.setRepaymentTime(DateUtil.getSpecSecondTimeStamp(DateUtil.addDays(afViewAssetBorrowCashDo.getGmtCreate(), timeLimit.intValue())));
 		repaymentPlan.setRepaymentDays(timeLimit);
 		repaymentPlan.setRepaymentAmount(afViewAssetBorrowCashDo.getAmount());
-		repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afViewAssetBorrowCashDo.getAmount(), new BigDecimal(1+17*timeLimit / 36000d)));
+		repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afViewAssetBorrowCashDo.getAmount(), new BigDecimal(afAssetPackageDo.getBorrowRate().doubleValue()*timeLimit / 36000d)));
 		repaymentPlan.setRepaymentPeriod(0);
 		repaymentPlans.add(repaymentPlan);
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
