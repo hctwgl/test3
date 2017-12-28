@@ -300,6 +300,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             afRepaymentDao.addRepayment(repayment);
             //addRepaymentyDetail(totalAmount,repaymentAmount,repayment.getRid());
             repayment.setStatus(RepaymentStatus.PROCESS.getCode());
+            afUserAmountService.addUseAmountDetail(repayment);
             afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.PROCESS, repayment);
             try {
                 if (StringUtil.equals("sysJob", clientIp)) {
