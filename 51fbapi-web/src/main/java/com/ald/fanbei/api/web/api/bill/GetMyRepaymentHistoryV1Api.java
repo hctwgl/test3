@@ -54,9 +54,9 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			// 记录上翻或者下翻
 			String operation = ObjectUtils.toString(requestDataVo.getParams().get("operation"));
 			Date nowDate = new Date();
-			if (month == null && year == null){
+			if (StringUtil.isEmpty(month) && StringUtil.isEmpty(year)){
 				month = DateUtil.getMonth(nowDate);
-				year = DateUtil.getMonth(nowDate);
+				year = DateUtil.getYear(nowDate);
 			}
 			if (month == null || year == null) {
 				logger.error("getMyRepaymentHistoryV1Api month or year is null ,RequestDataVo id =" + requestDataVo.getId());
