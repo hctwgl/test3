@@ -143,11 +143,12 @@ public class UserWithholdController extends BaseController {
                     repaymentAmount = BigDecimalUtil.multiply(afBorrowCashDo.getAmount(),amountRate);
                     logger.info("withhold for borrowcashOverdue,userId:"+userId + ",borrowId:"+borrowId);
                     if(repaymentAmount.compareTo(temAmount)>0){
-                        logger.info("withhold for borrowcashOverdue fail for repaymentAmount>temAmount,userId:"+userId + ",borrowId:"+borrowId);
+                        repaymentAmount = temAmount;
+                        /*logger.info("withhold for borrowcashOverdue fail for repaymentAmount>temAmount,userId:"+userId + ",borrowId:"+borrowId);
                         JSONObject returnjson = new JSONObject();
                         returnjson.put("success",false);
                         returnjson.put("msg","afBorrowCashDo repaymentAmount>temAmount");
-                        return returnjson;
+                        return returnjson;*/
                     }
                 }
             }
