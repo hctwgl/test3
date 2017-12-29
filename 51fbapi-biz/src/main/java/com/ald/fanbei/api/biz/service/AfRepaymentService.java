@@ -66,4 +66,6 @@ public interface AfRepaymentService {
     int dealSelfSupportOrBoluomeFail(String outTradeNo,String tradeNo);
 
     int updateRepaymentName(Long refId);
+
+	String getProcessingRepayNo(Long userId);
 }
