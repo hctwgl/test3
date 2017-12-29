@@ -853,4 +853,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         return afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(borrowCashId,tradeNo);
     }
 
+    @Override
+    public String getProcessingRepayNo(Long userId) {
+        return afRepaymentBorrowCashDao.getProcessingRepayNo(userId);
+    }
+
 }

@@ -358,7 +358,7 @@ public class PayOrderV1Api implements ApiHandle {
                         if (payId.intValue() == 0) {
                             riskUtil.payOrderChangeAmount(orderInfo.getRid());
                         } else if (payId > 0 && PayStatus.DEALING.getCode().equals(payStatus.toString())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
+                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
                         }
                     }
 

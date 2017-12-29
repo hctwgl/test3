@@ -263,7 +263,7 @@
 		af_borrow_bill
 		WHERE is_delete = 0
 		AND borrow_id = #{borrowId}
-		ORDER BY bill_nper
+		ORDER BY id ASC
 	</select>
     
     <select id="getPaidBillNumByBorrowId" resultType="java.lang.Integer">
@@ -669,11 +669,11 @@
 	<select id="getUserAllMonthBill" resultType="AfBorrowBillDo">
 		select a.billAmount ,
 			str_to_date(a.gmtOutDay,'%Y-%m-%d %H:%i:%s') gmtOutDay
-		from 
+		from
 		(SELECT
 		      COALESCE (sum(bill_amount), 0) billAmount,
 		      DATE_FORMAT(gmt_out_day,'%Y-%c-01') gmtOutDay
-		      -- gmt_out_day 
+		      -- gmt_out_day
 		    FROM
 		      af_borrow_bill
 		    WHERE
@@ -686,7 +686,7 @@
 		    ORDER BY
 		      DATE_FORMAT(gmt_out_day,'%Y-%c') desc
 		) a
-		left join 
+		left join
 		(SELECT
 		      COALESCE (sum(bill_amount), 0) billAmount,
 		      DATE_FORMAT(gmt_out_day,'%Y-%c-01') gmtOutDay
@@ -703,7 +703,7 @@
 		    ORDER BY
 		      DATE_FORMAT(gmt_out_day,'%Y-%c') desc
 		) b
-		on a.gmtOutDay = b.gmtOutDay 
+		on a.gmtOutDay = b.gmtOutDay
 		where  IFNULL(b.billAmount,0) = 0
 		LIMIT #{begin},#{pageSize}
 	</select>
@@ -759,7 +759,7 @@
 		</foreach>
 
 	</update>
-	
+
 	<select id="getPayDayByYearAndMonth" resultType="java.util.Date">
 		SELECT
 			gmt_pay_time
@@ -781,7 +781,7 @@
         af_interim_au
         where user_id = #{userId}
 	</select>
-	
+
 	<select id="getBillIdListByQuery" resultType="java.lang.Long">
 		SELECT
 			id

@@ -9,8 +9,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-
-import javax.swing.plaf.basic.BasicScrollPaneUI;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 
 /**
  * @类描述：
@@ -207,6 +206,13 @@ public interface AfBorrowCashDao {
     AfBorrowCashDo getBorrowCashByStatus(@Param("userId")Long userId);
 
 	int updateAfBorrowCashPlanTime(@Param("userId")Long userId);
+	/**
+	 * 获取最近一次借钱信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	AfUserBorrowCashOverdueInfoDto getOverdueInfoByUserId(@Param("userId") Long userId);
 	
 	/**
 	 * 宜信查询

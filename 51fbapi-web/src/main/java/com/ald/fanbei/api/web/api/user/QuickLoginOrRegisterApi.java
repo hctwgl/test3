@@ -247,7 +247,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 		String loginWifiMacKey = Constants.CACHEKEY_USER_LOGIN_WIFI_MAC + afUserDo.getRid();
 		bizCacheUtil.saveObject(loginWifiMacKey, wifiMac);
-		if (afUserDo.getFailCount() == -1) {
+		if (afUserDo.getFailCount() == -1 && (afUserDo.getPassword() == null || "".equals(afUserDo.getPassword()))) {
 			jo.put("flag", "Y");
 		} else {
 			jo.put("flag", "N");
