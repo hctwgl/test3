@@ -506,8 +506,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     temRepayMent.setRid(repayment.getRid());
                     // 变更还款记录为已还款
                     afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
-
-                    if (allAmount.compareTo(repayAmount) == 0) {
+                    //判断是否需要平账
+                    if ((repayment.getName().equals("代扣付款")&&StringUtils.equals("Y",afBorrowCashDo.getOverdueStatus()))||allAmount.compareTo(repayAmount) == 0) {
                         Long userId = afBorrowCashDo.getUserId();
                         AfUserAccountDo accountInfo = afUserAccountDao.getUserAccountInfoByUserId(userId);
                         //减少使用额度
