@@ -249,7 +249,8 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
         afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), BigDecimal.ZERO.subtract(youhuijuan), 1, AfUserAmountDetailType.YOUHUIJUANGDIKOU));
 
-        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), bankPay, 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+//        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), bankPay, 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), afUserAmountDo.getAmount(), 1, AfUserAmountDetailType.ZHIJIEZHIFU));
 
         return 1;
     }
