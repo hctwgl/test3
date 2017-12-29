@@ -567,14 +567,18 @@ public class AppH5UserContorler extends BaseController {
             afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 
             String salt = UserUtil.getSalt();
-            String password = UserUtil.getPassword(passwordSrc, salt);
-
             AfUserDo userDo = new AfUserDo();
+            if(passwordSrc == "") {
+            	userDo.setPassword("");
+            } else {
+            	String password = UserUtil.getPassword(passwordSrc, salt);
+            	userDo.setPassword(password);
+            }
+
             userDo.setSalt(salt);
             userDo.setUserName(mobile);
             userDo.setMobile(mobile);
             userDo.setNick("");
-            userDo.setPassword(password);
             userDo.setRegisterChannelId(pcp.getChannelId());
             userDo.setRegisterChannelPointId(pcp.getId());
             userDo.setRecommendId(0l);
