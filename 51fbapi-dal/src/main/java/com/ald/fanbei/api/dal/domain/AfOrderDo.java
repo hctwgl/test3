@@ -114,6 +114,9 @@ public class AfOrderDo extends AbstractSerial{
 		return blackBox;
 	}
 	public void setBlackBox(String blackBox) {
+		if(blackBox.length()>1024){
+			blackBox="";//针对超长字符串进行处理
+		}
 		this.blackBox = blackBox;
 	}
 	public String getOrderStatus() {
