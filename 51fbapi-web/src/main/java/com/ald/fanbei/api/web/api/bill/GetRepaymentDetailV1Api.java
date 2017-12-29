@@ -112,7 +112,7 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 				AfBorrowDto borrow = afUserAmountService.getBorrowDtoByAmountId(amountId);
 				map.put("name", borrow.getName());
 				map.put("bankAmount", borrow.getBankAmount());
-				map.put("priceAmount", borrow.getPriceAmount());
+				map.put("priceAmount", borrow.getSaleAmount());
 				map.put("nper", borrow.getNper());
 				map.put("nperAmount", borrow.getNperAmount());
 				map.put("nperRepayment", borrow.getNperRepayment());

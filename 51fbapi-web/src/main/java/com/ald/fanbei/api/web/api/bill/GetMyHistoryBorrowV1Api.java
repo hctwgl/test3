@@ -131,8 +131,8 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 			}
 			Collections.sort(list,new Comparator<Map<String, Object>>(){
 				public int compare(Map<String, Object> arg0, Map<String, Object> arg1) {
-					if(Integer.valueOf((String)arg0.get("year")) > Integer.valueOf((String)arg1.get("year"))) return -1;
-					if(Integer.valueOf((String)arg0.get("year")) < Integer.valueOf((String)arg1.get("year"))) return 1;
+					if((Integer)arg0.get("year") > (Integer)arg1.get("year")) return -1;
+					if((Integer)arg0.get("year") < (Integer)arg1.get("year")) return 1;
 					return 0;
 				}
 			});

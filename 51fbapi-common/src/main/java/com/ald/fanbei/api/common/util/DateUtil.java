@@ -881,6 +881,20 @@ public class DateUtil {
         long millisec = end.getTime() - before.getTime();
         return millisec / (60 * 1000);
     }
+    
+    /**
+     * 返回两个时间间隔的天数
+     * @param before 起始时间
+     * @param end 终止时间
+     * @return 分钟数
+     */
+    public static long getNumberOfDayBetween(final Date before, final Date end) {
+    	if (before==null|| end ==null) {
+    		return 0l;
+		}
+    	long millisec = end.getTime() - before.getTime();
+    	return millisec / (60 * 1000 * 60 * 24);
+    }
 
     public static int getNumberOfMonthsBetween(final Date before, final Date end) {
         Calendar cal1 = Calendar.getInstance();
@@ -1236,4 +1250,64 @@ public class DateUtil {
 		long secs = (endDate.getTime() - nowDate.getTime()) / 1000;
 		return secs;
     }
+    
+    
+    /**
+     * 获取当前时间戳，精确到秒
+     * @return
+     */
+    public static long  getCurrSecondTimeStamp() {
+    	Date nowDate  = new Date();
+    	long secs = nowDate.getTime() / 1000;
+    	return secs;
+    }
+    
+    /**
+     * 获取指定时间的时间戳，精确到秒
+     * @return
+     */
+    public static long  getSpecSecondTimeStamp(Date specDates) {
+    	if(specDates==null){
+    		return 0l;
+    	}
+    	long secs = specDates.getTime() / 1000;
+    	return secs;
+    }
+    
+    /**
+     * 获取传入的时间戳之差对应的秒数,与传入的限制对比
+     * endTimeStamp-beginTimeStamp > maxSeconds return 1  
+     * endTimeStamp-beginTimeStamp = maxSeconds 0  
+     * endTimeStamp-beginTimeStamp < maxSeconds -1  
+     * error -2
+     * @return
+     */
+    public static int  judgeDiffTimeStamp(long beginTimeStamp,long endTimeStamp,long maxSeconds) {
+    	try {
+			long diffSeconds = endTimeStamp - beginTimeStamp;
+			if(diffSeconds > maxSeconds){
+				return 1;
+			}else if(diffSeconds == maxSeconds){
+				return 0;
+			}else{
+				return -1;
+			}
+		} catch (Exception e) {
+			return -2;
+		}
+    }
+
+    /**
+     * 
+     * @param loanStartTime
+     * @return
+     */
+	public static Date getSpecDateBySecondDefault(Long timeSecondTimpstamp,Date specDate) {
+		if(timeSecondTimpstamp == null || timeSecondTimpstamp <= 0){
+			return specDate;
+		}else{
+			return new Date(timeSecondTimpstamp*1000);
+		}
+	}
+	
 }
