@@ -779,4 +779,17 @@ public class PayRoutController {
 		return JSON.toJSONString(jsonObject);
 	}
 
+
+	/**
+	 * 生成退款详情
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value = {"/addRefundDetail"})
+	@ResponseBody
+	public int addRefundDetail(long orderId){
+		logger.info("addRefundDetail orderId="+orderId);
+		return afUserAmountService.refundOrder(orderId);
+	}
+
 }

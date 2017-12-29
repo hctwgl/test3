@@ -213,7 +213,7 @@
 			a.is_delete = 0
 		AND a.user_id = #{userId}
 		AND b.in_bill = 0
-		AND a.status in ('TRANSED','FINISH')
+		AND a.status = 'TRANSED'
 		order by a.gmt_create desc
 	</select>
 
@@ -240,7 +240,7 @@ FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 		WHERE
 			a.is_delete = 0
 		AND a.user_id = #{userId}
-		AND a.status in ('TRANSED','FINISH')
+		AND a.status = 'TRANSED'
 		AND b.in_bill = 0
 	</select>
 
@@ -254,6 +254,7 @@ FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 		WHERE
 			a.is_delete = 0
 		AND a.user_id = #{userId}
+		AND a.status = 'TRANSED'
 		AND b.in_bill = 0
 	</select>
 

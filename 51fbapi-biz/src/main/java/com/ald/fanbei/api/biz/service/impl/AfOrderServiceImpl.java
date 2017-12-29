@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOrderDto;
 
@@ -98,38 +100,6 @@ import com.ald.fanbei.api.common.util.InterestFreeUitl;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.OrderNoUtils;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
-import com.ald.fanbei.api.dal.dao.AfOrderTempDao;
-import com.ald.fanbei.api.dal.dao.AfResourceDao;
-import com.ald.fanbei.api.dal.dao.AfTradeBusinessInfoDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
-import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsReservationDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfOrderTempDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
-import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfOrderQuery;
@@ -254,6 +224,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
     @Resource
     AfInterimAuDao afInterimAuDao;
 
+	@Resource
+	AfBorrowExtendDao afBorrowExtendDao;
 
 	@Override
 	public int getNoFinishOrderCount(Long userId) {
@@ -913,7 +885,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
 								if(borrowList == null || borrowList.size()==0 ){
 									List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+									for(AfBorrowBillDo _afBorrowExtendDo:billList){
+										_afBorrowExtendDo.setStatus("N");
+									}
 									afBorrowDao.addBorrowBill(billList);
+									AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+									if(_aa ==null){
+										_aa =new AfBorrowExtendDo();
+										_aa.setId(afBorrowDo.getRid());
+										_aa.setInBill(1);
+										afBorrowExtendDao.addBorrowExtend(_aa);
+									}
+									else{
+										_aa.setInBill(1);
+										afBorrowExtendDao.updateBorrowExtend(_aa);
+									}
 								}
 							}
 							orderDao.updateOrder(afOrder);
@@ -1550,7 +1536,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						return 0;
 					}
 					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
+
+						logger.info("dealBrandOrder cp begin , payOrderNo = {} and tradeNo = {} and type = {}",
+								new Object[] { payOrderNo, tradeNo, payType });
+
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
+
+						logger.info("dealBrandOrder cp = "+afBorrowDo.getRid());
+
 						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
 						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(),
 								BorrowBillStatus.NO.getCode());
