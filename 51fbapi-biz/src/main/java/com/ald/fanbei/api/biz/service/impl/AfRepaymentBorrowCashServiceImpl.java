@@ -534,7 +534,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     try {
                         AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
                         if(repayment.getName().equals("代扣付款")){
-                            sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), nowRepayAmountStr);
+                            if(StringUtils.equals("Y",afBorrowCashDo.getOverdueStatus())){
+                                sendRepaymentBorrowCashOverdueWithHold(afUserDo.getMobile(), nowRepayAmountStr);
+                            }else{
+                                sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), nowRepayAmountStr);
+                            }
                         }else{
                             sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), nowRepayAmountStr, notRepayMoneyStr);
                         }
@@ -615,6 +619,18 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 		replaceMapData.put("nowRepayAmountStr", nowRepayAmountStr);
 		return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_SUCCESS.getCode());
     }
+
+    /**
+     * 代扣现金贷逾期还款成功短信发送
+     * @param mobile
+     * @param nowRepayAmountStr
+     */
+    private boolean sendRepaymentBorrowCashOverdueWithHold(String mobile,String nowRepayAmountStr){
+        //模版数据map处理
+        Map<String,String> replaceMapData = new HashMap<String, String>();
+        replaceMapData.put("nowRepayAmountStr", nowRepayAmountStr);
+        return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_OVERDUE_SUCCESS.getCode());
+    }
     
     
     /**
@@ -668,6 +684,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 	@Override
 	public long dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg) {
 		AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(outTradeNo);
+        AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(repayment.getBorrowId());
 		if (YesNoStatus.YES.getCode().equals(repayment.getStatus())) {
 			return 0l;
 		}
@@ -684,7 +701,9 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			replaceMapData.put("errorMsg", errorMsg);
 			//还款失败短信通知
 			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
-				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+			    if(StringUtils.equals("N",afBorrowCashDo.getOverdueStatus())){
+                    smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+                }
 			}else{
 				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
 				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());

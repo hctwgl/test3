@@ -75,6 +75,8 @@ public class UserWithholdController extends BaseController {
         Long userId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("userId")),null);
         //最低代扣金额
         BigDecimal lowCashPrice = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("lowCashPrice")),BigDecimal.ZERO);
+        BigDecimal amountRate = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(request.getParameter("amountRate")),BigDecimal.ZERO);
+        String borrowStatus = ObjectUtils.toString(request.getParameter("borrowStatus"), null);
 
         BigDecimal repaymentAmount = BigDecimal.ZERO;
         Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(request.getParameter("borrowId")), 0l);
@@ -135,6 +137,20 @@ public class UserWithholdController extends BaseController {
             BigDecimal temAmount = BigDecimalUtil.subtract(allAmount,
                     afBorrowCashDo.getRepayAmount());
             repaymentAmount = temAmount;
+            if(StringUtils.isNotBlank(borrowStatus)){
+                if("overdue".equals(borrowStatus)){
+                    amountRate = BigDecimalUtil.add(amountRate,BigDecimal.ONE);
+                    repaymentAmount = BigDecimalUtil.multiply(afBorrowCashDo.getAmount(),amountRate);
+                    logger.info("withhold for borrowcashOverdue,userId:"+userId + ",borrowId:"+borrowId);
+                    if(repaymentAmount.compareTo(temAmount)>0){
+                        logger.info("withhold for borrowcashOverdue fail for repaymentAmount>temAmount,userId:"+userId + ",borrowId:"+borrowId);
+                        JSONObject returnjson = new JSONObject();
+                        returnjson.put("success",false);
+                        returnjson.put("msg","afBorrowCashDo repaymentAmount>temAmount");
+                        return returnjson;
+                    }
+                }
+            }
             //如果订单已结清或者需还金额为0
             if(!"TRANSED".equals(afBorrowCashDo.getStatus())||repaymentAmount.compareTo(BigDecimal.ZERO)<=0){
                 //当前无账单
