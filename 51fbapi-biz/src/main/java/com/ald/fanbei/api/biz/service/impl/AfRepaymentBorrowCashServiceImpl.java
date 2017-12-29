@@ -703,6 +703,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			if(StringUtil.isNotBlank(payType)&&payType.indexOf("代扣")>-1){
 			    if(StringUtils.equals("N",afBorrowCashDo.getOverdueStatus())){
                     smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+                }else{
+                    logger.info("borrowCash overdue withhold false,mobile="+afUserDo.getMobile()+ "errorMsg:" + errorMsg);
                 }
 			}else{
 				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
