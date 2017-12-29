@@ -678,9 +678,9 @@
 		      af_borrow_bill
 		    WHERE
 		      is_delete = 0
-		      AND is_out = 1
 		      AND status = 'Y'
 		      AND user_id = #{userId}
+		      and gmt_out_day <![CDATA[<]]> NOW()
 		    GROUP BY
 		      DATE_FORMAT(gmt_out_day,'%Y-%c')
 		    ORDER BY
@@ -697,6 +697,7 @@
 		      AND is_out = 1
 		      AND status = 'N'
 		      AND user_id = #{userId}
+		      and gmt_out_day <![CDATA[<]]> NOW()
 		    GROUP BY
 		      DATE_FORMAT(gmt_out_day,'%Y-%c')
 		    ORDER BY
