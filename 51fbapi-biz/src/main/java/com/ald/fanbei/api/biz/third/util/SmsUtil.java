@@ -715,6 +715,7 @@ public class SmsUtil extends AbstractThird {
      */
     private static SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
+        logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
                 Constants.INVELOMENT_TYPE_TEST)) {
             result.setSucc(true);
@@ -730,7 +731,7 @@ public class SmsUtil extends AbstractThird {
         String reqResult = HttpUtil.doHttpPost(URL, JSONObject.toJSONString(paramsMap));
 
         logger.info(StringUtil.appendStrs("sendSms params=|", mobiles, "|", content, "|", reqResult));
-        logger.info("sendSms params=|"+mobiles+"content="+content);
+
         JSONObject json = JSON.parseObject(reqResult);
         if (json.getInteger("result") == 0) {
             result.setSucc(true);
