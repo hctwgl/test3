@@ -943,6 +943,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		userName = "13370127054";
 		String pid =userName + System.currentTimeMillis();
 		logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
+		logger.info("msgcontent="+msgContent+",userName="+userName+",title="+title);
 		Map<String,String> extras = new HashMap<String,String>();
 		extras.put(PID, pid);
 		extras.put(TIMESTAMP, System.currentTimeMillis() + "");
