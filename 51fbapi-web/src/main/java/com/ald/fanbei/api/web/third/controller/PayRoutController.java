@@ -160,6 +160,9 @@ public class PayRoutController {
 	@Resource
 	private AfBankDao afBankDao;
 
+	@Resource
+	private AfBorrowExtendDao afBorrowExtendDao;
+
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
@@ -818,16 +821,44 @@ public class PayRoutController {
 
 			AfOrderDo afOrder = afOrderDao.getOrderById(orderId);
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderId);
-			if (afBorrowDo != null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
 
-				AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowDo.getUserId());
-				afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afBorrowDo.getUserId());
+			if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+				//查询是否己产生
 				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
 				if (borrowList == null || borrowList.size() == 0) {
+					AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+					if (_aa == null) {
+						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+						afBorrowExtendDo.setId(afBorrowDo.getRid());
+						afBorrowExtendDo.setInBill(1);
+						afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+					} else {
+						_aa.setInBill(1);
+						afBorrowExtendDao.updateBorrowExtend(_aa);
+					}
 					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-					afBorrowDao.addBorrowBill(billList);
+					for(AfBorrowBillDo _afBorrowExtendDo:billList){
+						_afBorrowExtendDo.setStatus("N");
+					}
+					afBorrowService.addBorrowBill(billList);
+
+					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
+					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
 				}
 			}
+
+
+//			if (afBorrowDo != null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+//
+//				AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowDo.getUserId());
+//
+//				afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afBorrowDo.getUserId());
+//				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+//				if (borrowList == null || borrowList.size() == 0) {
+//					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+//					afBorrowDao.addBorrowBill(billList);
+//				}
+//			}
 			AfOrderDo orderDoUpdate = new AfOrderDo();
 			orderDoUpdate.setRid(orderId);
 			orderDoUpdate.setStatus(OrderStatus.FINISHED.getCode());
