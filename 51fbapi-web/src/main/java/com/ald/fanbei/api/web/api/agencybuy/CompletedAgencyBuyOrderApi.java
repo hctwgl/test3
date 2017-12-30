@@ -124,7 +124,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					if (_aa == null) {
 						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
 						afBorrowExtendDo.setId(afBorrowDo.getRid());
-						afBorrowExtendDo.setInBill(0);
+						afBorrowExtendDo.setInBill(1);
 						afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
 					} else {
 						_aa.setInBill(1);
