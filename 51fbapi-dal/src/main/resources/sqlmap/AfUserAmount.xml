@@ -83,6 +83,8 @@
 			a.id = #{amountId}
 		and b.is_delete = 0
 		and d.is_delete = 0
+		order by c.gmt_create
+		limit 0,1
 	</select>
 	
 	<select id="getUserAmountByQuery" resultType="AfUserAmountDo">

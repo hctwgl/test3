@@ -112,13 +112,6 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 			String date = DateUtil.formatDate(userAmount.getGmtCreate(), DateUtil.DATE_TIME_SHORT);
 			// 计算系统减免
 			amount = afUserAmountService.getRenfundAmountByAmountId(amountId);
-			if (amount.compareTo(new BigDecimal(0)) == 1) {
-				AfUserAmountDetailDo _amount = new AfUserAmountDetailDo();
-				_amount.setAmount(amount);
-				_amount.setType(7);
-				_amount.setTitle("系统减免");
-				detailList.add(_amount);
-			}
 			map.put("detailList", detailList);
 			if (userAmount.getBizType() == AfUserAmountBizType.REFUND.getCode()) {
 				AfBorrowDto borrow = afUserAmountService.getBorrowDtoByAmountId(amountId);
@@ -131,6 +124,13 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 				map.put("nperRepayment", borrow.getNperRepayment());
 			}
 			if (userAmount.getBizType() == AfUserAmountBizType.REPAYMENT.getCode()) {
+				if (amount.compareTo(new BigDecimal(0)) == 1) {
+					AfUserAmountDetailDo _amount = new AfUserAmountDetailDo();
+					_amount.setAmount(amount);
+					_amount.setType(7);
+					_amount.setTitle("系统减免");
+					detailList.add(_amount);
+				}
 				// 还款日志
 				List<AfUserAmountLogDo> amountLogList = afUserAmountService.getAmountLogByAmountId(userAmount.getSourceId());
 				map.put("logList", amountLogList);
