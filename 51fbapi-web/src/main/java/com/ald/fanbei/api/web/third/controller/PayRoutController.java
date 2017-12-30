@@ -806,6 +806,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String autoCompleteOrder(Long orderId,String sign) throws Exception{
 		thirdLog.info("autoCompleteOrder: orderId="+orderId + ",sign="+sign);
+
 		String data ="orderId="+orderId+"&vcode=0123654aa";
 		String salt = ConfigProperties.get("fbapi.orderFinish.key");
 		byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
