@@ -792,4 +792,48 @@ public class PayRoutController {
 		return afUserAmountService.refundOrder(orderId);
 	}
 
+
+	/**
+	 *
+	 * @param orderId
+	 * @param sigin
+	 * @return
+	 */
+	/**
+	 * 订单自动收货
+	 */
+	@RequestMapping(value = {"/autoCompleteOrder"})
+	@ResponseBody
+	public String autoCompleteOrder(Long orderId,String sign) throws Exception{
+
+		String data ="orderId="+orderId+"&vcode=0123654aa";
+		String salt = ConfigProperties.get("fbapi.orderFinish.key");
+		byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+		String sign1 = DigestUtil.encodeHex(pd);
+		if(!sign.equals(sign1)){
+			return "false";
+		}
+
+
+		AfOrderDo afOrder = afOrderDao.getOrderById(orderId);
+		AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderId);
+		if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+
+			AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowDo.getUserId());
+			afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afBorrowDo.getUserId());
+			List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+			if(borrowList == null || borrowList.size()==0 ){
+				List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+				afBorrowDao.addBorrowBill(billList);
+			}
+			AfOrderDo orderDoUpdate = new AfOrderDo();
+			orderDoUpdate.setRid(orderId);
+			orderDoUpdate.setStatus(OrderStatus.FINISHED.getCode());
+			orderDoUpdate.setGmtFinished(new Date());
+			orderDoUpdate.setLogisticsInfo("已签收");
+			afOrderService.updateOrder(orderDoUpdate);
+		}
+
+		return "success";
+	}
 }
