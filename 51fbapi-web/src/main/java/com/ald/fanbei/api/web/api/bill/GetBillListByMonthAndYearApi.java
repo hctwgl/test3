@@ -28,7 +28,6 @@ import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
-import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -97,6 +96,7 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 			}
 			// 计算所属账期
 			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.DATE,1);
 			calendar.set(Calendar.MONTH,inMonth - 1);
 			calendar.set(Calendar.YEAR,inYear);
 			Date strOutDay = DateUtil.getFirstOfMonth(calendar.getTime());
@@ -116,6 +116,15 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 				resp.setResponseData(map);
 				return resp;
 			}
+			// 获取未入账账单
+			List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
+			// 未入账笔数
+			int notInCount = afBorrowService.getUserNotInBorrowCount(userId);
+			// 未入账金额
+			BigDecimal notInMoney = afBorrowService.getUserNotInBorrowMoney(userId);
+			map.put("borrowList", borrowList);
+			map.put("notInCount", notInCount);
+			map.put("notInMoney", notInMoney);
 			query.setIsOut(1);
 			query.setStatus(BorrowBillStatus.NO.getCode());
 			int outBillCount = afBorrowBillService.countBillByQuery(query);
@@ -164,39 +173,15 @@ public class GetBillListByMonthAndYearApi implements ApiHandle{
 				map.put("money", money);
 				billList = afBorrowBillService.getBillListByQuery(query);
 				map.put("billList", billList);
-				// 获取未入账账单
-				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
-				// 未入账笔数
-				int notInCount = afBorrowService.getUserNotInBorrowCount(userId);
-				// 未入账金额
-				BigDecimal notInMoney = afBorrowService.getUserNotInBorrowMoney(userId);
-				map.put("borrowList", borrowList);
-				map.put("notInCount", notInCount);
-				map.put("notInMoney", notInMoney);
 				// 出账日
 				Date outDate = DateUtil.addDays(strOutDay, userOutDayDo.getOutDay() - 1);
 				map.put("outDay", DateUtil.formatAndMonthAndDay(outDate));
 				resp.setResponseData(map);
 				return resp;
 			}else {
-				map.put("status", "noInBill");
-				// 获取未入账账单
-				List<AfBorrowDto> borrowList = afBorrowService.getUserNotInBorrow(userId);
-				// 未入账笔数
-				int notInCount = afBorrowService.getUserNotInBorrowCount(userId);
-				// 未入账金额
-				if (notInCount > 0) {
-					BigDecimal notInMoney = afBorrowService.getUserNotInBorrowMoney(userId);
-					map.put("borrowList", borrowList);
-					map.put("notInCount", notInCount);
-					map.put("notInMoney", notInMoney);
-					resp.setResponseData(map);
-					return resp;
-				}else {
-					map.put("status", "finsh");
-					resp.setResponseData(map);
-					return resp;
-				}
+				map.put("status", "finsh");
+				resp.setResponseData(map);
+				return resp;
 			}
 		} catch (Exception e) {
 			logger.error("getBillListByMonthAndYearApi error :" , e);

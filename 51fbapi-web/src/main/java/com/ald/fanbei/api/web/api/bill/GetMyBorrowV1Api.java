@@ -120,7 +120,23 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 if (billCount < 1) {
                     map.put("status", "noBill");
                 } else {
-                    map.put("status", "bill");
+                	// 查询下月未出账单
+                	AfBorrowBillQueryNoPage _query = new AfBorrowBillQueryNoPage();
+                	Date now = new Date();
+                	Date strDate = DateUtil.getFirstOfMonth(now);
+                	strDate = DateUtil.addHoures(strDate, -12);
+                	Date endDate = DateUtil.addMonths(strDate, 1);
+                	_query.setUserId(userId);
+                	_query.setOutDayStr(strDate);
+                	_query.setOutDayEnd(endDate);
+                	_query.setStatus("N");
+                	_query.setIsOut(0);
+                	int nextBillCount = afBorrowBillService.countBillByQuery(_query);
+                	if (nextBillCount > 0) {
+                		map.put("status", "nextBill");
+					}else {
+						map.put("status", "bill");
+					}
                 }
                 // 已出账单
                 query.setIsOut(1);

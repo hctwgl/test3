@@ -102,14 +102,27 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 				return resp;
 			}
 			List<AfUserAmountDetailDo> detailList = afUserAmountService.getAmountDetailByAmountId(amountId);
-			map.put("detailList", detailList);
+			if (detailList == null || detailList.size() < 1) {
+				logger.error("getRepaymentDetailV1Api detailList is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId + " ,amountId=" + amountId);
+				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AMOUNT_IS_NULL);
+				return resp;
+			}
 			BigDecimal amount = new BigDecimal(0);
 			String number = userAmount.getBizOrderNo();;
 			String date = DateUtil.formatDate(userAmount.getGmtCreate(), DateUtil.DATE_TIME_SHORT);
+			// 计算系统减免
+			amount = afUserAmountService.getRenfundAmountByAmountId(amountId);
+			if (amount.compareTo(new BigDecimal(0)) == 1) {
+				AfUserAmountDetailDo _amount = new AfUserAmountDetailDo();
+				_amount.setAmount(amount);
+				_amount.setType(7);
+				_amount.setTitle("系统减免");
+				detailList.add(_amount);
+			}
+			map.put("detailList", detailList);
 			if (userAmount.getBizType() == AfUserAmountBizType.REFUND.getCode()) {
-				// 退款详情
-				amount = afUserAmountService.getRenfundAmountByAmountId(amountId);
 				AfBorrowDto borrow = afUserAmountService.getBorrowDtoByAmountId(amountId);
+				// 订单内容
 				map.put("name", borrow.getName());
 				map.put("bankAmount", borrow.getBankAmount());
 				map.put("priceAmount", borrow.getSaleAmount());
@@ -118,19 +131,12 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 				map.put("nperRepayment", borrow.getNperRepayment());
 			}
 			if (userAmount.getBizType() == AfUserAmountBizType.REPAYMENT.getCode()) {
-				// 还款详情
-				for (AfUserAmountDetailDo detailDo : detailList) {
-					if (detailDo.getType() == AfUserAmountDetailType.SHIJIZHIFU.getCode()) {
-						amount = detailDo.getAmount();
-						break;
-					}
-				}
+				// 还款日志
 				List<AfUserAmountLogDo> amountLogList = afUserAmountService.getAmountLogByAmountId(userAmount.getSourceId());
 				map.put("logList", amountLogList);
 			}
 			map.put("number", number);
 			map.put("date", date);
-			map.put("amount", amount);
 			resp.setResponseData(map);
 			return resp;
 		} catch (Exception e) {
