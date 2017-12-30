@@ -229,7 +229,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
 
         AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
-        afUserAmountDo.setAmount(map.get("repayment"));
+        afUserAmountDo.setAmount(map.get("repayment").add(bankPay));
         afUserAmountDo.setBizOrderNo(afOrderRefundDo.getRefundNo());  //随机生成
         afUserAmountDo.setBizType(AfUserAmountBizType.REFUND.getCode());
         afUserAmountDo.setSourceId(afOrderRefundDo.getRid());
