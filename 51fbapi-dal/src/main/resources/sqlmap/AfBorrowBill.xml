@@ -766,7 +766,8 @@
 		FROM
 			af_borrow_bill
 		WHERE
-			user_id = #{userId}
+		is_delete = 0
+		AND	user_id = #{userId}
 		AND DATE_FORMAT(gmt_out_day,'%Y') = #{billYear}
 		AND DATE_FORMAT(gmt_out_day,'%c') = #{billMonth}
 		and is_out = 1
