@@ -57,7 +57,7 @@
 	</select>
 	
 	<select id="getRenfundAmountByAmountId" resultType="java.math.BigDecimal">
-		SELECT COALESCE (SUM(amount * count), 0) from af_user_amount_detail where user_amount_id = #{amountId}
+		SELECT COALESCE (SUM(amount), 0) from af_user_amount_detail where user_amount_id = #{amountId}
 	</select>
 	
 	<select id="getUserAmountById" resultType="AfUserAmountDo">
@@ -118,5 +118,9 @@
 			AND DATE_FORMAT(gmt_create,'%Y') = #{year}
 		</if>
 			order by gmt_create
+	</select>
+	
+	<select id="getRenfundAmountByAmountId" resultType="java.math.BigDecimal">
+		SELECT COALESCE (SUM(amount), 0) from af_user_amount_detail where user_amount_id = #{amountId} and type in (3,4,5)
 	</select>
 </mapper>

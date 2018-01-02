@@ -131,6 +131,13 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 					_amount.setTitle("系统减免");
 					detailList.add(_amount);
 				}
+				// 计算实际还款金额（自行支付+余额抵扣+优惠卷抵扣）
+				BigDecimal repaymentAmount = afUserAmountService.getRepaymentAmountByAmountId(amountId);
+				AfUserAmountDetailDo repaymentAmountDo = new AfUserAmountDetailDo();
+				repaymentAmountDo.setAmount(repaymentAmount);
+				repaymentAmountDo.setType(8);
+				repaymentAmountDo.setTitle("实际还款金额");
+				detailList.add(repaymentAmountDo);
 				// 还款日志
 				List<AfUserAmountLogDo> amountLogList = afUserAmountService.getAmountLogByAmountId(userAmount.getSourceId());
 				map.put("logList", amountLogList);

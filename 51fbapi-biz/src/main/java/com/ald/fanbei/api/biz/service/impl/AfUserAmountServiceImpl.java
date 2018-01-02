@@ -13,7 +13,6 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
-import com.sun.org.apache.bcel.internal.generic.RET;
 import com.timevale.tgtext.awt.geom.q;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -398,6 +397,11 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 	@Override
 	public List<String> getMonthInYearByQuery(AfUserAmountQuery query) {
 		return afUserAmountDao.getMonthInYearByQuery(query);
+	}
+
+	@Override
+	public BigDecimal getRepaymentAmountByAmountId(Long amountId) {
+		return afUserAmountDao.getRepaymentAmountByAmountId(amountId);
 	}
 
 }
