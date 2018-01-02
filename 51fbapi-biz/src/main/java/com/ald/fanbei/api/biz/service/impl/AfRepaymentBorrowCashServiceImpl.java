@@ -655,7 +655,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
              String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
              content = content.replace("&repayMoney",repayMoney);
              pushService.pushUtil(title,content,mobile);
-             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_CONFIRM_SUCCESS.getCode());
          }
     }
     

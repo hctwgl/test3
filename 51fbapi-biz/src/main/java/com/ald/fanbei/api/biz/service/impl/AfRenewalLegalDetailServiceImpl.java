@@ -491,7 +491,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				AfBorrowCashDo currAfBorrowCashDo = afBorrowCashService.getBorrowCashByrid(afRenewalDetailDo.getBorrowId());
 				AfUserDo userDo = afUserService.getUserById(currAfBorrowCashDo.getUserId());
 				try {
-					pushService.repayRenewalSuccess(userDo.getUserName());
+//					pushService.repayRenewalSuccess(userDo.getUserName());
 					logger.info("续期成功，推送消息成功outTradeNo:"+outTradeNo);
 				}catch (Exception e){
 					logger.error("续期成功，推送消息异常outTradeNo:"+outTradeNo,e);
