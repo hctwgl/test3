@@ -665,7 +665,7 @@ public class AppH5DoubleEggsController extends BaseController {
 				if (goodsDo != null) {
 
 					//String time = "10";
-					int preTime = 10;//Integer.parseInt(time);
+					int preTime = 20;//Integer.parseInt(time);
 					Date now = new Date();
 
 					// if now + preTime >= goods start time then throw
@@ -694,7 +694,16 @@ public class AppH5DoubleEggsController extends BaseController {
 					logger.info(log);
 					
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
-
+					
+					//add subscribe people
+					AfResourceDo resourceDo= afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "SUBSCRIBE_FAKE_NUMBER");
+					int fakeNumber = 0 ;
+					if (resourceDo != null) {
+						fakeNumber += Integer.parseInt(resourceDo.getValue());
+					}
+					
+					int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber();
+					data.put("number", numberForSF + fakeNumber);
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
 					return result;
 				}

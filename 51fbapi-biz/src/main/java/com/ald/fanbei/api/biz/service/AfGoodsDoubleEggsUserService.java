@@ -16,4 +16,6 @@ public interface AfGoodsDoubleEggsUserService extends ParentService<AfGoodsDoubl
 
 	int isSubscribed(long userId, Long doubleGoodsId);
 
+	int getSpringFestivalNumber();
+
 }

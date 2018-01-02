@@ -131,4 +131,7 @@
 		AND double_eggs_id = #{doubleGoodsId};
     </select>
 
+	<select id="getSpringFestivalNumber" resultType="java.lang.Integer">
+		SELECT DISTINCT(COUNT(`user_id`))  FROM af_goods_double_eggs_user WHERE  `is_ordered` =2;
+	</select>
 </mapper>
