@@ -26,6 +26,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.Validator;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -37,6 +38,7 @@ import com.google.common.collect.Maps;
  *
  */
 @Component("getHomeInfoV2Api")
+@Validator("getHomeInfoV2Param")
 public class GetHomeInfoV2Api implements ApiHandle {
 
 	@Resource
@@ -72,7 +74,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("homePageType", "NEW");
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		Integer appVersion = context.getAppVersion();
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());

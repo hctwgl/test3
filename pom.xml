@@ -213,11 +213,11 @@
 			<artifactId>core</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.bouncycastle</groupId>-->
-			<!--<artifactId>bcprov-jdk15</artifactId>-->
-			<!--<version>1.46</version>-->
-		<!--</dependency>-->
+		<!--<dependency> -->
+		<!--<groupId>org.bouncycastle</groupId> -->
+		<!--<artifactId>bcprov-jdk15</artifactId> -->
+		<!--<version>1.46</version> -->
+		<!--</dependency> -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk15</artifactId>
@@ -272,6 +272,11 @@
 			<artifactId>ComInterface</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.0.2.Final</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>
@@ -305,7 +310,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArguments>
 						<verbose />
-                        <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
+						<bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>
