@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,7 +186,16 @@ public class AppH5AllSearchController extends BaseController {
 								}
 							});
 					
-			
+					//resultList sort by price ..
+					if (sort.equals("price_des")) {
+						Collections.sort(resultlist);
+					}else if (sort.equals("price_asc")) {
+						Collections.sort(resultlist);
+						Collections.reverse(resultlist);
+					}
+					
+					
+					
 					goodsList.addAll(resultlist);
 					data.put("goodsList", goodsList);
 					
@@ -230,6 +241,15 @@ public class AppH5AllSearchController extends BaseController {
 								}
 							}
 						});
+				
+				//sort
+				//resultList sort by price ..
+				if (sort.equals("price_des")) {
+					Collections.sort(resultlist);
+				}else if (sort.equals("price_asc")) {
+					Collections.sort(resultlist);
+					Collections.reverse(resultlist);
+				}
 				
 				data.put("goodsList", resultlist);
 				return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();

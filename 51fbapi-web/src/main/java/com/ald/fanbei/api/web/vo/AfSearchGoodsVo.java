@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.vo;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.AbstractSerial;
@@ -11,7 +12,7 @@ import com.ald.fanbei.api.common.AbstractSerial;
  * @author hexin 2017年2月18日上午11:21:35
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class AfSearchGoodsVo extends AbstractSerial {
+public class AfSearchGoodsVo extends AbstractSerial implements Comparable<AfSearchGoodsVo>{
 
 	private static final long serialVersionUID = 7350723172877682162L;
 	
@@ -25,7 +26,28 @@ public class AfSearchGoodsVo extends AbstractSerial {
 	private String goodsUrl;//商品链接
 	private Long volume;//销量
 	private Map<String, Object> nperMap;//月供
-
+	
+	
+	
+	public AfSearchGoodsVo() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public AfSearchGoodsVo(String numId, BigDecimal saleAmount, String realAmount, String rebateAmount,
+			String goodsName, String goodsIcon, String thumbnailIcon, String goodsUrl, Long volume,
+			Map<String, Object> nperMap) {
+		super();
+		this.numId = numId;
+		this.saleAmount = saleAmount;
+		this.realAmount = realAmount;
+		this.rebateAmount = rebateAmount;
+		this.goodsName = goodsName;
+		this.goodsIcon = goodsIcon;
+		this.thumbnailIcon = thumbnailIcon;
+		this.goodsUrl = goodsUrl;
+		this.volume = volume;
+		this.nperMap = nperMap;
+	}
 	public Long getVolume() {
 		return volume;
 	}
@@ -86,6 +108,14 @@ public class AfSearchGoodsVo extends AbstractSerial {
     }
 	public void setNperMap(Map<String, Object> nperMap) {
 		this.nperMap = nperMap;
+	}
+	
+	@Override
+	public int compareTo(AfSearchGoodsVo o) {
+		BigDecimal price1 = new BigDecimal(this.getRealAmount());
+		BigDecimal price2 = new BigDecimal(o.getRealAmount());
+		
+		return price1.compareTo(price2);
 	}
 
 }
