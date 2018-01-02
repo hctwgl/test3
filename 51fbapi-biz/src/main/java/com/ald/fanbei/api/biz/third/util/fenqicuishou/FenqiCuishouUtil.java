@@ -187,7 +187,7 @@ public class FenqiCuishouUtil {
             String salt = "51fabbeicuoshou";
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            if(!sign1.equals(sign))return false;
+//            if(!sign1.equals(sign))return false;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -261,20 +261,23 @@ public class FenqiCuishouUtil {
                         afRepaymentDo.setJfbAmount(BigDecimal.ZERO);
                         afRepaymentDo.setCouponAmount(BigDecimal.ZERO);
 
-                        AfRepaymentDo __repayment = afRepaymentDao.getRepaymentByPayTradeNo(afRepaymentDo.getPayTradeNo());
-                        if(__repayment ==null){
+                        List<AfRepaymentDo> repaymentlist = afRepaymentDao.getRepaymentListByPayTradeNo(afRepaymentDo.getPayTradeNo());
+
+                        if(repaymentlist ==null || repaymentlist.size()==0){
                             afRepaymentDao.addRepayment(afRepaymentDo);
                         }
                         else{
-                             if( !__repayment.getBillIds().trim().equals(billIds)){
-                                 thirdLog.info("cuishouhuankuan  getRepayMentDo error payTradeNo ="+afRepaymentDo.getPayTradeNo());
-                                 postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款编号已存在");
-                                 return;
-                             }else{
-                                 if(__repayment.getStatus().equals(RepaymentStatus.YES.getCode())){
-                                     thirdLog.info("cuishouhuankuan  getRepayMentDo  success");
-                                     postChuiSohiu(afRepaymentDo.getRepayNo(), "200", "还款成功");
+                             for(AfRepaymentDo __repayment :repaymentlist) {
+                                 if (!__repayment.getBillIds().trim().equals(billIds)) {
+                                     thirdLog.info("cuishouhuankuan  getRepayMentDo error payTradeNo =" + afRepaymentDo.getPayTradeNo());
+                                     postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款编号已存在");
                                      return;
+                                 } else {
+                                     if (__repayment.getStatus().equals(RepaymentStatus.YES.getCode())) {
+                                         thirdLog.info("cuishouhuankuan  getRepayMentDo  success");
+                                         postChuiSohiu(afRepaymentDo.getRepayNo(), "200", "还款成功");
+                                         return;
+                                     }
                                  }
                              }
                         }
