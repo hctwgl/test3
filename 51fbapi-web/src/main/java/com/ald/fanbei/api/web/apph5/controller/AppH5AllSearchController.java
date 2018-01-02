@@ -187,9 +187,9 @@ public class AppH5AllSearchController extends BaseController {
 							});
 					
 					//resultList sort by price ..
-					if (sort.equals("price_des")) {
+					if (sort.equals("price_asc")) {
 						Collections.sort(resultlist);
-					}else if (sort.equals("price_asc")) {
+					}else if (sort.equals("price_des")) {
 						Collections.sort(resultlist);
 						Collections.reverse(resultlist);
 					}
@@ -242,11 +242,10 @@ public class AppH5AllSearchController extends BaseController {
 							}
 						});
 				
-				//sort
 				//resultList sort by price ..
-				if (sort.equals("price_des")) {
+				if (sort.equals("price_asc")) {
 					Collections.sort(resultlist);
-				}else if (sort.equals("price_asc")) {
+				}else if (sort.equals("price_des")) {
 					Collections.sort(resultlist);
 					Collections.reverse(resultlist);
 				}
