@@ -5,6 +5,8 @@ import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
 import com.ald.fanbei.api.biz.util.AlgorithmHelper;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.PayStatus;
+import com.ald.fanbei.api.common.enums.RepaymentStatus;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
@@ -15,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author honghzengpei 2017/11/29 17:37
@@ -43,6 +47,9 @@ public class FenqiCuishouUtil {
     AfBorrowService afBorrowService;
     @Resource
     AfRepaymentDao afRepaymentDao;
+
+    @Resource
+    RedisTemplate redisTemplate;
 
     public static ThreadLocal<Boolean> checkChuiSou = new ThreadLocal<Boolean>();
 
@@ -243,6 +250,8 @@ public class FenqiCuishouUtil {
                             repayAmount = repayAmount.add(afBorrowBillDo.getBillAmount());
                         }
 
+
+
                         afRepaymentDo.setBillIds(billIds);
                         afRepaymentDo.setRepaymentAmount(repayAmount);
                         afRepaymentDo.setTradeNo(jsonObject.get("trade_no").toString());
@@ -256,16 +265,56 @@ public class FenqiCuishouUtil {
                         afRepaymentDo.setRebateAmount(BigDecimal.ZERO);
                         afRepaymentDo.setJfbAmount(BigDecimal.ZERO);
                         afRepaymentDo.setCouponAmount(BigDecimal.ZERO);
-                        afRepaymentDao.addRepayment(afRepaymentDo);
+
+                        final String key = "choushou_redis_check_"+afRepaymentDo.getPayTradeNo();
+                        long count = redisTemplate.opsForValue().increment(key, 1);
+
+                        if (count != 1) {
+                            postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "处理中");
+                            return ;
+                        }
+                        redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+
+
+                        List<AfRepaymentDo> repaymentlist = afRepaymentDao.getRepaymentListByPayTradeNo(afRepaymentDo.getPayTradeNo());
+
+                        if(repaymentlist ==null || repaymentlist.size()==0){
+                            afRepaymentDao.addRepayment(afRepaymentDo);
+                        }
+                        else{
+                             for(AfRepaymentDo __repayment :repaymentlist) {
+                                 if (!__repayment.getBillIds().trim().equals(billIds)) {
+                                     thirdLog.info("cuishouhuankuan  getRepayMentDo error payTradeNo =" + afRepaymentDo.getPayTradeNo());
+                                     postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款编号已存在");
+                                     return;
+                                 } else {
+                                     if (__repayment.getStatus().equals(RepaymentStatus.YES.getCode())) {
+                                         thirdLog.info("cuishouhuankuan  getRepayMentDo  success");
+                                         postChuiSohiu(afRepaymentDo.getRepayNo(), "200", "还款成功");
+                                         return;
+                                     }
+                                 }
+                             }
+                        }
+
                         long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(), afRepaymentDo.getTradeNo(), false);
                         if (i > 0) {
+                            redisTemplate.delete(key);
+                            thirdLog.info("cuishouhuankuan  getRepayMentDo  success");
                             postChuiSohiu(afRepaymentDo.getRepayNo(), "200", "还款成功");
+
                         } else {
+                            redisTemplate.delete(key);
+                            thirdLog.info("cuishouhuankuan  getRepayMentDo  error500");
                             postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款失败");
+
                         }
                     }catch (Exception e){
                         thirdLog.error("cuishouhuankuan  getRepayMentDo error expection =",e);
+                        logger.error("cuishouhuankuan  getRepayMentDo error expection =",e);
                         postChuiSohiu(FenqiCuishouUtil.getRepaymentNo(), "500", "还款失败");
+                        final String key = "choushou_redis_check_"+FenqiCuishouUtil.getRepaymentNo();
+                        redisTemplate.delete(key);
                     }
 
                     //String bill

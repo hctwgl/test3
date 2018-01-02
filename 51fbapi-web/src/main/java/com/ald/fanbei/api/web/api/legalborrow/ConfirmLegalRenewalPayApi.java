@@ -264,6 +264,11 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
                         throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_RENEW_LIMIT_ERROR);//提示语
                     }
                 }
+
+                if (com.ald.fanbei.api.common.util.StringUtil.isEmpty(address)) {
+                    logger.info("empty address");
+                    throw new FanbeiException("请先填写收货地址!", true);
+                }
                 map = afRenewalLegalDetailService.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
 
                 // 代收
