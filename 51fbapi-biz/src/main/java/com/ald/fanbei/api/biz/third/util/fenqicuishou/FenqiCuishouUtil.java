@@ -187,7 +187,7 @@ public class FenqiCuishouUtil {
             String salt = "51fabbeicuoshou";
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-//            if(!sign1.equals(sign))return false;
+            if(!sign1.equals(sign))return false;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
