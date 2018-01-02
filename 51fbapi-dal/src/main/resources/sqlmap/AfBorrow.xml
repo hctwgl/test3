@@ -232,7 +232,7 @@ o.`ip` ,o.`lat` ,o.`lng` ,o.`black_box`
 ,o.`consignee` ,o.`gmt_deliver` ,
 (SELECT sh.`area`  FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = o.`third_order_no`   LIMIT 1) area,
 (SELECT sh.`phone`   FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = o.`third_order_no`   LIMIT 1) phone,
-(SELECT wm.`goodsInfo`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`    LIMIT 1)  goodsInfo,
+/*(SELECT wm.`goodsInfo`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`    LIMIT 1)  goodsInfo,*/
 (SELECT wm.`quantity`   FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`    LIMIT 1)  quantity,
 (SELECT jy.`phone`  FROM `af_boluome_jiayouka` jy WHERE jy.`third_order_no` = o.`third_order_no`   LIMIT 1) gasPhone,
 (SELECT br.`calculate_method`  FROM `af_borrow` br WHERE br.`order_id` = o.`id`   LIMIT 1 ) calculateMethod,
