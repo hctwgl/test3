@@ -160,6 +160,9 @@ public class PayRoutController {
 	@Resource
 	private AfBankDao afBankDao;
 
+	@Resource
+	private AfBorrowExtendDao afBorrowExtendDao;
+
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
@@ -792,4 +795,82 @@ public class PayRoutController {
 		return afUserAmountService.refundOrder(orderId);
 	}
 
+
+	/**
+	 *
+	 * @param orderId
+	 * @param sigin
+	 * @return
+	 */
+	/**
+	 * 订单自动收货
+	 */
+	@RequestMapping(value = {"/autoCompleteOrder"})
+	@ResponseBody
+	public String autoCompleteOrder(Long orderId,String sign) throws Exception{
+		thirdLog.info("autoCompleteOrder: orderId="+orderId + ",sign="+sign);
+		try {
+			String data = "orderId=" + orderId + "&vcode=0123654aa";
+			String salt = ConfigProperties.get("fbapi.orderfinish.key");
+			byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			String sign1 = DigestUtil.encodeHex(pd);
+			if (!sign.equals(sign1)) {
+				return "false";
+			}
+
+
+			AfOrderDo afOrder = afOrderDao.getOrderById(orderId);
+			AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderId);
+
+			if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+				//查询是否己产生
+				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+				if (borrowList == null || borrowList.size() == 0) {
+					AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+					if (_aa == null) {
+						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+						afBorrowExtendDo.setId(afBorrowDo.getRid());
+						afBorrowExtendDo.setInBill(1);
+						afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+					} else {
+						_aa.setInBill(1);
+						afBorrowExtendDao.updateBorrowExtend(_aa);
+					}
+					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+					for(AfBorrowBillDo _afBorrowExtendDo:billList){
+						_afBorrowExtendDo.setStatus("N");
+					}
+					afBorrowService.addBorrowBill(billList);
+
+					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
+					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
+				}
+			}
+
+
+//			if (afBorrowDo != null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+//
+//				AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowDo.getUserId());
+//
+//				afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afBorrowDo.getUserId());
+//				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+//				if (borrowList == null || borrowList.size() == 0) {
+//					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+//					afBorrowDao.addBorrowBill(billList);
+//				}
+//			}
+			AfOrderDo orderDoUpdate = new AfOrderDo();
+			orderDoUpdate.setRid(orderId);
+			orderDoUpdate.setStatus(OrderStatus.FINISHED.getCode());
+			orderDoUpdate.setGmtFinished(new Date());
+			orderDoUpdate.setLogisticsInfo("已签收");
+			afOrderService.updateOrder(orderDoUpdate);
+
+			return "success";
+		}
+		catch (Exception e){
+			thirdLog.error("autoCompleteOrder error=",e);
+			return "false";
+		}
+	}
 }

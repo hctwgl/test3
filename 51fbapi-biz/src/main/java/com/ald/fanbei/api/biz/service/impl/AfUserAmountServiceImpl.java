@@ -13,7 +13,6 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
-import com.sun.org.apache.bcel.internal.generic.RET;
 import com.timevale.tgtext.awt.geom.q;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -229,7 +228,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
 
         AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
-        afUserAmountDo.setAmount(map.get("repayment"));
+        afUserAmountDo.setAmount(map.get("repayment").add(bankPay));
         afUserAmountDo.setBizOrderNo(afOrderRefundDo.getRefundNo());  //随机生成
         afUserAmountDo.setBizType(AfUserAmountBizType.REFUND.getCode());
         afUserAmountDo.setSourceId(afOrderRefundDo.getRid());
@@ -249,7 +248,8 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
         afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), BigDecimal.ZERO.subtract(youhuijuan), 1, AfUserAmountDetailType.YOUHUIJUANGDIKOU));
 
-        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), bankPay, 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+//        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), bankPay, 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), afUserAmountDo.getAmount(), 1, AfUserAmountDetailType.ZHIJIEZHIFU));
 
         return 1;
     }
@@ -397,6 +397,11 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 	@Override
 	public List<String> getMonthInYearByQuery(AfUserAmountQuery query) {
 		return afUserAmountDao.getMonthInYearByQuery(query);
+	}
+
+	@Override
+	public BigDecimal getRepaymentAmountByAmountId(Long amountId) {
+		return afUserAmountDao.getRepaymentAmountByAmountId(amountId);
 	}
 
 }

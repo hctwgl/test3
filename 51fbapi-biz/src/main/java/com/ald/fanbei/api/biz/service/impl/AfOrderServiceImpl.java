@@ -877,33 +877,33 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						
 						//----------------------------------------------mqp end add a switch--------------------------------------------------
 						break;
-					case PAID:
-							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
-							if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
-								AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
-								afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
-								List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
-								if(borrowList == null || borrowList.size()==0 ){
-									List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
-									for(AfBorrowBillDo _afBorrowExtendDo:billList){
-										_afBorrowExtendDo.setStatus("N");
-									}
-									afBorrowDao.addBorrowBill(billList);
-									AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
-									if(_aa ==null){
-										_aa =new AfBorrowExtendDo();
-										_aa.setId(afBorrowDo.getRid());
-										_aa.setInBill(1);
-										afBorrowExtendDao.addBorrowExtend(_aa);
-									}
-									else{
-										_aa.setInBill(1);
-										afBorrowExtendDao.updateBorrowExtend(_aa);
-									}
-								}
-							}
-							orderDao.updateOrder(afOrder);
-							break;
+//					case PAID:
+//							AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(afOrder.getRid());
+//							if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+//								AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
+//								afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
+//								List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+//								if(borrowList == null || borrowList.size()==0 ){
+//									List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+//									for(AfBorrowBillDo _afBorrowExtendDo:billList){
+//										_afBorrowExtendDo.setStatus("N");
+//									}
+//									afBorrowDao.addBorrowBill(billList);
+//									AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+//									if(_aa ==null){
+//										_aa =new AfBorrowExtendDo();
+//										_aa.setId(afBorrowDo.getRid());
+//										_aa.setInBill(1);
+//										afBorrowExtendDao.addBorrowExtend(_aa);
+//									}
+//									else{
+//										_aa.setInBill(1);
+//										afBorrowExtendDao.updateBorrowExtend(_aa);
+//									}
+//								}
+//							}
+//							orderDao.updateOrder(afOrder);
+//							break;
 
 					default:
 						logger.info(" status is {} ", afOrder.getStatus());
