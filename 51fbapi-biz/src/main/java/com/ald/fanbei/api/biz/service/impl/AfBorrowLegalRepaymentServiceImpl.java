@@ -238,6 +238,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                     try {
                 		dealOrderRepay(repayDealBo, orderRepaymentDo);
                 		dealBorrowRepay(repayDealBo, repaymentDo);
+                		
+                		dealSum(repayDealBo);
+                		
                         dealCouponAndRebate(repayDealBo);
                         doAccountLog(repayDealBo);
                         
@@ -492,12 +495,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         afBorrowLegalOrderCashDao.updateById(orderCashDo);
         
         changOrderRepaymentStatus(repayDealBo.curOutTradeNo, AfBorrowLegalRepaymentStatus.YES.getCode(), orderRepaymentDo.getId());
-		
-		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
-        repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
-        repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage());
-        repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue());
-        repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
 	}
     
     /**
@@ -535,12 +532,27 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         cashDo.setSumRebate(BigDecimalUtil.add(cashDo.getSumRebate(), repaymentDo.getRebateAmount()));//余额使用
         dealBorrowRepayIfFinish(repayDealBo, repaymentDo, cashDo);
         afBorrowCashService.updateBorrowCash(cashDo);
-        
+	}
+	
+	private void dealSum(RepayDealBo repayDealBo){
+		AfBorrowLegalOrderCashDo orderCashDo = repayDealBo.orderCashDo;
+		AfBorrowCashDo cashDo = repayDealBo.cashDo;
+		
+		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(orderCashDo.getAmount());
+		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
+        repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
+        repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage());
+        repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue());
+        repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
+		
+		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(cashDo.getAmount());
         repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(cashDo.getRepayAmount());
         repayDealBo.sumInterest = repayDealBo.sumInterest.add(cashDo.getRateAmount()).add(cashDo.getSumRate());
         repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(cashDo.getPoundage()).add(cashDo.getSumRenewalPoundage());
         repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(cashDo.getOverdueAmount()).add(cashDo.getSumOverdue());
         repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
+	
+        repayDealBo.sumAmount = repayDealBo.sumBorrowAmount.add(repayDealBo.sumIncome);
 	}
 	
 	/**
@@ -742,7 +754,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 														orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue(),
 														orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidPoundage(),
 														orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidInterest());
-		repayDealBo.sumAmount = repayDealBo.sumAmount.add(sumAmount);
 		BigDecimal allRepayAmount = orderCashDo.getRepaidAmount().add(orderRepaymentBo.getRepayAmount());
 		Date now = new Date();
 		orderCashDo.setRepaidAmount(allRepayAmount);
@@ -809,7 +820,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 					cashDo.getOverdueAmount(), cashDo.getSumOverdue(),
 					cashDo.getRateAmount(), cashDo.getSumRate(),
 					cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
-		repayDealBo.sumAmount = repayDealBo.sumAmount.add(sumAmount);
 		BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
 		cashDo.setRepayAmount(allRepayAmount);
 		
