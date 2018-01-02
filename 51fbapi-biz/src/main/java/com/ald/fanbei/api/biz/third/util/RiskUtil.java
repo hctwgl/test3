@@ -473,7 +473,7 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -533,6 +533,13 @@ public class RiskUtil extends AbstractThird {
         HashMap summaryOrderData = new HashMap();
         if(orderid > 0 ){
             summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderid);
+        }
+        if(borrow != null){
+            summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
+            summaryOrderData.put("freeNper",borrow.getFreeNper());
+            summaryOrderData.put("nperAmount",borrow.getNperAmount());
+            summaryOrderData.put("cardNumber",cardNo);
+            summaryOrderData.put("cardName",cardName);
         }
         reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
         reqBo.setReqExt("");

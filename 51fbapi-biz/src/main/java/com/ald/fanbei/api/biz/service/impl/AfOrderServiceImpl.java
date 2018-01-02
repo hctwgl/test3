@@ -1061,7 +1061,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
 								ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(),
 								orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
-								orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid());
+								orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid(),card.getBankName(),borrow);
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
@@ -1124,7 +1124,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								BigDecimal.ZERO, borrowTime,
 								OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())
 										? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(),
-								getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid());
+								getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid(),card.getBankName(),borrow);
 						if (verybo.isSuccess()) {
 							logger.info("combination_pay result is true");
 							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());

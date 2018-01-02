@@ -223,7 +223,7 @@ FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 (SELECT c.`name`  FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`category_id`   = c.`id` WHERE g.`id` = o.`goods_id`    LIMIT 1 ) categoryTwo,
 (SELECT (SELECT s.`name`  FROM `af_goods_category` s WHERE s.`id`  = c.`parent_id`   LIMIT 1) FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`category_id`  = c.`id` WHERE g.`id` = o.`goods_id`   ) categoryThree,
 (SELECT fo.`type`  FROM `af_trade_order` tr LEFT JOIN `af_trade_business_info` fo on tr.`business_id`   = fo.`business_id` WHERE  tr.`order_id` = o.`id`   LIMIT 1 ) typeName,
-o.`ip` ,o.`lat` ,o.`lng` ,o.`black_box`
+o.`ip` ,o.`lat` ,o.`lng`
 , CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`contact_addr`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`   LIMIT 1) ELSE o.`address` END  address
 ,  CASE WHEN  o.`order_type` ='BOLUOME' THEN  '' ELSE o.`province` END  province
 , CASE WHEN  o.`order_type` ='BOLUOME' THEN   '' ELSE o.`city` END  city
