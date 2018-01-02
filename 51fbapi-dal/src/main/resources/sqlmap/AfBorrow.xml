@@ -229,7 +229,7 @@ o.`ip` ,o.`lat` ,o.`lng`
 , CASE WHEN  o.`order_type` ='BOLUOME' THEN   '' ELSE o.`city` END  city
 ,  CASE WHEN  o.`order_type` ='BOLUOME' THEN   '' ELSE o.`district` END  district
 ,  CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`contact_mobile`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`   LIMIT 1) ELSE o.`consignee_mobile` END  consigneeMobile
-,o.`consignee` ,o.`gmt_deliver` ,
+,CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`contact_name`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`   LIMIT 1) ELSE o.`consignee` END consignee,o.`gmt_deliver` ,
 (SELECT sh.`area`  FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = o.`third_order_no`   LIMIT 1) area,
 (SELECT sh.`phone`   FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = o.`third_order_no`   LIMIT 1) phone,
 /*(SELECT wm.`goodsInfo`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`    LIMIT 1)  goodsInfo,*/
