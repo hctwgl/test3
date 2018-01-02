@@ -37,6 +37,7 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 
 	public void setOrderInfo(String orderInfo) {
 		this.orderInfo = orderInfo;
+		this.put("orderInfo",orderInfo);
 	}
 
 	public String getOrderNo() {
