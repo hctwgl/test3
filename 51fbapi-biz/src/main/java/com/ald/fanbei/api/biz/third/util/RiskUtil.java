@@ -1434,7 +1434,7 @@ public class RiskUtil extends AbstractThird {
                             rebateContext.rebate(orderInfo);
                         }
                         if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
+                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
                         }
                         // TODO:返回值
                         return 1L;
@@ -1586,7 +1586,7 @@ public class RiskUtil extends AbstractThird {
         AfOrderDo orderInfo = orderDao.getOrderById(rid);
         logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
         if (orderInfo != null && StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
+            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
         }
     }
 

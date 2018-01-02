@@ -7,7 +7,7 @@
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
-		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,
+		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,
 		lat,lng
 	</sql>
 	<sql id="queryAllFields">
@@ -16,7 +16,7 @@
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
-		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district
+		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
