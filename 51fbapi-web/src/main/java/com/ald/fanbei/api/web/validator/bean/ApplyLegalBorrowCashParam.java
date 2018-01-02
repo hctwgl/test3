@@ -12,9 +12,9 @@ public class ApplyLegalBorrowCashParam {
 	@Pattern(regexp="^([1-9]\\d{0,9}|0)([.]?|(\\.\\d{1,2})?)$")
 	private String amount;
 	@NotNull
-	
 	private String pwd;
 	@NotNull
+	@Pattern(regexp="(7|14)")
 	private String type;
 	@NotNull
 	private String latitude;
@@ -35,16 +35,19 @@ public class ApplyLegalBorrowCashParam {
 	@NotNull
 	private String refundRemark;
 	@NotNull
+	@Pattern(regexp="^[0-9]{1,20}$")
 	private String goodsId;
 	@NotNull
 	private String goodsName;
 	@NotNull
+	@Pattern(regexp="^([1-9]\\d{0,9}|0)([.]?|(\\.\\d{1,2})?)$")
 	private String goodsAmount;
 	@NotNull
 	private String deliveryAddress;
 	@NotNull
 	private String deliveryUser;
 	@NotNull
+	@Pattern(regexp="^[1-9]{1}[0-9]{5,8}$")
 	private String deliveryPhone;
 
 }

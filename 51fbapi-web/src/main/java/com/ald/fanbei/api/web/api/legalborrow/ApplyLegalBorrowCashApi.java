@@ -171,9 +171,6 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
 
-		
-		// FIXME 修复网络延迟导致搭售商品加载不正确问题
-		
 		// 获取用户账户和认证信息
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
