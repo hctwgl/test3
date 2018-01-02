@@ -210,10 +210,38 @@ IFNULL(sum(c.repay_amount),0)  totalAmount  ,
 COUNT(if(overdue_status='Y',true,null))   countOverdue  ,
 IFNULL((SELECT  c1.amount    FROM  af_borrow_cash c1 WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  ) ,0) lastAmount,
 IFNULL((SELECT  c1.overdue_day    FROM  af_borrow_cash c1  WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  ),0)  lastOverdueDay,
-IFNULL(MAX(c.overdue_day  ),0)  maxOverdueDay
+IFNULL(MAX(c.overdue_day  ),0)  maxOverdueDay,
+DATE_FORMAT(min(c.gmt_create),'%Y-%m-%d %H:%i:%s') firstBorrowTime
 FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 	</select>
 
+	<select id="getUserSummaryOrderById" resultType="java.util.HashMap">
+		SELECT (SELECT DATE_FORMAT(MIN(bi.`gmt_pay_time`), '%Y-%m-%d')  FROM `af_borrow_bill` bi WHERE bi.`borrow_id` =0 ) firstDueDate,o.`order_type` orderType,o.`pay_type` payType,o.`sec_type` secType,o.`order_no` orderNo,o.`user_coupon_id` userCouponId,o.`goods_id` goodsId,o.`goods_name` goodsName,o.`count` count,o.`actual_amount` actualAmount,o.`borrow_amount` borrowAmount,o.`bank_amount` bankAmount
+,CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`restaurant_name`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`  LIMIT 1) ELSE o.`shop_name` END  shopName
+,o.`rebate_amount` rebateAmount ,o.`commission_amount`  commissionAmount,o.`rebate_allowance_amount` rebateAllowanceAmount,o.`nper` nper,o.`borrow_rate` borrowRate,o.`coupon_amount` couponAmount,o.`au_amount` auAmount,o.`used_amount` usedAmount ,
+(SELECT c.`name`  FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`primary_category_id`  = c.`id` WHERE g.`id` = o.`goods_id`     LIMIT 1) categoryOne,
+(SELECT c.`name`  FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`category_id`   = c.`id` WHERE g.`id` = o.`goods_id`    LIMIT 1 ) categoryTwo,
+(SELECT (SELECT s.`name`  FROM `af_goods_category` s WHERE s.`id`  = c.`parent_id`   LIMIT 1) FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`category_id`  = c.`id` WHERE g.`id` = o.`goods_id`   ) categoryThree,
+(SELECT fo.`type`  FROM `af_trade_order` tr LEFT JOIN `af_trade_business_info` fo on tr.`business_id`   = fo.`business_id` WHERE  tr.`order_id` = o.`id`   LIMIT 1 ) typeName,
+o.`ip` ,o.`lat` ,o.`lng` ,o.`black_box`
+, CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`contact_addr`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`   LIMIT 1) ELSE o.`address` END  address
+,  CASE WHEN  o.`order_type` ='BOLUOME' THEN  '' ELSE o.`province` END  province
+, CASE WHEN  o.`order_type` ='BOLUOME' THEN   '' ELSE o.`city` END  city
+,  CASE WHEN  o.`order_type` ='BOLUOME' THEN   '' ELSE o.`district` END  district
+,  CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`contact_mobile`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`   LIMIT 1) ELSE o.`consignee_mobile` END  consigneeMobile
+,o.`consignee` ,o.`gmt_deliver` ,
+(SELECT sh.`area`  FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = o.`third_order_no`   LIMIT 1) area,
+(SELECT sh.`phone`   FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = o.`third_order_no`   LIMIT 1) phone,
+/*(SELECT wm.`goodsInfo`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`    LIMIT 1)  goodsInfo,*/
+(SELECT wm.`quantity`   FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`    LIMIT 1)  quantity,
+(SELECT jy.`phone`  FROM `af_boluome_jiayouka` jy WHERE jy.`third_order_no` = o.`third_order_no`   LIMIT 1) gasPhone,
+(SELECT br.`calculate_method`  FROM `af_borrow` br WHERE br.`order_id` = o.`id`   LIMIT 1 ) calculateMethod,
+(SELECT br.`free_nper`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) freeNper,
+(SELECT br.`nper_amount`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) nperAmount,
+(SELECT br.`card_number`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardNumber,
+(SELECT br.`card_name`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardName
+FROM `af_order` o  WHERE o.`id`  =#{id}
+	</select>
 
 
 

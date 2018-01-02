@@ -28,7 +28,17 @@ public class RiskVerifyReqBo extends HashMap<String, String>{
 	private String notifyUrl;
 	private String signInfo;
 	private String summaryData;
-	
+	private String orderInfo;
+
+
+	public String getOrderInfo() {
+		return orderInfo;
+	}
+
+	public void setOrderInfo(String orderInfo) {
+		this.orderInfo = orderInfo;
+	}
+
 	public String getOrderNo() {
 		return orderNo;
 	}
