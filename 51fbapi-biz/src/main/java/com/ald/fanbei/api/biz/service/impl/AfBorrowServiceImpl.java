@@ -972,11 +972,15 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 		// 已经还账单和-优惠和
 		BigDecimal repaymentAndCouponAmount = calculateRepaymentAndCouponAmount(borrowId);
 
-		return BigDecimalUtil.add(borrowAmount,
-				refundByUser ? BigDecimalUtil.multiply(borrowAmount, new BigDecimal(days), refundRate)
-						: BigDecimal.ZERO,
-				BigDecimalUtil.multiply(refundAmount, new BigDecimal("-1")),
-				BigDecimalUtil.multiply(repaymentAndCouponAmount, new BigDecimal("-1")));
+
+		//modifed by hongzhengpei  郑洪军说不收退款利率钱。有录音为证，但录音只保存7天。
+		return BigDecimalUtil.add(borrowAmount,  BigDecimal.ZERO,
+				BigDecimalUtil.multiply(refundAmount, new BigDecimal("-1")), BigDecimalUtil.multiply(repaymentAndCouponAmount, new BigDecimal("-1")));
+
+//        return BigDecimalUtil.add(borrowAmount, refundByUser ? BigDecimalUtil.multiply(borrowAmount, new BigDecimal(days), refundRate) : BigDecimal.ZERO,
+//                BigDecimalUtil.multiply(refundAmount, new BigDecimal("-1")), BigDecimalUtil.multiply(repaymentAndCouponAmount, new BigDecimal("-1")));
+
+
 	}
 
 	/**
@@ -1028,37 +1032,41 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 							continue;
 						} else {
 							// 有优惠券
-							if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size() - 1) {
-								// 不是最后一个记录，则按照百分比计算
-								logger.info(" is not last one");
-								totalAmount = BigDecimalUtil.add(totalAmount,
-										calculateRepaymentCouponAmount(repayment, billInfo));
-								continue;
-							} else {
-								// 如果是最后一个，则先减去前面的还款记录
-								BigDecimal tempAmount = BigDecimal.ZERO;
-								logger.info(" is last one");
-								List<AfBorrowBillDo> tempBillList = afBorrowBillDao
-										.getBillListByIds(repaymentBillLists);
-								// 只有一个
-								if (repaymentBillLists.size() == 1) {
-									totalAmount = calculateRepaymentCouponAmount(repayment, billInfo);
-								} else {
-									for (int i = 0; i < repaymentBillLists.size() - 1; i++) {
-										AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList,
-												repaymentBillLists.get(i));
-										tempAmount = BigDecimalUtil.add(tempAmount,
-												calculateRepaymentCouponAmount(repayment, tempBillInfo));
-									}
-									BigDecimal finalRepaymentActualAmount = BigDecimalUtil.add(
-											repayment.getActualAmount(),
-											BigDecimalUtil.divide(repayment.getJfbAmount(), new BigDecimal("100")),
-											repayment.getRebateAmount());
-									totalAmount = BigDecimalUtil.add(totalAmount,
-											BigDecimalUtil.subtract(finalRepaymentActualAmount, tempAmount));
-								}
-								continue;
-							}
+
+							//修改退款时有优惠倦的逻辑，洪军要改的
+							totalAmount = BigDecimalUtil.add(totalAmount, calculateRepaymentCouponAmount(repayment, billInfo));
+							
+//							if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size() - 1) {
+//								// 不是最后一个记录，则按照百分比计算
+//								logger.info(" is not last one");
+//								totalAmount = BigDecimalUtil.add(totalAmount,
+//										calculateRepaymentCouponAmount(repayment, billInfo));
+//								continue;
+//							} else {
+//								// 如果是最后一个，则先减去前面的还款记录
+//								BigDecimal tempAmount = BigDecimal.ZERO;
+//								logger.info(" is last one");
+//								List<AfBorrowBillDo> tempBillList = afBorrowBillDao
+//										.getBillListByIds(repaymentBillLists);
+//								// 只有一个
+//								if (repaymentBillLists.size() == 1) {
+//									totalAmount = calculateRepaymentCouponAmount(repayment, billInfo);
+//								} else {
+//									for (int i = 0; i < repaymentBillLists.size() - 1; i++) {
+//										AfBorrowBillDo tempBillInfo = getBillFromList(tempBillList,
+//												repaymentBillLists.get(i));
+//										tempAmount = BigDecimalUtil.add(tempAmount,
+//												calculateRepaymentCouponAmount(repayment, tempBillInfo));
+//									}
+//									BigDecimal finalRepaymentActualAmount = BigDecimalUtil.add(
+//											repayment.getActualAmount(),
+//											BigDecimalUtil.divide(repayment.getJfbAmount(), new BigDecimal("100")),
+//											repayment.getRebateAmount());
+//									totalAmount = BigDecimalUtil.add(totalAmount,
+//											BigDecimalUtil.subtract(finalRepaymentActualAmount, tempAmount));
+//								}
+//								continue;
+//							}
 						}
 					}
 				}

@@ -232,6 +232,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.getNoFinishOrderCount(userId);
 	}
 
+	@Resource
+	AfUserAmountService afUserAmountService;
+
 	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:" + content);
@@ -1997,6 +2000,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						break;
 					}
 					logger.info("dealBrandOrderRefund comlete");
+					try {
+						afUserAmountService.refundOrder(orderId);
+					}catch (Exception e){
+						logger.error("add refund detail error",e);
+					}
 					return 1;
 				} catch (FanbeiException e) {
 					status.setRollbackOnly();
