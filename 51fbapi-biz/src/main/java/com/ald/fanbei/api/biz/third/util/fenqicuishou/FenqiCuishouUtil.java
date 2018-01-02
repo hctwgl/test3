@@ -7,8 +7,10 @@ import com.ald.fanbei.api.biz.util.AlgorithmHelper;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfRepaymentDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author honghzengpei 2017/11/29 17:37
@@ -43,6 +46,8 @@ public class FenqiCuishouUtil {
 
     public static ThreadLocal<Boolean> checkChuiSou = new ThreadLocal<Boolean>();
 
+    public static ThreadLocal<String> repaymentNo = new ThreadLocal<String>();
+
     public static boolean getCheck(){
         if(checkChuiSou.get() ==null) return false;
         return checkChuiSou.get();
@@ -50,6 +55,14 @@ public class FenqiCuishouUtil {
 
     public static void setCheck(Boolean bo){
         checkChuiSou.set(bo);
+    }
+
+    public static String getRepaymentNo(){
+        if(repaymentNo.get() ==null) return "";
+        return repaymentNo.get();
+    }
+    public static void setRepaymentNo(String no){
+        repaymentNo.set(no);
     }
 
     /**
@@ -176,41 +189,83 @@ public class FenqiCuishouUtil {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    SimpleDateFormat sdf  =   new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-                    JSONObject jsonObject = JSONObject.parseObject(data);
-                    AfRepaymentDo afRepaymentDo = new AfRepaymentDo();
-                    afRepaymentDo.setStatus("A");
-                    afRepaymentDo.setRepayNo(jsonObject.get("repay_no").toString());
-                    afRepaymentDo.setUserId(Long.parseLong( jsonObject.get("consumer_no").toString()));
                     try {
-                        afRepaymentDo.setGmtCreate(sdf.parse(jsonObject.get("repay_time").toString()));
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        JSONObject jsonObject = JSONObject.parseObject(data);
+                        AfRepaymentDo afRepaymentDo = new AfRepaymentDo();
+                        afRepaymentDo.setStatus("A");
+                        afRepaymentDo.setRepayNo(jsonObject.get("repay_no").toString());
+                        FenqiCuishouUtil.setRepaymentNo(afRepaymentDo.getRepayNo());
+                        afRepaymentDo.setUserId(Long.parseLong(jsonObject.get("consumer_no").toString()));
+                        try {
+                            //2017-12-27 18:06:58.0
+                            afRepaymentDo.setGmtCreate(sdf.parse(jsonObject.get("repay_time").toString()));
+                        } catch (Exception e) {
+                            thirdLog.info("cuishouhuankuan  getRepayMentDo updateTime =0");
+                        }
+                        afRepaymentDo.setGmtModified(afRepaymentDo.getGmtCreate());
+
+                        BigDecimal amount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(jsonObject.get("repay_amount").toString()), BigDecimal.ZERO);
+                        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+                            thirdLog.info("cuishouhuankuan  getRepayMentDo error amount =0");
+                            postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款失败");
+                            return;
+                        }
+                        afRepaymentDo.setActualAmount(amount);
+                        JSONArray billListArray = (JSONArray) jsonObject.get("bill_id");
+
+                        String billIds = "";
+                        if (billListArray == null || billListArray.size() == 0) {
+                            thirdLog.info("cuishouhuankuan  getRepayMentDo error billids size=0");
+                            postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款失败");
+                            return;
+                        }
+                        for (int i = 0; i < billListArray.size(); i++) {
+                            if (billIds.length() > 0) {
+                                billIds += ",";
+                            }
+                            billIds += billListArray.get(i).toString();
+                        }
+                        List<Long> billIdList = CollectionConverterUtil.convertToListFromArray(billIds.split(","), new Converter<String, Long>() {
+                            @Override
+                            public Long convert(String source) {
+                                return Long.parseLong(source);
+                            }
+                        });
+                        List<AfBorrowBillDo> borrowBillList = afBorrowBillService.getBorrowBillByIds(billIdList);
+                        BigDecimal repayAmount = BigDecimal.ZERO;
+                        if (borrowBillList.size() != billIdList.size()) {
+                            thirdLog.info("cuishouhuankuan  getRepayMentDo error billids =" + billIds);
+                            postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款失败");
+                            return;
+                        }
+                        for (AfBorrowBillDo afBorrowBillDo : borrowBillList) {
+                            repayAmount = repayAmount.add(afBorrowBillDo.getBillAmount());
+                        }
+
+                        afRepaymentDo.setBillIds(billIds);
+                        afRepaymentDo.setRepaymentAmount(repayAmount);
+                        afRepaymentDo.setTradeNo(jsonObject.get("trade_no").toString());
+                        afRepaymentDo.setUserCouponId(0l);
+
+                        afRepaymentDo.setCardName(getCardName(jsonObject.get("repay_type").toString()));
+                        afRepaymentDo.setPayTradeNo(jsonObject.get("trade_no").toString());
+                        afRepaymentDo.setCardNumber("");
+
+                        afRepaymentDo.setName("分期催收还款");
+                        afRepaymentDo.setRebateAmount(BigDecimal.ZERO);
+                        afRepaymentDo.setJfbAmount(BigDecimal.ZERO);
+                        afRepaymentDo.setCouponAmount(BigDecimal.ZERO);
+                        afRepaymentDao.addRepayment(afRepaymentDo);
+                        long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(), afRepaymentDo.getTradeNo(), false);
+                        if (i > 0) {
+                            postChuiSohiu(afRepaymentDo.getRepayNo(), "200", "还款成功");
+                        } else {
+                            postChuiSohiu(afRepaymentDo.getRepayNo(), "500", "还款失败");
+                        }
                     }catch (Exception e){
-
-                    }
-                    afRepaymentDo.setGmtModified(afRepaymentDo.getGmtCreate());
-
-                    BigDecimal amount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(jsonObject.get("repay_amount").toString()), BigDecimal.ZERO);
-                    if(amount.compareTo(BigDecimal.ZERO) ==0) return;
-                    afRepaymentDo.setActualAmount(amount);
-                    afRepaymentDo.setBillIds(jsonObject.get("bill_id").toString());
-                    afRepaymentDo.setTradeNo(jsonObject.get("trade_no").toString());
-                    afRepaymentDo.setUserCouponId(0l);
-
-                    afRepaymentDo.setCardName(getCardName(jsonObject.get("repay_type").toString()));
-                    afRepaymentDo.setPayTradeNo(jsonObject.get("trade_no").toString());
-                    afRepaymentDo.setCardNumber("");
-
-                    afRepaymentDo.setName("分期催收还款");
-                    afRepaymentDo.setRebateAmount(BigDecimal.ZERO);
-                    afRepaymentDo.setJfbAmount(BigDecimal.ZERO);
-                    afRepaymentDo.setCouponAmount(BigDecimal.ZERO);
-                    afRepaymentDao.addRepayment(afRepaymentDo);
-                    long i = afRepaymentService.dealRepaymentSucess(afRepaymentDo.getPayTradeNo(),afRepaymentDo.getTradeNo(),false);
-                    if(i>0){
-                        postChuiSohiu(afRepaymentDo.getRepayNo(),"200","还款成功");
-                    }
-                    else{
-                        postChuiSohiu(afRepaymentDo.getRepayNo(),"500","还款失败");
+                        thirdLog.error("cuishouhuankuan  getRepayMentDo error expection =",e);
+                        postChuiSohiu(FenqiCuishouUtil.getRepaymentNo(), "500", "还款失败");
                     }
 
                     //String bill

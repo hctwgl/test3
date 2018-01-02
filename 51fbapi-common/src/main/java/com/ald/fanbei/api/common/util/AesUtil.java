@@ -142,7 +142,7 @@ public class AesUtil {
     public static String encryptToBase64(String content, String password) {
         byte[] encryptResult = encrypt(content, password);
         try {
-			return new String(encryptResult,"UTF-8");
+			return new String(Base64.encodeBase64(encryptResult),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			logger.error("encryptToBase64",e);
 			e.printStackTrace();

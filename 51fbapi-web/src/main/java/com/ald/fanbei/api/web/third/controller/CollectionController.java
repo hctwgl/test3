@@ -1,15 +1,17 @@
 package com.ald.fanbei.api.web.third.controller;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
+import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
+import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,29 +20,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
-import com.ald.fanbei.api.biz.bo.CollectionUpdateResqBo;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.JsonUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.AfIdNumberDo;
-import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @类现描述：和催收平台互调
@@ -58,7 +45,10 @@ public class CollectionController {
 	
 	@Resource
 	AfBorrowCashService borrowCashService;
-	
+
+	@Resource
+	AfBorrowService afBorrowService;
+
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	
@@ -67,9 +57,15 @@ public class CollectionController {
 	
 	@Resource
 	AfIdNumberService idNumberService;
-	
+
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+
+	@Resource
+	AfContractPdfService afContractPdfService;
+
+	@Resource
+	private AfContractPdfCreateService afContractPdfCreateService;
 	/**
 	 * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向51返呗推送,返呗记录线下还款信息
 	 * @param request
@@ -111,8 +107,8 @@ public class CollectionController {
 				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
 				return updteBo;
 			}
-			
-			
+
+
 			String sign2=DigestUtil.MD5(afBorrowCashDo.getBorrowNo());
 			if (StringUtil.equals(sign1, sign2)) {// 验签成功
 				// 查询订单借款 FIXME
@@ -322,7 +318,84 @@ public class CollectionController {
 		}
 		return updteBo;
 	}
-	
+
+
+	/**
+	 * 催收平台查询pdf合同协议
+	 * @param data
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = { "/getContractProtocolPdf"}, method = RequestMethod.POST)
+	@ResponseBody
+	public CollectionUpdateResqBo getContractProtocolPdf(HttpServletRequest request, HttpServletResponse response){
+		String data = ObjectUtils.toString(request.getParameter("data"));
+		JSONObject object = JSON.parseObject(data);
+		String borrowNo = object.getString("borrowNo");
+		int type = NumberUtil.objToIntDefault(object.getString("type"),0);//1:现金借款协议 2:旧版商品分期协议 3:续借协议 4：
+		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
+		String sign = ObjectUtils.toString(request.getParameter("sign"));
+		logger.info("getContractProtocolPdf id="+borrowNo+",timestamp="+timestamp+",sign1="+sign+",type="+type);
+		CollectionUpdateResqBo updteBo=new CollectionUpdateResqBo();
+		Long id = 0l;
+		AfBorrowDo afBorrowDo = null;
+		AfBorrowCashDo afBorrowCashDo = null;
+		if (type == 1){//旧版现金借款协议
+			afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+			if (afBorrowCashDo == null){
+				logger.error("getContractProtocolPdf afBorrowCashDo is null,no =>{}",borrowNo);
+				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
+				return updteBo;
+			}
+			id = afBorrowCashDo.getRid();
+		}else if (type == 2){//旧版商品分期协议
+			afBorrowDo = afBorrowService.getBorrowInfoByBorrowNo(borrowNo);
+			if (afBorrowDo == null){
+				logger.error("getContractProtocolPdf afBorrowDo is null,no =>{}",borrowNo);
+				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST.getMsg());
+				return updteBo;
+			}
+			id = afBorrowDo.getRid();
+		}else {
+			logger.error("getContractProtocolPdf type is error,type =>{}",type);
+			updteBo.setCode(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.REQUEST_PARAM_NOT_EXIST.getMsg());
+			return updteBo;
+		}
+		AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id,(byte)type);
+		if(afContractPdfDo == null) {
+			if (type == 1){
+				afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(),afBorrowCashDo.getAmount(),afBorrowCashDo.getUserId());
+			}else if (type == 2){
+				afContractPdfCreateService.protocolInstalment(afBorrowDo.getUserId(),afBorrowDo.getNper(),afBorrowDo.getAmount(),afBorrowDo.getRid());
+			}
+			afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(id,(byte)type);
+			if (afContractPdfDo == null){
+				logger.error("getContractProtocolPdf afContractPdfDo is null,id =>{}",id);
+				updteBo.setCode(FanbeiThirdRespCode.COLLECTION_CONTRACT_PDF_CREATE_ERROR.getCode());
+				updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_CONTRACT_PDF_CREATE_ERROR.getMsg());
+				return updteBo;
+			}
+		}
+		String sign1=DigestUtil.MD5(data);
+		if (StringUtil.equals(sign, sign1)) {	// 验签成功
+			updteBo.setCode(FanbeiThirdRespCode.SUCCESS.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.SUCCESS.getMsg());
+			Map<String,String> map=new HashMap<String,String>();
+			map.put("contractPdfUrl",afContractPdfDo.getContractPdfUrl());
+			String jsonString = JsonUtil.toJSONString(map);
+			updteBo.setData(jsonString);
+		} else {
+			logger.info("sign and sign is fail");
+			updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
+			updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
+			return updteBo;
+		}
+		return updteBo;
+	}
+
 	/**
 	 * 催收平台获取借款记录信息用于数据同步刷新bill
 	 * @author yuyue

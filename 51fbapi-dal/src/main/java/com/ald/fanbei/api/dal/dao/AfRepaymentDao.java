@@ -58,4 +58,6 @@ public interface AfRepaymentDao {
     int updateRepaymentName(Long refId);
 
     int getCurrDayRepayErrorTimes(Long userId);
+
+    String getProcessingRepayNo(@Param("userId")Long userId);
 }

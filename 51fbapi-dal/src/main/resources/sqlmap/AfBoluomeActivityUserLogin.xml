@@ -240,7 +240,4 @@ id rid,gmt_create,user_id,user_name,ref_user_id,ref_user_name,boluome_activity_i
 			AND boluome_activity_id = #{activityId}
 			ORDER BY gmt_create DESC
     </select>
-    
-    
-    
 </mapper>

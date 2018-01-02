@@ -1,3 +1,4 @@
+
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.io.IOException;
@@ -1022,3 +1023,4 @@ public class APPH5GgActivityController extends BaseController {
 	}
 
 }
+

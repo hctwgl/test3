@@ -821,12 +821,10 @@ public class TestController {
 
     @RequestMapping(value = {"/testOrderPay"}, method = RequestMethod.POST)
     @ResponseBody
-    public BoluomePushPayResponseBo testOrderPay(HttpServletRequest request, HttpServletResponse response) {
+    public void testOrderPay(HttpServletRequest request, HttpServletResponse response) {
         long orderId = 198649;
         AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
-        BoluomePushPayResponseBo b = boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount() ,orderInfo.getSecType());
-
-        return b;
+        boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount() ,orderInfo.getSecType());
     }
 
     private void pickBrandCoupon(String userName, String brandUrl) {
