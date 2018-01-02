@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.api.bill;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -89,7 +90,7 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			}
 			if (StringUtil.isEmpty(operation)) {
 				// 初始化页面
-				// 查询用户最后一条还款记录
+				// 查询用户最后一条记录
 				List<AfUserAmountDo> queryList = afUserAmountService.getUserAmountByQuery(query);
 				if(queryList == null || queryList.size() < 1) {
 					resp.setResponseData(map);
@@ -99,14 +100,18 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				endDate = DateUtil.getFirstOfMonth(firstAmount.getGmtCreate());
 				endDate = DateUtil.addMonths(endDate, 1);
 				endDate = DateUtil.addHoures(endDate, -12);
-				strDate = DateUtil.addMonths(endDate, -4);
+				strDate = DateUtil.addMonths(endDate, -12);
+//				Calendar calendar = Calendar.getInstance();
+//				calendar.setTime(endDate);
+//				calendar.add(Calendar.SECOND, -1);
+//				endDate = calendar.getTime();
 				query.setStrDate(strDate);
 				query.setEndDate(endDate);
 				amountList = afUserAmountService.getUserAmountByQuery(query);
 				List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 				Integer strMonth = Integer.parseInt(DateUtil.getMonth(strDate));
 				Integer strYear = Integer.parseInt(DateUtil.getYear(strDate));
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < 12; i++) {
 					Map<String, Object> timeMap = new HashMap<String, Object>();
 					if (strMonth + i - 12 > 0) {
 						timeMap.put("month", strMonth + i - 12);
@@ -127,7 +132,7 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				}
 				for (AfUserAmountDo amountDo : amountList) {
 					for (Map<String, Object> map2 : list) {
-						if (StringUtil.equals(map2.get("month").toString(), DateUtil.getMonth(amountDo.getGmtCreate()))) {
+						if ((Integer)map2.get("month") == Integer.parseInt(DateUtil.getMonth(amountDo.getGmtCreate()))) {
 							List<AfUserAmountDo> list2 = (List) map2.get("amountList");
 							list2.add(amountDo);
 						}
@@ -152,11 +157,11 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 				// 上翻 
 				strDate = DateUtil.parseDate(year+month, DateUtil.MONTH_SHOT_PATTERN);
 				strDate = DateUtil.addMonths(strDate, 1);
-				endDate = DateUtil.addMonths(strDate, 4);
+				endDate = DateUtil.addMonths(strDate, 12);
 			}else {
 				// 下翻 bottom
 				endDate = DateUtil.parseDate(year+month, DateUtil.MONTH_SHOT_PATTERN);
-				strDate = DateUtil.addMonths(endDate, -7);
+				strDate = DateUtil.addMonths(endDate, -23);
 			}
 			query.setStrDate(strDate);
 			query.setEndDate(endDate);
@@ -164,7 +169,7 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 			Integer strMonth = Integer.parseInt(DateUtil.getMonth(strDate));
 			Integer strYear = Integer.parseInt(DateUtil.getYear(strDate));
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 12; i++) {
 				Map<String, Object> timeMap = new HashMap<String, Object>();
 				if (strMonth + i - 12 > 0) {
 					timeMap.put("month", strMonth + i - 12);
@@ -184,7 +189,7 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			}
 			for (AfUserAmountDo amountDo : amountList) {
 				for (Map<String, Object> map2 : list) {
-					if (StringUtil.equals(map2.get("month").toString(), DateUtil.getMonth(amountDo.getGmtCreate()))) {
+					if ((Integer)map2.get("month") == Integer.parseInt(DateUtil.getMonth(amountDo.getGmtCreate()))) {
 						List<AfUserAmountDo> list2 = (List) map2.get("amountList");
 						list2.add(amountDo);
 					}
