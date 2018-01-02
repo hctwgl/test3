@@ -110,17 +110,19 @@ public class GetMyRepaymentDetailV1Api implements ApiHandle{
 				if (moneny.compareTo(new BigDecimal(0)) == 0) {
 					// 没有本月已出，查询是否有本月未出未还
 					query.setIsOut(0);
-					query.setOverdueStatus("N");
+					query.setStatus("N");
 					moneny = afBorrowBillService.getUserBillMoneyByQuery(query);
 					if (moneny.compareTo(new BigDecimal(0)) == 1) {
 						billList = afBorrowBillService.getBillListByQuery(query);
 						month = DateUtil.getMonth(strOutDay);
-					}
-					if (moneny.compareTo(new BigDecimal(0)) == 0) {
+					}else if (moneny.compareTo(new BigDecimal(0)) == 0) {
 						// 没有本月未出，查询下月未出
 						strOutDay = DateUtil.addMonths(strOutDay, 1);
 						endOutDay = DateUtil.addMonths(strOutDay, 1);
-						query.setOverdueStatus("N");
+						query.setOutDayStr(strOutDay);
+						query.setOutDayEnd(endOutDay);
+						query.setIsOut(0);
+						query.setStatus("N");
 						moneny = afBorrowBillService.getUserBillMoneyByQuery(query);
 						if (moneny.compareTo(new BigDecimal(0)) == 1) {
 							// 有下月未出未还
@@ -128,12 +130,14 @@ public class GetMyRepaymentDetailV1Api implements ApiHandle{
 							month = DateUtil.getMonth(strOutDay);
 						}
 					}
-				}
-				if (moneny.compareTo(new BigDecimal(0)) == 1) {
+				}else if (moneny.compareTo(new BigDecimal(0)) == 1) {
 					// 有本月已出
 					strOutDay = DateUtil.addMonths(strOutDay, 1);
 					endOutDay = DateUtil.addMonths(strOutDay, 1);
-					query.setOverdueStatus("N");
+					query.setOutDayStr(strOutDay);
+					query.setOutDayEnd(endOutDay);
+					query.setIsOut(0);
+					query.setStatus("N");
 					moneny = afBorrowBillService.getUserBillMoneyByQuery(query);
 					if (moneny.compareTo(new BigDecimal(0)) == 1) {
 						// 有下月未出未还
