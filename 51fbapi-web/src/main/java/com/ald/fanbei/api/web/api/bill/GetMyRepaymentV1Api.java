@@ -105,23 +105,57 @@ public class GetMyRepaymentV1Api implements ApiHandle{
 				map.put("outBills", outBills);
 			}
 			// 获取下月未出账单
+			// 先查询是否有本月已出
 			Date strOutDay = DateUtil.getFirstOfMonth(new Date());
 			strOutDay = DateUtil.addHoures(strOutDay, -12);
-			strOutDay = DateUtil.addMonths(strOutDay, 1);
 			Date endOutDay = DateUtil.addMonths(strOutDay, 1);
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(endOutDay);
-			calendar.add(Calendar.SECOND, -1);
-			endOutDay = calendar.getTime();
-			query.setIsOut(0);
+			query.setIsOut(1);
 			query.setOutDayStr(strOutDay);
 			query.setOutDayEnd(endOutDay);
+			query.setOverdueStatus(null);
 			BigDecimal notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
-			if (notOutMoney.compareTo(new BigDecimal(0)) == 1) {
-				String month = DateUtil.getMonth(strOutDay);
-				List<Long> notOutBills = afBorrowBillService.getBillIdListByQuery(query);
-				map.put("notOutBills", notOutBills);
-				map.put("nextMonth", month);
+			if (notOutMoney.compareTo(new BigDecimal(0)) == 0) {
+				// 没有本月已出，查询是否有本月未出未还
+				query.setIsOut(0);
+				query.setStatus("N");
+				notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+				if (notOutMoney.compareTo(new BigDecimal(0)) == 1) {
+					List<Long> notOutBills = afBorrowBillService.getBillIdListByQuery(query);
+					String month = DateUtil.getMonth(strOutDay);
+					map.put("notOutBills", notOutBills);
+					map.put("nextMonth", month);
+				}else if (notOutMoney.compareTo(new BigDecimal(0)) == 0) {
+					// 没有本月未出，查询下月未出
+					strOutDay = DateUtil.addMonths(strOutDay, 1);
+					endOutDay = DateUtil.addMonths(strOutDay, 1);
+					query.setOutDayStr(strOutDay);
+					query.setOutDayEnd(endOutDay);
+					query.setIsOut(0);
+					query.setStatus("N");
+					notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+					if (notOutMoney.compareTo(new BigDecimal(0)) == 1) {
+						List<Long> notOutBills = afBorrowBillService.getBillIdListByQuery(query);
+						String month = DateUtil.getMonth(strOutDay);
+						map.put("notOutBills", notOutBills);
+						map.put("nextMonth", month);
+					}
+				}
+			}else if (notOutMoney.compareTo(new BigDecimal(0)) == 1) {
+				// 有本月已出
+				strOutDay = DateUtil.addMonths(strOutDay, 1);
+				endOutDay = DateUtil.addMonths(strOutDay, 1);
+				query.setOutDayStr(strOutDay);
+				query.setOutDayEnd(endOutDay);
+				query.setIsOut(0);
+				query.setStatus("N");
+				notOutMoney = afBorrowBillService.getUserBillMoneyByQuery(query);
+				if (notOutMoney.compareTo(new BigDecimal(0)) == 1) {
+					// 有下月未出未还
+					List<Long> notOutBills = afBorrowBillService.getBillIdListByQuery(query);
+					String month = DateUtil.getMonth(strOutDay);
+					map.put("notOutBills", notOutBills);
+					map.put("nextMonth", month);
+				}
 			}
 			map.put("notOutMoney", notOutMoney);
 			// 获取用户余额

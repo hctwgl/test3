@@ -133,8 +133,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
     				int _billCount = afBorrowBillService.countBillByQuery(_query);
     				if (_billCount < 1) {
     					// 没有本月已出，查询是否有本月未出未还
-    					query.setIsOut(0);
-    					query.setStatus("N");
+    					_query.setIsOut(0);
+    					_query.setStatus("N");
     					_billCount = afBorrowBillService.countBillByQuery(_query);
     					if (_billCount > 0) {
     						map.put("status", "nextBill");
@@ -142,7 +142,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
     						// 没有本月未出，查询下月未出
     						strOutDay = DateUtil.addMonths(strOutDay, 1);
     						endOutDay = DateUtil.addMonths(strOutDay, 1);
-    						query.setOverdueStatus("N");
+    						_query.setOverdueStatus("N");
     						_billCount = afBorrowBillService.countBillByQuery(_query);
     						if (_billCount > 0) {
     							// 有下月未出未还
@@ -153,8 +153,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
     					// 有本月已出,查询是否有下月未出未还
     					strOutDay = DateUtil.addMonths(strOutDay, 1);
     					endOutDay = DateUtil.addMonths(strOutDay, 1);
-    					query.setIsOut(0);
-    					query.setStatus("N");
+    					_query.setIsOut(0);
+    					_query.setStatus("N");
     					_billCount = afBorrowBillService.countBillByQuery(_query);
     					if (_billCount < 1) {
     						// 有下月未出未还
