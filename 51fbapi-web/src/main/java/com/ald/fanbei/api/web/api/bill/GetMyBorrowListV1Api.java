@@ -131,7 +131,7 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 							afBorrowBillDo.setOverdueStatus("Y");
 						}else {
 							afBorrowBillDo.setOverdueStatus("N");
-							afBorrowBillDo.setGmtPayTime(afBorrowBillService.getPayDayByYearAndMonth(userId,afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth()));
+							afBorrowBillDo.setGmtPayTime(afBorrowBillService.getLastPayDayByUserId(userId));
 						}
 					}
 					if (yearMap.containsKey(afBorrowBillDo.getBillYear())) {

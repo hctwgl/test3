@@ -134,7 +134,8 @@ public class GetRepaymentDetailV1Api implements ApiHandle{
 				// 计算实际还款金额（自行支付+余额抵扣+优惠卷抵扣）
 				BigDecimal repaymentAmount = afUserAmountService.getRepaymentAmountByAmountId(amountId);
 				AfUserAmountDetailDo repaymentAmountDo = new AfUserAmountDetailDo();
-				repaymentAmountDo.setAmount(repaymentAmount);
+				// 产品说实际还款金额用整数展示
+				repaymentAmountDo.setAmount(repaymentAmount.abs());
 				repaymentAmountDo.setType(8);
 				repaymentAmountDo.setTitle("实际还款金额");
 				detailList.add(repaymentAmountDo);
