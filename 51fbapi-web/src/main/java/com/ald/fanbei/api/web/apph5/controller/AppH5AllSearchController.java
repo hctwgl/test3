@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,7 +86,7 @@ public class AppH5AllSearchController extends BaseController {
 			Integer pageNo = NumberUtil.objToIntDefault(request.getParameter("pageNo"), 1);
 			String sort = ObjectUtils.toString(request.getParameter("sort"), null);
 
-			if (keyword == null) {
+			if (StringUtils.isBlank(keyword)) {
 				throw new FanbeiException("keyword can't be empty", FanbeiExceptionCode.PARAM_ERROR);
 			}
 
