@@ -379,10 +379,10 @@
 		AND name LIKE CONCAT('%',#{keyword},'%')
 		</if>
 		<if test="sortword != null and sortword != ''">
-		order by #{sortword}
+		order by ${sortword}
 		</if>
 		<if test="sort != null and sort != ''">
-		#{sort}
+		${sort}
 		</if>
 		
 	</select>	
