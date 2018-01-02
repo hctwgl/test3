@@ -120,7 +120,7 @@
 			order by gmt_create
 	</select>
 	
-	<select id="getRenfundAmountByAmountId" resultType="java.math.BigDecimal">
+	<select id="getRepaymentAmountByAmountId" resultType="java.math.BigDecimal">
 		SELECT COALESCE (SUM(amount), 0) from af_user_amount_detail where user_amount_id = #{amountId} and type in (3,4,5)
 	</select>
 </mapper>
