@@ -265,6 +265,7 @@ public class FenqiCuishouUtil {
                         }
                     }catch (Exception e){
                         thirdLog.error("cuishouhuankuan  getRepayMentDo error expection =",e);
+                        logger.error("cuishouhuankuan  getRepayMentDo error expection =",e);
                         postChuiSohiu(FenqiCuishouUtil.getRepaymentNo(), "500", "还款失败");
                     }
 
