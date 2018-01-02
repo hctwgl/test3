@@ -362,17 +362,16 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
                     afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
                     afBorrowLegalOrderDo.setClosedDetail("risk refuse");
                     afBorrowLegalOrderDo.setGmtClosed(new Date());
-
+                    transactionTemplate.execute(new TransactionCallback<String>() {
+                        @Override
+                        public String doInTransaction(TransactionStatus ts) {
+                            afBorrowCashService.updateBorrowCash(cashDo);
+                            afBorrowLegalOrderCashService.updateById(afBorrowLegalOrderCashDo);
+                            afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
+                            return "success";
+                        }
+                    });
                 }
-                transactionTemplate.execute(new TransactionCallback<String>() {
-                    @Override
-                    public String doInTransaction(TransactionStatus ts) {
-                        afBorrowCashService.updateBorrowCash(cashDo);
-                        afBorrowLegalOrderCashService.updateById(afBorrowLegalOrderCashDo);
-                        afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
-                        return "success";
-                    }
-                });
 
                 return resp;
             } catch (Exception e) {
