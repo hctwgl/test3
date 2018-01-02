@@ -36,7 +36,7 @@ import com.ald.fanbei.api.common.util.SerializeUtil;
 public class BizCacheUtil extends AbstractThird {
 	protected static Logger logger = LoggerFactory.getLogger(BizCacheUtil.class);
 
-	public static boolean BIZ_CACHE_SWITCH = true;// 业务缓存开关，true：打开（即使用缓存）
+	public static boolean BIZ_CACHE_SWITCH = false;// 业务缓存开关，true：打开（即使用缓存）
 													// false：关闭（即不使用缓存）
 
 	@Resource
