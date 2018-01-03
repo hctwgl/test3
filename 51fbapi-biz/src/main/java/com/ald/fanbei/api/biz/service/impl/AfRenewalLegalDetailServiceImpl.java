@@ -2,11 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -306,6 +302,10 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 		int errorTimes = afRenewalDetailDao.getCurrDayRepayErrorTimes(afRenewalDetailDo.getUserId());
 		try {
 			smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
+			String title = "本次续借支付失败";
+			String content = "续借支付失败：&errorMsg。";
+			content = content.replace("&errorMsg",errorMsg);
+			pushService.pushUtil(title,content,userDo.getMobile());
 		} catch (Exception e) {
 			logger.error("sendRenewalFailWarnMsg is Fail.",e);
 		}
@@ -455,6 +455,26 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 						afUserAccountDao.updateUserAccount(account);
 	
 						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
+						//续借成功发送短信和消息通知
+						AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_SUCCESS.getCode());
+						if(null != resourceDo){
+							AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
+							if(null != afUserDo){
+								String content = resourceDo.getValue();
+								Calendar c = Calendar.getInstance();
+								c.setTime(afBorrowCashDo.getGmtPlanRepayment());
+								int month = c.get(Calendar.MONTH)+1;
+								int day = c.get(Calendar.DATE);
+								content = content.replace("M",month+"");
+								content = content.replace("D",day+"");
+								smsUtil.sendMessageToMobile(afUserDo.getUserName(),content);
+								String title = "恭喜您，续借成功";
+								String msgcontent = "恭喜，您已经续借成功，最新还款日为M月D日，请按时还款，保持良好信用。";
+								msgcontent = msgcontent.replace("M",month+"");
+								msgcontent = msgcontent.replace("D",day+"");
+								pushService.pushUtil(title,msgcontent,afUserDo.getUserName());
+							}
+						}
 						return 1l;
 					} catch (Exception e) {
 						status.setRollbackOnly();
@@ -471,7 +491,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 				AfBorrowCashDo currAfBorrowCashDo = afBorrowCashService.getBorrowCashByrid(afRenewalDetailDo.getBorrowId());
 				AfUserDo userDo = afUserService.getUserById(currAfBorrowCashDo.getUserId());
 				try {
-					pushService.repayRenewalSuccess(userDo.getUserName());
+//					pushService.repayRenewalSuccess(userDo.getUserName());
 					logger.info("续期成功，推送消息成功outTradeNo:"+outTradeNo);
 				}catch (Exception e){
 					logger.error("续期成功，推送消息异常outTradeNo:"+outTradeNo,e);
@@ -494,7 +514,9 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 			if (resultValue == 1L){
 				//生成续期凭据
 				contractPdfThreadPool.protocolRenewalPdf(afRenewalDetailDo.getUserId(),afRenewalDetailDo.getBorrowId(),afRenewalDetailDo.getRid(),afRenewalDetailDo.getRenewalDay(),afRenewalDetailDo.getRenewalAmount());
-			} 
+			}
+
+
 			return resultValue;
 		}finally {
 			redisTemplate.delete(key);

@@ -65,6 +65,9 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 			if (isSold) {// 出售
 				try{
 					result = afGoodsPriceDao.updateSell(priceId,count.longValue());
+					if(result == 0){
+						throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
+					}
 				}catch(Exception e){
 					throw new FanbeiException(FanbeiExceptionCode.GOODS_ARE_NOT_IN_STOCK);
 				}

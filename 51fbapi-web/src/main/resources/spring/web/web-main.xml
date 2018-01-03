@@ -149,6 +149,7 @@
 				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
 				<value>/legalborrow/getCashPageType</value>
 				<value>/legalborrow/getBorrowLegalChargeInfo</value>
+				<value>/legalborrow/getOverdueStatus</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -475,6 +476,7 @@
 				<entry key="/legalborrow/getConfirmBorrowLegalInfo" value-ref="getConfirmBorrowLegalInfoApi" />
 				<entry key="/legalborrow/getLegalOrderLogistics" value-ref="getLegalOrderLogisticsApi" />
 				<entry key="/legalborrow/getLegalRenewalList" value-ref="getLegalRenewalListApi" />
+				<entry key="/legalborrow/getOverdueStatus" value-ref="getOverdueStatusApi" />
 				
 				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
