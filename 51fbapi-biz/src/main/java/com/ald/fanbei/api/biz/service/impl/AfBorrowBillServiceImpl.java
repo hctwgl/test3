@@ -370,7 +370,7 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 			} else {
 				//未出
-				boolean needPlusFree = false;
+				boolean needPlusFree = true;
 				if (!m.containsKey(afBorrowBillDo.getBorrowId())) {
 					if (afBorrowBillDo.getBillNper().intValue() == 1) {
 						needPlusFree = false;
