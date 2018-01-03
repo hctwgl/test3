@@ -26,16 +26,32 @@ public class AfSearchGoodsVo extends AbstractSerial implements Comparable<AfSear
 	private String goodsUrl;//商品链接
 	private Long volume;//销量
 	private Map<String, Object> nperMap;//月供
+	private String source;
 	
 	
 	
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
 	public AfSearchGoodsVo() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	
+	@Override
+	public String toString() {
+		return "AfSearchGoodsVo [numId=" + numId + ", saleAmount=" + saleAmount + ", realAmount=" + realAmount
+				+ ", rebateAmount=" + rebateAmount + ", goodsName=" + goodsName + ", goodsIcon=" + goodsIcon
+				+ ", thumbnailIcon=" + thumbnailIcon + ", goodsUrl=" + goodsUrl + ", volume=" + volume + ", nperMap="
+				+ nperMap + ", source=" + source + "]";
+	}
 	public AfSearchGoodsVo(String numId, BigDecimal saleAmount, String realAmount, String rebateAmount,
 			String goodsName, String goodsIcon, String thumbnailIcon, String goodsUrl, Long volume,
-			Map<String, Object> nperMap) {
+			Map<String, Object> nperMap, String source) {
 		super();
 		this.numId = numId;
 		this.saleAmount = saleAmount;
@@ -47,6 +63,7 @@ public class AfSearchGoodsVo extends AbstractSerial implements Comparable<AfSear
 		this.goodsUrl = goodsUrl;
 		this.volume = volume;
 		this.nperMap = nperMap;
+		this.source = source;
 	}
 	public Long getVolume() {
 		return volume;

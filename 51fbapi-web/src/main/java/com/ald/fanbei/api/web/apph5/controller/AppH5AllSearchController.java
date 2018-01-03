@@ -268,6 +268,7 @@ public class AppH5AllSearchController extends BaseController {
 			goodsVo.setGoodsIcon(goodsDo.getGoodsIcon());
 			goodsVo.setGoodsName(goodsDo.getName());
 			goodsVo.setGoodsUrl(goodsDo.getGoodsUrl());
+			goodsVo.setSource("SELFSUPPORT");
 
 			goodsVo.setNperMap(getNper(goodsDo.getSaleAmount()));
 
@@ -323,6 +324,7 @@ public class AppH5AllSearchController extends BaseController {
 		vo.setGoodsIcon(item.getPictUrl());
 		vo.setGoodsName(item.getTitle());
 		vo.setGoodsUrl(item.getItemUrl());
+		vo.setSource("TAOBAO");
 
 		vo.setNperMap(getNper(new BigDecimal(item.getZkFinalPrice())));
 
