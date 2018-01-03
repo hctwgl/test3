@@ -296,12 +296,17 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
                                 return Long.parseLong(source);
                             }
                         });
+                List<AfBorrowBillDo> listDo = afBorrowBillService.getBorrowBillByIds(billIds);
+                BigDecimal allAmount = BigDecimal.ZERO;
+                for (AfBorrowBillDo afBorrowBillDo : listDo){
+                    allAmount = allAmount.add(afBorrowBillDo.getBillAmount());
+                }
                 for (Long billId : billIds) {
                     if (repaymentBillLists.contains(billId)) {
                         AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
                         if(billInfo == null) continue;
-
-                        totalAmount = BigDecimalUtil.add(totalAmount, billInfo.getBillAmount());
+                        totalAmount = BigDecimalUtil.add(totalAmount,calculateRepaymentCouponAmount1(repayment,billInfo,allAmount));
+                        //totalAmount = BigDecimalUtil.add(totalAmount, billInfo.getBillAmount());
                         benjin = BigDecimalUtil.add(benjin, billInfo.getPrincipleAmount());
                         feiqishouxufei =BigDecimalUtil.add(feiqishouxufei, billInfo.getPoundageAmount().add(billInfo.getInterestAmount()));
                         yuqilixi =BigDecimalUtil.add(yuqilixi, billInfo.getOverdueInterestAmount().add(billInfo.getOverduePoundageAmount()));
@@ -353,7 +358,8 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
         BigDecimal couponAmount = repayment.getCouponAmount();
         BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
-        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+//        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+        BigDecimal result = BigDecimalUtil.multiply(rate, couponAmount);
         logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
         return result;
     }
@@ -403,5 +409,38 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 	public BigDecimal getRepaymentAmountByAmountId(Long amountId) {
 		return afUserAmountDao.getRepaymentAmountByAmountId(amountId);
 	}
+
+
+    private BigDecimal calculateRepaymentCouponAmount(AfRepaymentDo repayment, AfBorrowBillDo billInfo,BigDecimal allAmount) {
+        logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
+        BigDecimal couponAmount = repayment.getCouponAmount();
+        BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
+//        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+
+        BigDecimal result = billInfo.getBillAmount().multiply(repayment.getActualAmount());
+        result = BigDecimalUtil.divide(result,allAmount);
+
+        result = result.subtract(BigDecimalUtil.multiply(rate, couponAmount));
+
+        logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
+        return result;
+    }
+
+
+    /**
+     * 计算该笔账单在还款中的实际还款金额
+     *
+     * @param repayment
+     * @param billInfo
+     * @return
+     */
+    private BigDecimal calculateRepaymentCouponAmount1(AfRepaymentDo repayment, AfBorrowBillDo billInfo,BigDecimal allAmount) {
+        logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
+        //BigDecimal rate1 = BigDecimalUtil.divide(billInfo.getBillAmount(),allAmount);
+        BigDecimal result = billInfo.getBillAmount().multiply(repayment.getActualAmount());
+        result = BigDecimalUtil.divide(result,allAmount);
+        logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{ billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
+        return result;
+    }
 
 }
