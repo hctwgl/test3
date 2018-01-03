@@ -55,12 +55,14 @@ public class GetOverdueStatusApi implements ApiHandle {
 			// 查询是否有借款逾期
 			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 			if (borrowCashDo != null) {
-				if (StringUtils.equals(borrowCashDo.getOverdueStatus(), "Y")) {
+				if (StringUtils.equals(borrowCashDo.getOverdueStatus(), "Y") 
+						&& !StringUtils.equals("FINSH", borrowCashDo.getStatus())) {
 					loanOverdueStatus = "Y";
 				} else {
 					AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowCashDo.getRid());
 					if (legalOrderCashDo != null) {
-						if (StringUtils.equals(legalOrderCashDo.getOverdueStatus(), "Y")) {
+						if (StringUtils.equals(legalOrderCashDo.getOverdueStatus(), "Y") 
+								&& !StringUtils.equals("FINISHED", legalOrderCashDo.getStatus())) {
 							loanOverdueStatus = "Y";
 						}
 					}
