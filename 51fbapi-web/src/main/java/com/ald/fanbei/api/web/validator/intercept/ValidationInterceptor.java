@@ -12,6 +12,7 @@ import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.metadata.ConstraintDescriptor;
 
+import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.ald.fanbei.api.web.validator.Validator;
+import org.apache.commons.beanutils.Converter;
 
 /**
  * 
@@ -44,11 +46,14 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 	private Logger logger = LoggerFactory.getLogger(ValidationInterceptor.class);
 
 	private static javax.validation.Validator clsValidator;
+	
+	private static ConvertUtilsBean convertUtils;
 
 	@PostConstruct
 	public void init() {
 		ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 		clsValidator = validatorFactory.getValidator();
+		convertUtils = new ConvertUtilsBean();
 	}
 
 	@Override
@@ -68,6 +73,7 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 				Set<ConstraintViolation<Object>> validateResults = clsValidator.validate(validatorInstanceBean);
 				for (ConstraintViolation<Object> validateResult : validateResults) {
 					Path propertyPath = validateResult.getPropertyPath();
+					String message = validateResult.getMessage();
 					String paramName = StringUtils.EMPTY;
 					if (propertyPath != null) {
 						paramName = propertyPath.toString();
@@ -75,7 +81,7 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 					ConstraintDescriptor<?> cd = validateResult.getConstraintDescriptor();
 					boolean legal = cd.isReportAsSingleViolation();
 					if (!legal) {
-						throw new FanbeiException("request param not legal,param name => " + paramName, true);
+						throw new FanbeiException( paramName + message, true);
 					}
 				}
 			} catch (InstantiationException e) {
@@ -95,8 +101,11 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 			Object reqParam = reqData.getParams().get(fieldName);
 			if (reqParam != null) {
 				field.setAccessible(true);
+				Class<?> fieldType = field.getType();
 				try {
-					field.set(validatorBean, reqParam);
+					Converter converter = convertUtils.lookup(fieldType);
+					Object fieldVal = converter.convert(fieldType, reqParam);
+					field.set(validatorBean, fieldVal);
 				} catch (IllegalArgumentException e) {
 					logger.error("illegal argument error, error info=>{}", e.getMessage());
 				} catch (IllegalAccessException e) {
