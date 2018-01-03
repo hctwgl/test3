@@ -332,7 +332,7 @@ public class CollectionController {
 					map.put("rest_amount", restAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 					map.put("overdue_day", overdueDay + "");
 					map.put("renewal_num", afBorrowCashDo.getRenewalNum() + "");
-					map.put("repay_amount_sum", repayAmountSum + "");
+					map.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
 					map.put("status", afBorrowCashDo.getStatus());
 					map.put("gmt_plan_repayment", DateUtil.formatDateTime(afBorrowCashDo.getGmtPlanRepayment()));
 					map.put("majiabao_name", StringUtil.null2Str(afBorrowCashDo.getMajiabaoName()));
