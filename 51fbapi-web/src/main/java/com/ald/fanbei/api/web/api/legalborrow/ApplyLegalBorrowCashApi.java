@@ -342,7 +342,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
                 RiskVerifyRespBo verifyBo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
                         afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress,
                         blackBox, riskOrderNo, accountDo.getUserName(), riskReviewAmount, afBorrowCashDo.getPoundage(),
-                        borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null);
+                        borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null,0l,afBorrowCashDo.getCardName(),null,"");
 
                 if (verifyBo.isSuccess()) {
                     delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(), verifyBo.getResult(),
@@ -536,6 +536,10 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
             String bankNumber = card.getCardNumber();
             String lastBank = bankNumber.substring(bankNumber.length() - 4);
             smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+			String title = "恭喜您，审核通过啦！";
+			String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
+			msgContent = msgContent.replace("&bankCardNo", lastBank);
+			jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
             // 审核通过
             cashDo.setGmtArrival(currDate);
             cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());

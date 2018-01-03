@@ -556,6 +556,26 @@ public class SmsUtil extends AbstractThird {
         }
         return false;
     }
+
+
+    /**
+     * 续借成功给用户
+     * @param mobile
+     * @param errorMsg
+     * @param errorTimes
+     * @param resourceType
+     * @param resourceSecType
+     * @return
+     */
+    public boolean sendMessageToMobile(String mobile,String content) {
+        try {
+            SmsResult smsResult = sendSmsToDhst(mobile, content);
+            return smsResult.isSucc();
+        } catch (Exception e) {
+            logger.error("sendMessageToMobile exception,mobile="+mobile+"content="+content);
+        }
+        return false;
+    }
     
     /**
      * 对单个手机号发送普通短信
@@ -695,6 +715,7 @@ public class SmsUtil extends AbstractThird {
      */
     private static SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
+        logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
                 Constants.INVELOMENT_TYPE_TEST)) {
             result.setSucc(true);
