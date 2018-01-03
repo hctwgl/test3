@@ -156,7 +156,7 @@ public class GetMyBorrowV1Api implements ApiHandle {
     					_query.setIsOut(0);
     					_query.setStatus("N");
     					_billCount = afBorrowBillService.countBillByQuery(_query);
-    					if (_billCount < 1) {
+    					if (_billCount > 0) {
     						// 有下月未出未还
     						map.put("status", "nextBill");
     					}
