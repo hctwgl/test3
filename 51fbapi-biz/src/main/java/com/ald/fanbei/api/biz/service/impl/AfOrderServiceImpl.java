@@ -1090,13 +1090,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							afInterimAuDo = new AfInterimAuDo();
 							afInterimAuDo.setGmtFailuretime(DateUtil.getStartDate());
 						}
-                        //获取当前用户可用临时额度
-                        BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                         //可使用额度
                         BigDecimal useableAmount = BigDecimal.ZERO;
                         //判断临时额度是否到期
                         if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE"))
                         {
+							//获取当前用户可用临时额度
+							BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                             useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount()).add(interim);
                         }
                         else
