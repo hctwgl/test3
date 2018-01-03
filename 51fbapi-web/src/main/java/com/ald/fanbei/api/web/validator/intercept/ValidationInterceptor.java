@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.web.validator.intercept;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +16,7 @@ import javax.validation.ValidatorFactory;
 import javax.validation.metadata.ConstraintDescriptor;
 
 import org.apache.commons.beanutils.ConvertUtilsBean;
+import org.apache.commons.beanutils.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +31,6 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.ald.fanbei.api.web.validator.Validator;
-import org.apache.commons.beanutils.Converter;
 
 /**
  * 
@@ -48,12 +51,15 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 	private static javax.validation.Validator clsValidator;
 	
 	private static ConvertUtilsBean convertUtils;
+	
+	private static ResourceBundle resourceBundle ;
 
 	@PostConstruct
 	public void init() {
 		ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 		clsValidator = validatorFactory.getValidator();
 		convertUtils = new ConvertUtilsBean();
+		resourceBundle = ResourceBundle.getBundle("com.ald.fanbei.api.web.validator.message.check_msg", Locale.CHINA);
 	}
 
 	@Override
@@ -81,6 +87,14 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 					ConstraintDescriptor<?> cd = validateResult.getConstraintDescriptor();
 					boolean legal = cd.isReportAsSingleViolation();
 					if (!legal) {
+						String transName = resourceBundle.getString(paramName);
+						if(StringUtils.isNotEmpty(transName)) {
+							try {
+								paramName = new String(transName.getBytes("ISO-8859-1"), "UTF-8");
+							} catch (UnsupportedEncodingException e) {
+								e.printStackTrace();
+							}
+						}
 						throw new FanbeiException( paramName + message, true);
 					}
 				}

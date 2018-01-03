@@ -100,7 +100,7 @@ import io.netty.util.internal.StringUtil;
 public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 
 	protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
-
+	// [start] 依赖注入
 	@Resource
 	SmsUtil smsUtil;
 	@Resource
@@ -147,7 +147,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
 	@Resource
 	AfGoodsService afGoodsService;
-
+	// [end] 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
