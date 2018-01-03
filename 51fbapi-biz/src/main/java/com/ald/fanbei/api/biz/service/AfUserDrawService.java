@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.dal.domain.AfUserDrawDo;
+import com.ald.fanbei.api.dal.domain.dto.UserDrawInfo;
 
 /**
  * 年会抽奖Service
@@ -12,4 +15,9 @@ import com.ald.fanbei.api.dal.domain.AfUserDrawDo;
  */
 public interface AfUserDrawService extends ParentService<AfUserDrawDo, Long>{
 
+    AfUserDrawDo getByPhone(String phone);
+
+    List<AfUserDrawDo> getByPhoneAndStatus(String phone, Integer status);
+    
+    List<UserDrawInfo> getByStatus(Integer status);
 }
