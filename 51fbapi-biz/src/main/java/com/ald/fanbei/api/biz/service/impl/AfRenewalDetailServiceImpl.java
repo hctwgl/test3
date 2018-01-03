@@ -240,6 +240,10 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		int errorTimes = afRenewalDetailDao.getCurrDayRepayErrorTimes(afRenewalDetailDo.getUserId());
 		try {
 			smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
+			String title = "本次续借支付失败";
+			String content = "续借支付失败：&errorMsg。";
+			content = content.replace("&errorMsg",errorMsg);
+			pushService.pushUtil(title,content,userDo.getMobile());
 		} catch (Exception e) {
 			logger.error("sendRenewalFailWarnMsg is Fail.",e);
 		}
