@@ -429,6 +429,7 @@ public class PayRoutController {
 						logger.info("repayment cash error:merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
 								+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
 								+ respDesc,e);
+						return "ERROR";
 					}
 
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
