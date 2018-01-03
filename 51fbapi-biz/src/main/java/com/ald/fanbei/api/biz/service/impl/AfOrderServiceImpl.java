@@ -216,7 +216,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	AfBoluomeUserCouponService afBoluomeUserCouponService;
 	@Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
-	
+
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
 		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -856,13 +856,13 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								afOrder.getRid(), AccountLogType.REBATE);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
 						orderDao.updateOrder(afOrder);
-						
+
 						//----------------------------------------------mqp add a switch--------------------------------------------------
 						AfResourceDo afResourceDo = new AfResourceDo();
 						afResourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "ACTIVITY_SWITCH");
 						if (afResourceDo != null ) {
 							String swtich = afResourceDo.getValue();
-							
+
 							if (StringUtil.isNotBlank(swtich) && swtich.equals("O")) {
 								// qiao+2017-11-14 15:30:27:the second time to light the activity
 								logger.info("afBoluomeRebateService.addRedPacket params orderId = {} , userId = {}",
@@ -877,7 +877,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								boolean flag1 = afBoluomeUserCouponService.sendCoupon(userId);
 							}
 						}
-						
+
 						//----------------------------------------------mqp end add a switch--------------------------------------------------
 						break;
 //					case PAID:
@@ -1095,7 +1095,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                         //可使用额度
                         BigDecimal useableAmount = BigDecimal.ZERO;
                         //判断临时额度是否到期
-                        if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+                        if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE"))
                         {
                             useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount()).add(interim);
                         }
@@ -2262,7 +2262,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
             BigDecimal leftAmount = afUserVirtualAccountService.getCurrentMonthLeftAmount(orderInfo.getUserId(), virtualCode, virtualTotalAmount);
             BigDecimal useableAmount = BigDecimal.ZERO;
             //判断临时额度是否到期
-            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE"))
             {
                 //获取当前用户可用临时额度
                 BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
@@ -2281,7 +2281,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         } else {
             BigDecimal useableAmount = BigDecimal.ZERO;
             //判断临时额度是否到期
-            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0)
+            if(afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE"))
             {
                 //获取当前用户可用临时额度
                 BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
