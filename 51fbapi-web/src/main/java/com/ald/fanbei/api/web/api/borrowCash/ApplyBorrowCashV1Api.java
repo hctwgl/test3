@@ -627,6 +627,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 				poundageBig));
 		afBorrowCashDo.setPoundageRate(poundage);
 		afBorrowCashDo.setBaseBankRate(bankRate);
+		afBorrowCashDo.setRiskDailyRate(poundage);
 		return afBorrowCashDo;
 	}
 
