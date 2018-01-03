@@ -235,6 +235,9 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         afUserAmountDo.setUserId(afOrderRefundDo.getUserId());
         afUserAmountDo.setStatus(AfUserAmountProcessStatus.SUCCESS.getCode());
         afUserAmountDo.setRemark(afOrderDo.getGoodsName());
+        if(afUserAmountDo.getRemark() ==null || afUserAmountDo.getRemark().length() ==0){
+            afUserAmountDo.setRemark(afOrderDo.getShopName());
+        }
         afUserAmountDao.addUserAmount(afUserAmountDo);
 //        addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
 
