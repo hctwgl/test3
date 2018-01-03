@@ -728,4 +728,9 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
 		return afRepaymentDao.updateRepaymentName(refId);
 	}
 
+    @Override
+    public String getProcessingRepayNo(Long userId) {
+        return afRepaymentDao.getProcessingRepayNo(userId);
+    }
+
 }

@@ -263,6 +263,7 @@
 		af_borrow_bill
 		WHERE is_delete = 0
 		AND borrow_id = #{borrowId}
+		ORDER BY id ASC
 	</select>
     
     <select id="getPaidBillNumByBorrowId" resultType="java.lang.Integer">

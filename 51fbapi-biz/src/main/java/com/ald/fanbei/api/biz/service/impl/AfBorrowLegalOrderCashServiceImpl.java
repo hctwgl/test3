@@ -122,4 +122,9 @@ public class AfBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<AfBorro
 			}
 		}
 	}
+
+	@Override
+	public int updateLegalOrderCashBalanced(AfBorrowLegalOrderCashDo legalOrderCashDo) {
+		return afBorrowLegalOrderCashDao.updateLegalOrderCashBalanced(legalOrderCashDo);
+	}
 }

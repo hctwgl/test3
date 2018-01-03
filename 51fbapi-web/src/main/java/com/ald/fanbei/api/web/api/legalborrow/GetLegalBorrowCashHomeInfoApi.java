@@ -252,6 +252,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 		if (companyInfo != null) {
 			data.put("companyName", companyInfo.getValue());
 		} else {
+			logger.info("companyName empty");
 			data.put("companyName", "");
 		}
 		// 增加判断，如果前面还有没有还的借款，优先还掉

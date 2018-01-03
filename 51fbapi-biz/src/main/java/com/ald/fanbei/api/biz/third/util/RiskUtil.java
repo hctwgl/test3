@@ -467,12 +467,13 @@ public class RiskUtil extends AbstractThird {
      *                    增加里那个字段
      * @param SecSence    二级场景
      * @param ThirdSencem 三级场景
+     * @param orderid 订单号
      * @return
      */
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -528,6 +529,20 @@ public class RiskUtil extends AbstractThird {
             summaryData.put("maxOverdueDay","0");
         }
         reqBo.setSummaryData(JSON.toJSONString(summaryData));
+        //12-13 弱风控加入订单信息
+        HashMap summaryOrderData = new HashMap();
+        if(orderid > 0 ){
+            summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderid);
+        }
+        if(borrow != null){
+            summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
+            summaryOrderData.put("freeNper",borrow.getFreeNper());
+            summaryOrderData.put("nperAmount",borrow.getNperAmount());
+            summaryOrderData.put("cardNumber",cardNo);
+            summaryOrderData.put("cardName",cardName);
+            summaryOrderData.put("payType",payType);
+        }
+        reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
         reqBo.setReqExt("");
 
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
@@ -1434,7 +1449,7 @@ public class RiskUtil extends AbstractThird {
                             rebateContext.rebate(orderInfo);
                         }
                         if (StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
+                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
                         }
                         // TODO:返回值
                         return 1L;
@@ -1586,7 +1601,7 @@ public class RiskUtil extends AbstractThird {
         AfOrderDo orderInfo = orderDao.getOrderById(rid);
         logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
         if (orderInfo != null && StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {
-            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
+            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getSaleAmount(), orderInfo.getSecType());
         }
     }
 
