@@ -983,6 +983,48 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 
 	}
 
+
+	/**
+	 * 计算该笔账单在还款中的实际还款金额
+	 *
+	 * @param repayment
+	 * @param billInfo
+	 * @return
+	 */
+	private BigDecimal calculateRepaymentCouponAmount(AfRepaymentDo repayment, AfBorrowBillDo billInfo,BigDecimal allAmount) {
+		logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
+		BigDecimal couponAmount = repayment.getCouponAmount();
+		BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
+//        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+
+		BigDecimal result = billInfo.getBillAmount().multiply(repayment.getActualAmount());
+		result = BigDecimalUtil.divide(result,allAmount);
+
+		result = result.subtract(BigDecimalUtil.multiply(rate, couponAmount));
+
+		logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
+		return result;
+	}
+
+
+	/**
+	 * 计算该笔账单在还款中的实际还款金额
+	 *
+	 * @param repayment
+	 * @param billInfo
+	 * @return
+	 */
+	private BigDecimal calculateRepaymentCouponAmount1(AfRepaymentDo repayment, AfBorrowBillDo billInfo,BigDecimal allAmount) {
+		logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
+		//BigDecimal rate1 = BigDecimalUtil.divide(billInfo.getBillAmount(),allAmount);
+		BigDecimal result = billInfo.getBillAmount().multiply(repayment.getActualAmount());
+		result = BigDecimalUtil.divide(result,allAmount);
+		logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{ billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
+		return result;
+	}
+
+	@Resource
+	AfBorrowBillService afBorrowBillService;
 	/**
 	 * 计算还款金额以及优惠金额
 	 * 
@@ -1023,18 +1065,26 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 								return Long.parseLong(source);
 							}
 						});
+
+				List<AfBorrowBillDo> listDo = afBorrowBillService.getBorrowBillByIds(billIds);
+				BigDecimal allAmount = BigDecimal.ZERO;
+				for (AfBorrowBillDo afBorrowBillDo : listDo){
+					allAmount = allAmount.add(afBorrowBillDo.getBillAmount());
+				}
+
 				for (Long billId : billIds) {
 					if (repaymentBillLists.contains(billId)) {
 						AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
 						if (repayment.getUserCouponId() == 0l) {
 							// 没有优惠券,则按照账单金额来
-							totalAmount = billInfo.getBillAmount();
+							//totalAmount = billInfo.getBillAmount();
+							totalAmount = BigDecimalUtil.add(totalAmount,calculateRepaymentCouponAmount1(repayment,billInfo,allAmount));
 							continue;
 						} else {
 							// 有优惠券
-
+							totalAmount = BigDecimalUtil.add(totalAmount,calculateRepaymentCouponAmount1(repayment,billInfo,allAmount));
 							//修改退款时有优惠倦的逻辑，洪军要改的
-							totalAmount = BigDecimalUtil.add(totalAmount, calculateRepaymentCouponAmount(repayment, billInfo));
+							//totalAmount = BigDecimalUtil.add(totalAmount, calculateRepaymentCouponAmount(repayment, billInfo));
 							
 //							if (repaymentBillLists.indexOf(billId) != repaymentBillLists.size() - 1) {
 //								// 不是最后一个记录，则按照百分比计算
