@@ -1002,7 +1002,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 //		BigDecimal result = billInfo.getBillAmount().multiply(repayment.getActualAmount());
 		result = BigDecimalUtil.divide(result,allAmount);
 
-		result = result.subtract(BigDecimalUtil.multiply(rate, couponAmount));
+		//result = result.subtract(BigDecimalUtil.multiply(rate, couponAmount));
 
 		logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
 		return result;
@@ -1070,7 +1070,7 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 							}
 						});
 
-				List<AfBorrowBillDo> listDo = afBorrowBillService.getBorrowBillByIds(billIds);
+				List<AfBorrowBillDo> listDo = afBorrowBillService.getBorrowBillByIds(repaymentBillLists);
 				BigDecimal allAmount = BigDecimal.ZERO;
 				for (AfBorrowBillDo afBorrowBillDo : listDo){
 					allAmount = allAmount.add(afBorrowBillDo.getBillAmount());

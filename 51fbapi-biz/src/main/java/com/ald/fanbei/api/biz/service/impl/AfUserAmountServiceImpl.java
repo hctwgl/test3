@@ -299,12 +299,15 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
                                 return Long.parseLong(source);
                             }
                         });
-                List<AfBorrowBillDo> listDo = afBorrowBillService.getBorrowBillByIds(billIds);
+                List<AfBorrowBillDo> listDo = afBorrowBillService.getBorrowBillByIds(repaymentBillLists);
                 BigDecimal allAmount = BigDecimal.ZERO;
                 for (AfBorrowBillDo afBorrowBillDo : listDo){
                     allAmount = allAmount.add(afBorrowBillDo.getBillAmount());
                 }
                 for (Long billId : billIds) {
+                    if (!repaymentBillLists.contains(billId)){
+                        continue;
+                    }
                     if (repaymentBillLists.contains(billId)) {
                         AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
                         if(billInfo == null) continue;
