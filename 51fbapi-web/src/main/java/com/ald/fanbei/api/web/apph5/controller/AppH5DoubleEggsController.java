@@ -381,16 +381,18 @@ public class AppH5DoubleEggsController extends BaseController {
 			}
 			
 			// 未登录初始化数据
-			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);  
+			
+			
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
 			String coupons = couponCategory.getCoupons();
-			if(StringUtil.isNotBlank(coupons)){
+			if(StringUtil.isBlank(coupons)){
 				return H5CommonResponse.getNewInstance(false, "改会场没有优惠券").toString();
 			}
 			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
 
 			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
-
+			
 			for (int i = 0; i < couponsArray.size(); i++) {
 				String couponId = (String) couponsArray.getString(i);
 				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
