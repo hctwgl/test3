@@ -49,4 +49,10 @@ public class AfGoodsDoubleEggsUserServiceImpl extends ParentServiceImpl<AfGoodsD
 			
 			return afGoodsDoubleEggsUserDao.isSubscribed(userId,doubleGoodsId);
 		}
+
+		@Override
+		public int getSpringFestivalNumber(Long goodsId) {
+			
+			return afGoodsDoubleEggsUserDao.getSpringFestivalNumber(goodsId);
+		}
 }

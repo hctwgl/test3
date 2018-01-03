@@ -131,7 +131,14 @@
 		AND double_eggs_id = #{doubleGoodsId};
     </select>
 
-	<select id="getSpringFestivalNumber" resultType="java.lang.Integer">
-		SELECT DISTINCT(COUNT(`user_id`))  FROM af_goods_double_eggs_user WHERE  `is_ordered` =2;
+	<select id="getSpringFestivalNumber" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		SELECT DISTINCT
+			(COUNT(u.`user_id`))
+		FROM
+			af_goods_double_eggs_user u
+		INNER JOIN af_goods_double_eggs de ON de.id = u.double_eggs_id
+		WHERE
+			u.`is_ordered` = 2
+		AND de.goods_id = #{goodsId};
 	</select>
 </mapper>

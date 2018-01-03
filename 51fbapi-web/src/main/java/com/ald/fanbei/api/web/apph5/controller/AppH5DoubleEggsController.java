@@ -673,7 +673,7 @@ public class AppH5DoubleEggsController extends BaseController {
 						fakeNumber += Integer.parseInt(resourceDo.getValue());
 					}
 					
-					int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber();
+					int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber(goodsId);
 					data.put("number", numberForSF + fakeNumber);
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
 					return result;
