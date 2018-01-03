@@ -83,6 +83,7 @@ import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.Validator;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
