@@ -252,4 +252,6 @@ public interface JpushService {
 	public void send15Coupon(String userName);
 
 	public void sendRebateMsg(String userName, String scence, BigDecimal rebateAmount);
+
+	public void pushUtil(String title,String msgContent,String userName);
 }
