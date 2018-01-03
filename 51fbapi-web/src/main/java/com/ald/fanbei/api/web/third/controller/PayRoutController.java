@@ -393,6 +393,7 @@ public class PayRoutController {
 		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
 		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
+
 		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
 				+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
 				+ respDesc);
@@ -419,7 +420,17 @@ public class PayRoutController {
 						return "ERROR";
 					}
 				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
+					try{
+						long result =  afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
+						if (result <= 0) {
+							return "ERROR";
+						}
+					}catch (Exception e){
+						logger.info("repayment cash error:merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
+								+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
+								+ respDesc,e);
+					}
+
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
 				} else if (PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款

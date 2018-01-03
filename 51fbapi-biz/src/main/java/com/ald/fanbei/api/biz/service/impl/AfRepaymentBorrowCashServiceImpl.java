@@ -358,6 +358,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             userCardNo = System.currentTimeMillis() + StringUtils.EMPTY;
         }
         final String cardNo = userCardNo;
+        //region 事务开启
 		long resultValue =  transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -559,7 +560,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
             }
         });
-
+        //endregion 事务结束
         if (resultValue == 1L) {
             //还款成功,通知同步数据等操作
             logger.info("还款成功,通知同步数据等操作进入repayNo:" + repayment.getRepayNo() + ",borrowId:" + afBorrowCashDo.getRid());
