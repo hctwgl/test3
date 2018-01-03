@@ -384,6 +384,9 @@ public class AppH5DoubleEggsController extends BaseController {
 			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
 			String coupons = couponCategory.getCoupons();
+			if(StringUtil.isNotBlank(coupons)){
+				return H5CommonResponse.getNewInstance(false, "改会场没有优惠券").toString();
+			}
 			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
 
 			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
