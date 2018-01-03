@@ -199,7 +199,7 @@ public class GetMyRepaymentHistoryV1Api implements ApiHandle{
 			Collections.sort(list,new Comparator<Map<String, Object>>(){
 				public int compare(Map<String, Object> arg0, Map<String, Object> arg1) {
 					if((Integer)arg0.get("int") > (Integer)arg1.get("int")) return -1;
-					if((Integer)arg0.get("int") < (Integer)arg0.get("int")) return 1;
+					if((Integer)arg0.get("int") < (Integer)arg1.get("int")) return 1;
 					return 0;
 				}
 			});

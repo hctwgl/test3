@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
@@ -93,6 +93,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		contextApp = context;
+		
+		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("homePageType", "OLD");
 		Integer appVersion = context.getAppVersion();
@@ -205,16 +208,26 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
 			//新版,旧版,banner图不一样
 			String homeBanner = AfResourceType.HomeBannerNew.getCode();
-			if(contextApp.getAppVersion() >= 394){
-				homeBanner = AfResourceType.HomeBannerNewMost.getCode();
+			if(StringUtils.equals(deviceType, "IPHONEX")) {
+				homeBanner = AfResourceType.HomeBannerNewMostiPhoneX.getCode();
+			} else {
+				if(contextApp.getAppVersion() >= 394){
+					homeBanner = AfResourceType.HomeBannerNewMost.getCode();
+				}
 			}
+			
 			topBannerList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderBy(homeBanner));
 		} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type) ){
 			//新版,旧版,banner图不一样
 			String homeBanner = AfResourceType.HomeBannerNew.getCode();
-			if(contextApp.getAppVersion() >= 394){
-				homeBanner = AfResourceType.HomeBannerNewMost.getCode();
+			
+			if(StringUtils.equals(deviceType, "IPHONEX")) {
+				homeBanner = AfResourceType.HomeBannerNewMostiPhoneX.getCode();
+			} else {
+				if(contextApp.getAppVersion() >= 394){
+					homeBanner = AfResourceType.HomeBannerNewMost.getCode();
+				}
 			}
 			topBannerList = getObjectWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(homeBanner));

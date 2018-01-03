@@ -3,6 +3,8 @@ package com.ald.fanbei.api.web.api.bill;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -129,7 +131,7 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 							afBorrowBillDo.setOverdueStatus("Y");
 						}else {
 							afBorrowBillDo.setOverdueStatus("N");
-							afBorrowBillDo.setGmtPayTime(afBorrowBillService.getPayDayByYearAndMonth(userId,afBorrowBillDo.getBillYear(),afBorrowBillDo.getBillMonth()));
+							afBorrowBillDo.setGmtPayTime(afBorrowBillService.getLastPayDayByUserId(userId));
 						}
 					}
 					if (yearMap.containsKey(afBorrowBillDo.getBillYear())) {
@@ -151,6 +153,15 @@ public class GetMyBorrowListV1Api implements ApiHandle{
 				respMaP.put("bills", yearMap.get(key));
 				list.add(respMaP);
 			}
+			
+			Collections.sort(list,new Comparator<Map<String, Object>>(){
+				public int compare(Map<String, Object> arg0, Map<String, Object> arg1) {
+					if((Integer)arg0.get("year") > (Integer)arg1.get("year")) return 1;
+					if((Integer)arg0.get("year") < (Integer)arg1.get("year")) return -1;
+					return 0;
+				}
+			});
+			
 			map.put("money", money);
 			map.put("billList", list);
 			resp.setResponseData(map);
