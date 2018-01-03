@@ -1939,7 +1939,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 					case BANK:
 						// 银行卡退款
 						AfUserAccountDo userAccount = afUserAccountDao.getUserAccountInfoByUserId(userId);
-						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfo(bankId);
+						AfUserBankcardDo card = afUserBankcardDao.getUserBankInfoRefund(bankId);
 
 						AfOrderRefundDo refundInfo = BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 								refundAmount, userId, orderId, orderNo, OrderRefundStatus.REFUNDING, PayType.BANK,
