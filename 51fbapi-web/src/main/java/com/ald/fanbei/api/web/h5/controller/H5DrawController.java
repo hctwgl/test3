@@ -56,11 +56,11 @@ public class H5DrawController extends H5Controller {
     public String share(HttpServletRequest request, HttpServletResponse response) {
 	// 验证请求参数
 	String phone = request.getParameter("phone");
-	if (StringUtils.isNotBlank(phone) && phone.length() != 11) {
+	if (StringUtils.isBlank(phone) || phone.length() != 11) {
 	    return H5CommonResponse.getNewInstance(false, "手机号码输入错误").toString();
 	}
 	String code = request.getParameter("code");
-	if (StringUtils.isNotBlank(code)) {
+	if (StringUtils.isBlank(code)) {
 	    return H5CommonResponse.getNewInstance(false, "请求参数错误").toString();
 	}
 
