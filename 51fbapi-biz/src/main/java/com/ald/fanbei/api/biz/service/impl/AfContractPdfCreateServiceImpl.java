@@ -26,6 +26,7 @@ import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -631,7 +632,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
         try {
             File file = new File(map.get("secondPath").toString());
             input = new FileInputStream(file);
-            MultipartFile multipartFile = null;//new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
+            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
             OssUploadResult ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
             input.close();
             logger.info(ossUploadResult.getMsg(), "url:", ossUploadResult.getUrl());
