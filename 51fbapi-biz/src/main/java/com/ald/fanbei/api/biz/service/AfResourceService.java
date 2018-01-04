@@ -6,6 +6,8 @@ import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.alibaba.fastjson.JSONObject;
 
@@ -223,4 +225,6 @@ public interface AfResourceService {
 	List<AfResourceDo> getHomeBrandPositonInfoList();
 
 	AfResourceDo getFinancialEntranceInfo();
+	
+	AfResourceDo getWechatConfig();
 }

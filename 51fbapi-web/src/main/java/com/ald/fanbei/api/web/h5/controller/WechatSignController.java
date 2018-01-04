@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -22,7 +21,6 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
-import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -64,7 +62,7 @@ public class WechatSignController extends H5Controller {
 	    logger.info("++++++++++request url 22222:" + urlOld);
 
 	    // 获取secret 和appId
-	    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("ACCESSTOKEN", "WX");
+	    AfResourceDo afResourceDo = afResourceService.getWechatConfig();
 	    // value = appId ; value1= secret
 
 	    if (null != afResourceDo) {

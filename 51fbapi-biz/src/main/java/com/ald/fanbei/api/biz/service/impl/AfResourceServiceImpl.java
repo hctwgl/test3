@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.CollectionConverterUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -649,5 +652,15 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getFinancialEntranceInfo();
 	}
 
-
+    public AfResourceDo getWechatConfig() {
+	// 获取配置信息
+	String resourceType = "ACCESSTOKEN";
+	String resourceSecType = "WX";
+	String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+	if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+	    resourceType = "ACCESSTOKEN_PRE";
+	    resourceSecType = "WX_PRE";
+	}
+	return afResourceDao.getConfigByTypesAndSecType(resourceType, resourceSecType);
+    }
 }

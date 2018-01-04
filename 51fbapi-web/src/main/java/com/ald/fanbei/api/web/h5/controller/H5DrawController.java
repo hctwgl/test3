@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +20,6 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserDrawStatus;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserDrawDo;
@@ -70,7 +68,7 @@ public class H5DrawController extends H5Controller {
 	if (userDrawDo != null) {
 	    if (userDrawDo.getStatus().equals(UserDrawStatus.NORMAL.getCode())) {
 		// 获取配置信息
-		AfResourceDo afResourceDo = getWechatConfig();
+		AfResourceDo afResourceDo = afResourceService.getWechatConfig();
 		String appid = afResourceDo.getValue();
 		String secret = afResourceDo.getValue1();
 		// 获取微信信息openId、头像、昵称
@@ -126,7 +124,7 @@ public class H5DrawController extends H5Controller {
 	}
 
 	// 获取配置信息
-	AfResourceDo afResourceDo = getWechatConfig();
+	AfResourceDo afResourceDo = afResourceService.getWechatConfig();
 	String appid = afResourceDo.getValue();
 	String secret = afResourceDo.getValue1();
 
@@ -172,17 +170,5 @@ public class H5DrawController extends H5Controller {
 	} else {
 	    return H5CommonResponse.getNewInstance(false, "非法请求openId").toString();
 	}
-    }
-
-    private AfResourceDo getWechatConfig() {
-	// 获取配置信息
-	String resourceType = "ACCESSTOKEN";
-	String resourceSecType = "WX";
-	String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-	if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
-	    resourceType = "ACCESSTOKEN_PRE";
-	    resourceSecType = "WX_PRE";
-	}
-	return afResourceService.getConfigByTypesAndSecType(resourceType, resourceSecType);
     }
 }
