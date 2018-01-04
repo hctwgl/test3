@@ -111,7 +111,7 @@ public class H5DrawController extends H5Controller {
     public String goodsInfo(HttpServletRequest request, HttpServletResponse response) {
 	// 验证请求参数
 	String count = request.getParameter("count");
-	if (StringUtils.isNotBlank(count)) {
+	if (StringUtils.isBlank(count)) {
 	    return H5CommonResponse.getNewInstance(false, "请求参数错误").toString();
 	}
 	Integer winCount = Integer.parseInt(count);
@@ -119,7 +119,7 @@ public class H5DrawController extends H5Controller {
 	    return H5CommonResponse.getNewInstance(false, "请求参数错误").toString();
 	}
 	String code = request.getParameter("code");
-	if (StringUtils.isNotBlank(code)) {
+	if (StringUtils.isBlank(code)) {
 	    return H5CommonResponse.getNewInstance(false, "请求参数错误").toString();
 	}
 
