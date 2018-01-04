@@ -626,7 +626,7 @@ public class AppH5DoubleEggsController extends BaseController {
 				log = log + String.format("goodsId = %s",goodsId);
 				logger.info(log);
 				
-				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByDoubleGoodsId(goodsId);
+				AfGoodsDoubleEggsDo goodsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 
 				log = log + String.format("goodsDo = %s",goodsDo.toString());
 				logger.info(log);
@@ -634,17 +634,19 @@ public class AppH5DoubleEggsController extends BaseController {
 				if (goodsDo != null) {
 
 					//String time = "10";
-					int preTime = 20;//Integer.parseInt(time);
+					//Integer.parseInt(time);
+					int preTime = 20;
 					Date now = new Date();
 
 					// if now + preTime >= goods start time then throw
 					// error"time分钟内无需预约"
 					if (DateUtil.addMins(now, preTime).after(goodsDo.getStartTime())) {
-						result = H5CommonResponse.getNewInstance(false, "抱歉" + preTime + "分钟内无法预约！").toString();
-						return result;
+						return  H5CommonResponse.getNewInstance(false, "抱歉" + preTime + "分钟内无法预约！").toString();
+						
 					}
 
 					long doubleGoodsId = goodsDo.getRid();
+					
 					// to check if this user already subscribed this goods if
 					// yes then "已经预约不能重复预约"else"预约成功"
 					if (afGoodsDoubleEggsUserService.isSubscribed(doubleGoodsId, userId) > 0) {
@@ -656,20 +658,18 @@ public class AppH5DoubleEggsController extends BaseController {
 					userDo.setDoubleEggsId(doubleGoodsId);
 					userDo.setGmtCreate(now);
 					userDo.setGmtModified(now);
-					userDo.setIsOrdered(1);
+					//for spring festival
+					userDo.setIsOrdered(2);
 					userDo.setUserId(userId);
-
+					
 					log = log + String.format("afGoodsDoubleEggsUserDo for saving = %s",userDo.toString());
 					logger.info(log);
 					
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
 					
 					//add subscribe people
-					AfResourceDo resourceDo= afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "SUBSCRIBE_FAKE_NUMBER");
-					int fakeNumber = 0 ;
-					if (resourceDo != null) {
-						fakeNumber += Integer.parseInt(resourceDo.getValue());
-					}
+					//AfResourceDo resourceDo= afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "SUBSCRIBE_FAKE_NUMBER");
+					Long fakeNumber = goodsDo.getAlreadyCount();
 					
 					int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber(goodsId);
 					data.put("number", numberForSF + fakeNumber);

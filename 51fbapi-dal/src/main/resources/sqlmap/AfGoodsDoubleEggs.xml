@@ -156,7 +156,7 @@
       SELECT
         <include refid="queryFields" />
         FROM af_goods_double_eggs
-      WHERE is_delete = 0 AND goods_id = #{goodsId};
+      WHERE is_delete = 0 AND goods_id = #{goodsId} limit 0,1;
     </select>
     
        <select id="getByDoubleGoodsId" parameterType="java.lang.Long" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo">
