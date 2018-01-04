@@ -184,9 +184,19 @@
     
     <select id="getByStatus" resultType="com.ald.fanbei.api.dal.domain.dto.UserDrawInfo">
         SELECT
-        phone,`name`,nick_name,header_img
+        id rid,phone,`name`,nick_name,header_img
         FROM af_user_draw
         where `status` = #{status,jdbcType=INTEGER}
     </select>
+    
+    <update id="updateWinUserStatus"  parameterType="com.ald.fanbei.api.dal.domain.AfUserDrawDo">
+        UPDATE af_user_draw                   
+        set `status` = #{status,jdbcType=INTEGER},      
+            `group` = UNIX_TIMESTAMP()   
+        where id in
+        <foreach collection="userList" item="item" open="(" separator="," close=")">
+                #{item.rid}       
+        </foreach>
+    </update>
     
 </mapper>

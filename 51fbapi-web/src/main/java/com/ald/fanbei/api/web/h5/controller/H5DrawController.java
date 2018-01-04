@@ -163,6 +163,9 @@ public class H5DrawController extends H5Controller {
 		    winUsers.add(users.get(winIndex.get(i)));
 		}
 
+		// 更新中奖用户状态
+		afUserDrawService.updateWinUserStatus(UserDrawStatus.WIN.getCode(), winUsers);
+
 		return H5CommonResponse.getNewInstance(true, "获取抽奖用户成功", "", winUsers).toString();
 	    } else {
 		return H5CommonResponse.getNewInstance(true, "所有用户均中奖").toString();

@@ -21,4 +21,6 @@ public interface AfUserDrawDao extends BaseDao<AfUserDrawDo, Long> {
     List<AfUserDrawDo> getByPhoneAndStatus(@Param("phone") String phone, @Param("status") Integer status);
 
     List<UserDrawInfo> getByStatus(Integer status);
+
+    int updateWinUserStatus(@Param("status") Integer status, @Param("userList") List<UserDrawInfo> userList);
 }

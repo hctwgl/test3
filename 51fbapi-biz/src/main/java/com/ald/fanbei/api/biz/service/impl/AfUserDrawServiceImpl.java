@@ -52,4 +52,10 @@ public class AfUserDrawServiceImpl extends ParentServiceImpl<AfUserDrawDo, Long>
 
 	return afUserDrawDao.getByStatus(status);
     }
+
+    @Override
+    public int updateWinUserStatus(Integer status, List<UserDrawInfo> userList) {
+
+	return afUserDrawDao.updateWinUserStatus(status, userList);
+    }
 }

@@ -6,6 +6,15 @@ public class UserDrawInfo {
     private String name;
     private String nickName;
     private String headerImg;
+    private Long rid;
+
+    public Long getRid() {
+	return rid;
+    }
+
+    public void setRid(Long rid) {
+	this.rid = rid;
+    }
 
     public String getPhone() {
 	return phone;
@@ -41,7 +50,7 @@ public class UserDrawInfo {
 
     @Override
     public String toString() {
-	return "UserDrawInfo [phone=" + phone + ", name=" + name + ", nickName=" + nickName + ", headerImg=" + headerImg + "]";
+	return "UserDrawInfo [phone=" + phone + ", name=" + name + ", nickName=" + nickName + ", headerImg=" + headerImg + ", rid=" + rid + "]";
     }
 
 }
