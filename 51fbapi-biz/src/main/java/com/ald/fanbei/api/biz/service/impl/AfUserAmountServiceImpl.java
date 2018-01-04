@@ -39,6 +39,7 @@ import java.util.List;
 @Service("afUserAmountService")
 public class AfUserAmountServiceImpl implements AfUserAmountService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
     @Resource
     AfUserAmountDao afUserAmountDao;
@@ -194,26 +195,44 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         return  transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
             public Integer doInTransaction(TransactionStatus status) {
-                return _refundOrder(orderId);
+                try {
+                    return _refundOrder(orderId);
+                }catch (Exception e){
+                    logger.error("add refundDetail error:",e);
+                    thirdLog.error("add refundDetail error",e);
+                    return 0;
+                }
             }
         });
     }
 
     private int _refundOrder(long orderId){
         AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
+
         if (afOrderDo == null) {
+            logger.info("add refundDetail order is null orderId ="+ orderId);
             return 0;
         }
+        logger.info("add refundDetail orderStatus ="+ afOrderDo.getStatus());
         if (!(afOrderDo.getStatus().equals(OrderStatus.CLOSED.getCode()) || afOrderDo.getStatus().equals(OrderStatus.DEAL_REFUNDING.getCode()))) {
             return 0;
         }
         AfOrderRefundDo afOrderRefundDo = afOrderRefundDao.getOrderRefundByOrderId(orderId);
         if (afOrderRefundDo == null || !(afOrderRefundDo.getStatus().equals(OrderRefundStatus.FINISH.getCode()) || afOrderRefundDo.getStatus().equals(OrderRefundStatus.REFUNDING.getCode()))) {
+            logger.info("add refundDetail afOrderRefundDo error");
+            try{
+                logger.info("add refundDetail afOrderRefundDo status"+ afOrderRefundDo.getStatus());
+            }
+            catch (Exception e){
+                logger.info("add refundDetail afOrderRefundDo is null");
+                e.printStackTrace();
+            }
             return 0;
         }
 
         AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderId);
         if (borrowInfo == null) {
+            logger.info("add refundDetail borrowInfo is null");
             return 0;
         }
         List<AfBorrowBillDo> repaymentedBillList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowInfo.getRid(),
