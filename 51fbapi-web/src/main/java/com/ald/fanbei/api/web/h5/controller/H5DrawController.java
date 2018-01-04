@@ -135,7 +135,7 @@ public class H5DrawController extends H5Controller {
 	    // 获取微信信息openId
 	    JSONObject wxUserInfo = WxUtil.getUserInfo(appid, secret, code);
 	    openId = wxUserInfo.getString("openid");
-	    if (StringUtils.isNotBlank(openId)) {
+	    if (StringUtils.isBlank(openId)) {
 		return H5CommonResponse.getNewInstance(false, "非法请求code").toString();
 	    }
 	}
