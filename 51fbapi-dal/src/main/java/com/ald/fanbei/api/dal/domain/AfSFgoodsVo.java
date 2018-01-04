@@ -17,8 +17,8 @@ public class AfSFgoodsVo extends AbstractSerial{
 	
 	private Long id;
 	private Long activityId;
-	private int order_number;
-	private String is_order;
+	private int orderNumber;
+	private String isOrder;
 	public Long getId() {
 		return id;
 	}
@@ -31,23 +31,25 @@ public class AfSFgoodsVo extends AbstractSerial{
 	public void setActivityId(Long activityId) {
 		this.activityId = activityId;
 	}
-	public int getOrder_number() {
-		return order_number;
+	public int getOrderNumber() {
+		return orderNumber;
 	}
-	public void setOrder_number(int order_number) {
-		this.order_number = order_number;
+	public void setOrderNumber(int orderNumber) {
+		this.orderNumber = orderNumber;
 	}
-	public String getIs_order() {
-		return is_order;
+	public String getIsOrder() {
+		return isOrder;
 	}
-	public void setIs_order(String is_order) {
-		this.is_order = is_order;
+	public void setIsOrder(String isOrder) {
+		this.isOrder = isOrder;
 	}
 	@Override
 	public String toString() {
-		return "AfSFgoodsVo [id=" + id + ", activityId=" + activityId + ", order_number=" + order_number + ", is_order="
-				+ is_order + "]";
+		return "AfSFgoodsVo [id=" + id + ", activityId=" + activityId + ", orderNumber=" + orderNumber + ", isOrder="
+				+ isOrder + "]";
 	}
+
+	
 	
 	
 
