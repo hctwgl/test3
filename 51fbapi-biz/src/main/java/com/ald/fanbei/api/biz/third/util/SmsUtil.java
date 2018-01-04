@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -109,7 +110,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.REGIST, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -133,7 +134,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -156,7 +157,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -180,7 +181,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -879,6 +880,14 @@ public class SmsUtil extends AbstractThird {
             logger.error("sendTenementNotify success,mobile:" + mobiles + "content:" + content);
         } catch (Exception e) {
             logger.error("sendTenementNotify error:", e);
+        }
+    }
+    private static SmsResult switchSmsSend(String mobile, String content){
+
+        if("01234".contains(mobile.substring(10,11))){
+            return YFSmsUtil.send(mobile, content,YFSmsUtil.VERIFYCODE);
+        }else{
+            return sendSmsToDhst(mobile, content);
         }
     }
 }
