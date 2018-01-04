@@ -6,7 +6,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
+import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1149,6 +1151,7 @@ public class DateUtil {
     }
     
     public static void main(String[] args) {
+      String data=  Base64.decodeToString("eyJhbW91bnQiOjIwMC4wMCwiYm9ycm93Tm8iOiJqcTIwMTgwMTA0MTYwMTM4MDEzMDMiLCJpbmNv\nbWUiOjE4LjIwLCJvdmVyZHVlQ291bnQiOjAsIm92ZXJkdWVEYXlzIjowfQ==");
         /*
          * System.out.println(DateUtils.getFirstOfMonth(DateUtils.addMonths( DateUtils.currentDate(), -3)));
          * System.out.println(DateUtils.getEndOfMonth(DateUtils.currentDate())); System.out.println("now:" +
