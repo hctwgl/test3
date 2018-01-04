@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -363,9 +364,13 @@ public class AppH5InterimAuController extends BaseController {
      * @param date2
      * @return
      */
-    public int differentDaysByMillisecond(Date date1, Date date2)
-    {
-        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+    public int differentDaysByMillisecond(Date date1, Date date2) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString1=formatter.format(date1);
+        String dateString2=formatter.format(date2);
+        Date d1 = formatter.parse(dateString1);
+        Date d2 = formatter.parse(dateString2);
+        int days = (int) ((d2.getTime() - d1.getTime()) / (1000*3600*24));
         return days;
     }
 
