@@ -376,9 +376,9 @@ public class RiskUtil extends AbstractThird {
         AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
         Long userId = Long.parseLong(oldUserInfo.getValue());
         Long consumerId = Long.parseLong(consumerNo);
-        if ("ALL".equals(event) && !StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode()) && consumerId <= userId) {
-            event = "REAUTH";
-        }
+//        if ("ALL".equals(event) && !StringUtil.equals(afUserAuthDo.getRiskStatus(), RiskStatus.SECTOR.getCode()) && consumerId <= userId) {
+//            event = "REAUTH";
+//        }
 
         RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDo(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
@@ -420,9 +420,10 @@ public class RiskUtil extends AbstractThird {
         AfResourceDo oldUserInfo = afResourceService.getSingleResourceBytype(Constants.RES_OLD_USER_ID);
         Long userId = Long.parseLong(oldUserInfo.getValue());
         Long consumerId = Long.parseLong(consumerNo);
-        if ("ALL".equals(event) && !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.SECTOR.getCode()) && consumerId <= userId) {
-            event = "REAUTH";
-        }
+        //关闭REAUTH事件
+//        if ("ALL".equals(event) && !StringUtil.equals(afUserAuthDo.getBasicStatus(), RiskStatus.SECTOR.getCode()) && consumerId <= userId) {
+//            event = "REAUTH";
+//        }
 
         RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDoV1(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
