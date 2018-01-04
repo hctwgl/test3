@@ -92,7 +92,7 @@ public class AppH5SFSubscribeController  extends BaseController{
 				//get goods to subscribe 
 				List<AfSFgoodsVo> goodsList = afGoodsDoubleEggsService.getFivePictures(userId);
 				data.put("goodsList", goodsList);
-				
+				logger.info("/appH5SF/initHomePage userId={} , goodsList={} ", new Object[]{userId,goodsList});
 				//get configuration from afresource
 				AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "INIT_HOME_PAGE");
 				if (resourceDo != null) {
@@ -100,7 +100,7 @@ public class AppH5SFSubscribeController  extends BaseController{
 					data.put("strategy_img", resourceDo.getValue());
 					data.put("strategy_redirect_img", resourceDo.getValue1());
 				}
-				
+				logger.info("/appH5SF/initHomePage userId={} , goodsList={} ,resourceDo = {}", new Object[]{userId,goodsList,resourceDo});
 				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 			}
 			

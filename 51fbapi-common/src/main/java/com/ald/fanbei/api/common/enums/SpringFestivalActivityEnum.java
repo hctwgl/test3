@@ -22,7 +22,8 @@ public enum SpringFestivalActivityEnum {
 	HOME_ELECTICITY(5L,"_HOME_ELECTICITY_","家电"),
 	ELECTRIC_PRODUCT(6L,"_ELECTRIC_PRODUCT_","电器"),
 	SECOND_HAND(7L,"_SECOND_HAND_","二手"),
-	BAGS(8L,"_BAGS_","箱包");
+	BAGS(8L,"_BAGS_","箱包"),
+	PHONE(9L,"_PHONE_","手机");
 	
 	private Long activityId;
 	private String tag;

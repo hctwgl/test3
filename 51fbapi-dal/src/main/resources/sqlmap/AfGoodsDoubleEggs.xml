@@ -212,9 +212,9 @@
 		WHERE
 			goods_id = #{goodsId};
     </update>
-    
-    <select id="getFivePictures" parameterType="com.ald.fanbei.api.dal.domain.AfSFgoodsVo",resultType="java.lang.Long">
-		SELECT
+
+    <select id="getFivePictures" resultType="com.ald.fanbei.api.dal.domain.AfSFgoodsVo" parameterType="java.lang.Long">
+    		SELECT
 				de.goods_id AS id,
 				de.activity_id AS activity_id,
 				(
@@ -226,6 +226,9 @@
 						u.double_eggs_id = de.id
 				) AS order_number,
 				<if test="userId != null and userId != '' ">
+				<![CDATA[
+				
+				
 						CASE WHEN (
 									SELECT
 										count(*)
@@ -239,9 +242,7 @@
 						ELSE
 								'N'
 						END
-				</if>
-				<if test="userId == 0">
-				'N'
+				]]>
 				</if>
 			as is_order
 			FROM
