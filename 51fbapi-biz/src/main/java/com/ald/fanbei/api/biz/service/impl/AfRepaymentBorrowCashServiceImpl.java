@@ -358,6 +358,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
             userCardNo = System.currentTimeMillis() + StringUtils.EMPTY;
         }
         final String cardNo = userCardNo;
+        //region 事务开启
 		long resultValue =  transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -488,16 +489,19 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     afUserCouponDao.updateUserCouponSatusUsedById(repayment.getUserCouponId());
 
                     // 授权账户可用金额变更
-                    AfUserAccountDo account = new AfUserAccountDo();
-                    account.setUserId(repayment.getUserId());
-                    account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
+                    if(repayment.getRebateAmount().compareTo(BigDecimal.ZERO)>0||repayment.getJfbAmount().compareTo(BigDecimal.ZERO)>0){
+                        AfUserAccountDo account = new AfUserAccountDo();
+                        account.setUserId(repayment.getUserId());
+                        account.setJfbAmount(repayment.getJfbAmount().multiply(new BigDecimal(-1)));
 
-                    account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
-                    int result=afUserAccountDao.updateUserAccount(account);
-                    if(result<=0){
-                        logger.info("update account error,details:repayNo"+repayment.getRepayNo(), JSON.toJSONString(account));
-                        //throw new Exception("update account error,details");
+                        account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));
+                        int result=afUserAccountDao.updateUserAccount(account);
+                        if(result<=0){
+                            logger.info("update account error,details:repayNo"+repayment.getRepayNo(), JSON.toJSONString(account));
+                            //throw new Exception("update account error,details");
+                        }
                     }
+
                     afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
 
                     AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
@@ -556,7 +560,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
             }
         });
-
+        //endregion 事务结束
         if (resultValue == 1L) {
             //还款成功,通知同步数据等操作
             logger.info("还款成功,通知同步数据等操作进入repayNo:" + repayment.getRepayNo() + ",borrowId:" + afBorrowCashDo.getRid());
@@ -644,9 +648,18 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
  		replaceMapData.put("repayMoney", repayMoney);
  		replaceMapData.put("remainAmount", notRepayMoney);
          if (StringUtil.isNotBlank(notRepayMoney)) {
+             String title = "部分还款成功！";
+             String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
+             content = content.replace("&repayMoney",repayMoney);
+             content = content.replace("&remainAmount",notRepayMoney);
+             pushService.pushUtil(title,content,mobile);
              return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
          } else {
-             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+             String title = "恭喜您，借款已还清！";
+             String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
+             content = content.replace("&repayMoney",repayMoney);
+             pushService.pushUtil(title,content,mobile);
+             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_CONFIRM_SUCCESS.getCode());
          }
     }
     
@@ -709,6 +722,10 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 			}else{
 				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
 				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+                String title = "本次还款支付失败";
+                String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
+                content = content.replace("&errorMsg",errorMsg);
+                pushService.pushUtil(title,content,afUserDo.getMobile());
 			}
 		}
 		return rowNums;
