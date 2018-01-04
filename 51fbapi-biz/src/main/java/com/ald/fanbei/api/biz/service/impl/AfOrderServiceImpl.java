@@ -1895,6 +1895,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 						AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderIdAndStatus(orderInfo.getRid(),
 								BorrowStatus.TRANSED.getCode());
+						if (afBorrowDo == null) {
+						    afBorrowDo = afBorrowService.getBorrowByOrderIdAndStatus(orderInfo.getRid(),
+									BorrowStatus.FINISH.getCode());
+						}
 						BigDecimal newBorrowAmount = BigDecimal.ZERO;
 						BigDecimal backAmount = BigDecimal.ZERO;
 						// 重新需要生成账单的金额
