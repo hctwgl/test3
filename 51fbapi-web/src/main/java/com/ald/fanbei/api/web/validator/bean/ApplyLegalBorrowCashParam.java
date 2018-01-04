@@ -17,10 +17,8 @@ public class ApplyLegalBorrowCashParam {
 	@Pattern(regexp = "(7|14)")
 	private String type;
 	@NotNull
-	@Pattern(regexp = "^[\\-\\+]?([0-8]?\\d{1}\\.\\d{1,6}|90\\.0{1,6})$")
 	private String latitude;
 	@NotNull
-	@Pattern(regexp = "^[\\-\\+]?(0?\\d{1,2}\\.\\d{1,6}|1[0-7]?\\d{1}\\.\\d{1,6}|180\\.0{1,6})$")
 	private String longitude;
 	@NotNull
 	private String province;
@@ -49,7 +47,7 @@ public class ApplyLegalBorrowCashParam {
 	@NotNull
 	private String deliveryUser;
 	@NotNull
-	@Pattern(regexp = "^[1-9]{1}[0-9]{5,8}$")
+	@Pattern(regexp = "^[1-9]{1}[0-9]{5,10}$")
 	private String deliveryPhone;
 
 }
