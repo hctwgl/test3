@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.web.validator.intercept;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.Locale;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -49,17 +52,24 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 	private Logger logger = LoggerFactory.getLogger(ValidationInterceptor.class);
 
 	private static javax.validation.Validator clsValidator;
-	
+
 	private static ConvertUtilsBean convertUtils;
-	
-	private static ResourceBundle resourceBundle ;
+
+	private static ResourceBundle resourceBundle;
 
 	@PostConstruct
 	public void init() {
 		ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 		clsValidator = validatorFactory.getValidator();
 		convertUtils = new ConvertUtilsBean();
-		resourceBundle = ResourceBundle.getBundle("com.ald.fanbei.api.web.validator.message.check_msg", Locale.CHINA);
+		String locale = Locale.CHINA.toString();
+		InputStream is = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream("com/ald/fanbei/api/web/validator/message/check_msg" + "_" + locale + ".properties");
+		try {
+			resourceBundle = new PropertyResourceBundle(is);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -88,20 +98,20 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 					boolean legal = cd.isReportAsSingleViolation();
 					if (!legal) {
 						String transName = resourceBundle.getString(paramName);
-						if(StringUtils.isNotEmpty(transName)) {
+						if (StringUtils.isNotEmpty(transName)) {
 							try {
 								paramName = new String(transName.getBytes("ISO-8859-1"), "UTF-8");
 							} catch (UnsupportedEncodingException e) {
 								e.printStackTrace();
 							}
 						}
-						throw new FanbeiException( paramName + message, true);
+						throw new FanbeiException(paramName + message, true);
 					}
 				}
 			} catch (InstantiationException e) {
-				logger.error("instantion bean error ,error info =>{}",e.getMessage());
+				logger.error("instantion bean error ,error info =>{}", e.getMessage());
 			} catch (IllegalAccessException e) {
-				logger.error("illegal access error ,error info =>{}",e.getMessage());
+				logger.error("illegal access error ,error info =>{}", e.getMessage());
 			}
 		}
 	}
