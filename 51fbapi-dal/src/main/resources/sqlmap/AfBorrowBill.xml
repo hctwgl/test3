@@ -545,7 +545,8 @@
 			AND overdue_status = #{overdueStatus}
 		</if>
 		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
-			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
 		</if>
 		AND user_id = #{userId}
     </select>
@@ -569,7 +570,8 @@
 			AND overdue_status = #{overdueStatus}
 		</if>
 		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
-			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
 		</if>
 		AND user_id = #{userId}
 		GROUP BY
@@ -595,7 +597,8 @@
 			AND overdue_status = #{overdueStatus}
 		</if>
 		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
-			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
 		</if>
 		AND user_id = #{userId}
 	</select>
@@ -608,7 +611,8 @@
 			a.bill_nper billNper,
 			a.nper nper,
 			c.gmt_pay payDate,
-			a.gmt_out_day gmtOutDay
+			a.gmt_out_day gmtOutDay,
+			a.gmt_pay_time gmtPayTime
 		FROM `af_borrow_bill` a
 		LEFT JOIN `af_borrow` b on a.`borrow_id`= b.`id`
 		LEFT JOIN `af_order` c on b.`order_id`= c.id
@@ -624,7 +628,8 @@
 			AND a.overdue_status = #{overdueStatus}
 		</if>
 		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
-			AND a.gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
 		</if>
 		AND a.`user_id` = #{userId}
 		ORDER BY c.`gmt_pay`
@@ -641,7 +646,8 @@
 		AND status = 'N'
 		AND overdue_status = 'Y'
 		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
-			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
 		</if>
 		AND user_id = #{userId}
 	</select>
@@ -800,7 +806,8 @@
 			AND overdue_status = #{overdueStatus}
 		</if>
 		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
-			AND gmt_out_day BETWEEN #{outDayStr} and #{outDayEnd}
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
 		</if>
 		AND user_id = #{userId}
 	</select>
