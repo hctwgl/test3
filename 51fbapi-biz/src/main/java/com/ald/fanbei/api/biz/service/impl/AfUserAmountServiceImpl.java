@@ -77,6 +77,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try{
                     _addUserAmountDetail(afRepaymentDo);
+                    status.flush();
                 }
                 catch (Exception e){
                     logger.error("add userAmount error",e);
@@ -192,18 +193,24 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
     //订单退款生成记录
     public int refundOrder(final long orderId) {
-        return  transactionTemplate.execute(new TransactionCallback<Integer>() {
-            @Override
-            public Integer doInTransaction(TransactionStatus status) {
-                try {
-                    return _refundOrder(orderId);
-                }catch (Exception e){
-                    logger.error("add refundDetail error:",e);
-                    thirdLog.error("add refundDetail error",e);
-                    return 0;
+        try {
+            return transactionTemplate.execute(new TransactionCallback<Integer>() {
+                @Override
+                public Integer doInTransaction(TransactionStatus status) {
+                    try {
+                        return _refundOrder(orderId);
+                    } catch (Exception e) {
+                        logger.error("add refundDetail error:", e);
+                        thirdLog.error("add refundDetail error", e);
+                        return 0;
+                    }
                 }
-            }
-        });
+            });
+        }catch (Exception e){
+            logger.error("add refundDetail error:", e);
+            thirdLog.error("add refundDetail error", e);
+            return  0;
+        }
     }
 
     private int _refundOrder(long orderId){
