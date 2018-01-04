@@ -213,14 +213,6 @@ public class SubmitRepaymentByYiBaoApi implements ApiHandle {
                     throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
                 }
 
-            } else if (cardId.longValue() == -3) {
-                if (context.getAppVersion() < 395) {
-                    throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
-                }
-                if (!afResourceService.checkThirdPayByType(ThirdBizType.REPAYMENT, ThirdPayTypeEnum.ZFBPAY)) {
-                    throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
-                }
-
                 map = afRepaymentService.createRepaymentYiBao(jfbAmount, repaymentAmount, actualAmount, coupon, rebateAmount, billIds, cardId, userId, billDo, "", afUserAccountDo);
                 map.put("userNo", afUserAccountDo.getUserName());
                 map.put("userType", "USER_ID");
