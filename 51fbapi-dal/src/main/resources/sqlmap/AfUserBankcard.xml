@@ -46,7 +46,19 @@
 		AND
 			b.status='B'
 	</select>
-	
+	<select id="getUserBankInfoRefund" resultType="AfUserBankDto">
+		SELECT
+			<include refid="queryWithFields"/>
+		FROM
+			af_user_bankcard b
+		LEFT JOIN
+			af_user_account c
+		ON
+			b.is_delete=0 and b.user_id = c.user_id 
+		WHERE
+			b.is_delete=0 
+		AND b.id=#{bankId}
+	</select>
 	
 	<select id="getUserMainBankcardByUserId" resultType="AfUserBankcardDo">
 		SELECT

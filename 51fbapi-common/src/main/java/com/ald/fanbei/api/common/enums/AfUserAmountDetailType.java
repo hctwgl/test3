@@ -33,6 +33,7 @@ public enum AfUserAmountDetailType {
     SHIJIZHIFU( 5,"自行支付"),
     /**
      * 直接支付
+     * 退款时使用
      */
     ZHIJIEZHIFU( 6,"直接支付");
 

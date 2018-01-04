@@ -540,4 +540,73 @@ public class BizCacheUtil extends AbstractThird {
 			return false;
 		}
 	}
+	
+	/**
+	 * 锁住某个key值支付指定秒数，需要解锁时删除即可
+	 * @param key
+	 * @param value
+	 * @param expire 指定秒数
+	 * @return
+	 */
+	public boolean getLockSpecifiedTime(final String key, final String value,final long expire) {
+		if (!BIZ_CACHE_SWITCH) {
+			return false;
+		}
+		try {
+			Boolean flag = (Boolean) redisTemplate.execute(new RedisCallback<Object>() {
+				@Override
+				public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+					return connection.setNX(redisTemplate.getStringSerializer().serialize(key), value.getBytes());
+				}
+			});
+			if (flag) {
+				redisTemplate.execute(new RedisCallback<Object>() {
+					@Override
+					public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+						return connection.expire(redisTemplate.getStringSerializer().serialize(key), expire);
+					}
+				});
+			}
+			return flag;
+		} catch (Exception e) {
+			logger.error("getLock error", e);
+			return false;
+		}
+	}
+	
+	/**
+	 * 重试多次来获取锁，重试times次
+	 * 
+	 * @param key
+	 *            锁对应的key
+	 * @param value
+	 *            锁对应的value
+	 * @param times
+	 *            重试次数
+	 * @return
+	 */
+	public boolean getLockTryTimesSpecExpire(String key, String value, int times,long expire) {
+		try {
+			if (!BIZ_CACHE_SWITCH) {
+				return false;
+			}
+			if (times < 2) {
+				return getLockSpecifiedTime(key, value,expire);
+			}
+			for (int i = 0; i < times; i++) {
+				Thread.sleep(RandomUtils.nextInt(10));
+				boolean ifGet = getLockSpecifiedTime(key, value,expire);
+				if (ifGet) {
+					return true;
+				}
+				if (i == times - 1) {
+					this.delCache(key);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("get object error", e);
+			return false;
+		}
+		return false;
+	}
 }

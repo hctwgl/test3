@@ -111,4 +111,6 @@ public interface AfBorrowDao {
 	BigDecimal getUserNotInBorrowMoney(@Param("userId")Long userId);
 
     HashMap getUserSummary(@Param("userId") Long userId);
+
+    HashMap getUserSummaryOrderById(@Param("id") long id);
 }

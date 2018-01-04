@@ -99,8 +99,8 @@ public class GetMyHistoryBorrowDetailV1Api implements ApiHandle{
 			Date end = DateUtil.addDays(strOutDay, userOutDayDo.getOutDay() - 2);
 			Date str = DateUtil.addMonths(strOutDay, -1);
 			str = DateUtil.addDays(str, userOutDayDo.getOutDay() - 1);
-			map.put("str", DateUtil.formatAndMonthAndDay(str));
-			map.put("end", DateUtil.formatAndMonthAndDay(end));
+			map.put("str", DateUtil.formatShortDateC(str));
+			map.put("end", DateUtil.formatShortDateC(end));
 			map.put("billList", billList);
 			resp.setResponseData(map);
 			return resp;

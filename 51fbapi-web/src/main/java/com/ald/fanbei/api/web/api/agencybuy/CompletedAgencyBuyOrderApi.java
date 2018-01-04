@@ -124,13 +124,16 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 					if (_aa == null) {
 						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
 						afBorrowExtendDo.setId(afBorrowDo.getRid());
-						afBorrowExtendDo.setInBill(0);
+						afBorrowExtendDo.setInBill(1);
 						afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
 					} else {
 						_aa.setInBill(1);
 						afBorrowExtendDao.updateBorrowExtend(_aa);
 					}
 					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrderDo.getPayType());
+					for(AfBorrowBillDo _afBorrowExtendDo:billList){
+						_afBorrowExtendDo.setStatus("N");
+					}
 					afBorrowService.addBorrowBill(billList);
 
 					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrderDo.getUserId());

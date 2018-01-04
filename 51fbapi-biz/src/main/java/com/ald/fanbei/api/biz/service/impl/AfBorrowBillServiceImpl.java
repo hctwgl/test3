@@ -370,23 +370,24 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 
 			} else {
 				//未出
-				boolean needPlusFree = false;
+				boolean needPlusFree = true;
 				if (!m.containsKey(afBorrowBillDo.getBorrowId())) {
 					if (afBorrowBillDo.getBillNper().intValue() == 1) {
-						needPlusFree = true;
+						needPlusFree = false;
 						m.put(afBorrowBillDo.getBorrowId(), true);
 					}
-
-					if (!needPlusFree) {
+					else {
 						Calendar c = Calendar.getInstance();
 						c.set(Calendar.HOUR_OF_DAY, 0);
 						c.set(Calendar.MINUTE, 0);
 						c.set(Calendar.SECOND, 0);
 						if (pay_day.compareTo(c.getTime()) < 0) {
 							m.put(afBorrowBillDo.getBorrowId(), true);
-							needPlusFree = true;
+							needPlusFree = false;
 						}
 					}
+				}else{
+					needPlusFree = true;
 				}
 
 

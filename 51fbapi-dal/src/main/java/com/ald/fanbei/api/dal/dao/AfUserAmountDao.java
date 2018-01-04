@@ -92,4 +92,13 @@ public interface AfUserAmountDao {
 	 */
 	List<String> getMonthInYearByQuery(AfUserAmountQuery query);
 
+	/**
+	 * 计算实际还款金额（自行支付+余额抵扣+优惠卷抵扣）
+	 * @author yuyue
+	 * @Time 2018年1月2日 下午1:15:33
+	 * @param amountId
+	 * @return
+	 */
+	BigDecimal getRepaymentAmountByAmountId(@Param("amountId")Long amountId);
+
 }

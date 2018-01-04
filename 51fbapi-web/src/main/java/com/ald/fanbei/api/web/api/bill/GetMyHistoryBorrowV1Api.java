@@ -2,6 +2,8 @@ package com.ald.fanbei.api.web.api.bill;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
 import com.ald.fanbei.api.biz.service.AfBorrowBillService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -126,6 +129,13 @@ public class GetMyHistoryBorrowV1Api implements ApiHandle{
 				map.put("bills", yearMap.get(key));
 				list.add(map);
 			}
+			Collections.sort(list,new Comparator<Map<String, Object>>(){
+				public int compare(Map<String, Object> arg0, Map<String, Object> arg1) {
+					if((Integer)arg0.get("year") > (Integer)arg1.get("year")) return -1;
+					if((Integer)arg0.get("year") < (Integer)arg1.get("year")) return 1;
+					return 0;
+				}
+			});
 			respMap.put("list", list);
 			resp.setResponseData(respMap);
 			return resp;

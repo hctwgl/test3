@@ -276,7 +276,7 @@ public class StartCashierApi implements ApiHandle {
             }
             BigDecimal userabledAmount = BigDecimal.ZERO;
             //额度判断
-            if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
+            if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE")) {
                 //获取当前用户可用临时额度
                 BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                 userabledAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);
@@ -441,7 +441,7 @@ public class StartCashierApi implements ApiHandle {
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         BigDecimal useableAmount = BigDecimal.ZERO;
         //额度判断
-        if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0) {
+        if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME") && !orderInfo.getOrderType().equals("TRADE")) {
             //获取当前用户可用临时额度
             BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
             useableAmount = userDto.getAuAmount().subtract(userDto.getUsedAmount()).subtract(userDto.getFreezeAmount()).add(interim);

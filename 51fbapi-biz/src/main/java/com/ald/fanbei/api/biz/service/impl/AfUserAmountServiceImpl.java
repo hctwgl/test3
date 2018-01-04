@@ -13,7 +13,6 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAmountQuery;
-import com.sun.org.apache.bcel.internal.generic.RET;
 import com.timevale.tgtext.awt.geom.q;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -40,6 +39,7 @@ import java.util.List;
 @Service("afUserAmountService")
 public class AfUserAmountServiceImpl implements AfUserAmountService {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
 
     @Resource
     AfUserAmountDao afUserAmountDao;
@@ -77,6 +77,7 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try{
                     _addUserAmountDetail(afRepaymentDo);
+                    status.flush();
                 }
                 catch (Exception e){
                     logger.error("add userAmount error",e);
@@ -192,29 +193,53 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
     //订单退款生成记录
     public int refundOrder(final long orderId) {
-        return  transactionTemplate.execute(new TransactionCallback<Integer>() {
-            @Override
-            public Integer doInTransaction(TransactionStatus status) {
-                return _refundOrder(orderId);
-            }
-        });
+        try {
+            return transactionTemplate.execute(new TransactionCallback<Integer>() {
+                @Override
+                public Integer doInTransaction(TransactionStatus status) {
+                    try {
+                        return _refundOrder(orderId);
+                    } catch (Exception e) {
+                        logger.error("add refundDetail error:", e);
+                        thirdLog.error("add refundDetail error", e);
+                        return 0;
+                    }
+                }
+            });
+        }catch (Exception e){
+            logger.error("add refundDetail error:", e);
+            thirdLog.error("add refundDetail error", e);
+            return  0;
+        }
     }
 
     private int _refundOrder(long orderId){
         AfOrderDo afOrderDo = afOrderService.getOrderById(orderId);
+
         if (afOrderDo == null) {
+            logger.info("add refundDetail order is null orderId ="+ orderId);
             return 0;
         }
+        logger.info("add refundDetail orderStatus ="+ afOrderDo.getStatus());
         if (!(afOrderDo.getStatus().equals(OrderStatus.CLOSED.getCode()) || afOrderDo.getStatus().equals(OrderStatus.DEAL_REFUNDING.getCode()))) {
             return 0;
         }
         AfOrderRefundDo afOrderRefundDo = afOrderRefundDao.getOrderRefundByOrderId(orderId);
         if (afOrderRefundDo == null || !(afOrderRefundDo.getStatus().equals(OrderRefundStatus.FINISH.getCode()) || afOrderRefundDo.getStatus().equals(OrderRefundStatus.REFUNDING.getCode()))) {
+            logger.info("add refundDetail afOrderRefundDo error");
+            try{
+                logger.info("add refundDetail afOrderRefundDo status"+ afOrderRefundDo.getStatus());
+            }
+            catch (Exception e){
+                logger.info("add refundDetail afOrderRefundDo is null");
+                e.printStackTrace();
+            }
             return 0;
         }
 
         AfBorrowDo borrowInfo = afBorrowService.getBorrowByOrderId(orderId);
         if (borrowInfo == null) {
+            logger.info("add refundDetail borrowInfo is null");
             return 0;
         }
         List<AfBorrowBillDo> repaymentedBillList = afBorrowBillDao.getBillListByBorrowIdAndStatus(borrowInfo.getRid(),
@@ -229,13 +254,16 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
 
         AfUserAmountDo afUserAmountDo = new AfUserAmountDo();
-        afUserAmountDo.setAmount(map.get("repayment"));
+        afUserAmountDo.setAmount(map.get("repayment").add(bankPay));
         afUserAmountDo.setBizOrderNo(afOrderRefundDo.getRefundNo());  //随机生成
         afUserAmountDo.setBizType(AfUserAmountBizType.REFUND.getCode());
         afUserAmountDo.setSourceId(afOrderRefundDo.getRid());
         afUserAmountDo.setUserId(afOrderRefundDo.getUserId());
         afUserAmountDo.setStatus(AfUserAmountProcessStatus.SUCCESS.getCode());
         afUserAmountDo.setRemark(afOrderDo.getGoodsName());
+        if(afUserAmountDo.getRemark() ==null || afUserAmountDo.getRemark().length() ==0){
+            afUserAmountDo.setRemark(afOrderDo.getShopName());
+        }
         afUserAmountDao.addUserAmount(afUserAmountDo);
 //        addUserAmountLog(afRepaymentDo,AfUserAmountProcessStatus.NEW);
 
@@ -249,7 +277,8 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 
         afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), BigDecimal.ZERO.subtract(youhuijuan), 1, AfUserAmountDetailType.YOUHUIJUANGDIKOU));
 
-        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), bankPay, 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+//        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), bankPay, 1, AfUserAmountDetailType.ZHIJIEZHIFU));
+        afUserAmountDetailDao.addUserAmountDetail(buildAmountDetail(afUserAmountDo.getId(), afUserAmountDo.getAmount(), 1, AfUserAmountDetailType.ZHIJIEZHIFU));
 
         return 1;
     }
@@ -296,12 +325,20 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
                                 return Long.parseLong(source);
                             }
                         });
+                List<AfBorrowBillDo> listDo = afBorrowBillService.getBorrowBillByIds(repaymentBillLists);
+                BigDecimal allAmount = BigDecimal.ZERO;
+                for (AfBorrowBillDo afBorrowBillDo : listDo){
+                    allAmount = allAmount.add(afBorrowBillDo.getBillAmount());
+                }
                 for (Long billId : billIds) {
+                    if (!repaymentBillLists.contains(billId)){
+                        continue;
+                    }
                     if (repaymentBillLists.contains(billId)) {
                         AfBorrowBillDo billInfo = getBillFromList(repaymentedBillList, billId);
                         if(billInfo == null) continue;
-
-                        totalAmount = BigDecimalUtil.add(totalAmount, billInfo.getBillAmount());
+                        totalAmount = BigDecimalUtil.add(totalAmount,calculateRepaymentCouponAmount1(repayment,billInfo,allAmount));
+                        //totalAmount = BigDecimalUtil.add(totalAmount, billInfo.getBillAmount());
                         benjin = BigDecimalUtil.add(benjin, billInfo.getPrincipleAmount());
                         feiqishouxufei =BigDecimalUtil.add(feiqishouxufei, billInfo.getPoundageAmount().add(billInfo.getInterestAmount()));
                         yuqilixi =BigDecimalUtil.add(yuqilixi, billInfo.getOverdueInterestAmount().add(billInfo.getOverduePoundageAmount()));
@@ -353,7 +390,8 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
         logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
         BigDecimal couponAmount = repayment.getCouponAmount();
         BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
-        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+//        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+        BigDecimal result = BigDecimalUtil.multiply(rate, couponAmount);
         logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
         return result;
     }
@@ -398,5 +436,46 @@ public class AfUserAmountServiceImpl implements AfUserAmountService {
 	public List<String> getMonthInYearByQuery(AfUserAmountQuery query) {
 		return afUserAmountDao.getMonthInYearByQuery(query);
 	}
+
+	@Override
+	public BigDecimal getRepaymentAmountByAmountId(Long amountId) {
+		return afUserAmountDao.getRepaymentAmountByAmountId(amountId);
+	}
+
+
+    private BigDecimal calculateRepaymentCouponAmount(AfRepaymentDo repayment, AfBorrowBillDo billInfo,BigDecimal allAmount) {
+        logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
+        BigDecimal couponAmount = repayment.getCouponAmount();
+        BigDecimal rate = BigDecimalUtil.divide(billInfo.getBillAmount(), repayment.getRepaymentAmount());
+//        BigDecimal result = billInfo.getBillAmount().subtract(BigDecimalUtil.multiply(rate, couponAmount));
+
+        BigDecimal actualAmount = BigDecimalUtil.add(repayment.getActualAmount(),repayment.getRebateAmount());
+        BigDecimal result = billInfo.getBillAmount().multiply(actualAmount);
+
+        result = BigDecimalUtil.divide(result,allAmount);
+
+        result = result.subtract(BigDecimalUtil.multiply(rate, couponAmount));
+
+        logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{rate, billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
+        return result;
+    }
+
+
+    /**
+     * 计算该笔账单在还款中的实际还款金额
+     *
+     * @param repayment
+     * @param billInfo
+     * @return
+     */
+    private BigDecimal calculateRepaymentCouponAmount1(AfRepaymentDo repayment, AfBorrowBillDo billInfo,BigDecimal allAmount) {
+        logger.info("calculateRepaymentCouponAmount begin  repayment = {}, billInfo = {}", new Object[]{repayment, billInfo});
+        //BigDecimal rate1 = BigDecimalUtil.divide(billInfo.getBillAmount(),allAmount);
+        BigDecimal actualAmount = BigDecimalUtil.add(repayment.getActualAmount(),repayment.getRebateAmount());
+        BigDecimal result = billInfo.getBillAmount().multiply(actualAmount);
+        result = BigDecimalUtil.divide(result,allAmount);
+        logger.info("rate = {}, billAmount = {} repaymentAmount = {} result = {}", new Object[]{ billInfo.getBillAmount(), repayment.getRepaymentAmount(), result});
+        return result;
+    }
 
 }
