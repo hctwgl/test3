@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.util.HashMap;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
+import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -37,22 +48,62 @@ public class AppH5SFSubscribeController  extends BaseController{
 	
 	@Resource
 	AfResourceService afResourceService;
-	
+	@Resource
+	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+	@Resource
+	AfGoodsDoubleEggsUserService afGoodsDoubleEggsUserService;
+	@Resource
+	AfUserService afUserService;
+	/**
+	 * 
+	 * @Title: convertUserNameToUserId @Description: @param userName @return
+	 *         Long @throws
+	 */
+	private Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
+
+		}
+		return userId;
+	}
 	@RequestMapping(value = "/initHomePage",method = RequestMethod.POST )
 	public String initHomePage(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
+		FanbeiWebContext context = new FanbeiWebContext();
+		java.util.Map<String, Object> data = new HashMap<>();
+		
 		try {
-			java.util.Map<String, Object> data = new HashMap<>();
-			// get info from afResource;
-			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS", "INI_HOME_PAGE");
-			if(afResourceDo != null){
-			    data.put("eggsPic", afResourceDo.getValue());
-			    data.put("eggsUrl", afResourceDo.getValue1());
-			    data.put("freshManPic", afResourceDo.getValue2());
-			    data.put("freshManUrl", afResourceDo.getValue3());
+			context = doWebCheck(request, false);
+			if (context != null) {
+
+				String userName = context.getUserName();
+				//init the userId for the interface : getFivePictures
+				Long userId = 0L;
+				
+				//if login then 
+				if (StringUtil.isNotBlank(userName)) {
+					userId = convertUserNameToUserId(userName);
+				}
+				
+				//get goods to subscribe 
+				List<AfSFgoodsVo> goodsList = afGoodsDoubleEggsService.getFivePictures(userId);
+				data.put("goodsList", goodsList);
+				
+				//get configuration from afresource
+				AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "INIT_HOME_PAGE");
+				if (resourceDo != null) {
+					data.put("describtion", resourceDo.getValue2());
+					data.put("strategy_img", resourceDo.getValue());
+					data.put("strategy_redirect_img", resourceDo.getValue1());
+				}
+				
+				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 			}
 			
-			result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
 			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);

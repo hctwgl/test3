@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
 import com.ald.fanbei.api.dal.domain.GoodsForDate;
 
 /**
@@ -24,5 +25,7 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 	List<GoodsForDate> getGOodsByDate(Date startDate);
 
 	void updateCountById(Long goodsId);
+	
+	List<AfSFgoodsVo> getFivePictures(Long userId);
 
 }

@@ -212,4 +212,43 @@
 		WHERE
 			goods_id = #{goodsId};
     </update>
+    
+    <select id="getFivePictures" parameterType="com.ald.fanbei.api.dal.domain.AfSFgoodsVo",resultType="java.lang.Long">
+		SELECT
+				de.goods_id AS id,
+				de.activity_id AS activity_id,
+				(
+					SELECT
+						count(*)
+					FROM
+						af_goods_double_eggs_user u
+					WHERE
+						u.double_eggs_id = de.id
+				) AS order_number,
+				<if test="userId != null and userId != '' ">
+						CASE WHEN (
+									SELECT
+										count(*)
+									FROM
+										af_goods_double_eggs_user u
+									WHERE
+										u.double_eggs_id = de.id
+									AND u.user_id = #{userId}
+						) > 0 THEN
+								'Y'
+						ELSE
+								'N'
+						END
+				</if>
+				<if test="userId == 0">
+				'N'
+				</if>
+			as is_order
+			FROM
+				af_goods_double_eggs de
+			WHERE
+				de.reserve = 'Main'
+			ORDER BY
+				de.goods_id;
+    </select>
 </mapper>

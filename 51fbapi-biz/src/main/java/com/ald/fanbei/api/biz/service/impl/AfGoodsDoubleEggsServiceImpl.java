@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.AfGoodsDoubleEggsDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
 import com.ald.fanbei.api.dal.domain.GoodsForDate;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 
@@ -67,6 +68,12 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		public void updateCountById(Long goodsId) {
 			afGoodsDoubleEggsDao.updateCountById(goodsId);
 			
+		}
+
+		@Override
+		public List<AfSFgoodsVo> getFivePictures(Long userId) {
+			
+			return afGoodsDoubleEggsDao.getFivePictures(userId);
 		}
 
 
