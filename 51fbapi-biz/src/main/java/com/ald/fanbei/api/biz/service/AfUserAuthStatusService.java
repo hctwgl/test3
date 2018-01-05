@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 
 /**
+<<<<<<< HEAD
  * @类现描述：
  * @author caowu 2017年1月5日 下午17:25:56
  * @version
@@ -24,5 +25,15 @@ public interface AfUserAuthStatusService {
      * @return
      */
     AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndScene(Long userId, String scene,String status);
+=======
+ * 额度拆分多场景认证状体记录Service
+ * 
+ * @author gaojb
+ * @version 1.0.0 初始化
+ * @date 2018-01-05 14:58:48
+ * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ */
+public interface AfUserAuthStatusService extends ParentService<AfUserAuthStatusDo, Long>{
+>>>>>>> origin/version_split_sence
 
 }

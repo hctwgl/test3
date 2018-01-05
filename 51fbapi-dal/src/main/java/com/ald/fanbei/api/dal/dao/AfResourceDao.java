@@ -181,4 +181,11 @@ public interface AfResourceDao {
 
 	AfResourceDo getFinancialEntranceInfo();
 
+	/**
+	 * 根据type和value获取一个resoueceDo
+	 * @param type
+	 * @param value
+	 * @return
+	 */
+	AfResourceDo getConfigByTypesAndValue(@Param("type") String type, @Param("value")String value);
 }

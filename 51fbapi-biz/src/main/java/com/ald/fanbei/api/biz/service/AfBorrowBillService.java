@@ -1,14 +1,18 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
+import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -155,6 +159,12 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	int getSumOverdueCountByBorrowId(Long borrowId);
+	/**
+	 * 根据借款ID获取该借款账单的最大逾期天数
+	 * @param borrowId
+	 * @return
+	 */
+	int getMaxOverdueCountByBorrowId( Long borrowId);
 	
 	/**
 	 * 修改账单状态
@@ -219,6 +229,102 @@ public interface AfBorrowBillService {
 	List<AfOverdueOrderDto> getOverdueDataToRiskByConsumerNo(Long consumerNo);
 
 	/**
+	 * 获取用户未付款的逾期账单月数
+	 * @author yuyue
+	 * @Time 2017年11月10日 下午1:21:21
+	 * @param userId
+	 * @return
+	 */
+	int getOverduedMonthByUserId(Long userId);
+
+	/**
+	 * 获取未逾期用户最后还款日
+	 * @author yuyue
+	 * @Time 2017年11月13日 下午3:42:33
+	 * @param userId
+	 * @return
+	 */
+	Date getLastPayDayByUserId(Long userId);
+
+	/**
+	 * 根据条件获取用户账单金额
+	 * @author yuyue
+	 * @Time 2017年11月15日 下午3:55:05
+	 * @param query
+	 * @return
+	 */
+	BigDecimal getUserBillMoneyByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 根据条件获取用户月账单金额
+	 * @author yuyue
+	 * @Time 2017年11月15日 下午4:56:00
+	 * @param query
+	 * @return
+	 */
+	List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 根据条件查询子账单个数
+	 * @author yuyue
+	 * @Time 2017年11月20日 下午4:32:52
+	 * @param query
+	 * @return
+	 */
+	int countBillByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 根据条件查询子账单详情
+	 * @author yuyue
+	 * @Time 2017年11月21日 上午11:55:03
+	 * @param query
+	 * @return
+	 */
+	List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 根据条件查询月账单逾期利息
+	 * @author yuyue
+	 * @Time 2017年11月21日 下午2:34:22
+	 * @param query
+	 * @return
+	 */
+	BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQueryNoPage query);
+
+	/**
+	 * 根据borrowId查询账单利息
+	 * @author yuyue
+	 * @Time 2017年11月23日 下午1:55:35
+	 * @param borrowId
+	 * @return
+	 */
+	BigDecimal getInterestByBorrowId(Long borrowId);
+
+	/**
+	 * 根据borrowId查询账单逾期利息
+	 * @author yuyue
+	 * @Time 2017年11月23日 下午2:13:27
+	 * @param rid
+	 * @return
+	 */
+	BigDecimal getOverdueInterestByBorrowId(Long borrowId);
+
+	/**
+	 * 查询用户历史账单(已还清)
+	 * @author yuyue
+	 * @Time 2017年11月24日 下午1:30:14
+	 * @param userId
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	List<AfBorrowBillDo> getUserAllMonthBill(Long userId, int page, int pageSize);
+
+	List<AllBarlyClearanceBo> getAllClear(Long userId,Long billId);
+
+	
+
+	/**
 	 * 根据用户ID获取未还的逾期数
 	 * @author yuyue
 	 * @Time 2017年11月6日 下午3:34:04
@@ -253,4 +359,31 @@ public interface AfBorrowBillService {
 	int updateBorrowBillLockById(String billId);
 
 	int updateBorrowBillUnLockByIds(String billIds);
+
+	/**
+	 * 获取用户还款日
+	 * @author yuyue
+	 * @Time 2017年12月4日 下午3:18:58
+	 * @param userId
+	 * @param billYear
+	 * @param billMonth
+	 * @return
+	 */
+	Date getPayDayByYearAndMonth(Long userId, int billYear, int billMonth);
+
+	/**
+	 * 获取用户的临时额度
+	 * @param userId
+	 * @return
+	 */
+	AfInterimAuDo selectInterimAmountByUserId(Long userId);
+
+	/**
+	 * 根据条件查询billId
+	 * @author yuyue
+	 * @Time 2017年12月19日 下午3:40:38
+	 * @param query
+	 * @return
+	 */
+	List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query);
 }

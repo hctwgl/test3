@@ -486,6 +486,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.borrowNo = cashDo.getBorrowNo();
 		repayDealBo.refId += orderCashDo.getRid();
 		repayDealBo.userId = cashDo.getUserId();
+		repayDealBo.renewalNum = cashDo.getRenewalNum();
 		
 		dealOrderRepayOverdue(repayDealBo, orderCashDo);//逾期费
         dealOrderRepayPoundage(repayDealBo, orderCashDo);//手续费
@@ -669,7 +670,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                 			repayDealBo.borrowNo, "50", riskOrderNo, 
                 			repayDealBo.sumBorrowAmount,
                 			repayDealBo.sumIncome, 
-                			repayDealBo.overdueDay, overdueCount);
+                			repayDealBo.overdueDay,
+                			overdueCount,
+                			repayDealBo.overdueDay,
+                			repayDealBo.renewalNum);
             }
         } catch (Exception e) {
             logger.error("notifyRisk.raiseQuota error！", e);
@@ -1005,6 +1009,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		String borrowNo;								//借款流水号
     	String refId = "";								//还款的id串
     	Long userId ;									//目标用户id
+    	int renewalNum;                            //续借次数
 	}
 	
 	@Override

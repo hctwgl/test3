@@ -105,6 +105,24 @@ public class BizCacheUtil extends AbstractThird {
 		}
 		return 0l;
 	}
+	/**
+	 * 自增命令
+	 * @param key 键
+	 * @param expiredSeconds 失效时间
+	 * @return 自增值
+	 */
+	public long incr(String key,long expiredSeconds){
+		try {
+			Long r = redisIntegerTemplate.opsForValue().increment(key, 1);
+			if(r<2){
+				redisIntegerTemplate.expire(key,expiredSeconds,TimeUnit.SECONDS);
+			}
+			return r;
+		} catch (Exception e) {
+			logger.error("incr", e);
+		}
+		return 0l;
+	}
 	
 	public void saveObjectForever(final String key, final Serializable seriObj) {
 		if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(key) || seriObj == null) {

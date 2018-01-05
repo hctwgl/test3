@@ -199,6 +199,23 @@
 		FROM af_borrow WHERE is_delete = 0 AND borrow_no = #{borrowNo} LIMIT 1
 	</select>
 
+	<select id="getUserNotInBorrow" resultType="AfBorrowDto">
+		SELECT
+			a.id rid,
+			a.NAME name,
+			a.amount amount,
+			c.gmt_pay payDate
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND b.in_bill = 0
+		AND a.status = 'TRANSED'
+		order by a.gmt_create desc
+	</select>
 
 	<select id="getUserSummary" resultType="java.util.HashMap">
 		SELECT IFNULL(TIMESTAMPDIFF(HOUR,(SELECT gmt_risk  FROM af_user_auth WHERE user_id =c.user_id   LIMIT 1 ),(SELECT min(gmt_create)  FROM af_borrow_cash WHERE user_id =c.user_id  and `status`='FINSH' )),0) hourBetweenVerifyBorrow,
@@ -214,9 +231,36 @@ IFNULL(MAX(c.overdue_day  ),0)  maxOverdueDay,
 DATE_FORMAT(min(c.gmt_create),'%Y-%m-%d %H:%i:%s') firstBorrowTime
 FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 	</select>
+	<select id="getUserNotInBorrowCount" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND a.status = 'TRANSED'
+		AND b.in_bill = 0
+	</select>
+
+	<select id="getUserNotInBorrowMoney" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (SUM(a.amount), 0)
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND a.status = 'TRANSED'
+		AND b.in_bill = 0
+	</select>
 
 	<select id="getUserSummaryOrderById" resultType="java.util.HashMap">
-		SELECT (SELECT DATE_FORMAT(MIN(bi.`gmt_pay_time`), '%Y-%m-%d')  FROM `af_borrow_bill` bi WHERE bi.`borrow_id` =0 ) firstDueDate,o.`order_type` orderType,o.`pay_type` payType,o.`sec_type` secType,o.`order_no` orderNo,o.`user_coupon_id` userCouponId,o.`goods_id` goodsId,o.`goods_name` goodsName,o.`count` count,o.`actual_amount` actualAmount,o.`borrow_amount` borrowAmount,o.`bank_amount` bankAmount
+		SELECT (SELECT DATE_FORMAT(MIN(bi.`gmt_pay_time`), '%Y-%m-%d')  FROM `af_borrow_bill` bi LEFT JOIN af_borrow b ON b.id=bi.borrow_id WHERE b.order_id = o.id) firstDueDate,o.`order_type` orderType,o.`pay_type` payType,o.`sec_type` secType,o.`order_no` orderNo,o.`user_coupon_id` userCouponId,o.`goods_id` goodsId,o.`goods_name` goodsName,o.`count` count,o.`actual_amount` actualAmount,o.`borrow_amount` borrowAmount,o.`bank_amount` bankAmount
 ,CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`restaurant_name`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`  LIMIT 1) ELSE o.`shop_name` END  shopName
 ,o.`rebate_amount` rebateAmount ,o.`commission_amount`  commissionAmount,o.`rebate_allowance_amount` rebateAllowanceAmount,o.`nper` nper,o.`borrow_rate` borrowRate,o.`coupon_amount` couponAmount,o.`au_amount` auAmount,o.`used_amount` usedAmount ,
 (SELECT c.`name`  FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`primary_category_id`  = c.`id` WHERE g.`id` = o.`goods_id`     LIMIT 1) categoryOne,
