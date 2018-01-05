@@ -113,4 +113,6 @@ public interface AfBorrowDao {
     HashMap getUserSummary(@Param("userId") Long userId);
 
     HashMap getUserSummaryOrderById(@Param("id") long id);
+
+	Integer countNperRepaymentByBorrowId(@Param("id") long id);
 }
