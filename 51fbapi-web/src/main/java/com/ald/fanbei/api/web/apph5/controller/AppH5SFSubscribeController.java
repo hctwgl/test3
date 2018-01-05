@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,16 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfShopService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
+import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -54,6 +63,10 @@ public class AppH5SFSubscribeController  extends BaseController{
 	AfGoodsDoubleEggsUserService afGoodsDoubleEggsUserService;
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	AfShopService afShopService;
+	
+	String opennative = "/fanbei-web/opennative?name=";
 	/**
 	 * 
 	 * @Title: convertUserNameToUserId @Description: @param userName @return
@@ -70,6 +83,18 @@ public class AppH5SFSubscribeController  extends BaseController{
 		}
 		return userId;
 	}
+	/**
+	 * 
+	* @Title: initHomePage
+	* @author qiao
+	* @date 2018年1月5日 下午1:39:36
+	* @Description: 
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
 	@RequestMapping(value = "/initHomePage",method = RequestMethod.POST )
 	public String initHomePage(HttpServletRequest request, HttpServletResponse response) {
 		String result = "";
@@ -84,10 +109,29 @@ public class AppH5SFSubscribeController  extends BaseController{
 				//init the userId for the interface : getFivePictures
 				Long userId = 0L;
 				
+				String huoche = "HUOCHE";
+				String jipiao = "JIPIAO";
+
+				//get shop id for plane and train 
+				AfShopDo huocheDo = new AfShopDo();
+				huocheDo.setType(huoche);
+				huocheDo = afShopService.getShopInfoBySecTypeOpen(huocheDo);
+				if (huocheDo != null) {
+					data.put("trainShopId", huocheDo.getRid());
+				}
+				
+				AfShopDo jipiaoDo = new AfShopDo();
+				jipiaoDo.setType(huoche);
+				jipiaoDo = afShopService.getShopInfoBySecTypeOpen(jipiaoDo);
+				if (jipiaoDo != null) {
+					data.put("planeShopId", jipiaoDo.getRid());
+				}
+				
 				//if login then 
 				if (StringUtil.isNotBlank(userName)) {
 					userId = convertUserNameToUserId(userName);
 				}
+				
 				
 				//get goods to subscribe 
 				List<AfSFgoodsVo> goodsList = afGoodsDoubleEggsService.getFivePictures(userId);
@@ -112,6 +156,66 @@ public class AppH5SFSubscribeController  extends BaseController{
 		return result;
 	}
 
+	/**
+	 * 
+	* @Title: getBrandUrl
+	* @author qiao
+	* @date 2018年1月5日 下午1:39:29
+	* @Description: 
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/getBrandUrl",method = RequestMethod.POST )
+	public String getBrandUrl(HttpServletRequest request, HttpServletResponse response) {
+		String resultStr = "";
+		FanbeiWebContext context = new FanbeiWebContext();
+		java.util.Map<String, Object> data = new HashMap<>();
+		
+		try {
+			context = doWebCheck(request, true);
+			if (context != null) {
+				
+				
+				Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
+
+				if (shopId == null) {
+				    logger.error("shopId is empty");
+				    return H5CommonResponse.getNewInstance(false, "参数shopId为空").toString();
+				}
+
+				AfShopDo shopInfo = afShopService.getShopById(shopId);
+				if (shopInfo == null) {
+				    logger.error("shopId is invalid");
+				    return H5CommonResponse.getNewInstance(false, "参数shopId无效").toString();
+				}
+				String userName = context.getUserName();
+				Long userId = convertUserNameToUserId(userName);
+				String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(), shopInfo.getType(), userId, userName);
+
+				data.put("shopUrl", shopUrl);
+				logger.info("/appH5SF/getBrandUrl param: userId={} , shopUrl ={}",userId,shopUrl);
+				resultStr = H5CommonResponse.getNewInstance(true, "获取波罗蜜url成功", "", data).toString();
+			}
+			
+		}catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+				return resultStr.toString();
+			}
+		}catch (Exception exception) {
+			resultStr = H5CommonResponse.getNewInstance(false, "获取波罗蜜url失败", "", exception.getMessage()).toString();
+			logger.error("获取波罗蜜url失败  e = {} , resultStr = {}", exception, resultStr);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), resultStr);
+		}
+		return resultStr;
+	}
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub
