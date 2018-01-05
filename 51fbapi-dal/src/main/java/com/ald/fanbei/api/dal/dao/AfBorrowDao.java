@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
 
 /**
  * 
@@ -79,6 +81,34 @@ public interface AfBorrowDao {
 	 * @return
 	 */
 	AfBorrowDo getBorrowInfoByBorrowNo(String borrowNo);
+
+
+	/**
+	 * 获取用户所有未入账账单
+	 * @author yuyue
+	 * @Time 2017年11月21日 下午5:00:51
+	 * @param userId
+	 * @return
+	 */
+	List<AfBorrowDto> getUserNotInBorrow(@Param("userId")Long userId);
+
+	/**
+	 * 获取用户所有未入账账单数
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午6:07:23
+	 * @param userId
+	 * @return
+	 */
+	int getUserNotInBorrowCount(@Param("userId")Long userId);
+
+	/**
+	 * 获取用户所有未入账账单金额
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午6:09:55
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserNotInBorrowMoney(@Param("userId")Long userId);
 
     HashMap getUserSummary(@Param("userId") Long userId);
 

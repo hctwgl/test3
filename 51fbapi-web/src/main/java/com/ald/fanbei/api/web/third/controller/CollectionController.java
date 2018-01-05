@@ -109,7 +109,7 @@ public class CollectionController {
 		String timestamp = ObjectUtils.toString(request.getParameter("timestamp"));
 		String sign1 = ObjectUtils.toString(request.getParameter("sign"));
 
-		logger.info("findBorrowCashByBorrowNo data="+data+",timestamp="+timestamp+",sign1="+sign1+"");
+		logger.info("findBorrowCashByBorrowNoV1 data="+data+",timestamp="+timestamp+",sign1="+sign1+"");
 
 		//解析参数
 		JSONObject obj = JSON.parseObject(data);
@@ -120,7 +120,7 @@ public class CollectionController {
 			date = DateUtil.stringToDate(time);
 		} catch (ParseException e1) {
 			e1.printStackTrace();
-			logger.error("findBorrowCashByBorrowNo stringToDate is fail" + e1);
+			logger.error("findBorrowCashByBorrowNoV1 stringToDate is fail" + e1);
 		}
 
 		Map<String,String> map=new HashMap<String,String>();
@@ -130,7 +130,7 @@ public class CollectionController {
 		try {
 			AfBorrowCashDo afBorrowCashDo = borrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 			if (afBorrowCashDo == null) {
-				logger.error("findBorrowCashByBorrowNo afBorrowCashDo is null,borrowNo=" + borrowNo);
+				logger.error("findBorrowCashByBorrowNoV1 afBorrowCashDo is null,borrowNo=" + borrowNo);
 				updteBo.setCode(FanbeiThirdRespCode.FAILED.getCode());
 				updteBo.setMsg(FanbeiThirdRespCode.FAILED.getMsg());
 				return updteBo;
