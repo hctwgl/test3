@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_user_account_sence表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfUserAccountSenceDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,scene,user_id,au_amount,used_amount,freeze_amount 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="scene != null and scene != ''">
+            AND scene = #{scene,jdbcType=VARCHAR}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="auAmount != null and auAmount != ''">
+            AND au_amount = #{auAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="usedAmount != null and usedAmount != ''">
+            AND used_amount = #{usedAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="freezeAmount != null and freezeAmount != ''">
+            AND freeze_amount = #{freezeAmount,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_user_account_sence
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="scene != null">        
+	            scene,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="auAmount != null">        
+	            au_amount,
+	        </if>
+	        <if test="usedAmount != null">        
+	            used_amount,
+	        </if>
+	        <if test="freezeAmount != null">        
+	            freeze_amount,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="scene != null" >
+		       #{scene,jdbcType=VARCHAR},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="auAmount != null" >
+		       #{auAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="usedAmount != null" >
+		       #{usedAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="freezeAmount != null" >
+		       #{freezeAmount,jdbcType=DECIMAL},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
+        UPDATE af_user_account_sence
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="scene != null and scene != '' ">        
+                scene = #{scene,jdbcType=VARCHAR},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="auAmount != null and auAmount != '' ">        
+                au_amount = #{auAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="usedAmount != null and usedAmount != '' ">        
+                used_amount = #{usedAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="freezeAmount != null and freezeAmount != '' ">        
+                freeze_amount = #{freezeAmount,jdbcType=DECIMAL}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_account_sence
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_account_sence
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_account_sence
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
