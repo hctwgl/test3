@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
-
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -73,6 +72,7 @@ import com.ald.fanbei.api.common.enums.PushStatus;
 import com.ald.fanbei.api.common.enums.RiskStatus;
 import com.ald.fanbei.api.common.enums.SupplyCertifyStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -179,6 +179,9 @@ public class RiskUtil extends AbstractThird {
     AfInterimAuDao afInterimAuDao;
     @Resource
     AfInterimDetailDao afInterimDetailDao;
+    
+    @Autowired
+    AfUserAccountSenceService afUserAccountSenceService;
 
     private static String getUrl() {
         if (url == null) {
@@ -646,12 +649,18 @@ public class RiskUtil extends AbstractThird {
             riskResp.setSuccess(true);
             JSONObject dataObj = JSON.parseObject(riskResp.getData());
             BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
+            BigDecimal onlineAmount = new BigDecimal(dataObj.getString("onlineAmount"));
+            BigDecimal offlineAmount = new BigDecimal(dataObj.getString("offlineAmount"));
             Long consumerNum = Long.parseLong(consumerNo);
 
             AfUserAccountDo accountDo = new AfUserAccountDo();
             accountDo.setUserId(consumerNum);
             accountDo.setAuAmount(au_amount);
             afUserAccountService.updateUserAccount(accountDo);
+            
+            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNum, onlineAmount);
+            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.OFFLINE.getCode(), consumerNum, offlineAmount);
+            
             return riskResp;
         } else {
             throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);

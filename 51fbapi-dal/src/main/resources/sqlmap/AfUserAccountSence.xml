@@ -121,6 +121,12 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
+	<update id="updateUserSceneAuAmount"  parameterType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
+        INSERT INTO af_user_account_sence (scene,user_id,au_amount) 
+        VALUES (#{scene,jdbcType=VARCHAR},#{userId,jdbcType=INTEGER},#{auAmount,jdbcType=DECIMAL})  
+        ON DUPLICATE KEY UPDATE au_amount=#{auAmount,jdbcType=DECIMAL},gmt_modified = NOW(); 
+    </update>
+
 	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
         SELECT
         <include refid="queryFields" />
