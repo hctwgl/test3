@@ -604,7 +604,7 @@ public class RiskUtil extends AbstractThird {
      * @param borrowCount
      * @return
      */
-    public RiskVerifyRespBo raiseQuota(String consumerNo, String borrowNo, String scene, String orderNo, BigDecimal amount, BigDecimal income, Long overdueDay, int overdueCount) {
+    public RiskVerifyRespBo raiseQuota(String consumerNo, String borrowNo, String scene, String orderNo, BigDecimal amount, BigDecimal income, Long overdueDay, int overdueCount,Long maxOverdueDay,int repayCount) {
         RiskRaiseQuotaReqBo reqBo = new RiskRaiseQuotaReqBo();
         reqBo.setOrderNo(orderNo);
         reqBo.setEventType(Constants.EVENT_FINANCE_COUNT);
@@ -617,6 +617,9 @@ public class RiskUtil extends AbstractThird {
         obj.put("income", income);
         obj.put("overdueDays", overdueDay);
         obj.put("overdueCount", overdueCount);
+        
+        obj.put("maxOverdueDay", maxOverdueDay);
+        obj.put("repayCount", repayCount);
 
         reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
         reqBo.setReqExt("");

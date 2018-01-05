@@ -159,6 +159,12 @@ public interface AfBorrowBillService {
 	 * @return
 	 */
 	int getSumOverdueCountByBorrowId(Long borrowId);
+	/**
+	 * 根据借款ID获取该借款账单的最大逾期天数
+	 * @param borrowId
+	 * @return
+	 */
+	int getMaxOverdueCountByBorrowId( Long borrowId);
 	
 	/**
 	 * 修改账单状态

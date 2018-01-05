@@ -31,6 +31,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 /**
  * 
@@ -645,4 +646,10 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	public List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query) {
 		return afBorrowBillDao.getBillIdListByQuery(query);
 	}
+
+        @Override
+        public int getMaxOverdueCountByBorrowId(Long borrowId) {
+    
+    		return afBorrowBillDao.getMaxOverdueCountByBorrowId(borrowId);
+        }
 }
