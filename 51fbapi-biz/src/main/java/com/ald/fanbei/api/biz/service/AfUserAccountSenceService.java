@@ -14,4 +14,6 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 public interface AfUserAccountSenceService extends ParentService<AfUserAccountSenceDo, Long> {
 
     int updateUserSceneAuAmount(String scene, Long userId, BigDecimal auAmount);
+
+    AfUserAccountSenceDo getByUserIdAndScene(String scene, Long userId);
 }
