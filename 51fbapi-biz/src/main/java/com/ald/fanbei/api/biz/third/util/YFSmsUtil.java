@@ -77,7 +77,7 @@ public class YFSmsUtil {
         SmsResult result = new SmsResult();
         try{
 
-            logger.info("sendSms params=|"+phones+"content="+content);
+            logger.info("YFsendSms params=|"+phones+"content="+content);
             if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
                     Constants.INVELOMENT_TYPE_TEST)) {
                 result.setSucc(true);
