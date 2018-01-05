@@ -718,7 +718,7 @@ public class SmsUtil extends AbstractThird {
      * @param mobile
      * @param msg
      */
-    private static SmsResult sendSmsToDhst(String mobiles, String content) {
+    private SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
         logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
@@ -886,13 +886,12 @@ public class SmsUtil extends AbstractThird {
             logger.error("sendTenementNotify error:", e);
         }
     }
-    private static SmsResult switchSmsSend(String mobile, String content){
+    private  SmsResult switchSmsSend(String mobile, String content){
 
-        SmsUtil smsUtil = new SmsUtil();
-        if("YF".contains(smsUtil.rules(mobile))){
+        if("YF".contains(this.rules(mobile))){
             return YFSmsUtil.send(mobile, content,YFSmsUtil.VERIFYCODE);
         }else{
-            return sendSmsToDhst(mobile, content);
+            return this.sendSmsToDhst(mobile, content);
         }
     }
     public   String rules(String mobile){
