@@ -78,12 +78,12 @@ public class YFSmsUtil {
         try{
 
             logger.info("YFsendSms params=|"+phones+"content="+content);
-            if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
-                    Constants.INVELOMENT_TYPE_TEST)) {
-                result.setSucc(true);
-                result.setResultStr("test");
-                return result;
-            }
+//            if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
+//                    Constants.INVELOMENT_TYPE_TEST)) {
+//                result.setSucc(true);
+//                result.setResultStr("test");
+//                return result;
+//            }
 
 
             String key = "";

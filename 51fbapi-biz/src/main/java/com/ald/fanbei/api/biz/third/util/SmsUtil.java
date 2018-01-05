@@ -408,7 +408,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.FORGET_PASS, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
