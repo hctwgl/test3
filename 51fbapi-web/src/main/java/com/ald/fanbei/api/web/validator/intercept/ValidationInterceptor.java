@@ -76,6 +76,7 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 			try {
 				Object validatorInstanceBean = validatorBeanClazz.newInstance();
 				initializeValidatorBean(validatorInstanceBean, reqData);
+				logger.info("initialize validator bean success.");
 				Set<ConstraintViolation<Object>> validateResults = clsValidator.validate(validatorInstanceBean);
 				for (ConstraintViolation<Object> validateResult : validateResults) {
 					Path propertyPath = validateResult.getPropertyPath();
@@ -95,6 +96,7 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 								e.printStackTrace();
 							}
 						}
+						logger.error(paramName + message);
 						throw new FanbeiException( paramName + message, true);
 					}
 				}
