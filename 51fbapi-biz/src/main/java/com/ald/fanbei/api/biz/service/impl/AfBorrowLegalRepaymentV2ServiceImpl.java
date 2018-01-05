@@ -78,7 +78,7 @@ import com.alibaba.fastjson.JSONObject;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Service("afBorrowLegalRepaymentService")
-public class AfBorrowLegalRepaymentV2ServiceImpl implements AfBorrowLegalRepaymentV2Service {
+public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRepaymentBorrowCashDo, Long>  implements AfBorrowLegalRepaymentV2Service {
 
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
@@ -738,6 +738,11 @@ public class AfBorrowLegalRepaymentV2ServiceImpl implements AfBorrowLegalRepayme
 		String borrowNo;								//借款流水号
     	String refId = "";								//还款的id串
     	Long userId ;									//目标用户id
+	}
+
+	@Override
+	public BaseDao<AfRepaymentBorrowCashDo, Long> getDao() {
+		return null;
 	}
 
 }

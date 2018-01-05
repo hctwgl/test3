@@ -22,7 +22,6 @@ import com.ald.fanbei.api.biz.service.impl.AfBorrowLegalRepaymentV2ServiceImpl.R
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.AfRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -83,7 +82,7 @@ public class RepayDoV2Api implements ApiHandle {
 		data.put("rid", bo.borrowId);
 		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
 		data.put("gmtCreate", new Date());
-		data.put("status", AfBorrowLegalRepaymentStatus.YES.getCode());
+		data.put("status", AfBorrowCashRepmentStatus.YES.getCode());
 		if(bo.userCouponDto != null) {
 			data.put("couponAmount", bo.userCouponDto.getAmount());
 		}
@@ -120,8 +119,6 @@ public class RepayDoV2Api implements ApiHandle {
 		bo.cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")),0l);
 		bo.couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
 		bo.borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
-		bo.borrowOrderId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowOrderId")), 0l);
-		bo.from = ObjectUtils.toString(requestDataVo.getParams().get("from"), "").toString();
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);
