@@ -34,73 +34,6 @@
         </if>
     </sql>
 
-
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-
-        INSERT INTO af_user_auth_status
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">
-	            gmt_modified,
-	        </if>
-	        <if test="scene != null">
-	            scene,
-	        </if>
-	        <if test="status != null">
-	            status,
-	        </if>
-	        <if test="userId != null">
-	            user_id,
-	        </if>
-	        <if test="causeReason != null">
-	            cause_reason,
-        id rid,gmt_create,gmt_modified,scene,status,user_id,cause_reason
-    </sql>
-
-    <insert id="addAfUserAuthStatus" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" keyProperty="rid">
-        INSERT INTO af_user_auth_status
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="scene != null">
-                scene,
-	        </if>
-	        <if test="status != null">
-                status,
-	        </if>
-	        <if test="userId != null">
-                user_id,
-	        </if>
-	        <if test="causeReason != null">
-                cause_reason
-	        </if>
-        </trim>
-        
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="scene != null" >
-		       #{scene,jdbcType=VARCHAR},
-		    </if>
-		    <if test="status != null" >
-		       #{status,jdbcType=VARCHAR},
-		    </if>
-		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="causeReason != null" >
-		       #{causeReason,jdbcType=VARCHAR},
-		    </if>
-        </trim>
-    </insert>
-
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
         UPDATE af_user_auth_status
           <set>
@@ -142,18 +75,46 @@
         limit 0,1
     </select>
 
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM af_user_auth_status
-        <include refid="commonCondition"/>
-		       #{userId},
-		    </if>
-		    <if test="causeReason != null" >
-		       #{causeReason,jdbcType=VARCHAR}
-		    </if>
+
+    <insert id="addAfUserAuthStatus" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" keyProperty="rid">
+        INSERT INTO af_user_auth_status
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="scene != null">
+                scene,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="causeReason != null">
+                cause_reason
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scene != null" >
+                #{scene,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="causeReason != null" >
+                #{causeReason,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
+
 
     <select id="selectAfUserAuthStatusByUserIdAndScene" resultType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
         SELECT

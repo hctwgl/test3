@@ -1,14 +1,15 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
-<<<<<<< HEAD
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Param;
 /**
- *@类现描述：
- *@author caowu 2018年1月5日 下午15:34:01
- *@version
- *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * 额度拆分多场景认证状体记录Dao
+ *
+ * @author gaojb
+ * @version 1.0.0 初始化
+ * @date 2018-01-05 14:58:48
+ * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfUserAuthStatusDao {
     /**
@@ -25,19 +26,6 @@ public interface AfUserAuthStatusDao {
      * @return
      */
     AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndScene(@Param("userId") Long userId, @Param("scene") String scene,@Param("status") String status);
-=======
 
-/**
- * 额度拆分多场景认证状体记录Dao
- * 
- * @author gaojb
- * @version 1.0.0 初始化
- * @date 2018-01-05 14:58:48
- * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
- */
-public interface AfUserAuthStatusDao extends BaseDao<AfUserAuthStatusDo, Long> {
 
-    
-
->>>>>>> origin/version_split_sence
 }
