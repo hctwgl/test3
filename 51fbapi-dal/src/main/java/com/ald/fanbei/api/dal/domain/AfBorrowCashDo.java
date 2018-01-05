@@ -62,13 +62,15 @@ public class AfBorrowCashDo extends AbstractSerial {
 	private BigDecimal poundageRate;// 借钱手续费率（日）
 	private BigDecimal baseBankRate;// 央行基准利率
 	private String majiabaoName;//马甲包名称www为APP,其余的为马甲包名称
-	
-	
+	private BigDecimal riskDailyRate;
 
-	
+	public BigDecimal getRiskDailyRate() {
+		return riskDailyRate;
+	}
 
-
-
+	public void setRiskDailyRate(BigDecimal riskDailyRate) {
+		this.riskDailyRate = riskDailyRate;
+	}
 
 	/**
 	 * @return the gmtClose
