@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +26,6 @@ import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -39,12 +36,10 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
-import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -244,110 +239,6 @@ public class AppH5SFSubscribeController extends BaseController {
 		}
 		return resultStr;
 	}
-	
-	@RequestMapping(value = "/initTigerMachine", method = RequestMethod.POST)
-	public String couponHomePage(HttpServletRequest request, HttpServletResponse response) {
-		Map<String, Object> data = new HashMap<String, Object>();
-		FanbeiWebContext context = new FanbeiWebContext();
-		String result = "";
-
-		try {
-			context = doWebCheck(request, false);
-			Long userId = convertUserNameToUserId(context.getUserName());
-			
-			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
-			
-			if (activityId == null ) {
-				return H5CommonResponse.getNewInstance(false, "参数会场id获取失败").toString();
-			}
-			
-			// 未登录初始化数据
-			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);  
-			
-			
-			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
-			String coupons = couponCategory.getCoupons();
-			if(StringUtil.isBlank(coupons)){
-				return H5CommonResponse.getNewInstance(false, "改会场没有优惠券").toString();
-			}
-			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
-
-			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
-			
-			for (int i = 0; i < couponsArray.size(); i++) {
-				String couponId = (String) couponsArray.getString(i);
-				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
-				if (afCouponDo != null) {
-					AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
-					afCouponDouble12Vo.setId(afCouponDo.getRid());
-					afCouponDouble12Vo.setName(afCouponDo.getName());
-					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
-					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
-					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
-
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					// 当前时间
-					Date currentTime = new Date();
-					
-					//new way to get Field isShow
-
-					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
-					if (afResourceDo == null) {
-						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
-					}
-					
-					String startTime = afResourceDo.getValue();
-					String endTime = afResourceDo.getValue1();
-					
-					if (currentTime.before(dateFormat.parse(startTime))) {
-						afCouponDouble12Vo.setIsShow("N");// 活动未开始
-					}
-					
-					if (currentTime.after(dateFormat.parse(endTime))) {
-						afCouponDouble12Vo.setIsShow("E");// 活动已经结束
-					}
-					
-					String tenMinute = startTime.split(" ")[1];
-					String currentHourMinute = DateUtil.convertDateToString(DateUtil.SHORT_MATCH_PATTERN,currentTime);
-					
-					if(currentHourMinute.compareTo(tenMinute) < 0 ){
-						afCouponDouble12Vo.setIsShow("N");// 活动未开始
-					}else{
-						afCouponDouble12Vo.setIsShow("Y");// 在活动时间内
-					}
-					if (userId == null) {
-						afCouponDouble12Vo.setIsGet("N");// 未领取
-
-					} else {
-						if (afUserCouponService.getUserCouponByUserIdAndCouponId(userId, afCouponDo.getRid()) != 0) {
-							afCouponDouble12Vo.setIsGet("Y");// 已领取
-						} else {
-							afCouponDouble12Vo.setIsGet("N");// 未领取
-						}
-
-					}
-					if (afCouponDo.getQuota() > afCouponDo.getQuotaAlready()) {
-						afCouponDouble12Vo.setIshas("Y");// 优惠券还有
-					} else {
-						afCouponDouble12Vo.setIshas("N");// 优惠券已领完
-					}
-					couponVoList.add(afCouponDouble12Vo);
-				}
-			}
-
-			logger.info(JSON.toJSONString(couponVoList));
-			data.put("couponList", couponVoList);
-			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
-		
-		} 
-		catch (Exception e) {
-			logger.error("/appH5DoubleEggs/initCoupons error = {}", e.getStackTrace());
-			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
-		}
-		return result;
-	}
-	
-	
 	
 
 	@Override
