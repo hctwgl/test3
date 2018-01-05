@@ -336,6 +336,18 @@
 				<entry key="/borrow/getCreditPromoteInfoV1" value-ref="getCreditPromoteInfoV1Api" />
 
 
+				<entry key="/borrow/getBillListByMonthAndYear" value-ref="getBillListByMonthAndYearApi" />
+				<entry key="/borrow/getBorrowDetailV1" value-ref="getBorrowDetailV1Api" />
+				<entry key="/borrow/getMyBorrowListV1" value-ref="getMyBorrowListV1Api" />
+				<entry key="/borrow/getMyBorrowV1" value-ref="getMyBorrowV1Api" />
+				<entry key="/borrow/getMyHistoryBorrowV1" value-ref="getMyHistoryBorrowV1Api" />
+				<entry key="/borrow/getMyRepaymentDetailV1" value-ref="getMyRepaymentDetailV1Api" />
+				<entry key="/borrow/getMyRepaymentHistoryV1" value-ref="getMyRepaymentHistoryV1Api" />
+				<entry key="/borrow/getMyRepaymentV1" value-ref="getMyRepaymentV1Api" />
+				<entry key="/borrow/getRepaymentDetailV1" value-ref="getRepaymentDetailV1Api" />
+				<entry key="/borrow/getRepaymentCalendarV1" value-ref="getRepaymentCalendarV1Api" />
+				<entry key="/borrow/getMyHistoryBorrowDetailV1" value-ref="getMyHistoryBorrowDetailV1Api" />
+
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
 				<entry key="/brand/getOrderDetailUrl" value-ref="getOrderDetailUrlApi" />
@@ -449,6 +461,8 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+				<!-- 漂浮窗信息 -->
+				<entry key="/floatingWindow/floatInfo" value-ref="floatInfo" />
 
 				<!-- 代扣开关 -->
 				<entry key="/Withhold/getWithholdInfo" value-ref="getWithholdInfoApi" />
@@ -482,6 +496,9 @@
 				
 				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
+
+				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
+				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
 
 			</map>
 		</constructor-arg>
