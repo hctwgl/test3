@@ -37,10 +37,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 /**  
- * @Description: 续期确认支付（合规）
+ * @Description: 续期确认支付（合规V2）
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
  * @author yanghailong
- * @date 2017年12月8日
+ * @date 2018年1月5日
  */
 @Component("confirmLegalRenewalPayV2Api")
 public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
