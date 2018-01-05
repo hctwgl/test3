@@ -243,7 +243,11 @@ public class UserWithholdController extends BaseController {
                 afWithholdLogDo.setRefId(refId);
                 afWithholdLogDo.setRemark(map==null?"":map.toString());
                 //插入代扣日志
-                afWithholdLogService.saveRecord(afWithholdLogDo);
+                try{
+                    afWithholdLogService.saveRecord(afWithholdLogDo);
+                }catch (Exception e){
+                    logger.error("withhold for add logs error:" + e);
+                }
                 return returnjson;
             }else if(actualAmount.compareTo(lowCashPrice)<0){
                 logger.info("withhold for borrowcash fail for actualAmount less than lowCashPrice,userId:"+userId + ",borrowId:"+borrowId);
@@ -298,14 +302,22 @@ public class UserWithholdController extends BaseController {
                         afWithholdLogDo.setStatus(1);
                         afWithholdLogDo.setRemark(map.toString());
                         //插入代扣日志
-                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                        try{
+                            afWithholdLogService.saveRecord(afWithholdLogDo);
+                        }catch (Exception e){
+                            logger.error("withhold for add logs error:" + e);
+                        }
                         break;
                     }else{
                         afWithholdLogDo.setStatus(0);
                         returnjson.put("success",true);
                         afWithholdLogDo.setRemark(map==null?"":map.toString());
                         //插入代扣日志
-                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                        try{
+                            afWithholdLogService.saveRecord(afWithholdLogDo);
+                        }catch (Exception e){
+                            logger.error("withhold for add logs error:" + e);
+                        }
                     }
 
                 }
@@ -459,7 +471,11 @@ public class UserWithholdController extends BaseController {
                 afWithholdLogDo.setRefId(refId);
                 afWithholdLogDo.setRemark(map==null?"":map.toString());
                 //插入代扣日志
-                afWithholdLogService.saveRecord(afWithholdLogDo);
+                try{
+                    afWithholdLogService.saveRecord(afWithholdLogDo);
+                }catch (Exception e){
+                    logger.error("withhold for add logs error:" + e);
+                }
                 return returnjson;
             }else if(actualAmount.compareTo(lowBillPrice)<0){
                 logger.info("withhold for borrowbill fail for actualAmount less than lowBillPrice,userId:"+userId + ",billIds:"+billIds);
@@ -513,14 +529,22 @@ public class UserWithholdController extends BaseController {
                         returnjson.put("success",true);
                         afWithholdLogDo.setRemark(map.toString());
                         //插入代扣日志
-                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                        try{
+                            afWithholdLogService.saveRecord(afWithholdLogDo);
+                        }catch (Exception e){
+                            logger.error("withhold for add logs error:" + e);
+                        }
                         break;
                     }else{
                         afWithholdLogDo.setStatus(0);
                         returnjson.put("success",true);
                         afWithholdLogDo.setRemark(map==null?"":map.toString());
                         //插入代扣日志
-                        afWithholdLogService.saveRecord(afWithholdLogDo);
+                        try{
+                            afWithholdLogService.saveRecord(afWithholdLogDo);
+                        }catch (Exception e){
+                            logger.error("withhold for add logs error:" + e);
+                        }
                     }
 
                 }

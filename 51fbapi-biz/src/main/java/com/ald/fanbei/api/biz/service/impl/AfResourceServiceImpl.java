@@ -663,4 +663,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 	}
 	return afResourceDao.getConfigByTypesAndSecType(resourceType, resourceSecType);
     }
+
+	@Override
+	public AfResourceDo getConfigByTypesAndValue(String type, String value) {
+		return afResourceDao.getConfigByTypesAndValue(type,value);
+	}
+
 }

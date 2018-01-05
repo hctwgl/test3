@@ -263,7 +263,7 @@
 		af_borrow_bill
 		WHERE is_delete = 0
 		AND borrow_id = #{borrowId}
-		ORDER BY id ASC
+		ORDER BY bill_nper ASC
 	</select>
     
     <select id="getPaidBillNumByBorrowId" resultType="java.lang.Integer">
@@ -515,6 +515,206 @@
 		abb.bill_month DESC
 	</select>
 
+	<select id="getOverduedMonthByUserId" resultType="java.lang.Integer">
+		SELECT COUNT(1) from (
+			SELECT * from af_borrow_bill
+			where is_delete = 0
+			and overdue_status = 'Y'
+			and status = 'N'
+			and user_id = #{userId} GROUP BY bill_month,bill_year)a
+    </select>
+
+    <select id="getLastPayDayByUserId" resultType="java.util.Date">
+		SELECT gmt_pay_time from af_borrow_bill where is_delete = 0 and is_out = 1 and status = 'N' and user_id = #{userId}  ORDER BY gmt_pay_time LIMIT 0,1
+    </select>
+
+    <select id="getUserBillMoneyByQuery" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (sum(bill_amount), 0)
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND overdue_status = #{overdueStatus}
+		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
+		</if>
+		AND user_id = #{userId}
+    </select>
+
+    <select id="getUserBillListByQuery" resultType="AfBorrowBillDo">
+		SELECT
+			COALESCE (sum(bill_amount), 0) billAmount,
+			COALESCE (sum(overdue_interest_amount), 0) overdueInterestAmount,
+			gmt_out_day gmtOutDay
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND overdue_status = #{overdueStatus}
+		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
+		</if>
+		AND user_id = #{userId}
+		GROUP BY
+			gmt_out_day
+		ORDER BY
+			gmt_out_day
+	</select>
+
+	<select id="countBillByQuery" resultType="java.lang.Integer">
+		SELECT
+			COUNT(1)
+		from
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND overdue_status = #{overdueStatus}
+		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
+		</if>
+		AND user_id = #{userId}
+	</select>
+
+	<select id="getBillListByQuery" resultType="AfBorrowBillDto">
+		SELECT
+			a.id rid,
+			a.NAME name,
+			a.bill_amount billAmount,
+			a.bill_nper billNper,
+			a.nper nper,
+			c.gmt_pay payDate,
+			a.gmt_out_day gmtOutDay,
+			a.gmt_pay_time gmtPayTime
+		FROM `af_borrow_bill` a
+		LEFT JOIN `af_borrow` b on a.`borrow_id`= b.`id`
+		LEFT JOIN `af_order` c on b.`order_id`= c.id
+		where
+			a.`is_delete`= 0
+		<if test="isOut != null">
+			AND a.is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND a.overdue_status = #{overdueStatus}
+		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
+		</if>
+		AND a.`user_id` = #{userId}
+		ORDER BY c.`gmt_pay`
+	</select>
+
+	<select id="getUserOverdeuInterestByQuery" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (sum(overdue_interest_amount), 0)
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		AND is_out = 1
+		AND status = 'N'
+		AND overdue_status = 'Y'
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
+		</if>
+		AND user_id = #{userId}
+	</select>
+
+	<select id="getInterestByBorrowId" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (sum(interest_amount), 0)
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		AND borrow_id = #{borrowId}
+	</select>
+
+	<select id="getOverdueInterestByBorrowId" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (sum(overdue_interest_amount), 0)
+		FROM
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		AND borrow_id = #{borrowId}
+	</select>
+
+	<select id="getUserAllMonthBill" resultType="AfBorrowBillDo">
+		select a.billAmount ,
+			str_to_date(a.gmtOutDay,'%Y-%m-%d %H:%i:%s') gmtOutDay
+		from
+		(SELECT
+		      COALESCE (sum(bill_amount), 0) billAmount,
+		      DATE_FORMAT(gmt_out_day,'%Y-%c-01') gmtOutDay
+		      -- gmt_out_day
+		    FROM
+		      af_borrow_bill
+		    WHERE
+		      is_delete = 0
+		      AND status = 'Y'
+		      AND user_id = #{userId}
+		      and gmt_out_day <![CDATA[<]]> NOW()
+		    GROUP BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c')
+		    ORDER BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c') desc
+		) a
+		left join
+		(SELECT
+		      COALESCE (sum(bill_amount), 0) billAmount,
+		      DATE_FORMAT(gmt_out_day,'%Y-%c-01') gmtOutDay
+		    FROM
+		      af_borrow_bill
+		    WHERE
+		      is_delete = 0
+		      AND is_out = 1
+		      AND status = 'N'
+		      AND user_id = #{userId}
+		      and gmt_out_day <![CDATA[<]]> NOW()
+		    GROUP BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c')
+		    ORDER BY
+		      DATE_FORMAT(gmt_out_day,'%Y-%c') desc
+		) b
+		on a.gmtOutDay = b.gmtOutDay
+		where  IFNULL(b.billAmount,0) = 0
+		LIMIT #{begin},#{pageSize}
+	</select>
+
+
 	<select id="countNotPayOverdueBill" resultType="java.lang.Integer">
 		SELECT COUNT(1) from af_borrow_bill where is_delete = 0 and `status` = 'N' and overdue_status = 'Y' and user_id = #{userId}
 	</select>
@@ -565,4 +765,50 @@
 		</foreach>
 
 	</update>
+
+	<select id="getPayDayByYearAndMonth" resultType="java.util.Date">
+		SELECT
+			gmt_pay_time
+		FROM
+			af_borrow_bill
+		WHERE
+		is_delete = 0
+		AND	user_id = #{userId}
+		AND DATE_FORMAT(gmt_out_day,'%Y') = #{billYear}
+		AND DATE_FORMAT(gmt_out_day,'%c') = #{billMonth}
+		and is_out = 1
+		order by gmt_pay_time
+		limit 0,1
+	</select>
+
+	<select id="selectInterimAmountByUserId" resultType="afInterimAuDo">
+		SELECT
+		id rid,user_id,gmt_create,gmt_modified,interim_amount,interim_used,gmt_failuretime
+        from
+        af_interim_au
+        where user_id = #{userId}
+	</select>
+
+	<select id="getBillIdListByQuery" resultType="java.lang.Long">
+		SELECT
+			id
+		from
+			af_borrow_bill
+		WHERE
+			is_delete = 0
+		<if test="isOut != null">
+			AND is_out = #{isOut}
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="overdueStatus != null and overdueStatus != ''">
+			AND overdue_status = #{overdueStatus}
+		</if>
+		<if test="outDayStr != null and outDayStr != '' and outDayEnd != null and outDayEnd != ''">
+			AND gmt_out_day <![CDATA[>=]]> #{outDayStr} 
+			and gmt_out_day <![CDATA[<]]> #{outDayEnd}
+		</if>
+		AND user_id = #{userId}
+	</select>
 </mapper>

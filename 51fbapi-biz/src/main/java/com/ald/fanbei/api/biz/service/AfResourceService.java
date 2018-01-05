@@ -208,7 +208,7 @@ public interface AfResourceService {
 
 	List<AfResourceDo> getEcommercePositionUpRescoure();
 	List<AfResourceDo> getEcommercePositionDownRescoure();
-	
+
 	/**
 	 * 获取vip用户专有利率
 	 * @param userName 用户名
@@ -227,4 +227,6 @@ public interface AfResourceService {
 	AfResourceDo getFinancialEntranceInfo();
 	
 	AfResourceDo getWechatConfig();
+
+	AfResourceDo getConfigByTypesAndValue(String type,String value);
 }
