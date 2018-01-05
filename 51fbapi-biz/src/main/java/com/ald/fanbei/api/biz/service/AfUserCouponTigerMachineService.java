@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.AfUserCouponTigerMachineDo;
  */
 public interface AfUserCouponTigerMachineService extends ParentService<AfUserCouponTigerMachineDo, Long>{
 
+	int getTotalTimesByUserId(Long userId);
+
 }

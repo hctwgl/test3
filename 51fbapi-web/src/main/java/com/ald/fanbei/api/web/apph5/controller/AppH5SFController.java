@@ -21,12 +21,16 @@ import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsService;
 import com.ald.fanbei.api.biz.service.AfGoodsDoubleEggsUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
+import com.ald.fanbei.api.biz.service.AfUserCouponTigerMachineService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -69,6 +73,8 @@ public class AppH5SFController extends BaseController {
 	AfGoodsDoubleEggsUserService afGoodsDoubleEggsUserService;
 	@Resource
 	AfUserService afUserService;
+	@Resource
+	AfUserCouponTigerMachineService afUserCouponTigerMachineService;
 
 	String opennative = "/fanbei-web/opennative?name=";
 
@@ -89,29 +95,38 @@ public class AppH5SFController extends BaseController {
 		return userId;
 	}
 
+	/**
+	 * 
+	* @Title: initTigerMachine
+	* @author qiao
+	* @date 2018年1月5日 下午5:43:05
+	* @Description: 老虎机页面初始化
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
 	@RequestMapping(value = "/initTigerMachine", method = RequestMethod.POST)
-	public String couponHomePage(HttpServletRequest request, HttpServletResponse response) {
+	public String initTigerMachine(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		FanbeiWebContext context = new FanbeiWebContext();
 		String result = "";
 
 		try {
-			context = doWebCheck(request, false);
+			context = doWebCheck(request, true);
+			
 			Long userId = convertUserNameToUserId(context.getUserName());
 
-			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
-
-			if (activityId == null) {
-				return H5CommonResponse.getNewInstance(false, "参数会场id获取失败").toString();
-			}
-
-			// 未登录初始化数据
+			Long activityId = 10L;
+			
+			//get conpons
 			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
 
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
 			String coupons = couponCategory.getCoupons();
 			if (StringUtil.isBlank(coupons)) {
-				return H5CommonResponse.getNewInstance(false, "改会场没有优惠券").toString();
+				return H5CommonResponse.getNewInstance(false, "次活动奖品已经领完").toString();
 			}
 			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
 
@@ -128,48 +143,6 @@ public class AppH5SFController extends BaseController {
 					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
 					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
 
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					// 当前时间
-					Date currentTime = new Date();
-
-					// new way to get Field isShow
-
-					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY",
-							"START_END_TIME");
-					if (afResourceDo == null) {
-						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
-					}
-
-					String startTime = afResourceDo.getValue();
-					String endTime = afResourceDo.getValue1();
-
-					if (currentTime.before(dateFormat.parse(startTime))) {
-						afCouponDouble12Vo.setIsShow("N");// 活动未开始
-					}
-
-					if (currentTime.after(dateFormat.parse(endTime))) {
-						afCouponDouble12Vo.setIsShow("E");// 活动已经结束
-					}
-
-					String tenMinute = startTime.split(" ")[1];
-					String currentHourMinute = DateUtil.convertDateToString(DateUtil.SHORT_MATCH_PATTERN, currentTime);
-
-					if (currentHourMinute.compareTo(tenMinute) < 0) {
-						afCouponDouble12Vo.setIsShow("N");// 活动未开始
-					} else {
-						afCouponDouble12Vo.setIsShow("Y");// 在活动时间内
-					}
-					if (userId == null) {
-						afCouponDouble12Vo.setIsGet("N");// 未领取
-
-					} else {
-						if (afUserCouponService.getUserCouponByUserIdAndCouponId(userId, afCouponDo.getRid()) != 0) {
-							afCouponDouble12Vo.setIsGet("Y");// 已领取
-						} else {
-							afCouponDouble12Vo.setIsGet("N");// 未领取
-						}
-
-					}
 					if (afCouponDo.getQuota() > afCouponDo.getQuotaAlready()) {
 						afCouponDouble12Vo.setIshas("Y");// 优惠券还有
 					} else {
@@ -178,18 +151,112 @@ public class AppH5SFController extends BaseController {
 					couponVoList.add(afCouponDouble12Vo);
 				}
 			}
-
+			
+			//get total userTimes
+			int times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
+			data.put("times", times);
 			logger.info(JSON.toJSONString(couponVoList));
 			data.put("couponList", couponVoList);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 
-		} catch (Exception e) {
+		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+				
+			}
+		} 
+		
+		catch (Exception e) {
 			logger.error("/appH5DoubleEggs/initCoupons error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
 		}
 		return result;
 	}
 
+	/**
+	 * 
+	* @Title: pickUpTigerMachineCoupon
+	* @author qiao
+	* @date 2018年1月5日 下午5:47:05
+	* @Description: 老虎机领券
+	* @param request
+	* @param response
+	* @return    
+	* @return String   
+	* @throws
+	 */
+	@RequestMapping(value = "/pickUpTigerMachineCoupon", method = RequestMethod.POST)
+	public String pickUpTigerMachineCoupon(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		FanbeiWebContext context = new FanbeiWebContext();
+		String result = "";
+
+		try {
+			context = doWebCheck(request, true);
+			
+			Long userId = convertUserNameToUserId(context.getUserName());
+
+			Long activityId = 10L;
+			
+			//get conpons
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+
+			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+			String coupons = couponCategory.getCoupons();
+			if (StringUtil.isBlank(coupons)) {
+				return H5CommonResponse.getNewInstance(false, "次活动奖品已经领完").toString();
+			}
+			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+
+			List<Long> avalibleCouponIdList = new ArrayList<>();
+
+			for (int i = 0; i < couponsArray.size(); i++) {
+				String couponId = (String) couponsArray.getString(i);
+				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+				if (afCouponDo != null) {
+					AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
+					afCouponDouble12Vo.setId(afCouponDo.getRid());
+					afCouponDouble12Vo.setName(afCouponDo.getName());
+					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
+					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
+					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
+
+					if (afCouponDo.getQuota() > afCouponDo.getQuotaAlready()) {
+						avalibleCouponIdList.add(afCouponDouble12Vo.getId());
+					} 
+				}
+			}
+			
+			//random get one coupon Id
+			
+			
+			
+			//get total userTimes
+			int times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
+			data.put("times", times);
+			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
+
+		} catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
+				data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+				
+			}
+		} 
+		
+		catch (Exception e) {
+			logger.error("/appH5DoubleEggs/initCoupons error = {}", e.getStackTrace());
+			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
+		}
+		return result;
+	}
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 		// TODO Auto-generated method stub

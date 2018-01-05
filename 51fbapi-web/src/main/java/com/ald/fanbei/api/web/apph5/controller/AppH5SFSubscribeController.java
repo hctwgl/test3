@@ -229,8 +229,7 @@ public class AppH5SFSubscribeController extends BaseController {
 				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
 						+ H5OpenNativeType.AppLogin.getCode();
 				data.put("loginUrl", loginUrl);
-				resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
-				return resultStr.toString();
+				return resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
 			}
 		} catch (Exception exception) {
 			resultStr = H5CommonResponse.getNewInstance(false, "获取波罗蜜url失败", "", exception.getMessage()).toString();

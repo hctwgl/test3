@@ -33,4 +33,10 @@ public class AfUserCouponTigerMachineServiceImpl extends ParentServiceImpl<AfUse
 	public BaseDao<AfUserCouponTigerMachineDo, Long> getDao() {
 		return afUserCouponTigerMachineDao;
 	}
+
+		@Override
+		public int getTotalTimesByUserId(Long userId) {
+			
+			return afUserCouponTigerMachineDao.getTotalTimesByUserId(userId);
+		}
 }

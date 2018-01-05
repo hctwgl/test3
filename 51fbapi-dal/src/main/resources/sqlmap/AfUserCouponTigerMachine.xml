@@ -120,4 +120,12 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getTotalTimesByUserId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		SELECT
+			daily_time + shoping_time
+		FROM
+			af_user_coupon_tiger_machine
+		WHERE
+			is_delete = 0 user_id = #{userId}
+    </select>
 </mapper>
