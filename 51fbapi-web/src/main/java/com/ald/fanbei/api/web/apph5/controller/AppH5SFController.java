@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -197,9 +199,7 @@ public class AppH5SFController extends BaseController {
 
 		try {
 			context = doWebCheck(request, true);
-			
 			Long userId = convertUserNameToUserId(context.getUserName());
-
 			Long activityId = 10L;
 			
 			//get conpons
@@ -218,22 +218,18 @@ public class AppH5SFController extends BaseController {
 				String couponId = (String) couponsArray.getString(i);
 				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
 				if (afCouponDo != null) {
-					AfCouponDouble12Vo afCouponDouble12Vo = new AfCouponDouble12Vo();
-					afCouponDouble12Vo.setId(afCouponDo.getRid());
-					afCouponDouble12Vo.setName(afCouponDo.getName());
-					afCouponDouble12Vo.setThreshold(afCouponDo.getUseRule());
-					afCouponDouble12Vo.setAmount(afCouponDo.getAmount());
-					afCouponDouble12Vo.setLimitAmount(afCouponDo.getLimitAmount());
 
 					if (afCouponDo.getQuota() > afCouponDo.getQuotaAlready()) {
-						avalibleCouponIdList.add(afCouponDouble12Vo.getId());
+						avalibleCouponIdList.add(afCouponDo.getRid());
 					} 
 				}
 			}
 			
 			//random get one coupon Id
+			int hitIndex = (int) (Math.random() * (avalibleCouponIdList.size() - 0) + 0);
 			
-			
+			Long id = avalibleCouponIdList.get(hitIndex);
+			data.put("id", id);
 			
 			//get total userTimes
 			int times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
@@ -262,6 +258,7 @@ public class AppH5SFController extends BaseController {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 	@Override
 	public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
