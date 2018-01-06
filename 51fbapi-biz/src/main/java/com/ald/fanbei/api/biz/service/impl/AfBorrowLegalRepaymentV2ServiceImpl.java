@@ -165,6 +165,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
 				String repayType, String repayTime, String repayAmount,
 				String restAmount, String outTradeNo, String isBalance) {
+		checkOfflineRepayment(cashDo, repayAmount, outTradeNo);
+		
 		RepayBo bo = new RepayBo();
 		bo.userId = cashDo.getUserId();
 		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
@@ -603,6 +605,18 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
         }
+	}
+	
+	private void checkOfflineRepayment(AfBorrowCashDo cashDo, String offlineRepayAmount ,String outTradeNo) {
+		if(afRepaymentBorrowCashDao.getRepaymentBorrowCashByTradeNo(null, outTradeNo) != null) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+		}
+		
+		BigDecimal restAmount = calculateRestAmount(cashDo);
+		// 因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+10元 时，返回错误
+		if (NumberUtil.objToBigDecimalDivideOnehundredDefault(offlineRepayAmount, BigDecimal.ZERO).compareTo(restAmount) > 0) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+		}
 	}
     
 	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid) {
