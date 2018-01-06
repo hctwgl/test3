@@ -137,17 +137,6 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	/**
 	 * 新版还钱函
 	 * 参考{@link com.ald.fanbei.api.biz.service.impl.AfRepaymentBorrowCashServiceImpl}.createRepayment()
-	 * 
-	 * @param repaymentAmount
-	 * @param actualAmount
-	 * @param coupon
-	 * @param rebateAmount
-	 * @param borrow
-	 * @param cardId
-	 * @param userId
-	 * @param clientIp
-	 * @param afUserAccountDo
-	 * @return
 	 */
 	@Override
 	public void repay(RepayBo bo) {

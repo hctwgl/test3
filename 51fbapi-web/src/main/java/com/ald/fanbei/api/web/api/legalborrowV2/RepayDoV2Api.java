@@ -143,7 +143,7 @@ public class RepayDoV2Api implements ApiHandle {
 		}
 		bo.cashDo = cashDo;
 		
-		// 检查当前 借款 或 订单借钱 是否已在处理中
+		// 检查当前 借款 是否已在处理中
 		AfRepaymentBorrowCashDo rbCashDo = afRepaymentBorrowCashService.getLastRepaymentBorrowCashByBorrowId(bo.borrowId);
 		if(rbCashDo != null && AfBorrowCashRepmentStatus.PROCESS.getCode().equals(rbCashDo.getStatus())) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_PROCESS_ERROR);
