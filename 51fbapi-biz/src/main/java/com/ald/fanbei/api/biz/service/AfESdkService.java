@@ -26,6 +26,8 @@ public interface AfESdkService {
 
     FileDigestSignResult secondSign(Map<String,String> map);//签章
 
+    FileDigestSignResult thirdSign(Map<String,String> map);//签章
+
     FileDigestSignResult selfSign(Map<String,String> map);//签章
 
     AddAccountResult addPerson(Map<String,String> map);//创建个人账户
@@ -46,6 +48,6 @@ public interface AfESdkService {
 
     AfUserSealDo getSealPersonal(AfUserDo afUserDo, AfUserAccountDo accountDo);
 
-    void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo);
+    void getSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo);
 
 }
