@@ -21,7 +21,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:80";
+	String urlBase = "http://localhost:8080";
 	String userName = "15669066271";
 	
 	/**
@@ -61,7 +61,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 
-//	@Test
+	@Test
 	public void  repayDo() {
 		String url = urlBase + "/legalborrowV2/repayDo";
 		Map<String,String> params = new HashMap<>();
@@ -69,11 +69,9 @@ public class LegalBorrowV2Test  extends BaseTest{
 		params.put("userCouponId", "");
 		params.put("rebateAmount", "");
 		params.put("payPwd", DigestUtils.md5Hex("111111"));
-		params.put("cardId", "3111464124");
+		params.put("cardId", "244");
 		params.put("actualAmount", "201");
-		params.put("borrowOrderId", "243");
-//		params.put("borrowId", "1259939");
-		params.put("from", "ORDER");
+		params.put("borrowId", "1260416");
 		
 		testApi(url, params, userName ,true);
 	}
