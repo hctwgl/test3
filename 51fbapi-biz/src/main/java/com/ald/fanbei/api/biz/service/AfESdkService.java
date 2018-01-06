@@ -24,6 +24,8 @@ public interface AfESdkService {
 
     FileDigestSignResult userSign(Map<String,String> map);//签章
 
+    FileDigestSignResult secondUserSign(Map<String,String> map);//签章
+
     FileDigestSignResult secondSign(Map<String,String> map);//签章
 
     FileDigestSignResult thirdSign(Map<String,String> map);//签章
@@ -35,6 +37,8 @@ public interface AfESdkService {
     GetAccountProfileResult getPerson(Map<String,String> map);//创建个人账户
 
     AfUserSealDo selectUserSealByUserId(Long id);
+
+    AfUserSealDo selectUserSealByCardId(String id);
 
     List<AfUserSealDo> selectByUserType(String type);
 

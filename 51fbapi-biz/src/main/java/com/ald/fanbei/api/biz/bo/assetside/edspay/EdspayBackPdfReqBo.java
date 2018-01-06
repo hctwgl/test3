@@ -27,6 +27,26 @@ public class EdspayBackPdfReqBo implements Serializable {
 
 	private String protocolUrl;
 
+	private String investorName;
+
+	private String investorCardId;
+
+	public String getInvestorName() {
+		return investorName;
+	}
+
+	public void setInvestorName(String investorName) {
+		this.investorName = investorName;
+	}
+
+	public String getInvestorCardId() {
+		return investorCardId;
+	}
+
+	public void setInvestorCardId(String investorCardId) {
+		this.investorCardId = investorCardId;
+	}
+
 	public Integer getDebtType() {
 		return debtType;
 	}

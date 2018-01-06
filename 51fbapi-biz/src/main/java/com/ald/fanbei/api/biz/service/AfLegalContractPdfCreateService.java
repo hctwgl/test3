@@ -17,6 +17,7 @@ public interface AfLegalContractPdfCreateService {
 
     void protocolLegalRenewal(long userId, Long borrowId, Long renewalId, int renewalDay, BigDecimal renewalAmount);
 
-    int getProtocalLegalByType(Integer debtType,String orderNo,String protocolUrl) throws IOException;
+    String getProtocalLegalByType(Integer debtType, String orderNo,String protocolUrl,String investorPhone,
+                                  String investorName,String investorCardId) throws IOException;
 
 }

@@ -126,14 +126,70 @@ public class AfESdkServiceImpl implements AfESdkService {
 		// float width = Float.valueOf(map.get("sealWidth"));
 		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
 		int posX = 170;
-		int posY = 685;
+		int posY = 785;
 		int posType = 0;
 		int width = 159;
 		boolean isQrcodeSign = false;
 		String key = map.get("key");
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
-		posPage = "5";
+		posPage = "6";
+		PosBean pos = new PosBean();
+		pos.setPosType(posType);
+		pos.setPosX(posX);
+		pos.setPosY(posY);
+		pos.setPosPage(posPage);
+		pos.setKey(key);
+		pos.setWidth(width);
+		pos.setQrcodeSign(isQrcodeSign);
+		SignPDFFileBean fileBean = new SignPDFFileBean();
+		fileBean.setSrcPdfFile(srcFile);
+		fileBean.setDstPdfFile(dstFile);
+		fileBean.setFileName(fileName);
+		FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
+		// 使用用户印章签名
+		return r;
+	}
+
+	@Override
+	public FileDigestSignResult secondUserSign(Map<String, String> map) {
+
+		// 待签署文 档路径
+		String srcFile = map.get("selfPath");// 待签署文档路径
+		logger.debug("sign doc: " + srcFile);
+		String dstFile = map.get("secondPath");// 签署后文档保存路径
+		String fileName = map.get("fileName");// 文档显示名字
+		String type = map.get("signType");// 签章类型
+		SignType signType = null;
+		String sealData = map.get("personUserSeal");// 签章数据
+		fileName = "反呗合同";
+		type = "Multi";
+		if ("Single".equalsIgnoreCase(type)) {
+			signType = SignType.Single;
+		} else if ("Multi".equalsIgnoreCase(type)) {
+			signType = SignType.Multi;
+		} else if ("Edges".equalsIgnoreCase(type)) {
+			signType = SignType.Edges;
+		} else if ("Key".equalsIgnoreCase(type)) {
+			signType = SignType.Key;
+		}
+
+		String accountId = map.get("accountId");
+		// accountId = "57FD6990CE904C84A212A6D81E16213A";
+		// int posX = Integer.valueOf(map.get("posX"));
+		// int posY = Integer.valueOf(map.get("posY"));
+		// int posType = Integer.valueOf(map.get("posType"));
+		// float width = Float.valueOf(map.get("sealWidth"));
+		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
+		int posX = 170;
+		int posY = 785;
+		int posType = 0;
+		int width = 159;
+		boolean isQrcodeSign = false;
+		String key = map.get("key");
+		String posPage = map.get("posPage");
+		logger.debug("sign account id: " + accountId);
+		posPage = "6";
 		PosBean pos = new PosBean();
 		pos.setPosType(posType);
 		pos.setPosX(posX);
@@ -182,14 +238,14 @@ public class AfESdkServiceImpl implements AfESdkService {
 		// float width = Float.valueOf(map.get("sealWidth"));
 		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
 		int posX = 420;
-		int posY = 685;
+		int posY = 785;
 		int posType = 0;
 		int width = 159;
 		boolean isQrcodeSign = false;
 		String key = map.get("key");
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
-		posPage = "5";
+		posPage = "6";
 		PosBean pos = new PosBean();
 		pos.setPosType(posType);
 		pos.setPosX(posX);
@@ -238,7 +294,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		// float width = Float.valueOf(map.get("sealWidth"));
 		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
 		int posX = 420;
-		int posY = 540;
+		int posY = 640;
 		int posType = 0;
 		int width = 159;
 
@@ -246,7 +302,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		String key = map.get("key");
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
-		posPage = "5";
+		posPage = "6";
 		PosBean pos = new PosBean();
 		pos.setPosType(posType);
 		pos.setPosX(posX);
@@ -295,7 +351,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		 * Boolean.valueOf(map.get("isQrcodeSign"));
 		 */
 		int posX = 170;
-		int posY = 540;
+		int posY = 640;
 		int posType = 0;
 		int width = 159;
 		boolean isQrcodeSign = false;
@@ -303,7 +359,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
 		fileName = "反呗合同";
-		posPage = "5";
+		posPage = "6";
 		PosBean pos = new PosBean();
 		pos.setPosType(posType);
 		pos.setPosX(posX);
@@ -348,6 +404,11 @@ public class AfESdkServiceImpl implements AfESdkService {
 	}
 
 	@Override
+	public AfUserSealDo selectUserSealByCardId(String id) {
+		return afUserSealDao.selectByCardId(id);
+	}
+
+	@Override
 	public List<AfUserSealDo> selectByUserType(String type) {
 		return afUserSealDao.selectByUserType(type);
 	}
@@ -377,8 +438,13 @@ public class AfESdkServiceImpl implements AfESdkService {
 	@Override
 	public AfUserSealDo getSealPersonal(AfUserDo afUserDo, AfUserAccountDo accountDo) {
 
-		AfUserSealDo afUserSealDo = selectUserSealByUserId(afUserDo.getRid());
+		AfUserSealDo afUserSealDo = new AfUserSealDo();
 		AfUserSealDo afUserSealDo1 = new AfUserSealDo();
+		if ("edspay".equals(afUserDo.getMajiabaoName())){
+			afUserSealDo = selectUserSealByCardId(accountDo.getIdNumber());
+		}else {
+			afUserSealDo = selectUserSealByUserId(afUserDo.getRid());
+		}
 		if (null == afUserSealDo) {// 第一次创建个人印章
 			Map<String, String> map = new HashMap<>();
 			map.put("name", afUserDo.getRealName());
@@ -395,11 +461,18 @@ public class AfESdkServiceImpl implements AfESdkService {
 				throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 			}
 			afUserSealDo1.setUserAccountId(addAccountResult.getAccountId());
-			afUserSealDo1.setUserType("2");
+			if (afUserDo.getMajiabaoName() != null && "edspay".equals(afUserDo.getMajiabaoName())){
+				afUserSealDo1.setUserType("3");
+			}else {
+				afUserSealDo1.setUserType("2");
+			}
 			AddSealResult addSealResult = createSealPersonal(addAccountResult.getAccountId(), "RECTANGLE", "RED");
 			if (!addSealResult.isErrShow()) {
 				afUserSealDo1.setUserId(afUserDo.getRid());
 				afUserSealDo1.setUserSeal(addSealResult.getSealData());
+				if (afUserDo.getMajiabaoName() != null && "edspay".equals(afUserDo.getMajiabaoName())){
+					afUserSealDo1.setEdspayUserCardId(accountDo.getIdNumber());
+				}
 				// afUserSealDo1.setUserSeal("data:image/png;base64,"+addSealResult.getSealData());
 				// userSeal = addSealResult.getSealData();
 			}

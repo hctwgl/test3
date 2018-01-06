@@ -15,9 +15,19 @@ public class AfUserSealDo {
 
     private String userName;
 
+    private String edspayUserCardId;
+
     private Date gmtCreate;
 
     private Byte isDelete;
+
+    public String getEdspayUserCardId() {
+        return edspayUserCardId;
+    }
+
+    public void setEdspayUserCardId(String edspayUserCardId) {
+        this.edspayUserCardId = edspayUserCardId;
+    }
 
     public Date getGmtCreate() {
         return gmtCreate;
