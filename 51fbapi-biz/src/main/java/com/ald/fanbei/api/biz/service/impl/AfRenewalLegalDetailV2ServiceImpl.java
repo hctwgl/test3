@@ -78,7 +78,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author yanghailong
  * @date 2017年12月11日
  */
-@Service("afRenewalLegalDetailService")
+@Service("afRenewalLegalDetailV2Service")
 public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements AfRenewalLegalDetailV2Service {
 	@Resource
 	UpsUtil upsUtil;
@@ -188,7 +188,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 	
 	
 	
-	long dealChangStatus(final String outTradeNo, final String tradeNo, final String status, final Long rid) {
+	long dealChangStatus(final String outTradeNo, final String tradeNo, final String status, final Long renewalDetailId) {
 
 		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
 		if(afYibaoOrderDo !=null){
@@ -208,10 +208,10 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 				try {
 					
 					//更新还款记录
-					AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByRenewalId(rid);
+					AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByRenewalId(renewalDetailId);
 					afRenewalDetailDo.setStatus(status);
 					afRenewalDetailDo.setTradeNo(tradeNo);
-					afRenewalDetailDo.setRid(rid);
+					afRenewalDetailDo.setRid(renewalDetailId);
 					afRenewalDetailDo.setGmtModified(new Date());
 					afRenewalDetailDao.updateRenewalDetail(afRenewalDetailDo);
 					
@@ -540,7 +540,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 		
 		if(afBorrowCashDo.getRenewalNum()>0){
 			// 续借过
-			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+			AfRenewalDetailDo renewalDetail = afRenewalDetailDao.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
 			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays ,2 , RoundingMode.HALF_UP);
 			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360
