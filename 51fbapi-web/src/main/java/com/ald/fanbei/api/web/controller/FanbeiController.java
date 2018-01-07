@@ -250,8 +250,6 @@ public class FanbeiController extends BaseController {
             
             reqVo.setSystem(system);
             
-            
-
             JSONObject jsonObj = JSON.parseObject(requestData);
             reqVo.setParams((jsonObj == null || jsonObj.isEmpty()) ? new HashMap<String,Object>() : jsonObj);
 
@@ -278,7 +276,7 @@ public class FanbeiController extends BaseController {
         }catch(FanbeiException e){
         	logger.error("app exception",e);
         	throw e;
-    } catch (Exception e) {
+		} catch (Exception e) {
             logger.error("sys exception",e);
             throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
         }

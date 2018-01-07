@@ -496,6 +496,7 @@
 				<entry key="/legalborrow/getOverdueStatus" value-ref="getOverdueStatusApi" />
 				
 				<!-- legalborrowV2 -->
+				<entry key="/legalborrowV2/applyLegalBorrowCash" value-ref="applyLegalBorrowCashV2Api" />
 				<entry key="/legalborrowV2/repayDoV2" value-ref="repayDoV2Api" />
 				<entry key="/legalborrowV2/getBorrowLegalChargeInfoV2" value-ref="getBorrowLegalChargeInfoV2Api" />
 				<entry key="/legalborrowV2/getLegalOrderLogisticsV2" value-ref="getLegalOrderLogisticsV2Api" />

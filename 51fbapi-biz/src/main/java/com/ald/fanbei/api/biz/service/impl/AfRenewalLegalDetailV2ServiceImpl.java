@@ -78,7 +78,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author yanghailong
  * @date 2017年12月11日
  */
-@Service("afRenewalLegalDetailService")
+@Service("afRenewalLegalDetailV2Service")
 public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements AfRenewalLegalDetailV2Service {
 	@Resource
 	UpsUtil upsUtil;
