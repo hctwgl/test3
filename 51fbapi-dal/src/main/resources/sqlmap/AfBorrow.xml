@@ -260,7 +260,7 @@ FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 	</select>
 
 	<select id="getUserSummaryOrderById" resultType="java.util.HashMap">
-		SELECT (SELECT DATE_FORMAT(MIN(bi.`gmt_pay_time`), '%Y-%m-%d')  FROM `af_borrow_bill` bi LEFT JOIN af_borrow b ON b.id=bi.borrow_id WHERE b.order_id = o.id) firstDueDate,o.`order_type` orderType,o.`pay_type` payType,o.`sec_type` secType,o.`order_no` orderNo,o.`user_coupon_id` userCouponId,o.`goods_id` goodsId,o.`goods_name` goodsName,o.`count` count,o.`actual_amount` actualAmount,o.`borrow_amount` borrowAmount,o.`bank_amount` bankAmount
+		SELECT (SELECT DATE_FORMAT(MIN(bi.`gmt_pay_time`), '%Y-%m-%d')  FROM `af_borrow_bill` bi WHERE  bi.`status`!='C' and bi.`user_id` =o.`user_id`) firstDueDate,o.`order_type` orderType,o.`pay_type` payType,o.`sec_type` secType,o.`order_no` orderNo,o.`user_coupon_id` userCouponId,o.`goods_id` goodsId,o.`goods_name` goodsName,o.`count` count,o.`actual_amount` actualAmount,o.`borrow_amount` borrowAmount,o.`bank_amount` bankAmount
 ,CASE WHEN  o.`order_type` ='BOLUOME' THEN  (SELECT wm.`restaurant_name`  FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =o.`third_order_no`  LIMIT 1) ELSE o.`shop_name` END  shopName
 ,o.`rebate_amount` rebateAmount ,o.`commission_amount`  commissionAmount,o.`rebate_allowance_amount` rebateAllowanceAmount,o.`nper` nper,o.`borrow_rate` borrowRate,o.`coupon_amount` couponAmount,o.`au_amount` auAmount,o.`used_amount` usedAmount ,
 (SELECT c.`name`  FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`primary_category_id`  = c.`id` WHERE g.`id` = o.`goods_id`     LIMIT 1) categoryOne,
@@ -287,6 +287,15 @@ o.`ip` ,o.`lat` ,o.`lng`
 FROM `af_order` o  WHERE o.`id`  =#{id}
 	</select>
 
-
+	<select id="countNperRepaymentByBorrowId" resultType="java.lang.Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			af_borrow_bill
+		WHERE
+			borrow_id = #{id}
+		AND is_delete = 0
+		AND `status` = 'Y'
+	</select>
 
 </mapper>
