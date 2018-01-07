@@ -26,5 +26,6 @@ public interface ApiHandle {
 	 * @param request
 	 * @return
 	 */
-    ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request);
+
+	ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request);
 }

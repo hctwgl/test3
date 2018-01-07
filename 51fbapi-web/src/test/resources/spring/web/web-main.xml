@@ -127,6 +127,7 @@
 				<value>/user/getImageCode</value>
 				<value>/goods/getGoodsSpec</value>
 				<value>/trade/login</value>
+				<value>/order/dmNperEnabled</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -216,6 +217,7 @@
 				<entry key="/order/refundOrderApply" value-ref="refundOrderApplyApi" />
 				<entry key="/order/deleteOrderInfo" value-ref="deleteOrderInfoApi" />
 				<entry key="/order/buySelfGoods" value-ref="buySelfGoodsApi" />
+				<entry key="/order/dmNperEnabled" value-ref="dmNperEnabledApi" />
 				<entry key="/order/insufficientBalance" value-ref="insufficientBalanceApi" />
 				<entry key="/order/cancelAfterSaleApply" value-ref="cancelAfterSaleApplyApi" />
 				<entry key="/order/afterSaleLogisticSupply" value-ref="afterSaleLogisticSupplyApi" />
