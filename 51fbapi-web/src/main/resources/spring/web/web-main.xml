@@ -492,6 +492,9 @@
 				<entry key="/legalborrow/getLegalRenewalList" value-ref="getLegalRenewalListApi" />
 				<entry key="/legalborrow/getOverdueStatus" value-ref="getOverdueStatusApi" />
 				
+				<!-- legalborrowV2 -->
+				<entry key="/legalborrowV2/repayDo" value-ref="repayDoV2Api" />
+				
 				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 

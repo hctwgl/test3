@@ -21,7 +21,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://localhost:8080";
+	String urlBase = "http://btestapp.51fanbei.com:80";
 	String userName = "15669066271";
 	
 	/**
@@ -68,15 +68,15 @@ public class LegalBorrowV2Test  extends BaseTest{
 		params.put("repaymentAmount", "201");
 		params.put("userCouponId", "");
 		params.put("rebateAmount", "");
-		params.put("payPwd", DigestUtils.md5Hex("111111"));
-		params.put("cardId", "244");
+		params.put("payPwd", DigestUtils.md5Hex("123456"));
+		params.put("cardId", "3111464125");
 		params.put("actualAmount", "201");
-		params.put("borrowId", "1260416");
+		params.put("borrowId", "1260148");
 		
 		testApi(url, params, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
 		String orderNo = "xj2017122018091400239";
