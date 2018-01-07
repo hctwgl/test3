@@ -67,7 +67,7 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
     @Resource
     AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
     @Resource
-    AfRenewalLegalDetailService afRenewalLegalDetailService;
+    AfRenewalLegalDetailV2Service afRenewalLegalDetailV2Service;
 
     @Resource
     YiBaoUtility yiBaoUtility;
@@ -168,35 +168,13 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
     		BigDecimal renewalCapitalRate = (new BigDecimal(capitalRateResource.getValue())).divide(new BigDecimal(100));// 续借需还本金比例
             capital = afBorrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
        
-            //上一笔订单记录
-    		AfBorrowLegalOrderDo afBorrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
-    		if(afBorrowLegalOrder==null){
-    			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
-    		}
-    		AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(afBorrowLegalOrder.getRid());
-    		if(afBorrowLegalOrderCash==null){
-    			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_ORDER_NOT_EXIST_ERROR);
-    		}
-    		logger.info("confirmLegalRenewalPayApi last afBorrowLegalOrderCash record = {}" ,afBorrowLegalOrderCash);
-    		
-    		//上期借款手续费
+    		// 上期借款手续费
     		BigDecimal borrowPoundage = afBorrowCashDo.getPoundage();
-    		//上期订单手续费
-    		BigDecimal orderPoundage = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getPoundageAmount(),BigDecimal.ZERO);
-    		//上期借款利息
+    		// 上期借款利息
     		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
-    		//上期订单利息
-    		BigDecimal orderRateAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getInterestAmount(),BigDecimal.ZERO);
-    		
-    		//上期逾期费（借款和订单）
+    		// 上期借款逾期费
     		BigDecimal borrowOverdueAmount = afBorrowCashDo.getOverdueAmount();
-    		BigDecimal orderOverdueAmount = afBorrowLegalOrderCash.getOverdueAmount();
 
-    		//上期订单借款金额
-    		BigDecimal orderAmount = afBorrowLegalOrderCash.getAmount();
-    		// 上期订单待还本金
-    		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderAmount,afBorrowLegalOrderCash.getSumRepaidInterest(),afBorrowLegalOrderCash.getSumRepaidOverdue(),afBorrowLegalOrderCash.getSumRepaidPoundage()).subtract(afBorrowLegalOrderCash.getRepaidAmount());
-    		
     		// 本金（总） 
     		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
     		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
@@ -204,19 +182,10 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
     		
     		//借款已还金额
     		BigDecimal borrowRepayAmount = afBorrowCashDo.getRepayAmount();
-    		//订单已还金额
-    		BigDecimal orderRepayAmount = NumberUtil.objToBigDecimalDefault(afBorrowLegalOrderCash.getRepaidAmount(),BigDecimal.ZERO);
-
     		
-    		//上期总手续费
-    		BigDecimal poundage = BigDecimalUtil.add(borrowPoundage,orderPoundage);
-    		//上期总逾期费
-    		BigDecimal overdueAmount = BigDecimalUtil.add(borrowOverdueAmount,orderOverdueAmount);
-    		//上期总利息
-    		BigDecimal rateAmount = BigDecimalUtil.add(borrowRateAmount,orderRateAmount);
 
     		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单本金)
-    		BigDecimal repaymentAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
+    		BigDecimal repaymentAmount = BigDecimalUtil.add(borrowRateAmount, borrowPoundage, borrowOverdueAmount, capital);
 
     		BigDecimal actualAmount = repaymentAmount;
 
@@ -229,27 +198,10 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
             Map<String, Object> map;
 
             if (cardId == -1) {// 微信支付
-//                if(wxDo !=null && wxDo.getValue().toLowerCase().equals("true")){
-//                    map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
-//                    map.put("userNo",userDto.getUserName());
-//                    map.put("userType","USER_ID");
-//                    map.put("directPayType","WX");
-//                    resp.setResponseData(map);
-//                }else{
-                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
-//                }
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
             }
-            else  if(cardId ==-3){ //支付宝支付
-//                if(zfbDo !=null && zfbDo.getValue().toLowerCase().equals("true")) {
-//                    map = afRenewalDetailService.createRenewalYiBao(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion());
-//                    map.put("userNo", userDto.getUserName());
-//                    map.put("userType", "USER_ID");
-//                    map.put("directPayType", "ZFB");
-//                    resp.setResponseData(map);
-//                }
-//                else{
-                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
-//                }
+            else if(cardId ==-3){ //支付宝支付
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZFB_NOT_USERD);
             }
 
             else if (cardId > 0) {// 银行卡支付
@@ -269,7 +221,7 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
                     logger.info("empty address");
                     throw new FanbeiException("请先填写收货地址!", true);
                 }
-                map = afRenewalLegalDetailService.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
+                map = afRenewalLegalDetailV2Service.createLegalRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(), goodsId, deliveryUser, deliveryPhone, address);
 
                 // 代收
                 UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

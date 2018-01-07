@@ -13,13 +13,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -28,17 +25,12 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 
 /**  
@@ -57,15 +49,9 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
-	AfUserAccountService afUserAccountService;
-	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
 	@Resource
 	AfRenewalDetailService afRenewalDetailService;
-	@Resource
-	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
-	@Resource
-	AfBorrowLegalOrderService afBorrowLegalOrderService;
 	@Resource
 	AfRenewalLegalDetailService afRenewalLegalDetailService;
 	
@@ -110,7 +96,7 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 		return resp;
 	}
 
-	public Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo) {
+	private Map<String, Object> objectWithAfBorrowCashDo(AfBorrowCashDo afBorrowCashDo) {
 		
 		Map<String, Object> data = new HashMap<String, Object>();
 
