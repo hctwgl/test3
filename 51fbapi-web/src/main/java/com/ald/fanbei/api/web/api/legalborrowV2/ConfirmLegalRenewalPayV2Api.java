@@ -68,6 +68,8 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
     AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
     @Resource
     AfRenewalLegalDetailV2Service afRenewalLegalDetailV2Service;
+    @Resource
+    AfGoodsService afGoodsService;
 
     @Resource
     YiBaoUtility yiBaoUtility;
@@ -180,12 +182,13 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
     		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
     		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
     		
-    		//借款已还金额
+    		// 借款已还金额
     		BigDecimal borrowRepayAmount = afBorrowCashDo.getRepayAmount();
     		
 
-    		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单本金)
-    		BigDecimal repaymentAmount = BigDecimalUtil.add(borrowRateAmount, borrowPoundage, borrowOverdueAmount, capital);
+    		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +本期订单金额)
+    		BigDecimal orderAmount = afGoodsService.getGoodsById(goodsId).getSaleAmount();
+    		BigDecimal repaymentAmount = BigDecimalUtil.add(borrowRateAmount, borrowPoundage, borrowOverdueAmount, capital, orderAmount);
 
     		BigDecimal actualAmount = repaymentAmount;
 
