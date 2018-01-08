@@ -2563,5 +2563,10 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
 	}
 
+	@Override
+	public int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount) {
+		return orderDao.updateAuAndUsed(orderId, auAmount, usedAmount);
+	}
+
 
 }

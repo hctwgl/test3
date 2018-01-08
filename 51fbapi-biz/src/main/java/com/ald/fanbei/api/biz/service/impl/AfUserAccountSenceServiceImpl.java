@@ -15,7 +15,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 
 /**
  * 额度拆分多场景分期额度记录ServiceImpl
- * 
+ *
  * @author gaojb
  * @version 1.0.0 初始化
  * @date 2018-01-05 14:57:51 Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -31,12 +31,21 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
     @Override
     public BaseDao<AfUserAccountSenceDo, Long> getDao() {
-	return afUserAccountSenceDao;
+        return afUserAccountSenceDao;
     }
 
     @Override
     public int updateUserSceneAuAmount(String scene, Long userId, BigDecimal auAmount) {
+        return afUserAccountSenceDao.updateUserSceneAuAmount(scene, userId, auAmount);
+    }
 
-	return afUserAccountSenceDao.updateUserSceneAuAmount(scene, userId, auAmount);
+    @Override
+    public AfUserAccountSenceDo getByUserIdAndType(String scene, Long userId) {
+        return afUserAccountSenceDao.getByUserIdAndType(scene, userId);
+    }
+
+    @Override
+    public String getBusinessTypeByOrderId(Long orderId) {
+        return afUserAccountSenceDao.getBusinessTypeByOrderId(orderId);
     }
 }

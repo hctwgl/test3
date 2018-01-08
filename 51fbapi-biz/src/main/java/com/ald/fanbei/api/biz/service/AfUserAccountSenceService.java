@@ -14,4 +14,13 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 public interface AfUserAccountSenceService extends ParentService<AfUserAccountSenceDo, Long> {
 
     int updateUserSceneAuAmount(String scene, Long userId, BigDecimal auAmount);
+
+    AfUserAccountSenceDo getByUserIdAndType(String scene, Long userId);
+
+    /**
+     * 通过订单ID查询商圈类别code
+     * @param orderId
+     * @return
+     */
+    String getBusinessTypeByOrderId(Long orderId);
 }

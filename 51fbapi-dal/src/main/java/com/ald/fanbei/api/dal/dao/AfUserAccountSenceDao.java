@@ -16,4 +16,13 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo;
 public interface AfUserAccountSenceDao extends BaseDao<AfUserAccountSenceDo, Long> {
 
     int updateUserSceneAuAmount(@Param("scene") String scene, @Param("userId") Long userId, @Param("auAmount") BigDecimal auAmount);
+
+    AfUserAccountSenceDo getByUserIdAndType(@Param("scene") String scene, @Param("userId") Long userId);
+
+    /**
+     * 通过订单ID查询商圈类别code
+     * @param orderId
+     * @return
+     */
+    String getBusinessTypeByOrderId(@Param("orderId") Long orderId);
 }

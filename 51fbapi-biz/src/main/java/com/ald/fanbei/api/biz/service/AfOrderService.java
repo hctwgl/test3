@@ -364,5 +364,6 @@ public interface AfOrderService {
      * @return
      */
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,Long userId);
-	
+
+	int updateAuAndUsed(Long orderId, BigDecimal auAmount, BigDecimal usedAmount);
 }
