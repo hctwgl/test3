@@ -496,13 +496,23 @@
 				<entry key="/legalborrow/getOverdueStatus" value-ref="getOverdueStatusApi" />
 				
 				<!-- legalborrowV2 -->
-				<entry key="/legalborrowV2/applyLegalBorrowCash" value-ref="applyLegalBorrowCashV2Api" />
+				<entry key="/legalborrowV2/applyLegalBorrowCashV2" value-ref="applyLegalBorrowCashV2Api" />
+				<entry key="/legalborrowV2/applyLegalRenewalV2" value-ref="applyLegalRenewalV2Api" />
 				<entry key="/legalborrowV2/repayDoV2" value-ref="repayDoV2Api" />
 				<entry key="/legalborrowV2/getBorrowLegalChargeInfoV2" value-ref="getBorrowLegalChargeInfoV2Api" />
 				<entry key="/legalborrowV2/getLegalOrderLogisticsV2" value-ref="getLegalOrderLogisticsV2Api" />
 				<entry key="/legalborrowV2/getOverdueStatusV2" value-ref="getOverdueStatusV2Api" />
-				
-				
+				<entry key="/legalborrowV2/getLegalBorrowCashDetailV2" value-ref="getLegalBorrowCashDetailV2Api" />
+				<entry key="/legalborrowV2/getConfirmBorrowLegalInfoV2" value-ref="getConfirmBorrowLegalInfoV2Api" />
+				<entry key="/legalborrowV2/getBorrowLegalOrderInfoV2" value-ref="getBorrowLegalOrderInfoV2Api" />
+				<entry key="/legalborrowV2/getBorrowLegalOrderDetailV2" value-ref="getBorrowLegalOrderDetailV2Api" />
+				<entry key="/legalborrowV2/getLegalRenewalListV2" value-ref="getLegalRenewalListV2Api" />
+				<entry key="/legalborrowV2/getBorrowLegalRenewalDetailV2" value-ref="getBorrowLegalRenewalDetailV2Api" />
+				<entry key="/legalborrowV2/getCashPageTypeV2" value-ref="getCashPageTypeV2Api" />
+				<entry key="/legalborrowV2/confirmLegalRenewalPayV2" value-ref="confirmLegalRenewalPayV2Api" />
+				<entry key="/legalborrowV2/applyLegalRenewalV2" value-ref="applyLegalRenewalV2Api" />
+
+
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
 
 				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />

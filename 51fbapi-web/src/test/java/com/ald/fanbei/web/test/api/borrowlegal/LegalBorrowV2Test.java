@@ -21,7 +21,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "http://btestapp.51fanbei.com:80";
+	String urlBase = "http://localhost:8080";
 	String userName = "15669066271";
 	
 	/**
@@ -61,13 +61,13 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 
-	@Test
+//	@Test
 	public void  repayDo() {
-		String url = urlBase + "/legalborrowV2/repayDo";
+		String url = urlBase + "/legalborrowV2/repayDoV2";
 		Map<String,String> params = new HashMap<>();
 		params.put("repaymentAmount", "201");
-		params.put("userCouponId", "");
-		params.put("rebateAmount", "");
+		params.put("userCouponId", null);
+		params.put("rebateAmount", null);
 		params.put("payPwd", DigestUtils.md5Hex("123456"));
 		params.put("cardId", "3111464125");
 		params.put("actualAmount", "201");
@@ -79,12 +79,12 @@ public class LegalBorrowV2Test  extends BaseTest{
 //	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "xj2017122018091400239";
-		String merPriv = PayOrderSource.RENEW_CASH_LEGAL.getCode();
-		String tradeNo = "";
+		String orderNo = "hq2018010811542108319";
+		String merPriv = PayOrderSource.REPAY_CASH_LEGAL_V2.getCode();
+		String tradeNo = "xianfeng21231";
 		String tradeState = "00";
 		
-		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv +"&tradeNo="+tradeNo+"&tradeState="+tradeState;
+		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
 		url += reqStr;
 		Map<String,String> params = new HashMap<>();
 		
@@ -95,17 +95,17 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {
 		String url = urlBase + "/third/collection/offlineRepayment?";
 		 
 		String tradeNo = "offline" + System.currentTimeMillis();
 		Map<String,String> params = new HashMap<>();
 		params.put("repay_no", tradeNo);
-		params.put("borrow_no", "jq2017121917075900521");
+		params.put("borrow_no", "jq2017122020523500899");
 		params.put("repay_type", "BANK");
 		params.put("repay_time", DateUtil.formatDateTime(new Date()));
-		params.put("repay_amount", "20100.00");
+		params.put("repay_amount", "1000.00");
 		params.put("rest_amount", "10000.00");
 		params.put("trade_no", tradeNo);
 		params.put("is_balance", YesNoStatus.NO.getCode());

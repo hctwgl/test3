@@ -170,7 +170,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 		if (cardId > 0) {// 银行卡支付
 			AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 			dealChangStatus(payTradeNo, repayNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), renewalDetail.getRid());
-			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL.getCode());
+			UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(), bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_CASH_LEGAL_V2.getCode());
 			if (!respBo.isSuccess()) {
 				dealLegalRenewalFail(payTradeNo, repayNo,afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
 				throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
@@ -188,7 +188,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 	
 	
 	
-	long dealChangStatus(final String outTradeNo, final String tradeNo, final String status, final Long rid) {
+	long dealChangStatus(final String outTradeNo, final String tradeNo, final String status, final Long renewalDetailId) {
 
 		AfYibaoOrderDo afYibaoOrderDo = afYibaoOrderDao.getYiBaoOrderByOrderNo(outTradeNo);
 		if(afYibaoOrderDo !=null){
@@ -208,10 +208,10 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 				try {
 					
 					//更新还款记录
-					AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByRenewalId(rid);
+					AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailDao.getRenewalDetailByRenewalId(renewalDetailId);
 					afRenewalDetailDo.setStatus(status);
 					afRenewalDetailDo.setTradeNo(tradeNo);
-					afRenewalDetailDo.setRid(rid);
+					afRenewalDetailDo.setRid(renewalDetailId);
 					afRenewalDetailDo.setGmtModified(new Date());
 					afRenewalDetailDao.updateRenewalDetail(afRenewalDetailDo);
 					
@@ -540,7 +540,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 		
 		if(afBorrowCashDo.getRenewalNum()>0){
 			// 续借过
-			AfRenewalDetailDo renewalDetail = afRenewalLegalDetailService.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
+			AfRenewalDetailDo renewalDetail = afRenewalDetailDao.getLastRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 			// 续期手续费 = 上期续借金额 * 上期续借天数 * 借款手续费率  / 360
 			borrowPoundage = renewalDetail.getRenewalAmount().multiply(allowRenewalDay).multiply(newServiceRate).divide(oneYeayDays ,2 , RoundingMode.HALF_UP);
 			// 续期利息 = 上期续借金额 * 上期续借天数  * 借款利率 / 360

@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -40,6 +38,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.Validator;
+import com.ald.fanbei.api.web.validator.bean.BorrowLegalRepayDoV2Param;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 
@@ -50,6 +50,7 @@ import com.google.common.collect.Maps;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("repayDoV2Api")
+@Validator("legalRepayDoV2Param")
 public class RepayDoV2Api implements ApiHandle {
 	
 	BigDecimal showAmount;
@@ -107,18 +108,18 @@ public class RepayDoV2Api implements ApiHandle {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		
-		
 		RepayBo bo = new RepayBo();
 		bo.userId = userId;
 		bo.userDo = userDo;
 		
-		bo.repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);
-		bo.rebateAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
-		bo.actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
-		bo.payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
-		bo.cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")),0l);
-		bo.couponId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("couponId")), 0l);
-		bo.borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
+		BorrowLegalRepayDoV2Param param = (BorrowLegalRepayDoV2Param) requestDataVo.getParamBo();
+		bo.repaymentAmount = param.repaymentAmount;
+		bo.rebateAmount = param.rebateAmount;
+		bo.actualAmount = param.actualAmount;
+		bo.payPwd = param.payPwd;
+		bo.cardId = param.cardId;
+		bo.couponId = param.couponId;
+		bo.borrowId = param.borrowId;
 		
 		if (bo.cardId == -1) {// -1-微信支付，-2余额支付，>0卡支付（包含组合支付）
 			throw new FanbeiException(FanbeiExceptionCode.WEBCHAT_NOT_USERD);

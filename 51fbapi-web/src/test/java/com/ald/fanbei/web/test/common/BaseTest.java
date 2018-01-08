@@ -1,20 +1,25 @@
 package com.ald.fanbei.web.test.common;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -125,7 +130,10 @@ public class BaseTest {
         String signStrBefore = signStrPrefix;
         if (paramList.size() > 0) {
             for (String item : paramList) {
-                signStrBefore = signStrBefore + "&" + item + "=" + params.get(item);
+            	String value = params.get(item);
+            	if(value != null) {
+            		signStrBefore = signStrBefore + "&" + item + "=" + value;
+            	}
             }
         }
         System.out.println("String before sign:"+signStrBefore);
@@ -148,8 +156,32 @@ public class BaseTest {
 		"&"+ Constants.REQ_SYS_NODE_USERNAME+"=" + header.get(Constants.REQ_SYS_NODE_USERNAME);
     }
     
-    private String httpPost(String url, String reqBody, Map<String, String> headers) throws ClientProtocolException, IOException {
-    	CloseableHttpClient httpClient = HttpClients.createDefault();
+    private String httpPost(String url, String reqBody, Map<String, String> headers) throws Exception {
+    	CloseableHttpClient httpClient = null;
+    	
+    	if(url.contains("https")) {
+    		SSLContext ctx = SSLContext.getInstance("TLS");  
+	        X509TrustManager tm = new X509TrustManager() {  
+                @Override  
+                public void checkClientTrusted(X509Certificate[] chain,  
+                        String authType) throws CertificateException {  
+                }  
+                @Override  
+                public void checkServerTrusted(X509Certificate[] chain,  
+                        String authType) throws CertificateException {  
+                }  
+                @Override  
+                public X509Certificate[] getAcceptedIssuers() {  
+                    return null;  
+                }  
+	        };  
+	        ctx.init(null, new TrustManager[]{tm}, new java.security.SecureRandom());  
+	        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(ctx);
+	        
+	        httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+    	}else {
+    		httpClient = HttpClients.createDefault();
+    	}
     	
     	// headers
     	HttpPost postMethod = new HttpPost(url);
