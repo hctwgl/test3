@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.web.validator.intercept;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -31,6 +33,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
 import com.ald.fanbei.api.web.validator.Validator;
+import com.google.common.collect.Lists;
 
 /**
  * 
@@ -134,7 +137,16 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 
 	private Validator[] getValidatorAnnotation(Class<? extends ApiHandle> clazz) {
 		if (clazz.isAnnotationPresent(Validator.class)) {
-			return clazz.getAnnotationsByType(Validator.class);
+			Annotation[] annotations = clazz.getDeclaredAnnotations();
+			List<Validator> vas = Lists.newArrayList();
+			for(Annotation annotation: annotations) {
+				if(annotation instanceof Validator) {
+					vas.add((Validator)annotation);
+				}
+			}
+			Validator[] validators = {} ;
+			validators = vas.toArray(validators);
+			return validators;
 		}
 		return null;
 	}
