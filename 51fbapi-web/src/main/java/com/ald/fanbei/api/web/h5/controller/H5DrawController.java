@@ -89,12 +89,12 @@ public class H5DrawController extends H5Controller {
 			afUserDrawDo.setStatus(UserDrawStatus.SIGNIN.getCode());
 			afUserDrawService.updateById(afUserDrawDo);
 
-			return H5CommonResponse.getNewInstance(true, "签到成功").toString();
+			return H5CommonResponse.getNewInstance(true, String.format("恭喜 %s 签到成功", userDrawDo.getName())).toString();
 		    } else {
 			return H5CommonResponse.getNewInstance(false, "获取微信信息失败").toString();
 		    }
 		} else {
-		    return H5CommonResponse.getNewInstance(false, String.format("当前微信帐号已经签到号码: ", openIdUser.getPhone())).toString();
+		    return H5CommonResponse.getNewInstance(false, String.format("当前微信帐号已经签到手机号码  %s", openIdUser.getPhone())).toString();
 		}
 	    } else {
 		return H5CommonResponse.getNewInstance(false, "该手机号码已签到").toString();
