@@ -172,21 +172,28 @@
         SELECT
         <include refid="queryFields" />
         FROM af_user_draw
-        where phone = #{phone,jdbcType=VARCHAR}
+        where is_delete = 0 AND phone = #{phone,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="getByOpenId" resultType="com.ald.fanbei.api.dal.domain.AfUserDrawDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_user_draw
+        where is_delete = 0 AND open_id = #{openId,jdbcType=VARCHAR}
     </select>
     
     <select id="getByPhoneAndStatus" resultType="com.ald.fanbei.api.dal.domain.AfUserDrawDo">
         SELECT
         <include refid="queryFields" />
         FROM af_user_draw
-        where phone = #{phone,jdbcType=VARCHAR} and `status` = #{status,jdbcType=INTEGER}
+        where is_delete = 0 AND phone = #{phone,jdbcType=VARCHAR} and `status` = #{status,jdbcType=INTEGER}
     </select>
     
     <select id="getByStatus" resultType="com.ald.fanbei.api.dal.domain.dto.UserDrawInfo">
         SELECT
         id rid,phone,`name`,nick_name,header_img
         FROM af_user_draw
-        where `status` = #{status,jdbcType=INTEGER}
+        where is_delete = 0 AND `status` = #{status,jdbcType=INTEGER}
     </select>
     
     <update id="updateWinUserStatus"  parameterType="com.ald.fanbei.api.dal.domain.AfUserDrawDo">

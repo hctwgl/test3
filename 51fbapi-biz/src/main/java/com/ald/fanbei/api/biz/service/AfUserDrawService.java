@@ -18,6 +18,8 @@ public interface AfUserDrawService extends ParentService<AfUserDrawDo, Long> {
 
     AfUserDrawDo getByPhone(String phone);
 
+    AfUserDrawDo getByOpenId(String openId);
+
     List<AfUserDrawDo> getByPhoneAndStatus(String phone, Integer status);
 
     List<UserDrawInfo> getByStatus(Integer status);

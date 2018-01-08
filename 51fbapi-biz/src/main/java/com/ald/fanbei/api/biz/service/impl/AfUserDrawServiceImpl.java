@@ -58,4 +58,9 @@ public class AfUserDrawServiceImpl extends ParentServiceImpl<AfUserDrawDo, Long>
 
 	return afUserDrawDao.updateWinUserStatus(status, userList);
     }
+
+    @Override
+    public AfUserDrawDo getByOpenId(String openId) {
+	return afUserDrawDao.getByOpenId(openId);
+    }
 }

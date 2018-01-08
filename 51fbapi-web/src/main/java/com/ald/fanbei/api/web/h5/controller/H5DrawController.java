@@ -77,19 +77,24 @@ public class H5DrawController extends H5Controller {
 		String nickName = wxUserInfo.getString("nickname");
 		String headImagUrl = wxUserInfo.getString("headimgurl");
 
-		if (StringUtils.isNotBlank(openId) && StringUtils.isNotBlank(nickName) && StringUtils.isNotBlank(headImagUrl)) {
-		    // 获取微信信息成功
-		    AfUserDrawDo afUserDrawDo = new AfUserDrawDo();
-		    afUserDrawDo.setRid(userDrawDo.getRid());
-		    afUserDrawDo.setHeaderImg(headImagUrl);
-		    afUserDrawDo.setNickName(nickName);
-		    afUserDrawDo.setOpenId(openId);
-		    afUserDrawDo.setStatus(UserDrawStatus.SIGNIN.getCode());
-		    afUserDrawService.updateById(afUserDrawDo);
+		AfUserDrawDo openIdUser = afUserDrawService.getByOpenId(openId);
+		if (openIdUser == null) {
+		    if (StringUtils.isNotBlank(openId) && StringUtils.isNotBlank(nickName) && StringUtils.isNotBlank(headImagUrl)) {
+			// 获取微信信息成功
+			AfUserDrawDo afUserDrawDo = new AfUserDrawDo();
+			afUserDrawDo.setRid(userDrawDo.getRid());
+			afUserDrawDo.setHeaderImg(headImagUrl);
+			afUserDrawDo.setNickName(nickName);
+			afUserDrawDo.setOpenId(openId);
+			afUserDrawDo.setStatus(UserDrawStatus.SIGNIN.getCode());
+			afUserDrawService.updateById(afUserDrawDo);
 
-		    return H5CommonResponse.getNewInstance(true, "签到成功").toString();
+			return H5CommonResponse.getNewInstance(true, "签到成功").toString();
+		    } else {
+			return H5CommonResponse.getNewInstance(false, "获取微信信息失败").toString();
+		    }
 		} else {
-		    return H5CommonResponse.getNewInstance(false, "获取微信信息失败").toString();
+		    return H5CommonResponse.getNewInstance(false, "当前微信帐号已经签到其他号码").toString();
 		}
 	    } else {
 		return H5CommonResponse.getNewInstance(false, "该手机号码已签到").toString();
