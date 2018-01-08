@@ -59,40 +59,35 @@ public class H5DrawController extends H5Controller {
 	if (StringUtils.isBlank(phone) || phone.length() != 11) {
 	    return H5CommonResponse.getNewInstance(false, "手机号码输入错误").toString();
 	}
-	String code = request.getParameter("code");
-	if (StringUtils.isBlank(code)) {
-	    return H5CommonResponse.getNewInstance(false, "请求参数错误").toString();
+
+	String openId = request.getParameter("openid");
+	if (StringUtils.isBlank(openId)) {
+	    return H5CommonResponse.getNewInstance(false, "参数错误openId").toString();
+	}
+	String nickName = request.getParameter("nickname");
+	if (StringUtils.isBlank(nickName)) {
+	    return H5CommonResponse.getNewInstance(false, "参数错误nickName").toString();
+	}
+	String headImagUrl = request.getParameter("headimgurl");
+	if (StringUtils.isBlank(headImagUrl)) {
+	    return H5CommonResponse.getNewInstance(false, "参数错误headImagUrl").toString();
 	}
 
 	AfUserDrawDo userDrawDo = afUserDrawService.getByPhone(phone);
 	if (userDrawDo != null) {
 	    if (userDrawDo.getStatus().equals(UserDrawStatus.NORMAL.getCode())) {
-		// 获取配置信息
-		AfResourceDo afResourceDo = afResourceService.getWechatConfig();
-		String appid = afResourceDo.getValue();
-		String secret = afResourceDo.getValue1();
-		// 获取微信信息openId、头像、昵称
-		JSONObject wxUserInfo = WxUtil.getUserInfo(appid, secret, code);
-		String openId = wxUserInfo.getString("openid");
-		String nickName = wxUserInfo.getString("nickname");
-		String headImagUrl = wxUserInfo.getString("headimgurl");
-
 		AfUserDrawDo openIdUser = afUserDrawService.getByOpenId(openId);
 		if (openIdUser == null) {
-		    if (StringUtils.isNotBlank(openId) && StringUtils.isNotBlank(nickName) && StringUtils.isNotBlank(headImagUrl)) {
-			// 获取微信信息成功
-			AfUserDrawDo afUserDrawDo = new AfUserDrawDo();
-			afUserDrawDo.setRid(userDrawDo.getRid());
-			afUserDrawDo.setHeaderImg(headImagUrl);
-			afUserDrawDo.setNickName(nickName);
-			afUserDrawDo.setOpenId(openId);
-			afUserDrawDo.setStatus(UserDrawStatus.SIGNIN.getCode());
-			afUserDrawService.updateById(afUserDrawDo);
+		    // 获取微信信息成功
+		    AfUserDrawDo afUserDrawDo = new AfUserDrawDo();
+		    afUserDrawDo.setRid(userDrawDo.getRid());
+		    afUserDrawDo.setHeaderImg(headImagUrl);
+		    afUserDrawDo.setNickName(nickName);
+		    afUserDrawDo.setOpenId(openId);
+		    afUserDrawDo.setStatus(UserDrawStatus.SIGNIN.getCode());
+		    afUserDrawService.updateById(afUserDrawDo);
 
-			return H5CommonResponse.getNewInstance(true, String.format("恭喜 %s 签到成功", userDrawDo.getName())).toString();
-		    } else {
-			return H5CommonResponse.getNewInstance(false, "获取微信信息失败").toString();
-		    }
+		    return H5CommonResponse.getNewInstance(true, String.format("恭喜 %s 签到成功", userDrawDo.getName())).toString();
 		} else {
 		    return H5CommonResponse.getNewInstance(false, String.format("当前微信帐号已经签到手机号码  %s", openIdUser.getPhone())).toString();
 		}
