@@ -12,6 +12,7 @@ public class Constants {
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;
+	public static final long SECOND_OF_TEN = 10l;//10秒
 	public static final long SECOND_OF_FIFTEEN = 15l;//15秒
 	public static final long SECOND_OF_THREE = 30l;// 30秒
 	public static final long SECOND_OF_HALF_HOUR = 30 * 60l;
