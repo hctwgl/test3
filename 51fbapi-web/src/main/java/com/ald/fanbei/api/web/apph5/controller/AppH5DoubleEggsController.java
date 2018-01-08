@@ -667,8 +667,6 @@ public class AppH5DoubleEggsController extends BaseController {
 					
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
 					
-					//add subscribe people
-					//AfResourceDo resourceDo= afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "SUBSCRIBE_FAKE_NUMBER");
 					Long fakeNumber = goodsDo.getAlreadyCount();
 					
 					int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber(goodsId);
