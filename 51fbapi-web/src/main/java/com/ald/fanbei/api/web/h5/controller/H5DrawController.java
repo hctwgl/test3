@@ -141,7 +141,7 @@ public class H5DrawController extends H5Controller {
 	}
 
 	// 判断是否与数据库保持一致
-	if ("DEFAULT".equals(configOpenId) || openId.equals(configOpenId)) {
+	if ("DEFAULT".equals(configOpenId) || openId.equals(configOpenId) || bizCacheUtil.getObject(codeKey) != null) {
 	    // 记录code信息
 	    bizCacheUtil.saveObject(codeKey, code, Constants.SECOND_OF_ONE_DAY);
 
