@@ -76,11 +76,11 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "xj2017122018091400239";
-		String merPriv = PayOrderSource.RENEW_CASH_LEGAL.getCode();
+		String orderNo = "hq2018010811314808317";
+		String merPriv = PayOrderSource.REPAY_CASH_LEGAL.getCode();
 		String tradeNo = "";
 		String tradeState = "00";
 		
@@ -95,7 +95,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-//	@Test
+	@Test
 	public void  offlineRepayment() throws UnsupportedEncodingException {
 		String url = urlBase + "/third/collection/offlineRepayment?";
 		 
