@@ -149,24 +149,7 @@ public class PayOrderV1Api implements ApiHandle {
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CUT_PRICE_ISBUY);
             }
         }
-        //----------------
 
-        // mqp_新人专享活动增加逻辑
-        /*if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
-                && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-            AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
-                    .getById(Long.parseLong(orderInfo.getThirdOrderNo()));
-            if(shareUserGoodsDo!= null)
-            {
-                        AfShareUserGoodsDo result = afShareUserGoodsService
-                                .getByUserId(shareUserGoodsDo.getUserId());
-            
-                        if (result != null && result.getIsBuy() == 1) {
-                            logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
-                            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
-                        }
-            }
-        }*/
 
         if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) 
         		&& afShareGoodsService.getCountByGoodsId(orderInfo.getGoodsId())!=0){
@@ -353,6 +336,11 @@ public class PayOrderV1Api implements ApiHandle {
             Object payStatus = result.get("status");
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {
+                	//----------------------------begin map:add one time for tiger machine---------------------------------
+                	
+                	
+                	//----------------------------end map:add one time for tiger machine---------------------------------
+                	
                     //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
                     if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
                         if (payId.intValue() == 0) {
