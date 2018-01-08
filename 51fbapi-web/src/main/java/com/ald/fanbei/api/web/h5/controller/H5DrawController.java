@@ -122,14 +122,14 @@ public class H5DrawController extends H5Controller {
 	    return H5CommonResponse.getNewInstance(false, "请求参数错误").toString();
 	}
 
-	// 控制抽奖接口调用频率
-	String drawFrequencyKey = "Draw:Result:Runing";
-	if (bizCacheUtil.getObject(drawFrequencyKey) == null) {
-	    // 添加控制锁
-	    bizCacheUtil.saveObject(drawFrequencyKey, 1, Constants.SECOND_OF_TEN);
-	} else {
-	    return H5CommonResponse.getNewInstance(false, "请稍后发起请求result").toString();
-	}
+//	// 控制抽奖接口调用频率
+//	String drawFrequencyKey = "Draw:Result:Runing";
+//	if (bizCacheUtil.getObject(drawFrequencyKey) == null) {
+//	    // 添加控制锁
+//	    bizCacheUtil.saveObject(drawFrequencyKey, 1, Constants.SECOND_OF_TEN);
+//	} else {
+//	    return H5CommonResponse.getNewInstance(false, "请稍后发起请求result").toString();
+//	}
 
 	// 获取配置信息
 	AfResourceDo afResourceDo = afResourceService.getWechatConfig();
