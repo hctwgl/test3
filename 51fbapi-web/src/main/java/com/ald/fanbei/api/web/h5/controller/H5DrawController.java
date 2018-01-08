@@ -94,7 +94,7 @@ public class H5DrawController extends H5Controller {
 			return H5CommonResponse.getNewInstance(false, "获取微信信息失败").toString();
 		    }
 		} else {
-		    return H5CommonResponse.getNewInstance(false, "当前微信帐号已经签到其他号码").toString();
+		    return H5CommonResponse.getNewInstance(false, String.format("当前微信帐号已经签到号码: ", openIdUser.getPhone())).toString();
 		}
 	    } else {
 		return H5CommonResponse.getNewInstance(false, "该手机号码已签到").toString();
