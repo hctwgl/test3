@@ -495,9 +495,8 @@
 	<select id="tuchByBorrowId" resultType="java.lang.Long">
         SELECT id
         FROM af_borrow_legal_order_cash
-        WHERE
-        borrow_id = #{borrowId}
-        AND is_delete = 0
+        WHERE borrow_id = #{borrowId}
+            AND is_delete = 0
         LIMIT 1
     </select>
 	

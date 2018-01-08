@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
@@ -28,6 +29,8 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 
 	@Resource
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
+	@Resource
+	private AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
@@ -54,10 +57,18 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 		return afBorrowLegalOrderDao.saveRecord(afBorrowLegalOrderDo);
 	}
 
-
 	@Override
 	public List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query) {
 		return afBorrowLegalOrderDao.getUserBorrowLegalOrderList(query);
+	}
+	
+	public boolean isV2BorrowCash(Long borrowId) {
+		Long orderId = afBorrowLegalOrderDao.tuchByBorrowId(borrowId);
+		if(orderId != null) {
+			Long orderCashId = afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId);
+			if(orderCashId == null) return true;
+		}
+		return false;
 	}
 
 }

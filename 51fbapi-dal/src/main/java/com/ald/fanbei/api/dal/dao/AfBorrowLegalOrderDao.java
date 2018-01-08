@@ -22,5 +22,7 @@ public interface AfBorrowLegalOrderDao extends BaseDao<AfBorrowLegalOrderDo, Lon
 	int addBorrowLegalOrder(AfBorrowLegalOrderDo borrowLegalOrder);
 
 	AfBorrowLegalOrderDo getLastOrderByBorrowId(Long borrowId);
+	
+	Long tuchByBorrowId(Long borrowId);
 
 }

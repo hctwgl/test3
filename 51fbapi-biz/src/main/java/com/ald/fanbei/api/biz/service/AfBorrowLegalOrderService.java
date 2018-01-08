@@ -26,4 +26,6 @@ public interface AfBorrowLegalOrderService extends ParentService<AfBorrowLegalOr
 
 	List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query);
 	
+	boolean isV2BorrowCash(Long borrowId);
+	
 }

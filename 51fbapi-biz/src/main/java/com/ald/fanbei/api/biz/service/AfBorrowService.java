@@ -306,4 +306,13 @@ public interface AfBorrowService {
 	 */
 	BigDecimal getUserNotInBorrowMoney(Long userId);
 
+	/**
+	 * 根据borrowId获取已还款期数
+	 * @author yuyue
+	 * @Time 2018年1月5日 下午3:11:01
+	 * @param rid
+	 * @return
+	 */
+	Integer countNperRepaymentByBorrowId(Long rid);
+
 }

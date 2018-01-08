@@ -351,7 +351,7 @@ $(function () {
                     var a = JSON.parse(returnData);
                     console.log(a);
                     if (a.success) {
-                        maidianFn("registerSuccess");
+                        maidianFnNew("registerSuccess", registerMobile);
                         var urlName = param['urlName'];
                         requestMsg("注册成功");
                         setTimeout(function () {

@@ -32,7 +32,9 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.third.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.apph5.controller" />
-
+	
+	<context:component-scan base-package="com.ald.fanbei.api.web.validator.bean" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.validator.intercept" />
 
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
@@ -150,6 +152,7 @@
 				<value>/legalborrow/getCashPageType</value>
 				<value>/legalborrow/getBorrowLegalChargeInfo</value>
 				<value>/legalborrow/getOverdueStatus</value>
+				<value>/order/dmNperEnabled</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -263,7 +266,7 @@
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
 				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
 				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
-
+				<entry key="/order/dmNperEnabled" value-ref="dmNperEnabledApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -491,6 +494,13 @@
 				<entry key="/legalborrow/getLegalOrderLogistics" value-ref="getLegalOrderLogisticsApi" />
 				<entry key="/legalborrow/getLegalRenewalList" value-ref="getLegalRenewalListApi" />
 				<entry key="/legalborrow/getOverdueStatus" value-ref="getOverdueStatusApi" />
+				
+				<!-- legalborrowV2 -->
+				<entry key="/legalborrowV2/applyLegalBorrowCash" value-ref="applyLegalBorrowCashV2Api" />
+				<entry key="/legalborrowV2/repayDoV2" value-ref="repayDoV2Api" />
+				<entry key="/legalborrowV2/getBorrowLegalChargeInfoV2" value-ref="getBorrowLegalChargeInfoV2Api" />
+				<entry key="/legalborrowV2/getLegalOrderLogisticsV2" value-ref="getLegalOrderLogisticsV2Api" />
+				<entry key="/legalborrowV2/getOverdueStatusV2" value-ref="getOverdueStatusV2Api" />
 				
 				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
