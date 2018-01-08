@@ -137,10 +137,10 @@ public class CollectionSystemUtil extends AbstractThird {
 		// APP还款类型写3 , 线下还款写4
 		data.setChannel(AfRepayCollectionType.APP.getCode());
 		try {
-			logger.info("repaymentAchieve request :", JSON.toJSONString(data));
+			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
 			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
 					getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(data));
-			logger.info("repaymentAchieve response :", reqResult);
+			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("consumerRepayment fail , reqResult is null");
 			} else {
