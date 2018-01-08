@@ -25,4 +25,6 @@ public interface AfUserAccountSenceDao extends BaseDao<AfUserAccountSenceDo, Lon
      * @return
      */
     String getBusinessTypeByOrderId(@Param("orderId") Long orderId);
+
+    AfUserAccountSenceDo getByUserIdAndScene(@Param("scene") String scene, @Param("userId") Long userId);
 }
