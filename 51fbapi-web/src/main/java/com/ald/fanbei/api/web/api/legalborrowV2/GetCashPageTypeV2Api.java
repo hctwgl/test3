@@ -52,13 +52,13 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 		Map<String, Object> data = new HashMap<>();
 		resp.setResponseData(data);
 		Long userId = context.getUserId();
-		String pageType = "old";
+		String pageType = "V0";
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(RESOURCE_TYPE, SEC_TYPE);
 		String isBack = afResourceDo.getValue();
 		if (userId == null && StringUtils.equalsIgnoreCase("false", isBack)) {
 			pageType = "V2";
 		} else if (userId == null && StringUtils.equalsIgnoreCase("true", isBack)) {
-			pageType = "old";
+			pageType = "V0";
 		} else if (userId != null && StringUtils.equalsIgnoreCase("false", isBack)) {
 			// 不回退的情况
 			// 获取最后一笔借款
@@ -83,7 +83,7 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 							pageType = "V2";
 						}
 					}else {
-						pageType = "old";
+						pageType = "V0";
 					}
 				}
 			}
@@ -93,7 +93,7 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 			// 获取最后一笔借款
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 			if (afBorrowCashDo == null) {
-				pageType = "old";
+				pageType = "V0";
 			} else {
 				//查询用户是否有订单
 				AfBorrowLegalOrderDo borrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
@@ -102,22 +102,22 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 						.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 				String status = afBorrowCashDo.getStatus();
 				if (StringUtils.equalsIgnoreCase("CLOSED", status)) {
-					pageType = "old";
+					pageType = "V0";
 				}else if(StringUtils.equalsIgnoreCase("FINSH", status)){
 					if (borrowLegalOrder == null) {
-						pageType = "old";
+						pageType = "V0";
 					} else if (borrowLegalOrder != null) {
 						if(null == afBorrowLegalOrderCashDo){
-							pageType = "old";
+							pageType = "V0";
 						}else if(afBorrowLegalOrderCashDo != null && StringUtils.equalsIgnoreCase(afBorrowLegalOrderCashDo.getStatus(), "FINISHED")){
-							pageType = "old";
+							pageType = "V0";
 						}else{
 							pageType = "V2";
 						}
 					}
 				}else{
 					if(null == borrowLegalOrder){
-						pageType = "old";
+						pageType = "V0";
 					}else if(null != borrowLegalOrder){
 						if(null != afBorrowLegalOrderCashDo){
 							pageType = "V2";
