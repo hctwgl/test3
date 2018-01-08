@@ -225,9 +225,6 @@
 					WHERE
 						u.double_eggs_id = de.id
 				) AS order_number,
-				<if test="userId != null and userId != '' ">
-				<![CDATA[
-				
 				
 						CASE WHEN (
 									SELECT
@@ -242,8 +239,7 @@
 						ELSE
 								'N'
 						END
-				]]>
-				</if>
+			
 			as is_order
 			FROM
 				af_goods_double_eggs de
