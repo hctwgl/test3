@@ -497,6 +497,8 @@
 				
 				<!-- legalborrowV2 -->
 				<entry key="/legalborrowV2/applyLegalBorrowCash" value-ref="applyLegalBorrowCashV2Api" />
+				
+				
 				<entry key="/legalborrowV2/applyLegalRenewal" value-ref="applyLegalRenewalV2Api" />
 				<entry key="/legalborrowV2/repayDo" value-ref="repayDoV2Api" />
 				<entry key="/legalborrowV2/getBorrowLegalChargeInfo" value-ref="getBorrowLegalChargeInfoV2Api" />
