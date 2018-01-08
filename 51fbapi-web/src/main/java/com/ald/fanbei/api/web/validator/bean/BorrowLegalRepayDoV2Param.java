@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component("legalRepayDoV2Param")
-public class LegalRepayDoV2Param {
+public class BorrowLegalRepayDoV2Param {
 	@NotNull
 	@DecimalMin("0")
 	public BigDecimal repaymentAmount;

@@ -39,7 +39,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.bean.LegalRepayDoV2Param;
+import com.ald.fanbei.api.web.validator.bean.BorrowLegalRepayDoV2Param;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 
@@ -112,7 +112,7 @@ public class RepayDoV2Api implements ApiHandle {
 		bo.userId = userId;
 		bo.userDo = userDo;
 		
-		LegalRepayDoV2Param param = (LegalRepayDoV2Param) requestDataVo.getParamBo();
+		BorrowLegalRepayDoV2Param param = (BorrowLegalRepayDoV2Param) requestDataVo.getParamBo();
 		bo.repaymentAmount = param.repaymentAmount;
 		bo.rebateAmount = param.rebateAmount;
 		bo.actualAmount = param.rebateAmount;
