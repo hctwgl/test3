@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -82,8 +83,6 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
 import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
-import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
-import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAccountQuery;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -2430,7 +2429,95 @@ public class RiskUtil extends AbstractThird {
         } catch (Exception e) {
             logger.error("syncOpenId error:", e);
         }
-
     }
+    
+    /**
+     * 获取用户分层利率
+     * @param userId
+     * @param rate
+     * @return
+     */
+    public BigDecimal getRiskOriRate(Long userId) {
+    	List<AfResourceDo> borrowConfigList = afResourceService.selectBorrowHomeConfigByAllTypes();
+		Map<String, Object> rate = getObjectWithResourceDolist(borrowConfigList);
+		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
+		BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
+		BigDecimal serviceRate = bankRate.multiply(bankDouble).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6,
+				RoundingMode.HALF_UP);
+		BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
+
+		Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
+		if (poundageRateCash != null) {
+			poundageRate = new BigDecimal(poundageRateCash.toString());
+		} else {
+			try {
+				RiskVerifyRespBo riskResp = riskUtil.getUserLayRate(userId.toString());
+				String poundage = riskResp.getPoundageRate();
+				if (!StringUtils.isBlank(riskResp.getPoundageRate())) {
+					logger.info("comfirmBorrowCash get user poundage rate from risk: consumerNo="
+							+ riskResp.getConsumerNo() + ",poundageRate=" + poundage);
+					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId, poundage,
+							Constants.SECOND_OF_ONE_MONTH);
+					bizCacheUtil.saveObject(Constants.RES_BORROW_CASH_POUNDAGE_TIME + userId, new Date(),
+							Constants.SECOND_OF_ONE_MONTH);
+				}
+			} catch (Exception e) {
+				logger.info(userId + "从风控获取分层用户额度失败：" + e);
+			}
+		}
+		// 计算原始利率
+		BigDecimal oriRate = serviceRate.add(poundageRate);
+		return oriRate;
+	}
+    
+    
+    public  Map<String, Object> getObjectWithResourceDolist(List<AfResourceDo> list) {
+		Map<String, Object> data = new HashMap<String, Object>();
+
+		for (AfResourceDo afResourceDo : list) {
+			if (StringUtils.equals(afResourceDo.getType(), AfResourceType.borrowRate.getCode())) {
+				if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BorrowCashRange.getCode())) {
+
+					data.put("maxAmount", afResourceDo.getValue());
+					data.put("minAmount", afResourceDo.getValue1());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashBaseBankDouble.getCode())) {
+					data.put("bankDouble", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashPoundage.getCode())) {
+					data.put("poundage", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.BorrowCashOverduePoundage.getCode())) {
+					data.put("overduePoundage", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(), AfResourceSecType.BaseBankRate.getCode())) {
+					data.put("bankRate", afResourceDo.getValue());
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashSupuerSwitch.getCode())) {
+					data.put("supuerSwitch", afResourceDo.getValue());
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashLenderForCash.getCode())) {
+					data.put("lender", afResourceDo.getValue());
+
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashTotalAmount.getCode())) {
+					data.put("amountPerDay", afResourceDo.getValue());
+				} else if (StringUtils.equals(afResourceDo.getSecType(),
+						AfResourceSecType.borrowCashShowNum.getCode())) {
+					data.put("nums", afResourceDo.getValue());
+				}
+			} else {
+				if (StringUtils.equals(afResourceDo.getType(), AfResourceSecType.BorrowCashDay.getCode())) {
+					data.put("borrowCashDay", afResourceDo.getValue());
+				}
+			}
+		}
+
+		return data;
+
+	}
 
 }

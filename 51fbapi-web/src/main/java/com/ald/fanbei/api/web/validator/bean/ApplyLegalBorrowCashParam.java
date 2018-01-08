@@ -21,9 +21,9 @@ public class ApplyLegalBorrowCashParam {
 	@Pattern(regexp = "(7|14)")
 	private String type;
 	@NotNull
-	private String latitude;
+	private BigDecimal latitude;
 	@NotNull
-	private String longitude;
+	private BigDecimal longitude;
 	@NotNull
 	private String province;
 	@NotNull
@@ -71,16 +71,16 @@ public class ApplyLegalBorrowCashParam {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getLatitude() {
+	public BigDecimal getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(String latitude) {
+	public void setLatitude(BigDecimal latitude) {
 		this.latitude = latitude;
 	}
-	public String getLongitude() {
+	public BigDecimal getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(String longitude) {
+	public void setLongitude(BigDecimal longitude) {
 		this.longitude = longitude;
 	}
 	public String getProvince() {

@@ -64,7 +64,7 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 		convertUtils = new ConvertUtilsBean();
 		resourceBundle = ResourceBundle.getBundle("com.ald.fanbei.api.web.validator.message.check_msg", Locale.CHINA);
 	}
-
+	
 	@Override
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
 		ApiHandle methodHandel = apiHandleFactory.getApiHandle(reqData.getMethod());
@@ -81,7 +81,11 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 				initializeValidatorBean(validatorInstanceBean, reqData);
 				reqData.setParamBo(validatorInstanceBean);
 				logger.info("initialize validator bean success.");
-				Set<ConstraintViolation<Object>> validateResults = clsValidator.validate(validatorInstanceBean);
+				
+				Set<ConstraintViolation<Object>> validateResults = null;
+				synchronized(this) {
+					validateResults = clsValidator.validate(validatorInstanceBean);
+				}
 				for (ConstraintViolation<Object> validateResult : validateResults) {
 					Path propertyPath = validateResult.getPropertyPath();
 					String message = validateResult.getMessage();

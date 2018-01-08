@@ -10,14 +10,14 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum RiskReviewStatus {
 	
-	apply("APPLY", "申请/待风控审核"), 
-	waitfbReview("WAITFBREVIEW", ":待返呗审核通过"),
+	APPLY("APPLY", "申请/待风控审核"), 
+	WAITFBREVIEW("WAITFBREVIEW", ":待返呗审核通过"),
 	REFUSE("REFUSE", "风控拒绝审核不通过"),
 	
-	agree("AGREE", "风控审核同意"),
+	AGREE("AGREE", "风控审核同意"),
 
-	fbagree("FBAGREE", "返呗审核同意"),
-	fbrefuse("FBREFUSE", "返呗平台审核拒绝");
+	FBAGREE("FBAGREE", "返呗审核同意"),
+	FBREFUSE("FBREFUSE", "返呗平台审核拒绝");
     
     private String code;
     private String name;
