@@ -486,14 +486,10 @@ public class StartCashierApi implements ApiHandle {
     private BigDecimal getUseableAmount(AfOrderDo orderInfo, AfUserAccountDto userDto, AfInterimAuDo afInterimAuDo) {
         BigDecimal useableAmount = BigDecimal.ZERO;
         //判断商圈订单
-        if (orderInfo.getOrderType().equals("TRADE")) {
-            String secType = orderInfo.getSecType();
-            if (secType.equals("")) {
-                secType = afUserAccountSenceService.getBusinessTypeByOrderId(orderInfo.getRid());
-            }
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
             //教育培训订单
-            if (secType.equals("TRAIN")) {
-                AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType("TRAIN", userDto.getUserId());
+            if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
+                AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userDto.getUserId());
                 if (afUserAccountSenceDo != null) {
                     //修改订单的授信额度和使用额度
                     afOrderService.updateAuAndUsed(orderInfo.getRid(), afUserAccountSenceDo.getAuAmount(), afUserAccountSenceDo.getUsedAmount());
@@ -501,12 +497,12 @@ public class StartCashierApi implements ApiHandle {
                 }
             }
         } else {    //线上分期订单
-            AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType("ONLINE", userDto.getUserId());
+            AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
             if (afUserAccountSenceDo != null) {
                 //修改订单的授信额度和使用额度
                 afOrderService.updateAuAndUsed(orderInfo.getRid(), afUserAccountSenceDo.getAuAmount(), afUserAccountSenceDo.getUsedAmount());
                 //额度判断
-                if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals("BOLUOME")) {
+                if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
                     //获取当前用户可用临时额度
                     BigDecimal interim = afInterimAuDo.getInterimAmount().subtract(afInterimAuDo.getInterimUsed());
                     useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount()).add(interim);

@@ -127,6 +127,16 @@
         ON DUPLICATE KEY UPDATE au_amount=#{auAmount,jdbcType=DECIMAL},gmt_modified = NOW(); 
     </update>
 
+    <update id="updateUsedAmount">
+        UPDATE
+        af_user_account_sence
+        SET
+        gmt_modified = NOW(),
+        used_amount = used_amount + #{usedAmount}
+        WHERE
+        user_id = #{userId} AND scene = #{scene}
+    </update>
+
 	<select id="getByUserIdAndScene" resultType="com.ald.fanbei.api.dal.domain.AfUserAccountSenceDo">
         SELECT
         <include refid="queryFields" />
@@ -146,7 +156,7 @@
         SELECT
         <include refid="queryFields" />
         FROM af_user_account_sence
-        WHERE is_delete = 0 AND user_id=#{user_id} AND scene=#{scene}
+        WHERE is_delete = 0 AND user_id=#{userId} AND scene=#{scene}
     </select>
 
     <select id="getBusinessTypeByOrderId" resultType="java.lang.String">

@@ -16,7 +16,7 @@ import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.VersionCheckUitl;
-import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.*;
 
@@ -76,11 +76,6 @@ import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfInterimAuDao;
-import com.ald.fanbei.api.dal.dao.AfInterimDetailDao;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.AfInterimAuDo;
 import com.ald.fanbei.api.dal.domain.AfInterimDetailDo;
@@ -179,6 +174,8 @@ public class RiskUtil extends AbstractThird {
     AfInterimAuDao afInterimAuDao;
     @Resource
     AfInterimDetailDao afInterimDetailDao;
+    @Resource
+    AfUserAccountSenceDao afUserAccountSenceDao;
     
     @Autowired
     AfUserAccountSenceService afUserAccountSenceService;
@@ -669,9 +666,9 @@ public class RiskUtil extends AbstractThird {
             if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
                 afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNum, onlineAmount);
             }
-            AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.OFFLINE.getCode(), consumerNum);
+            AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNum);
             if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.OFFLINE.getCode(), consumerNum, offlineAmount);
+                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNum, offlineAmount);
             }            
             
             return riskResp;
@@ -821,43 +818,8 @@ public class RiskUtil extends AbstractThird {
             afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
             afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(), orderInfo.getOrderType());
         }
-        //获取临时额度
-        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
-        //获取可使用额度
-        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-        // 修改用户账户信息
-        AfUserAccountDo account = new AfUserAccountDo();
-        if (useableAmount.compareTo(orderInfo.getActualAmount()) == -1) {
-            //使用的临时额度
-            BigDecimal usedInterim = BigDecimal.ZERO;
-            if (useableAmount.compareTo(BigDecimal.ZERO) == 1) {
-                //增加账户使用额度
-                account.setUsedAmount(useableAmount);
-                account.setUserId(userAccountInfo.getUserId());
-                afUserAccountDao.updateUserAccount(account);
-                //增加临时使用额度
-                usedInterim = orderInfo.getActualAmount().subtract(useableAmount);
-                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
-            } else {
-                //增加临时使用额度
-                usedInterim = orderInfo.getActualAmount();
-                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
-            }
-            //增加临时额度使用记录
-            AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
-            afInterimDetailDo.setAmount(usedInterim.multiply(new BigDecimal(-1)));
-            afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().add(usedInterim));
-            afInterimDetailDo.setUserId(userAccountInfo.getUserId());
-            afInterimDetailDo.setType(1);
-            afInterimDetailDo.setOrderId(orderInfo.getRid());
-            afInterimDetailDo.setUserId(userAccountInfo.getUserId());
-            afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
-        } else {
-            //增加账户使用额度
-            account.setUsedAmount(orderInfo.getActualAmount());
-            account.setUserId(userAccountInfo.getUserId());
-            afUserAccountDao.updateUserAccount(account);
-        }
+        //更新拆分场景使用额度
+        updateUsedAmount(orderInfo,borrow);
 
         logger.info("updateOrder orderInfo = {}", orderInfo);
         orderDao.updateOrder(orderInfo);
@@ -1005,47 +967,59 @@ public class RiskUtil extends AbstractThird {
             afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
             afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.COMBINATION_PAY.getCode(), orderInfo.getOrderType());
         }
-        //获取临时额度
-        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
-        //获取可使用额度
-        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-
-        // 修改用户账户信息
-        AfUserAccountDo account = new AfUserAccountDo();
-        if (useableAmount.compareTo(orderInfo.getBorrowAmount()) == -1) {
-            //使用的临时额度
-            BigDecimal usedInterim = BigDecimal.ZERO;
-            if (useableAmount.compareTo(BigDecimal.ZERO) == 1) {
-                //增加账户使用额度
-                account.setUsedAmount(useableAmount);
-                account.setUserId(userAccountInfo.getUserId());
-                afUserAccountDao.updateUserAccount(account);
-                //增加临时使用额度
-                usedInterim = orderInfo.getBorrowAmount().subtract(useableAmount);
-                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
-            } else {
-                //增加临时使用额度
-                usedInterim = orderInfo.getBorrowAmount();
-                afInterimAuDao.updateInterimUsed(userAccountInfo.getUserId(), usedInterim);
-            }
-            //增加临时额度使用记录
-            AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
-            afInterimDetailDo.setAmount(usedInterim.multiply(new BigDecimal(-1)));
-            afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().add(usedInterim));
-            afInterimDetailDo.setType(1);
-            afInterimDetailDo.setOrderId(orderInfo.getRid());
-            afInterimDetailDo.setUserId(userAccountInfo.getUserId());
-            afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
-        } else {
-            account.setUsedAmount(orderInfo.getBorrowAmount());
-            account.setUserId(userAccountInfo.getUserId());
-            afUserAccountDao.updateUserAccount(account);
-        }
-
+        //更新拆分场景使用额度
+        updateUsedAmount(orderInfo,borrow);
         logger.info("updateOrder orderInfo = {}", orderInfo);
         orderDao.updateOrder(orderInfo);
         resultMap.put("success", true);
         return resultMap;
+    }
+
+    /**
+     * 更新拆分场景使用额度
+     * @param orderInfo
+     * @param borrow
+     */
+    private void updateUsedAmount(AfOrderDo orderInfo,AfBorrowDo borrow){
+        //获取临时额度
+        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+        //判断商圈订单
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            //教育培训订单
+            if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
+                afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.TRAIN.getCode(),orderInfo.getUserId(),borrow.getAmount());
+            }
+        } else {    //线上分期订单
+            AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId());
+            //获取可使用额度
+            BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+            // 修改用户账户信息
+            if (useableAmount.compareTo(borrow.getAmount()) == -1) {
+                BigDecimal usedInterim = BigDecimal.ZERO;
+                if (useableAmount.compareTo(BigDecimal.ZERO) == 1) {
+                    //修改线上分期额度
+                    afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),useableAmount);
+                    //增加临时使用额度
+                    usedInterim = borrow.getAmount().subtract(useableAmount);
+                    afInterimAuDao.updateInterimUsed(orderInfo.getUserId(), usedInterim);
+                } else {
+                    //增加临时使用额度
+                    usedInterim = borrow.getAmount();
+                    afInterimAuDao.updateInterimUsed(orderInfo.getUserId(), usedInterim);
+                }
+                //增加临时额度使用记录
+                AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
+                afInterimDetailDo.setAmount(usedInterim.multiply(new BigDecimal(-1)));
+                afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().add(usedInterim));
+                afInterimDetailDo.setType(1);
+                afInterimDetailDo.setOrderId(orderInfo.getRid());
+                afInterimDetailDo.setUserId(orderInfo.getUserId());
+                afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
+            } else {
+                //修改线上分期额度
+                afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),borrow.getAmount());
+            }
+        }
     }
 
     /**
@@ -1184,9 +1158,9 @@ public class RiskUtil extends AbstractThird {
                     if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
                         afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
                     }
-                    AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.OFFLINE.getCode(), consumerNo);
+                    AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNo);
                     if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.OFFLINE.getCode(), consumerNo, offlineAmount);
+                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
                     }
                     
                     jpushService.strongRiskSuccess(userAccountDo.getUserName());
