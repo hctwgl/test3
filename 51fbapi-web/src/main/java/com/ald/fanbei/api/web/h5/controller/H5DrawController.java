@@ -89,7 +89,7 @@ public class H5DrawController extends H5Controller {
 
 		    return H5CommonResponse.getNewInstance(true, String.format("恭喜 %s 签到成功", userDrawDo.getName())).toString();
 		} else {
-		    return H5CommonResponse.getNewInstance(false, String.format("当前微信帐号已经签到手机号码  %s", openIdUser.getPhone())).toString();
+		    return H5CommonResponse.getNewInstance(false, String.format("微信帐号已签其它号码  %s", openIdUser.getPhone())).toString();
 		}
 	    } else {
 		return H5CommonResponse.getNewInstance(false, "该手机号码已签到").toString();
