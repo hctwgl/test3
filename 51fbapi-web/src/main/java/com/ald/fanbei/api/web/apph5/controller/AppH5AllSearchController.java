@@ -135,125 +135,16 @@ public class AppH5AllSearchController extends BaseController {
 			int totalCount = query.getTotalCount();
 			int totalPage = query.getTotalPage();
 
-			if (CollectionUtil.isNotEmpty(orgSelfGoodlist)) {
-				if (orgSelfGoodlist.size() == 20) {
-
-					// full page then return
-					for (AfGoodsDo goodsDo : orgSelfGoodlist) {
-						AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo);
-						goodsList.add(vo);
-					}
-					data.put("goodsList", goodsList);
-
-					return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-
-				} else {
-
-					// partly from selfSupport then return
-					for (AfGoodsDo goodsDo : orgSelfGoodlist) {
-						AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo);
-						goodsList.add(vo);
-					}
-
-					// partly from the first one page from taobao add to the list
-					int numNeeded = totalPage * 20 - totalCount;
-
-					Map<String, Object> buildParams = new HashMap<String, Object>();
-					buildParams.put("q", keyword);
-					buildParams.put("pageNo", pageNo);
-					buildParams.put("pageSize", numNeeded);
-					if (StringUtil.isAllNotEmpty(sort)) {
-						buildParams.put("sort", sort);
-					}
-					List<NTbkItem> list = taobaoApiUtil.executeTaobaokeSearch(buildParams).getResults();
-
-					final AfResourceDo resource = afResourceService
-							.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
-					List<AfSearchGoodsVo> resultlist = new ArrayList<>();
-					resultlist = CollectionConverterUtil.convertToListFromList(list,
-							new Converter<NTbkItem, AfSearchGoodsVo>() {
-								@Override
-								public AfSearchGoodsVo convert(NTbkItem source) {
-
-									if (null == resource) {
-										return convertFromTaobaoToVo(source, BigDecimal.ZERO, BigDecimal.ZERO);
-									} else {
-										return convertFromTaobaoToVo(source,
-												NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
-												NumberUtil.objToBigDecimalDefault(resource.getValue1(),
-														BigDecimal.ZERO));
-									}
-								}
-							});
-					
-					//resultList sort by price ..
-					if (sort.equals("price_asc")) {
-						Collections.sort(resultlist);
-					}else if (sort.equals("price_des")) {
-						Collections.sort(resultlist);
-						Collections.reverse(resultlist);
-					}
-					
-					
-					
-					goodsList.addAll(resultlist);
-					data.put("goodsList", goodsList);
-					
-					// TODO:return;
-					return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
-				}
-
-			} else {
-				// get all from taobao
-				int taobaoPageNo = 1;
-				if (totalPage * 20 > totalCount) {
-					taobaoPageNo = pageNo - totalPage + 1;
-				} else {
-					taobaoPageNo = pageNo - totalPage;
-				}
-
-				// for taobao
-				Map<String, Object> buildParams = new HashMap<String, Object>();
-				buildParams.put("q", keyword);
-				buildParams.put("pageNo", taobaoPageNo);
-				buildParams.put("pageSize", 20);
-				if (sort != null) {
-					buildParams.put("sort", sort);
-				}
-				
-				List<NTbkItem> list = taobaoApiUtil.executeTaobaokeSearch(buildParams).getResults();
-
-				final AfResourceDo resource = afResourceService
-						.getSingleResourceBytype(Constants.RES_THIRD_GOODS_REBATE_RATE);
-				List<AfSearchGoodsVo> resultlist = new ArrayList<>();
-				resultlist = CollectionConverterUtil.convertToListFromList(list,
-						new Converter<NTbkItem, AfSearchGoodsVo>() {
-							@Override
-							public AfSearchGoodsVo convert(NTbkItem source) {
-
-								if (null == resource) {
-									return convertFromTaobaoToVo(source, BigDecimal.ZERO, BigDecimal.ZERO);
-								} else {
-									return convertFromTaobaoToVo(source,
-											NumberUtil.objToBigDecimalDefault(resource.getValue(), BigDecimal.ZERO),
-											NumberUtil.objToBigDecimalDefault(resource.getValue1(),
-													BigDecimal.ZERO));
-								}
-							}
-						});
-				
-				//resultList sort by price ..
-				if (sort.equals("price_asc")) {
-					Collections.sort(resultlist);
-				}else if (sort.equals("price_des")) {
-					Collections.sort(resultlist);
-					Collections.reverse(resultlist);
-				}
-				
-				data.put("goodsList", resultlist);
-				return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+			for (AfGoodsDo goodsDo : orgSelfGoodlist) {
+				AfSearchGoodsVo vo = convertFromSelfToVo(goodsDo);
+				goodsList.add(vo);
 			}
+			data.put("goodsList", goodsList);
+			data.put("totalCount", totalCount);
+			data.put("totalPage", totalPage);
 
+			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+		
 		} catch (Exception exception) {
 			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
 			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
