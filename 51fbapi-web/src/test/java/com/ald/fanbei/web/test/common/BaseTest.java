@@ -125,7 +125,10 @@ public class BaseTest {
         String signStrBefore = signStrPrefix;
         if (paramList.size() > 0) {
             for (String item : paramList) {
-                signStrBefore = signStrBefore + "&" + item + "=" + params.get(item);
+            	String value = params.get(item);
+            	if(value != null) {
+            		signStrBefore = signStrBefore + "&" + item + "=" + value;
+            	}
             }
         }
         System.out.println("String before sign:"+signStrBefore);
