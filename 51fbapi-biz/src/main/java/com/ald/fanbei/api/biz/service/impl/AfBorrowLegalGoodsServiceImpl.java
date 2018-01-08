@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -37,5 +38,10 @@ public class AfBorrowLegalGoodsServiceImpl extends ParentServiceImpl<AfBorrowLeg
 	@Override
 	public Long getGoodsIdByProfitAmout(BigDecimal profitAmout) {
 		return afBorrowLegalGoodsDao.getGoodsIdByProfitAmout(profitAmout);
+	}
+
+	@Override
+	public List<Long> getGoodsIdByProfitAmoutForV2(BigDecimal profitAmount) {
+		return afBorrowLegalGoodsDao.getGoodsIdByProfitAmoutForV2(profitAmount);
 	}
 }
