@@ -100,7 +100,7 @@ public class PayOrderV1Api implements ApiHandle {
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-kanxia        Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
+        Long orderId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("orderId"), null);
         Long payId = NumberUtil.objToLongDefault(requestDataVo.getParams().get("payId"), null);
         Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), null);
         String type = ObjectUtils.toString(requestDataVo.getParams().get("type"), OrderType.BOLUOME.getCode()).toString();
