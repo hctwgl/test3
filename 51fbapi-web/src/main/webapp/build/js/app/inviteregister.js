@@ -454,7 +454,7 @@ window.onload = () => {
             token: token
           },
           success: function (returnData) {
-            maidianFn("registerSuccess");
+            maidianFnNew("registerSuccess", $('#user').val());
             $('.reg').removeClass('pending')
             if (returnData.success) {
               window.location.href = returnData.url;
