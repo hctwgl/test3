@@ -183,6 +183,9 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 						bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
 
+						//添加用户认证信息多场景状态
+
+
 						if (context.getAppVersion() > 367) {
 							creditRebateMap.put("creditRebateMsg", creditRebateMsg);
 							resp.setResponseData(creditRebateMap);

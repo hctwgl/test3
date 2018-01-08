@@ -5,9 +5,9 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,scene,status,user_id,cause_reason 
+        id rid,gmt_create,gmt_modified,scene,status,user_id,cause_reason
     </sql>
-    
+
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
     	WHERE is_delete = 0
@@ -34,78 +34,28 @@
         </if>
     </sql>
 
-    
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
-        INSERT INTO af_user_auth_status
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
-	        <if test="scene != null">        
-	            scene,
-	        </if>
-	        <if test="status != null">        
-	            status,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="causeReason != null">        
-	            cause_reason,
-	        </if>
-        </trim>
-        
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="scene != null" >
-		       #{scene,jdbcType=VARCHAR},
-		    </if>
-		    <if test="status != null" >
-		       #{status,jdbcType=VARCHAR},
-		    </if>
-		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="causeReason != null" >
-		       #{causeReason,jdbcType=VARCHAR},
-		    </if>
-        </trim>
-    </insert>
-    
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
         UPDATE af_user_auth_status
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
             </if>
-            <if test="scene != null and scene != '' ">        
-                scene = #{scene,jdbcType=VARCHAR},                
+            <if test="scene != null and scene != '' ">
+                scene = #{scene,jdbcType=VARCHAR},
             </if>
-            <if test="status != null and status != '' ">        
-                status = #{status,jdbcType=VARCHAR},                
+            <if test="status != null and status != '' ">
+                status = #{status,jdbcType=VARCHAR},
             </if>
-            <if test="userId != null and userId != '' ">        
-                user_id = #{userId,jdbcType=INTEGER},                
+            <if test="userId != null and userId != '' ">
+                user_id = #{userId,jdbcType=INTEGER},
             </if>
-            <if test="causeReason != null and causeReason != '' ">        
-                cause_reason = #{causeReason,jdbcType=VARCHAR}                
+            <if test="causeReason != null and causeReason != '' ">
+                cause_reason = #{causeReason,jdbcType=VARCHAR}
             </if>
-        </set>    
+        </set>
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
@@ -121,15 +71,60 @@
         SELECT
         <include refid="queryFields" />
         FROM af_user_auth_status
-        <include refid="commonCondition"/> 
+        <include refid="commonCondition"/>
         limit 0,1
     </select>
-               
-    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
+
+
+    <insert id="addAfUserAuthStatus" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" keyProperty="rid">
+        INSERT INTO af_user_auth_status
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="scene != null">
+                scene,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="causeReason != null">
+                cause_reason
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scene != null" >
+                #{scene,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="causeReason != null" >
+                #{causeReason,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <select id="selectAfUserAuthStatusByUserIdAndScene" resultType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo">
         SELECT
         <include refid="queryFields" />
         FROM af_user_auth_status
-        <include refid="commonCondition"/>
+       where
+        is_delete = 0
+        AND status=#{status}
+        AND user_id=#{userId}
+        AND scene =#{scene}
     </select>
     
 </mapper>

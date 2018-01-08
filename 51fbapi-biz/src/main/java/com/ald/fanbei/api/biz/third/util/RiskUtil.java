@@ -649,17 +649,30 @@ public class RiskUtil extends AbstractThird {
             riskResp.setSuccess(true);
             JSONObject dataObj = JSON.parseObject(riskResp.getData());
             BigDecimal au_amount = new BigDecimal(dataObj.getString("amount"));
-            BigDecimal onlineAmount = new BigDecimal(dataObj.getString("onlineAmount"));
-            BigDecimal offlineAmount = new BigDecimal(dataObj.getString("offlineAmount"));
+
+            String limitAmount = obj.getString("onlineAmount");
+            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+                limitAmount = "0";
+            BigDecimal onlineAmount = new BigDecimal(limitAmount);
+            limitAmount = obj.getString("offlineAmount");
+            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+                limitAmount = "0";
+            BigDecimal offlineAmount = new BigDecimal(limitAmount);
+            
             Long consumerNum = Long.parseLong(consumerNo);
 
             AfUserAccountDo accountDo = new AfUserAccountDo();
             accountDo.setUserId(consumerNum);
             accountDo.setAuAmount(au_amount);
             afUserAccountService.updateUserAccount(accountDo);
-            
-            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNum, onlineAmount);
-            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.OFFLINE.getCode(), consumerNum, offlineAmount);
+            AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNum);
+            if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNum, onlineAmount);
+            }
+            AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.OFFLINE.getCode(), consumerNum);
+            if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.OFFLINE.getCode(), consumerNum, offlineAmount);
+            }            
             
             return riskResp;
         } else {
@@ -1128,10 +1141,20 @@ public class RiskUtil extends AbstractThird {
         if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
             logger.info("asyRegisterStrongRiskV1 reqBo.getSignInfo()" + reqBo.getSignInfo());
             JSONObject obj = JSON.parseObject(data);
-            String limitAmount = obj.getString("amount");
+            String limitAmount = obj.getString("amount");            
             if (StringUtil.equals(limitAmount, "") || limitAmount == null)
                 limitAmount = "0";
             BigDecimal au_amount = new BigDecimal(limitAmount);
+            
+            limitAmount = obj.getString("onlineAmount");
+            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+                limitAmount = "0";
+            BigDecimal onlineAmount = new BigDecimal(limitAmount);
+            limitAmount = obj.getString("offlineAmount");
+            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+                limitAmount = "0";
+            BigDecimal offlineAmount = new BigDecimal(limitAmount);
+            
             Long consumerNo = Long.parseLong(obj.getString("consumerNo"));
             String result = obj.getString("result");
             String orderNo = obj.getString("orderNo");
@@ -1157,6 +1180,15 @@ public class RiskUtil extends AbstractThird {
                         accountDo.setAuAmount(au_amount);
                         afUserAccountService.updateUserAccount(accountDo);
                     }
+                    AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNo);
+                    if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
+                    }
+                    AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.OFFLINE.getCode(), consumerNo);
+                    if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.OFFLINE.getCode(), consumerNo, offlineAmount);
+                    }
+                    
                     jpushService.strongRiskSuccess(userAccountDo.getUserName());
                     smsUtil.sendRiskSuccess(userAccountDo.getUserName());
                 } else if (StringUtils.equals("30", result)) {

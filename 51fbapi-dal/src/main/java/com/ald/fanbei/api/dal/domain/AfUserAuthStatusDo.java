@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 /**
  * 额度拆分多场景认证状体记录实体
- * 
+ *
  * @author gaojb
  * @version 1.0.0 初始化
  * @date 2018-01-05 14:58:48
@@ -20,7 +20,7 @@ import java.math.BigDecimal;
      * 主键Rid
      */
     private Long rid;
-    
+
 
     /**
      * 创建时间
@@ -44,7 +44,7 @@ import java.math.BigDecimal;
 
     /**
      * 用户id
-            
+
      */
     private Long userId;
 
@@ -65,13 +65,13 @@ import java.math.BigDecimal;
 
     /**
      * 设置主键Id
-     * 
+     *
      * @param 要设置的主键Id
      */
     public void setRid(Long rid){
       this.rid = rid;
     }
-    
+
 
     /**
      * 获取创建时间
@@ -84,7 +84,7 @@ import java.math.BigDecimal;
 
     /**
      * 设置创建时间
-     * 
+     *
      * @param gmtCreate 要设置的创建时间
      */
     public void setGmtCreate(Date gmtCreate){
@@ -102,7 +102,7 @@ import java.math.BigDecimal;
 
     /**
      * 设置最后修改时间
-     * 
+     *
      * @param gmtModified 要设置的最后修改时间
      */
     public void setGmtModified(Date gmtModified){
@@ -120,7 +120,7 @@ import java.math.BigDecimal;
 
     /**
      * 设置CASH 现金贷场景，ONLINE 线上分期，TRAIN线下培训
-     * 
+     *
      * @param scene 要设置的CASH 现金贷场景，ONLINE 线上分期，TRAIN线下培训
      */
     public void setScene(String scene){
@@ -138,7 +138,7 @@ import java.math.BigDecimal;
 
     /**
      * 设置Y已认证 N未认证 C认证失败
-     * 
+     *
      * @param status 要设置的Y已认证 N未认证 C认证失败
      */
     public void setStatus(String status){
@@ -147,10 +147,10 @@ import java.math.BigDecimal;
 
     /**
      * 获取用户id
-            
+
      *
      * @return 用户id
-            
+
      */
     public Long getUserId(){
       return userId;
@@ -158,10 +158,10 @@ import java.math.BigDecimal;
 
     /**
      * 设置用户id
-            
-     * 
+
+     *
      * @param userId 要设置的用户id
-            
+
      */
     public void setUserId(Long userId){
       this.userId = userId;
@@ -178,7 +178,7 @@ import java.math.BigDecimal;
 
     /**
      * 设置未通过原因，json格式，表示哪些认证信息需要重新提交。
-     * 
+     *
      * @param causeReason 要设置的未通过原因，json格式，表示哪些认证信息需要重新提交。
      */
     public void setCauseReason(String causeReason){
@@ -186,3 +186,5 @@ import java.math.BigDecimal;
     }
 
 }
+
+

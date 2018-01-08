@@ -23,4 +23,6 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
      * @return
      */
     String getBusinessTypeByOrderId(Long orderId);
+
+    AfUserAccountSenceDo getByUserIdAndScene(String scene, Long userId);
 }

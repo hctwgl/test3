@@ -48,4 +48,10 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
     public String getBusinessTypeByOrderId(Long orderId) {
         return afUserAccountSenceDao.getBusinessTypeByOrderId(orderId);
     }
+
+    @Override
+    public AfUserAccountSenceDo getByUserIdAndScene(String scene, Long userId) {
+
+	return afUserAccountSenceDao.getByUserIdAndScene(scene, userId);
+    }
 }

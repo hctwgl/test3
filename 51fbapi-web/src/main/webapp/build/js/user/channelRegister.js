@@ -9,8 +9,8 @@ console.log(style);
 var channelCode = getUrl('channelCode');
 var pointCode = getUrl('pointCode');
 
-function toMaidian(data) {
-    maidianFnNew(data, channelCode, pointCode);
+function toMaidian(data,data2) {
+    maidianFnNew(data, channelCode, pointCode, data2);
 }
 
 function formatDateTime() {
@@ -227,7 +227,7 @@ $(function(){
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {
-                                        toMaidian("registerSuccess");
+                                        toMaidian("registerSuccess", mobileNum);
                                         // js判断微信和QQ
                                         let ua = navigator.userAgent.toLowerCase();
                                         if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
