@@ -207,7 +207,7 @@
         FROM af_borrow_legal_order_repayment
         WHERE is_delete = 0
         AND borrow_id=#{borrowId}
-        AND status = 'A'
+        AND status in ('A','P')
     </select>
     
 </mapper>
