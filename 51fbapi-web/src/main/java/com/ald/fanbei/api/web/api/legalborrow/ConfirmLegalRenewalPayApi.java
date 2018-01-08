@@ -90,6 +90,9 @@ public class ConfirmLegalRenewalPayApi implements ApiHandle {
         String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"), "").toString();
         String address = ObjectUtils.toString(requestDataVo.getParams().get("address"), "").toString();
         
+        // 对405版本借钱，在低版本续期情况做控制
+     	afBorrowLegalOrderService.checkIllegalVersionInvoke(context.getAppVersion(), borrowId);
+        
         //用户认证信息
         AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 

@@ -239,13 +239,13 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
                 newMap.put("type", map.get("type"));
 
                 resp.setResponseData(newMap);
-                logger.info("confirmLegalRenewalPayApi result = {}" ,resp);
+                logger.info("confirmLegalRenewalPayV2Api result = {}" ,resp);
             }
 
             return resp;
         }
        catch (Exception e){
-    	   logger.error("confirmLegalRenewalPayApi error: "+e);
+    	   logger.error("confirmLegalRenewalPayV2Api error: "+e);
             throw  e;
        }
         finally {
