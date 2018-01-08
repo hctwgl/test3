@@ -509,6 +509,8 @@
 				<entry key="/legalborrowV2/getLegalRenewalListV2" value-ref="getLegalRenewalListV2Api" />
 				<entry key="/legalborrowV2/getBorrowLegalRenewalDetailV2" value-ref="getBorrowLegalRenewalDetailV2Api" />
 				<entry key="/legalborrowV2/getCashPageTypeV2" value-ref="getCashPageTypeV2Api" />
+				<entry key="/legalborrowV2/confirmLegalRenewalPayV2" value-ref="confirmLegalRenewalPayV2Api" />
+				<entry key="/legalborrowV2/applyLegalRenewalV2" value-ref="applyLegalRenewalV2Api" />
 
 
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
