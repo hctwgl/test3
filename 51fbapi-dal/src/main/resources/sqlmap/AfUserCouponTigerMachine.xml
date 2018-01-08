@@ -128,4 +128,19 @@
 		WHERE
 			is_delete = 0 user_id = #{userId}
     </select>
+    
+    <select id="decreaseOnce" parameterType="java.lang.Long" resultType="java.lang.Integer">
+		UPDATE af_user_coupon_tiger_machine SET gmt_modified = NOW(),
+		daily_time =
+		CASE ( SELECT * FROM(SELECT daily_time FROM af_user_coupon_tiger_machine WHERE user_id = #{userId}) a)
+		WHEN daily_time = 1 
+		THEN 0 ELSE daily_time
+		END
+		,shoping_time = 
+		CASE ( SELECT * FROM(SELECT daily_time FROM af_user_coupon_tiger_machine WHERE user_id = #{userId}) a)
+		WHEN daily_time = 0 
+		THEN  shoping_time - 1 ELSE shoping_time
+		END
+		WHERE user_id = #{userId};
+    </select>
 </mapper>

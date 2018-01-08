@@ -16,6 +16,8 @@ public interface AfUserCouponTigerMachineDao extends BaseDao<AfUserCouponTigerMa
 
 	int getTotalTimesByUserId(@Param("userId")Long userId);
 
+	int decreaseOnce(@Param("userId")Long userId);
+
     
 
 }
