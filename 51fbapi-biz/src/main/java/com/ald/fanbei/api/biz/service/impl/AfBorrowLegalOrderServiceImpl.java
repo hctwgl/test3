@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
@@ -69,6 +71,14 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 			if(orderCashId == null) return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void checkIllegalVersionInvoke(Integer version, Long borrowId) {
+		if (version < 405 && isV2BorrowCash(borrowId)) {
+			throw new FanbeiException(FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
+		}
+		
 	}
 
 }

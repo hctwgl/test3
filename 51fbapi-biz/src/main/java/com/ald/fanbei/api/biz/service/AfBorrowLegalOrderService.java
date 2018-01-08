@@ -28,4 +28,11 @@ public interface AfBorrowLegalOrderService extends ParentService<AfBorrowLegalOr
 	
 	boolean isV2BorrowCash(Long borrowId);
 	
+	/**
+	 * 检查旧版客户端是否存在新版V2借钱数据
+	 * @param version
+	 * @param borrowId
+	 */
+	void checkIllegalVersionInvoke(Integer version, Long borrowId);
+	
 }
