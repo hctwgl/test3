@@ -19,6 +19,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +30,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +43,6 @@ import com.ald.fanbei.api.biz.bo.BoluomePushPayResponseBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.bo.BrandActivityCouponResponseBo;
 import com.ald.fanbei.api.biz.bo.BrandCouponResponseBo;
-import com.ald.fanbei.api.biz.bo.CollectionDataBo;
 import com.ald.fanbei.api.biz.bo.InterestFreeJsonBo;
 import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
@@ -70,50 +76,8 @@ import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfRepayCollectionType;
-import com.ald.fanbei.api.common.enums.BorrowCalculateMethod;
-import com.ald.fanbei.api.common.enums.BorrowStatus;
-import com.ald.fanbei.api.common.enums.BorrowType;
-import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayStatus;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.PushStatus;
-import com.ald.fanbei.api.common.enums.RefundSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.Converter;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.AfBorrowDao;
-import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.dao.AfOrderRefundDao;
-import com.ald.fanbei.api.dal.dao.AfRepaymentBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.AfRepaymentDetalDao;
-import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
-import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
-import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfContactsOldDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
-import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
-import com.ald.fanbei.api.dal.domain.RiskTrackerDo;
 import com.ald.fanbei.api.dal.domain.dto.UserDeGoods;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -159,11 +123,13 @@ public class TestController {
     @Resource
     AfOrderRefundDao afOrderRefundDao;
     @Resource
-    private GeneratorClusterNo generatorClusterNo;
+    GeneratorClusterNo generatorClusterNo;
     @Resource
     AfRepaymentBorrowCashDao afRepaymentBorrowCashDao;
     @Resource
     AfOrderDao afOrderDao;
+    @Resource
+    TransactionTemplate transactionTemplate;
     @Resource
     RiskTrackerService riskTrackerService;
     @Resource
@@ -184,14 +150,15 @@ public class TestController {
     private TaobaoApiUtil taobaoApiUtil;
     @Autowired
     RiskRequestProxy requestProxy;
-
+    @Autowired
+    AppOpenLogDao appOpenLogDao;
     @Resource
     RedisTemplate redisTemplate;
 
     @RequestMapping("/compensate")
     @ResponseBody
     public String compensate() {
-        try{
+        try {
             RiskTrackerDo riskTrackerDo = new RiskTrackerDo();
             List<RiskTrackerDo> riskTrackerDoList = riskTrackerService.getListByCommonCondition(riskTrackerDo);
             for (RiskTrackerDo item : riskTrackerDoList) {
@@ -220,8 +187,7 @@ public class TestController {
                         logger.error("updateOpenId compensate exception:", e);
                     }
 
-                }
-                else if (item.getUrl().indexOf("raiseQuota") != -1 && item.getTrackId().indexOf("success_") == -1) {//未处理过得提额
+                } else if (item.getUrl().indexOf("raiseQuota") != -1 && item.getTrackId().indexOf("success_") == -1) {//未处理过得提额
                     try {
                         HashMap reqBo = JSON.parseObject(item.getParams(), HashMap.class);
                         String data = getUrlParamsByMap(reqBo);
@@ -275,8 +241,8 @@ public class TestController {
                 }
 
             }
-        }catch (Exception e){
-            logger.error("compensate error:",e);
+        } catch (Exception e) {
+            logger.error("compensate error:", e);
         }
         return "调用处理中^";
     }
@@ -286,18 +252,58 @@ public class TestController {
     public String cuishou() {
         //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
         ExecutorService pool = Executors.newFixedThreadPool(16);
-        for (int i=0;i<1000;i++){
+        for (int i = 0; i < 1000; i++) {
             pool.execute(new Runnable() {
                 @Override
                 public void run() {
                     String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(new Date());
-                    System.out.println("---"+repayNo);
+                    System.out.println("---" + repayNo);
                 }
             });
         }
 
 
-       // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
+        // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
+        return "调用处理中^";
+
+    }
+
+    @RequestMapping("/transed")
+    @ResponseBody
+    public String transed() {
+        //AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(1302389l, "20170727200040011100260068825762");
+        ExecutorService pool = Executors.newFixedThreadPool(16);
+        for (int i = 0; i < 100; i++) {
+            pool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        transactionTemplate.execute(new TransactionCallback<Integer>() {
+                            @Override
+                            public Integer doInTransaction(TransactionStatus transactionStatus) {
+                                AfBorrowDo borrowDo = new AfBorrowDo();
+                                AppOpenLogDo appOpenLogDo=new AppOpenLogDo();
+                                appOpenLogDo.setRid(1l);
+                                appOpenLogDo.setAppVersion("123:"+new Date().getTime());
+                                appOpenLogDao.updateById(appOpenLogDo);
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                return 1;
+                            }
+                        });
+                    }catch (Exception e){
+                        logger.info("error:",e);
+                    }
+
+                }
+            });
+        }
+
+
+        // riskUtil.syncOpenId(1302389,"268811897276756002554870029");
         return "调用处理中^";
 
     }
@@ -825,12 +831,10 @@ public class TestController {
 
     @RequestMapping(value = {"/testOrderPay"}, method = RequestMethod.POST)
     @ResponseBody
-    public BoluomePushPayResponseBo testOrderPay(HttpServletRequest request, HttpServletResponse response) {
+    public void testOrderPay(HttpServletRequest request, HttpServletResponse response) {
         long orderId = 198649;
         AfOrderDo orderInfo = afOrderService.getOrderById(orderId);
-        BoluomePushPayResponseBo b = boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount());
-
-        return b;
+        boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
     }
 
     private void pickBrandCoupon(String userName, String brandUrl) {
@@ -1048,8 +1052,9 @@ public class TestController {
     @Resource
     private AfRepaymentDetalDao afRepaymentDetalDao;
 
-	@Resource
-	HuichaoUtility huichaoUtility;
+    @Resource
+    HuichaoUtility huichaoUtility;
+
     /**
      *
      */
@@ -1064,15 +1069,15 @@ public class TestController {
 //		Map m = yiBaoUtility.createOrder(BigDecimal.TEN,"hk"+String.valueOf (new Date().getTime()/1000),20158l,PayOrderSource.BORROWCASH);
 //		String token =  m.get("token").toString();
 //		String d= yiBaoUtility.getCashier(token,20158l);
-		//Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
+        //Map<String,String> addda = yiBaoUtility.getYiBaoOrder("hq2017090815262700180","1001201709080000000015990156");
 //		String e="";
-		//huichaoUtility.getHuiCaoOrder("1509598766744");
+        //huichaoUtility.getHuiCaoOrder("1509598766744");
 
-		huichaoUtility.getOrderStatus("xj2017112411401400326");
+        huichaoUtility.getOrderStatus("xj2017112411401400326");
 
-		//HashMap srce =  huichaoUtility.createOrderZFB("zfaaaabcdef1","1",13989456178L, PayOrderSource.RENEWAL_PAY);
-		//afYiBaoOrderDao.updateYiBaoOrderStatusByOrderNo("adfasdfadsf11111",1);
-		String e = "";
+        //HashMap srce =  huichaoUtility.createOrderZFB("zfaaaabcdef1","1",13989456178L, PayOrderSource.RENEWAL_PAY);
+        //afYiBaoOrderDao.updateYiBaoOrderStatusByOrderNo("adfasdfadsf11111",1);
+        String e = "";
     }
 
 

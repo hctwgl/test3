@@ -20,7 +20,7 @@
         })(window);
     </script>
     <!--转化代码-->
-    #set($version="201712201831")
+    #set($version="201712211346")
     #set($src="http://f.51fanbei.com/h5/app/activity/11")
     <meta charset="UTF-8">
     <title>“吃玩住行”就来这</title>
@@ -28,6 +28,15 @@
 </head>
 <body>
 <div id="ggFixSharejm" class="ggFixSharejm">
+    <!--公告左右移动--start-->
+    <div class="personAmount">
+        <div class="amountCont">
+            <div class="cont cont1">
+                <p>第二波活动还剩 <span class="timeOut"></span> 结束，第三波福利加码即将开启，敬请期待！</p>
+            </div>
+            <div class="cont cont2"></div>
+        </div>
+    </div><!--公告左右移动--end-->
     <!--首页轮播图-->
     <div class="loadingMask"><i class="loading"></i></div>
     <div class="banner first">
@@ -57,7 +66,7 @@
         <p class="closeRule" @click="closeClick()">X</p>
     </div>
     <div class="mask" v-show="ruleShow"  @click="closeClick()"></div>
-    <div class="signTitle"><span>注册立领15元无门槛外卖券使用即返10元现金</span></div>
+    <div class="signTitle"><span>注册立领15元无门槛外卖券使用即返30元</span></div>
     <!--注册--start-->
     <div class="login clearFix" id="register">
         <div class="phone">

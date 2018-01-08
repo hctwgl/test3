@@ -102,7 +102,7 @@ public abstract class BaseController {
         Calendar calStart = Calendar.getInstance();
         RequestDataVo requestDataVo = null;
         try {
-            // 检查参数是否为空
+            // 检查参	数是否为空
             reqData = checkCommonParam(reqData, request, isForQQ);
 
             // if (StringUtils.isBlank(reqData)) {
@@ -146,7 +146,7 @@ public abstract class BaseController {
             exceptionresponse = doProcess(requestDataVo, contex, request);
             resultStr = JSON.toJSONString(exceptionresponse);
         } catch (FanbeiException e) {
-            exceptionresponse = buildErrorResult(e.getErrorCode(), request);
+            exceptionresponse = buildErrorResult(e, request);
             resultStr = JSON.toJSONString(exceptionresponse);
             logger.error("o2oapp exception id=" + (requestDataVo == null ? reqData : requestDataVo.getId()), e);
         } catch (Exception e) {
@@ -262,7 +262,28 @@ public abstract class BaseController {
         resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode);
         return resp;
     }
+    protected BaseResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
+        FanbeiExceptionCode exceptionCode=e.getErrorCode();
+        ApiHandleResponse resp = new ApiHandleResponse();
+        resp.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
+        if (exceptionCode == null) {
+            exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
+        }
+        if(e.getDynamicMsg()!=null&&e.getDynamicMsg()){
+            resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID),exceptionCode,e.getMessage());
+        }else if(!StringUtil.isEmpty(e.getResourceType())){
+            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype(e.getResourceType());
+            String msgTemplate=afResourceDo.getValue();
+            for (String paramsKey :e.paramsMap.keySet()) {
+                msgTemplate= msgTemplate.replace(paramsKey,e.paramsMap.get(paramsKey));
+            }
+            resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID),exceptionCode,msgTemplate);
+        }else{
+            resp = new ApiHandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode);
+        }
 
+        return resp;
+    }
     /**
      * 解析请求参数
      *
@@ -408,7 +429,7 @@ public abstract class BaseController {
         FanbeiWebContext webContext = new FanbeiWebContext();
         String appInfo = getAppInfo(request.getHeader("Referer"));
         //如果是测试环境
-        logger.info("doWebCheck appInfo = {}", appInfo);
+        logger.info(String.format("doWebCheck appInfo = {%s}",appInfo));
         if (Constants.INVELOMENT_TYPE_TEST.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE)) && StringUtil.isBlank(appInfo)) {
             String testUser = getTestUser(request.getHeader("Referer"));
             if (testUser != null && !"".equals(testUser)) {
@@ -459,7 +480,7 @@ public abstract class BaseController {
 
             } else if (userInfo == null) {
 
-                throw new FanbeiException(requestDataVo.getId() + "user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+                throw new FanbeiException(requestDataVo.getId() + " user don't exist", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
             }
             context.setUserId(userInfo.getRid());
             context.setNick(userInfo.getNick());

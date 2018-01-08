@@ -10,18 +10,35 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
+import com.ald.fanbei.api.biz.service.AfActivityService;
+import com.ald.fanbei.api.biz.service.AfCategoryService;
+import com.ald.fanbei.api.biz.service.AfGoodsService;
+import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.biz.service.AfModelH5ItemService;
+import com.ald.fanbei.api.biz.service.AfModelH5Service;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.InterestfreeCode;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
+import com.ald.fanbei.api.dal.domain.AfModelH5ItemDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
@@ -70,9 +87,9 @@ public class GetHomeInfoV2Api implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Map<String, Object> data = new HashMap<String, Object>();
+		String deviceType = ObjectUtils.toString(requestDataVo.getParams().get("deviceType"));
 		data.put("homePageType", "NEW");
 		String envType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-		Integer appVersion = context.getAppVersion();
 		// 搜索框背景图
 		List<AfResourceDo> serchBoxRescList = afResourceService
 				.getConfigByTypes(ResourceType.SEARCH_BOX_BACKGROUND.getCode());
@@ -84,7 +101,11 @@ public class GetHomeInfoV2Api implements ApiHandle {
 
 		// 顶部导航信息
 		List<Object> topBannerList = new ArrayList<Object>();
+		
 		String topBanner = AfResourceType.HomeBannerV401.getCode();
+		if(StringUtils.equals(deviceType, "IPHONEX")) {
+			topBanner = AfResourceType.HomeBannerV401iPhoneX.getCode();
+		}
 		// 正式环境和预发布环境区分
 		if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
 			topBannerList = getBannerInfoWithResourceDolist(
@@ -93,45 +114,29 @@ public class GetHomeInfoV2Api implements ApiHandle {
 			topBannerList = getBannerInfoWithResourceDolist(
 					afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
 		}
-		// logger.info("home page top banner info => {}",
-		// JSONObject.toJSONString(topBannerList));
-
+		
 		// 快速导航信息
 		Map<String, Object> navigationInfo = getNavigationInfoWithResourceDolist(
 				afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()));
 		
-		// logger.info("home page fast nav info => {}",
-		// JSONObject.toJSONString(topBannerList));
-
 		// 新增运营位1,快捷导航上方活动专场
 		List<Object> navigationUpOne = getNavigationUpOneResourceDoList(
-				afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOne.getCode()));
-
-		// logger.info("home page nav up ad position info => {}" +
-		// JSONObject.toJSONString(navigationUpOne));
+				afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
 
 		// 新增运营位2,快捷导航下方活动专场
 		List<Object> navigationDownOne = getNavigationDownTwoResourceDoList(
-				afResourceService.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwo.getCode()));
-		// logger.info("home page nav down ad position info => {}" +
-		// JSONObject.toJSONString(navigationUpOne));
-
+				afResourceService.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
+		
 		// 获取常驻运营位信息
 		List<Object> homeNomalPositionList = getHomeNomalPositonInfoResourceDoList(
 				afResourceService.getHomeNomalPositionList());
-		// logger.info("home page nomal ad position info => {}" +
-		// JSONObject.toJSONString(homeNomalPositionList));
-
+	
 		// 获取逛逛信息
 		Map<String, Object> brandAreaInfo = getBrandAreaInfo();
-		// logger.info("home page brand area info => {}" +
-		// JSONObject.toJSONString(brandAreaInfo));
-
+		
 		// 获取电商板块信息
 		Map<String, Object> ecommerceAreaInfo = getEcommerceAreaInfo();
-		// logger.info("home page ecommerce area info => {}" +
-		// JSONObject.toJSONString(ecommerceAreaInfo));
-
+		
 		// 获取首页商品信息
 		List<Map<String, Object>> categoryGoodsInfo = null;
 		//做线上和预发开关
@@ -149,10 +154,6 @@ public class GetHomeInfoV2Api implements ApiHandle {
 				categoryGoodsInfo = getHomePageGoodsCategoryInfo();
 			}
 		}
-
-
-		// logger.info("home page category goods info => {}" +
-		// JSONObject.toJSONString(categoryGoodsInfo));
 
 		// 背景图配置
 		List<AfResourceDo> backgroundList = afResourceService

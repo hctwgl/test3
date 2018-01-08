@@ -12,6 +12,7 @@ import com.ald.fanbei.api.biz.bo.AfTradeRebateModelBo;
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
+import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -109,6 +110,9 @@ public class PayOrderV1Api implements ApiHandle {
         boolean fromCashier = true; //NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         String isCombinationPay = ObjectUtils.toString(requestDataVo.getParams().get("isCombinationPay"), "").toString();
+
+        VersionCheckUitl.setVersion( context.getAppVersion());//addby hongzhengpei
+
 
         if (orderId == null || payId == null) {
             logger.error("orderId is empty or payId is empty");
@@ -354,7 +358,7 @@ public class PayOrderV1Api implements ApiHandle {
                         if (payId.intValue() == 0) {
                             riskUtil.payOrderChangeAmount(orderInfo.getRid());
                         } else if (payId > 0 && PayStatus.DEALING.getCode().equals(payStatus.toString())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount());
+                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
                         }
                     }
 

@@ -4,6 +4,8 @@ import com.ald.fanbei.api.common.AbstractSerial;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.HashMap;
+
 /**
  * 
  * @类描述：接口响应类
@@ -16,13 +18,19 @@ public class ApiHandleResponse extends AbstractSerial implements BaseResponse {
 	private String id;
 	private AppResponse result;
 
+
 	public ApiHandleResponse(String id, FanbeiExceptionCode excCode) {
 		this.id = id;
 		result = new AppResponse();
 		result.setCode(excCode.getErrorCode());
 		result.setMsg(excCode.getDesc());
 	}
-
+	public ApiHandleResponse(String id, FanbeiExceptionCode excCode,String msg) {
+		this.id = id;
+		result = new AppResponse();
+		result.setCode(excCode.getErrorCode());
+		result.setMsg(msg);
+	}
 	public ApiHandleResponse() {
 
 	}

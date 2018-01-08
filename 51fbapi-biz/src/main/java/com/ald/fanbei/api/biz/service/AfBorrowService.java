@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfBorrowDto;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -201,6 +203,8 @@ public interface AfBorrowService {
 	 */
 	Long dealAgentPayBorrowAndBill(AfBorrowDo borrow, Long userId, String userName, BigDecimal amount, String payType,String orderType);
 
+	Long updateBorrowStatus(AfBorrowDo borrow,String userName,long userId);
+
 	/**
 	 * 生成代付借款以及账单
 	 * 
@@ -274,5 +278,41 @@ public interface AfBorrowService {
 	List<AfBorrowBillDo> getBorrowBillListY(Long userId,Integer billYear,Integer billMonth);
 
 	HashMap addHomeBorrow(final Long orderId, final int nper, final Long userId,Date date);
+
+	/**
+	 * 获取用户所有未入账账单
+	 * @author yuyue
+	 * @Time 2017年11月21日 下午4:59:01
+	 * @param userId
+	 * @return
+	 */
+	List<AfBorrowDto> getUserNotInBorrow(Long userId);
+
+	/**
+	 * 获取用户所有未入账账单数
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午6:06:41
+	 * @param userId
+	 * @return
+	 */
+	int getUserNotInBorrowCount(Long userId);
+
+	/**
+	 * 获取用户所有未入账账单金额
+	 * @author yuyue
+	 * @Time 2017年11月29日 下午6:09:14
+	 * @param userId
+	 * @return
+	 */
+	BigDecimal getUserNotInBorrowMoney(Long userId);
+
+	/**
+	 * 根据borrowId获取已还款期数
+	 * @author yuyue
+	 * @Time 2018年1月5日 下午3:11:01
+	 * @param rid
+	 * @return
+	 */
+	Integer countNperRepaymentByBorrowId(Long rid);
 
 }

@@ -1,5 +1,20 @@
 package com.ald.fanbei.api.web.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -11,23 +26,9 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.intercept.ValidationInterceptor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 
@@ -42,6 +43,9 @@ public class FanbeiController extends BaseController {
 
 	@Resource
 	AfResourceService afResourceService;
+	
+	@Resource
+	ValidationInterceptor validationInterceptor;
 
     @RequestMapping(value ={
     	    	"/goods/getFootMarkList","/goods/getGoodsInfoByNumId","/good/getGoodsTkRate","/goods/getThirdShopsList",
@@ -81,7 +85,7 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/order/confirmReceipt","/order/buySelfGoods","/order/mobileCharge","/order/getOrderDetailInfo","/order/getOrderList","/order/getOrderNoWithUser","/order/refundOrderApply","/order/deleteOrderInfo","/order/cancelAfterSaleApply","/order/afterSaleLogisticSupply","/order/getOrderAfterSaleInfo","/order/insufficientBalance"
-        ,"/order/tradeOrder","/order/getTradeOrderDetailInfo","/order/combinationPay","/order/getBeforePayType"
+        ,"/order/tradeOrder","/order/getTradeOrderDetailInfo","/order/combinationPay","/order/getBeforePayType","/order/dmNperEnabled"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String orderRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -126,6 +130,10 @@ public class FanbeiController extends BaseController {
             "/repay/submitRepayment","/auth/authYdInfo","/bill/getLimitDetailList","/bill/getLimitDetailInfo","/borrow/getCreditPromoteInfo","/borrow/getOtherPayWay"
             ,"/borrow/getRepaymentInfo","/borrow/submitRepaymentByYiBao","/bill/getRepayMentAmountByMonth","/repay/getRepaymentConfirmInfoV1"
             ,"/bill/getBillListByStatus","/borrow/getCreditPromoteInfoV1"
+            ,"/borrow/getBillListByMonthAndYear","/borrow/getBorrowDetailV1","/borrow/getMyBorrowListV1","/borrow/getMyBorrowV1"
+            ,"/borrow/getMyHistoryBorrowV1","/borrow/getMyRepaymentDetailV1","/borrow/getMyRepaymentHistoryV1","/borrow/getMyRepaymentV1","/borrow/getRepaymentDetailV1"
+            ,"/borrow/getRepaymentCalendarV1","/borrow/getMyHistoryBorrowDetailV1"
+            ,"/borrow/getDataView","/borrow/submitClear"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String fenbeiRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -187,7 +195,8 @@ public class FanbeiController extends BaseController {
     		"/repayCash/getRepayCashList","/repayCash/getRepayCashInfo","/borrowCash/applyRenewal","/borrowCash/confirmRenewalPay","/borrowCash/getRenewalList",
     		"/borrowCash/getRenewalDetail","/borrowCash/getLoanSupermarketList","/loanMarket/accessLoanSupermarket","borrowCash/applyBorrowCashV1",
             "/repayCash/getConfirmRepayInfoV1","/borrowCash/confirmRenewalPayV1","/repayCash/getRepayCashByOrderId",
-            "/borrowCash/getLoanSupermarketTabList","/borrowCash/getLoanSupermarketListByTab","/borrowCash/tearPacket","/instalments/getInstalmentsAd"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
+            "/borrowCash/getLoanSupermarketTabList","/borrowCash/getLoanSupermarketListByTab","/borrowCash/tearPacket","/instalments/getInstalmentsAd",
+            "legalborrow/*"},method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String borrowCashRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -255,6 +264,9 @@ public class FanbeiController extends BaseController {
 	@Override
 	public BaseResponse doProcess(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest httpServletRequest) {
         ApiHandle methodHandel = apiHandleFactory.getApiHandle(requestDataVo.getMethod());
+        // 数据校验拦截器
+        validationInterceptor.intercept(requestDataVo, context, httpServletRequest);
+        
         ApiHandleResponse handelResult;
         try {
             handelResult = methodHandel.process(requestDataVo,context, httpServletRequest);

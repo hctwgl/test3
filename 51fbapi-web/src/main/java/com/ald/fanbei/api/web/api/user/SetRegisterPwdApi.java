@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfBoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfH5BoluomeActivityService;
 import com.ald.fanbei.api.biz.service.AfPromotionChannelPointService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfSmsRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserService;
@@ -29,11 +30,13 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.AfBoluomeActivityUserLoginDo;
 import com.ald.fanbei.api.dal.domain.AfPromotionChannelPointDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * 
@@ -61,6 +64,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 	AfBoluomeActivityService afBoluomeActivityService;
 	@Resource
 	AfH5BoluomeActivityService afH5BoluomeActivityService;
+	@Resource
+	AfResourceService afResourceService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -168,13 +173,12 @@ public class SetRegisterPwdApi implements ApiHandle {
 			userDo.setRecommendId(userRecommendDo.getRid());
 		}
 		userDo.setMajiabaoName(majiabaoName);
-		afUserService.addUser(userDo);
-
-		Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+		long userId = afUserService.addUser(userDo);
+	
+		Long invteLong = Constants.INVITE_START_VALUE + userId;
 		String inviteCode = Long.toString(invteLong, 36);
 		userDo.setRecommendCode(inviteCode);
 		afUserService.updateUser(userDo);
-
 		// 注册完成,给用户发送注册成功的短信
 		// smsUtil.sendRegisterSuccessSms(userDo.getUserName());
 		afUserDo = afUserService.getUserByUserName(userName);
@@ -185,28 +189,34 @@ public class SetRegisterPwdApi implements ApiHandle {
 			riskUtil.verifyASyRegister(ObjectUtils.toString(afUserDo.getRid(), ""), userName, blackBox, uuid,
 					registerTime, ip, phoneType, networkType, osType,Constants.EVENT_RIGISTER_ASY);
 		}
-		
-		// 吃玩住行活动， 注册成功后。如果被邀请了(有邀请码)，则添加绑定记录
-		  if (!StringUtils.isBlank(recommendCode) && !recommendCode.equals("0") ) {
-		       AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
-		       if(userRecommendDo != null ){
-        		      try{
-        			        long  boluomeActivityId  = 1000L;  //该活动默认值
-                			AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
-                			afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
-                			afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
-                			afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
-                			afBoluomeActivityUserLogin.setRefUserId(userRecommendDo.getRid());
-                			afBoluomeActivityUserLogin.setRefUserName(userRecommendDo.getUserName());
-                			afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
-                			logger.info("setRegisterPwdApi gg activity add binding record afBoluomeActivityUserLogin = {}",afBoluomeActivityUserLogin);
-        					    
-        			}catch(Exception e){
-        			        logger.error("setRegisterPwdApi gg activity add binding record error",e);
-        			}	
-		        }
-		      }
-					
+		//--------------------------------------------霸王餐活动start--------------------------------------------
+		//霸王餐活动绑定关系开关
+		  AfResourceDo biddingSwitch =   afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY","BIDDING_SWITCH");
+		    if(biddingSwitch != null){
+			if("O".equals(biddingSwitch.getValue())){
+      		// 吃玩住行活动， 注册成功后。如果被邀请了(有邀请码)，则添加绑定记录
+      		  if (!StringUtils.isBlank(recommendCode) && !recommendCode.equals("0") ) {
+      		       AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
+      		       logger.info("setRegisterPwdApi gg activity userRecommendDo = {},recommendCode = {}",JSONObject.toJSONString(userRecommendDo),recommendCode);
+      		       if(userRecommendDo != null ){
+              		      try{
+              			        long  boluomeActivityId  = 1000L;  //该活动默认值
+                      			AfBoluomeActivityUserLoginDo afBoluomeActivityUserLogin = new AfBoluomeActivityUserLoginDo();
+                      			afBoluomeActivityUserLogin.setUserId(afUserDo.getRid());
+                      			afBoluomeActivityUserLogin.setUserName(afUserDo.getUserName());
+                      			afBoluomeActivityUserLogin.setBoluomeActivityId(boluomeActivityId);
+                      			afBoluomeActivityUserLogin.setRefUserId(userRecommendDo.getRid());
+                      			afBoluomeActivityUserLogin.setRefUserName(userRecommendDo.getUserName());
+                      			afH5BoluomeActivityService.saveUserLoginInfo(afBoluomeActivityUserLogin);
+                      			logger.info("setRegisterPwdApi gg activity add binding record afBoluomeActivityUserLogin = {},userRecommendDo = {}",JSONObject.toJSONString(afBoluomeActivityUserLogin),JSONObject.toJSONString(userRecommendDo));
+              					    
+              			}catch(Exception e){
+              			        logger.error("setRegisterPwdApi gg activity add binding record error",e);
+              			}	
+      		        }
+      		      }
+			}
+		    }
 		
 		 //吃玩住行活动被邀请的新用户登录送券
 		try{
@@ -215,6 +225,8 @@ public class SetRegisterPwdApi implements ApiHandle {
 		   }catch (Exception e){
 			  logger.error("sentNewUserBoluomeCouponForDineDash error",e.getMessage());
 		   }
+		//------------------------------------------霸王餐活动end----------------------------------------
+		
 		return resp;
 	}
 

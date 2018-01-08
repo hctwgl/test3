@@ -79,6 +79,46 @@ public class AfOrderDo extends AbstractSerial{
 	private BigDecimal auAmount;//用户的总授信额度
 	private BigDecimal usedAmount;//已使用额度
 	
+	//add time 2017年12月11日16:36:06
+	private String province;//收货人省份
+	private String city;//收货人所在城市
+	private String district;//收货人所在区
+	private String blackBox;//同盾设备指纹
+	private String ip;//ip地址
+	
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+	public String getProvince() {
+		return province;
+	}
+	public void setProvince(String province) {
+		this.province = province;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getDistrict() {
+		return district;
+	}
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+	public String getBlackBox() {
+		return blackBox;
+	}
+	public void setBlackBox(String blackBox) {
+		if(blackBox.length()>1024){
+			blackBox="";//针对超长字符串进行处理
+		}
+		this.blackBox = blackBox;
+	}
 	public String getOrderStatus() {
 	    return orderStatus;
 	}

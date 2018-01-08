@@ -44,7 +44,8 @@ public class GeneratorClusterNo {
 	AfOrderRefundService afOrderRefundService;
 	@Resource
 	AfAftersaleApplyService afAftersaleApplyService;
-	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	/**
 	 * 获取订单号
 	 * 
@@ -93,7 +94,7 @@ public class GeneratorClusterNo {
 	public String getBorrowNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("jk");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate, "jk")));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum("jk",dateStr)));
 		return orderSb.toString();
 	}
 
@@ -106,7 +107,20 @@ public class GeneratorClusterNo {
 	public String getBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("jq");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowCashSequenceNum(currDate, "jq")));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum( "jq",dateStr)));
+		return orderSb.toString();
+	}
+
+	/**
+	 * 获取购买搭售商品借款编号
+	 *
+	 * @param currDate
+	 * @return
+	 */
+	public String geBorrowLegalOrderCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+		StringBuffer orderSb = new StringBuffer("lg");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowCashSequenceNum(currDate, "lg")));
 		return orderSb.toString();
 	}
 
@@ -119,10 +133,20 @@ public class GeneratorClusterNo {
 	public String getRepaymentNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("hk");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentSequenceNum(currDate, "hk")));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum("hk",dateStr)));
 		return orderSb.toString();
 	}
-
+	/**
+	 * 根据前缀与秒级别前缀生成自增序号，之前并发会有问题。支持秒级并发w
+	 * @param orderPre 订单前缀
+	 * @param datePre 秒级时间前缀
+	 * @return redis 原子性自增序号
+	 */
+	private int getSequenceNum(String orderPre,String datePre) {
+		String orderNoPre = orderPre + datePre;
+		long inData= bizCacheUtil.incr(orderNoPre,10);//10秒后过期
+		return new Long(inData).intValue();
+	}
 	/**
 	 * 获取现金还款编号
 	 * 
@@ -136,6 +160,22 @@ public class GeneratorClusterNo {
 			orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "hq")));
 			return orderSb.toString();
 		}
+	}
+
+	/**
+	 * 获取现金还款编号
+	 *
+	 * @param currDate
+	 * @return
+	 */
+	public String getOfflineRepaymentBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+		StringBuffer orderSb = new StringBuffer("offline");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "offline")));
+//		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+//		StringBuffer orderSb = new StringBuffer("hq");
+//		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum( "hq",dateStr)));
+		return orderSb.toString();
 	}
 
 	/**

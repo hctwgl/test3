@@ -384,9 +384,9 @@ public class AppH5UserContorler extends BaseController {
                 AfUserDo userRecommendDo = afUserService.getUserByRecommendCode(recommendCode);
                 userDo.setRecommendId(userRecommendDo.getRid());
             }
-            afUserService.addUser(userDo);
+            long userId = afUserService.addUser(userDo);
 
-            Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+            Long invteLong = Constants.INVITE_START_VALUE + userId;
             String inviteCode = Long.toString(invteLong, 36);
             userDo.setRecommendCode(inviteCode);
             afUserService.updateUser(userDo);
@@ -567,20 +567,24 @@ public class AppH5UserContorler extends BaseController {
             afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
 
             String salt = UserUtil.getSalt();
-            String password = UserUtil.getPassword(passwordSrc, salt);
-
             AfUserDo userDo = new AfUserDo();
+            if(passwordSrc == "") {
+            	userDo.setPassword("");
+            } else {
+            	String password = UserUtil.getPassword(passwordSrc, salt);
+            	userDo.setPassword(password);
+            }
+
             userDo.setSalt(salt);
             userDo.setUserName(mobile);
             userDo.setMobile(mobile);
             userDo.setNick("");
-            userDo.setPassword(password);
             userDo.setRegisterChannelId(pcp.getChannelId());
             userDo.setRegisterChannelPointId(pcp.getId());
             userDo.setRecommendId(0l);
-            afUserService.addUser(userDo);
+            long userId = afUserService.addUser(userDo);
 
-            Long invteLong = Constants.INVITE_START_VALUE + userDo.getRid();
+            Long invteLong = Constants.INVITE_START_VALUE + userId;
             String inviteCode = Long.toString(invteLong, 36);
             userDo.setRecommendCode(inviteCode);
             afUserService.updateUser(userDo);

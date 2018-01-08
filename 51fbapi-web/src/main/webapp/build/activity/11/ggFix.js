@@ -51,6 +51,21 @@ let vm = new Vue({
                 },1000)
             });
             $(".loadingMask").fadeOut();
+            //倒计时
+            let currentStamp=Date.parse(new Date());
+            let endStamp=Date.parse(new Date("2017/12/22 16:00:00"));
+            let diff=(endStamp-currentStamp)/1000;
+            showTimerS(diff);
+            diff--;
+            window.setInterval(function(){
+                showTimerS(diff);
+                $('.timeOut').html(showTimerS(diff));
+                diff--;
+            }, 1000);
+            //左右移动动画
+            let cont = $(".cont1").html();
+            $(".cont2").html(cont);
+            wordMove();
             //初始化数据
             $.ajax({
                 type: 'post',
@@ -308,7 +323,7 @@ function alaShareData(){
         "appLogin": "Y", // 是否需要登录，Y需要，N不需要
         "type": "share", // 此页面的类型
         "shareAppTitle": "有人@你~你有最高188元惊喜金待领取！",  // 分享的title
-        'shareAppContent': "16元外卖1元购，下单即返10元现金（可提现）~",  // 分享的内容
+        'shareAppContent': "16元外卖1元购，下单即返30元~",  // 分享的内容
         "shareAppImage": "http://f.51fanbei.com/h5/app/activity/11/ggFix41.jpg",  // 分享右边小图
         "shareAppUrl": domainName+"/fanbei-web/activity/ggFixShare?typeFrom=app&typeFromNum=0&userName="+userName+"&pageName="+pageName,  // 分享后的链接
         "isSubmit": "Y", // 是否需要向后台提交数据，Y需要，N不需要
@@ -317,4 +332,38 @@ function alaShareData(){
     var dataStr = JSON.stringify(dataObj);  // obj对象转换成json对象
     return dataStr;
 };
+//首页顶部栏动画-------------------------
+var speed = 30;
+function wordMove(){
+    var left = $(".personAmount").scrollLeft();
+    if(left >= $(".cont1").width()){
+        left = 0;
+    }else{
+        left++;
+    }
+    $(".personAmount").scrollLeft(left);
+    setTimeout("wordMove()",speed);
+}
+//倒计时
+function showTimerS( diff ){
+    let hour=0,
+        minute=0,
+        second=0;//时间默认值
 
+    if(diff > 0){
+        hour = Math.floor(diff / (60 * 60));
+        minute = Math.floor(diff / 60) - (hour * 60);
+        second = Math.floor(diff) - (hour * 60 * 60) - (minute * 60);
+    }
+    if (hour <= 9){
+        hour = '0' + hour;
+    }
+    if (minute <= 9){
+        minute = '0' + minute;
+    }
+    if (second <= 9) {
+        second = '0' + second;
+    }
+
+    return hour+':'+minute+':'+second
+}

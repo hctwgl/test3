@@ -96,6 +96,8 @@ public class AppH5ProtocolController extends BaseController {
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfRescourceLogService afRescourceLogService;
@@ -146,18 +148,23 @@ public class AppH5ProtocolController extends BaseController {
 			model.put("lateFeeMin", new BigDecimal(amounts[0]));
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
+		Date date = new Date();
+
 		if (null != borrowId && 0 != borrowId) {
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
+			//取当前的分期时间，而不是当前时间
+			AfBorrowDo afBorrowDo= afBorrowService.getBorrowById(borrowId);
+			date= afBorrowDo.getGmtCreate();
 		}
+		model.put("gmtStart", date);
+		model.put("gmtEnd", DateUtil.addMonths(date, nper));
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 //		model.put("poundage", consumeDo.getValue1());
 		model.put("poundage", poundage);
-		
-		Date date = new Date();
-		model.put("gmtStart", date);
-		model.put("gmtEnd", DateUtil.addMonths(date, nper));
+
+
 
 		for (NperDo nperDo : list) {
 			if (nperDo.getNper() == nper) {
@@ -182,21 +189,6 @@ public class AppH5ProtocolController extends BaseController {
 			model.put("interest", new BigDecimal(0));
 		}
 		logger.info(JSON.toJSONString(model));
-	}
-	@RequestMapping(value = { "getBorrowIdByNo" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String getBorrowIdByNo(String borrowNo){
-		if (null == borrowNo || "".equals(borrowNo)){
-			return H5CommonResponse.getNewInstance(false, "borrowNo is null", "", "").toString();
-		}
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
-		Map map = new HashMap();
-		if (null != afBorrowCashDo){
-			map.put("borrowId",afBorrowCashDo.getRid().toString());
-			return H5CommonResponse.getNewInstance(true, "get borrowId success", "", map).toString();
-		}
-		map.put("borrowId","");
-		return H5CommonResponse.getNewInstance(false, "get borrowId fail", "", map).toString();
 	}
 	@RequestMapping(value = { "numProtocol" }, method = RequestMethod.GET)
 	public void numProtocol(HttpServletRequest request, ModelMap model)throws IOException{

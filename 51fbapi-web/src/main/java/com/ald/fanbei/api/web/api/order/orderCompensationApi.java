@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -37,7 +38,7 @@ public class orderCompensationApi {
 			AfOrderDo orderInfo = afOrderService.getOrderInfoById(orderId,userId);
 			if(null == orderInfo){
 				//查询接口
-				boluomeUtil.pushPayStatus(orderId, null, null, null, thirdOrderNo, null);
+				boluomeUtil.pushPayStatus(orderId, OrderType.BOLUOME.getCode(), null, null, null, thirdOrderNo, null,null);
 				
 				
 				//保存订单afOrderService.createOrder

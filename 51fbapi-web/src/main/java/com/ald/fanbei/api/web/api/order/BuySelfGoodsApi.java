@@ -109,7 +109,19 @@ public class BuySelfGoodsApi implements ApiHandle {
 		boolean fromCashier =NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
 		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
-		Date gmtPayEnd = DateUtil.addHoures(currTime, Constants.ORDER_PAY_TIME_LIMIT);
+		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+		try{
+			AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("order_pay_time_limit");
+			if(resourceDo!=null){
+				order_pay_time_limit=Integer.valueOf(resourceDo.getValue()) ;
+				if(order_pay_time_limit==0){
+					order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+				}
+			}
+		}catch (Exception e){
+			logger.error("resource config error:",e);
+		}
+		Date gmtPayEnd = DateUtil.addHoures(currTime, order_pay_time_limit);
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		Integer nper = NumberUtil.objToIntDefault(requestDataVo.getParams().get("nper"), 0);
 //		if (actualAmount.compareTo(BigDecimal.ZERO) == 0) {
@@ -140,7 +152,9 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setSaleAmount(goodsDo.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
-
+		//新增下单时，记录ip和同盾设备指纹锁 cxk
+		afOrder.setIp(request.getRemoteAddr());//用户ip地址
+		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹
 		// afOrder.setActualAmount(goodsDo.getSaleAmount().multiply(new
 		// BigDecimal(count)));
 
@@ -449,8 +463,17 @@ public class BuySelfGoodsApi implements ApiHandle {
 		afOrder.setPriceAmount(goodsDo.getPriceAmount());
 		afOrder.setGoodsIcon(goodsDo.getGoodsIcon());
 		afOrder.setGoodsName(goodsDo.getName());
-		String address = addressDo.getProvince() != null ? addressDo.getProvince() : "";
-		if (addressDo.getCity() != null) {
+		
+		//新增下单时记录 省、 市、 区 、详细地址 、IP 、设备指纹 2017年12月12日11:17:51 cxk
+		String province = addressDo.getProvince() !=null?addressDo.getProvince():"";
+		String city = addressDo.getCity() !=null?addressDo.getCity():"";
+		String district = addressDo.getCounty() !=null?addressDo.getCounty():"";
+		String address = addressDo.getAddress() !=null?addressDo.getAddress():"";
+		afOrder.setProvince(province);//省
+		afOrder.setCity(city);//市
+		afOrder.setDistrict(district);//区
+		afOrder.setAddress(address);//详细地址
+		/*if (addressDo.getCity() != null) {
 			address = address.concat(addressDo.getCity());
 
 		}
@@ -461,7 +484,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 		if (addressDo.getAddress() != null) {
 			address = address.concat(addressDo.getAddress());
 		}
-		afOrder.setAddress(address);
+		afOrder.setAddress(address);*/
 		afOrder.setGoodsId(goodsDo.getRid());
 		afOrder.setOpenId(goodsDo.getOpenId());
 		afOrder.setNumId(goodsDo.getNumId());

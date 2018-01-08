@@ -410,7 +410,7 @@ public class YiBaoUtility  implements ThirdInterface{
             }
         }
         else if(resultStatus.equals("SUCCESS")){
-            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo);
+            afRepaymentService.dealRepaymentSucess(orderNo, thirdOrderNo,false);
 
 
         }
@@ -419,7 +419,7 @@ public class YiBaoUtility  implements ThirdInterface{
         }
         else{
             //关闭
-            afRepaymentService.dealRepaymentFail(orderNo, thirdOrderNo);
+            afRepaymentService.dealRepaymentFail(orderNo, thirdOrderNo,false,"");
         }
     }
 

@@ -5,13 +5,12 @@ var token=formatDateTime()+Math.random().toString(36).substr(2);
 
 var style=$("#style").val();  // 样式
 var os=getBlatFrom(); // 1是android，2是ios
-console.log(os);
-
+console.log(style);
 var channelCode = getUrl('channelCode');
 var pointCode = getUrl('pointCode');
 
-function toMaidian(data) {
-    maidianFnNew(data, channelCode, pointCode);
+function toMaidian(data,data2) {
+    maidianFnNew(data, channelCode, pointCode, data2);
 }
 
 function formatDateTime() {
@@ -192,13 +191,17 @@ $(function(){
     // 提交注册
     $("#register_submitBtn").click(function(){ // 完成注册提交
         toMaidian('registerBtn');
-        // md5加密
-        var register_password = $("#register_password").val();
-        var password_md5 = String(CryptoJS.MD5(register_password));
-        var passwordLength = register_password.length;
-        // 正则判断密码为6-18位字母+字符的组合
-        var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
-        var password = pwdReg.test(register_password);
+        if(style!='8'){ //样式8无密码
+            // md5加密
+            var register_password = $("#register_password").val();
+            var password_md5 = String(CryptoJS.MD5(register_password));
+            var passwordLength = register_password.length;
+            // 正则判断密码为6-18位字母+字符的组合
+            var pwdReg=/^((?=.*?\d)(?=.*?[A-Za-z])|(?=.*?\d)(?=.*?[.!@#$%])|(?=.*?[A-Za-z])(?=.*?[.]))[\dA-Za-z.!@#$%]+$/;
+            var password = pwdReg.test(register_password);
+        }else{
+            var password_md5=''
+        }
         var mobileNum = $("#register_mobile").val();
         var register_verification = $("#register_verification").val();
         var channelCode = $("#channelCode").val();
@@ -206,7 +209,7 @@ $(function(){
         var isState = $("#register_codeBtn").attr("isState");
         if(/^1(3|4|5|7|8)\d{9}$/i.test(mobileNum) && mobileNum != "" ){ // 判断电话开头
             if ( register_verification != "" ) { // 验证码不能为空
-                if ( password && 6 <= passwordLength && passwordLength <= 18 ) { // 密码6-18位
+                if ( style=='8'||(password && 6 <= passwordLength && passwordLength <= 18 )) { // 密码6-18位
                     if ($("#input_check").is(":checked")) { // 判断当前是否选中
                         if ( $("#register_codeBtn").attr("isState")==1 ) {
                             _taq.push({convert_id:"59212981134", event_type:"form"});// 检测访问量
@@ -224,7 +227,7 @@ $(function(){
                                 },
                                 success: function(returnData){
                                     if (returnData.success) {
-                                        toMaidian("registerSuccess");
+                                        toMaidian("registerSuccess", mobileNum);
                                         // js判断微信和QQ
                                         let ua = navigator.userAgent.toLowerCase();
                                         if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){

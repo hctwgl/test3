@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -15,8 +16,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -38,8 +38,10 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfSmsRecordDo;
+import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -74,7 +76,7 @@ public class SmsUtil extends AbstractThird {
     private static String TRADE_HOME_PAID_SUCCESS = "信用消费提醒，您于%s成功付款%s元，最近还款日期为%s，可登录51返呗核对账单";
     private static String TEST_VERIFY_CODE = "888888";
     private static String BorrowBillMessageSuccess = "您x月份分期账单代扣还款成功，请登录51返呗查看详情。";
-
+    private static String GAME_PAY_RESULT = "您为%s充值已经%s。";
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
@@ -89,6 +91,9 @@ public class SmsUtil extends AbstractThird {
 
     @Resource
     AfUserOutDayDao afUserOutDayDao;
+
+    @Resource
+    private  BizCacheUtil bizCacheUtil;
 
     /**
      * 发送注册短信验证码
@@ -109,7 +114,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.REGIST, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -133,7 +138,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -156,7 +161,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -180,7 +185,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -403,7 +408,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.FORGET_PASS, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -512,34 +517,6 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
-     * 用户还款成功后发送短信提醒用户
-     *
-     * @param mobile
-     * @param repayMoney    还款金额
-     * @param notRepayMoney 剩余未还款金额
-     */
-    public boolean sendRepaymentBorrowCashWarnMsg(String mobile, String repayMoney, String notRepayMoney) {
-        String content = null;
-        if (StringUtil.isNotBlank(notRepayMoney)) {
-            AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
-            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
-                content = resourceDo.getValue().replace("&repayMoney", repayMoney).replace("&remainAmount", notRepayMoney);
-            }
-        } else {
-            AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
-            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
-                content = resourceDo.getValue().replace("&repayMoney", repayMoney);
-            }
-        }
-        if (StringUtil.isNotBlank(content)) {
-            logger.error("sendRepaymentBorrowCashSuccess success,mobile:" + mobile + "content:" + content);
-            SmsResult smsResult = sendSmsToDhst(mobile, content);
-            return smsResult.isSucc();
-        }
-        return false;
-    }
-
-    /**
      * 借钱抽奖中奖消息通知
      *
      * @param mobile
@@ -551,68 +528,60 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
-     * 还款失败，通知用户
-     *
+     * resource配置统一短信发送
+     * value:短信内容  value1:开关 1开 0关   value2:单日单个用户失败短信发送次数限制，防刷使用
      * @param mobile
+     * @param errorMsg
+     * @param errorTimes
+     * @param resourceType
+     * @param resourceSecType
      * @return
      */
-    public boolean sendRepaymentBorrowCashFail(String mobile, String errorMsg, int errorTimes) {
-        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+    public boolean sendConfigMessageToMobile(String mobile, Map<String,String> replaceMapData, int errorTimes,String resourceType,String resourceSecType) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(resourceType, resourceSecType);
         try {
             //发送短信的大开关
             if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
                 //单日单个用户发送次数限制校验
                 int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
                 if (maxSendTimes < errorTimes) {
-                    logger.error("sendRepaymentBorrowCashFail false,maxSendTimes:" + maxSendTimes + ",errorTimes:" + errorTimes + ",mobile:" + mobile);
+                    logger.error("sendConfigMessageToMobile false,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",maxSendTimes:" + maxSendTimes + ",errorTimes:" + errorTimes + ",mobile:" + mobile);
                     return false;
                 }
                 String content = StringUtil.null2Str(resourceDo.getValue());
-                content = content.replace("&errorMsg", errorMsg);
-                logger.error("sendRepaymentBorrowCashFail success,mobile:" + mobile + "content:" + content);
+                content = StringUtil.convertMessageByMapInfo("&", content, replaceMapData);
+                logger.error("sendConfigMessageToMobile success,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",mobile:" + mobile + "content:" + content);
                 SmsResult smsResult = sendSmsToDhst(mobile, content);
                 return smsResult.isSucc();
             } else {
-                logger.error("sendRepaymentBorrowCashFail false,send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
+                logger.error("sendConfigMessageToMobile false,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
             }
         } catch (Exception e) {
-            logger.error("sendRepaymentBorrowCashFail exception,send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
+            logger.error("sendConfigMessageToMobile exception,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
         }
         return false;
     }
 
 
     /**
-     * 用户续借失败发送短信提醒用户
-     *
+     * 续借成功给用户
      * @param mobile
+     * @param errorMsg
+     * @param errorTimes
+     * @param resourceType
+     * @param resourceSecType
+     * @return
      */
-    public boolean sendRenewalFailWarnMsg(String mobile, String errorMsg, int errorTimes) {
-
-        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());
+    public boolean sendMessageToMobile(String mobile,String content) {
         try {
-            //发送短信的大开关
-            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
-                //单日单个用户发送次数限制校验
-                int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
-                if (maxSendTimes < errorTimes) {
-                    logger.error("sendRenewalFailWarnMsg false,maxSendTimes:" + maxSendTimes + ",errorTimes:" + errorTimes + ",mobile:" + mobile);
-                    return false;
-                }
-                String content = StringUtil.null2Str(resourceDo.getValue());
-                content = content.replace("&errorMsg", errorMsg);
-                SmsResult smsResult = sendSmsToDhst(mobile, content);
-                logger.info("ssendRenewalFailWarnMsg is succes ;content={}" + content);
-                return smsResult.isSucc();
-            } else {
-                logger.error("sendRenewalFailWarnMsg false,send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
-            }
+            SmsResult smsResult = sendSmsToDhst(mobile, content);
+            return smsResult.isSucc();
         } catch (Exception e) {
-            logger.error("sendRenewalFailWarnMsg exception,send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
+            logger.error("sendMessageToMobile exception,mobile="+mobile+"content="+content);
         }
         return false;
     }
-
+    
     /**
      * 对单个手机号发送普通短信
      *
@@ -749,8 +718,9 @@ public class SmsUtil extends AbstractThird {
      * @param mobile
      * @param msg
      */
-    private static SmsResult sendSmsToDhst(String mobiles, String content) {
+    private SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
+        logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
                 Constants.INVELOMENT_TYPE_TEST)) {
             result.setSucc(true);
@@ -898,58 +868,16 @@ public class SmsUtil extends AbstractThird {
             thirdLog.error("union login sms error channel:" + channelCode + ",phone:" + phone);
         }
     }
-
-    public boolean sendRepaymentBorrowBillFail(String mobile, String errorMsg, int errorTimes) {
-        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
-        try {
-            //发送短信的大开关
-            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
-                //单日单个用户发送次数限制校验
-                //手动还款暂不发短信,所以不需要判断次数，代扣最多口两次
-                /*int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
-                if(maxSendTimes<errorTimes){
-                    logger.error("sendRepaymentBorrowBillFail false,maxSendTimes:"+maxSendTimes+",errorTimes:"+errorTimes+",mobile:"+mobile);
-                    return false;
-                }*/
-                String content = StringUtil.null2Str(resourceDo.getValue());
-                content = content.replace("&errorMsg", errorMsg);
-                SmsResult smsResult = sendSmsToDhst(mobile, content);
-                logger.error("sendRepaymentBorrowBillFail success,mobile:" + mobile + "content:" + content);
-                return smsResult.isSucc();
-            } else {
-                logger.error("sendRepaymentBorrowBillFail false,send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
-            }
-        } catch (Exception e) {
-            logger.error("sendRepaymentBorrowBillFail exception,send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
-        }
-        return false;
+    
+    public void sendGamePayResultToUser(String mobile, String gameName, String status) {
+	try {
+	    SmsResult smsResult = sendSmsToDhst(mobile, String.format(GAME_PAY_RESULT, gameName, status));
+	    logger.error("sendGamePayResultToUser success,mobile:" + mobile + "gameName:" + gameName);
+	} catch (Exception e) {
+	    logger.error("sendGamePayResultToUser error:", e);
+	}
     }
-
-    public boolean sendRepaymentBorrowBillSuccess(String mobile) {
-        try {
-            //发送短信的大开关
-            Date date = DateUtil.addMonths(new Date(), -1);
-            String month = DateUtil.getMonth(date);
-            String content = BorrowBillMessageSuccess.replace("x", month);
-            SmsResult smsResult = sendSmsToDhst(mobile, content);
-            logger.error("sendRepaymentBorrowBillsuccess success,mobile:" + mobile + "content:" + content);
-            return smsResult.isSucc();
-        } catch (Exception e) {
-            logger.error("sendRepaymentBorrowBillsuccess exception:", e);
-        }
-        return false;
-    }
-
-    public void sendRepaymentBorrowCashWithHold(String mobile, String content) {
-        try {
-            SmsResult smsResult = sendSmsToDhst(mobile, content);
-            logger.error("sendRepaymentBorrowCashWithHold success,mobile:" + mobile + "content:" + content);
-        } catch (Exception e) {
-            logger.error("sendRepaymentBorrowCashWithHold error:", e);
-        }
-
-    }
-
+    
     public void sendTenementNotify(String mobiles, String content) {
         try {
             SmsResult smsResult = sendSmsToDhst(mobiles, content);
@@ -957,6 +885,35 @@ public class SmsUtil extends AbstractThird {
         } catch (Exception e) {
             logger.error("sendTenementNotify error:", e);
         }
+    }
+    private  SmsResult switchSmsSend(String mobile, String content){
+
+        if("YF".contains(this.rules(mobile))){
+            return YFSmsUtil.send(mobile, content,YFSmsUtil.VERIFYCODE);
+        }else{
+            return this.sendSmsToDhst(mobile, content);
+        }
+    }
+    public   String rules(String mobile){
+        String switchRule = (String)bizCacheUtil.getObject("sms_switch");
+        if(switchRule == null){
+            switchRule = "YF:01234,DH:56789";
+            List<AfResourceDo> resouces = afResourceService.getConfigByTypes("sms_switch");
+            if(resouces !=null || resouces.size()>0){
+                AfResourceDo resourceDo = resouces.get(0);
+                switchRule = resourceDo.getValue();
+            }
+            bizCacheUtil.saveObject("sms_switch",switchRule);
+        }
+        String[] rules = switchRule.split(",");
+        for(String rule : rules){
+
+            if(rule.split(":")[1].contains(mobile.substring(10,11))){
+                return rule.split(":")[0];
+            }
+        }
+
+        return "DH";
     }
 }
 

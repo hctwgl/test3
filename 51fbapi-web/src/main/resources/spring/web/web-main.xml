@@ -32,7 +32,9 @@
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.third.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.apph5.controller" />
-
+	
+	<context:component-scan base-package="com.ald.fanbei.api.web.validator.bean" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.validator.intercept" />
 
 	<!-- velocity configuration -->
 	<bean id="velocityConfigurer"
@@ -145,6 +147,12 @@
 
 				<value>/homePage/homeScrollBar</value>
 				<value>/resource/getRedRainRounds</value>
+				<value>/legalborrow/getBorrowCashGoodInfo</value>
+				<value>/legalborrow/getLegalBorrowCashHomeInfo</value>
+				<value>/legalborrow/getCashPageType</value>
+				<value>/legalborrow/getBorrowLegalChargeInfo</value>
+				<value>/legalborrow/getOverdueStatus</value>
+				<value>/order/dmNperEnabled</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -258,7 +266,7 @@
 				<entry key="/order/getTradeOrderDetailInfo" value-ref="getTradeOrderDetailInfoApi" />
 				<entry key="/order/combinationPay" value-ref="combinationPayApi" />
 				<entry key="/order/getBeforePayType" value-ref="getBeforePayTypeApi" />
-
+				<entry key="/order/dmNperEnabled" value-ref="dmNperEnabledApi" />
 
 				<!-- system模块 -->
 				<entry key="/system/appUpgrade" value-ref="appUpgradeApi" />
@@ -328,6 +336,18 @@
 				<entry key="/borrow/getOtherPayWay" value-ref="getOtherPayWayApi" />
 				<entry key="/borrow/getCreditPromoteInfoV1" value-ref="getCreditPromoteInfoV1Api" />
 
+
+				<entry key="/borrow/getBillListByMonthAndYear" value-ref="getBillListByMonthAndYearApi" />
+				<entry key="/borrow/getBorrowDetailV1" value-ref="getBorrowDetailV1Api" />
+				<entry key="/borrow/getMyBorrowListV1" value-ref="getMyBorrowListV1Api" />
+				<entry key="/borrow/getMyBorrowV1" value-ref="getMyBorrowV1Api" />
+				<entry key="/borrow/getMyHistoryBorrowV1" value-ref="getMyHistoryBorrowV1Api" />
+				<entry key="/borrow/getMyRepaymentDetailV1" value-ref="getMyRepaymentDetailV1Api" />
+				<entry key="/borrow/getMyRepaymentHistoryV1" value-ref="getMyRepaymentHistoryV1Api" />
+				<entry key="/borrow/getMyRepaymentV1" value-ref="getMyRepaymentV1Api" />
+				<entry key="/borrow/getRepaymentDetailV1" value-ref="getRepaymentDetailV1Api" />
+				<entry key="/borrow/getRepaymentCalendarV1" value-ref="getRepaymentCalendarV1Api" />
+				<entry key="/borrow/getMyHistoryBorrowDetailV1" value-ref="getMyHistoryBorrowDetailV1Api" />
 
 				<!-- brand品牌模块 -->
 				<entry key="/brand/getBrandUrl" value-ref="getBrandUrlApi" />
@@ -442,6 +462,8 @@
 				<!-- 商品分类 -->
 				<entry key="/category/getAllGoodsCategory" value-ref="getAllGoodsCategoryApi" />
 				<entry key="/category/getGoodsList" value-ref="getGoodsListApi" />
+				<!-- 漂浮窗信息 -->
+				<entry key="/floatingWindow/floatInfo" value-ref="floatInfo" />
 
 				<!-- 代扣开关 -->
 				<entry key="/Withhold/getWithholdInfo" value-ref="getWithholdInfoApi" />
@@ -452,8 +474,32 @@
 
 				<!-- 首页滚动条 -->
 				<entry key="/homePage/homeScrollBar" value-ref="homeScrollBarApi" />
-
+				
+				<!-- legalborrow -->
+				<entry key="/legalborrow/applyLegalBorrowCash" value-ref="applyLegalBorrowCashApi" />
+				<entry key="/legalborrow/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoApi" />
+				<entry key="/legalborrow/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalOrderInfo" value-ref="getBorrowLegalOrderInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalRenewalDetail" value-ref="getBorrowLegalRenewalDetailApi" />
+				<entry key="/legalborrow/getCashPageType" value-ref="getCashPageTypeApi" />
+				<entry key="/legalborrow/applyLegalRenewal" value-ref="applyLegalRenewalApi" />
+				<entry key="/legalborrow/confirmLegalRenewalPay" value-ref="confirmLegalRenewalPayApi" />
+				<entry key="/legalborrow/getBorrowLegalChargeInfo" value-ref="getBorrowLegalChargeInfoApi" />
+				<entry key="/legalborrow/getBorrowLegalOrderDetail" value-ref="getBorrowLegalOrderDetailApi" />
+				<entry key="/legalborrow/repayDo" value-ref="repayDoApi" />
+				<entry key="/legalborrow/getOrderRepaymentInfo" value-ref="getOrderRepaymentInfoApi" />
+				<entry key="/legalborrow/getResourceCompanyName" value-ref="getResourceCompanyNameApi" />
+				<entry key="/legalborrow/getLegalBorrowCashDetail" value-ref="getLegalBorrowCashDetailApi" />
+				<entry key="/legalborrow/getConfirmBorrowLegalInfo" value-ref="getConfirmBorrowLegalInfoApi" />
+				<entry key="/legalborrow/getLegalOrderLogistics" value-ref="getLegalOrderLogisticsApi" />
+				<entry key="/legalborrow/getLegalRenewalList" value-ref="getLegalRenewalListApi" />
+				<entry key="/legalborrow/getOverdueStatus" value-ref="getOverdueStatusApi" />
+				
+				
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />
+
+				<entry key="/borrow/getDataView" value-ref="getDataViewApi" />
+				<entry key="/borrow/submitClear" value-ref="submitClearApi" />
 
 			</map>
 		</constructor-arg>

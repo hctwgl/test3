@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdBizType;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayBo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayStatusEnum;
@@ -503,7 +502,6 @@ public class AfResourceServiceImpl implements AfResourceService {
         return afResourceDo;
     }
 
-
 	/**
 	 * 获取第三方支付通道
 	 * @param thirdPayTypeEnum
@@ -596,6 +594,7 @@ public class AfResourceServiceImpl implements AfResourceService {
         return afResourceDao.getScrollbarListByType(type);
     }
 
+
    @Override
 	public List<AfResourceDo> getEcommercePositionUpRescoure() {
 		return afResourceDao.getEcommercePositionUpRescoure();
@@ -650,5 +649,10 @@ public class AfResourceServiceImpl implements AfResourceService {
 		return afResourceDao.getFinancialEntranceInfo();
 	}
 
+
+	@Override
+	public AfResourceDo getConfigByTypesAndValue(String type, String value) {
+		return afResourceDao.getConfigByTypesAndValue(type,value);
+	}
 
 }

@@ -24,7 +24,8 @@ public enum AfOrderStatusMsgRemark {
 	REBATED("REBATED", "订单完成",""),
 	CLOSED("CLOSED", "订单关闭",""),
 	WAITING_REFUND("WAIT_REFUND", "售后处理中",""),
-	DEAL_REFUNDING("DEAL_REFUNDING", "退款中","");
+	DEAL_REFUNDING("DEAL_REFUNDING", "退款中",""),
+	PROCESSING("PROCESSING", "商家处理中",""),;
 	
 	
 	private String code;

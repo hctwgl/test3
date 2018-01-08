@@ -66,10 +66,10 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
 	@Override
-	public int addUser(final AfUserDo afUserDo) {
-		return transactionTemplate.execute(new TransactionCallback<Integer>() {
+	public Long addUser(final AfUserDo afUserDo) {
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
-			public Integer doInTransaction(TransactionStatus status) {
+			public Long doInTransaction(TransactionStatus status) {
 				try {
 					afUserDao.addUser(afUserDo);
 					AfUserAuthDo afUserAuthDo = new AfUserAuthDo();
@@ -98,12 +98,13 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 
 					//处理帐单日，还款日
 					addOutDay(afUserDo.getRid());
-
-					return 1;
+					long userId = 0L;
+					userId = afUserDo.getRid();
+					return userId;
 				} catch (Exception e) {
 					status.setRollbackOnly();
 					logger.info("addUser error:", e,afUserDo);
-					return 0;
+					return 0L;
 				}
 			}
 		});

@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.api.repayment;
+package com.ald.fanbei.web.test;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;

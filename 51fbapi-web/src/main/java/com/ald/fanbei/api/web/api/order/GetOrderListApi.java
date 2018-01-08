@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
@@ -19,12 +20,15 @@ import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfShopService;
+import com.ald.fanbei.api.biz.service.AfSupGameService;
+import com.ald.fanbei.api.biz.service.AfSupOrderService;
 import com.ald.fanbei.api.biz.service.AfTradeBusinessInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeOrderService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
 import com.ald.fanbei.api.common.enums.AfOrderStatusMsgRemark;
+import com.ald.fanbei.api.common.enums.OrderSecType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -36,6 +40,8 @@ import com.ald.fanbei.api.dal.domain.AfAftersaleApplyDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfShopDo;
+import com.ald.fanbei.api.dal.domain.AfSupGameDo;
+import com.ald.fanbei.api.dal.domain.AfSupOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTradeBusinessInfoDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -67,6 +73,11 @@ public class GetOrderListApi implements ApiHandle{
 	AfGoodsPriceService afGoodsPriceService;
 	@Resource
 	AfShopService afShopService;
+	
+	@Autowired
+	AfSupOrderService afSupOrderService;
+	@Autowired
+	AfSupGameService afSupGameService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
@@ -111,10 +122,16 @@ public class GetOrderListApi implements ApiHandle{
 			  //若空，用订单的图片
 			  vo.setGoodsIcon(order.getGoodsIcon());
 		    }
+		    
+		    //游戏充值
+		    if(OrderSecType.SUP_GAME.getCode().equals(order.getSecType())){
+			AfSupOrderDo afSupOrderDo = afSupOrderService.getByOrderNo(order.getOrderNo());
+			AfSupGameDo afSupGameDo = afSupGameService.getById(afSupOrderDo.getGoodsId());
+			vo.setSecType(afSupGameDo.getType());			
+		    }
 		}else{
 		    vo.setGoodsIcon(order.getGoodsIcon());
 		}
-		
 		vo.setGoodsName(order.getGoodsName());
 		vo.setGoodsPriceName(order.getGoodsPriceName());
 		vo.setOrderId(order.getRid());

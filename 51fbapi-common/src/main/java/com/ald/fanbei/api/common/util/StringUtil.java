@@ -5,6 +5,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -286,45 +288,21 @@ public class StringUtil extends StringUtils {
 		return cardNumber.substring(cardNumber.length() - lastLength);
 	}
 
-	/**
-	 * 只针对还款失败三方返回内容处理 裁掉最前面的"请求第三方失败,",删除中间出现的<100051>等返回码信息等
-	 * 
-	 * @param cardNumber
-	 * @param lastLength
-	 * @return
-	 */
-	public static String processRepayFailThirdMsg(String originMsg) {
-		String defaultMsg = "交易失败";
-		try {
-			if (isEmpty(originMsg)) {
-				return defaultMsg;
+	public static String joinListToString(List<String> sourceList, String sep) {
+	    	StringBuffer sb = new StringBuffer();
+	    	if(sourceList==null || sourceList.size()==0){
+	    		return "";
+	    	}
+	    	for (int i =0;i<sourceList.size();i++) {
+	    		if(i==sourceList.size()-1){
+	    			sb.append(sourceList.get(i));
+	    		}else{
+	    			sb.append(sourceList.get(i)).append(sep);
+	    		}
 			}
-			if (originMsg.startsWith("请求第三方失败,")) {
-				originMsg = originMsg.replaceFirst("请求第三方失败,", "");
-			}
-			if (originMsg.startsWith("请求第三方失败:")) {
-				originMsg = originMsg.replaceFirst("请求第三方失败:", "");
-			}
-			if (originMsg.startsWith("单位返回信息:")) {
-				originMsg = originMsg.replaceFirst("单位返回信息:", "");
-			}
-			String replaceStr = "";
-			if (originMsg.contains("[") && originMsg.contains("]")) {
-				int beginIndex = originMsg.indexOf("[");
-				int endIndex = originMsg.lastIndexOf("]") + 1;
-				replaceStr = originMsg.substring(beginIndex, endIndex);
-			}
-			originMsg = originMsg.replace(replaceStr, "");
-			if (isEmpty(originMsg)) {
-				return defaultMsg;
-			} else {
-				return originMsg;
-			}
-		} catch (Exception e) {
-			return originMsg;
-		}
+	    	return sb.toString();
 	}
-
+	 
 	public static String getDeviceTailNum(String deviceId) {
 		if (StringUtils.isEmpty(deviceId)) {
 			throw new IllegalArgumentException("deviceId can't be empty.");
@@ -336,6 +314,21 @@ public class StringUtil extends StringUtils {
 		return tailNum + "";
 	}
 
+	/**
+     * 根据map中数据，替换短信内容
+     * 实例，假设原始短信模版中有特殊符&errorMsg,map中有对应key为errorMsg，则替换对应内容到&errorMsg
+     * @param extraChar 替换内容中的标识符号，如&
+     * @param originMessage 短信模版本
+     * @param replaceMap 数据封装map
+     * @return
+     */
+    public static String convertMessageByMapInfo(String extraChar,String originMessage,Map<String,String> replaceMapData){
+    	Set<String> keySet = replaceMapData.keySet();
+    	for (String tempKey : keySet) {
+    		originMessage = originMessage.replaceAll(extraChar+tempKey, replaceMapData.get(tempKey));
+		}
+    	return originMessage;
+    }
 	public static void main(String[] args) {
 		System.out.println(judgeClientDeviceFlag("i_EF97D566-0A4A-4492-9AEB-38C3A44AD40B_1510372484991_www"));
 	}

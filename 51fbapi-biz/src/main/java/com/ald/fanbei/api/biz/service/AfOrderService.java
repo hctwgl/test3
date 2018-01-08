@@ -65,7 +65,7 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Map<String,Object> createMobileChargeOrder(AfUserBankcardDo card,String userName,Long userId, AfUserCouponDto couponDto,
-			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo);
+			BigDecimal money,String mobile,BigDecimal rebateAmount,Long bankId,String clientIp,AfUserAccountDo afUserAccountDo,String blackBox);
 	
 	/**
 	 * 手机充值订单充值逻辑
@@ -113,7 +113,7 @@ public interface AfOrderService {
 	 * @param id
 	 * @return
 	 */
-	int deleteOrder(Long id);
+	void deleteOrder(Long userId, Long orderId);
 	/**
 	 * 获取订单列表
 	 * @param pageNo
@@ -161,6 +161,15 @@ public interface AfOrderService {
 	 * @return
 	 */
 	int dealBoluomeOrder(AfOrderDo afOrder);
+	
+	/**
+	 * 处理回调完成的订单业务逻辑
+	 * @author gaojb
+	 * @Time 2017年11月27日 上午11:38:00
+	 * @param afOrder
+	 * @return
+	 */
+	int callbackCompleteOrder(AfOrderDo afOrder);
 	
 	/**
 	 * 支付菠萝觅订单
@@ -324,6 +333,24 @@ public interface AfOrderService {
      * @return
      */
     List<AfOrderDo> getOverOrderByGoodsIdAndUserId(Long goodsId,Long userId);
+    
+    /**
+     * 获取查询菠萝蜜订单详情地址
+     * @author gaojb
+     * @Time 2017年11月23日 下午6:23:25
+     * @param afOrderDo
+     * @return
+     */
+    String getBoluomeOrderDetailUrl(AfOrderDo orderInfo);
+    
+    /**
+	 * 根据订单号，查询订单信息
+	 * @author gaojb
+	 * @Time 2017年11月24日 下午5:10:47
+	 * @param orderNo
+	 * @return
+	 */
+	AfOrderDo getOrderByOrderNo(String orderNo);
 
 	List<AfOrderDo> getOverOrderByUserId(Long userId);
 

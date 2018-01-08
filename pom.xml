@@ -213,11 +213,11 @@
 			<artifactId>core</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.bouncycastle</groupId>-->
-			<!--<artifactId>bcprov-jdk15</artifactId>-->
-			<!--<version>1.46</version>-->
-		<!--</dependency>-->
+		<!--<dependency> -->
+		<!--<groupId>org.bouncycastle</groupId> -->
+		<!--<artifactId>bcprov-jdk15</artifactId> -->
+		<!--<version>1.46</version> -->
+		<!--</dependency> -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk15</artifactId>
@@ -267,6 +267,16 @@
 			<version>4.9</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>jiazhiyi.web.com</groupId>
+			<artifactId>ComInterface</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.0.2.Final</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>51fbapi-common</module>
@@ -275,6 +285,20 @@
 		<module>51fbapi-web</module>
 	</modules>
 	<build>
+	    <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -300,7 +324,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<compilerArguments>
 						<verbose />
-                        <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
+						<bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
 					</compilerArguments>
 				</configuration>
 			</plugin>

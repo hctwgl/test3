@@ -224,16 +224,28 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
 		WHERE goods_id=#{goodsId}
     </select>
 
+    <select id="getGoodsPriceByGoodsId" resultType="com.ald.fanbei.api.dal.domain.AfGoodsPriceDo" parameterType="java.lang.Long">
+    	SELECT 
+		<include refid="queryFields" />
+		from af_goods_price 
+		WHERE goods_id=#{goodsId}
+		LIMIT 1
+    </select>
+
     <select id="selectSumStock" parameterType="java.lang.Long" resultType="java.lang.Integer" >
         select SUM(stock) from af_goods_price where  is_delete = 0 and is_sale = 'Y' and goods_id = #{goodsId}
     </select>
 
     <update id="updateSell" parameterType="java.lang.Long">
-        UPDATE af_goods_price SET stock = stock - #{count} , sale_count = sale_count + #{count} where id = #{priceId}
+        UPDATE af_goods_price SET stock = stock - #{count} , sale_count = sale_count + #{count} where id = #{priceId} AND  <![CDATA[
+          stock >= #{count}
+      ]]>
     </update>
 
     <update id="updateReturnGoods" parameterType="java.lang.Long"  >
-        UPDATE af_goods_price SET stock = stock + #{count} , sale_count = sale_count - #{count} where id = #{priceId}
+        UPDATE af_goods_price SET stock = stock + #{count} , sale_count = sale_count - #{count} where id = #{priceId} AND  <![CDATA[
+          sale_count >= #{count}
+      ]]>
     </update>
 
     <select id="selectSumStockMap"  resultType="AfGoodsPriceDto" parameterType="list">

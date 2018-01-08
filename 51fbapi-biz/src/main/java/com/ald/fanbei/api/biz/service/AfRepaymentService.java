@@ -16,6 +16,8 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
  */
 public interface AfRepaymentService {
 
+	void testbackDetail();
+
 	Map<String,Object> createRepaymentYiBao( BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 									   BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp,AfUserAccountDo afUserAccountDo);
 	/**
@@ -32,7 +34,7 @@ public interface AfRepaymentService {
 	Map<String,Object> createRepayment( BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
 			BigDecimal rebateAmount,String billIds,Long cardId,Long userId,AfBorrowBillDo billDo,String clientIp,AfUserAccountDo afUserAccountDo);
 	
-	long dealRepaymentSucess(String outTradeNo,String tradeNo);
+	long dealRepaymentSucess(String outTradeNo,String tradeNo,boolean isNeedNoticeMsg);
 	
 	/**
 	 * 获取最近还款编号
@@ -53,7 +55,7 @@ public interface AfRepaymentService {
      * @param tradeNo
      * @return
      */
-    int dealRepaymentFail(String outTradeNo,String tradeNo);
+    int dealRepaymentFail(String outTradeNo,String tradeNo,boolean isNeedNoticeMsg,String errorWarnMsg);
     
     /**
      * 处理自营商品菠萝蜜订单失败
@@ -64,7 +66,6 @@ public interface AfRepaymentService {
     int dealSelfSupportOrBoluomeFail(String outTradeNo,String tradeNo);
 
     int updateRepaymentName(Long refId);
-	boolean sendFailMessage(Long userId, String content, String outTradeNo, String tradeNo);
 
-	boolean sendSuccessMessage(Long userId,String outTradeNo,String tradeNo);
+	String getProcessingRepayNo(Long userId);
 }
