@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.common.util;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 
 /**
@@ -26,5 +28,15 @@ public class BeanUtil {
                 e.printStackTrace();   
             }   
             return params;   
-    }  
+    }
+
+	public static void copyProperties(Object desc,Object ori) {
+		try {
+			BeanUtils.copyProperties(desc, ori);
+		} catch (IllegalAccessException e1) {
+			e1.printStackTrace();
+		} catch (InvocationTargetException e1) {
+			e1.printStackTrace();
+		}
+	}  
 }

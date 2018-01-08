@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.common.util;
+package com.ald.fanbei.api.web.common.util;
 
 import java.util.Date;
 
@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 

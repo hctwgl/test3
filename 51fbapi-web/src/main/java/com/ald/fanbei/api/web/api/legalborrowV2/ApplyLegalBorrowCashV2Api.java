@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
@@ -24,8 +25,8 @@ import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.RiskReviewStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BeanUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.LogUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -36,6 +37,7 @@ import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.common.util.LogUtil;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.ApplyLegalBorrowCashParam;
 
@@ -73,8 +75,12 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 
-		ApplyLegalBorrowCashParam param = (ApplyLegalBorrowCashParam) requestDataVo.getParamBo();
+		ApplyLegalBorrowCashParam param = (ApplyLegalBorrowCashParam) requestDataVo.getParamObj();
 
+		ApplyLegalBorrowCashBo paramBo =  new ApplyLegalBorrowCashBo();
+		
+		BeanUtil.copyProperties(paramBo,param);
+		
 		// 获取用户账户和认证信息
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -86,19 +92,19 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
 		// 业务逻辑校验
-		applyLegalBorrowCashService.checkBusi(accountDo, authDo, rateInfoDo, mainCard, param);
+		applyLegalBorrowCashService.checkBusi(accountDo, authDo, rateInfoDo, mainCard, paramBo);
 		try {
 			// 业务加锁处理
 			applyLegalBorrowCashService.checkLock(lockKey);
 			
 			AfBorrowCashDo afBorrowCashDo = applyLegalBorrowCashService.buildBorrowCashDo(
-					mainCard, userId, rateInfoDo, param);
+					mainCard, userId, rateInfoDo, paramBo);
 			// 用户借钱时app来源区分
-			String appName = applyLegalBorrowCashService.getAppName(requestDataVo);
+			String appName = getAppName(requestDataVo);
 			afBorrowCashDo.setMajiabaoName(appName);
 			// 搭售商品订单
 			AfBorrowLegalOrderDo afBorrowLegalOrderDo = applyLegalBorrowCashService.buildBorrowLegalOrder(userId,
-					param);
+					paramBo);
 
 			Long borrowId = applyLegalBorrowCashService.addBorrowResult(afBorrowCashDo,afBorrowLegalOrderDo);
 			// 生成借款信息失败
@@ -108,7 +114,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 			// 借过款的放入缓存，借钱按钮不需要高亮显示
 			bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));
 			
-			String appType = applyLegalBorrowCashService.getAppType(requestDataVo);
+			String appType = getAppType(requestDataVo);
 			String ipAddress = CommonUtil.getIpAddr(request);
 			final AfBorrowCashDo cashDo = new AfBorrowCashDo();
 			try {
@@ -121,7 +127,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				cashDo.setReviewStatus(RiskReviewStatus.APPLY.getCode());
 				afBorrowCashService.updateBorrowCash(cashDo);
 				// 提交风控审核
-				RiskVerifyRespBo verifyBo = applyLegalBorrowCashService.submitRiskReview(borrowId,appType,ipAddress,param,
+				RiskVerifyRespBo verifyBo = applyLegalBorrowCashService.submitRiskReview(borrowId,appType,ipAddress,paramBo,
 						accountDo,userId,afBorrowCashDo,riskOrderNo);
 				
 				if (verifyBo.isSuccess()) {
@@ -163,5 +169,16 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 			bizCacheUtil.delCache(lockKey);
 		}
 	}
+	
+	private String getAppName(RequestDataVo requestDataVo) {
+		String appName = requestDataVo.getId().substring(requestDataVo.getId().lastIndexOf("_") + 1,
+				requestDataVo.getId().length());
+		return appName;
+	}
+
+	private String getAppType(RequestDataVo requestDataVo) {
+		return (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
+	}
+
 
 }

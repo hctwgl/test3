@@ -19,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.ApplyLegalBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
@@ -61,8 +62,6 @@ import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.validator.bean.ApplyLegalBorrowCashParam;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -111,7 +110,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	private Logger logger = LoggerFactory.getLogger(ApplyLegalBorrowCashServiceImpl.class);
 
 	@Override
-	public AfBorrowLegalOrderDo buildBorrowLegalOrder(Long userId, ApplyLegalBorrowCashParam param) {
+	public AfBorrowLegalOrderDo buildBorrowLegalOrder(Long userId, ApplyLegalBorrowCashBo param) {
 		AfBorrowLegalOrderDo afBorrowLegalOrderDo = new AfBorrowLegalOrderDo();
 		afBorrowLegalOrderDo.setUserId(userId);
 		afBorrowLegalOrderDo.setBorrowId(0L);
@@ -127,7 +126,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Override
 	public AfBorrowCashDo buildBorrowCashDo(AfUserBankcardDo afUserBankcardDo, Long userId, 
-			AfResourceDo rateInfoDo,ApplyLegalBorrowCashParam param) {
+			AfResourceDo rateInfoDo,ApplyLegalBorrowCashBo param) {
 		// 获取用户分层利率
 		BigDecimal oriRate = riskUtil.getRiskOriRate(userId);
 		int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
@@ -251,7 +250,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	 * 校验借款金额
 	 */
 	@Override
-	public void checkAmount(ApplyLegalBorrowCashParam param, AfResourceDo rateInfoDo) {
+	public void checkAmount(ApplyLegalBorrowCashBo param, AfResourceDo rateInfoDo) {
 		BigDecimal borrowAmount = param.getAmount();
 		if (rateInfoDo != null) {
 			BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
@@ -266,7 +265,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	 * 检验支付密码
 	 */
 	@Override
-	public void checkPassword(AfUserAccountDo accountDo, ApplyLegalBorrowCashParam param) {
+	public void checkPassword(AfUserAccountDo accountDo, ApplyLegalBorrowCashBo param) {
 		String inputOldPwd = UserUtil.getPassword(param.getPwd(), accountDo.getSalt());
 		if (!StringUtils.equals(inputOldPwd, accountDo.getPassword())) {
 			throw new FanbeiException(FanbeiExceptionCode.USER_PAY_PASSWORD_INVALID_ERROR);
@@ -302,7 +301,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	 * 校验是否可借钱
 	 */
 	@Override
-	public void checkCanBorrow(AfUserAccountDo accountDo, ApplyLegalBorrowCashParam param) {
+	public void checkCanBorrow(AfUserAccountDo accountDo, ApplyLegalBorrowCashBo param) {
 		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 		BigDecimal accountBorrow = this.calculateMaxAmount(usableAmount);
 
@@ -316,7 +315,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	 */
 	@Override
 	public void checkBusi(AfUserAccountDo accountDo, AfUserAuthDo authDo, AfResourceDo rateInfoDo,
-			AfUserBankcardDo bankCard,ApplyLegalBorrowCashParam param) {
+			AfUserBankcardDo bankCard,ApplyLegalBorrowCashBo param) {
 		this.checkAccount(accountDo, authDo);
 		this.checkAmount(param, rateInfoDo);
 		this.checkPassword(accountDo, param);
@@ -507,16 +506,11 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		});
 	}
 
-	@Override
-	public String getAppName(RequestDataVo requestDataVo) {
-		String appName = requestDataVo.getId().substring(requestDataVo.getId().lastIndexOf("_") + 1,
-				requestDataVo.getId().length());
-		return appName;
-	}
+	
 
 	@Override
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
-			ApplyLegalBorrowCashParam param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo) {
+			ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo) {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String borrowTime = sdf.format(new Date());
@@ -532,10 +526,6 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				afBorrowCashDo.getCardName(), null, "");
 		return verifyBo;
 	}
-
-	@Override
-	public String getAppType(RequestDataVo requestDataVo) {
-		return (requestDataVo.getId().startsWith("i") ? "alading_ios" : "alading_and");
-	}
-
+	
+	
 }

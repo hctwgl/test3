@@ -112,7 +112,7 @@ public class RepayDoV2Api implements ApiHandle {
 		bo.userId = userId;
 		bo.userDo = userDo;
 		
-		BorrowLegalRepayDoV2Param param = (BorrowLegalRepayDoV2Param) requestDataVo.getParamBo();
+		BorrowLegalRepayDoV2Param param = (BorrowLegalRepayDoV2Param) requestDataVo.getParamObj();
 		bo.repaymentAmount = param.repaymentAmount;
 		bo.rebateAmount = param.rebateAmount;
 		bo.actualAmount = param.actualAmount;
