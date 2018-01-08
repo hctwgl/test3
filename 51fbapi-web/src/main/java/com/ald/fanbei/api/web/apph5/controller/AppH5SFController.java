@@ -195,6 +195,11 @@ public class AppH5SFController extends BaseController {
 			Long userId = convertUserNameToUserId(context.getUserName());
 			Long activityId = 10L;
 			
+			//get total userTimes
+			int times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
+			if (times < 1) {
+				return H5CommonResponse.getNewInstance(false, "您暂无抽奖机会，快去购物获取抽奖机会吧").toString();
+			}
 			//get conpons
 			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
 
@@ -221,12 +226,19 @@ public class AppH5SFController extends BaseController {
 			//random get one coupon Id
 			int hitIndex = (int) (Math.random() * (avalibleCouponIdList.size() - 0) + 0);
 			
-			Long id = avalibleCouponIdList.get(hitIndex);
-			data.put("id", id);
+			Long couponId = avalibleCouponIdList.get(hitIndex);
+			data.put("couponId", couponId);
 			
-			//get total userTimes
-			int times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
-			data.put("times", times);
+			//decrease the times for once.
+			//(fist decrease the daily time one then the shopping one)+grant coupons
+			
+			boolean isSuccess = afUserCouponTigerMachineService.grandCoupon(couponId,userId);
+			if (!isSuccess) {
+				return H5CommonResponse.getNewInstance(false, "老虎机抽取礼物失败，可以重新来一次哦~").toString();
+			}
+			
+			
+			data.put("times", times-1);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 
 		} catch (FanbeiException e) {
@@ -241,8 +253,8 @@ public class AppH5SFController extends BaseController {
 		} 
 		
 		catch (Exception e) {
-			logger.error("/appH5DoubleEggs/initCoupons error = {}", e.getStackTrace());
-			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
+			logger.error("/H5SF/pickUpTigerMachineCoupon error = {}", e.getStackTrace());
+			return H5CommonResponse.getNewInstance(false, "老虎机抽取礼物失败，可以重新来一次哦~").toString();
 		}
 		return result;
 	}

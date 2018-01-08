@@ -14,4 +14,6 @@ public interface AfUserCouponTigerMachineService extends ParentService<AfUserCou
 
 	int getTotalTimesByUserId(Long userId);
 
+	boolean grandCoupon(Long couponId, Long userId);
+
 }
