@@ -79,7 +79,7 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 			try {
 				Object validatorInstanceBean = validatorBeanClazz.newInstance();
 				initializeValidatorBean(validatorInstanceBean, reqData);
-				reqData.setParamBo(validatorInstanceBean);
+				reqData.setParamObj(validatorInstanceBean);
 				logger.info("initialize validator bean success.");
 				
 				Set<ConstraintViolation<Object>> validateResults = null;
