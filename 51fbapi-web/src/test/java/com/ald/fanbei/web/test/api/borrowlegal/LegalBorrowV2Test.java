@@ -61,7 +61,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 
-	@Test
+//	@Test
 	public void  repayDo() {
 		String url = urlBase + "/legalborrowV2/repayDoV2";
 		Map<String,String> params = new HashMap<>();
@@ -76,15 +76,15 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, params, userName ,true);
 	}
 	
-	@Test
+//	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018010811314808317";
-		String merPriv = PayOrderSource.REPAY_CASH_LEGAL.getCode();
-		String tradeNo = "";
+		String orderNo = "hq2018010811542108319";
+		String merPriv = PayOrderSource.REPAY_CASH_LEGAL_V2.getCode();
+		String tradeNo = "xianfeng21231";
 		String tradeState = "00";
 		
-		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv +"&tradeNo="+tradeNo+"&tradeState="+tradeState;
+		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
 		url += reqStr;
 		Map<String,String> params = new HashMap<>();
 		
@@ -102,10 +102,10 @@ public class LegalBorrowV2Test  extends BaseTest{
 		String tradeNo = "offline" + System.currentTimeMillis();
 		Map<String,String> params = new HashMap<>();
 		params.put("repay_no", tradeNo);
-		params.put("borrow_no", "jq2017121917075900521");
+		params.put("borrow_no", "jq2017122020523500899");
 		params.put("repay_type", "BANK");
 		params.put("repay_time", DateUtil.formatDateTime(new Date()));
-		params.put("repay_amount", "20100.00");
+		params.put("repay_amount", "76100.00");
 		params.put("rest_amount", "10000.00");
 		params.put("trade_no", tradeNo);
 		params.put("is_balance", YesNoStatus.NO.getCode());
