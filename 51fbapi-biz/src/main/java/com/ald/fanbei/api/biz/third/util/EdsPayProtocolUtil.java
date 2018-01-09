@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 
+ *
  * @类描述：和资产方系统调用工具类
  * @author chengkang 2017年11月29日 16:55:23
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 需加密参数 真实姓名 ， 身份证号， 手机号，邮箱，银行卡号
@@ -36,14 +36,14 @@ import java.util.List;
 public class EdsPayProtocolUtil extends AbstractThird {
 
 	@Resource
-    AfResourceService afResourceService;
+	AfResourceService afResourceService;
 	@Resource
 	AfAssetSideInfoDao afAssetSideInfoDao;
 	@Resource
 	AfAssetPackageDao afAssetPackageDao;
 	@Resource
 	AfLegalContractPdfCreateService afLegalContractPdfCreateService;
-	
+
 	public AssetSideRespBo giveBackPdfInfo(String timestamp, String data, String sign, String appId) {
 		// 响应数据,默认成功
 		AssetSideRespBo notifyRespBo = new AssetSideRespBo();
@@ -61,12 +61,12 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				return notifyRespBo;
 			}
 			//请求时间校验
-			/*Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
+			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
 			if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}*/
+			}
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayBackPdfReqBo edspayBackPdfReqBo  = null;
@@ -89,17 +89,20 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
-			
+
 			//签名成功,业务处理
 			String orderNo = edspayBackPdfReqBo.getOrderNo();
 			String protocolUrl = edspayBackPdfReqBo.getProtocolUrl();
+			Integer debtType = edspayBackPdfReqBo.getDebtType();
 			String investorName = edspayBackPdfReqBo.getInvestorName();
 			String investorCardId = edspayBackPdfReqBo.getInvestorCardId();
 			String investorPhone = edspayBackPdfReqBo.getInvestorPhone();
-			Integer debtType = edspayBackPdfReqBo.getDebtType();
-			/*String orderNo="jq2018010511131701332";
-			Integer debtType=1;
-			String protocolUrl="http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/instalment.pdf";*/
+			/*orderNo="jk2018010914473300001";
+			debtType=2;
+			investorName="杨海龙";
+			investorCardId="342522199401124538";
+			investorPhone="18268005632";
+			protocolUrl="http://edspay.oss-cn-qdjbp-a.aliyuncs.com/protocol/loanProtocol1000000059960459.pdf";*/
 			if(orderNo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
@@ -123,7 +126,7 @@ public class EdsPayProtocolUtil extends AbstractThird {
 			}
 			notifyRespBo.setData(url);
 			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
-		} catch (Exception e) {
+		}catch (Exception e) {
 			//系统异常
 			logger.error("EdspayController giveBackCreditInfo error,appId="+appId+ ",sendTime=" + timestamp, e);
 			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);

@@ -127,6 +127,7 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             afUserSealDo1.setUserAccountId(accountId);
             afUserSealDo1.setUserType("1");
             afUserSealDo1.setUserId((Long)map.get("userId"));
+            afUserSealDo1.setUserName((String)map.get("name"));
             if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()){
                 afUserSealDo1.setUserSeal(addSealResult.getSealData());
             }else {
@@ -140,6 +141,7 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             AfUserSealDo afUserSealDo1 = new AfUserSealDo();
             afUserSealDo1.setId(afUserSealDo1.getId());
             afUserSealDo1.setUserId((Long)map.get("userId"));
+            afUserSealDo1.setUserName((String)map.get("name"));
             if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()){
                 afUserSealDo1.setUserSeal(addSealResult.getSealData());
             }else {

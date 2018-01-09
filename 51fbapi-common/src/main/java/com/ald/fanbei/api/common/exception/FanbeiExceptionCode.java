@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.common.exception;
 
 /**
- * 
+ *
  *@类AppExceptionCode.java 的实现描述：错误枚举类
  *@author 陈金虎 2017年1月16日 下午11:27:54
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
@@ -35,7 +35,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1015,"user not exist error","用户不存在"),
     USER_LOGIN_SMS_NOTEXIST("USER_LOGIN_SMS_NOTEXIST",1016,"user login sms not exist","请获取短信验证码"),
     USER_LOGIN_SMS_WRONG_ERROR("USER_LOGIN_SMS_WRONG_ERROR",1017,"user login sms wrong error","验证码不正确"),
-    
+
     // user mode code from 1100 - 1199
     USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"),
     USER_INVALID_MOBILE_NO("USER_INVALID_MOBILE_NO",1101,"invalid mobile number","无效手机号"),
@@ -105,7 +105,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR("USER_COUPON_MORE_THAN_LIMIT_COUNT_ERROR",1212,"user coupon error ","优惠券个数超过最大领券个数"),
     USER_COUPON_PICK_OVER_ERROR("USER_COUPON_PICK_OVER_ERROR",1213,"pick coupon over error ","优惠券已领取完"),
     USER_GET_SIGN_AWARD_ERROR("USER_GET_SIGN_AWARD_ERROR",1214,"user get sign award error ","签到奖励已领取"),
-    
+
     // 1300 -
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     USER_MAIN_BANKCARD_NOT_EXIST_ERROR("USER_MAIN_BANKCARD_NOT_EXIST_ERROR",1301,"user main bankcard not exist error","您未绑定主卡"),
@@ -134,13 +134,13 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CHSI_CERTIFIED_UNDER_MAINTENANCE("CHSI_CERTIFIED_UNDER_MAINTENANCE",1321,"chsi certified under maintenance","学信网认证正在维护中，请等待！"),
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),
-    
+
     ZM_ERROR("ZM_ERROR",1510,"zm error","调用芝麻信用失败"),
     ZM_AUTH_ERROR("ZM_AUTH_ERROR",1511,"zm auth error","芝麻信用授权失败"),
 //    ZM_CREDIT_WATCHLISTII_ERROR("ZM_CREDIT_WATCHLISTII_ERROR",1511,"zm credit watchlistii error","调用芝麻行业关注名单失败"),
 //    ZM_CREDIT_SCORE_GET_ERROR("ZM_CREDIT_SCORE_GET_ERROR",1512,"zm credit score get error","调用芝麻信用评分失败"),
     DEALWITH_YOUDUN_NOTIFY_ERROR("DEALWITH_YOUDUN_NOTIFY_ERROR",1520,"dealwith youdun notify error","有盾回调出错"),
-    
+
     SMS_MOBILE_NO_ERROR("SMS_MOBILE_NO_ERROR",1530,"invalid mobile","无效手机号"),
     SMS_MOBILE_COUNT_TOO_MANAY("SMS_MOBILE_COUNT_TOO_MANAY",1531,"too manay mobiles","手机号太多"),
     SMS_MOBILE_ERROR("SMS_MOBILE_ERROR",1532,"too manay mobiles","手机号有误"),
@@ -155,7 +155,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AUTH_REALNAME_ERROR("AUTH_REALNAME_ERROR",1540,"auth realname error","实名认证失败"),
     AUTH_CARD_ERROR("AUTH_CARD_ERROR",1541,"auth card error","银行卡认证失败"),
     AUTH_BINDCARD_ERROR("AUTH_BINDCARD_ERROR",1542,"bind card error","绑定银行卡失败"),
-    
+
     UPS_REPEAT_NOTIFY("UPS_REPEAT_NOTIFY",1549,"ups repeat notify","重复UPS回调"),
     UPS_AUTH_BF_SIGN_ERROR("UPS_AUTH_BF_SIGN_ERROR",1550,"bao fu auth error","银行卡认证失败"),
     UPS_AUTH_YSB_SIGN_ERROR("UPS_AUTH_YSB_SIGN_ERROR",1551,"bao fu auth error","银行卡认证失败"),
@@ -187,7 +187,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AFTERSALE_APPLY_NOT_EXIST("AFTERSALE_APPLY_NOT_EXIST",1577,"aftersale apply not exist","售后申请记录不存在"),
     FUNCTION_REPAIRING_ERROR("FUNCTION_REPAIRING_ERROR",1578,"function repairing error","此功能正在维护中，请耐心等待！"),
     ORDER_HAS_CLOSED("ORDER_HAS_CLOSED",1579,"order has closed","订单已经关闭,请重新下单"),
-    
+
     //order model 1600-1699
     USER_ORDER_NOT_EXIST_ERROR("USER_ORDER_NOT_EXIST_ERROR",1600,"user order not exist error","用户订单不存在"),
     GOODS_NOT_EXIST_ERROR("GOODS_NOT_EXIST_ERROR",1601,"goods not exist error","商品不存在"),
@@ -233,7 +233,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     ADD_WHITE_USER_PRIMARIES_ERROR("ADD_WHITE_USER_PRIMARIES_ERROR",1907,"add white user primaries error","添加白名单失败"),
     QUERY_GRANT_AMOUNT_ERROR("Query_GRANT_AMOUNT_ERROR",1908,"query user grantAmount error","正在获取信用额度，请稍候！"),
     RISK_RAISE_QUOTA_ERROR("RISK_RAISE_QUOTA_ERROR",1909,"risk raise quota error","风控提额失败"),
-    
+
     AUTH_ALL_AUTH_ERROR("AUTH_ALL_AUTH_ERROR",1910,"all auth  error","信用认证未完成"),
     API_CALL_NUM_OVERFLOW("API_CALL_NUM_OVERFLOW",1911,"api call num overflow","您的认证次数已达上限，请明日再试！"),
 
@@ -257,16 +257,16 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
 
     BORROW_CASH_NOT_EXIST_ERROR("BORROW_CASH_NOT_EXIST_ERROR",2002,"borrow cash not exist","借钱信息不存在"),
     BORROW_CASH_REPAY_NOT_EXIST_ERROR("BORROW_CASH_REPAY_NOT_EXIST_ERROR",2003,"borrow cash repay not exist","还钱信息不存在或已删除"),
-   
+
     //还款中，不能修改code
     BORROW_CASH_REPAY_PROCESS_ERROR("BORROW_CASH_REPAY_PROCESS_ERROR",2004,"borrow cash repay not exist","您有一笔还款正在处理中"),
-   
-    
+
+
     BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2005,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
     ORDER_BORROW_CASH_NOT_EXIST_ERROR("ORDER_BORROW_CASH_NOT_EXIST_ERROR",2006,"order borrow cash not exist","商品借款信息不存在"),
 
-    
-    
+
+
     RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",3005,"renewal cash repay more than borrow cash","续借金额大于借款金额"),
     RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED("RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED",3006,"renewal cash repay less one hundred","续借金额小于100"),
 
@@ -275,7 +275,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_CASH_MORE_ACCOUNT_ERROR("BORROW_CASH_MORE_ACCOUNT_ERROR",2008,"borrow cash  more  account  borrow error","借款金额超过可借金额，请下拉刷新后重新提交"),
 
     HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2009,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
-    
+
     STRONG_RISK_STATUS_ERROR("STRONG_RISK_STATUS_ERROR",2010,"strong risk apply status error","您的风控审核正在提交"),
     ADD_BORROW_CASH_INFO_FAIL("ADD_BORROW_CASH_INFO_FAIL",2011,"add borrow cash info fail","生成借款信息失败"),
     BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
@@ -296,13 +296,14 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     NO_QUALIFIED_SIGN_AWARD("NO_QUALIFIED_SIGN_AWARD",4008,"no qualified sign award","不符合领取条件"),
     PERSON_SEAL_CREATE_FAILED("PERSON_SEAL_CREATE_FAILED",4100,"person_seal_create_failed","个人印章创建失败"),
     COMPANY_SEAL_CREATE_FAILED("COMPANY_SEAL_CREATE_FAILED",4101,"COMPANY_SEAL_CREATE_FAILED","公司印章创建失败"),
-    CONTRACT_CREATE_FAILED("CONTRACT_CREATE_FAILED",4102,"contract_create_failed","合同生成失败"),
+    CONTRACT_CREATE_FAILED("CONTRACT_CREATE_FAILED",4103,"contract_create_failed","合同生成失败"),
+    CONTRACT_NOT_FIND("CONTRACT_NOT_FIND",4104,"contract_not_find","合同不存在"),
     COMPANY_SIGN_ACCOUNT_CREATE_FAILED("COMPANY_SIGN_ACCOUNT_CREATE_FAILED",4102,"company_sign_account_create_failed","e签宝账户创建失败"),
     TONGTUN_FENGKONG_REGISTER_PWD_ERROR("TONGTUN_FENGKONG_REGISTER_PWD_ERROR",4007,"tongtun fengkong error","您要找回的手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
     TONGTUN_FENGKONG_REGIST_ERROR("TONGTUN_FENGKONG_REGIST_ERROR",4004,"tongtun fengkong error","您注册手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
     TONGTUN_FENGKONG_LOGIN_ERROR("TONGTUN_FENGKONG_LOGIN_ERROR",4005,"tongtun login fengkong error","您登录手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
     TONGTUN_FENGKONG_TRADE_ERROR("TONGTUN_FENGKONG_TRADE_ERROR",4006,"tongtun trade fengkong error","您投资手机号存在安全风险，如有疑问请联系客服:0571-88193918"),
-    
+
     GAME_CHANCE_CODE_ERROR("GAME_CHANCE_CODE_ERROR",4030,"game chance code error","无效抓娃娃机会"),
     GAME_COUPONS_LIMIT_ERROR("GAME_COUPONS_LIMIT_ERROR",4031,"coupon limit","未中奖"),
     NOT_CONFIG_GAME_INFO_ERROR("NOT_CONFIG_GAME_INFO_ERROR",4032,"not config game info error","请配置游戏信息"),
