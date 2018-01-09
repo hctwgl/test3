@@ -153,6 +153,11 @@
 				<value>/legalborrow/getBorrowLegalChargeInfo</value>
 				<value>/legalborrow/getOverdueStatus</value>
 				<value>/order/dmNperEnabled</value>
+				<value>/legalborrowV2/getBorrowCashGoodInfo</value>
+				<value>/legalborrowV2/getLegalBorrowCashHomeInfo</value>
+				<value>/legalborrowV2/getCashPageType</value>
+				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
+				<value>/legalborrowV2/getOverdueStatus</value>
 			</list>
 		</constructor-arg>
 	</bean>
