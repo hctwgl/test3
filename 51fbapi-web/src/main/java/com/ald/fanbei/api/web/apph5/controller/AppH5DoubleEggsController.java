@@ -646,10 +646,16 @@ public class AppH5DoubleEggsController extends BaseController {
 					}
 
 					long doubleGoodsId = goodsDo.getRid();
+					AfGoodsDoubleEggsDo tempDo = new AfGoodsDoubleEggsDo();
+					tempDo.setGoodsId(goodsId);
+					tempDo = afGoodsDoubleEggsService.getByCommonCondition(tempDo);
+					if (tempDo == null ) {
+						result = H5CommonResponse.getNewInstance(false, "商品不存在！").toString();
+					}
 					
 					// to check if this user already subscribed this goods if
 					// yes then "已经预约不能重复预约"else"预约成功"
-					if (afGoodsDoubleEggsUserService.isSubscribed(doubleGoodsId, userId) > 0) {
+					if (afGoodsDoubleEggsUserService.isSubscribed(tempDo.getRid(), userId) > 0) {
 						result = H5CommonResponse.getNewInstance(false, "已经预约过不能重复预约！").toString();
 						return result;
 					}
