@@ -534,7 +534,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                                 //先还临时额度再还使用额度
                                 backInterim = afInterimAuDo.getInterimUsed();
                                 afInterimAuDao.updateInterimUsed(repayment.getUserId(), backInterim.multiply(new BigDecimal(-1)));
-                                //增加线上使用额度
+                                //减少线上使用额度
                                 afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(), repayment.getUserId(), onlineAmount.subtract(backInterim).multiply(new BigDecimal(-1)));
                             }
                             //增加临时额度使用记录
@@ -546,7 +546,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                             afInterimDetailDo.setUserId(repayment.getUserId());
                             afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
                         } else {
-                            //增加线上使用额度
+                            //减少线上使用额度
                             afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),repayment.getUserId(), onlineAmount.multiply(new BigDecimal(-1)));
                         }
                     }

@@ -202,6 +202,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
 	@Resource
 	AfBorrowExtendDao afBorrowExtendDao;
+	@Resource
+	AfUserAccountSenceDao afUserAccountSenceDao;
 
 	@Override
 	public int getNoFinishOrderCount(Long userId) {
@@ -1786,10 +1788,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 						logger.info("dealBrandOrderRefund borrowAmount = {}", borrowAmount);
 
 						// 更新账户金额
-						BigDecimal usedAmount = BigDecimalUtil.subtract(accountInfo.getUsedAmount(),
-								calculateUsedAmount(borrowInfo));
-						accountInfo.setUsedAmount(usedAmount);
-						afUserAccountDao.updateOriginalUserAccount(accountInfo);
+						BigDecimal usedAmount = calculateUsedAmount(borrowInfo);
+						//减少线上使用额度
+						afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),accountInfo.getUserId(), usedAmount.multiply(new BigDecimal(-1)));
 						// 增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(
 								UserAccountLogType.AP_REFUND, borrowInfo.getAmount(), userId, borrowInfo.getRid()));
@@ -1831,10 +1832,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 									PayType.AGENT_PAY, StringUtils.EMPTY, null, "菠萝觅代付退款生成新账单" + borrowAmount.abs(),
 									refundSource, StringUtils.EMPTY));
 							// 修改用户账户信息
-							AfUserAccountDo account = new AfUserAccountDo();
-							account.setUsedAmount(borrowAmount);
-							account.setUserId(accountInfo.getUserId());
-							afUserAccountDao.updateUserAccount(account);
+							afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),accountInfo.getUserId(), borrowAmount);
 
 							afBorrowService.dealAgentPayBorrowAndBill(accountInfo.getUserId(),
 									accountInfo.getUserName(), borrowAmount, borrowInfo.getName(),
@@ -1880,11 +1878,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								new Object[] { newBorrowAmount, backAmount });
 
 						// 更新账户金额
-						BigDecimal userUsedAmount = afUserAccountDo.getUsedAmount();
 						BigDecimal thisTimeUsedAmount = calculateUsedAmount(afBorrowDo);
-						BigDecimal newUsedAmount = BigDecimalUtil.subtract(userUsedAmount, thisTimeUsedAmount);
-						afUserAccountDo.setUsedAmount(newUsedAmount);
-						afUserAccountDao.updateOriginalUserAccount(afUserAccountDo);
+						//减少线上使用额度
+						afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),afUserAccountDo.getUserId(), thisTimeUsedAmount.multiply(new BigDecimal(-1)));
 						// 增加Account记录
 						afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(
 								UserAccountLogType.CP_REFUND, afBorrowDo.getAmount(), userId, afBorrowDo.getRid()));
@@ -1918,10 +1914,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 									PayType.COMBINATION_PAY, StringUtils.EMPTY, null, "组合支付退款生成新账单" + backAmount.abs(),
 									refundSource, StringUtils.EMPTY));
 							// 修改用户账户信息
-							AfUserAccountDo account = new AfUserAccountDo();
-							account.setUsedAmount(backAmount);
-							account.setUserId(afUserAccountDo.getUserId());
-							afUserAccountDao.updateUserAccount(account);
+							afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),afUserAccountDo.getUserId(), backAmount);
 
 							afBorrowService.dealAgentPayBorrowAndBill(afUserAccountDo.getUserId(),
 									afUserAccountDo.getUserName(), backAmount.abs(), afBorrowDo.getName(),
