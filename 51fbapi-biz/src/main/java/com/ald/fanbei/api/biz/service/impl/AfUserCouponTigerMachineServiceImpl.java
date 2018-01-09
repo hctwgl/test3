@@ -84,6 +84,8 @@ public class AfUserCouponTigerMachineServiceImpl extends ParentServiceImpl<AfUse
 			if (originalTime > 0) {
 				if (type.equals("DAILY")) {
 					//TODO:updateOneTimeDaily
+					AfUserCouponTigerMachineDo tigerMachineDo = new AfUserCouponTigerMachineDo();
+					
 				}else{
 					//TODO:updateOneTimeShop
 				}
