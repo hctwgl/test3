@@ -369,6 +369,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		repayDealBo.curSumRebateAmount = repayDealBo.curSumRebateAmount.add(repaymentDo.getRebateAmount());
 		repayDealBo.curUserCouponId = repaymentDo.getUserCouponId();
 		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(repaymentDo.getRepaymentAmount());
+		repayDealBo.curCardName = repaymentDo.getCardName();
 		repayDealBo.curCardNo = repaymentDo.getCardNumber();
 		repayDealBo.curName = repaymentDo.getName();
 		
