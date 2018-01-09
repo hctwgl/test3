@@ -152,7 +152,18 @@
 				<value>/legalborrow/getCashPageType</value>
 				<value>/legalborrow/getBorrowLegalChargeInfo</value>
 				<value>/legalborrow/getOverdueStatus</value>
+				
+				<value>/legalborrowV2/getBorrowCashGoodInfo</value>
+				<value>/legalborrowV2/getLegalBorrowCashHomeInfo</value>
+				<value>/legalborrowV2/getCashPageType</value>
+				<value>/legalborrowV2/getOverdueStatus</value>
+				
 				<value>/order/dmNperEnabled</value>
+				<value>/legalborrowV2/getBorrowCashGoodInfo</value>
+				<value>/legalborrowV2/getLegalBorrowCashHomeInfo</value>
+				<value>/legalborrowV2/getCashPageType</value>
+				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
+				<value>/legalborrowV2/getOverdueStatus</value>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -514,6 +525,8 @@
 				<entry key="/legalborrowV2/confirmLegalRenewalPay" value-ref="confirmLegalRenewalPayV2Api" />
 				<entry key="/legalborrowV2/applyLegalRenewal" value-ref="applyLegalRenewalV2Api" />
 				<entry key="/legalborrowV2/getBorrowCashGoodInfo" value-ref="getBorrowCashGoodInfoV2Api" />
+				<entry key="/legalborrowV2/getLegalBorrowCashHomeInfo" value-ref="getLegalBorrowCashHomeInfoV2Api" />
+
 
 
 				<entry key="/goods/getHomeGoodsList" value-ref="getHomeGoodsListApi" />

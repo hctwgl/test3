@@ -99,18 +99,6 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZM_STATUS_EXPIRED);
         }
 
-        List<AfResourceDo> afResourceDoList = afResourceService.getConfigByTypes("PAY_ZFB");
-        List<AfResourceDo> afResourceDoList1 = afResourceService.getConfigByTypes("PAY_WX");
-        AfResourceDo zfbDo = null;
-        AfResourceDo wxDo = null;
-        if(afResourceDoList !=null && afResourceDoList.size()>0){
-            zfbDo = afResourceDoList.get(0);
-        }
-        if(afResourceDoList1 !=null && afResourceDoList1.size()>0){
-            wxDo = afResourceDoList1.get(0);
-        }
-
-
         if (borrowId == 0) {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
         }
@@ -157,11 +145,6 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
                 throw new FanbeiException("Nothing order can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
             }
 
-
-            // 续期天数
-            //AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
-            BigDecimal allowRenewalDay = new BigDecimal(7);// 允许续期天数
-            
             //续借需要支付本金
             BigDecimal capital =BigDecimal.ZERO;
 
@@ -176,15 +159,6 @@ public class ConfirmLegalRenewalPayV2Api implements ApiHandle {
     		BigDecimal borrowRateAmount = afBorrowCashDo.getRateAmount();
     		// 上期借款逾期费
     		BigDecimal borrowOverdueAmount = afBorrowCashDo.getOverdueAmount();
-
-    		// 本金（总） 
-    		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
-    		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
-    		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
-    		
-    		// 借款已还金额
-    		BigDecimal borrowRepayAmount = afBorrowCashDo.getRepayAmount();
-    		
 
     		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +本期订单金额)
     		BigDecimal orderAmount = afGoodsService.getGoodsById(goodsId).getSaleAmount();

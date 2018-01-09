@@ -50,9 +50,13 @@ public interface ApplyLegalBorrowCashService {
 
 	public void updateBorrowStatus(AfBorrowCashDo cashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
-	public Long addBorrowResult(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
+	public Long addBorrowRecord(AfBorrowCashDo afBorrowCashDo, AfBorrowLegalOrderDo afBorrowLegalOrderDo);
 
 	public RiskVerifyRespBo submitRiskReview(Long borrowId, String appType, String ipAddress,
 			ApplyLegalBorrowCashBo param, AfUserAccountDo accountDo, Long userId, AfBorrowCashDo afBorrowCashDo,String riskOrderNo);
+
+	public void updateBorrowStatus2Apply(Long borrowId, String riskOrderNo);
+
+	public void checkGenRecordError(Long borrowId);
 
 }
