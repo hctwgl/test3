@@ -104,12 +104,6 @@ public abstract class BaseController {
 			// 检查参 数是否为空
 			reqData = checkCommonParam(reqData, request, isForQQ);
 
-			// if (StringUtils.isBlank(reqData)) {
-			// exceptionresponse =
-			// buildErrorResult(FanbeExceptionCode.REQUEST_PARAM_NOT_EXIST,
-			// request);
-			// return JSON.toJSONString(exceptionresponse);
-			// }
 			// 解析参数（包括请求头中的参数和报文体中的参数）
 			requestDataVo = parseRequestData(reqData, request);
 
@@ -219,7 +213,6 @@ public abstract class BaseController {
 	 * @return
 	 */
 	private String browsingAndCertification(HttpServletRequest request, String reqData) {
-		// TODO Auto-generated method stub
 		String url = request.getRequestURI();
 		JSONObject result = JSONObject.parseObject(reqData);
 		if ("/brand/getBrandUrl".equals(url)) {

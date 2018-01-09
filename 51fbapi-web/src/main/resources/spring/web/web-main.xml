@@ -152,6 +152,12 @@
 				<value>/legalborrow/getCashPageType</value>
 				<value>/legalborrow/getBorrowLegalChargeInfo</value>
 				<value>/legalborrow/getOverdueStatus</value>
+				
+				<value>/legalborrowV2/getBorrowCashGoodInfo</value>
+				<value>/legalborrowV2/getLegalBorrowCashHomeInfo</value>
+				<value>/legalborrowV2/getCashPageType</value>
+				<value>/legalborrowV2/getOverdueStatus</value>
+				
 				<value>/order/dmNperEnabled</value>
 			</list>
 		</constructor-arg>

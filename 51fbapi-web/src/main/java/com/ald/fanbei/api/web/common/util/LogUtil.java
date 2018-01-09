@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +29,22 @@ public class LogUtil {
 	 * @param context
 	 */
 	public static void doMaidianLog(HttpServletRequest request, AfBorrowCashDo cashDo, RequestDataVo requestDataVo,
-			FanbeiContext context) {
+			FanbeiContext context,String ... exts) {
 		try {
-			// 获取可变参数
-			String ext1 = cashDo.getBorrowNo();
-			String ext2 = cashDo.getUserId() + "";
-			String ext3 = cashDo.getAmount() + "";
-			String ext4 = context.getAppVersion() + "";
+			String ext1 = StringUtils.EMPTY;
+			String ext2 = StringUtils.EMPTY;
+			String ext3 = StringUtils.EMPTY;
+			String ext4 = StringUtils.EMPTY;
+			try{
+				// 获取可变参数
+				ext1 = exts[0];
+				ext2 = exts[1];
+				ext3 = exts[2];
+				ext4 = exts[3];
+			} catch (Exception e){
+				// ignore error
+			}
+			
 			maidianLog.info(com.ald.fanbei.api.common.util.StringUtil.appendStrs("	",
 					DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT), "	",
 					com.ald.fanbei.api.common.util.StringUtil.judgeClientDeviceFlag(requestDataVo.getId()), "	rmtIP=",

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.common.exception;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 陈金虎 2017年1月16日 下午11:27:35
@@ -19,7 +20,7 @@ public class FanbeiException extends RuntimeException {
     //动态的异常，可以根据资源文件中配置
     private Boolean dynamicMsg;
     private String resourceType;
-    public HashMap<String,String> paramsMap=new HashMap();
+    public Map<String,String> paramsMap = new HashMap<String,String>();
     public FanbeiException() {
         super();
         errorCode = FanbeiExceptionCode.SYSTEM_ERROR;

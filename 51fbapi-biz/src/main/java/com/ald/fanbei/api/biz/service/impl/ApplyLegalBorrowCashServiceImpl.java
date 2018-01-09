@@ -492,7 +492,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	}
 
 	@Override
-	public Long addBorrowResult(final AfBorrowCashDo afBorrowCashDo,final AfBorrowLegalOrderDo afBorrowLegalOrderDo) {
+	public Long addBorrowRecord(final AfBorrowCashDo afBorrowCashDo,final AfBorrowLegalOrderDo afBorrowLegalOrderDo) {
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus ts) {
@@ -525,6 +525,23 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				borrowTime, "借钱", StringUtils.EMPTY, null, null, 0l,
 				afBorrowCashDo.getCardName(), null, "");
 		return verifyBo;
+	}
+
+	@Override
+	public void updateBorrowStatus2Apply(Long borrowId, String riskOrderNo) {
+		AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
+		delegateBorrowCashDo.setRid(borrowId);
+		delegateBorrowCashDo.setGmtModified(new Date());
+		delegateBorrowCashDo.setRishOrderNo(riskOrderNo);
+		delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.APPLY.getCode());
+		afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
+	}
+
+	@Override
+	public void checkGenRecordError(Long borrowId) {
+		if (borrowId == null) {
+			throw new FanbeiException(FanbeiExceptionCode.ADD_BORROW_CASH_INFO_FAIL);
+		}
 	}
 	
 	

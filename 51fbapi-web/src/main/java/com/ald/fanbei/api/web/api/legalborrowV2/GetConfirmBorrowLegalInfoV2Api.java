@@ -127,7 +127,7 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 				BigDecimal minAmount = new BigDecimal(rateInfoDo.getValue4());
 				BigDecimal maxAmount = new BigDecimal(rateInfoDo.getValue1());
 				if (param.getAmount().compareTo(minAmount) < 0 || param.getAmount().compareTo(maxAmount) > 0) {
-					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
+					throw new FanbeiException(FanbeiExceptionCode.APPLY_CASHED_AMOUNT_ERROR);
 				}
 			}
 
@@ -135,17 +135,17 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 			BigDecimal accountBorrow = calculateMaxAmount(usableAmount);
 			if (StringUtil.equals(authDo.getRiskStatus(), RiskStatus.YES.getCode())
 					&& accountBorrow.compareTo(param.getAmount()) < 0) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 			}
 
 			AfUserBankcardDo afUserBankcardDo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 			if (afUserBankcardDo == null) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 			}
 
 			boolean isCanBorrowCash = afBorrowCashService.isCanBorrowCash(userId);
 			if (!isCanBorrowCash) {
-				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
+				throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_STATUS_ERROR);
 			}
 
 			BigDecimal poundageRate = new BigDecimal(rate.get("poundage").toString());
@@ -155,7 +155,7 @@ public class GetConfirmBorrowLegalInfoV2Api extends GetBorrowCashBase implements
 				poundageRate = new BigDecimal(poundageRateCash.toString());
 			}
 			Integer day = NumberUtil.objToIntDefault(param.getType(), 0);
-			// FIXME 校验商品Id
+			//  校验商品Id
 			BigDecimal newRate = null;
 			if (rateInfoDo != null) {
 				String borrowRate = rateInfoDo.getValue2();
