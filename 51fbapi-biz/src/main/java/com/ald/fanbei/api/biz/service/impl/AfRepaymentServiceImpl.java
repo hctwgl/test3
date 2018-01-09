@@ -146,6 +146,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
     AfInterimAuDao afInterimAuDao;
     @Resource
     AfInterimDetailDao afInterimDetailDao;
+    @Resource
+    AfUserAccountSenceDao afUserAccountSenceDao;
 
     public void testbackDetail() {
         AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentById(94901l);
@@ -501,37 +503,52 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     AfBorrowBillDo houseBill = afBorrowBillDao.getBillHouseAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
                     BigDecimal houseAmount = houseBill == null ? BigDecimal.ZERO : houseBill.getPrincipleAmount();
                     BigDecimal backAmount = billDo.getPrincipleAmount().subtract(houseAmount);
-                    //获取临时额度
-                    AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(repayment.getUserId());
-                    if (afInterimAuDo == null) {
-                        afInterimAuDo = new AfInterimAuDo();
-                        afInterimAuDo.setInterimAmount(new BigDecimal(0));
-                        afInterimAuDo.setInterimUsed(new BigDecimal(0));
+                    //获取培训账单
+                    AfBorrowBillDo trainBill = afBorrowBillDao.getBillTrainAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
+                    BigDecimal trainAmount = trainBill == null ? BigDecimal.ZERO : trainBill.getPrincipleAmount();
+                    //还培训额度
+                    if(trainAmount.compareTo(BigDecimal.ZERO) == 1) {
+                        //减少培训使用额度
+                        afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.TRAIN.getCode(),account.getUserId(),trainAmount.multiply(new BigDecimal(-1)));
                     }
-                    //判断临时额度是否使用
-                    if (afInterimAuDo.getInterimUsed().compareTo(BigDecimal.ZERO) == 1) {
-                        //还款金额是否大于使用的临时额度
-                        BigDecimal backInterim = BigDecimal.ZERO;
-                        if (afInterimAuDo.getInterimUsed().compareTo(backAmount) >= 0) {
-                            //还临时额度
-                            backInterim = backAmount;
-                            afInterimAuDao.updateInterimUsed(repayment.getUserId(), backInterim.multiply(new BigDecimal(-1)));
-                        } else {
-                            //先还临时额度再还使用额度
-                            backInterim = afInterimAuDo.getInterimUsed();
-                            afInterimAuDao.updateInterimUsed(repayment.getUserId(), backInterim.multiply(new BigDecimal(-1)));
-                            account.setUsedAmount(backAmount.subtract(backInterim).multiply(new BigDecimal(-1)));
+                    //线上账单金额（总金额-培训金额）
+                    BigDecimal onlineAmount = backAmount.subtract(trainAmount);
+                    //还线上额度
+                    if(onlineAmount.compareTo(BigDecimal.ZERO) == 1) {
+                        //获取临时额度
+                        AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(repayment.getUserId());
+                        if (afInterimAuDo == null) {
+                            afInterimAuDo = new AfInterimAuDo();
+                            afInterimAuDo.setInterimAmount(new BigDecimal(0));
+                            afInterimAuDo.setInterimUsed(new BigDecimal(0));
                         }
-                        //增加临时额度使用记录
-                        AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
-                        afInterimDetailDo.setAmount(backInterim);
-                        afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().subtract(backInterim));
-                        afInterimDetailDo.setType(2);
-                        afInterimDetailDo.setOrderId(new Long(0));
-                        afInterimDetailDo.setUserId(repayment.getUserId());
-                        afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
-                    } else {
-                        account.setUsedAmount(backAmount.multiply(new BigDecimal(-1)));
+                        //判断临时额度是否使用
+                        if (afInterimAuDo.getInterimUsed().compareTo(BigDecimal.ZERO) == 1) {
+                            //还款金额是否大于使用的临时额度
+                            BigDecimal backInterim = BigDecimal.ZERO;
+                            if (afInterimAuDo.getInterimUsed().compareTo(onlineAmount) >= 0) {
+                                //还临时额度
+                                backInterim = onlineAmount;
+                                afInterimAuDao.updateInterimUsed(repayment.getUserId(), backInterim.multiply(new BigDecimal(-1)));
+                            } else {
+                                //先还临时额度再还使用额度
+                                backInterim = afInterimAuDo.getInterimUsed();
+                                afInterimAuDao.updateInterimUsed(repayment.getUserId(), backInterim.multiply(new BigDecimal(-1)));
+                                //增加线上使用额度
+                                afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(), repayment.getUserId(), onlineAmount.subtract(backInterim).multiply(new BigDecimal(-1)));
+                            }
+                            //增加临时额度使用记录
+                            AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
+                            afInterimDetailDo.setAmount(backInterim);
+                            afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().subtract(backInterim));
+                            afInterimDetailDo.setType(2);
+                            afInterimDetailDo.setOrderId(new Long(0));
+                            afInterimDetailDo.setUserId(repayment.getUserId());
+                            afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
+                        } else {
+                            //增加线上使用额度
+                            afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),repayment.getUserId(), onlineAmount.multiply(new BigDecimal(-1)));
+                        }
                     }
 //					account.setUsedAmount(billDo.getPrincipleAmount().multiply(new BigDecimal(-1)));
                     account.setRebateAmount(repayment.getRebateAmount().multiply(new BigDecimal(-1)));

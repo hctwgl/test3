@@ -987,6 +987,7 @@ public class RiskUtil extends AbstractThird {
         if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
             //教育培训订单
             if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
+                //增加培训使用额度
                 afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.TRAIN.getCode(),orderInfo.getUserId(),borrow.getAmount());
             }
         } else {    //线上分期订单
@@ -997,7 +998,7 @@ public class RiskUtil extends AbstractThird {
             if (useableAmount.compareTo(borrow.getAmount()) == -1) {
                 BigDecimal usedInterim = BigDecimal.ZERO;
                 if (useableAmount.compareTo(BigDecimal.ZERO) == 1) {
-                    //修改线上分期额度
+                    //增加线上使用额度
                     afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),useableAmount);
                     //增加临时使用额度
                     usedInterim = borrow.getAmount().subtract(useableAmount);
@@ -1016,7 +1017,7 @@ public class RiskUtil extends AbstractThird {
                 afInterimDetailDo.setUserId(orderInfo.getUserId());
                 afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
             } else {
-                //修改线上分期额度
+                //增加线上使用额度
                 afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(),borrow.getAmount());
             }
         }
