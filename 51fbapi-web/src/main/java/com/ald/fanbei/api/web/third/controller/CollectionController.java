@@ -484,7 +484,7 @@ public class CollectionController {
                 return updteBo;
             }
         } catch (Exception e) {
-            logger.error("sign and sign is fail,borrowNo=" + borrowNo);
+            logger.error("unknow exception :" ,e);
             updteBo.setCode(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getCode());
             updteBo.setMsg(FanbeiThirdRespCode.COLLECTION_REQUEST_SIGN.getMsg());
             return updteBo;
