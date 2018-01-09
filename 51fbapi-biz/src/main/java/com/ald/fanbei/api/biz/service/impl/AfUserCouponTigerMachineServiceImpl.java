@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
@@ -83,17 +85,41 @@ public class AfUserCouponTigerMachineServiceImpl extends ParentServiceImpl<AfUse
 			int originalTime = this.getTotalTimesByUserId(userId);
 			if (originalTime > 0) {
 				if (type.equals("DAILY")) {
-					//TODO:updateOneTimeDaily
+					//updateOneTimeDaily
 					AfUserCouponTigerMachineDo tigerMachineDo = new AfUserCouponTigerMachineDo();
+					tigerMachineDo.setUserId(userId);
+					tigerMachineDo = afUserCouponTigerMachineDao.getByCommonCondition(tigerMachineDo);
+					tigerMachineDo.setDailyTime(1);
+					afUserCouponTigerMachineDao.updateById(tigerMachineDo);
 					
 				}else{
-					//TODO:updateOneTimeShop
+					//updateOneTimeShop
+					AfUserCouponTigerMachineDo tigerMachineDo = new AfUserCouponTigerMachineDo();
+					tigerMachineDo.setUserId(userId);
+					tigerMachineDo = afUserCouponTigerMachineDao.getByCommonCondition(tigerMachineDo);
+					tigerMachineDo.setShopingTime(tigerMachineDo.getShopingTime() + 1);
+					afUserCouponTigerMachineDao.updateById(tigerMachineDo);
 				}
 			}else{
 				if (type.equals("DAILY")) {
 					//TODO:InsertOneTimeDaily
+					AfUserCouponTigerMachineDo tigerMachineDo = new AfUserCouponTigerMachineDo();
+					tigerMachineDo.setDailyTime(1);
+					tigerMachineDo.setGmtCreate(new Date());
+					tigerMachineDo.setGmtModified(new Date());
+					tigerMachineDo.setShopingTime(0);
+					tigerMachineDo.setUserId(userId);
+					afUserCouponTigerMachineDao.saveRecord(tigerMachineDo);
+					
 				}else{
-					//TODO:InsertOneTimeShop
+					//InsertOneTimeShop
+					AfUserCouponTigerMachineDo tigerMachineDo = new AfUserCouponTigerMachineDo();
+					tigerMachineDo.setDailyTime(1);
+					tigerMachineDo.setGmtCreate(new Date());
+					tigerMachineDo.setGmtModified(new Date());
+					tigerMachineDo.setShopingTime(1);
+					tigerMachineDo.setUserId(userId);
+					afUserCouponTigerMachineDao.saveRecord(tigerMachineDo);
 				}
 			}
 			return 0;
