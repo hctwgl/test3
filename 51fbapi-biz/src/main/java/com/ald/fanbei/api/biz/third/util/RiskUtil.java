@@ -697,12 +697,12 @@ public class RiskUtil extends AbstractThird {
      * @param virtualCode 虚拟值
      * @return
      */
-    public Map<String, Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final Map<String, Object> virtualMap) throws FanbeiException {
+    public Map<String, Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final Map<String, Object> virtualMap,AfOrderDo orderInfo) throws FanbeiException {
         String result = verifybo.getResult();
 
         logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
         // 添加一个根据风控号查找记录的方法
-        AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+        //AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
         // 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
         logger.info("risk_result =" + result);
         AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());

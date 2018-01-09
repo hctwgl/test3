@@ -1076,7 +1076,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 							// #region add by honghzengpei
 							// afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
 							// #endregion
-							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap);
+							return riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap,orderInfo);
 						}
 
 						// verybo.getResult()=10,则成功，活动返利
