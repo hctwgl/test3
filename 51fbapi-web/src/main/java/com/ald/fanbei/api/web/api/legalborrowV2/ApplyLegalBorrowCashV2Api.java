@@ -41,7 +41,6 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.common.util.LogUtil;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.ApplyLegalBorrowCashParam;
-import com.mysql.jdbc.StringUtils;
 
 /**
  * @author Jiang Rongbo 2017年3月25日下午1:06:18

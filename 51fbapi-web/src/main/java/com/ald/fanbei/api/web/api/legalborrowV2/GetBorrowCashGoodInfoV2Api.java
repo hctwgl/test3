@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.api.legalborrowV2;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
 import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
@@ -171,7 +169,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			
 			
 		}
-
+		respData.put("goodsInfoList", goodsInfoList);
 		logger.info("getBorrowCashGoodInfoApi process, userid => {} , resp data => {}", userId,
 				JSONObject.toJSONString(respData));
 		resp.setResponseData(respData);
