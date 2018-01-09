@@ -61,11 +61,13 @@ public class AfUserCouponTigerMachineServiceImpl extends ParentServiceImpl<AfUse
 						String log = String.format("afUserCouponTigerMachineService.grandCoupon() params: couponId = %L , userId = %L", couponId,userId);
 						logger.info(log);
 						//decrease time 
-						afUserCouponTigerMachineDao.decreaseOnce(userId);
+						int result1 = afUserCouponTigerMachineDao.decreaseOnce(userId);
 						//grand coupon
 						afUserCouponService.grantCoupon(userId, couponId, "SPRING_FESTIVAL_ACTIVITY", " ");
+						if (result1 == 1) {
+							result = true;
+						}
 						
-						result = true;
 						return result;
 						
 					} catch (Exception e) {
