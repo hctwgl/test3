@@ -555,12 +555,13 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
 			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(),
 					currDate);
+			afBorrowCashService.updateBorrowCash(cashDo);
 		} /*
 		 * else { cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.
 		 * getCode()); }
 		 */
 		
-		afBorrowCashService.updateBorrowCash(cashDo);
+
 	}
 
 	/**
