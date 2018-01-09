@@ -2039,7 +2039,8 @@ public class RiskUtil extends AbstractThird {
         RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
         reqBo.setConsumerNo(consumerNo);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-
+        HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
+        reqBo.setSummaryData(JSON.toJSONString(summaryData));
         String url = getUrl() + "/modules/api/risk/userRate.htm";
 //		String url = "http://192.168.110.22:80/modules/api/risk/userRate.htm";
         String reqResult = requestProxy.post(url, reqBo);
