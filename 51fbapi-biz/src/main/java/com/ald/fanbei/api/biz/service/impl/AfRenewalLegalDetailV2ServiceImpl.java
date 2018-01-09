@@ -46,7 +46,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderRepaymentDao;
@@ -57,9 +56,7 @@ import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
@@ -214,7 +211,6 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 					afRenewalDetailDo.setRid(renewalDetailId);
 					afRenewalDetailDo.setGmtModified(new Date());
 					afRenewalDetailDao.updateRenewalDetail(afRenewalDetailDo);
-					
 					
 					if(status.equals("N")){
 						// 获取新增的订单
@@ -529,8 +525,6 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 		}else{
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_RATE_ERROR);
 		}		
-
-        //---------
 		
 		// 上期借款手续费
 		BigDecimal borrowPoundage = BigDecimal.ZERO;
@@ -576,18 +570,15 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 		afRenewalDetailDo.setActualAmount(actualAmount);
 		afRenewalDetailDo.setPoundageRate(borrowCashPoundage);	// 借钱手续费率（日）
 		afRenewalDetailDo.setBaseBankRate(baseBankRate);	// 央行基准利率
-		
+		afRenewalDetailDo.setCardNumber("");
 		afRenewalDetailDo.setCapital(capital);
 		
 		if (cardId == -2) {
-			afRenewalDetailDo.setCardNumber("");
 			afRenewalDetailDo.setCardName(Constants.DEFAULT_USER_ACCOUNT);
 		} else if (cardId == -1) {
-			afRenewalDetailDo.setCardNumber("");
 			afRenewalDetailDo.setCardName(Constants.DEFAULT_WX_PAY_NAME);
 		}
 		else if(cardId ==-3){
-			afRenewalDetailDo.setCardNumber("");
 			afRenewalDetailDo.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		}
 		else {
