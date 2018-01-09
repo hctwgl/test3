@@ -472,13 +472,13 @@ public class RiskUtil extends AbstractThird {
      *                    增加里那个字段
      * @param SecSence    二级场景
      * @param ThirdSencem 三级场景
-     * @param orderid 订单号
+     * @param orderid     订单号
      * @return
      */
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -536,16 +536,16 @@ public class RiskUtil extends AbstractThird {
         reqBo.setSummaryData(JSON.toJSONString(summaryData));
         //12-13 弱风控加入订单信息
         HashMap summaryOrderData = new HashMap();
-        if(orderid > 0 ){
+        if (orderid > 0) {
             summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderid);
         }
-        if(borrow != null){
-            summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
-            summaryOrderData.put("freeNper",borrow.getFreeNper());
-            summaryOrderData.put("nperAmount",borrow.getNperAmount());
-            summaryOrderData.put("cardNumber",cardNo);
-            summaryOrderData.put("cardName",cardName);
-            summaryOrderData.put("payType",payType);
+        if (borrow != null) {
+            summaryOrderData.put("calculateMethod", borrow.getCalculateMethod());
+            summaryOrderData.put("freeNper", borrow.getFreeNper());
+            summaryOrderData.put("nperAmount", borrow.getNperAmount());
+            summaryOrderData.put("cardNumber", cardNo);
+            summaryOrderData.put("cardName", cardName);
+            summaryOrderData.put("payType", payType);
         }
         reqBo.setOrderInfo(JSON.toJSONString(summaryOrderData));
         reqBo.setReqExt("");
@@ -783,7 +783,7 @@ public class RiskUtil extends AbstractThird {
          * modify by hongzhengpei
          */
         if (VersionCheckUitl.getVersion().intValue() >= VersionCheckUitl.VersionZhangDanSecond) {
-            if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())|| orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
+            if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode()) || orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
                 afBorrowService.updateBorrowStatus(borrow, userAccountInfo.getUserName(), userAccountInfo.getUserId());
                 afBorrowService.dealAgentPayBorrowAndBill(borrow, userAccountInfo.getUserId(), userAccountInfo.getUserName(), orderInfo.getActualAmount(), PayType.AGENT_PAY.getCode(), orderInfo.getOrderType());
             } else if (orderInfo.getOrderType().equals(OrderType.AGENTBUY.getCode())) {
@@ -1137,7 +1137,7 @@ public class RiskUtil extends AbstractThird {
                     afUserAuthService.updateUserAuth(authDo);
 
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
-	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+                                                    如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
                     AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
                     if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
                         AfUserAccountDo accountDo = new AfUserAccountDo();
@@ -2433,4 +2433,54 @@ public class RiskUtil extends AbstractThird {
 
     }
 
+    public int onlinebankNotify(String code, String data, String msg, String signInfo) {
+        RiskOperatorNotifyReqBo reqBo = new RiskOperatorNotifyReqBo();
+        reqBo.setCode(code);
+        reqBo.setData(data);
+        reqBo.setMsg(msg);
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        logger.info(createLinkString(reqBo));
+        logThird(signInfo, "onlinebankNotify", reqBo);
+        if (StringUtil.equals(signInfo, reqBo.getSignInfo())) {// 验签成功
+            logger.info("onlinebankNotify process user account");
+            return 1;
+//            JSONObject obj = JSON.parseObject(data);
+//            String consumerNo = obj.getString("consumerNo");
+//            String result = obj.getString("result");// 10，成功；20，失败；30，用户信息不存在；40，用户信息不符
+//            if (StringUtil.equals("50", result)) {//不做任何更新
+//                return 0;
+//            }
+//            String limitAmount = obj.getString("amount");
+//            if (StringUtil.equals(limitAmount, "") || limitAmount == null)
+//                limitAmount = "0";
+//            BigDecimal au_amount = new BigDecimal(limitAmount);
+//
+//            AfUserAuthDo auth = new AfUserAuthDo();
+//            auth.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+//            auth.setGmtChsi(new Date(System.currentTimeMillis()));
+//            AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+//
+//            if (StringUtil.equals("10", result)) {
+//                auth.setChsiStatus(YesNoStatus.YES.getCode());
+//				/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+//				     如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+//                if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+//                    auth.setRiskStatus(RiskStatus.YES.getCode());
+//                    AfUserAccountDo accountDo = new AfUserAccountDo();
+//                    accountDo.setUserId(NumberUtil.objToLongDefault(consumerNo, 0l));
+//                    accountDo.setAuAmount(au_amount);
+//                    afUserAccountService.updateUserAccount(accountDo);
+//                }
+//                jpushService.chsiRiskSuccess(userAccountDo.getUserName());
+//            } else if (StringUtil.equals("20", result)) {//20是认证未通过 风控返回错误
+//                auth.setChsiStatus(YesNoStatus.NO.getCode());
+//                jpushService.chsiRiskFail(userAccountDo.getUserName());
+//            } else if (StringUtil.equals("21", result)) {//21是认证失败 魔蝎返回错误
+//                auth.setChsiStatus("A");
+//                jpushService.chsiRiskFault(userAccountDo.getUserName());
+//            }
+//            return afUserAuthService.updateUserAuth(auth);
+        }
+        return 0;
+    }
 }

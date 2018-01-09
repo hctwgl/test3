@@ -132,6 +132,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		data.put("contactorModel", contactorModel);
 		data.put("realNameStatus", authDo.getRealnameStatus());
 		data.put("bankCardStatus", authDo.getBankcardStatus());
+
 		// 3.6.7是否显示运营图片
 //		if(StringUtil.equals(authDo.getRiskStatus(), RiskStatus.A.getCode())){
 //			data.put("isShowImage", "N");
@@ -261,7 +262,7 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		data.put("alipayStatus", authDo.getAlipayStatus());
 		data.put("chsiStatus", authDo.getChsiStatus());
 		data.put("zhengxinStatus", authDo.getZhengxinStatus());
-
+		data.put("onlinebankStatus", authDo.getOnlinebankStatus());
 
 		//添加是否已发起过公积金认证，来区分对应状态是初始化还是之前认证失败
 		if (authDo.getGmtFund() != null) {
@@ -300,7 +301,12 @@ public class GetCreditPromoteInfoV1Api implements ApiHandle {
 		} else {
 			data.put("gmtZhengxinExist", YesNoStatus.NO.getCode());
 		}
-
+		//添加是否已发起过网银认证，来区分对应状态是初始化还是之前认证失败
+		if (authDo.getGmtOnlinebank() != null) {
+			data.put("gmtOnlinebankExist", YesNoStatus.YES.getCode());
+		} else {
+			data.put("gmtOnlinebankExist", YesNoStatus.NO.getCode());
+		}
 		data.put("isSkipH5", isSkipH5);
 
 		return data;

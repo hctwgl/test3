@@ -291,6 +291,9 @@
 				<entry key="/auth/authMobile" value-ref="authMobileApi" />
 				<entry key="/auth/authContactor" value-ref="authContactorApi" />
 				<entry key="/auth/authChsi" value-ref="authChsiApi" />
+				<!--新增网银-->
+				<entry key="/auth/authOnlinebank" value-ref="authOnlinebankApi" />
+
 				<entry key="/auth/authZhengxin" value-ref="authZhengxinApi" />
 				<entry key="/auth/authLocation" value-ref="authLocationApi" />
 				<entry key="/auth/authMobileBack" value-ref="authMobileBackApi" />

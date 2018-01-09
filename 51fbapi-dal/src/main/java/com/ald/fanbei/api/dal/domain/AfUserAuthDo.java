@@ -60,7 +60,8 @@ public class AfUserAuthDo extends AbstractSerial {
 	private String chsiStatus; //学信网认证
 	private Date gmtZhengxin;
 	private String zhengxinStatus;
-
+	private Date gmtOnlinebank;
+	private String onlinebankStatus;
 	public String getBasicStatus() {
 		return basicStatus;
 	}
@@ -374,5 +375,20 @@ public class AfUserAuthDo extends AbstractSerial {
 	public void setZhengxinStatus(String zhengxinStatus) {
 		this.zhengxinStatus = zhengxinStatus;
 	}
-	
+
+	public Date getGmtOnlinebank() {
+		return gmtOnlinebank;
+	}
+
+	public void setGmtOnlinebank(Date gmtOnlinebank) {
+		this.gmtOnlinebank = gmtOnlinebank;
+	}
+
+	public String getOnlinebankStatus() {
+		return onlinebankStatus;
+	}
+
+	public void setOnlinebankStatus(String onlinebankStatus) {
+		this.onlinebankStatus = onlinebankStatus;
+	}
 }

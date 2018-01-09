@@ -245,7 +245,27 @@ public class RiskController {
 			return "ERROR";
 		}
 	}
-	
+	/**
+	 *网银认证异步回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = { "/onlinebank" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String wangyin(HttpServletRequest request, HttpServletResponse response) {
+		String code = request.getParameter("code");
+		String data = request.getParameter("data");
+		String msg = request.getParameter("msg");
+		String signInfo = request.getParameter("signInfo");
+		logger.info("deal wangyin begin,code=" + code + ",data=" + data);
+		if (TRADE_STATUE_SUCC.equals(code)) {
+			riskUtil.onlinebankNotify(code, data, msg, signInfo);
+			return "SUCCESS";
+		} else {
+			return "ERROR";
+		}
+	}
 	
 	/**
 	 * 征信
