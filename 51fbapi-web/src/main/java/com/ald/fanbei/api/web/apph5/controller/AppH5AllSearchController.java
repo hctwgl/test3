@@ -132,6 +132,7 @@ public class AppH5AllSearchController extends BaseController {
 
 			// get selfSupport goods
 			List<AfGoodsDo> orgSelfGoodlist = afGoodsService.getAvaliableSelfGoods(query);
+			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {}", orgSelfGoodlist.size());
 			int totalCount = query.getTotalCount();
 			int totalPage = query.getTotalPage();
 
@@ -142,7 +143,8 @@ public class AppH5AllSearchController extends BaseController {
 			data.put("goodsList", goodsList);
 			data.put("totalCount", totalCount);
 			data.put("totalPage", totalPage);
-
+			
+			logger.info("/appH5Goods/searchGoods orgSelfGoodlist.size = {},goodsList = {}", orgSelfGoodlist.size(),goodsList.size());
 			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 		
 		} catch (Exception exception) {
