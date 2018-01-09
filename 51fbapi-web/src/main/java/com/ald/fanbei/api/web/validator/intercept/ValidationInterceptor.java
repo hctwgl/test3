@@ -96,7 +96,12 @@ public class ValidationInterceptor implements Interceptor, ApplicationContextAwa
 					ConstraintDescriptor<?> cd = validateResult.getConstraintDescriptor();
 					boolean legal = cd.isReportAsSingleViolation();
 					if (!legal) {
-						String transName = resourceBundle.getString(paramName);
+						String transName = StringUtils.EMPTY;
+						try{
+							transName = resourceBundle.getString(paramName);
+						} catch(Exception e) {
+							// ignore error
+						}
 						if(StringUtils.isNotEmpty(transName)) {
 							try {
 								paramName = new String(transName.getBytes("ISO-8859-1"), "UTF-8");
