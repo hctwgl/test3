@@ -29,6 +29,10 @@ public class Constants {
 	public static final int MINITS_OF_HALF_HOUR = 30;
 	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
+	
+	//51公积金token失效时间
+	public static final long SECOND_OF_ONE_HALF_HOUR =90 * 60l;//一个半小时
+	
 	// 商品详情图片信息包含数据总计部分
 	public static final int GOODSDETAIL_PIC_PARTS = 3;
 	// 自营商品超时支付时间-小时
@@ -446,4 +450,8 @@ public class Constants {
 	  public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
+	  
+	  //51公积金token
+	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";	
+	  
 }
