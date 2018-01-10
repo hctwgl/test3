@@ -176,7 +176,7 @@ public class BoluomeUtil extends AbstractThird {
 	BoluomeOrderSearchRequestBo reqBo = new BoluomeOrderSearchRequestBo();
 	String appKey = AesUtil.decrypt(ConfigProperties.get(Constants.CONFKEY_BOLUOME_APPKEY), ConfigProperties.get(Constants.CONFKEY_AES_KEY));
 	reqBo.setOrderId(thirdOrderNo);
-	reqBo.setTimestamp(System.currentTimeMillis());
+	reqBo.setTimestamp(System.currentTimeMillis()/1000);
 	reqBo.setSign(BoluomeCore.builOrderSign(reqBo));
 	reqBo.setAppKey(appKey);
 	logger.info("OrderSearch begin, reqBo = {}", reqBo);
