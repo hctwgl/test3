@@ -938,7 +938,10 @@
 			</if>	
 			<if test="lng != null">
 			    ,lng=#{lng}
-			</if>	
+			</if>
+			<if test="gpsAddress != null">
+				,gps_address=#{gpsAddress}
+			</if>
 		WHERE id = #{rid}
 	</update>
 	
