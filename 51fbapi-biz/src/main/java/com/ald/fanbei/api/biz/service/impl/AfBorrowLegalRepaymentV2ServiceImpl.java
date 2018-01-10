@@ -164,7 +164,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	@Override
 	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
 				String repayType, String repayTime, String repayAmount,
-				String restAmount, String outTradeNo, String isBalance) {
+				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator) {
 		checkOfflineRepayment(cashDo, repayAmount, outTradeNo);
 		
 		RepayBo bo = new RepayBo();
@@ -179,10 +179,11 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
 		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
 		bo.outTradeNo = outTradeNo;
-		
+		bo.cardNo = repayCardNum;
+		bo.repayType = repayType;
 		generateRepayRecords(bo);
-		
-		dealRepaymentSucess(bo.tradeNo, "", bo.borrowRepaymentDo);
+
+		dealRepaymentSucess(bo.tradeNo, "", bo.borrowRepaymentDo,operator);
 		
 	}
 	
@@ -193,18 +194,17 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	 * @return
 	 */
 	@Override
-    public void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo) {
+    public void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo,String operator) {
     	try {
     		lock(tradeNo);
     		
             logger.info("dealRepaymentSucess process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",borrowRepayment=" + JSON.toJSONString(repaymentDo) );
             
             preCheck(repaymentDo, tradeNo);
-            
+			repaymentDo.setOperator(operator);
             final RepayDealBo repayDealBo = new RepayDealBo();
             repayDealBo.curTradeNo = tradeNo;
             repayDealBo.curOutTradeNo = outTradeNo;
-            
             long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
                 @Override
                 public Long doInTransaction(TransactionStatus status) {
@@ -237,7 +237,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	@Override
     public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
 		final AfRepaymentBorrowCashDo repaymentDo = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(tradeNo);
-        dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo);
+        dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo,null);
     }
     
     /**
@@ -301,7 +301,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     	String name = bo.name;
 		
     	AfRepaymentBorrowCashDo borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
+				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 		
 		bo.borrowRepaymentDo = borrowRepaymentDo;
@@ -363,7 +363,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		if(repaymentDo == null) return;
 		
 		AfBorrowCashDo cashDo = afBorrowCashService.getBorrowCashByrid(repaymentDo.getBorrowId());
-		
+		cashDo.setRemark(repaymentDo.getOperator());
 		repayDealBo.curRepayAmoutStub = repaymentDo.getRepaymentAmount();
 		repayDealBo.curRebateAmount = repaymentDo.getRebateAmount();
 		repayDealBo.curSumRebateAmount = repayDealBo.curSumRebateAmount.add(repaymentDo.getRebateAmount());
@@ -372,7 +372,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		repayDealBo.curCardName = repaymentDo.getCardName();
 		repayDealBo.curCardNo = repaymentDo.getCardNumber();
 		repayDealBo.curName = repaymentDo.getName();
-		
+
 		repayDealBo.cashDo = cashDo;
 		repayDealBo.overdueDay = cashDo.getOverdueDay();
 		repayDealBo.borrowNo = cashDo.getBorrowNo();
@@ -650,7 +650,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	
 	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
 			BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow, 
-			Long borrowId, Long cardId, String payTradeNo, String name, Long userId) {
+			Long borrowId, Long cardId, String payTradeNo, String name, Long userId,String repayType,String cardNo) {
 		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
@@ -675,8 +675,13 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (cardId == -4) {
-			repay.setCardNumber("");
-			repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
+			repay.setCardNumber(cardNo);
+			if ("alipay".equals(repayType)){
+				repay.setCardName("支付宝");
+			}else if ("bank".equals(repayType)){
+				repay.setCardName("银行卡");
+			}
+//			repay.setCardName(repayType);
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			repay.setCardNumber(bank.getCardNumber());
@@ -706,6 +711,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		public AfUserAccountDo userDo;
 		public String remoteIp;
 		public String name;
+		public String repayType;
 		/* biz 业务处理字段 */
 		
 		/* Response字段 */

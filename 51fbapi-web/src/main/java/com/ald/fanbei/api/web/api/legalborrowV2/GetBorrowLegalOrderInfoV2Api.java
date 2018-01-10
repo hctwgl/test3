@@ -67,8 +67,7 @@ public class GetBorrowLegalOrderInfoV2Api implements ApiHandle {
 		query.setPageNo(pageNo);
 		// 查询用户订单记录
 		List<AfBorrowLegalOrderDo> borrowLegalOrdersList = afBorrowLegalOrderService.getUserBorrowLegalOrderList(query);
-		List<Map<String, Object>> orderListV1 = Lists.newArrayList();
-		List<Map<String, Object>> orderListV2 = Lists.newArrayList();
+		List<Map<String, Object>> orderList = Lists.newArrayList();
 		for (AfBorrowLegalOrderDo borrowLegalOrderDo : borrowLegalOrdersList) {
 			Map<String, Object> orderInfoMap = Maps.newHashMap();
 			Long orderId = borrowLegalOrderDo.getRid();
@@ -86,27 +85,30 @@ public class GetBorrowLegalOrderInfoV2Api implements ApiHandle {
 
 			AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService
 					.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
-			if( legalOrderCash != null) {//没有cash 就是V2版本的
+			if( legalOrderCash != null) {//有cash 就是V1版本的
 				orderInfoMap.put("borrowStatus", legalOrderCash.getStatus());
-				orderListV1.add(orderInfoMap);
-			}else{//有cash就是V1版本的
-				orderListV2.add(orderInfoMap);
+				orderInfoMap.put("source","V1");
+				orderList.add(orderInfoMap);
+			}else{//没有cash就是V2版本的
+				orderInfoMap.put("source","V2");
+				orderList.add(orderInfoMap);
 			}
 
 		}
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-		if(afBorrowCashDo != null){
-			if(StringUtils.equals(AfBorrowCashStatus.finsh.getCode(),afBorrowCashDo.getStatus()) || StringUtils.equals(AfBorrowCashStatus.closed.getCode(),afBorrowCashDo.getStatus())){
-				data.put("orderList", orderListV2);
-			}else {
-				AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
-				if(legalOrderCash != null){
-					data.put("orderList", orderListV1);
-				}else {
-					data.put("orderList", orderListV2);
-				}
-			}
-		}
+//		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
+//		if(afBorrowCashDo != null){
+//			if(StringUtils.equals(AfBorrowCashStatus.finsh.getCode(),afBorrowCashDo.getStatus()) || StringUtils.equals(AfBorrowCashStatus.closed.getCode(),afBorrowCashDo.getStatus())){
+//				data.put("orderList", orderListV2);
+//			}else {
+//				AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+//				if(legalOrderCash != null){
+//					data.put("orderList", orderListV1);
+//				}else {
+//					data.put("orderList", orderListV2);
+//				}
+//			}
+//		}
+		data.put("orderList", orderList);
 		resp.setResponseData(data);
 		return resp;
 	}

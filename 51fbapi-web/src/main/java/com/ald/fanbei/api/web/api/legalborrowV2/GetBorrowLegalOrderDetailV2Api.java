@@ -141,7 +141,7 @@ public class GetBorrowLegalOrderDetailV2Api implements ApiHandle {
 				}
 				afBorrowLegalOrderDeatilVo.setExistRepayingMoney(existRepayingMoney);
 			}
-			afBorrowLegalOrderDeatilVo.setEdition("1");
+			afBorrowLegalOrderDeatilVo.setEdition("V1");
 		}else{//v2版本
 			if (afBorrowLegalOrderDo != null) {
 				afBorrowLegalOrderDeatilVo.setDeliveryPhone(afBorrowLegalOrderDo.getDeliveryPhone());
@@ -154,7 +154,7 @@ public class GetBorrowLegalOrderDetailV2Api implements ApiHandle {
 				afBorrowLegalOrderDeatilVo.setGmtCreate(afBorrowLegalOrderDo.getGmtCreate());
 				afBorrowLegalOrderDeatilVo.setGmtDeliver(afBorrowLegalOrderDo.getGmtDeliver());
 				afBorrowLegalOrderDeatilVo.setStatus(afBorrowLegalOrderDo.getStatus());
-				afBorrowLegalOrderDeatilVo.setEdition("2");
+				afBorrowLegalOrderDeatilVo.setEdition("V2");
 				// 获取商品ID
 				Long goodsId = afBorrowLegalOrderDo.getGoodsId();
 				AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
