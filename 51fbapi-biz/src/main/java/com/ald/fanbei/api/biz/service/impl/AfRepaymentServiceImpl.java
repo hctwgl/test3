@@ -543,24 +543,10 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     }
 //					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, billDo.getPrincipleAmount(), repayment.getUserId(), repayment.getRid()));
                     afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT, backAmount, repayment.getUserId(), repayment.getRid()));
-                    dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
-
-                    //还款成功同步逾期订单
-                    dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
-
-//					AfRepaymentDetalDo afRepaymentDetalDo = afRepaymentDetalDao.getRepaymentDetalByTypeAndId(repayment.getRid(),1);
-//					if(afRepaymentDetalDo !=null){
-//						//回写返利
-//						AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-//						afUserAccountDo.setRebateAmount(afRepaymentDetalDo.getAmount());
-//						afUserAccountDo.setUserId(repayment.getUserId());
-//						afUserAccountDao.updateRebateAmount(afUserAccountDo);
-//						afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENT_OUT, afRepaymentDetalDo.getAmount(), repayment.getUserId(), repayment.getRid()));
-//					}
 
 
                     afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.SUCCESS, repayment);
-                    fenqiCuishouUtil.postReapymentMoney(repayment.getRid());
+
                     return 1l;
                 } catch (Exception e) {
                     status.setRollbackOnly();
@@ -572,7 +558,14 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
             }
         });
 
+        if(result==1){
+            dealWithRaiseAmount(repayment.getUserId(), repayment.getBillIds());
+            //还款成功同步逾期订单
+            dealWithSynchronizeOverdueOrder(repayment.getUserId(), repayment.getBillIds());
+            fenqiCuishouUtil.postReapymentMoney(repayment.getRid());
+        }
         if (result == 1 && isNeedNoticeMsg) {
+
             //回调成功发送还款成功短信
             sendSuccessMessage(repayment.getUserId(), repayment.getName());
         }
