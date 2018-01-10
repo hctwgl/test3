@@ -219,6 +219,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends BaseService implements Af
 						//关闭新增订单记录
 						if(borrowLegalOrderDo.getStatus().equals("UNPAID")){ // 只对新增订单操作
 							borrowLegalOrderDo.setStatus("CLOSED");
+							borrowLegalOrderDo.setGmtModified(new Date());
 							afBorrowLegalOrderDao.updateById(borrowLegalOrderDo);
 						}
 					}
