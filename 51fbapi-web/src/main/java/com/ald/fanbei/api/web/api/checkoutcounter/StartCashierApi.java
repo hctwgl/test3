@@ -260,8 +260,13 @@ public class StartCashierApi implements ApiHandle {
      * @return
      */
     private CashierTypeVo canConsume(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter) {
+        String scene = UserAccountSceneType.ONLINE.getCode();
+        //判断需要认证的场景
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            scene = orderInfo.getSecType();
+        }
         if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode())) {
-            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
+            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode(), scene);
         }
 
         //审核状态判定
@@ -270,7 +275,7 @@ public class StartCashierApi implements ApiHandle {
             AfResourceDo consumeMinResource = afResourceService.getSingleResourceBytype("CONSUME_MIN_AMOUNT");
             BigDecimal minAmount = consumeMinResource == null ? BigDecimal.ZERO : new BigDecimal(consumeMinResource.getValue());
             if (orderInfo.getActualAmount().compareTo(minAmount) < 0) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
+                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode(),scene);
             }
             //获取临时额度
             AfInterimAuDo afInterimAuDo = afInterimAuService.getByUserId(orderInfo.getUserId());
@@ -283,26 +288,22 @@ public class StartCashierApi implements ApiHandle {
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
             if (userabledAmount.compareTo(usabledMinAmount) < 0) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode());
+                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode(),scene);
             }
 
             if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 //额度不够
-                CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode());
+                CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode(),scene);
                 riskProcess(cashierTypeVo, orderInfo, userDto, usabledMinAmount, afInterimAuDo);
                 return cashierTypeVo;
             } else {
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
+                cashierTypeVo.setScene(scene);
                 riskProcess(cashierTypeVo, orderInfo, userDto, usabledMinAmount, afInterimAuDo);
                 return cashierTypeVo;
             }
         } else {
-            //判断需要认证的场景
-            if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode(), orderInfo.getSecType());
-            } else {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode(), UserAccountSceneType.ONLINE.getCode());
-            }
+            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode(), scene);
         }
     }
 
