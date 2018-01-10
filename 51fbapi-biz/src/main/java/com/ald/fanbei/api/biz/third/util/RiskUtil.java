@@ -15,7 +15,6 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.rebate.RebateContext;
 import com.ald.fanbei.api.biz.service.*;
-
 import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -2433,4 +2432,34 @@ public class RiskUtil extends AbstractThird {
 
     }
 
+
+	/**
+	 * @param data 51公积金返回的公积金信息信息
+	 * @param userId app端用户唯一标识
+	 * @param token 51公积金交互的token
+	 * @param orderSn 51公积金交互的订单号
+	 * @return 
+	 */
+	public RiskRespBo FundNotifyRisk(String data, String userId,String token, String orderSn) {
+		RiskNotifyReqBo reqBo = new RiskNotifyReqBo();
+		reqBo.setUserId(userId);
+        reqBo.setToken(token);
+        reqBo.setOrderSn(orderSn);
+        reqBo.setData(data);
+        String temp = String.valueOf(System.currentTimeMillis());
+        reqBo.setOrderNo(getOrderNo("fund", temp.substring(temp.length() - 4, temp.length())));
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        String reqResult = requestProxy.post(getUrl() + "/modules/api/risk/operator.htm", reqBo);
+        logThird(reqResult, "FundNotifyRisk", reqBo);
+        if (StringUtil.isBlank(reqResult)) {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+        }
+        RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskOperatorRespBo.class);
+        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
+            riskResp.setSuccess(true);
+            return riskResp;
+        } else {
+            throw new FanbeiException(FanbeiExceptionCode.RISK_VERIFY_ERROR);
+        }
+	}
 }

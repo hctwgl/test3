@@ -451,7 +451,9 @@ public class Constants {
 	  public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	  public static final String TRADE_CODE_INFO_DEFAULT_KEY = "default";
 	  
-	  //51公积金token
-	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";	
+	  //51公积金认证
+	  public static final String AUTH_51FUND_TOKEN = "auth_51fund_token";
+	  public static final String CONFKEY_51FUND_APPKEY = "fbapi.51fund.appkey";
+	  public static final String CONFKEY_51FUND_SECRET = "fbapi.51fund.secret";
 	  
 }
