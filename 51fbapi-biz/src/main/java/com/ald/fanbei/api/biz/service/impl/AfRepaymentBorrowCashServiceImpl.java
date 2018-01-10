@@ -219,47 +219,47 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
         if (cardId > 0) {
             dealChangStatus(payTradeNo, "", AfBorrowCashRepmentStatus.PROCESS.getCode(), repayment.getRid());
         }
-        return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
-            @Override
-            public Map<String, Object> doInTransaction(TransactionStatus status) {
-                try {
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    if (cardId == -1) {// 微信支付
-                        map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
-                    } else if (cardId > 0) {// 银行卡支付
-                        AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
-                        UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
-                                bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
-                        if (!respBo.isSuccess()) {
-                            if (StringUtil.isNotBlank(respBo.getRespCode())) {
-                                dealRepaymentFail(payTradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
-                            } else {
-                                dealRepaymentFail(payTradeNo, "", false, "");
-                            }
-                            throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-                        }
-                        map.put("resp", respBo);
-                    } else if (cardId == -2) {// 余额支付
-                        dealRepaymentSucess(repayment.getPayTradeNo(), "");
-                    }
-                    map.put("refId", repayment.getRid());
-                    map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
-                    return map;
-                } catch (Exception e) {
-                    if (e instanceof FanbeiException) {
-                        logger.error("createRepayment exist catch error,donot need rollback,payTradeNo=" + payTradeNo);
-                        Map<String, Object> map = new HashMap<String, Object>();
-                        map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
-                        map.put("refId", repayment.getRid());
-                        return map;
+        //return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+        // @Override
+        //public Map<String, Object> doInTransaction(TransactionStatus status) {
+        try {
+            Map<String, Object> map = new HashMap<String, Object>();
+            if (cardId == -1) {// 微信支付
+                map = UpsUtil.buildWxpayTradeOrder(payTradeNo, userId, name, actualAmount, PayOrderSource.REPAYMENTCASH.getCode());
+            } else if (cardId > 0) {// 银行卡支付
+                AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
+                UpsCollectRespBo respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", afUserAccountDo.getRealName(), bank.getMobile(), bank.getBankCode(),
+                        bank.getCardNumber(), afUserAccountDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", UserAccountLogType.REPAYMENTCASH.getCode());
+                if (!respBo.isSuccess()) {
+                    if (StringUtil.isNotBlank(respBo.getRespCode())) {
+                        dealRepaymentFail(payTradeNo, "", true, afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode()));
                     } else {
-                        logger.error("createRepayment exist error,need rollback,payTradeNo=" + payTradeNo, e);
-                        status.setRollbackOnly();
-                        throw e;
+                        dealRepaymentFail(payTradeNo, "", false, "");
                     }
+                    throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
                 }
+                map.put("resp", respBo);
+            } else if (cardId == -2) {// 余额支付
+                dealRepaymentSucess(repayment.getPayTradeNo(), "");
             }
-        });
+            map.put("refId", repayment.getRid());
+            map.put("type", UserAccountLogType.REPAYMENTCASH.getCode());
+            return map;
+        } catch (Exception e) {
+            if (e instanceof FanbeiException) {
+                logger.error("createRepayment exist catch error,donot need rollback,payTradeNo=" + payTradeNo);
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put(Constants.THIRD_REQ_EXCEP_KEY, e);
+                map.put("refId", repayment.getRid());
+                return map;
+            } else {
+                logger.error("createRepayment exist error,need rollback,payTradeNo=" + payTradeNo, e);
+                // status.setRollbackOnly();
+                throw e;
+            }
+        }
+        //}
+        //});
     }
 
 
