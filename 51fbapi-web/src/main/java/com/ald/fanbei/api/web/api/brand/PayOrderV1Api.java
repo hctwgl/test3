@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.web.api.brand;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -95,6 +98,8 @@ public class PayOrderV1Api implements ApiHandle {
     AfGoodsService afGoodsService;
     @Resource
     AfGoodsDoubleEggsService afGoodsDoubleEggsService;
+    @Resource
+    AfUserCouponTigerMachineService afUserCouponTigerMachineService;
     
 
     @Override
@@ -336,9 +341,17 @@ public class PayOrderV1Api implements ApiHandle {
             Object payStatus = result.get("status");
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {
-                	//----------------------------begin map:add one time for tiger machine---------------------------------
-                	
-                	
+                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
+                	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "INIT_HOME_PAGE");
+                	if (resourceDo != null) {
+                		Date current = new Date();
+                		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                		String strCurrent = sFormat.format(current);
+                		if (strCurrent.compareTo(resourceDo.getValue()) > 0 && strCurrent.compareTo(resourceDo.getValue1()) < 0 ) {
+                			afUserCouponTigerMachineService.addOneTime(userId, "SHOPPING");
+						}
+                		
+					}
                 	//----------------------------end map:add one time for tiger machine---------------------------------
                 	
                     //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
@@ -376,7 +389,6 @@ public class PayOrderV1Api implements ApiHandle {
         return resp;
     }
 
-    
     /**
 	 * 
 	 * @Title: double12GoodsCheck

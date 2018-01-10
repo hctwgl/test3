@@ -216,7 +216,9 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	AfBoluomeUserCouponService afBoluomeUserCouponService;
 	@Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
-
+	@Resource
+	AfUserCouponTigerMachineService afUserCouponTigerMachineService;
+ 
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
 		return orderDao.getOrderInfoByPayOrderNo(payTradeNo);
@@ -1548,6 +1550,21 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 			}
 		});
 		if (result == 1) {
+			
+		  	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
+        	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "INIT_HOME_PAGE");
+        	if (resourceDo != null) {
+        		Date current = new Date();
+        		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        		String strCurrent = sFormat.format(current);
+        		if (strCurrent.compareTo(resourceDo.getValue()) > 0 && strCurrent.compareTo(resourceDo.getValue1()) < 0 ) {
+        			afUserCouponTigerMachineService.addOneTime(orderInfo.getUserId(), "SHOPPING");
+				}
+        		
+			}
+        	//----------------------------end map:add one time for tiger machine---------------------------------
+			
+			
 			boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(),orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(),
 					PushStatus.PAY_SUC, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
 			// iPhonX预约
