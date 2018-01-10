@@ -88,8 +88,10 @@ public class GetBorrowLegalOrderInfoV2Api implements ApiHandle {
 					.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
 			if( legalOrderCash != null) {//没有cash 就是V2版本的
 				orderInfoMap.put("borrowStatus", legalOrderCash.getStatus());
+				orderInfoMap.put("source","V1");
 				orderListV1.add(orderInfoMap);
 			}else{//有cash就是V1版本的
+				orderInfoMap.put("source","V2");
 				orderListV2.add(orderInfoMap);
 			}
 
