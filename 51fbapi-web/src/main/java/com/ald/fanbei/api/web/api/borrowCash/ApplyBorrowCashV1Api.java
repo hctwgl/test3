@@ -378,6 +378,16 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 				cashDo.setGmtCreate(new Date(System.currentTimeMillis()));
 				cashDo.setRishOrderNo(riskOrderNo);
 				cashDo.setReviewStatus(AfBorrowCashReviewStatus.apply.getCode());
+
+				//region 01-08处理
+
+				afBorrowCashDo.setUserId(userId);
+				afBorrowCashDo.setGmtCreate(cashDo.getGmtCreate());
+				afBorrowCashDo.setRishOrderNo(cashDo.getRishOrderNo());
+				afBorrowCashDo.setReviewStatus(cashDo.getReviewStatus());
+
+				//endregion
+
 				afBorrowCashService.updateBorrowCash(cashDo);
 
 				SimpleDateFormat sdf = new SimpleDateFormat(
@@ -393,7 +403,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 						StringUtil.EMPTY_STRING, null, null,0l,card.getBankName(),null,"");
 
 				if (verybo.isSuccess()) {
-					delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(),
+					delegatePay(verybo.getConsumerNo(),afBorrowCashDo,
 							verybo.getResult());
 					// 加入借款埋点信息,来自哪个包等
 					doMaidianLog(request, afBorrowCashDo, requestDataVo,
@@ -450,7 +460,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 
 	}
 
-	private void delegatePay(String consumerNo, String orderNo, String result) {
+	private void delegatePay(String consumerNo, AfBorrowCashDo afBorrowCashDo, String result) {
 		Long userId = Long.parseLong(consumerNo);
 		AfBorrowCashDo cashDo = new AfBorrowCashDo();
 		// cashDo.setRishOrderNo(orderNo);
@@ -460,8 +470,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 				.parseLong(consumerNo));
 		AfUserAccountDo accountInfo = afUserAccountService
 				.getUserAccountByUserId(Long.parseLong(consumerNo));
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService
-				.getBorrowCashByRishOrderNo(orderNo);
 		cashDo.setRid(afBorrowCashDo.getRid());
 
 		AfUserBankcardDo card = afUserBankcardService
@@ -547,12 +555,13 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 			cashDo.setReviewDetails(AfBorrowCashReviewStatus.refuse.getName());
 			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(),
 					currDate);
+			afBorrowCashService.updateBorrowCash(cashDo);
 		} /*
 		 * else { cashDo.setReviewStatus(AfBorrowCashReviewStatus.waitfbReview.
 		 * getCode()); }
 		 */
 		
-		afBorrowCashService.updateBorrowCash(cashDo);
+
 	}
 
 	/**
@@ -627,6 +636,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 				poundageBig));
 		afBorrowCashDo.setPoundageRate(poundage);
 		afBorrowCashDo.setBaseBankRate(bankRate);
+		afBorrowCashDo.setRiskDailyRate(poundage);
 		return afBorrowCashDo;
 	}
 

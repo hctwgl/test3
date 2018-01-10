@@ -128,6 +128,24 @@
 		)
     </select>
 
+	<select id="getBillTrainAmountByIds" resultType="AfBorrowBillDo">
+		SELECT SUM(a.bill_amount) bill_amount,SUM(a.principle_amount) principle_amount,min(a.bill_year) bill_year,min(a.bill_month) bill_month,min(a.type) type,
+		min(a.borrow_no) borrow_no,min(a.name) name,count(1) count
+		FROM af_borrow_bill as a
+		INNER JOIN af_borrow as b ON a.borrow_id=b.id
+		INNER JOIN af_order as c ON b.order_id=c.id
+		INNER JOIN af_trade_order as d ON c.id=d.order_id
+		INNER JOIN af_trade_business_info as e ON d.business_id=e.id
+		INNER JOIN af_business_type as f ON e.type=f.id
+		WHERE a.is_delete=0  AND a.STATUS IN ('N','D')
+		AND c.order_type = 'TRADE' AND f.`code` = 'TRAIN'
+		AND a.id in (
+		<foreach collection="ids" item="item" index="index" separator="," >
+			#{item}
+		</foreach>
+		)
+	</select>
+
 	<select id="getBillHouseAmountByIds" resultType="AfBorrowBillDo">
 
 		SELECT SUM(b.bill_amount) bill_amount,SUM(b.principle_amount) principle_amount
@@ -441,7 +459,8 @@
        abb.interest_amount interestAmount,
        abb.overdue_interest_amount overdueInterestAmount,
        abb.poundage_amount poundageAmount,
-       abb.overdue_poundage_amount overduePoundageAmount
+       abb.overdue_poundage_amount overduePoundageAmount,
+       abb.gmt_pay_time lastRepayDay	
 	  FROM `af_borrow` ab 
 	  LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
 	 WHERE ab.`is_delete`= 0
@@ -508,7 +527,8 @@
 		abb.interest_amount interestAmount,
 		abb.overdue_interest_amount overdueInterestAmount,
 		abb.poundage_amount poundageAmount,
-		abb.overdue_poundage_amount overduePoundageAmount
+		abb.overdue_poundage_amount overduePoundageAmount,
+		abb.gmt_pay_time lastRepayDay	
 		FROM `af_borrow` ab
 		LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
 		WHERE ab.`is_delete`= 0

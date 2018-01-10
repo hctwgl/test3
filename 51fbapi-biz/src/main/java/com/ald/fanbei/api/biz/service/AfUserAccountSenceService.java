@@ -15,5 +15,14 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
 
     int updateUserSceneAuAmount(String scene, Long userId, BigDecimal auAmount);
 
+    AfUserAccountSenceDo getByUserIdAndType(String scene, Long userId);
+
+    /**
+     * 通过订单ID查询商圈类别code
+     * @param orderId
+     * @return
+     */
+    String getBusinessTypeByOrderId(Long orderId);
+
     AfUserAccountSenceDo getByUserIdAndScene(String scene, Long userId);
 }

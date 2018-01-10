@@ -123,6 +123,14 @@ public interface AfBorrowBillDao {
 	 */
 	public AfBorrowBillDo getBillAmountByIds(@Param("ids") List<String> ids);
 
+	/**
+	 * 获取培训账单金额,本金总额
+	 *
+	 * @param ids
+	 * @return
+	 */
+	AfBorrowBillDo getBillTrainAmountByIds(@Param("ids") List<String> ids);
+
 	AfBorrowBillDo getBillHouseAmountByIds(@Param("ids") List<String> ids);
 
 	/**

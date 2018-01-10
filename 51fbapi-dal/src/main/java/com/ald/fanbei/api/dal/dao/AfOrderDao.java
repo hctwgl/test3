@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -207,4 +208,5 @@ public interface AfOrderDao {
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(@Param("goodsId")Long goodsId,@Param("userId")Long userId);
 	Integer selectSumCountByGoodsIdAndType(AfOrderDo afOrderDo);
 
+	int updateAuAndUsed(@Param("orderId")Long orderId, @Param("auAmount")BigDecimal auAmount, @Param("usedAmount")BigDecimal usedAmount);
 }

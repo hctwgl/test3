@@ -938,7 +938,10 @@
 			</if>	
 			<if test="lng != null">
 			    ,lng=#{lng}
-			</if>	
+			</if>
+			<if test="gpsAddress != null">
+				,gps_address=#{gpsAddress}
+			</if>
 		WHERE id = #{rid}
 	</update>
 	
@@ -1133,4 +1136,14 @@
 		AND
 			user_id=#{userId}
 	</select>
+
+	<update id="updateAuAndUsed">
+		UPDATE
+		af_order
+		SET
+		au_amount = #{auAmount},
+		used_amount = #{usedAmount}
+		WHERE
+		id = #{orderId}
+	</update>
 </mapper>
