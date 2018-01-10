@@ -107,7 +107,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		SignType signType = null;
 		String sealData = map.get("personUserSeal");// 签章数据
 		fileName = "反呗合同";
-		type = "Multi";
+		type = "Single";
 		if ("Single".equalsIgnoreCase(type)) {
 			signType = SignType.Single;
 		} else if ("Multi".equalsIgnoreCase(type)) {
@@ -126,11 +126,12 @@ public class AfESdkServiceImpl implements AfESdkService {
 		// float width = Float.valueOf(map.get("sealWidth"));
 		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
 		int posX = 170;
-		int posY = 785;
+		int posY = 480;
 		int posType = 0;
-		int width = 159;
+		int width = 80;
 		boolean isQrcodeSign = false;
 		String key = map.get("key");
+//		key = "（借款人）：";
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
 		posPage = "6";
@@ -138,65 +139,9 @@ public class AfESdkServiceImpl implements AfESdkService {
 		pos.setPosType(posType);
 		pos.setPosX(posX);
 		pos.setPosY(posY);
+		pos.setWidth(width);
 		pos.setPosPage(posPage);
 		pos.setKey(key);
-		pos.setWidth(width);
-		pos.setQrcodeSign(isQrcodeSign);
-		SignPDFFileBean fileBean = new SignPDFFileBean();
-		fileBean.setSrcPdfFile(srcFile);
-		fileBean.setDstPdfFile(dstFile);
-		fileBean.setFileName(fileName);
-		FileDigestSignResult r = userSign.localSignPDF(accountId, sealData, fileBean, pos, signType);
-		// 使用用户印章签名
-		return r;
-	}
-
-	@Override
-	public FileDigestSignResult secondUserSign(Map<String, String> map) {
-
-		// 待签署文 档路径
-		String srcFile = map.get("selfPath");// 待签署文档路径
-		logger.debug("sign doc: " + srcFile);
-		String dstFile = map.get("secondPath");// 签署后文档保存路径
-		String fileName = map.get("fileName");// 文档显示名字
-		String type = map.get("signType");// 签章类型
-		SignType signType = null;
-		String sealData = map.get("personUserSeal");// 签章数据
-		fileName = "反呗合同";
-		type = "Multi";
-		if ("Single".equalsIgnoreCase(type)) {
-			signType = SignType.Single;
-		} else if ("Multi".equalsIgnoreCase(type)) {
-			signType = SignType.Multi;
-		} else if ("Edges".equalsIgnoreCase(type)) {
-			signType = SignType.Edges;
-		} else if ("Key".equalsIgnoreCase(type)) {
-			signType = SignType.Key;
-		}
-
-		String accountId = map.get("accountId");
-		// accountId = "57FD6990CE904C84A212A6D81E16213A";
-		// int posX = Integer.valueOf(map.get("posX"));
-		// int posY = Integer.valueOf(map.get("posY"));
-		// int posType = Integer.valueOf(map.get("posType"));
-		// float width = Float.valueOf(map.get("sealWidth"));
-		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-		int posX = 170;
-		int posY = 785;
-		int posType = 0;
-		int width = 159;
-		boolean isQrcodeSign = false;
-		String key = map.get("key");
-		String posPage = map.get("posPage");
-		logger.debug("sign account id: " + accountId);
-		posPage = "6";
-		PosBean pos = new PosBean();
-		pos.setPosType(posType);
-		pos.setPosX(posX);
-		pos.setPosY(posY);
-		pos.setPosPage(posPage);
-		pos.setKey(key);
-		pos.setWidth(width);
 		pos.setQrcodeSign(isQrcodeSign);
 		SignPDFFileBean fileBean = new SignPDFFileBean();
 		fileBean.setSrcPdfFile(srcFile);
@@ -219,7 +164,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		SignType signType = null;
 		String sealData = map.get("secondSeal");// 签章数据
 		fileName = "反呗合同";
-		type = "Multi";
+		type = "Single";
 		if ("Single".equalsIgnoreCase(type)) {
 			signType = SignType.Single;
 		} else if ("Multi".equalsIgnoreCase(type)) {
@@ -237,12 +182,13 @@ public class AfESdkServiceImpl implements AfESdkService {
 		// int posType = Integer.valueOf(map.get("posType"));
 		// float width = Float.valueOf(map.get("sealWidth"));
 		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-		int posX = 420;
-		int posY = 785;
+		int posX = 260;
+		int posY = 390;
 		int posType = 0;
-		int width = 159;
+		int width = 80;
 		boolean isQrcodeSign = false;
 		String key = map.get("key");
+		key = "身份证号码";
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
 		posPage = "6";
@@ -250,9 +196,9 @@ public class AfESdkServiceImpl implements AfESdkService {
 		pos.setPosType(posType);
 		pos.setPosX(posX);
 		pos.setPosY(posY);
+		pos.setWidth(width);
 		pos.setPosPage(posPage);
 		pos.setKey(key);
-		pos.setWidth(width);
 		pos.setQrcodeSign(isQrcodeSign);
 		SignPDFFileBean fileBean = new SignPDFFileBean();
 		fileBean.setSrcPdfFile(srcFile);
@@ -275,7 +221,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		SignType signType = null;
 		String sealData = map.get("thirdSeal");// 签章数据
 		fileName = "反呗合同";
-		type = "Multi";
+		type = "Single";
 		if ("Single".equalsIgnoreCase(type)) {
 			signType = SignType.Single;
 		} else if ("Multi".equalsIgnoreCase(type)) {
@@ -293,13 +239,14 @@ public class AfESdkServiceImpl implements AfESdkService {
 		// int posType = Integer.valueOf(map.get("posType"));
 		// float width = Float.valueOf(map.get("sealWidth"));
 		// boolean isQrcodeSign = Boolean.valueOf(map.get("isQrcodeSign"));
-		int posX = 420;
-		int posY = 640;
+		int posX = 145;
+		int posY = 325;
 		int posType = 0;
-		int width = 159;
+		int width = 80;
 
 		boolean isQrcodeSign = false;
 		String key = map.get("key");
+//		key = "楚橡信息科技股份有限公司";
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
 		posPage = "6";
@@ -307,9 +254,9 @@ public class AfESdkServiceImpl implements AfESdkService {
 		pos.setPosType(posType);
 		pos.setPosX(posX);
 		pos.setPosY(posY);
+		pos.setWidth(width);
 		pos.setPosPage(posPage);
 		pos.setKey(key);
-		pos.setWidth(width);
 		pos.setQrcodeSign(isQrcodeSign);
 		SignPDFFileBean fileBean = new SignPDFFileBean();
 		fileBean.setSrcPdfFile(srcFile);
@@ -332,7 +279,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		String fileName = map.get("fileName");
 		SignType signType = null;
 		String type = map.get("signType");
-		type = "Multi";
+		type = "Single";
 		if ("Single".equalsIgnoreCase(type)) {
 			signType = SignType.Single;
 		} else if ("Multi".equalsIgnoreCase(type)) {
@@ -350,12 +297,13 @@ public class AfESdkServiceImpl implements AfESdkService {
 		 * Float.valueOf(map.get("sealWidth")); boolean isQrcodeSign =
 		 * Boolean.valueOf(map.get("isQrcodeSign"));
 		 */
-		int posX = 170;
-		int posY = 640;
+		int posX = 185;
+		int posY = 380;
 		int posType = 0;
-		int width = 159;
+		int width = 80;
 		boolean isQrcodeSign = false;
 		String key = map.get("key");
+		key = "阿拉丁电子商务股份有限公司";
 		String posPage = map.get("posPage");
 		logger.debug("sign account id: " + accountId);
 		fileName = "反呗合同";
@@ -364,9 +312,9 @@ public class AfESdkServiceImpl implements AfESdkService {
 		pos.setPosType(posType);
 		pos.setPosX(posX);
 		pos.setPosY(posY);
+		pos.setWidth(width);
 		pos.setPosPage(posPage);
 		pos.setKey(key);
-		pos.setWidth(width);
 		pos.setQrcodeSign(isQrcodeSign);
 		SignPDFFileBean fileBean = new SignPDFFileBean();
 		fileBean.setDstPdfFile(dstFile);
@@ -472,6 +420,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 				afUserSealDo1.setUserSeal(addSealResult.getSealData());
 				if (afUserDo.getMajiabaoName() != null && "edspay".equals(afUserDo.getMajiabaoName())){
 					afUserSealDo1.setEdspayUserCardId(accountDo.getIdNumber());
+					afUserSealDo1.setUserName(afUserDo.getUserName());
 				}
 				// afUserSealDo1.setUserSeal("data:image/png;base64,"+addSealResult.getSealData());
 				// userSeal = addSealResult.getSealData();

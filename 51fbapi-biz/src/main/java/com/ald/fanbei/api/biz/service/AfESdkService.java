@@ -24,8 +24,6 @@ public interface AfESdkService {
 
     FileDigestSignResult userSign(Map<String,String> map);//签章
 
-    FileDigestSignResult secondUserSign(Map<String,String> map);//签章
-
     FileDigestSignResult secondSign(Map<String,String> map);//签章
 
     FileDigestSignResult thirdSign(Map<String,String> map);//签章
