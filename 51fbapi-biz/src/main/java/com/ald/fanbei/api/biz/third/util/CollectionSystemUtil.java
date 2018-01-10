@@ -274,7 +274,7 @@ public class CollectionSystemUtil extends AbstractThird {
 					}
 					//合规线下还款V2
 					else if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
-						afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum);
+						afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator);
 					}
 					//旧版线下还款
 					else {

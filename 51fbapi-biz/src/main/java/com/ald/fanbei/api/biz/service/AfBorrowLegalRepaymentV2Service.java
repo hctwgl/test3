@@ -19,10 +19,10 @@ public interface AfBorrowLegalRepaymentV2Service extends ParentService<AfRepayme
 	
 	void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
 			String repayType, String repayTime, String repayAmount,
-			String restAmount, String outTradeNo, String isBalance,String repayCardNum);
+			String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator);
 	
 	void dealRepaymentSucess(String tradeNo, String outTradeNo);
-	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo);
+	void dealRepaymentSucess(String tradeNo, String outTradeNo, final AfRepaymentBorrowCashDo repaymentDo,String operator);
 	
 	void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 	
