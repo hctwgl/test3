@@ -478,6 +478,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.curUserCouponId = orderRepaymentDo.getUserCouponId();
 		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(orderRepaymentDo.getRepayAmount());
 		repayDealBo.curCardNo = orderRepaymentDo.getCardNo();
+		repayDealBo.curCardName = orderRepaymentDo.getCardName();
 		repayDealBo.curName = orderRepaymentDo.getName();
 		
 		repayDealBo.cashDo = cashDo;
@@ -515,6 +516,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.curUserCouponId = repaymentDo.getUserCouponId();
 		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(repaymentDo.getRepaymentAmount());
 		repayDealBo.curCardNo = repaymentDo.getCardNumber();
+		repayDealBo.curCardName = repaymentDo.getCardName();
 		repayDealBo.curName = repaymentDo.getName();
 		
 		repayDealBo.cashDo = cashDo;
