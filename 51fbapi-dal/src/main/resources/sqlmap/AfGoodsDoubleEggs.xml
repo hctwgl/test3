@@ -166,9 +166,10 @@
       WHERE is_delete = 0 AND id = #{doubleGoodsId};
     </select>
     
-    <select id="getAvalibleDateList" resultType="java.util.Date">
+    <select id="getAvalibleDateList" resultType="java.util.Date" parameterType="java.lang.String">
 	SELECT start_time FROM af_goods_double_eggs 
 		WHERE is_delete = 0 
+		and start_time >= #{startTime}
 	GROUP BY start_time ORDER BY start_time ;
     </select>
     

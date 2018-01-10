@@ -53,9 +53,9 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		
 
 		@Override
-		public List<Date> getAvalibleDateList() {
+		public List<Date> getAvalibleDateList(String startTime) {
 		
-			return afGoodsDoubleEggsDao.getAvalibleDateList();
+			return afGoodsDoubleEggsDao.getAvalibleDateList(startTime);
 		}
 
 		@Override

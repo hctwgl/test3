@@ -23,7 +23,7 @@ public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long>
 	AfGoodsDoubleEggsDo getByDoubleGoodsId(@Param("doubleGoodsId")Long doubleGoodsId);
 	
 
-	List<Date> getAvalibleDateList();
+	List<Date> getAvalibleDateList(@Param("startTime")String startTime);
 
 	List<GoodsForDate> getgoodsByDate(@Param("startDate")Date startDate);
 

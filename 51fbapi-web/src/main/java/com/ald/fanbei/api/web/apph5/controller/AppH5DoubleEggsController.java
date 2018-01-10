@@ -506,7 +506,16 @@ public class AppH5DoubleEggsController extends BaseController {
 			
 			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
 			
-			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList();
+			//get dateList start from the spring festival activity beginning date
+			
+			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
+			if (resourceDo == null) {
+				return H5CommonResponse.getNewInstance(false, "活动没有配置活动起止时间！").toString();
+			}
+			
+			String beginningDate = resourceDo.getValue();
+			
+			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList(beginningDate);
 			if (CollectionUtil.isNotEmpty(dateList)) {
 				
 				log = log + String.format("middle params dateList.size() = %s", dateList.size());
