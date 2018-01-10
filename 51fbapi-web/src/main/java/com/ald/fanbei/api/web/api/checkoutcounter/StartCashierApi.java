@@ -76,6 +76,8 @@ public class StartCashierApi implements ApiHandle {
     AfInterimAuService afInterimAuService;
     @Resource
     AfUserAccountSenceService afUserAccountSenceService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -295,7 +297,12 @@ public class StartCashierApi implements ApiHandle {
                 return cashierTypeVo;
             }
         } else {
-            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode());
+            //判断需要认证的场景
+            if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode(), orderInfo.getSecType());
+            } else {
+                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode(), UserAccountSceneType.ONLINE.getCode());
+            }
         }
     }
 
@@ -342,6 +349,24 @@ public class StartCashierApi implements ApiHandle {
      */
     private String getIsAuth(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo) {
         String status = YesNoStatus.NO.getCode();
+        //获取不同场景的强风控认证
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            //商圈认证
+            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
+            if (afUserAuthStatusDo == null) {
+                authDo.setRiskStatus(YesNoStatus.NO.getCode());
+            } else {
+                authDo.setRiskStatus(afUserAuthStatusDo.getStatus());
+            }
+        } else {
+            //线上分期认证
+            AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
+            if (afUserAuthStatusDo == null) {
+                authDo.setRiskStatus(YesNoStatus.NO.getCode());
+            } else {
+                authDo.setRiskStatus(afUserAuthStatusDo.getStatus());
+            }
+        }
         if (userDto.getAuAmount().compareTo(BigDecimal.ZERO) > 0) {
             //StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getIvsStatus())// 反欺诈分已验证&&
             if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
