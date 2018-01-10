@@ -478,7 +478,7 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -519,7 +519,7 @@ public class RiskUtil extends AbstractThird {
         eventObj.put("ThirdSence", codeForThird == null ? "" : codeForThird);
         reqBo.setEventInfo(JSON.toJSONString(eventObj));
         //12-13 弱风控加入用户借款信息
-        HashMap summaryData = afBorrowDao.getUserSummary(userAuth.getUserId());
+        HashMap summaryData = riskDataMap.get("summaryData");
         if (summaryData == null) {
             summaryData = new HashMap();
             summaryData.put("hourBetweenVerifyBorrow", "0");
@@ -537,15 +537,7 @@ public class RiskUtil extends AbstractThird {
         //12-13 弱风控加入订单信息
         HashMap summaryOrderData = new HashMap();
         if(orderid > 0 ){
-            summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderid);
-            AfOrderDo orderInfo = orderDao.getOrderInfoById(orderid, Long.parseLong(consumerNo));
-            if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-                HashMap bolume = afBorrowDao.getBolumeSumDataById(orderid);
-                if (bolume != null ){
-                    summaryOrderData.putAll(bolume);
-                }
-
-            }
+            summaryOrderData =  riskDataMap.get("summaryOrderData");
         }
         if(borrow != null){
             summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
