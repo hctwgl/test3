@@ -75,6 +75,7 @@ public class AfOrderDo extends AbstractSerial{
 	
 	private BigDecimal lat;//支付时纬度
 	private BigDecimal lng;//支付时经度
+	private String gpsAddress;//支付时地址
 	private String orderStatus;
 	private BigDecimal auAmount;//用户的总授信额度
 	private BigDecimal usedAmount;//已使用额度
@@ -592,6 +593,13 @@ public class AfOrderDo extends AbstractSerial{
 	public void setLng(BigDecimal lng) {
 		this.lng = lng;
 	}
-	
+
+	public String getGpsAddress() {
+		return gpsAddress;
+	}
+
+	public void setGpsAddress(String gpsAddress) {
+		this.gpsAddress = gpsAddress;
+	}
 }
 

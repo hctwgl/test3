@@ -1,21 +1,27 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import com.ald.fanbei.api.biz.service.AfIdNumberService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
 import sun.awt.geom.AreaOp;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +47,9 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	@Resource
 	AfUserDao afUserDao;
 
+	@Resource
+	AfIdNumberService afIdNumberService;
+	
 	@Resource
 	private TransactionTemplate transactionTemplate;
 
@@ -214,6 +223,29 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 			AfRecommendUserDo afRecommendUserDo = afRecommendUserDao.getARecommendUserByIdAndType(userId,1);
 			if (afRecommendUserDo != null) {
 
+				/********临时逻辑：被邀请人未满20周岁时不给邀请人发放奖励***************/
+				AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
+				if (idNumberDo == null || idNumberDo.getRid() == null) {
+					logger.error("updateRecommendCash error : idNumberDo is null");
+					return 1;
+				}
+				if (StringUtil.isEmpty(idNumberDo.getBirthday())) {
+					logger.error("updateRecommendCash error : birthday is null");
+					return 1;
+				}
+				String[] birthdayStrings = idNumberDo.getBirthday().split("\\.");
+				Integer year = Integer.valueOf(birthdayStrings[0]);
+				Integer month = Integer.valueOf(birthdayStrings[1]);
+				Integer day = Integer.valueOf(birthdayStrings[2]);
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(year, month - 1, day);
+				Date time = calendar.getTime();
+				Date falg = DateUtil.addMonths(new Date(), -240);
+				if (falg.getTime() < time.getTime()) {
+					// 说明小于20周岁，不发放奖励
+					return 1;
+				}
+				/********临时逻辑：被邀请人未满20周岁时不给邀请人发放奖励***************/
 				AfResourceDo afResourceDo = getRecommendRecource();
 				BigDecimal money = getMoney(null,afResourceDo,1);
 
