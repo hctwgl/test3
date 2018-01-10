@@ -538,6 +538,14 @@ public class RiskUtil extends AbstractThird {
         HashMap summaryOrderData = new HashMap();
         if(orderid > 0 ){
             summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderid);
+            AfOrderDo orderInfo = orderDao.getOrderInfoById(orderid, Long.parseLong(consumerNo));
+            if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+                HashMap bolume = afBorrowDao.getBolumeSumDataById(orderid);
+                if (bolume != null ){
+                    summaryOrderData.putAll(bolume);
+                }
+
+            }
         }
         if(borrow != null){
             summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
