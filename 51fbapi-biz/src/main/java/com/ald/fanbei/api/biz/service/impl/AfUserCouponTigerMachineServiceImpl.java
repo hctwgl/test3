@@ -84,8 +84,10 @@ public class AfUserCouponTigerMachineServiceImpl extends ParentServiceImpl<AfUse
 
 		@Override
 		public int addOneTime(Long userId,String type) {
-			int originalTime = this.getTotalTimesByUserId(userId);
-			if (originalTime > 0) {
+			AfUserCouponTigerMachineDo machineDo = new AfUserCouponTigerMachineDo();
+			machineDo.setUserId(userId);
+			AfUserCouponTigerMachineDo resultDo = afUserCouponTigerMachineDao.getByCommonCondition(machineDo);
+			if (resultDo != null) {
 				if (type.equals("DAILY")) {
 					//updateOneTimeDaily
 					AfUserCouponTigerMachineDo tigerMachineDo = new AfUserCouponTigerMachineDo();

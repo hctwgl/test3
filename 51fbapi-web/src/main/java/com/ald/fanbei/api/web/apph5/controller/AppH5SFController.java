@@ -32,6 +32,9 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponTigerMachineDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -52,7 +55,7 @@ import com.alibaba.fastjson.JSONObject;
  * @version V1.0
  */
 @RestController
-@RequestMapping(value = "/H5SF", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/appH5SFMain", produces = "application/json;charset=UTF-8")
 public class AppH5SFController extends BaseController {
 	@Resource
 	AfCouponCategoryService afCouponCategoryService;
@@ -88,6 +91,65 @@ public class AppH5SFController extends BaseController {
 
 		}
 		return userId;
+	}
+	/**
+	 * 
+	 * @Title: initHomePage @author qiao @date 2018年1月5日
+	 * 下午1:39:36 @Description: @param request @param response @return @return
+	 * String @throws
+	 */
+	@RequestMapping(value = "/initHomePage", method = RequestMethod.POST)
+	public String initHomePage(HttpServletRequest request, HttpServletResponse response) {
+		String result = "";
+		FanbeiWebContext context = new FanbeiWebContext();
+		java.util.Map<String, Object> data = new HashMap<>();
+
+		try {
+			context = doWebCheck(request, false);
+			if (context != null) {
+
+				String userName = context.getUserName();
+				// init the userId for the interface : getFivePictures
+				Long userId = 0L;
+
+				// if login then
+				if (StringUtil.isNotBlank(userName)) {
+					userId = convertUserNameToUserId(userName);
+				}
+				
+				int tigerTimes = 1;
+				if (!userId.equals(0L)) {
+					//login then get the total times or insert one time daily one
+					AfUserCouponTigerMachineDo machineDo = new AfUserCouponTigerMachineDo();
+					machineDo.setUserId(userId);
+					AfUserCouponTigerMachineDo resultDo = afUserCouponTigerMachineService.getByCommonCondition(machineDo);
+					if (resultDo != null) {
+						tigerTimes = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
+					}else{
+						afUserCouponTigerMachineService.addOneTime(userId, "DAILY");
+					}
+				}
+				
+				data.put("tigerTimes", tigerTimes);
+				logger.info("/appH5SFMain/initHomePage userId={} , tigerTimes={} ", new Object[] { userId, tigerTimes });
+				
+				// get configuration from afresource
+				AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY",
+						"MAIN_DESCRIBTION");
+				if (resourceDo != null) {
+					data.put("describtion", resourceDo.getValue2());
+				}
+				logger.info("/appH5SFMain/initHomePage userId={} , tigerTimes={} ,resourceDo = {}",
+						new Object[] { userId, tigerTimes, resourceDo });
+				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
+			}
+
+		} catch (Exception exception) {
+			result = H5CommonResponse.getNewInstance(false, "初始化失败", "", exception.getMessage()).toString();
+			logger.error("初始化数据失败  e = {} , resultStr = {}", exception, result);
+			doMaidianLog(request, H5CommonResponse.getNewInstance(false, "fail"), result);
+		}
+		return result;
 	}
 
 	/**
