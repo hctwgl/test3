@@ -54,5 +54,7 @@ public interface AfBorrowLegalOrderCashService extends ParentService<AfBorrowLeg
 	void checkIllegalVersionInvoke(Integer version, Long borrowId);
 
 	int updateLegalOrderCashBalanced(AfBorrowLegalOrderCashDo legalOrderCashDo);
+
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoClosed(Long rid);
 	
 }

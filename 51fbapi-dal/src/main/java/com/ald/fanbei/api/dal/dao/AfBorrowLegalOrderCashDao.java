@@ -42,4 +42,6 @@ public interface AfBorrowLegalOrderCashDao extends BaseDao<AfBorrowLegalOrderCas
 	Long tuchByBorrowId(Long borrowId);
 
 	int updateLegalOrderCashBalanced(AfBorrowLegalOrderCashDo legalOrderCashDo);
+
+	AfBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowIdNoClosed(@Param("borrowId")Long borrowId);
 }
