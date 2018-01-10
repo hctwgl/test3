@@ -164,7 +164,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	@Override
 	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
 				String repayType, String repayTime, String repayAmount,
-				String restAmount, String outTradeNo, String isBalance) {
+				String restAmount, String outTradeNo, String isBalance,String repayCardNum) {
 		checkOfflineRepayment(cashDo, repayAmount, outTradeNo);
 		
 		RepayBo bo = new RepayBo();
@@ -179,7 +179,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
 		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
 		bo.outTradeNo = outTradeNo;
-		
+		bo.cardNo = repayCardNum;
+		bo.repayType = repayType;
 		generateRepayRecords(bo);
 		
 		dealRepaymentSucess(bo.tradeNo, "", bo.borrowRepaymentDo);
@@ -301,7 +302,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
     	String name = bo.name;
 		
     	AfRepaymentBorrowCashDo borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
+				bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 		afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 		
 		bo.borrowRepaymentDo = borrowRepaymentDo;
@@ -650,7 +651,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	
 	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
 			BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow, 
-			Long borrowId, Long cardId, String payTradeNo, String name, Long userId) {
+			Long borrowId, Long cardId, String payTradeNo, String name, Long userId,String repayType,String cardNo) {
 		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
@@ -675,8 +676,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (cardId == -4) {
-			repay.setCardNumber("");
-			repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
+			repay.setCardNumber(cardNo);
+			repay.setCardName(repayType);
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			repay.setCardNumber(bank.getCardNumber());
@@ -706,6 +707,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		public AfUserAccountDo userDo;
 		public String remoteIp;
 		public String name;
+		public String repayType;
 		/* biz 业务处理字段 */
 		
 		/* Response字段 */
