@@ -381,6 +381,7 @@ public class AfRenewalLegalDetailServiceImpl extends BaseService implements AfRe
 						
 						// 更新新增订单借款记录状态
 						borrowLegalOrderCashDo.setStatus("AWAIT_REPAY");//待还款
+						borrowLegalOrderCashDo.setGmtModifed(new Date());
 						afBorrowLegalOrderCashDao.updateById(borrowLegalOrderCashDo);
 						
 						// 更新新增订单状态为待发货
