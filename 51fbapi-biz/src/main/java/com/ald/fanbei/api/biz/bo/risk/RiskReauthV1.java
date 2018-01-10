@@ -46,4 +46,9 @@ public class RiskReauthV1 extends RiskRegisterStrongReqBo {
 		setEventInfo(Base64.encodeString(JSON.toJSONString(eventInfo)));
 	}
 
+	@Override
+	protected void create(String consumerNo, String event, String riskOrderNo, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String CHANNEL, String PRIVATE_KEY, String directory, String NotifyHost, String riskScene) {
+
+	}
+
 }

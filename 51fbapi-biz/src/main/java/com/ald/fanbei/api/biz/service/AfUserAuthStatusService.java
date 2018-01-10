@@ -10,11 +10,11 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
  */
 public interface AfUserAuthStatusService {
     /**
-     * 增加一个认证场景
+     * 增加或更新一个认证场景
      * @param afUserAuthStatusDo
      * @return
      */
-    Long addAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo);
+    void addOrUpdateAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo);
 
     /**
      * 查询该场景 是否存在认证
@@ -23,6 +23,9 @@ public interface AfUserAuthStatusService {
      * @param status
      * @return
      */
-    AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndScene(Long userId, String scene,String status);
+    AfUserAuthStatusDo selectAfUserAuthStatusByCondition(Long userId, String scene,String status);
 
+
+
+    AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);
 }

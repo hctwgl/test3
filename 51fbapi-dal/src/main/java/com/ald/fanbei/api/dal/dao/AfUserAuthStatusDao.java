@@ -20,12 +20,37 @@ public interface AfUserAuthStatusDao extends BaseDao<AfUserAuthStatusDo, Long>{
     Long addAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo);
 
     /**
-     * 查询一个用户认证场景
+     * 根据userId,scene查询一个用户认证场景
      * @param userId
      * @param scene
      * @return
      */
-    AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndScene(@Param("userId") Long userId, @Param("scene") String scene,@Param("status") String status);
+    int selectAfUserAuthStatusByUserIdAndScene(@Param("userId") Long userId, @Param("scene") String scene);
+
+    /**
+     * 根据userId,scene,status查询一个用户认证场景
+     * @param userId
+     * @param scene
+     * @param status
+     * @return
+     */
+    AfUserAuthStatusDo selectAfUserAuthStatusByCondition(@Param("userId") Long userId, @Param("scene") String scene,@Param("status") String status);
+
+    /**
+     * 更新一个用户认证场景
+     * @param afUserAuthStatusDo
+     * @return
+     */
+    int updateAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo);
 
 
+    /**
+     * 根据userId,status查询一个用户认证场景
+     * @param userId
+     * @param status
+     * @return
+     */
+    AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndStatus(@Param("userId") Long userId,@Param("status") String status);
 }
+
+

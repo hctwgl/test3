@@ -33,14 +33,23 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
     }
 
     @Override
-    public Long addAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo) {
+    public void addOrUpdateAfUserAuthStatus(AfUserAuthStatusDo afUserAuthStatusDo) {
 	// TODO Auto-generated method stub
-	return null;
+        if(afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndScene(afUserAuthStatusDo.getUserId(),afUserAuthStatusDo.getScene())>0){
+            afUserAuthStatusDao.updateAfUserAuthStatus(afUserAuthStatusDo);
+        }else{
+            afUserAuthStatusDao.addAfUserAuthStatus(afUserAuthStatusDo);
+        }
     }
 
     @Override
-    public AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndScene(Long userId, String scene, String status) {
+    public AfUserAuthStatusDo selectAfUserAuthStatusByCondition(Long userId, String scene, String status) {
 	// TODO Auto-generated method stub
-	return null;
+	   return afUserAuthStatusDao.selectAfUserAuthStatusByCondition(userId,scene,status);
+    }
+
+    @Override
+    public AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status) {
+        return afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndStatus(userId,status);
     }
 }

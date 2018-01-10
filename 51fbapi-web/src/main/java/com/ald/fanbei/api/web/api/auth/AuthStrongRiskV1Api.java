@@ -73,6 +73,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 	AfGameConfService afGameConfService;
 	@Resource
 	AfGameResultService afGameResultService;
+	@Resource
+	AfUserAuthStatusService afUserAuthStatusService;
 
 	@Resource
 	private CouponSceneRuleEnginerUtil couponSceneRuleEnginerUtil;
@@ -93,6 +95,33 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		if (!isGetLock) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
 		}
+
+		//认证场景 20（现金），21（线上），22（线下）
+		String scene = ObjectUtils.toString(requestDataVo.getParams().get("scene"));//场景
+		String noviceGuidance = ObjectUtils.toString(requestDataVo.getParams().get("noviceGuidance"));//新手引导过来
+		String riskScene ="";
+		if("CASH".equals(scene)){
+			riskScene="20";
+		}else if("ONLINE".equals(scene)){
+			riskScene="21";
+		}else if("TRAIN".equals(scene)){
+			riskScene="22";
+		}else{
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SCENE_PARAMETER_ERROR);
+		}
+		JSONObject riskCheckData =riskUtil.authDataCheck(userId,riskScene);
+		String riskCheckStatus = riskCheckData.getString("success");
+		//有数据过期了
+		if("55".equals(riskCheckStatus)){
+			ApiHandleResponse apiHandleResponse = new ApiHandleResponse();
+			apiHandleResponse.setResponseData(riskCheckData);
+			return apiHandleResponse;
+		}
+		//调用风控失败了
+		if(!"0".equals(riskCheckStatus)){
+			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
+		}
+
 		try {
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
@@ -142,53 +171,125 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
 					}
 					authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
-
-
 					afUserAuthService.updateUserAuth(authDo);
 
+                    //用户认证信息场景
+					AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
+					afUserAuthStatusDo.setUserId(userId);
+					afUserAuthStatusDo.setScene(scene);
+
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
-							card.getCardNumber(), riskOrderNo);
+							card.getCardNumber(), riskOrderNo,riskScene);
+
 					if (!riskResp.isSuccess()) {
 						if(!StringUtil.equals(afUserAuthDo.getRiskStatus(),RiskStatus.YES.getCode())){
 							authDo.setRiskStatus(RiskStatus.A.getCode());
 						}
 						authDo.setBasicStatus(RiskStatus.A.getCode());
 						afUserAuthService.updateUserAuth(authDo);
+
+						afUserAuthStatusDo.setStatus("C");
+						afUserAuthStatusDo.setCauseReason(riskResp.getMsg());
+						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_REGISTER_ERROR);
 					} else {
 						// 提交过信用认证,第一次给用户发放优惠劵
 						HashMap<String, String> creditRebateMap = new HashMap<String, String>();
 						String creditRebateMsg = "";
-						if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
-							// 发放优惠劵工作
-							// creditRebateMsg = getCreditAuthMsg(context,
-							// creditRebateMsg);
+						AfUserAuthStatusDo afUserAuthStatusDoSuccess= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"Y");
+						if(afUserAuthStatusDoSuccess==null){//判断是否有场景认证通过了,第一次通过发奖品
+							if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
+								// 发放优惠劵工作
+								// creditRebateMsg = getCreditAuthMsg(context,
+								// creditRebateMsg);
 
-							// couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
-							// 随机发放奖品
-							try {
-								Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);
-								if (prizeInfo != null) {
-									creditRebateMsg = (String) prizeInfo.get("prizeName");
+								// couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+								// 随机发放奖品
+								try {
+									Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);
+									if (prizeInfo != null) {
+										creditRebateMsg = (String) prizeInfo.get("prizeName");
+									}
+								} catch (Exception e) {
+									// ignore error
+									logger.error("getAuthPrize=>" + e.getMessage());
 								}
-							} catch (Exception e) {
-								// ignore error
-								logger.error("getAuthPrize=>" + e.getMessage());
-							}
 
-							// #region 新增需求 实名认证成功后 给钱10块钱给推荐人
-							afRecommendUserService.updateRecommendCash(userId);
-							// #endregion
+								// #region 新增需求 实名认证成功后 给钱10块钱给推荐人
+								afRecommendUserService.updateRecommendCash(userId);
+								// #endregion
+							}
 						}
 
 						bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
 
-						//添加用户认证信息多场景状态
+						//添加用户认证信息成功场景
+						afUserAuthStatusDo.setStatus("Y");
+						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
 
 						if (context.getAppVersion() > 367) {
 							creditRebateMap.put("creditRebateMsg", creditRebateMsg);
 							resp.setResponseData(creditRebateMap);
+						}
+					}
+
+					boolean numberOfAuth = false;
+					if("noviceGuidance".equals(noviceGuidance)){
+						numberOfAuth=true;
+					}
+					if(numberOfAuth){//新手引导过来的二次调用
+						afUserAuthStatusDo.setScene("ONLINE");
+						riskScene="21";
+						RiskRespBo riskResp1 = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
+								card.getCardNumber(), riskOrderNo,riskScene);
+
+						if (!riskResp1.isSuccess()) {
+							if(!StringUtil.equals(afUserAuthDo.getRiskStatus(),RiskStatus.YES.getCode())){
+								authDo.setRiskStatus(RiskStatus.A.getCode());
+							}
+							authDo.setBasicStatus(RiskStatus.A.getCode());
+							afUserAuthService.updateUserAuth(authDo);
+							//插入失败认证场景
+							afUserAuthStatusDo.setStatus("C");
+							afUserAuthStatusDo.setCauseReason(riskResp1.getMsg());
+							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+
+							return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_REGISTER_ERROR);
+						} else {
+							// 提交过信用认证,第一次给用户发放优惠劵
+							HashMap<String, String> creditRebateMap = new HashMap<String, String>();
+							String creditRebateMsg = "";
+							AfUserAuthStatusDo afUserAuthStatusDoSuccess= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"Y");
+							if(afUserAuthStatusDoSuccess==null){//判断是否有场景认证通过了,第一次通过发奖品
+								if (afUserAuthDo.getRiskStatus().equals(RiskStatus.A.getCode()) && afUserAuthDo.getBasicStatus().equals(RiskStatus.A.getCode())) {
+									try {
+										Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);
+										if (prizeInfo != null) {
+											creditRebateMsg = (String) prizeInfo.get("prizeName");
+										}
+									} catch (Exception e) {
+										// ignore error
+										logger.error("getAuthPrize=>" + e.getMessage());
+									}
+
+									// #region 新增需求 实名认证成功后 给钱10块钱给推荐人
+									afRecommendUserService.updateRecommendCash(userId);
+									// #endregion
+								}
+							}
+							bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());
+
+							//添加用户认证信息成功场景
+							afUserAuthStatusDo.setStatus("Y");
+							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+
+
+//							if (context.getAppVersion() > 367) {
+//								creditRebateMap.put("creditRebateMsg", creditRebateMsg);
+//								resp.setResponseData(creditRebateMap);
+//							}
 						}
 					}
 				} catch (Exception e) {

@@ -414,7 +414,7 @@ public class RiskUtil extends AbstractThird {
      *
      * @return
      */
-    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
+    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String riskScene) {
         Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
         String directory = "";
         if (directoryCache != null) {
@@ -428,7 +428,7 @@ public class RiskUtil extends AbstractThird {
 //            event = "REAUTH";
 //        }
 
-        RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDoV1(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost());
+        RiskRegisterStrongReqBo reqBo = RiskAuthFactory.createRiskDoV1(consumerNo, event, riskOrderNo, afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY, directory, getNotifyHost(),riskScene);
         reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
 //		String content = JSONObject.toJSONString(reqBo);
@@ -2362,6 +2362,49 @@ public class RiskUtil extends AbstractThird {
         } catch (Exception e) {
             logger.error("userTempQuota", e, reqBo);
             return new BigDecimal(0);
+        }
+    }
+
+    /**
+     * 提交认证信息时,数据有效性检查
+     * @param userId 用户id
+     * @param riskScene 审核场景
+     * @return 返回过期的数据,如果异常也返回null
+     */
+    public JSONObject authDataCheck(Long userId,String riskScene) {
+        HashMap<String, String> reqBo = new HashMap<String, String>();
+        JSONObject data =null;//返回结果
+        try {
+            //获取风控单号
+            //AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+            //String cardNo = card.getCardNumber();
+           // String riskOrderNo = riskUtil.getOrderNo("tmqa", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+            //风控申请临时额度参数
+            reqBo.put("consumerNo", userId.toString());
+           // reqBo.put("orderNo", riskOrderNo);
+            reqBo.put("scene", riskScene);
+            reqBo.put("signInfo", SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+            String url = getUrl() + "/modules/api/risk/checkData.htm";
+            String reqResult = requestProxy.post(url, reqBo);
+
+            JSONObject riskResp = JSONObject.parseObject(reqResult);
+            if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getString("code"))) {
+                data = JSONObject.parseObject(riskResp.getString("data"));
+                if(data!=null){
+                    data.put("success","55");//有过期数据
+                }else{
+                    data.put("success","0");//无过期数据
+                }
+                return data;
+            } else {
+                data.put("success","1");//失败
+                return data;
+            }
+        } catch (Exception e) {
+            logger.error("authDataCheck", e, reqBo);
+            data.put("success","2");//程序异常
+            return data;
         }
     }
 
