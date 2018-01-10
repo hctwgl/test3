@@ -14,9 +14,11 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfUserSeedDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.AfUserSeedDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -61,11 +63,19 @@ public class SubmitClearApi implements ApiHandle {
 
     @Resource
     AfUserBankcardService afUserBankcardService;
-
+    @Resource
+    AfUserSeedDao afUserSeedDao;
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
+
+
+        AfUserSeedDo afUserSeedDo = afUserSeedDao.getAfUserSeedDoByUserId(userId);
+        if(afUserSeedDo !=null){
+            throw new FanbeiException(FanbeiExceptionCode.ZZYH_ERROR);
+        }
+
         Long billId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("billId")), 0L);   //0 全部结清   其它订单结清
         BigDecimal repayAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repayAmount")),BigDecimal.ZERO);         //帐单金额
         BigDecimal rebateAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rabteAmount")),BigDecimal.ZERO);         //余额
