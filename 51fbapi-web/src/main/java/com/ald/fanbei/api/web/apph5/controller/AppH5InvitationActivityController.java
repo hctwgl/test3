@@ -1,7 +1,10 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +25,7 @@ import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponSceneService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
@@ -36,6 +40,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
@@ -80,6 +85,10 @@ public class AppH5InvitationActivityController extends BaseController {
     AfBoluomeRebateService afBoluomeRebateService;
     @Resource
     AfUserAuthService afUserAuthService;
+    @Resource
+    AfUserAccountLogDao afUserAccountLogDao;
+    @Resource
+    AfOrderService afOrderService;
     /**
      * 活动页面的基本信息
      * @param request
@@ -288,6 +297,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	        int firstOrder = 1;
 	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder);
 	        AfResourceDo food = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "FOOD");
+	        AfResourceDo onlineTime = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "ONLINE_TIME");
 	        NewbieTaskVo newbieTaskForFood =  assignment(food,rebateCount);
 	        newbieTaskList.add(newbieTaskForFood);
 	        //是否信用认证，0否，1是
@@ -297,8 +307,23 @@ public class AppH5InvitationActivityController extends BaseController {
 	            auth = 1;
 	        }
 	        NewbieTaskVo newbieTaskForAuth =  assignment(food,auth);
+	        Date riskTime = afUserAuthDo.getGmtRisk();
+	        if(onlineTime != null){
+	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+	            try {
+			Date time  = sdf.parse(onlineTime.getValue()) ;
+			 if(riskTime.before(time)){
+			     newbieTaskForAuth.setValue4(onlineTime.getValue1());
+			}
+		    } catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		    }
+	        }
 	        newbieTaskList.add(newbieTaskForAuth);
-	        
+	        //商城购物返利
+	        int shopShopping = 0;
+	        //afOrderService.getRebateShopOrderByUserId(userId);
 	        
 	        
 	        
@@ -345,10 +370,10 @@ public class AppH5InvitationActivityController extends BaseController {
     
     private List getWelfareExampleList(){
         List  welfareExampleList = new ArrayList();
-        AfResourceDo auth = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "FIRST_AWARD");
-        AfResourceDo borrow = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "SECOND_AWARD");
-        AfResourceDo shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
-        AfResourceDo stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
+        AfResourceDo auth = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "AUTH");
+        AfResourceDo borrow = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "BORROW");
+        AfResourceDo shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "SHOP");
+        AfResourceDo stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "STROLL");
         welfareExampleList.add(auth);
         welfareExampleList.add(borrow);
         welfareExampleList.add(shop);
