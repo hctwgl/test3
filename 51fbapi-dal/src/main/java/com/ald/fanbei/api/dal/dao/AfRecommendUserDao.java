@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfRecommendMoneyDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -36,11 +37,13 @@ public interface AfRecommendUserDao {
 
     int addRecommendMoney(AfRecommendMoneyDo afRecommendMoneyDo);
 
-    AfRecommendUserDo  getARecommendUserByIdAndType(@Param("user_id") Long user_id,@Param("type") int type);
+    AfRecommendUserDto  getARecommendUserByIdAndType(@Param("user_id") Long user_id,@Param("type") int type);
 
     int insertShareWithData(@Param("uuid")String uuid, @Param("userId")long userId, @Param("type")Integer type, @Param("invitationCode")String invitationCode);
     
     List<AfRecommendUserDo> getListByParentIdAndType(AfRecommendUserDo queryRecommendUser);
    
     Long findRefUserId(AfRecommendUserDo queryRecommendUser);
+    
+    int getSumSubmitRealname(@Param("pid")long pid);
 }

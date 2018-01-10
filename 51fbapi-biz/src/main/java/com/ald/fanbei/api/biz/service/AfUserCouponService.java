@@ -5,6 +5,8 @@ import java.util.List;
 
 
 
+
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
@@ -133,5 +135,7 @@ public interface AfUserCouponService {
 	List<AfUserCouponDto> getActivitySpecialCouponByAmount(Long userId, BigDecimal actualAmount,Long activityId, String activityType);
 
 	void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef);
+
+	public int sentUserCoupon(AfOrderDo afOrder);
 
 }

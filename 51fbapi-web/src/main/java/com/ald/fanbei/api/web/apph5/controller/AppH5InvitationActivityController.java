@@ -1,35 +1,55 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseExtBo;
+import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
+import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
+import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
+import com.ald.fanbei.api.biz.service.AfCouponSceneService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.CouponScene;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
 import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.NewbieTaskVo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * @类描述：
@@ -46,8 +66,20 @@ public class AppH5InvitationActivityController extends BaseController {
 
     @Resource
     AfUserService afUserService;
-
-
+    @Resource
+    AfResourceService afResourceService;
+    @Resource
+    AfCouponSceneService afCouponSceneService;
+    @Resource
+    AfCouponService afCouponService;
+    @Resource
+    AfCouponCategoryService afCouponCategoryService;
+    @Resource
+    BoluomeUtil boluomeUtil;
+    @Resource
+    AfBoluomeRebateService afBoluomeRebateService;
+    @Resource
+    AfUserAuthService afUserAuthService;
     /**
      * 活动页面的基本信息
      * @param request
@@ -73,7 +105,7 @@ public class AppH5InvitationActivityController extends BaseController {
                 return resp.toString();
             }
         }catch  (Exception e) {
-            logger.error("commitChannelRegister", e);
+            logger.error("activityUserInfo error", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
             return resp.toString();
         }
@@ -112,7 +144,423 @@ public class AppH5InvitationActivityController extends BaseController {
         return ret;
     }
 
+    /**
+     * 邀请有礼活动及用户信息(新版)
+     * @param request
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "activityAndUserInfo", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String activityUserInfoV1(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        Long userId = -1l;
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        AfUserDo afUser = null;
+        try{
+            context = doWebCheck(request, false);
+            if(context.isLogin()){
+        	   afUser = afUserService.getUserByUserName(context.getUserName());
+                if(afUser != null){
+                    userId = afUser.getRid();
+                }
+            } else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+               return resp.toString();
+            }
+        }catch  (Exception e) {
+            logger.error("activityAndUserInfo error", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
 
+          HashMap<String,Object> map =new HashMap<>();
+          List<HashMap> hashMapList =new ArrayList<>();
+          List  welfareTableList = new ArrayList();
+          List  welfareExampleList = new ArrayList();
+//        List  giftPackageList = new ArrayList();
+//        List  preferentialList = new ArrayList();
+        
+        //查看活动规则,图片,标题,描述
+        List listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
+        List listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
+        List listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
+        List listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
+    
+        
+        //用户的邀请码
+        String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
+        if(invitationCode.equals("0")){
+            //生成邀请码
+            AfUserDo userDo = new AfUserDo();
+	    Long invteLong = Constants.INVITE_START_VALUE + userId;
+	    String inviteCode = Long.toString(invteLong, 36);
+	    userDo.setRecommendCode(inviteCode);
+	    userDo.setRid(userId);
+	    afUserService.updateUser(userDo);
+	    invitationCode = inviteCode;
+        }
+       
+        
+        //福利表格
+         welfareTableList =  getWelfareTableList();
+        //福利举例
+         welfareExampleList = getWelfareExampleList();
+        //大礼包
+//         giftPackageList = getGiftPackageList();
+        //特惠专区
+//         preferentialList =  getPreferentialList();
+        
+        map.put("listRule",listRule);
+        map.put("listPic",listPic);
+        map.put("listTitle",listTitle);
+        map.put("listDesc",listDesc);
+        map.put("invitationCode",invitationCode);
+        map.put("welfareTableList",welfareTableList);
+        map.put("welfareExampleList",welfareExampleList);
+//      map.put("giftPackageList",giftPackageList);
+//      map.put("preferentialList",preferentialList);
+        hashMapList.add(map);
+        String ret = JSON.toJSONString(hashMapList);
+        return ret;
+    }
+    
+    
+    /**
+     * 邀请有礼页面配置信息(新版)
+     * @param request
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "activityHomeInfo", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String activityHomeInfo(HttpServletRequest request){
+
+        HashMap<String,Object> map =new HashMap<>();
+        List<HashMap> hashMapList =new ArrayList<>();
+
+        List  giftPackageList = new ArrayList();
+        List  preferentialList = new ArrayList();
+        //大礼包
+         giftPackageList = getGiftPackageList();
+        //特惠专区
+         preferentialList =  getPreferentialList();
+        map.put("giftPackageList",giftPackageList);
+        map.put("preferentialList",preferentialList);
+        hashMapList.add(map);
+        String ret = JSON.toJSONString(hashMapList);
+        return ret;
+    }
+    
+    /**
+     * 邀请有礼页新手任务(新版)
+     * @param request
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "newbieTask", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String newbieTask(HttpServletRequest request){
+	 FanbeiWebContext context = new FanbeiWebContext();
+	        Long userId = -1l;
+	        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+	        AfUserDo afUser = null;
+	        try{
+	            context = doWebCheck(request, false);
+	            if(context.isLogin()){
+	        	   afUser = afUserService.getUserByUserName(context.getUserName());
+	                if(afUser != null){
+	                    userId = afUser.getRid();
+	                }
+	            } else{
+	                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+	               return resp.toString();
+	            }
+	        }catch  (Exception e) {
+	            logger.error("activityHomeInfo error", e);
+	            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+	            return resp.toString();
+	        }
+	        HashMap<String,Object> map =new HashMap<>();
+	        List<HashMap> hashMapList =new ArrayList<>();
+	        List  newbieTaskList = new ArrayList();
+	        //是否点外卖
+	        int firstOrder = 1;
+	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder);
+	        AfResourceDo food = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "FOOD");
+	        NewbieTaskVo newbieTaskForFood =  assignment(food,rebateCount);
+	        newbieTaskList.add(newbieTaskForFood);
+	        //是否信用认证，0否，1是
+	        int auth = 0;
+	        AfUserAuthDo afUserAuthDo  = afUserAuthService.getUserAuthInfoByUserId(userId);
+	        if("Y".equals(afUserAuthDo.getRiskStatus())){
+	            auth = 1;
+	        }
+	        NewbieTaskVo newbieTaskForAuth =  assignment(food,auth);
+	        newbieTaskList.add(newbieTaskForAuth);
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+       
+        map.put("newbieTaskList",newbieTaskList);
+        hashMapList.add(map);
+        String ret = JSON.toJSONString(hashMapList);
+        return ret;
+    }
+    
+    
+    
+    private NewbieTaskVo assignment(AfResourceDo food,int count) {
+	NewbieTaskVo  newbieTaskVo = new NewbieTaskVo();
+	String value = food.getValue();
+	String title[] = value.split("/");  
+	newbieTaskVo.setFinish(0);
+	newbieTaskVo.setTitle(title[0]);
+	if(count>0){
+	        newbieTaskVo.setFinish(1);
+	        newbieTaskVo.setTitle(title[1]);
+        }
+	newbieTaskVo.setValue1(food.getValue1());
+	newbieTaskVo.setValue2(food.getValue2());
+	newbieTaskVo.setValue3(food.getValue3());
+	newbieTaskVo.setValue4(food.getValue4());
+	return newbieTaskVo;
+    }
+
+    private List getWelfareTableList(){
+        List  welfareTableList = new ArrayList();
+        AfResourceDo firstAward = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "FIRST_AWARD");
+        AfResourceDo secondAward = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "SECOND_AWARD");
+        AfResourceDo preferential = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
+        welfareTableList.add(firstAward);
+        welfareTableList.add(secondAward);
+        welfareTableList.add(preferential);
+	return welfareTableList;
+}
+    
+    
+    private List getWelfareExampleList(){
+        List  welfareExampleList = new ArrayList();
+        AfResourceDo auth = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "FIRST_AWARD");
+        AfResourceDo borrow = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "SECOND_AWARD");
+        AfResourceDo shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
+        AfResourceDo stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
+        welfareExampleList.add(auth);
+        welfareExampleList.add(borrow);
+        welfareExampleList.add(shop);
+        welfareExampleList.add(stroll);
+	return welfareExampleList;
+    }
+    
+    private List  getPreferentialList(){
+	         List  preferentialList = new ArrayList();
+	        AfResourceDo superValue = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "SUPER_VALUE");
+	        AfResourceDo fullCut = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "FULL_CUT");
+	        AfResourceDo shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "SHOP");
+	        AfResourceDo stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "STROLL");
+	        preferentialList.add(superValue);
+	        preferentialList.add(fullCut);
+	        preferentialList.add(shop);
+	        preferentialList.add(stroll);
+	        return preferentialList;
+  }
+    
+    private List getGiftPackageList(){
+	     List  giftPackageList = new ArrayList();
+	     List  titleList = new ArrayList();
+	     HashMap<String,Object> map1 =new HashMap<>();
+	     HashMap<String,Object> map2 =new HashMap<>();
+	     HashMap<String,Object> map3 =new HashMap<>();
+	     HashMap<String,Object> titleMap =new HashMap<>();
+	     List  list1 = new ArrayList();
+	     List  list2 = new ArrayList();
+	     List  list3 = new ArrayList();
+	     //实名认证
+	     List<AfCouponDo> authCoupon = getCommonCouponMap(CouponScene.CREDIT_AUTH);
+	     AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("RECOMMEND_COUPON", "TYPE_NAME");
+	     String value = "借钱";
+	     String value1 = "商城";
+	     String value2 = "吃完住行";
+	     String value3 = "还款优惠";
+	     String value4 = "自营商城";
+	    
+	     if(resourceDo != null){
+		 value = resourceDo.getValue();
+		 value1 = resourceDo.getValue1();
+		 value2 = resourceDo.getValue2();
+		 value3 = resourceDo.getValue3();
+		 value4 = resourceDo.getValue4();
+	     }
+	     
+	     if(authCoupon.size()>0){
+		 AfCouponDo  coupon = authCoupon.get(0);
+		 HashMap<String,Object> map =new HashMap<>();
+		 map.put("threshold", coupon.getLimitAmount());
+		 map.put("couponAmount",coupon.getAmount());
+		 map.put("couponName",value3);
+		 list1.add(map);
+	     }
+	     //首次借钱，首次购物
+	     AfCouponDo  firstLoan = getcouponForCategoryTag("_FIRST_LOAN_");
+	     AfCouponDo  firstShopping = getcouponForCategoryTag("_FIRST_SHOPPING_");
+	     HashMap<String,Object> loanMap =new HashMap<>();
+	     loanMap.put("threshold", firstLoan.getLimitAmount());
+	     loanMap.put("couponAmount",firstLoan.getAmount());
+	     loanMap.put("couponName", value3);
+	     HashMap<String,Object> shoppingMap =new HashMap<>();
+	     shoppingMap.put("threshold", firstShopping.getLimitAmount());
+	     shoppingMap.put("couponAmount",firstShopping.getAmount());
+	     shoppingMap.put("couponName", value3);
+	     list1.add(loanMap);
+	     
+	     map1.put("couponTitle", value);
+	     map1.put("couponList",list1 );
+	     giftPackageList.add(map1);
+	     
+	     //注册(自营商城)
+	     List<AfCouponDo> rigsetCoupon = getCommonCouponMap(CouponScene.REGIST);
+	     if(rigsetCoupon.size()>0){
+		for(int i=0;i<3;i++){
+		    AfCouponDo shop = rigsetCoupon.get(i);
+		     HashMap<String,Object> shopMap =new HashMap<>();
+		     shopMap.put("threshold", shop.getLimitAmount());
+		     shopMap.put("couponAmount",shop.getAmount());
+		     shopMap.put("couponName", value4);
+		     list2.add(shopMap);
+		}
+	     }
+	     map2.put("couponTitle", value1);
+	     map2.put("couponList",list2 );
+	     giftPackageList.add(map2);
+	     
+	     List<BoluomeCouponResponseExtBo> bolumeCouponList =  boluomeCouponList();
+	     for(BoluomeCouponResponseExtBo boluomeCoupon:bolumeCouponList){
+		      HashMap<String,Object> ggMap =new HashMap<>();
+		      ggMap.put("threshold", boluomeCoupon.getThreshold());
+		      ggMap.put("couponAmount",boluomeCoupon.getValue());
+		      ggMap.put("couponName",boluomeCoupon.getCouponName() );
+		      list3.add(ggMap);
+	     }
+	     if(list3 !=null){
+		 map3.put("couponTitle", value2); 
+		 map3.put("couponList", list3); 
+	     }
+	     
+	     giftPackageList.add(map3);
+	     return giftPackageList;
+    }
+    
+   
+    private  List<AfCouponDo>  getCommonCouponMap(CouponScene scene) {
+
+	List<Long> couponIds = afCouponSceneService.getCounponIds(scene);
+
+	List<AfCouponDo> couponList = null;
+
+	if (CollectionUtils.isNotEmpty(couponIds)) {
+		couponList = afCouponService.listCouponByIds(couponIds);
+	}
+
+
+	return couponList;
+}
+
+    private AfCouponDo getcouponForCategoryTag(String tag){
+	AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+	String coupons = couponCategory.getCoupons();
+	JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
+	AfCouponDo afCouponDo = new AfCouponDo();
+	//List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
+
+	if (couponsArray.size()>0) {
+		String couponId = (String) couponsArray.getString(0);
+	        afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
+	}
+	return afCouponDo;
+    }
+    /**
+	 * 
+	 * @说明：获得用户优惠券列表
+	 * @param: @return
+	 * @return: String
+	 */
+	private static String couponUrl = null;
+
+	private static String getCouponUrl() {
+		if (couponUrl == null) {
+			couponUrl = ConfigProperties.get(Constants.CONFKEY_BOLUOME_COUPON_URL);
+			return couponUrl;
+		}
+		return couponUrl;
+	}
+    private List<BoluomeCouponResponseExtBo> boluomeCouponList(){
+	List<BoluomeCouponResponseExtBo> boluomeCouponList = new ArrayList<>();
+
+	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
+	if (resourceDo != null) {
+		List<String> bList = new ArrayList<>();
+		bList.add(resourceDo.getValue());
+		bList.add(resourceDo.getValue2());
+		bList.add(resourceDo.getValue3());
+		if (bList != null && bList.size() > 0) {
+			for (String resouceIdStr : bList) {
+				Long resourceId = Long.parseLong(resouceIdStr);
+				AfResourceDo couponResourceDo = afResourceService.getResourceByResourceId(resourceId);
+				logger.info("boluomeCoupon  resourceId = {},couponResourceDo = {}", resourceId,
+						couponResourceDo);
+				if (couponResourceDo != null) {
+					String uri = couponResourceDo.getValue();
+					String[] pieces = uri.split("/");
+					if (pieces.length > 9) {
+						String app_id = pieces[6];
+						String campaign_id = pieces[8];
+						String user_id = "0";
+						// 获取boluome的券的内容
+						String url = getCouponUrl() + "?" + "app_id=" + app_id + "&user_id=" + user_id
+								+ "&campaign_id=" + campaign_id;
+						String reqResult = HttpUtil.doGet(url, 10);
+						logger.info("invition getCouponUrl reqResult = {}", reqResult);
+						if (!StringUtil.isBlank(reqResult)) {
+							ThirdResponseBo thirdResponseBo = JSONObject.parseObject(reqResult,
+									ThirdResponseBo.class);
+							if (thirdResponseBo != null && "0".equals(thirdResponseBo.getCode())) {
+								List<BoluomeCouponResponseParentBo> listParent = JSONArray.parseArray(
+										thirdResponseBo.getData(), BoluomeCouponResponseParentBo.class);
+								if (listParent != null && listParent.size() > 0) {
+									BoluomeCouponResponseParentBo parentBo = listParent.get(0);
+									if (parentBo != null) {
+										String activityCoupons = parentBo.getActivity_coupons();
+										String result = activityCoupons.substring(1,
+												activityCoupons.length() - 1);
+										String replacement = "," + "\"sceneId\":" + resourceId + "}";
+										String rString = result.replaceAll("}", replacement);
+										// 字符串转为json对象
+										BoluomeCouponResponseExtBo BoluomeCouponResponseExtBo = JSONObject
+												.parseObject(rString, BoluomeCouponResponseExtBo.class);
+//										List<BrandActivityCouponResponseBo> activityCouponList = boluomeUtil
+//												.getActivityCouponList(uri);
+										BoluomeCouponResponseExtBo.setCouponName(couponResourceDo.getName());
+										
+										boluomeCouponList.add(BoluomeCouponResponseExtBo);
+										
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return boluomeCouponList;
+    }
+    
+    
+    
     /**
      * 奖励详细查询
      * @param request

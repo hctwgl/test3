@@ -1133,4 +1133,12 @@
 		AND
 			user_id=#{userId}
 	</select>
+	<select id="getShopOrderByUser" resultType="HashMap">
+		 SELECT 	
+		 COUNT(1) 'count' FROM 
+		 af_order WHERE 
+		 user_id = #{userid}
+		 AND order_type IN('AGENTBUY','SELFSUPPORT')
+		 AND is_delete = 0
+	</select>
 </mapper>

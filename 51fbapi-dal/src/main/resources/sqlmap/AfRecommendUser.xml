@@ -56,10 +56,12 @@
 		from af_recommend_user where is_delete =0 and user_id = #{user_id}
 	</select>
 
-	<select id="getARecommendUserByIdAndType" resultType="AfRecommendUserDo">
-		select
-		<include refid="queryFields" />
-		from af_recommend_user where user_id = #{user_id} and type = #{type}
+	<select id="getARecommendUserByIdAndType" resultType="AfRecommendUserDto">
+		SELECT
+		ru.user_id,ru.is_loan,ru.loan_time,ru.origin,ru.parentId,ru.type,ru.recommend_count,ru.gmt_create,ru.is_shopping_rebate,au.risk_status
+		FROM af_recommend_user  ru
+		INNER JOIN af_user_auth au ON  au.user_id = ru.user_id	
+		WHERE ru.user_id = #{user_id} AND au.type = #{type}
 	</select>
 
 	<update id="updateLoanById" parameterType="AfRecommendUserDo">
@@ -188,4 +190,20 @@
 		  and gmt_create <![CDATA[ >= ]]> #{gmtCreate}
 		</if>
 	</select>
+	
+	
+	<select id="getSumSubmitRealname" parameterType="java.lang.Long" resultType="java.lang.Integer">
+	 SELECT COUNT(0)
+	    FROM af_recommend_user ru
+		  LEFT JOIN 
+		  af_user_auth au
+		  ON au.user_id = ru.user_id 
+		  WHERE 
+		  TO_DAYS(au.gmt_realname) = TO_DAYS(NOW())
+		  AND au.realname_status = 'Y'
+		  AND au.is_delete = 0
+		  AND ru.is_delete = 0
+		  AND ru.parentId = #{pid}
+	</select>
+	
 </mapper>

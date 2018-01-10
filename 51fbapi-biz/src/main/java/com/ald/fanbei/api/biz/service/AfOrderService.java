@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -364,5 +365,17 @@ public interface AfOrderService {
      * @return
      */
 	List<AfOrderDo> getDouble12OrderByGoodsIdAndUserId(Long goodsId,Long userId);
+
+	/**
+	 * 
+	* author chenqiwei
+	* @Title: getShopOrderByUser 
+	* @Description: 统计用户自营或分期
+	* @param userId
+	* @return     
+	* return HashMap 返回类型 
+	* @throws
+	 */
+	HashMap getShopOrderByUser(Long userid);
 	
 }

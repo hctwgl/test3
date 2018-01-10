@@ -327,4 +327,10 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 		return afBoluomeRebateDao.getMaxUserRebateByStartIdAndEndIdAndUserId(startId, endId, userId);
 	}
 
+	@Override
+	public int getCountByUserIdAndFirstOrder(Long userId, int firstOrder) {
+	    // TODO Auto-generated method stub
+	    	return afBoluomeRebateDao.getCountByUserIdAndFirstOrder(userId,firstOrder);
+	}
+
 }

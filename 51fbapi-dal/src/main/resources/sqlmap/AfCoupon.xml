@@ -139,4 +139,18 @@
 		AND
 			status = 'O'
 	</select>
+	
+		<select id="listCouponByIds" resultType="AfCouponDo">
+		SELECT
+	    	<include refid="queryAllFields" />
+	    FROM
+	   		 af_coupon
+	    WHERE
+	    	is_delete = 0
+		AND 
+			id IN
+		<foreach collection="items"  separator="," item="item" index="index" open="(" close=")">
+			#{item}
+		</foreach>
+	</select>
 </mapper>

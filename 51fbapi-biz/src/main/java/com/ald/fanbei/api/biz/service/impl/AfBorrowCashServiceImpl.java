@@ -129,7 +129,7 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 				return 1;
 			}
 		});
-
+		//邀请有礼
 		if (resultValue == 1) {
 			try {
 				int rr = afRecommendUserService.updateRecommendByBorrow(afBorrowCashDo.getUserId(),

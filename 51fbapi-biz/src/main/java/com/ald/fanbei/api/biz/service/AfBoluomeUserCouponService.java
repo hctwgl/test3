@@ -26,6 +26,10 @@ public interface AfBoluomeUserCouponService extends ParentService<AfBoluomeUserC
    // AfBoluomeUserCouponDo getLastUserCouponByUserId(Long userId);
     AfBoluomeUserCouponDo getUserCouponByUerIdAndRefIdAndChannel(AfBoluomeUserCouponDo queryUserCoupon);
     AfBoluomeUserCouponDo getLastUserCouponByUserIdSentCouponId(Long userId, Long newUser, Long inviter);
+    /*
+     * 今天获得的优惠券数量
+     */
+    int getTodayNumByUserId(Long userId);
 
 
 }

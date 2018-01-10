@@ -280,5 +280,14 @@
 			AND t.user_id = #{userId}
 			LIMIT 0,1;
     </select>
+    <select id= "getCountByUserIdAndFirstOrder"  resultType="java.lang.Integer">
+        select count(0) 
+        from af_boluome_rebate 
+        where is_delete = 0
+        and user_id = #{userId}
+        and first_order = #{firstOrder}
+    </select>
+    
+    
     
 </mapper>

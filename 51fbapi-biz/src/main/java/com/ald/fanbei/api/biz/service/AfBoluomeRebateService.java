@@ -32,6 +32,8 @@ public interface AfBoluomeRebateService extends ParentService<AfBoluomeRebateDo,
 
 	AfBoluomeRebateDo getMaxUserRebateByStartIdAndEndIdAndUserId(Long startId, Long endId, Long userId);
 
+	int getCountByUserIdAndFirstOrder(Long userId, int firstOrder);
+
 
 
 }

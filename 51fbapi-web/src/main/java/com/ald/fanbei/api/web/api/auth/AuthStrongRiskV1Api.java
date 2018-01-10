@@ -163,8 +163,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 							// 发放优惠劵工作
 							// creditRebateMsg = getCreditAuthMsg(context,
 							// creditRebateMsg);
-
-							// couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
+						    	//给该认证用户送还款券
+							couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 							// 随机发放奖品
 							try {
 								Map<String, Object> prizeInfo = getAuthPrize(requestDataVo, context, request);
@@ -176,9 +176,10 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 								logger.error("getAuthPrize=>" + e.getMessage());
 							}
 
-							// #region 新增需求 实名认证成功后 给钱10块钱给推荐人
+							// #region 新增需求 实名认证成功后 给钱5块钱给推荐人
 							afRecommendUserService.updateRecommendCash(userId);
 							// #endregion
+							
 						}
 
 						bizCacheUtil.delCache(Constants.CACHEKEY_USER_CONTACTS + idNumberDo.getUserId());

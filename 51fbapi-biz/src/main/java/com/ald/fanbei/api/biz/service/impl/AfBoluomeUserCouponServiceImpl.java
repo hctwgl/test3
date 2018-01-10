@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -58,6 +59,8 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	BizCacheUtil bizCacheUtil;
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	AfBoluomeUserCouponService afBoluomeUserCouponService;
 
 	@Override
 	public BaseDao<AfBoluomeUserCouponDo, Long> getDao() {
@@ -99,8 +102,16 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
         				   //   Long refUserIdTemp = afBoluomeActivityUserLoginDao.findRefUserId(userId);
         					log = log + String.format("refUserIdTemp =  %s", refUserIdTemp);
         					logger.info(log);
-        
+        					
         					if (refUserIdTemp != null) {
+        					         //查询该邀请者今日获得的优惠券,若大于限制不发放
+        					         int couponNum =  afBoluomeUserCouponService.getTodayNumByUserId(refUserIdTemp);
+                				        if(getRecommendRecourceForStrongWind()!=null){
+                				            int limitNum = Integer.valueOf(getRecommendRecourceForStrongWind().getValue3()) ;
+                						   if(limitNum != 0 && limitNum <= couponNum){
+                						       return false;
+                						   }
+                					 }
         						AfBoluomeUserCouponDo afBoluomeUserCouponDo = new AfBoluomeUserCouponDo();
         						afBoluomeUserCouponDo.setGmtCreate(new Date());
         						afBoluomeUserCouponDo.setGmtModified(new Date());
@@ -168,6 +179,10 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 		return result;
 
 	}
+	private AfResourceDo getRecommendRecourceForStrongWind(){
+		List<AfResourceDo> list = afResourceDao.getActivieResourceByType("RECOMMEND_STROLL");
+		return list.get(0);
+	}
 
 	private String convertToUserName(Long userId) {
 		AfUserDo userDo = afUserDao.getUserById(userId);
@@ -205,6 +220,13 @@ public class AfBoluomeUserCouponServiceImpl extends ParentServiceImpl<AfBoluomeU
 	public AfBoluomeUserCouponDo getLastUserCouponByUserIdSentCouponId(Long userId, Long newUser, Long inviter) {
 		// TODO Auto-generated method stub
 		return afBoluomeUserCouponDao.getLastUserCouponByUserIdSentCouponId(userId, newUser, inviter);
+	}
+
+
+	@Override
+	public int getTodayNumByUserId(Long userId) {
+	    // TODO Auto-generated method stub
+	    	return afBoluomeUserCouponDao.getTodayNumByUserId(userId);
 	}
 
 }
