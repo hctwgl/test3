@@ -757,21 +757,27 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
 //				afYibaoOrderDao.updateYiBaoOrderStatus(afYibaoOrderDo.getId(),2);
 //			}
 //		}
-        if (AfBorrowCashRepmentStatus.NO.getCode().equals(status)) {
-            if (thirdPayUtility.checkFail(outTradeNo)) {
-                return 1L;
+        try {
+            if (AfBorrowCashRepmentStatus.NO.getCode().equals(status)) {
+                if (thirdPayUtility.checkFail(outTradeNo)) {
+                    return 1L;
+                }
             }
+            logger.info("sync error outTradeNo :" + outTradeNo + ",tradeNo:" + tradeNo + ",status:" + status + ",");
+            AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
+            temRepayMent.setStatus(status);
+            temRepayMent.setTradeNo(tradeNo);
+            temRepayMent.setRid(repayment.getRid());
+            repayment.setStatus(status);
+            repayment.setTradeNo(tradeNo);
+            repayment.setRid(repayment.getRid());
+
+            return afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
+        } catch (Exception e) {
+            logger.info("sync error outTradeNo :" + outTradeNo + ",tradeNo:" + tradeNo + ",status:" + status + ",", e);
+            return 0;
         }
 
-        AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
-        temRepayMent.setStatus(status);
-        temRepayMent.setTradeNo(tradeNo);
-        temRepayMent.setRid(repayment.getRid());
-        repayment.setStatus(status);
-        repayment.setTradeNo(tradeNo);
-        repayment.setRid(repayment.getRid());
-
-        return afRepaymentBorrowCashDao.updateRepaymentBorrowCash(temRepayMent);
     }
 
     @Override
