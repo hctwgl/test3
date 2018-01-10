@@ -39,10 +39,10 @@ public class GetDataViewApi implements ApiHandle {
 
         Long userId = context.getUserId();
 
-        AfUserSeedDo afUserSeedDo = afUserSeedDao.getAfUserSeedDoByUserId(userId);
-        if(afUserSeedDo !=null){
-             throw new FanbeiException(FanbeiExceptionCode.ZZYH_ERROR);
-        }
+//        AfUserSeedDo afUserSeedDo = afUserSeedDao.getAfUserSeedDoByUserId(userId);
+//        if(afUserSeedDo !=null){
+//             throw new FanbeiException(FanbeiExceptionCode.ZFB_NOT_USERD);
+//        }
 
 //        Integer type = NumberUtil.objToIntDefault(ObjectUtils.toString(requestDataVo.getParams().get("type")), 0);   //0 订单结清   1 全部结清
         Long billId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("billId")), 0L);   //0 全部结清   其它订单结清
