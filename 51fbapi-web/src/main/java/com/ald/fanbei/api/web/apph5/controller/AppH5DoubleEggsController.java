@@ -566,8 +566,6 @@ public class AppH5DoubleEggsController extends BaseController {
 								goodsBuffer.setStatus(1);
 							}
 
-
-
 							// format to the fix form
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							goodsBuffer.setStartDate(sdf.format(startDate));
