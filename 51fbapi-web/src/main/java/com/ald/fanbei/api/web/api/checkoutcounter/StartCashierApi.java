@@ -132,6 +132,13 @@ public class StartCashierApi implements ApiHandle {
         cashierVo.setRebatedAmount(orderInfo.getRebateAmount());
         cashierVo.setAp(canConsume(userDto, authDo, orderInfo, checkoutCounter));
 
+        String scene = UserAccountSceneType.ONLINE.getCode();
+        //判断认证的场景
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            scene = orderInfo.getSecType();
+        }
+        cashierVo.setScene(scene);
+
         AfUserBankcardDo bankInfo = afUserBankcardService.getUserMainBankcardByUserId(userId);
 
         cashierVo.setMainBankCard(bankInfo);
@@ -260,13 +267,8 @@ public class StartCashierApi implements ApiHandle {
      * @return
      */
     private CashierTypeVo canConsume(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, AfCheckoutCounterDo checkoutCounter) {
-        String scene = UserAccountSceneType.ONLINE.getCode();
-        //判断需要认证的场景
-        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-            scene = orderInfo.getSecType();
-        }
         if (StringUtil.isEmpty(checkoutCounter.getInstallmentStatus()) || checkoutCounter.getInstallmentStatus().equals(YesNoStatus.NO.getCode())) {
-            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode(), scene);
+            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CASHIER.getCode());
         }
 
         //审核状态判定
@@ -275,7 +277,7 @@ public class StartCashierApi implements ApiHandle {
             AfResourceDo consumeMinResource = afResourceService.getSingleResourceBytype("CONSUME_MIN_AMOUNT");
             BigDecimal minAmount = consumeMinResource == null ? BigDecimal.ZERO : new BigDecimal(consumeMinResource.getValue());
             if (orderInfo.getActualAmount().compareTo(minAmount) < 0) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode(),scene);
+                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.CONSUME_MIN_AMOUNT.getCode());
             }
             //获取临时额度
             AfInterimAuDo afInterimAuDo = afInterimAuService.getByUserId(orderInfo.getUserId());
@@ -288,22 +290,21 @@ public class StartCashierApi implements ApiHandle {
             AfResourceDo usabledMinResource = afResourceService.getSingleResourceBytype("NEEDUP_MIN_AMOUNT");
             BigDecimal usabledMinAmount = usabledMinResource == null ? BigDecimal.ZERO : new BigDecimal(usabledMinResource.getValue());
             if (userabledAmount.compareTo(usabledMinAmount) < 0) {
-                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode(),scene);
+                return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDUP.getCode());
             }
 
             if (userabledAmount.compareTo(orderInfo.getActualAmount()) < 0) {
                 //额度不够
-                CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode(),scene);
+                CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.USE_ABLED_LESS.getCode());
                 riskProcess(cashierTypeVo, orderInfo, userDto, usabledMinAmount, afInterimAuDo);
                 return cashierTypeVo;
             } else {
                 CashierTypeVo cashierTypeVo = new CashierTypeVo(YesNoStatus.YES.getCode());
-                cashierTypeVo.setScene(scene);
                 riskProcess(cashierTypeVo, orderInfo, userDto, usabledMinAmount, afInterimAuDo);
                 return cashierTypeVo;
             }
         } else {
-            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode(), scene);
+            return new CashierTypeVo(YesNoStatus.NO.getCode(), CashierReasonType.NEEDAUTH.getCode());
         }
     }
 

@@ -22,18 +22,12 @@ public class CashierTypeVo {
     private BigDecimal repaymentAmount;//应还金额
     private BigDecimal virtualGoodsUsableAmount;
     private Long borrowId;//借钱id
-    private String scene;//额度场景
     public  CashierTypeVo(String status){
         this.status=status;
     }
     public  CashierTypeVo(String status,String reasonType){
         this.status=status;
         this.reasonType=reasonType;
-    }
-    public  CashierTypeVo(String status,String reasonType,String scene){
-        this.status=status;
-        this.reasonType=reasonType;
-        this.scene=scene;
     }
     public  CashierTypeVo(String status,String reasonType,HashMap data){
           this.status=status;
@@ -158,13 +152,5 @@ public class CashierTypeVo {
 
     public void setVirtualGoodsUsableAmount(BigDecimal virtualGoodsUsableAmount) {
         this.virtualGoodsUsableAmount = virtualGoodsUsableAmount;
-    }
-
-    public String getScene() {
-        return scene;
-    }
-
-    public void setScene(String scene) {
-        this.scene = scene;
     }
 }
