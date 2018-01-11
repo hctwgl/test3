@@ -878,7 +878,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         tempRepayAmount = BigDecimal.ZERO;
                     }
 
-                    if (YesNoStatus.YES.getCode().equals(isBalance) || allAmount.compareTo(haveRepayAmount) <= 0) {
+                    if (allAmount.compareTo(haveRepayAmount) <= 0) {
                         if (YesNoStatus.YES.getCode().equals(isBalance)) {
                             logger.info("dealOfflineRepaymentSucess isBalance yes process,borrowCashId=" + afBorrowCashDo.getRid());
                         }

@@ -240,8 +240,11 @@ public class CollectionSystemUtil extends AbstractThird {
 				String repayTime = obj.getString("repay_time");
 				String repayAmount = obj.getString("repay_amount");
 				String restAmount = obj.getString("rest_amount");
+				String repayCardNum = obj.getString("repay_cardNum");
+				String operator = obj.getString("operator");
 				String tradeNo = obj.getString("trade_no"); // 三方交易流水号
 				String isBalance = obj.getString("is_balance");
+				String isAdmin = obj.getString("is_admin");
 				
 				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance)) {
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
@@ -256,7 +259,7 @@ public class CollectionSystemUtil extends AbstractThird {
 					if(afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo.getRid()) != null) {
 						AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 						afBorrowLegalOrderCashService.checkOfflineRepayment(afBorrowCashDo, orderCashDo, repayAmount ,tradeNo);
-						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance);
+						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,isAdmin);
 					} else {//旧版线下还款
 						AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(afBorrowCashDo.getRid(), tradeNo);
 						if (existItem != null) {
