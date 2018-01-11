@@ -1,7 +1,11 @@
 package com.ald.fanbei.api.context;
 
 import java.util.Map;
-
+/**
+ * Http请求Context
+ * @author Jiang Rongbo
+ *
+ */
 public interface Context {
 
 	public Object getData(String key);
@@ -27,6 +31,10 @@ public interface Context {
 	public String getMethod();
 
 	public void setMethod(String method);
+	
+	public String getId();
+
+	public void setId(String id);
 	
 	public Map<String, Object> getSystemsMap() ;
 

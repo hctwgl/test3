@@ -15,6 +15,8 @@ public class ContextImpl implements Context {
 	private String method;
 
 	private Long userId;
+	
+	private String id;
 
 	private Map<String,Object> systemsMap;
 	
@@ -66,6 +68,15 @@ public class ContextImpl implements Context {
 	public String getMethod() {
 		return method;
 	}
+	
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public void setMethod(String method) {
 		this.method = method;
@@ -86,6 +97,7 @@ public class ContextImpl implements Context {
 		this.userName = builder.userName;
 		this.appVersion = builder.appVersion;
 		this.method  = builder.method;
+		this.id = builder.id;
 		this.systemsMap  = builder.systemsMap;
 	}
 
@@ -100,6 +112,8 @@ public class ContextImpl implements Context {
 		private Long userId;
 		
 		private String method;
+		
+		private String id;
 		
 		private Map<String,Object> systemsMap;
 
@@ -130,6 +144,11 @@ public class ContextImpl implements Context {
 		
 		public Builder systemsMap(Map<String,Object> systemsMap) {
 			this.systemsMap = systemsMap;
+			return this;
+		}
+		
+		public Builder id(String id) {
+			this.id = id;
 			return this;
 		}
 
