@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class H5SFSubsctribeController extends H5Controller{
 					data.put("strategy_img", resourceDo.getValue());
 					data.put("strategy_redirect_img", resourceDo.getValue1());
 				}
+				data.put("serviceTime", new Date());
 				logger.info("/appH5SF/initHomePage userId={} , goodsList={} ,resourceDo = {}",
 						new Object[] { userId, goodsList, resourceDo });
 				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();

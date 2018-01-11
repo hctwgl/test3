@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -117,12 +118,6 @@ public class AppH5SFSubscribeController extends BaseController {
 				if (goodsList.size() != 5) {
 					result = H5CommonResponse.getNewInstance(false, "配置失败").toString();
 				}
-		/*		goodsList.get(0).setOrderNumber(goodsList.get(0).getOrderNumber() + Integer.parseInt(fakeDo.getValue()));
-				goodsList.get(1).setOrderNumber(goodsList.get(1).getOrderNumber() + Integer.parseInt(fakeDo.getValue1()));
-				goodsList.get(2).setOrderNumber(goodsList.get(2).getOrderNumber() + Integer.parseInt(fakeDo.getValue2()));
-				goodsList.get(3).setOrderNumber(goodsList.get(3).getOrderNumber() + Integer.parseInt(fakeDo.getValue3()));
-				goodsList.get(4).setOrderNumber(goodsList.get(4).getOrderNumber() + Integer.parseInt(fakeDo.getValue4()));*/
-				
 				data.put("goodsList", goodsList);
 				logger.info("/appH5SF/initHomePage userId={} , goodsList={} ", new Object[] { userId, goodsList });
 				// get configuration from afresource
@@ -133,6 +128,7 @@ public class AppH5SFSubscribeController extends BaseController {
 					data.put("strategy_img", resourceDo.getValue());
 					data.put("strategy_redirect_img", resourceDo.getValue1());
 				}
+				data.put("serviceTime", new Date());
 				logger.info("/appH5SF/initHomePage userId={} , goodsList={} ,resourceDo = {}",
 						new Object[] { userId, goodsList, resourceDo });
 				result = H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
