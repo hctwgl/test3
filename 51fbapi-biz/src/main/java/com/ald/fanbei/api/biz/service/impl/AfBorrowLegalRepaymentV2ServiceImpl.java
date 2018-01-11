@@ -164,7 +164,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 	@Override
 	public void offlineRepay(AfBorrowCashDo cashDo, String borrowNo, 
 				String repayType, String repayTime, String repayAmount,
-				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator) {
+				String restAmount, String outTradeNo, String isBalance,String repayCardNum,String operator,String isAdmin) {
 		checkOfflineRepayment(cashDo, repayAmount, outTradeNo);
 		
 		RepayBo bo = new RepayBo();
@@ -177,7 +177,11 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.borrowId = cashDo.getRid();
 		
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
-		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
+		if (isAdmin != null && "Y".equals(isAdmin)){
+			bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;//财务线下打款
+		}else {
+			bo.name = Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE;//催收线下打款
+		}
 		bo.outTradeNo = outTradeNo;
 		bo.cardNo = repayCardNum;
 		bo.repayType = repayType;
@@ -665,6 +669,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		repay.setCouponAmount(couponAmountForBorrow);
 		repay.setName(name);
 		repay.setUserId(userId);
+		repay.setTradeNo(payTradeNo);
 		if (cardId == -2) {
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_USER_ACCOUNT);
