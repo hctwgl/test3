@@ -93,7 +93,6 @@ public class GetMyHistoryBorrowDetailV1Api implements ApiHandle{
 			query.setUserId(userId);
 			query.setOutDayStr(strOutDay);
 			query.setOutDayEnd(endOutDay);
-			query.setIsOut(1);
 			query.setStatus(BorrowBillStatus.YES.getCode());
 			List<AfBorrowBillDto> billList = afBorrowBillService.getBillListByQuery(query);
 			Date end = DateUtil.addDays(strOutDay, userOutDayDo.getOutDay() - 2);

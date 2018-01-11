@@ -713,6 +713,7 @@
 		) b
 		on a.gmtOutDay = b.gmtOutDay
 		where  IFNULL(b.billAmount,0) = 0
+		ORDER BY gmtOutDay desc
 		LIMIT #{begin},#{pageSize}
 	</select>
 
