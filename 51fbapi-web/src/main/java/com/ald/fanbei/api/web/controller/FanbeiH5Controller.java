@@ -1,27 +1,34 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5BaseController;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 
 
 
@@ -37,6 +44,8 @@ public class FanbeiH5Controller extends H5BaseController {
 	@Resource
 	H5HandleFactory h5HandleFactory;
 
+	@Resource
+	AfUserService afUserService;
 	
     @RequestMapping(value ="/h5/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -50,50 +59,52 @@ public class FanbeiH5Controller extends H5BaseController {
 	@Override
 	public Context parseRequestData(HttpServletRequest request) {
         try {
-        	ContextImpl.Builder builder = new ContextImpl.Builder();
-        	
-            String method = request.getRequestURI();
-            
-            String appInfo = request.getParameter("_appInfo");
-            
-            
-            
-            
-            builder.method(method);
-            
-            Context context = builder.build();
-            
-            
-            
-            /*
-            reqVo.setMethod(method);
-            reqVo.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
-            
-            
-            String appVersion = request.getHeader(Constants.REQ_SYS_NODE_VERSION);
-            String netType = request.getHeader(Constants.REQ_SYS_NODE_NETTYPE);
-            String userName = request.getHeader(Constants.REQ_SYS_NODE_USERNAME);
-            String sign = request.getHeader(Constants.REQ_SYS_NODE_SIGN);
-            String time = request.getHeader(Constants.REQ_SYS_NODE_TIME);
-
-            Map<String,Object> system = new HashMap<String,Object>();
-            
-            system.put(Constants.REQ_SYS_NODE_VERSION, appVersion);
-            system.put(Constants.REQ_SYS_NODE_NETTYPE, netType);
-            system.put(Constants.REQ_SYS_NODE_USERNAME, userName);
-            system.put(Constants.REQ_SYS_NODE_SIGN, sign);
-            system.put(Constants.REQ_SYS_NODE_TIME, time);
-            
-            reqVo.setSystem(system);
-            
-            JSONObject jsonObj = JSON.parseObject(requestData);
-            reqVo.setParams((jsonObj == null || jsonObj.isEmpty()) ? new HashMap<String,Object>() : jsonObj);
-             */
-            return context;
+        	return buildContext(request);
         } catch (Exception e) {
             throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
 	}
+
+	private Context buildContext(HttpServletRequest request) {
+		
+		ContextImpl.Builder builder = new ContextImpl.Builder();
+		String method = request.getRequestURI();
+        String appInfo = request.getParameter("_appInfo");
+        JSONObject _appInfo = JSONObject.parseObject(appInfo);
+        String userName = _appInfo.getString("userName");
+        Integer appVersion = _appInfo.getInteger("appVersion");
+        
+        Map<String,Object> systemsMap = (Map)JSON.parse(appInfo); 
+        AfUserDo userInfo = afUserService.getUserByUserName(userName);
+        Long userId = userInfo == null ? null : userInfo.getRid();
+        Map<String,Object> dataMaps = Maps.newHashMap();
+        
+        wrapRequest(request,dataMaps);
+        
+        builder.method(method)
+        	   .userId(userId)
+        	   .userName(userName)
+        	   .appVersion(appVersion)
+        	   .systemsMap(systemsMap)
+        	   .dataMap(dataMaps);
+        
+        Context context = builder.build();
+		return context;
+	}
+
+
+	private void wrapRequest(HttpServletRequest request, Map<String, Object> dataMaps) {
+		
+		Enumeration<String> paramNames =  request.getParameterNames();
+		while(paramNames.hasMoreElements()) {
+			String paramName = paramNames.nextElement();
+			if(!StringUtils.equals("_appInfo", paramName)) {
+				String objVal = request.getParameter(paramName);
+				dataMaps.put(paramName, objVal);
+			}
+		}
+	}
+
 
 	@Override
 	public BaseResponse doProcess(Context context) {

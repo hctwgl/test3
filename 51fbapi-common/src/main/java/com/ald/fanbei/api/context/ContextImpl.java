@@ -8,14 +8,17 @@ public class ContextImpl implements Context {
 
 	private Map<String, Object> dataMap = Maps.newHashMap();
 
-	private Long appVersion;
+	private Integer appVersion;
 
 	private String userName;
+	
+	private String method;
 
 	private Long userId;
 
-	private String method;
-
+	private Map<String,Object> systemsMap;
+	
+	
 	@Override
 	public Object getData(String key) {
 		return dataMap.get(key);
@@ -36,11 +39,11 @@ public class ContextImpl implements Context {
 		return this.dataMap;
 	}
 
-	public Long getAppVersion() {
+	public Integer getAppVersion() {
 		return appVersion;
 	}
 
-	public void setAppVersion(Long appVersion) {
+	public void setAppVersion(Integer appVersion) {
 		this.appVersion = appVersion;
 	}
 
@@ -67,6 +70,15 @@ public class ContextImpl implements Context {
 	public void setMethod(String method) {
 		this.method = method;
 	}
+	
+	
+	public Map<String, Object> getSystemsMap() {
+		return systemsMap;
+	}
+
+	public void setSystemsMap(Map<String, Object> systemsMap) {
+		this.systemsMap = systemsMap;
+	}
 
 	private ContextImpl(Builder builder) {
 		this.dataMap = builder.dataMap;
@@ -74,19 +86,22 @@ public class ContextImpl implements Context {
 		this.userName = builder.userName;
 		this.appVersion = builder.appVersion;
 		this.method  = builder.method;
+		this.systemsMap  = builder.systemsMap;
 	}
 
 	public static class Builder {
 
 		private Map<String, Object> dataMap;
 
-		private Long appVersion;
+		private Integer appVersion;
 
 		private String userName;
 
 		private Long userId;
 		
 		private String method;
+		
+		private Map<String,Object> systemsMap;
 
 		public Builder dataMap(Map<String, Object> dataMap) {
 			this.dataMap = dataMap;
@@ -98,7 +113,7 @@ public class ContextImpl implements Context {
 			return this;
 		}
 
-		public Builder appVersion(Long appVersion) {
+		public Builder appVersion(Integer appVersion) {
 			this.appVersion = appVersion;
 			return this;
 		}
@@ -110,6 +125,11 @@ public class ContextImpl implements Context {
 		
 		public Builder method(String method) {
 			this.method = method;
+			return this;
+		}
+		
+		public Builder systemsMap(Map<String,Object> systemsMap) {
+			this.systemsMap = systemsMap;
 			return this;
 		}
 

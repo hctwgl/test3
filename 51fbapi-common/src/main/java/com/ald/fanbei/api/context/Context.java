@@ -12,9 +12,9 @@ public interface Context {
 
 	public Map<String, Object> getDataMap();
 
-	public Long getAppVersion();
+	public Integer getAppVersion();
 
-	public void setAppVersion(Long appVersion);
+	public void setAppVersion(Integer appVersion);
 
 	public String getUserName();
 
@@ -27,4 +27,8 @@ public interface Context {
 	public String getMethod();
 
 	public void setMethod(String method);
+	
+	public Map<String, Object> getSystemsMap() ;
+
+	public void setSystemsMap(Map<String, Object> systemsMap);
 }
