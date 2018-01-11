@@ -284,11 +284,12 @@ public class AppH5InvitationActivityController extends BaseController {
 	        try{
 	            context = doWebCheck(request, false);
 	            if(context.isLogin()){
-	        	   afUser = afUserService.getUserByUserName(context.getUserName());
+	        	   afUser = afUserService.getUserByUserName(context.getUserName() );
 	                if(afUser != null){
 	                    userId = afUser.getRid();
 	                }
-	            }   else{
+	       
+	            }    else{
 	                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
 	               return resp.toString();
 	            }
@@ -371,7 +372,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	        
 
 	        //活动之前没有信用购物，且现在信用购物成功
-	        if(activityBeforeAuthShopping == 0 && isAuthShopping == 1){
+	        if(activityBeforeAuthShopping == 0 && isAuthShopping >= 1){
 	            authShopping = 1;
 	        }
 	        NewbieTaskVo newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping,"authShopping");
@@ -409,9 +410,10 @@ public class AppH5InvitationActivityController extends BaseController {
 		     newbieTaskForThirdShopping.setValue1("已购物"+acticityShopOrderList.size()+"次");
 		     
 		 }else{
-		           BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().subtract(new BigDecimal(2) );
+		           BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().multiply(new BigDecimal(2) );
 		           BigDecimal allAmount = doubleAmount.add(acticityShopOrderList.get(0).getRebateAmount()).add(acticityShopOrderList.get(1).getRebateAmount());
 		           newbieTaskForThirdShopping.setValue1("已购物3次，第三次双倍返"+doubleAmount +",累计返"+allAmount);
+		           newbieTaskForThirdShopping.setFinish(1);
 		 }
 		 newbieTaskList.add(newbieTaskForThirdShopping);	 
 		 
