@@ -7,6 +7,11 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 
+/**
+ * App内部H5接口
+ * @author rongbo
+ *
+ */
 @Component("h5GetLegalOrderLogisticsApi")
 public class H5GetLegalOrderLogisticsApi implements H5Handle{
 
