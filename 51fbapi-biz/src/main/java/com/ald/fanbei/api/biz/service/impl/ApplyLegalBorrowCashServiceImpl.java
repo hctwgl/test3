@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,7 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCacheAmountPerdayDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -106,6 +108,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Resource
 	AfUserAccountService afUserAccountService;
+	
+	@Resource
+	AfBorrowDao afBorrowDao;
 
 	private Logger logger = LoggerFactory.getLogger(ApplyLegalBorrowCashServiceImpl.class);
 
@@ -514,6 +519,11 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String borrowTime = sdf.format(new Date());
+		HashMap<String, HashMap> riskDataMap = new HashMap();
+
+        HashMap summaryData = afBorrowDao.getUserSummary(userId);
+        riskDataMap.put("summaryData", summaryData);
+        riskDataMap.put("summaryOrderData", new HashMap<>());
 		RiskVerifyRespBo verifyBo = riskUtil.verifyNew(
 				ObjectUtils.toString(userId),
 				afBorrowCashDo.getBorrowNo(), 
@@ -523,7 +533,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				riskOrderNo, accountDo.getUserName(), 
 				param.getAmount(), afBorrowCashDo.getPoundage(), 
 				borrowTime, "借钱", StringUtils.EMPTY, null, null, 0l,
-				afBorrowCashDo.getCardName(), null, "");
+				afBorrowCashDo.getCardName(), null, "", riskDataMap);
 		return verifyBo;
 	}
 
