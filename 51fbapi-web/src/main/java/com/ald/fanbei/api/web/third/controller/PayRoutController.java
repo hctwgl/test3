@@ -385,7 +385,7 @@ public class PayRoutController {
 				}
 			} else {
 				if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId, false, "");
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId, false, "",null);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId, "");
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
@@ -464,7 +464,7 @@ public class PayRoutController {
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				String errorWarnMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respCode);
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg,null);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
@@ -536,7 +536,7 @@ public class PayRoutController {
 			thirdLog.info("yibaoresonse fail: " + "status=" + status + ",orderNo=" + orderId);
 
 			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo, false, "");
+				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo, false, "",null);
 			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo, "");
 			} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)

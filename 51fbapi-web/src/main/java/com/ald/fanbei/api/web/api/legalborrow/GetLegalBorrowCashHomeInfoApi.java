@@ -271,7 +271,7 @@ public class GetLegalBorrowCashHomeInfoApi extends GetBorrowCashBase implements 
 			data.put("status", borrowStatus);
 
 			// 查询借款相关商品借款,计算总还款金额
-			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+			AfBorrowLegalOrderCashDo afBorrowLegalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());
 			// 判断订单借款是否结清
 			if (afBorrowLegalOrderCash != null) {
 				String status = afBorrowLegalOrderCash.getStatus();
