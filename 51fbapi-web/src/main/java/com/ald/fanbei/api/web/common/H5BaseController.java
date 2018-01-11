@@ -87,6 +87,7 @@ public abstract class H5BaseController {
 
 	private void checkAppInfo(HttpServletRequest request) {
 		String appInfo = request.getParameter("_appInfo");
+		// App内部H5接口，客户端必须上送_appInfo字段
 		if (StringUtils.isBlank(appInfo)) {
 			throw new FanbeiException("param is null", FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
