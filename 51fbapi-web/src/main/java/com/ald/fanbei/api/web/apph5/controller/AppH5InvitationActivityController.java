@@ -284,12 +284,12 @@ public class AppH5InvitationActivityController extends BaseController {
 	        try{
 	            context = doWebCheck(request, false);
 	            if(context.isLogin()){
-	        	   afUser = afUserService.getUserByUserName(context.getUserName() );
+	        	   afUser = afUserService.getUserByUserName(context.getUserName());
 	                if(afUser != null){
 	                    userId = afUser.getRid();
 	                }
-	                
-	            }    else{
+	                 
+	            }   else{   
 	                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
 	               return resp.toString();
 	            }
@@ -313,7 +313,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	        int rebateCount = afBoluomeRebateService.getCountByUserIdAndFirstOrder(userId,firstOrder);
 	        
 	        AfResourceDo onlineTime = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "ONLINE_TIME");
-	        NewbieTaskVo newbieTaskForFood =  assignment(foodResource,rebateCount,"rebateCount");
+	        NewbieTaskVo newbieTaskForFood =  assignment(foodResource,rebateCount);
 	        newbieTaskList.add(newbieTaskForFood);
 	        //是否信用认证，0否，1是
 	        int auth = 0;
@@ -329,7 +329,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	        if("Y".equals(riskStatus)){
 	            auth = 1;
 	        }
-	        NewbieTaskVo newbieTaskForAuth =  assignment(authResource,auth,"auth");
+	        NewbieTaskVo newbieTaskForAuth =  assignment(authResource,auth);
 	       
 	        if(onlineTime != null && riskTime !=null){
 	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
@@ -347,13 +347,13 @@ public class AppH5InvitationActivityController extends BaseController {
 	        //商城购物返利
 	        int shopShopping = 0;
 	        //afOrderService.getRebateShopOrderByUserId(userId);
-	        //自营商城或者代买分期
+	        //自营商城
 	       List<AfOrderDo> shopOrderList =   afOrderService.getShopOrderByUserIdOrActivityTime(userId,null);
 	       int firstShopping = 0; 
 	       if(shopOrderList.size()>0){
 		   firstShopping =1;
 	        }
-	        NewbieTaskVo newbieTaskForFirstShopShopping =  assignment(shoppingResource,firstShopping,"firstShopping");
+	        NewbieTaskVo newbieTaskForFirstShopShopping =  assignment(shoppingResource,firstShopping);
 	        if(firstShopping == 1){
 	            newbieTaskForFirstShopShopping.setTitle("商城购物返利"+shopOrderList.get(0).getRebateAmount()+"元");
 	        }
@@ -375,7 +375,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	        if(activityBeforeAuthShopping == 0 && isAuthShopping >= 1){
 	            authShopping = 1;
 	        }
-	        NewbieTaskVo newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping,"authShopping");
+	        NewbieTaskVo newbieTaskForAuthShopping =  assignment(creditShoppingResource,authShopping);
 	          //活动之前借过钱
 		 if(activityBeforeAuthShopping == 1){
 		     newbieTaskForAuthShopping.setValue4(onlineTime.getValue1());
@@ -394,18 +394,22 @@ public class AppH5InvitationActivityController extends BaseController {
 	        if(activityBeforeBorrow == 0 && isBorrow >= 1){
 	            borrow = 1;
 	        }
-	        NewbieTaskVo newbieTaskForBorrow =  assignment(borrowResource,borrow,"borrow");
+	        NewbieTaskVo newbieTaskForBorrow =  assignment(borrowResource,borrow);
 	          //活动之前借过钱
 		 if(activityBeforeBorrow >= 1){
 		     newbieTaskForBorrow.setValue4(onlineTime.getValue1());
 		}
 		 newbieTaskList.add(newbieTaskForBorrow);
 		 
-		 //活动期间三次商城购物。（自营，代买分期）
+		 //活动期间三次商城购物。（自营）
 		 //活动期间商城购物数据
 		 
 		 List<AfOrderDo> acticityShopOrderList = afOrderService.getShopOrderByUserIdOrActivityTime(userId,activityTime);
-		 NewbieTaskVo newbieTaskForThirdShopping =  assignment(thirdShoppingResource,0,"thirdShopping");
+		 int count = 0;
+		 if(acticityShopOrderList.size()>=3){
+		     count = acticityShopOrderList.size();
+		}
+		 NewbieTaskVo newbieTaskForThirdShopping =  assignment(thirdShoppingResource,count);
 		 if(acticityShopOrderList.size()<3){
 		     newbieTaskForThirdShopping.setValue1("已购物"+acticityShopOrderList.size()+"次");
 		     
@@ -426,24 +430,30 @@ public class AppH5InvitationActivityController extends BaseController {
     
     
 
-    private NewbieTaskVo assignment(AfResourceDo food,int count,String type) {
+    private NewbieTaskVo assignment(AfResourceDo resource,int count) {
 	NewbieTaskVo  newbieTaskVo = new NewbieTaskVo();
-	String value = food.getValue();
-	String title[] = value.split("/");  
+	String titleName = resource.getValue();
+	String buttonName = resource.getTypeDesc();
+	String urlName = resource.getDescription();
+	String title[] = titleName.split("/");  
+	String button[] = buttonName.split("/");  
+	String url[] = urlName.split("/");  
+	
 	newbieTaskVo.setFinish(0);
 	newbieTaskVo.setTitle(title[0]);
+	newbieTaskVo.setButton(button[0]);
+	newbieTaskVo.setUrl(url[0]);
 	if(count>0){
 	        newbieTaskVo.setFinish(1);
 	        newbieTaskVo.setTitle(title[1]);
-	        if("rebateCount".equals(type)){
-	            newbieTaskVo.setValue(food.getTypeDesc());
-	        }
-	        newbieTaskVo.setValue1(food.getValue4());
+	        newbieTaskVo.setButton(button[1]);
+	        newbieTaskVo.setUrl(url[1]);
+	        newbieTaskVo.setValue1(resource.getValue4());
 	        return newbieTaskVo;
         }
-	newbieTaskVo.setValue1(food.getValue1());
-	newbieTaskVo.setValue2(food.getValue2());
-	newbieTaskVo.setValue3(food.getValue3());
+	newbieTaskVo.setValue1(resource.getValue1());
+	newbieTaskVo.setValue2(resource.getValue2());
+	newbieTaskVo.setValue3(resource.getValue3());
 	
 	return newbieTaskVo;
     }

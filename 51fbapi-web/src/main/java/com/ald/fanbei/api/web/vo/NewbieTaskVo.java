@@ -18,7 +18,8 @@ public class NewbieTaskVo extends AbstractSerial {
 	
         private Integer finish; // 是否完成0：未完成，1已完成
         private String  title;  //标题
-        private String value;//值
+        private String button;//按钮值
+        private String url;//跳转链接
 	private String value1;//扩展值1
 	private String value2;//扩展值2
 	private String value3;//扩展值3
@@ -37,11 +38,18 @@ public class NewbieTaskVo extends AbstractSerial {
             this.title = title;
         }
         
-	public String getValue() {
-	    return value;
+	
+	public String getButton() {
+	    return button;
 	}
-	public void setValue(String value) {
-	    this.value = value;
+	public void setButton(String button) {
+	    this.button = button;
+	}
+	public String getUrl() {
+	    return url;
+	}
+	public void setUrl(String url) {
+	    this.url = url;
 	}
 	public String getValue1() {
 	    return value1;

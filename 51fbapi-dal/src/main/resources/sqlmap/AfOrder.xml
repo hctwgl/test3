@@ -1147,7 +1147,7 @@
 		 FROM 
 		 af_order WHERE 
 		 user_id = #{userId}
-		 AND order_type IN('AGENTBUY','SELFSUPPORT')
+		 AND order_type ='SELFSUPPORT'
 		 AND is_delete = 0
 		 and status = 'REBATED' 
 		  <if test="activityTime != null">

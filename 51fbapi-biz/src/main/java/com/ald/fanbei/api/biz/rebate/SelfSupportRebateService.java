@@ -10,13 +10,16 @@ import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Component(value = "rebate_SELFSUPPORT")
 public class SelfSupportRebateService extends BaseRebateService {
@@ -41,9 +44,6 @@ public class SelfSupportRebateService extends BaseRebateService {
         orderInfo.setGmtModified(new Date());
         orderInfo.setLogisticsInfo("已签收");
         afOrderDao.updateOrder(orderInfo);
-       //该订单为活动开启后第三单，则再返利一次rebateAmount *2
-        
-        
         return super.addRebateAmount(rebateAmount,orderInfo);
     }
 
