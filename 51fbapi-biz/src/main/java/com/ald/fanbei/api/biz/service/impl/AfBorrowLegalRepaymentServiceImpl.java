@@ -905,7 +905,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			}else if ("bank".equals(repayType)){
 				repay.setCardName("银行卡");
 			}else {
-				repay.setCardName("");
+				repay.setCardName("线下还款");
 			}
 //      repay.setCardNumber("");
 //      repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
@@ -955,7 +955,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			}else if ("bank".equals(repayType)){
 				repayment.setCardName("银行卡");
 			}else {
-				repayment.setCardName("");
+				repayment.setCardName("线下还款");
 			}
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(bo.cardId);
