@@ -680,11 +680,16 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (cardId == -4) {
+			if (cardNo == null){
+				cardNo = "";
+			}
 			repay.setCardNumber(cardNo);
 			if ("alipay".equals(repayType)){
 				repay.setCardName("支付宝");
 			}else if ("bank".equals(repayType)){
 				repay.setCardName("银行卡");
+			}else {
+				repay.setCardName("");
 			}
 //			repay.setCardName(repayType);
 		} else {

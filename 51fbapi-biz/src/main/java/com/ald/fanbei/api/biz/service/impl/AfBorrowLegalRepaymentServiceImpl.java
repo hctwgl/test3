@@ -382,7 +382,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				}
 				
 				borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, borrowRepayAmount, tradeNo, now, actualAmountForBorrow, bo.couponId, 
-							couponAmountForBorrow, rabateAmountForBorrow, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId);
+							couponAmountForBorrow, rabateAmountForBorrow, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 				afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 				
 				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
@@ -399,7 +399,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		
 		else if (AfBorrowLegalRepayFromEnum.BORROW.name().equalsIgnoreCase(bo.from)) {
 			borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-					bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId);
+					bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 			afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 		}
 		
@@ -870,7 +870,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 	
 	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
 			BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow, 
-			Long borrowId, Long cardId, String payTradeNo, String name, Long userId) {
+			Long borrowId, Long cardId, String payTradeNo, String name, Long userId,String repayType,String cardNo) {
 		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
@@ -896,8 +896,19 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (cardId == -4) {
-			repay.setCardNumber("");
-			repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
+			if (cardNo == null){
+				cardNo = "";
+			}
+			repay.setCardNumber(cardNo);
+			if ("alipay".equals(repayType)){
+				repay.setCardName("支付宝");
+			}else if ("bank".equals(repayType)){
+				repay.setCardName("银行卡");
+			}else {
+				repay.setCardName("");
+			}
+//			repay.setCardNumber("");
+//			repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			repay.setCardNumber(bank.getCardNumber());
@@ -935,11 +946,16 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			repayment.setCardNo("");
 			repayment.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (bo.cardId == -4) {
+			if (cardNo == null){
+				cardNo = "";
+			}
 			repayment.setCardNo(cardNo);
 			if ("alipay".equals(repayType)){
 				repayment.setCardName("支付宝");
 			}else if ("bank".equals(repayType)){
 				repayment.setCardName("银行卡");
+			}else {
+				repayment.setCardName("");
 			}
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(bo.cardId);
