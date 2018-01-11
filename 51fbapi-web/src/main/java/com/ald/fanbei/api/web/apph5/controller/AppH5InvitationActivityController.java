@@ -288,7 +288,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	                if(afUser != null){
 	                    userId = afUser.getRid();
 	                }
-	       
+	                
 	            }    else{
 	                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
 	               return resp.toString();
@@ -391,12 +391,12 @@ public class AppH5InvitationActivityController extends BaseController {
 	        int  activityBeforeBorrow  = afBorrowCashService.getCashBorrowSuccessByUserId(userId,activityTime);
 	        int  isBorrow  = afBorrowCashService.getCashBorrowSuccessByUserId(userId,null);
 	        //活动之前没有借过钱，且现在借钱成功
-	        if(activityBeforeBorrow == 0 && isBorrow == 1){
-	            auth = 1;
+	        if(activityBeforeBorrow == 0 && isBorrow >= 1){
+	            borrow = 1;
 	        }
 	        NewbieTaskVo newbieTaskForBorrow =  assignment(borrowResource,borrow,"borrow");
 	          //活动之前借过钱
-		 if(activityBeforeBorrow == 1){
+		 if(activityBeforeBorrow >= 1){
 		     newbieTaskForBorrow.setValue4(onlineTime.getValue1());
 		}
 		 newbieTaskList.add(newbieTaskForBorrow);
