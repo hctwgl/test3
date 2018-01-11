@@ -663,8 +663,8 @@ public class AppH5DoubleEggsController extends BaseController {
 					// to check if this user already subscribed this goods if
 					// yes then "已经预约不能重复预约"else"预约成功"
 					if (afGoodsDoubleEggsUserService.isSubscribed(tempDo.getRid(), userId) > 0) {
-						result = H5CommonResponse.getNewInstance(false, "已经预约过不能重复预约！").toString();
-						return result;
+						return H5CommonResponse.getNewInstance(false, "已经预约过不能重复预约！").toString();
+						 
 					}
 
 					AfGoodsDoubleEggsUserDo userDo = new AfGoodsDoubleEggsUserDo();
@@ -680,10 +680,10 @@ public class AppH5DoubleEggsController extends BaseController {
 					
 					afGoodsDoubleEggsUserService.saveRecord(userDo);
 					
-					Long fakeNumber = goodsDo.getAlreadyCount();
+					//Long fakeNumber = goodsDo.getAlreadyCount();
 					
-					int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber(goodsId);
-					data.put("number", numberForSF + fakeNumber);
+					//int numberForSF = afGoodsDoubleEggsUserService.getSpringFestivalNumber(goodsId);
+					//data.put("number", numberForSF + fakeNumber);
 					result = H5CommonResponse.getNewInstance(true, "预约成功", "", data).toString();
 					return result;
 				}
