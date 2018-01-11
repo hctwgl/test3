@@ -382,7 +382,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 				}
 				
 				borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, borrowRepayAmount, tradeNo, now, actualAmountForBorrow, bo.couponId, 
-							couponAmountForBorrow, rabateAmountForBorrow, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,,bo.repayType,bo.cardNo);
+							couponAmountForBorrow, rabateAmountForBorrow, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 				afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 				
 				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
