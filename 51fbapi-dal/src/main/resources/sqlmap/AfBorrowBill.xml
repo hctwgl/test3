@@ -438,7 +438,8 @@
        abb.interest_amount interestAmount,
        abb.overdue_interest_amount overdueInterestAmount,
        abb.poundage_amount poundageAmount,
-       abb.overdue_poundage_amount overduePoundageAmount
+       abb.overdue_poundage_amount overduePoundageAmount,
+       abb.gmt_pay_time lastRepayDay	
 	  FROM `af_borrow` ab 
 	  LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
 	 WHERE ab.`is_delete`= 0
@@ -505,7 +506,8 @@
 		abb.interest_amount interestAmount,
 		abb.overdue_interest_amount overdueInterestAmount,
 		abb.poundage_amount poundageAmount,
-		abb.overdue_poundage_amount overduePoundageAmount
+		abb.overdue_poundage_amount overduePoundageAmount,
+		abb.gmt_pay_time lastRepayDay	
 		FROM `af_borrow` ab
 		LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
 		WHERE ab.`is_delete`= 0
