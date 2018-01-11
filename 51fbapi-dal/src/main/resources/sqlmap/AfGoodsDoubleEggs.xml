@@ -225,7 +225,7 @@
 						af_goods_double_eggs_user u
 					WHERE
 						u.double_eggs_id = de.id
-				) AS order_number,
+				)+de.already_count  AS order_number,
 				
 						CASE WHEN (
 									SELECT
