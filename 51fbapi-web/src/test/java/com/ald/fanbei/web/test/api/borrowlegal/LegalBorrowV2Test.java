@@ -102,7 +102,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 		String tradeNo = "offline" + System.currentTimeMillis();
 		Map<String,String> params = new HashMap<>();
 		params.put("repay_no", tradeNo);
-		params.put("borrow_no", "jq2017122020523500899");
+		params.put("borrow_no", "jq2017122020002200873");
 		params.put("repay_type", "BANK");
 		params.put("repay_time", DateUtil.formatDateTime(new Date()));
 		params.put("repay_amount", "1000.00");

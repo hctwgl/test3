@@ -214,7 +214,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.cardNo = repayCardNum;
 		generateRepayRecords(bo);
 		
-		dealRepaymentSucess(bo.tradeNo, "", bo.borrowRepaymentDo, bo.orderRepaymentDo);
+		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo, bo.orderRepaymentDo);
 		
 	}
 	
@@ -875,7 +875,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
 		repay.setJfbAmount(jfbAmount);
-		repay.setPayTradeNo(payTradeNo);
+		repay.setPayTradeNo(repayNo);
 		repay.setRebateAmount(rebateAmountForBorrow);
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
@@ -934,6 +934,8 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		if ("alipay".equals(repayType)){
 			repayment.setTradeNoZfb(payTradeNo);
 		}else if ("bank".equals(repayType)){
+			repayment.setTradeNoUps(payTradeNo);
+		}else {
 			repayment.setTradeNoUps(payTradeNo);
 		}
 		if (bo.cardId == -2) {

@@ -187,7 +187,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		bo.repayType = repayType;
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, "", bo.borrowRepaymentDo,operator);
+		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo,operator);
 		
 	}
 	
@@ -659,7 +659,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
 		repay.setJfbAmount(jfbAmount);
-		repay.setPayTradeNo(payTradeNo);
+		repay.setPayTradeNo(repayNo);
 		repay.setRebateAmount(rebateAmountForBorrow);
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
