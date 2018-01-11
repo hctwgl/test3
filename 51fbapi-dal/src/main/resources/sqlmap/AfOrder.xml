@@ -1133,7 +1133,7 @@
 		AND
 			user_id=#{userId}
 	</select>
-	<select id="getShopOrderByUser" resultType="HashMap">
+	<select id="getCountShopOrderByUser" resultType="HashMap">
 		 SELECT 	
 		 COUNT(1) 'count' FROM 
 		 af_order WHERE 
@@ -1141,4 +1141,34 @@
 		 AND order_type IN('AGENTBUY','SELFSUPPORT')
 		 AND is_delete = 0
 	</select>
+	<select id="getShopOrderByUserIdOrActivityTime" resultType="AfOrderDo">
+		 SELECT 	
+		<include refid="queryAllFields"/>
+		 FROM 
+		 af_order WHERE 
+		 user_id = #{userId}
+		 AND order_type IN('AGENTBUY','SELFSUPPORT')
+		 AND is_delete = 0
+		 and status = 'REBATED' 
+		  <if test="activityTime != null">
+		   and gmt_finished &gt; #{activityTime}
+		</if>
+		 ORDER BY gmt_rebated asc,gmt_finished asc
+	</select>
+	
+	<select id="getAuthShoppingByUserId" resultType="java.lang.Integer">
+		 SELECT 	
+		 count(1)
+		 FROM 
+		 af_order WHERE 
+		 user_id = #{userId}
+		 AND order_type IN('AGENTBUY','SELFSUPPORT')
+		 AND is_delete = 0
+		 and pay_status = 'P' 
+		 and pay_type in('AP','CP')
+		 <if test="activityTime != null">
+		 and gmt_pay &lt; #{activityTime}
+		</if>
+	</select>
+	
 </mapper>

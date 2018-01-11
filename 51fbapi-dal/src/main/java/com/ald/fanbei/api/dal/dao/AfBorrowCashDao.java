@@ -220,4 +220,7 @@ public interface AfBorrowCashDao {
 	List<AfBorrowCashDo> getListByUserId(@Param("userId")Long userId, @Param("rows")Long rows);
 
 	AfBorrowCashDo getBorrowCashByUserIdDescById(@Param("userId")Long userId);
+
+	int getCashBorrowSuccessByUserId(@Param("userId") Long userId,@Param("activityTime") String activityTime);
+
 }

@@ -365,6 +365,17 @@ public class PayOrderV1Api implements ApiHandle {
                         afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
+                    //首次信用购物（自营或代买信用支付）送还款券
+                       if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) || OrderType.AGENTBUY.getCode().equals(orderInfo.getOrderType()) ){
+                	   if("AP".equals(orderInfo.getPayType()) || "CP".equals(orderInfo.getPayType()))
+        		       try{
+        		           afUserCouponService.sentUserCoupon(orderInfo);
+        		         }catch(Exception e){
+        		           logger.error("first shopping sentUserCoupon error:"+e+orderInfo.toString());
+        		       }
+		    
+                       }
+                    
                     
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");

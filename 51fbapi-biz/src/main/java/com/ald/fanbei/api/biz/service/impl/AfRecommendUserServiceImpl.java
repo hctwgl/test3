@@ -173,10 +173,10 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				} catch (Exception e) {
 					logger.error("{update userBorrowError} userId=" + userId);
 				}
-				//给该用户送优惠券（还款券）
+				/*//给该用户送优惠券（还款券）
 				String tag = "_FIRST_LOAN_";
 				String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
-			        sentUserCoupon(userId,tag,sourceType);
+			        sentUserCoupon(userId,tag,sourceType);*/
 			        
 				final AfBorrowCashDo afBorrowCashDo = afBorrowCashDao.getBorrowCash(userId);
 				final AfResourceDo afResourceDo = getRecommendRecourceForBorrow();

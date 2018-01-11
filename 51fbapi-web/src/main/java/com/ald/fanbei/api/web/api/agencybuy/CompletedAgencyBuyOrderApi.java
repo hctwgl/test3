@@ -76,6 +76,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 			if(StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode())){
 				//自营确认收货走返利处理，由于返利在确认收货收货状态之后，所以直接修改为返利成功即可
 				rebateContext.rebate(orderInfo);
+				
 //				addBorrowBill(orderInfo);
 				return resp;
 			}else{

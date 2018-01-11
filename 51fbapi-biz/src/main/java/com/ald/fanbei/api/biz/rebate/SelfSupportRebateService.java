@@ -41,6 +41,9 @@ public class SelfSupportRebateService extends BaseRebateService {
         orderInfo.setGmtModified(new Date());
         orderInfo.setLogisticsInfo("已签收");
         afOrderDao.updateOrder(orderInfo);
+       //该订单为活动开启后第三单，则再返利一次rebateAmount *2
+        
+        
         return super.addRebateAmount(rebateAmount,orderInfo);
     }
 

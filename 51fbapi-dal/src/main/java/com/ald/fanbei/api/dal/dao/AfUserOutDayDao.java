@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -24,4 +28,5 @@ public interface AfUserOutDayDao {
 	int insertUserOutDayLog(@Param("userId")long userId, @Param("outDay")int outDay);
 
 	int updateUserOutDay(@Param("userId")long userId, @Param("outDay")int outDay, @Param("payDay")int payDay);
+
 }

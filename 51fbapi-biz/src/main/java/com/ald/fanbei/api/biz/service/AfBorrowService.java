@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -274,5 +275,6 @@ public interface AfBorrowService {
 	List<AfBorrowBillDo> getBorrowBillListY(Long userId,Integer billYear,Integer billMonth);
 
 	HashMap addHomeBorrow(final Long orderId, final int nper, final Long userId,Date date);
+
 
 }

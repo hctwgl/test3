@@ -488,4 +488,17 @@
 			`status` IN ('TRANSED', 'FINSH') and overdue_status='Y' 
 		 and user_id = #{userId}
 	</select>
+	
+	<select id="getCashBorrowSuccessByUserId" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			`af_borrow_cash`
+		WHERE `is_delete` =0 AND `status` IN ("FINSH","TRANSED")
+		and user_id = #{userId}
+		<if test="activityTime != null">
+		and gmt_arrival &lt; #{activityTime}
+		</if>
+	</select>
+	
 </mapper>

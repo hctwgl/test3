@@ -2470,10 +2470,27 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	}
 
 	@Override
-	public HashMap getShopOrderByUser(Long userid) {
+	public HashMap getCountShopOrderByUser(Long userid) {
 	    // TODO Auto-generated method stub
-	    return orderDao.getShopOrderByUser(userid);
+	    return orderDao.getCountShopOrderByUser(userid);
 	}
+
+	
+	@Override
+	public List<AfOrderDo> getShopOrderByUserIdOrActivityTime(Long userId, String activityTime) {
+	    // TODO Auto-generated method stub
+	    return orderDao.getShopOrderByUserIdOrActivityTime(userId,activityTime);
+	}
+	
+	@Override
+	public int getAuthShoppingByUserId(Long userId, String activityTime) {
+	    // TODO Auto-generated method stub
+	    return orderDao.getAuthShoppingByUserId(userId,activityTime);
+	}
+
+
+	
+
 
 
 }

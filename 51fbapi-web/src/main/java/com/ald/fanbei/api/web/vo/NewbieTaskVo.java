@@ -36,6 +36,13 @@ public class NewbieTaskVo extends AbstractSerial {
         public void setTitle(String title) {
             this.title = title;
         }
+        
+	public String getValue() {
+	    return value;
+	}
+	public void setValue(String value) {
+	    this.value = value;
+	}
 	public String getValue1() {
 	    return value1;
 	}

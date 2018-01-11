@@ -212,7 +212,7 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	
 	public int sentUserCoupon(AfOrderDo afOrder){
 	        Long count = 0L;
-		HashMap map = afOrderService.getShopOrderByUser(afOrder.getUserId());
+		HashMap map = afOrderService.getCountShopOrderByUser(afOrder.getUserId());
 	
 		logger.info("sentUserCoupon for new user userId=" + afOrder);
 		
@@ -231,7 +231,7 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		
 		
 	}
-	  private void sentUserCoupon(Long userId,String tag,String sourceType){
+	  public void sentUserCoupon(Long userId,String tag,String sourceType){
 		//给该用户送优惠券（还款券）
 		AfCouponCategoryDo  couponCategory  = afCouponCategoryService.getCouponCategoryByTag(tag);
 		if(couponCategory != null){

@@ -48,6 +48,7 @@ import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfCounponStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -491,6 +492,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 			String lastBank = bankNumber.substring(bankNumber.length() - 4);
 
 			smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+			
 			// 审核通过
 			cashDo.setGmtArrival(currDate);
 			cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
@@ -537,6 +539,16 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 								afBorrowCashDo.getAmount(), userId,
 								afBorrowCashDo.getRid());
 				afUserAccountLogDao.addUserAccountLog(accountLog);
+				try{
+	        			//是否是第一次借款,给该用户送优惠券（还款券）
+	        			String tag = "_FIRST_LOAN_";
+	        			String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
+	        			//是否是第一次借款
+	        			afUserCouponService.sentUserCoupon(userId,tag,sourceType);
+	        			
+				}catch(Exception e){
+				    logger.error("first borrow sentUserCoupon error", e);
+				}
 			}
 			
 			afBorrowCashService.updateBorrowCash(cashDo);
@@ -749,5 +761,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 	// }
 	// }
 	// }
+	
 
 }

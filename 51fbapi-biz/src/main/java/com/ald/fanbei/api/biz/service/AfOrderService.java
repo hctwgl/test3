@@ -376,6 +376,13 @@ public interface AfOrderService {
 	* return HashMap 返回类型 
 	* @throws
 	 */
-	HashMap getShopOrderByUser(Long userid);
+	HashMap getCountShopOrderByUser(Long userid);
+
+	List<AfOrderDo> getShopOrderByUserIdOrActivityTime(Long userId, String activityTime);
+	
+	int getAuthShoppingByUserId(Long userId, String activityTime);
+
+
+
 	
 }

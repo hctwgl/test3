@@ -326,12 +326,12 @@ public class BuySelfGoodsApi implements ApiHandle {
 			}
 			afUserCouponService.updateUserCouponSatusUsedById(couponId);
 		}
-		//首次信用购物,送优惠券
-		  try{
-		        afUserCouponService.sentUserCoupon(afOrder);
-		        }catch(Exception e){
-		          logger.error("first shopping sentUserCoupon error:"+e+afOrder.toString());
-		      }
+//		//首次信用购物,送优惠券
+//		  try{
+//		        afUserCouponService.sentUserCoupon(afOrder);
+//		        }catch(Exception e){
+//		          logger.error("first shopping sentUserCoupon error:"+e+afOrder.toString());
+//		      }
 		resp.setResponseData(data);
 		return resp;
 	}
