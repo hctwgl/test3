@@ -14,6 +14,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfGoodsStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -91,6 +92,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfGoodsDoubleEggsService afGoodsDoubleEggsService;
 	@Resource
 	AfActivityGoodsService afActivityGoodsService;
+	@Resource
+	AfUserAccountSenceService afUserAccountSenceService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -298,10 +301,16 @@ public class BuySelfGoodsApi implements ApiHandle {
 
 		}
 		afOrder.setUserCouponId(couponId);
-		AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-		afOrder.setAuAmount(userAccountInfo.getAuAmount());
-		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
+		AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userId);
+		if(afUserAccountSenceDo == null){
+			afUserAccountSenceDo = new AfUserAccountSenceDo();
+			afUserAccountSenceDo.setAuAmount(new BigDecimal(0));
+			afUserAccountSenceDo.setFreezeAmount(new BigDecimal(0));
+			afUserAccountSenceDo.setUsedAmount(new BigDecimal(0));
+		}
+		BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+		afOrder.setAuAmount(afUserAccountSenceDo.getAuAmount());
+		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		afOrderService.createOrder(afOrder);
 		afGoodsService.updateSelfSupportGoods(goodsId, count);
 		String isEnoughAmount = "Y";

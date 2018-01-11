@@ -9,14 +9,12 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfTradeBusinessInfoDo;
-import com.ald.fanbei.api.dal.domain.AfTradeOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -50,6 +48,8 @@ public class TradeOrderApi implements ApiHandle {
     AfTradeOrderService afTradeOrderService;
     @Resource
     AfTradeBusinessInfoService afTradeBusinessInfoService;
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -82,6 +82,8 @@ public class TradeOrderApi implements ApiHandle {
         afOrder.setGmtPayEnd(gmtPayEnd);
         afOrder.setNper(nper);
         AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(businessId);
+        String code = afTradeBusinessInfoService.getCodeById(afTradeBusinessInfoDo.getType());
+        afOrder.setSecType(code);
         String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
         //region 没有配置就采用默认值
         AfTradeRebateModelBo rebateModel = null;
@@ -126,10 +128,16 @@ public class TradeOrderApi implements ApiHandle {
             rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
             afOrder.setRebateAmount(rebateAmount);
         }
-        AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(userId);
-        BigDecimal useableAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount()).subtract(userAccountInfo.getFreezeAmount());
-        afOrder.setAuAmount(userAccountInfo.getAuAmount());
-		afOrder.setUsedAmount(userAccountInfo.getUsedAmount());
+        AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userId);
+        if(afUserAccountSenceDo == null){
+            afUserAccountSenceDo = new AfUserAccountSenceDo();
+            afUserAccountSenceDo.setAuAmount(new BigDecimal(0));
+            afUserAccountSenceDo.setFreezeAmount(new BigDecimal(0));
+            afUserAccountSenceDo.setUsedAmount(new BigDecimal(0));
+        }
+        BigDecimal useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
+        afOrder.setAuAmount(afUserAccountSenceDo.getAuAmount());
+		afOrder.setUsedAmount(afUserAccountSenceDo.getUsedAmount());
 		//新增下单时记录 IP 、设备指纹 2017年12月12日13:21:39 cxk
 		afOrder.setIp(request.getRemoteAddr());//用户ip地址		
 		afOrder.setBlackBox(ObjectUtils.toString(requestDataVo.getParams().get("blackBox")));//加入同盾设备指纹		

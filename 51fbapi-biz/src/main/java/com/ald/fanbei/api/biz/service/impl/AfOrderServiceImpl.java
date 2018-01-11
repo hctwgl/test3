@@ -192,6 +192,8 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
+    @Resource
+    AfInterimDetailDao afInterimDetailDao;
 
     @Override
     public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
@@ -2268,6 +2270,57 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return useableAmount;
 	}
 
+    /**
+     * 处理组合支付失败的情况恢复额度
+     * @param orderInfo
+     */
+	private void updateUsedAmount(AfOrderDo orderInfo) {
+        //判断商圈订单
+        if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+            //教育培训订单
+            if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
+                //减少培训使用额度
+                afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.TRAIN.getCode(),orderInfo.getUserId(),orderInfo.getBorrowAmount().negate());
+            }
+        } else {
+            //获取临时额度
+            AfInterimAuDo afInterimAuDo = afInterimAuDao.getByUserId(orderInfo.getUserId());
+            if (afInterimAuDo == null) {
+                afInterimAuDo = new AfInterimAuDo();
+                afInterimAuDo.setInterimAmount(new BigDecimal(0));
+                afInterimAuDo.setInterimUsed(new BigDecimal(0));
+            }
+            //判断临时额度是否使用
+            if (afInterimAuDo.getInterimUsed().compareTo(BigDecimal.ZERO) == 1) {
+                //还款金额是否大于使用的临时额度
+                BigDecimal backInterim = BigDecimal.ZERO;
+                if (afInterimAuDo.getInterimUsed().compareTo(orderInfo.getBorrowAmount()) >= 0) {
+                    //还临时额度
+                    backInterim = orderInfo.getBorrowAmount();
+                    afInterimAuDao.updateInterimUsed(orderInfo.getUserId(), backInterim.multiply(new BigDecimal(-1)));
+                } else {
+                    //先还临时额度再还使用额度
+                    backInterim = afInterimAuDo.getInterimUsed();
+                    afInterimAuDao.updateInterimUsed(orderInfo.getUserId(), backInterim.multiply(new BigDecimal(-1)));
+                    //减少线上使用额度
+                    afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(), orderInfo.getUserId(), orderInfo.getBorrowAmount().subtract(backInterim).multiply(new BigDecimal(-1)));
+                }
+                //增加临时额度使用记录
+                AfInterimDetailDo afInterimDetailDo = new AfInterimDetailDo();
+                afInterimDetailDo.setAmount(backInterim);
+                afInterimDetailDo.setInterimUsed(afInterimAuDo.getInterimUsed().subtract(backInterim));
+                afInterimDetailDo.setType(3);
+                afInterimDetailDo.setOrderId(orderInfo.getRid());
+                afInterimDetailDo.setUserId(orderInfo.getUserId());
+                afInterimDetailDao.addAfInterimDetail(afInterimDetailDo);
+            }
+            else {
+                //减少线上使用额度
+                afUserAccountSenceDao.updateUsedAmount(UserAccountSceneType.ONLINE.getCode(),orderInfo.getUserId(), orderInfo.getBorrowAmount().negate());
+            }
+        }
+    }
+
 	/**
 	 * 处理组合支付失败的情况
 	 */
@@ -2292,19 +2345,11 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 
                     // 恢复额度
 
-                    // 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
-                    AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-                    if (userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >= 0) {
-                        // 恢复账户额度
-                        AfUserAccountDo account = new AfUserAccountDo();
-                        account.setUsedAmount(orderInfo.getBorrowAmount().negate());
-                        account.setUserId(orderInfo.getUserId());
-                        afUserAccountDao.updateUserAccount(account);
-                        // 增加资金变化的记录
-                        afUserAccountLogDao
-                                .addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL,
-                                        orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
-                    }
+                    updateUsedAmount(orderInfo);
+                    // 增加资金变化的记录
+                    afUserAccountLogDao
+                            .addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL,
+                                    orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
 
                     // 恢复虚拟额度
                     AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();
@@ -2371,20 +2416,12 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
                             new Object[]{payOrderNo, tradeNo});
 
                     // 恢复额度
+                    updateUsedAmount(orderInfo);
+                    // 增加资金变化的记录
+                    afUserAccountLogDao
+                            .addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL,
+                                    orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
 
-                    // 如果已经使用的额度大于要恢复的额度 才会给用户增加额度，防止重复回调造成重复给我用户增加额度问题
-                    AfUserAccountDo userAccountDo = afUserAccountDao.getUserAccountInfoByUserId(orderInfo.getUserId());
-                    if (userAccountDo.getUsedAmount().compareTo(orderInfo.getBorrowAmount()) >= 0) {
-                        // 恢复账户额度
-                        AfUserAccountDo account = new AfUserAccountDo();
-                        account.setUsedAmount(orderInfo.getBorrowAmount().negate());
-                        account.setUserId(orderInfo.getUserId());
-                        afUserAccountDao.updateUserAccount(account);
-                        // 增加资金变化的记录
-                        afUserAccountLogDao
-                                .addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CP_PAY_FAIL,
-                                        orderInfo.getBorrowAmount(), orderInfo.getUserId(), orderInfo.getRid()));
-                    }
 
                     // 恢复虚拟额度
                     AfUserVirtualAccountDo queryVirtualAccountDo = new AfUserVirtualAccountDo();

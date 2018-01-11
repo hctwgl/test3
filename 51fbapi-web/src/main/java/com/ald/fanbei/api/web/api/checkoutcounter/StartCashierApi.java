@@ -518,16 +518,12 @@ public class StartCashierApi implements ApiHandle {
             if (orderInfo.getSecType().equals(UserAccountSceneType.TRAIN.getCode())) {
                 AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.TRAIN.getCode(), userDto.getUserId());
                 if (afUserAccountSenceDo != null) {
-                    //修改订单的授信额度和使用额度
-                    afOrderService.updateAuAndUsed(orderInfo.getRid(), afUserAccountSenceDo.getAuAmount(), afUserAccountSenceDo.getUsedAmount());
                     useableAmount = afUserAccountSenceDo.getAuAmount().subtract(afUserAccountSenceDo.getUsedAmount()).subtract(afUserAccountSenceDo.getFreezeAmount());
                 }
             }
         } else {    //线上分期订单
             AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndType(UserAccountSceneType.ONLINE.getCode(), userDto.getUserId());
             if (afUserAccountSenceDo != null) {
-                //修改订单的授信额度和使用额度
-                afOrderService.updateAuAndUsed(orderInfo.getRid(), afUserAccountSenceDo.getAuAmount(), afUserAccountSenceDo.getUsedAmount());
                 //额度判断
                 if (afInterimAuDo.getGmtFailuretime().compareTo(DateUtil.getToday()) >= 0 && !orderInfo.getOrderType().equals(OrderType.BOLUOME.getCode())) {
                     //获取当前用户可用临时额度
