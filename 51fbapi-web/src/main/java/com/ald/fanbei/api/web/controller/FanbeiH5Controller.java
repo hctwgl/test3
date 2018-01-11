@@ -70,25 +70,28 @@ public class FanbeiH5Controller extends H5BaseController {
 		ContextImpl.Builder builder = new ContextImpl.Builder();
 		String method = request.getRequestURI();
         String appInfo = request.getParameter("_appInfo");
-        JSONObject _appInfo = JSONObject.parseObject(appInfo);
-        String userName = _appInfo.getString("userName");
-        String id = _appInfo.getString("id");
-        Integer appVersion = _appInfo.getInteger("appVersion");
+        if(StringUtils.isNotEmpty(appInfo)) {
+        	JSONObject _appInfo = JSONObject.parseObject(appInfo);
+            String userName = _appInfo.getString("userName");
+            String id = _appInfo.getString("id");
+            Integer appVersion = _appInfo.getInteger("appVersion");
+            
+            Map<String,Object> systemsMap = (Map)JSON.parse(appInfo); 
+            AfUserDo userInfo = afUserService.getUserByUserName(userName);
+            Long userId = userInfo == null ? null : userInfo.getRid();
+            builder.method(method)
+	     	   .userId(userId)
+	     	   .userName(userName)
+	     	   .appVersion(appVersion)
+	     	   .systemsMap(systemsMap)
+	     	   .id(id);
+        }
         
-        Map<String,Object> systemsMap = (Map)JSON.parse(appInfo); 
-        AfUserDo userInfo = afUserService.getUserByUserName(userName);
-        Long userId = userInfo == null ? null : userInfo.getRid();
         Map<String,Object> dataMaps = Maps.newHashMap();
         
         wrapRequest(request,dataMaps);
-        
-        builder.method(method)
-        	   .userId(userId)
-        	   .userName(userName)
-        	   .appVersion(appVersion)
-        	   .systemsMap(systemsMap)
-        	   .dataMap(dataMaps)
-        	   .id(id);
+        builder.dataMap(dataMaps);
+       
         Context context = builder.build();
 		return context;
 	}
