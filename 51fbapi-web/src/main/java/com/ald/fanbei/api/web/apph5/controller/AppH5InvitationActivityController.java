@@ -50,6 +50,7 @@ import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -697,7 +698,7 @@ public class AppH5InvitationActivityController extends BaseController {
                 if(afUser != null){
                     userId = afUser.getRid();
                 }
-            }else{
+            }else{  
                 resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
                 return resp.toString();
             }
@@ -712,7 +713,7 @@ public class AppH5InvitationActivityController extends BaseController {
         String ret = null;
         HashMap<String,Object> map =new HashMap<>();
         List<HashMap> hashMapList =new ArrayList<>();
-        List<AfRecommendUserDo> rewardQueryList =new ArrayList<>();
+        List<AfRecommendUserDto> rewardQueryList =new ArrayList<>();
         if("1".equals(type)||"2".equals(type)){
             rewardQueryList=afRecommendUserService.rewardQuery(userId,type,currentPage,pageSize);
             Integer count =afRecommendUserService.rewardQueryCount(userId,type);

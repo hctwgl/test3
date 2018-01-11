@@ -61,7 +61,7 @@
 		ru.user_id,ru.is_loan,ru.loan_time,ru.origin,ru.parentId,ru.type,ru.recommend_count,ru.gmt_create,ru.is_shopping_rebate,au.risk_status
 		FROM af_recommend_user  ru
 		INNER JOIN af_user_auth au ON  au.user_id = ru.user_id	
-		WHERE ru.user_id = #{user_id} AND au.type = #{type}
+		WHERE ru.user_id = #{user_id} AND ru.type = #{type}
 	</select>
 
 	<update id="updateLoanById" parameterType="AfRecommendUserDo">
@@ -128,12 +128,12 @@
 		select IFNULL(sum(money),0) from af_recommend_money where parent_id = #{userId}
 	</select>
 
-	<select id="firstRewardQuery" resultType="AfRecommendUserDo">
+	<select id="firstRewardQuery" resultType="AfRecommendUserDto">
 	    select a.user_id userId,a.parentId parentId,IFNULL(b.money,0.00) prizeMoney from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
         where a.is_delete=0 and a.parentId = #{userId} and a.type =1 and (b.parent_id =#{userId} or b.parent_id is null)
         limit #{pageNo},#{pageSize}
 	</select>
-	<select id="twoLevelRewardQuery" resultType="AfRecommendUserDo">
+	<select id="twoLevelRewardQuery" resultType="AfRecommendUserDto">
 	   select a.user_id userId,a.parentId parentId,IFNULL(b.money,0.00) prizeMoney from  af_recommend_user a left join af_recommend_money b on a.user_id=b.user_id
 	   where  b.parent_id = #{userId} and a.parentId in (SELECT user_id from af_recommend_user where is_delete=0 and parentId =#{userId} and type =1)
        limit #{pageNo},#{pageSize}

@@ -27,9 +27,9 @@ public interface AfRecommendUserDao {
 
     double getSumPrizeMoney(@Param("userId") long userId);
 
-    List<AfRecommendUserDo> firstRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize);
+    List<AfRecommendUserDto> firstRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize);
 
-    List<AfRecommendUserDo> twoLevelRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize);
+    List<AfRecommendUserDto> twoLevelRewardQuery(@Param("userId") long userId,@Param("pageNo")long pageNo,@Param("pageSize")Integer pageSize);
 
     int firstRewardQueryCount(@Param("userId") long userId);
 

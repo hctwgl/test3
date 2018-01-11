@@ -1,20 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-import com.ald.fanbei.api.common.enums.AfCounponStatus;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
-import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
-import com.alibaba.druid.util.StringUtils;
-import com.alibaba.fastjson.JSONArray;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +16,36 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import sun.awt.geom.AreaOp;
-
-import javax.annotation.Resource;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
+import com.ald.fanbei.api.biz.service.AfCouponService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.common.enums.CouponStatus;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.AfCouponDao;
+import com.ald.fanbei.api.dal.dao.AfRecommendUserDao;
+import com.ald.fanbei.api.dal.dao.AfResourceDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
+import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
+import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendMoneyDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendShareDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
+import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
+import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSONArray;
 
 @Service("afRecommendUserService")
 public class AfRecommendUserServiceImpl implements AfRecommendUserService {
@@ -62,6 +75,8 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	AfUserCouponDao  afUserCouponDao;
 	@Resource
 	AfCouponDao afCouponDao;
+	@Resource
+	AfUserAuthDao afUserAuthDao;
 	
 	@Resource
 	private TransactionTemplate transactionTemplate;
@@ -349,8 +364,8 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	}
 
 	@Override
-	public List<AfRecommendUserDo> rewardQuery(long userId, String type,Integer currentPage, Integer pageSize) {
-		List<AfRecommendUserDo> listData= new ArrayList<>();
+	public List<AfRecommendUserDto> rewardQuery(long userId, String type,Integer currentPage, Integer pageSize) {
+		List<AfRecommendUserDto> listData= new ArrayList<>();
 		if(pageSize==null){
 			pageSize=5;
 		}
@@ -361,7 +376,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 			listData = afRecommendUserDao.twoLevelRewardQuery(userId,pageNo,pageSize);
 		}
 		if(listData!=null){
-			for (AfRecommendUserDo af: listData) {
+			for (AfRecommendUserDto af: listData) {
 				//加上状态
 				AfRecommendUserDto afRecommendUserDto =afRecommendUserDao.getARecommendUserByIdAndType(af.getUserId(),1);
 				
@@ -387,10 +402,14 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 //				}
 				//加上userName
 				AfUserDo afUserDo =afUserDao.getUserById(af.getUserId());
+				AfUserAuthDo afUseAuthrDo = afUserAuthDao.getUserAuthInfoByUserId(af.getUserId());
 				af.setUserName(afUserDo.getUserName());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String createTime = sdf.format(afUserDo.getGmtCreate());
 				af.setCreateTime(createTime);
+				af.setIsShoppingRebate(afRecommendUserDto.getIsShoppingRebate());
+				af.setIsloan(afRecommendUserDto.getIsloan());
+				af.setRiskStatus(afUseAuthrDo.getRiskStatus());
 			}
 		}
 		return listData;

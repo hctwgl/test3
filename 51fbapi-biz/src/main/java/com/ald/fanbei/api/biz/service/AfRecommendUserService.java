@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -88,7 +89,7 @@ public interface AfRecommendUserService {
      * @param type
      * @return
      */
-    List<AfRecommendUserDo> rewardQuery(long userId,String type,Integer currentPage, Integer pageSize);
+    List<AfRecommendUserDto> rewardQuery(long userId,String type,Integer currentPage, Integer pageSize);
 
     /**
      * 总奖励查询总条数
