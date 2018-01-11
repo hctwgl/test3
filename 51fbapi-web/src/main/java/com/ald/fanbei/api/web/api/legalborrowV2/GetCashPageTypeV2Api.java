@@ -63,20 +63,32 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 			// 不回退的情况
 			// 获取最后一笔借款
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+			//查询用户是否有订单
+			AfBorrowLegalOrderDo borrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+			// 查询用户是否有订单借款信息
+			AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
+					.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 			if (afBorrowCashDo == null) {
 				pageType = "V2";
 			} else {
 				// 判断借款状态是否为完成或关闭
 				String status = afBorrowCashDo.getStatus();
-				if (StringUtils.equalsIgnoreCase("FINSH", status) || StringUtils.equalsIgnoreCase("CLOSED", status)) {
+				if (StringUtils.equalsIgnoreCase("FINSH", status)) {
+					if (borrowLegalOrder == null) {
+						pageType = "V2";
+					} else if (borrowLegalOrder != null) {
+						if(null == afBorrowLegalOrderCashDo){
+							pageType = "V2";
+						}else if(afBorrowLegalOrderCashDo != null && StringUtils.equalsIgnoreCase(afBorrowLegalOrderCashDo.getStatus(), "FINISHED")){
+							pageType = "V2";
+						}else{
+							pageType = "V1";
+						}
+					}
+				}else if(StringUtils.equalsIgnoreCase("CLOSED", status)){
 					pageType = "V2";
 				} else {
-					//查询用户是否有订单
-					AfBorrowLegalOrderDo borrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
 					if(null != borrowLegalOrder){
-						// 查询用户是否有订单借款信息
-						AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-								.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
 						if (afBorrowLegalOrderCashDo != null) {
 							pageType = "V1";
 						} else {
@@ -87,7 +99,6 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 					}
 				}
 			}
-
 		} else if (userId != null && StringUtils.equalsIgnoreCase("true", isBack)) {
 			// 回退的情况
 			// 获取最后一笔借款
@@ -112,7 +123,7 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 						}else if(afBorrowLegalOrderCashDo != null && StringUtils.equalsIgnoreCase(afBorrowLegalOrderCashDo.getStatus(), "FINISHED")){
 							pageType = "V0";
 						}else{
-							pageType = "V2";
+							pageType = "V1";
 						}
 					}
 				}else{
