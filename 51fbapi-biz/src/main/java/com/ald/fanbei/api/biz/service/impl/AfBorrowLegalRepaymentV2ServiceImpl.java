@@ -689,7 +689,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends ParentServiceImpl<AfRep
 			}else if ("bank".equals(repayType)){
 				repay.setCardName("银行卡");
 			}else {
-				repay.setCardName("");
+				repay.setCardName("线下还款");
 			}
 //			repay.setCardName(repayType);
 		} else {

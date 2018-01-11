@@ -103,15 +103,15 @@ public class LegalBorrowV2Test  extends BaseTest{
 		Map<String,String> params = new HashMap<>();
 		params.put("repay_no", tradeNo);
 		params.put("borrow_no", "jq2017122020002200873");
-		params.put("repay_type", "BANK");
+		params.put("repay_type", "bank");
 		params.put("repay_time", DateUtil.formatDateTime(new Date()));
 		params.put("repay_amount", "1000.00");
 		params.put("rest_amount", "10000.00");
-		params.put("repay_cardNum", "6568654646462113"); // 模拟催收则 注解掉
-		params.put("operator", "测试");// 模拟催收则 注解掉
+//		params.put("repay_cardNum", "6568654646462113"); // 模拟催收则 注解掉
+//		params.put("operator", "测试");// 模拟催收则 注解掉
 		params.put("trade_no", tradeNo);
 		params.put("is_balance", YesNoStatus.NO.getCode());
-		params.put("is_admin", "Y");// 模拟催收则 注解掉
+//		params.put("is_admin", "Y");// 模拟催收则 注解掉
 		
 		String data = JsonUtil.toJSONString(params);
 		String timestamp = DateUtil.getDateTimeFull(new Date());
