@@ -114,7 +114,7 @@ public class GetBorrowLegalOrderDetailV2Api implements ApiHandle {
 				afBorrowLegalOrderDeatilVo.setGmtCreate(afBorrowLegalOrderDo.getGmtCreate());
 				afBorrowLegalOrderDeatilVo.setGmtDeliver(afBorrowLegalOrderDo.getGmtDeliver());
 				afBorrowLegalOrderDeatilVo.setStatus(afBorrowLegalOrderDo.getStatus());
-
+				afBorrowLegalOrderDeatilVo.setGmtModified(afBorrowLegalOrderDo.getGmtModified());
 				// 获取商品ID
 				Long goodsId = afBorrowLegalOrderDo.getGoodsId();
 				AfGoodsDo goodsDo = afGoodsService.getGoodsById(goodsId);
@@ -154,6 +154,7 @@ public class GetBorrowLegalOrderDetailV2Api implements ApiHandle {
 				afBorrowLegalOrderDeatilVo.setGmtCreate(afBorrowLegalOrderDo.getGmtCreate());
 				afBorrowLegalOrderDeatilVo.setGmtDeliver(afBorrowLegalOrderDo.getGmtDeliver());
 				afBorrowLegalOrderDeatilVo.setStatus(afBorrowLegalOrderDo.getStatus());
+				afBorrowLegalOrderDeatilVo.setGmtModified(afBorrowLegalOrderDo.getGmtModified());
 				afBorrowLegalOrderDeatilVo.setEdition("V2");
 				// 获取商品ID
 				Long goodsId = afBorrowLegalOrderDo.getGoodsId();

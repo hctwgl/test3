@@ -68,6 +68,9 @@ public class CollectionController {
 
     @Resource
     AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+    
+    @Resource
+    AfBorrowLegalOrderService afBorrowLegalOrderService;
 
     @Resource
     AfBorrowCashOverdueService afBorrowCashOverdueService;
@@ -281,7 +284,7 @@ public class CollectionController {
 
 				// 查询订单借款
 				AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());
-				if (orderCashDo != null) {
+				if (orderCashDo != null) {	// 搭售V1
 					amount = cashDo.getAmount().add(orderCashDo.getAmount());//借款合计本金
 					overdueAmount = cashDo.getOverdueAmount().add(orderCashDo.getOverdueAmount());
 					rateAmount = cashDo.getRateAmount().add(orderCashDo.getInterestAmount());
@@ -294,7 +297,18 @@ public class CollectionController {
 								.add(poundageAmount).add(cashDo.getSumRenewalPoundage()).add(orderCashDo.getSumRepaidPoundage());// 欠款总额
 					
 					restAmount = repayAmount.subtract(repayAmountSum);
-				} else {
+					
+				} else if(afBorrowLegalOrderService.isV2BorrowCash(cashDo.getRid())){	// 搭售V2
+					amount = cashDo.getAmount();
+					rateAmount = cashDo.getRateAmount();
+					overdueAmount = cashDo.getOverdueAmount();
+					repayAmountSum = cashDo.getRepayAmount();
+					repayAmount = amount
+								.add(rateAmount).add(overdueAmount).add(cashDo.getPoundage())
+								.add(cashDo.getSumRate()).add(cashDo.getSumOverdue()).add(cashDo.getSumRenewalPoundage());// 欠款总额
+					restAmount = repayAmount.subtract(repayAmountSum);
+					
+				} else {	// 老版借钱
 					amount = cashDo.getAmount();
 					rateAmount = cashDo.getRateAmount();
 					overdueAmount = cashDo.getOverdueAmount();

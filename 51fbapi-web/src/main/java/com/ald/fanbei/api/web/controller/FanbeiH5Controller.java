@@ -72,6 +72,7 @@ public class FanbeiH5Controller extends H5BaseController {
         String appInfo = request.getParameter("_appInfo");
         JSONObject _appInfo = JSONObject.parseObject(appInfo);
         String userName = _appInfo.getString("userName");
+        String id = _appInfo.getString("id");
         Integer appVersion = _appInfo.getInteger("appVersion");
         
         Map<String,Object> systemsMap = (Map)JSON.parse(appInfo); 
@@ -86,8 +87,8 @@ public class FanbeiH5Controller extends H5BaseController {
         	   .userName(userName)
         	   .appVersion(appVersion)
         	   .systemsMap(systemsMap)
-        	   .dataMap(dataMaps);
-        
+        	   .dataMap(dataMaps)
+        	   .id(id);
         Context context = builder.build();
 		return context;
 	}
@@ -115,7 +116,7 @@ public class FanbeiH5Controller extends H5BaseController {
             handelResult = methodHandel.process(context);
             int resultCode = handelResult.getResult().getCode();
             if(resultCode != 1000){
-                //logger.info(requestDataVo.getId() + " err,Code=" + resultCode);
+                logger.info(context.getId() + " err,Code=" + resultCode);
             }
             return handelResult;
         }catch(FanbeiException e){
