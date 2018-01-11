@@ -957,7 +957,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			}else if ("bank".equals(repayType)){
 				repayment.setCardName("银行卡");
 			}else {
-				repayment.setCardName("");
+				repayment.setCardName("线下还款");
 			}
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(bo.cardId);
