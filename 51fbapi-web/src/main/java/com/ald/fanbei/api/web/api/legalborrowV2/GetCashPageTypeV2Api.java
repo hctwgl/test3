@@ -67,7 +67,7 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 			AfBorrowLegalOrderDo borrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
 			// 查询用户是否有订单借款信息
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-					.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+					.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());
 			if (afBorrowCashDo == null) {
 				pageType = "V2";
 			} else {
@@ -110,7 +110,7 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 				AfBorrowLegalOrderDo borrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
 				// 查询用户是否有订单借款信息
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
-						.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
+						.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());
 				String status = afBorrowCashDo.getStatus();
 				if (StringUtils.equalsIgnoreCase("CLOSED", status)) {
 					pageType = "V0";
