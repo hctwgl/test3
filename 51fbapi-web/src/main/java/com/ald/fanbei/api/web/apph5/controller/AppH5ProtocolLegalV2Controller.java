@@ -74,7 +74,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
 
-	@RequestMapping(value = {"protocolLegalInstalment"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public void protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
@@ -155,7 +155,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	 * @param model
 	 * @throws IOException
 	 */
-	@RequestMapping(value = { "protocolLegalCashLoan" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "protocolLegalCashLoanV2" }, method = RequestMethod.GET)
 	public void protocolLegalCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
@@ -319,7 +319,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 	}
 
-	@RequestMapping(value = { "protocolLegalRenewal" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "protocolLegalRenewalV2" }, method = RequestMethod.GET)
 	public void protocolLegalRenewal(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
