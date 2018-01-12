@@ -131,7 +131,7 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 				if (verifyBo.isSuccess()) {
 					// 风控审核通过，提交ups进行打款处理
 					applyLegalBorrowCashService.delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(),
-							verifyBo.getResult(), afBorrowLegalOrderDo, mainCard);
+							verifyBo.getResult(), afBorrowLegalOrderDo, mainCard, afBorrowCashDo);
 					// 增加借款埋点信息
 					doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
 				} else {
