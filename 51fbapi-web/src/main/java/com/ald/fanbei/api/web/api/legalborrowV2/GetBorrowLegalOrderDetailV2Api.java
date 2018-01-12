@@ -58,23 +58,17 @@ public class GetBorrowLegalOrderDetailV2Api implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
 		}
 		boolean flag = true;
-		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByUserId(userId);
-		if(afBorrowCashDo != null){
-			if(StringUtils.equals(AfBorrowCashStatus.finsh.getCode(),afBorrowCashDo.getStatus()) || StringUtils.equals(AfBorrowCashStatus.closed.getCode(),afBorrowCashDo.getStatus())){
-				flag = true;
-			}else {
-				AfBorrowLegalOrderCashDo legalOrderCash = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(afBorrowCashDo.getRid());
-				if(legalOrderCash != null){
-					flag = true;
-				}else {
-					flag = false;
-				}
-			}
-		}
+
 		AfBorrowLegalOrderDeatilVo afBorrowLegalOrderDeatilVo = new AfBorrowLegalOrderDeatilVo();
 		AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
 
 		AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
+		if(null != afBorrowLegalOrderCashDo){
+			flag = true;
+		}else if(null == afBorrowLegalOrderCashDo){
+			flag = false;
+		}
+
 		if(flag){//v1版本
 			if (afBorrowLegalOrderCashDo != null) {
 				// FIXME 计算待还金额

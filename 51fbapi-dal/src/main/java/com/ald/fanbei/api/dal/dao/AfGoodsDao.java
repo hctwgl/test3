@@ -9,6 +9,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 
 /**
@@ -101,4 +102,6 @@ public interface AfGoodsDao {
 	List<AfGoodsDo> listGoodsListByParentIdFromSubjectGoods(long parentId);
 
 	List<AfGoodsDo> listGoodsListBySubjectId(@Param("subjectId")Long subjectId);
+
+	List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query);
 }

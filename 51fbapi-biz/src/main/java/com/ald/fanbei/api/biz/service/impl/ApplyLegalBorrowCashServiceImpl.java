@@ -310,7 +310,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 		BigDecimal usableAmount = BigDecimalUtil.subtract(accountDo.getAuAmount(), accountDo.getUsedAmount());
 		BigDecimal accountBorrow = this.calculateMaxAmount(usableAmount);
 
-		if (accountBorrow.compareTo(param.getGoodsAmount().add(param.getAmount())) < 0) {
+		if (accountBorrow.compareTo(param.getAmount()) < 0) {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_MORE_ACCOUNT_ERROR);
 		}
 	}
@@ -355,12 +355,12 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 	public void delegatePay(String consumerNo, String orderNo, String result,
 			final AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard) {
 		Long userId = Long.parseLong(consumerNo);
-		final AfBorrowCashDo cashDo = new AfBorrowCashDo();
+		final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
 		Date currDate = new Date();
 		AfUserDo afUserDo = afUserService.getUserById(userId);
 		AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(userId);
 		final AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
-		cashDo.setRid(afBorrowCashDo.getRid());
+		delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
 
 		List<String> whiteIdsList = new ArrayList<String>();
 		final int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
@@ -386,24 +386,24 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			msgContent = msgContent.replace("&bankCardNo", lastBank);
 			jpushService.pushUtil(title, msgContent, afUserDo.getUserName());
 			// 审核通过
-			cashDo.setGmtArrival(currDate);
-			cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
+			delegateBorrowCashDo.setGmtArrival(currDate);
+			delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transeding.getCode());
 			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.UNPAID.getCode());
 			// 打款
 			UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(afBorrowCashDo.getArrivalAmount(),
 					afUserDo.getRealName(), afBorrowCashDo.getCardNumber(), consumerNo + "", mainCard.getMobile(),
 					mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
 					UserAccountLogType.BorrowCash.getCode(), afBorrowCashDo.getRid() + "");
-			cashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
+			delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.AGREE.getCode());
 			Integer day = NumberUtil
 					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
+			Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(delegateBorrowCashDo.getGmtArrival());
 			Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
-			cashDo.setGmtPlanRepayment(repaymentDay);
+			delegateBorrowCashDo.setGmtPlanRepayment(repaymentDay);
 			if (!upsResult.isSuccess()) {
 				// 大款失败，更新状态
 				logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-				cashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
+				delegateBorrowCashDo.setStatus(AfBorrowCashStatus.transedfail.getCode());
 				// 关闭订单
 				afBorrowLegalOrderDo.setStatus(AfBorrowCashStatus.closed.getCode());
 				afBorrowLegalOrderDo.setClosedDetail("transed fail");
@@ -412,7 +412,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				// 打款成功，更新借款状态、可用额度等信息
 				try {
 					BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(userId);
-					afBorrowCashService.updateAuAmountByRid(cashDo.getRid(), auAmount);
+					afBorrowCashService.updateAuAmountByRid(delegateBorrowCashDo.getRid(), auAmount);
 				} catch (Exception e) {
 					logger.error("updateAuAmountByRid is fail;msg=" + e);
 				}
@@ -427,9 +427,9 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			}
 
 		} else {
-			cashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-			cashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
-			cashDo.setReviewDetails(RiskReviewStatus.REFUSE.getName());
+			delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
+			delegateBorrowCashDo.setReviewStatus(RiskReviewStatus.REFUSE.getCode());
+			delegateBorrowCashDo.setReviewDetails(RiskReviewStatus.REFUSE.getName());
 			// 更新订单状态
 			afBorrowLegalOrderDo.setStatus(BorrowLegalOrderStatus.CLOSED.getCode());
 			jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), currDate);
@@ -439,7 +439,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			@Override
 			public String doInTransaction(TransactionStatus status) {
 				// 更新借款状态
-				afBorrowCashService.updateBorrowCash(cashDo);
+				afBorrowCashService.updateBorrowCash(delegateBorrowCashDo);
 				// 更新订单状态
 				afBorrowLegalOrderService.updateById(afBorrowLegalOrderDo);
 				ApplyLegalBorrowCashServiceImpl.this.addTodayTotalAmount(currentDay, afBorrowCashDo.getAmount());

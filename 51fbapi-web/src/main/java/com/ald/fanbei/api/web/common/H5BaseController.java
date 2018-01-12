@@ -175,38 +175,6 @@ public abstract class H5BaseController {
 		}
 	}
 
-	protected void writeRespData(PrintWriter writer, String resultStr) {
-		try {
-			writer.write(resultStr);
-			writer.flush();
-		} catch (Exception e) {
-			logger.error("o2oapp ioexception ", e);
-		} finally {
-			if (writer != null)
-				writer.close();
-		}
-	}
-
-	protected void writeResponse(HttpServletResponse response, String writeStr) {
-		PrintWriter writer = null;
-		try {
-			writer = response.getWriter();
-			writer.write(writeStr);
-		} catch (Exception e) {
-			logger.error("response write failed ,content is {}", writeStr);
-		} finally {
-			if (null != writer) {
-				writer.close();
-			}
-		}
-	}
-
-	protected String base64Encoded(String baseString) {
-		if (StringUtils.isNotEmpty(baseString)) {
-			return new String(Base64.decode(baseString));
-		}
-		return StringUtils.EMPTY;
-	}
 
 	/**
 	 * 记录埋点相关日志日志
