@@ -422,7 +422,7 @@ public class AppH5InvitationActivityController extends BaseController {
 		 }else{
 		           BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().multiply(new BigDecimal(2) );
 		           BigDecimal allAmount = doubleAmount.add(acticityShopOrderList.get(0).getRebateAmount()).add(acticityShopOrderList.get(1).getRebateAmount());
-		           newbieTaskForThirdShopping.setValue1("已购物3次，第三次双倍返"+doubleAmount +",累计返"+allAmount);
+		           newbieTaskForThirdShopping.setValue1("已购物<i>3</i>次，第三次双倍返<i>"+doubleAmount +"</i>,累计返<i>"+allAmount+"</i>");
 		           newbieTaskForThirdShopping.setFinish(1);
 		 }
 		 newbieTaskList.add(newbieTaskForThirdShopping);	 
