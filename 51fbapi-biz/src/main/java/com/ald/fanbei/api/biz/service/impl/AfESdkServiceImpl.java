@@ -420,7 +420,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 				afUserSealDo1.setUserSeal(addSealResult.getSealData());
 				if (afUserDo.getMajiabaoName() != null && "edspay".equals(afUserDo.getMajiabaoName())){
 					afUserSealDo1.setEdspayUserCardId(accountDo.getIdNumber());
-					afUserSealDo1.setUserName(afUserDo.getUserName());
+					afUserSealDo1.setUserName(afUserDo.getRealName());
 				}
 				// afUserSealDo1.setUserSeal("data:image/png;base64,"+addSealResult.getSealData());
 				// userSeal = addSealResult.getSealData();
@@ -434,6 +434,10 @@ public class AfESdkServiceImpl implements AfESdkService {
 				afUserSealDo1.setUserId(afUserDo.getRid());
 				afUserSealDo1.setUserSeal(addSealResult.getSealData());
 				afUserSealDo1.setUserAccountId(afUserSealDo.getUserAccountId());
+				if (afUserDo.getMajiabaoName() != null && "edspay".equals(afUserDo.getMajiabaoName())){
+					afUserSealDo1.setEdspayUserCardId(accountDo.getIdNumber());
+					afUserSealDo1.setUserName(afUserDo.getRealName());
+				}
 				// userSeal = addSealResult.getSealData();
 				int num = afUserSealDao.updateByUserId(afUserSealDo1);
 			}

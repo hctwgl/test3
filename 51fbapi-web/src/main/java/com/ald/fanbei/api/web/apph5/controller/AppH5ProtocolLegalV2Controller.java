@@ -116,6 +116,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			AfBorrowDo afBorrowDo= afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
+			date= afBorrowDo.getGmtCreate();
 			/*AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
 			if (afBorrowDo != null){
@@ -132,6 +133,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}else {
 			getResourceRate(model, type,afResourceDo,"instalment");
 		}
+		model.put("gmtStart", date);
+		model.put("gmtEnd", DateUtil.addMonths(date, nper));
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 //		model.put("poundage", consumeDo.getValue1());
@@ -165,9 +168,9 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		if(userName == null || !webContext.isLogin() ) {
+		/*if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
-		}
+		}*/
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
 
@@ -194,6 +197,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
+		getResourceRate(model, type,afResourceDo,"borrow");
 		if (borrowId > 0) {
             afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
@@ -205,9 +209,9 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					AfUserSealDo afUserSealDo = afUserSealDao.selectById(afContractPdfDo.getUserSealId());
 					model.put("edspayUserCardId",afUserSealDo.getEdspayUserCardId());
 					model.put("edspayUserName",afUserSealDo.getUserName());
-				}else {
-					getResourceRate(model, type,afResourceDo,"borrow");
+					model.put("secondSeal",afUserSealDo.getUserSeal());
 				}
+				getResourceRate(model, type,afResourceDo,"borrow");
 				model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借时间
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
 				if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
@@ -305,13 +309,13 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}*/
 		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
 		model.put("lender", lenderDo.getValue());// 出借人
-		AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
+		/*AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
 		if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 			model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-		}
+		}*/
 	}
 
-	private void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+	/*private void GetSeal(ModelMap model, AfUserDo afUserDo, AfUserAccountDo accountDo) {
 		try {
 			AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
@@ -320,6 +324,33 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
 			if (null != afUserSealDo && null != afUserSealDo.getUserSeal()){
 				model.put("personUserSeal","data:image/png;base64,"+afUserSealDo.getUserSeal());
+			}
+		}catch (Exception e){
+			logger.error("UserSeal create error",e);
+		}
+	}*/
+
+	private void GetSeal(ModelMap map, AfUserDo afUserDo, AfUserAccountDo accountDo) {
+		try {
+			AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
+				map.put("companyUserSeal","data:image/png;base64," + companyUserSealDo.getUserSeal());
+			}else {
+				logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
+			if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
+				logger.error("创建个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+			}
+			map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
+			companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技股份有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("thirdSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			}else {
+				logger.error("创建钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 		}catch (Exception e){
 			logger.error("UserSeal create error",e);

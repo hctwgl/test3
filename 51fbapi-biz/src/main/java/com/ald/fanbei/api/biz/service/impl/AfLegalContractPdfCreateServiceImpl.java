@@ -172,7 +172,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
         try {
             AfUserSealDo companyUserSealDo = afESdkService.selectUserSealByUserId(-1l);
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()){
-                map.put("CompanyUserSeal",companyUserSealDo.getUserSeal());
+                map.put("companyUserSeal",companyUserSealDo.getUserSeal());
             }else {
                 logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
@@ -198,6 +198,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             }
             map.put("secondSeal", investorAfUserSealDo.getUserSeal());
             map.put("secondAccoundId", investorAfUserSealDo.getUserAccountId());
+            map.put("edspayUserId", investorAfUserSealDo.getId());
             companyUserSealDo = afUserSealDao.selectByUserName("浙江楚橡信息科技股份有限公司");
             if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
                 map.put("thirdSeal", companyUserSealDo.getUserSeal());
@@ -688,6 +689,9 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
 //                if (!"".equals(evId)) {
 //                    afContractPdfDo.setEvId(evId);
 //                }
+                if (map.get("edspayUserId") != null){
+                    afContractPdfDo.setUserSealId((Long) map.get("edspayUserId"));
+                }
                 if ("1".equals(protocolCashType)) {//借款协议
                     afContractPdfDo.setType((byte) 1);
                     afContractPdfDo.setContractPdfUrl(ossUploadResult.getUrl());

@@ -58,7 +58,7 @@
     delete from af_user_seal
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="AfUserSealDo" >
+  <insert id="insert" parameterType="AfUserSealDo" useGeneratedKeys="true" keyProperty="id">
     insert into af_user_seal (user_seal, user_id,user_account_id,user_type,user_name,gmt_create,is_delete,edspay_user_card_id
       )
     values (#{userSeal,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},#{userAccountId},#{userType},#{userName},now(),0,#{edspayUserCardId}

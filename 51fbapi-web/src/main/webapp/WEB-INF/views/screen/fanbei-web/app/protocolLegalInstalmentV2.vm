@@ -54,10 +54,10 @@
     <ul>
         <li><i>借款本金</i><i>#if($!{amountLower})￥$!{amountLower}#end</i></li>
         <li><i>大写金额</i><i>#if($!{amountCapital})人民币$!{amountCapital}#end</i></li>
-        <li><i>借款利率（年化）</i><i>{{changeRate($!{yearRate})}}</i></li>
+        <li><i>借款利率（年化）</i><i>$!{yearRate}</i></li>
         <li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")#end</i></li>
         <li><i>还款方式</i><i>等本等息</i></li>
-        <li><i>还款日</i><i>每月$!{repayDay}日</i></li>
+        <li><i>还款日</i><i>$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
         <li><i>借款用途</i><i>个人消费</i></li>
     </ul><br>
     <span>还款计划：</span><br>
@@ -169,13 +169,15 @@
     <br>
     <table cellspacing="1">
         <tr><td>姓名</td><td>身份证号码</td><td>出借金额</td></tr>
-        <tr><td>1</td><td>三三四四</td><td>订单</td></tr>
-        <tr><td>2</td><td>三三四四</td><td>订单</td></tr>
+        <tr>
+            <td>$!{edspayUserName}</td><td>$!{edspayUserCardId}</td>
+            <td>#if($!{edspayUserCardId})$!{amountLower}#end</td>
+        </tr>
     </table>
     <br>
-    丙方：浙江阿拉丁电子商务股份有限公司<br>
-    丁方：浙江楚橡信息科技股份有限公司<br>
-    签署时间：【系统填写】年【系统填写】月【系统填写】日<br><br>
+    丙方：浙江阿拉丁电子商务股份有限公司 #if($!{companyUserSeal})<img style="max-width: 2.5rem" src="$!{companyUserSeal}">#end<br>
+    丁方：浙江楚橡信息科技股份有限公司 #if($!{thirdSeal})<img style="max-width: 2.5rem" src="$!{thirdSeal}">#end<br>
+    签署时间：$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")<br><br>
     </p>
 </div>
 <script type="text/javascript">
