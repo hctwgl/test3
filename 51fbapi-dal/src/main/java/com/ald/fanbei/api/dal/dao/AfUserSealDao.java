@@ -12,6 +12,8 @@ public interface AfUserSealDao {
 
     AfUserSealDo selectByUserId(Long id);
 
+    AfUserSealDo selectByCardId(String id);
+
     AfUserSealDo selectByUserName(String userName);
 
     List<AfUserSealDo> selectByUserType(String type);
