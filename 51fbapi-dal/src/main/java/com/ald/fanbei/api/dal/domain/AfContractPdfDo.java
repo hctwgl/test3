@@ -15,6 +15,16 @@ public class AfContractPdfDo {
 
     private Date gmtCreate;
 
+    private Long userSealId;
+
+    public Long getUserSealId() {
+        return userSealId;
+    }
+
+    public void setUserSealId(Long userSealId) {
+        this.userSealId = userSealId;
+    }
+
     public Date getGmtCreate() {
         return gmtCreate;
     }

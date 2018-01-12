@@ -31,6 +31,14 @@
     and is_delete = 0
     limit 1
   </select>
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from af_user_seal
+    where id = #{id}
+    and is_delete = 0
+    limit 1
+  </select>
   <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
     select
     <include refid="Base_Column_List" />
