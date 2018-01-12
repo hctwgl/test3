@@ -226,6 +226,11 @@ public class AppH5InvitationActivityController extends BaseController {
 //         giftPackageList = getGiftPackageList();
         //特惠专区
 //         preferentialList =  getPreferentialList();
+         
+       //用户的总共奖励金额
+        double sumPrizeMoney=afRecommendUserService.getSumPrizeMoney(userId);
+        DecimalFormat df = new DecimalFormat("######0.00");//金钱格式 保留两位小数
+        
         
         map.put("listRule",listRule);
         map.put("listPic",listPic);
@@ -236,6 +241,7 @@ public class AppH5InvitationActivityController extends BaseController {
         map.put("welfareExampleList",welfareExampleList);
 //      map.put("giftPackageList",giftPackageList);
 //      map.put("preferentialList",preferentialList);
+        map.put("sumPrizeMoney",df.format(sumPrizeMoney));
         hashMapList.add(map);
         String ret = JSON.toJSONString(hashMapList);
         return ret;

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.service.AfCouponSceneService;
 import com.ald.fanbei.api.biz.service.AfSigninService;
+import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -24,6 +25,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.ald.fanbei.api.dal.domain.AfSigninDo;
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -40,6 +42,8 @@ public class GetSigninInfoApi implements ApiHandle {
 	AfSigninService  afSigninService;
 	@Resource
 	AfCouponSceneService afCouponSceneService;
+	@Resource
+	AfUserService  afUserService;
 
 
 	@Override
@@ -90,7 +94,12 @@ public class GetSigninInfoApi implements ApiHandle {
         	data.put("seriesCount", seriesCount);
 
 		}
-
+        AfUserDo afUserDo = afUserService.getUserById(userId);
+           String avatar = null;
+        if(afUserDo != null){
+            avatar = afUserDo.getAvatar();
+        }
+        data.put("avatar", avatar);
         resp.setResponseData(data);
 
 		return resp;
