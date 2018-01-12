@@ -253,14 +253,26 @@ public class AppH5InvitationActivityController extends BaseController {
         	data.put("seriesCount", seriesCount);
 
 		}
-        AfUserDo afUserDo = afUserService.getUserById(userId);
-           String avatar = null;
-        if(afUserDo != null){
-            avatar = afUserDo.getAvatar();
-        }
-        data.put("avatar", avatar);
-        String ret = JSON.toJSONString(data);
-        return ret;
+                AfUserDo afUserDo = afUserService.getUserById(userId);
+                   String avatar = null;
+                if(afUserDo != null){
+                    avatar = afUserDo.getAvatar();
+                }
+                data.put("avatar", avatar);
+                
+   	     //签到优惠券
+             AfCouponDo signIn = new AfCouponDo();
+   	     List<AfCouponDo> signInCouponList = getCommonCouponMap(CouponScene.SIGN_IN);
+           	     data.put("threshold", "");
+        	     data.put("couponAmount", "");
+   	     if(signInCouponList.size()>0){
+   		     signIn = signInCouponList.get(0);
+ 		     data.put("threshold", signIn.getLimitAmount());
+ 		     data.put("couponAmount", signIn.getAmount());
+   	      }
+                
+                String ret = JSON.toJSONString(data);
+                return ret;
     }
 
     /**
