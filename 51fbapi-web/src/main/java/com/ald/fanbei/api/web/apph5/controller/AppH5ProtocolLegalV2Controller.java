@@ -9,6 +9,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
 import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
 import com.ald.fanbei.api.dal.dao.AfUserSealDao;
@@ -74,13 +75,16 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfUserSealDao afUserSealDao;
 	@Resource
 	AfUserOutDayDao afUserOutDayDao;
-
-	@RequestMapping(value = {"protocolLegalInstalment"}, method = RequestMethod.GET)
+	@Resource
+	AfBorrowService afBorrowService;
+	@Resource
+	AfContractPdfDao afContractPdfDao;
+	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public void protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		Long orderId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0l);
+		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("orderId"), 0l);
 		if (userName == null || !webContext.isLogin()) {
 			throw new FanbeiException("非法用户");
 		}
@@ -109,12 +113,13 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
 		Date date = new Date();
-		if (null != orderId && 0 != orderId) {
+		if (null != borrowId && 0 != borrowId) {
+			AfBorrowDo afBorrowDo= afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
-			AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
+			/*AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
-			if (afBorrowLegalOrderCashDo != null){
+			if (afBorrowDo != null){
 				model.put("instalmentGmtCreate", afBorrowLegalOrderCashDo.getGmtCreate());
 				model.put("instalmentRepayDay", afBorrowLegalOrderCashDo.getGmtPlanRepay());
 				model.put("gmtEnd", afBorrowLegalOrderCashDo.getGmtPlanRepay());
@@ -123,7 +128,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			}
 			if (afBorrowLegalOrderDo != null){
 				date = afBorrowLegalOrderDo.getGmtCreate();
-			}
+			}*/
 			model.put("overdueRate","36");
 		}else {
 			getResourceRate(model, type,afResourceDo,"instalment");
@@ -156,14 +161,14 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	 * @param model
 	 * @throws IOException
 	 */
-	@RequestMapping(value = { "protocolLegalCashLoan" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "protocolLegalCashLoanV2" }, method = RequestMethod.GET)
 	public void protocolLegalCashLoan(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		/*if(userName == null || !webContext.isLogin() ) {
+		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
-		}*/
+		}
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
 
@@ -193,12 +198,14 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		if (borrowId > 0) {
             afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
-				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowId);
-				if (afBorrowLegalOrderCashDo != null){
-					model.put("useType",afBorrowLegalOrderCashDo.getBorrowRemark());
-					/*model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
-					model.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate());//利率
-					model.put("overdueRate","36");*/
+				AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+				afContractPdfDo.setTypeId(borrowId);
+				afContractPdfDo.setType((byte) 1);
+				afContractPdfDo = afContractPdfDao.selectByTypeId(afContractPdfDo);
+				if (afContractPdfDo != null && afContractPdfDo.getUserSealId() != null){
+					AfUserSealDo afUserSealDo = afUserSealDao.selectById(afContractPdfDo.getUserSealId());
+					model.put("edspayUserCardId",afUserSealDo.getEdspayUserCardId());
+					model.put("edspayUserName",afUserSealDo.getUserName());
 				}else {
 					getResourceRate(model, type,afResourceDo,"borrow");
 				}
@@ -320,7 +327,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 	}
 
-	@RequestMapping(value = { "protocolLegalRenewal" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "protocolLegalRenewalV2" }, method = RequestMethod.GET)
 	public void protocolLegalRenewal(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
