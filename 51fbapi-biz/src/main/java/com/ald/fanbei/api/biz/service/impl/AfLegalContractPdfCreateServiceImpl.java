@@ -83,7 +83,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
     private EsignPublicInit esignPublicInit;
     @Resource
     private AfBorrowDao afBorrowDao;
-    private static final String src = "F:/doc/";
+    private static final String src = "/home/aladin/project/app_contract";
 
     @Override
     public void protocolLegalInstalment(long userId, BigDecimal borrowAmount, Long orderId) {//分期
@@ -184,16 +184,6 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             }
             map.put("personUserSeal", afUserSealDo.getUserSeal());
             map.put("accountId", afUserSealDo.getUserAccountId());
-            /*if (null != lenderDo.getValue()) {
-                companyUserSealDo = afUserSealDao.selectByUserName(lenderDo.getValue());
-                if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-                    map.put("secondSeal", companyUserSealDo.getUserSeal());
-                    map.put("secondAccoundId", companyUserSealDo.getUserAccountId());
-                }else {
-                    logger.error("创建第三方印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-                    throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-                }
-            }*/
             AfUserDo investorUserDo = new AfUserDo();
             AfUserAccountDo investorAccountDo = new AfUserAccountDo();
             investorUserDo.setMobile(map.get("investorPhone").toString());
@@ -294,15 +284,9 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             AfUserAccountDo accountDo = getUserInfo(userId, map);
             map.put("protocolCashType", "1");
             map.put("borrowId", borrowId);
-            /*map.put("idNumber", accountDo.getIdNumber());
-            map.put("realName", accountDo.getRealName());
-            map.put("email", afUserDo.getEmail());//电子邮箱
-            map.put("phone", afUserDo.getUserName());//联系方式*/
             AfBorrowCashDo afBorrowCashDo = null;
             map.put("amountCapital", "人民币" + toCapital(borrowAmount.doubleValue()));
             map.put("amountLower", "￥" + borrowAmount);
-//            map.put("amountCapital", toCapital(borrowAmount.doubleValue()));
-//            map.put("amountLower", borrowAmount);
             AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
             if (borrowId > 0) {
                 afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
@@ -339,74 +323,7 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             map.put("purpose", "个人消费");
             map.put("repayWay", "到期一次性还本付息");
             logger.info(JSON.toJSONString(map));
-           /* List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-            Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
-            BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
-            BigDecimal bankDouble = new BigDecimal(rate.get("bankDouble").toString());
-            BigDecimal poundage = new BigDecimal(rate.get("poundage").toString());
-            BigDecimal overduePoundage = new BigDecimal(rate.get("overduePoundage").toString());
-
-            BigDecimal bankService = bankRate.multiply(bankDouble).divide(new BigDecimal(360), 6, RoundingMode.HALF_UP);
-            BigDecimal overdue = bankService.add(poundage).add(overduePoundage);
-
-            Object poundageRateCash = bizCacheUtil.getObject(Constants.RES_BORROW_CASH_POUNDAGE_RATE + userId);
-            if (poundageRateCash != null) {
-                poundage = new BigDecimal(poundageRateCash.toString());
-            }
-
-            map.put("dayRate", bankService.multiply(new BigDecimal(100)).setScale(4, BigDecimal.ROUND_HALF_UP) + "%");//日利率
-            map.put("overdueRate", overdue.multiply(new BigDecimal(100)).setScale(4, BigDecimal.ROUND_HALF_UP) + "%");//逾期费率（日）
-            map.put("poundageRate", poundage.multiply(new BigDecimal(100)).setScale(4, BigDecimal.ROUND_HALF_UP) + "%");//手续费率
-            map.put("overduePoundageRate", overduePoundage.multiply(new BigDecimal(100)).setScale(4, BigDecimal.ROUND_HALF_UP) + "%");//逾期手续费率
-            map.put("purpose", "个人消费");
-            map.put("repayWay", "到期一次性还本付息");
-            map.put("amountCapital", "人民币" + toCapital(borrowAmount.doubleValue()));
-            map.put("amountLower", "￥" + borrowAmount);
-            if (borrowId > 0) {
-                AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
-                map.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借人
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
-                if (afBorrowCashDo != null) {
-                    map.put("borrowNo", afBorrowCashDo.getBorrowNo());
-                    if (StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.transed.getCode()) || StringUtils.equals(afBorrowCashDo.getStatus(), AfBorrowCashStatus.finsh.getCode())) {
-                        Integer day = NumberUtil.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
-                        Date arrivalStart = DateUtil.getStartOfDate(afBorrowCashDo.getGmtArrival());
-                        Date repaymentDay = DateUtil.addDays(arrivalStart, day - 1);
-                        map.put("gmtTime", simpleDateFormat.format(afBorrowCashDo.getGmtArrival()) + "至" + simpleDateFormat.format(repaymentDay));
-//                      map.put("repaymentDay", repaymentDay);
-//                      AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-//                      map.put("lender", lenderDo.getValue());// 出借人
-                        //查看有无和资金方关联，有的话，替换里面的借出人信息
-                        AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
-                        if (fundSideInfo != null && StringUtil.isNotBlank(fundSideInfo.getName())) {
-                            map.put("lender", fundSideInfo.getName());// 出借人
-                            AfResourceDo lenderDo = new AfResourceDo();
-                            lenderDo.setValue(fundSideInfo.getName());
-                            secondSeal(map, lenderDo, afUserDo, accountDo);
-                        } else {
-                            AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-                            map.put("lender", lenderDo.getValue());// 出借人
-                            secondSeal(map, lenderDo, afUserDo, accountDo);
-                        }
-
-                        if (null == map.get("companySelfSeal")) {
-                            logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-                            throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-//                        return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);//创建个人印章失败
-                        }
-                        if (null == map.get("personUserSeal")) {
-                            logger.error("创建个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
-                            throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
-//                        return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);//创建个人印章失败
-                        }
-                        map.put("lenderIdNumber", rate.get("lenderIdNumber"));
-                        map.put("lenderIdAmount", afBorrowCashDo.getAmount());
-                        map.put("gmtPlanRepayment", simpleDateFormat.format(afBorrowCashDo.getGmtPlanRepayment()));
-                    }
-                }
-            }*/
             long time = new Date().getTime();
-//            map.put("templatePath",src+"cashLoan"+".pdf");
             map.put("templatePath", "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/test/cashLoan.pdf");
             map.put("PDFPath", src + accountDo.getUserName() + "cashLoan" + time + 1 + ".pdf");
             map.put("userPath", src + accountDo.getUserName() + "cashLoan" + time + 2 + ".pdf");
@@ -415,7 +332,6 @@ public class AfLegalContractPdfCreateServiceImpl implements AfLegalContractPdfCr
             map.put("fileName", accountDo.getUserName() + "cashLoan" + time + 4);
             if (!pdfCreate(map))
                 throw new FanbeiException(FanbeiExceptionCode.CONTRACT_CREATE_FAILED);
-//            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CONTRACT_CREATE_FAILED);//
             logger.info(JSON.toJSONString(map));
         } catch (Exception e) {
             logger.error("protocolCashLoan error 借款合同生成失败 => {}", e);
