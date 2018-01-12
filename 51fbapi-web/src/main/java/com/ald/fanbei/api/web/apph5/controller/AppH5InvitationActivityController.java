@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseExtBo;
 import com.ald.fanbei.api.biz.bo.BoluomeCouponResponseParentBo;
+import com.ald.fanbei.api.biz.bo.CouponSceneRuleBo;
 import com.ald.fanbei.api.biz.bo.ThirdResponseBo;
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
@@ -30,27 +33,35 @@ import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfSigninService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponScene;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfCouponCategoryDo;
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfCouponSceneDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.AfSigninDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -95,6 +106,12 @@ public class AppH5InvitationActivityController extends BaseController {
     AfOrderService afOrderService;
     @Resource
     AfBorrowCashService afBorrowCashService;
+    @Resource
+    AfSigninService afSigninService;
+    @Resource
+    JpushService jpushService;
+    @Resource
+    CouponSceneRuleEnginerUtil activeRuleEngineUtil;
     
     /**
      * 活动页面的基本信息
@@ -160,6 +177,195 @@ public class AppH5InvitationActivityController extends BaseController {
         return ret;
     }
 
+    
+    /**
+     * 获取活动页面签到信息
+     * @param request
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getSigninInfo", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String getSigninInfo(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        Long userId = -1l;
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        AfUserDo afUser = null;
+        try{
+            context = doWebCheck(request, false);
+            if(context.isLogin()){
+                afUser = afUserService.getUserByUserName(context.getUserName());
+                if(afUser != null){
+                    userId = afUser.getRid();
+                }
+            }else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+        }catch  (Exception e) {
+            logger.error("getSigninInfo error", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+        AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
+        AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
+        if(afCouponSceneDo==null){
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", null);
+            return resp.toString();
+
+        }
+        Integer seriesTotal = 1;
+
+        List<CouponSceneRuleBo> ruleBoList=   afCouponSceneService.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
+
+        if(ruleBoList.size()==0){
+            resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", null);
+            return resp.toString();
+
+        }
+
+        CouponSceneRuleBo ruleBo = ruleBoList.get(0);
+ 	   seriesTotal= NumberUtil.objToIntDefault(ruleBo.getCondition(), 1) ;
+       Map<String, Object> data = new HashMap<String, Object>();
+		data.put("cycle", seriesTotal);
+    	data.put("ruleSignin",ObjectUtils.toString(afCouponSceneDo.getDescription(), "").toString()  );
+
+    	int seriesCount =0;
+
+        if (afSigninDo==null||null==afSigninDo.getGmtSeries()) {
+        	data.put("seriesCount",seriesCount);
+        	data.put("isSignin", "T");
+
+		}else{
+			seriesCount = afSigninDo.getSeriesCount();
+
+			Date seriesTime = afSigninDo.getGmtSeries();
+			if(DateUtil.isSameDay(new Date(), seriesTime)){
+	        	data.put("isSignin", "F");
+
+			}else{
+				if(!DateUtil.isSameDay(DateUtil.getCertainDay(-1),seriesTime)||seriesCount == seriesTotal){
+					seriesCount = 0;
+				}
+	        	data.put("isSignin", "T");
+			}
+
+        	data.put("seriesCount", seriesCount);
+
+		}
+        AfUserDo afUserDo = afUserService.getUserById(userId);
+           String avatar = null;
+        if(afUserDo != null){
+            avatar = afUserDo.getAvatar();
+        }
+        data.put("avatar", avatar);
+        String ret = JSON.toJSONString(data);
+        return ret;
+    }
+
+    /**
+     * 进行签到
+     * @param request
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "signin", produces = "text/html;charset=UTF-8",method = RequestMethod.POST)
+    public String signin(HttpServletRequest request){
+        FanbeiWebContext context = new FanbeiWebContext();
+        Long userId = -1l;
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        AfUserDo afUser = null;
+        try{
+            context = doWebCheck(request, false);
+            if(context.isLogin()){
+                afUser = afUserService.getUserByUserName(context.getUserName());
+                if(afUser != null){
+                    userId = afUser.getRid();
+                }
+            }else{
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
+        }catch  (Exception e) {
+            logger.error("signin error", e);
+            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
+            return resp.toString();
+        }
+
+        AfSigninDo afSigninDo = afSigninService.selectSigninByUserId(userId);
+	 AfCouponSceneDo afCouponSceneDo = afCouponSceneService.getCouponSceneByType(CouponSenceRuleType.SIGNIN.getCode());
+       if(afCouponSceneDo==null){
+	   resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", null);
+           return resp.toString();
+       }
+       Integer cycle = 1;
+       List<CouponSceneRuleBo> ruleBoList=   afCouponSceneService.getRules(CouponSenceRuleType.SIGNIN.getCode(), "signin");
+       
+       if(ruleBoList.size()==0){
+	   resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", null);
+           return resp.toString();
+
+       }
+
+       CouponSceneRuleBo ruleBo = ruleBoList.get(0);
+       cycle= NumberUtil.objToIntDefault(ruleBo.getCondition(), 1) ;
+	   
+	Integer seriesCount =  1;
+	Integer totalCount =  0;
+	if (afSigninDo == null) {
+		afSigninDo = new AfSigninDo();
+		totalCount += 1;
+		afSigninDo.setSeriesCount(seriesCount);
+		afSigninDo.setTotalCount(totalCount);
+		afSigninDo.setUserId(userId);
+		if (afSigninService.addSignin(afSigninDo) > 0) {
+			return resp.toString();
+		}
+
+	} else {
+		Date seriesTime =null;
+		if(afSigninDo.getGmtSeries()==null){
+			seriesCount =1;
+		}else{
+			seriesTime = afSigninDo.getGmtSeries();
+			if (DateUtil.isSameDay(new Date(), seriesTime)) {
+			    resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SIGNIN_AGAIN_ERROR.getDesc(), "", null);
+		            return resp.toString();
+			}
+			// 当连续签到天数小于循环周期时
+			if (DateUtil.isSameDay(DateUtil.getCertainDay(-1), seriesTime) && cycle != afSigninDo.getSeriesCount()) {
+				seriesCount = afSigninDo.getSeriesCount() + 1;
+			}
+		}
+																																																																																																																					
+		totalCount = afSigninDo.getTotalCount() + 1;
+		
+		AfSigninDo signinDo =new AfSigninDo();
+		signinDo.setSeriesCount(seriesCount);
+		signinDo.setTotalCount(totalCount);
+		signinDo.setUserId(userId);
+		signinDo.setRid(afSigninDo.getRid());
+
+		if ( afSigninService.changeSignin(signinDo) > 0) {
+			if(seriesCount == cycle){
+				activeRuleEngineUtil.signin(userId);
+				jpushService.getSignCycle(context.getUserName());
+			}
+		
+			return resp.toString();
+
+		}
+	}
+
+	resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc(), "", null);
+        return resp.toString();
+    
+    }
+
+    
+    
+    
     /**
      * 邀请有礼活动及用户信息(新版)
      * @param request
