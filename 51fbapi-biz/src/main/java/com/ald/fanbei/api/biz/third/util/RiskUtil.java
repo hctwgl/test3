@@ -327,7 +327,6 @@ public class RiskUtil extends AbstractThird {
     /**
      * 风控审批
      *
-     * @param orderNo
      * @param consumerNo
      * @param scene
      * @return
@@ -471,7 +470,7 @@ public class RiskUtil extends AbstractThird {
      * @param virtualCode 商品编号
      *                    增加里那个字段
      * @param SecSence    二级场景
-     * @param ThirdSencem 三级场景
+     * @param ThirdSence 三级场景
      * @param orderid 订单号
      * @return
      */
@@ -601,7 +600,6 @@ public class RiskUtil extends AbstractThird {
      * @param amount
      * @param income
      * @param overdueDay
-     * @param borrowCount
      * @return
      */
     public RiskVerifyRespBo raiseQuota(String consumerNo, String borrowNo, String scene, String orderNo, BigDecimal amount, BigDecimal income, Long overdueDay, int overdueCount,Long maxOverdueDay,int repayCount) {
@@ -658,18 +656,20 @@ public class RiskUtil extends AbstractThird {
             
             Long consumerNum = Long.parseLong(consumerNo);
 
-            AfUserAccountDo accountDo = new AfUserAccountDo();
-            accountDo.setUserId(consumerNum);
-            accountDo.setAuAmount(au_amount);
-            afUserAccountService.updateUserAccount(accountDo);
-            AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNum);
-            if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNum, onlineAmount);
-            }
-            AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNum);
-            if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNum, offlineAmount);
-            }            
+            AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
+            updateUserScenceAmount(userAccountDo,consumerNum,au_amount,onlineAmount,offlineAmount);
+//            AfUserAccountDo accountDo = new AfUserAccountDo();
+//            accountDo.setUserId(consumerNum);
+//            accountDo.setAuAmount(au_amount);
+//            afUserAccountService.updateUserAccount(accountDo);
+//            AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNum);
+//            if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
+//                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNum, onlineAmount);
+//            }
+//            AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNum);
+//            if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
+//                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNum, offlineAmount);
+//            }
             
             return riskResp;
         } else {
@@ -1146,41 +1146,9 @@ public class RiskUtil extends AbstractThird {
                     authDo.setGmtRisk(new Date(System.currentTimeMillis()));
                     afUserAuthService.updateUserAuth(authDo);
 
-	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
-	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
                     AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-                    if(au_amount.compareTo(new BigDecimal(0))>0) {
-                        if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
-                            AfUserAccountDo accountDo = new AfUserAccountDo();
-                            accountDo.setUserId(consumerNo);
-                            accountDo.setAuAmount(au_amount);
-                            afUserAccountService.updateUserAccount(accountDo);
-                        }
-                    }
+                    updateUserScenceAmount(userAccountDo,consumerNo,au_amount,onlineAmount,offlineAmount);
 
-                    if(onlineAmount.compareTo(new BigDecimal(0))>0) {
-                        AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNo);
-                        if(afUserAccountOnlineDo!=null) {
-                            if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
-                            }
-                        }
-                        else{
-                            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
-                        }
-                    }
-                    if(offlineAmount.compareTo(new BigDecimal(0))>0) {
-                        AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNo);
-                        if(afUserAccountOfflineDo!=null) {
-                            if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
-                            }
-                        }
-                        else
-                        {
-                            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
-                        }
-                    }
                     jpushService.strongRiskSuccess(userAccountDo.getUserName());
                     smsUtil.sendRiskSuccess(userAccountDo.getUserName());
                 } else if (StringUtils.equals("30", result)) {
@@ -1218,6 +1186,42 @@ public class RiskUtil extends AbstractThird {
         return 0;
     }
 
+        private void updateUserScenceAmount(AfUserAccountDo userAccountDo,Long consumerNo,BigDecimal au_amount,BigDecimal onlineAmount,BigDecimal offlineAmount){
+                /*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+                                                            如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
+            if(au_amount.compareTo(new BigDecimal(0))>0) {
+                if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                    AfUserAccountDo accountDo = new AfUserAccountDo();
+                    accountDo.setUserId(consumerNo);
+                    accountDo.setAuAmount(au_amount);
+                    afUserAccountService.updateUserAccount(accountDo);
+                }
+            }
+
+            if(onlineAmount.compareTo(new BigDecimal(0))>0) {
+                AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNo);
+                if(afUserAccountOnlineDo!=null) {
+                    if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
+                    }
+                }
+                else{
+                    afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
+                }
+            }
+            if(offlineAmount.compareTo(new BigDecimal(0))>0) {
+                AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNo);
+                if(afUserAccountOfflineDo!=null) {
+                    if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
+                    }
+                }
+                else
+                {
+                    afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
+                }
+            }
+        }
 
     /**
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
