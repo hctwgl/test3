@@ -501,6 +501,12 @@ public class AppH5DoubleEggsController extends BaseController {
 		FanbeiWebContext context = new FanbeiWebContext();
 		try {
 			context = doWebCheck(request, false);
+			
+			//get tag from activityId then get goods from different tag
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			if (activityId == null) {
+				
+			}
 
 			Date now = new Date() ;
 			
