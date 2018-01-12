@@ -529,14 +529,7 @@ public class AppH5InvitationActivityController extends BaseController {
 		 value4 = resourceDo.getValue4();
 	     }
 	     
-	     if(authCoupon.size()>0){
-		 AfCouponDo  coupon = authCoupon.get(0);
-		 HashMap<String,Object> map =new HashMap<>();
-		 map.put("threshold", coupon.getLimitAmount());
-		 map.put("couponAmount",coupon.getAmount());
-		 map.put("couponName",value3);
-		 list1.add(map);
-	     }
+	    
 	     //首次借钱，首次购物
 	     AfCouponDo  firstLoan = getcouponForCategoryTag("_FIRST_LOAN_");
 	     AfCouponDo  firstShopping = getcouponForCategoryTag("_FIRST_SHOPPING_");
@@ -549,6 +542,18 @@ public class AppH5InvitationActivityController extends BaseController {
 	     shoppingMap.put("couponAmount",firstShopping.getAmount());
 	     shoppingMap.put("couponName", value3);
 	     list1.add(loanMap);
+	     list1.add(shoppingMap);
+	     
+	     if(authCoupon.size()>0){
+		 for(int i=0;i<authCoupon.size();i++){
+        		 AfCouponDo  coupon = authCoupon.get(i);
+        		 HashMap<String,Object> map =new HashMap<>();
+        		 map.put("threshold", coupon.getLimitAmount());
+        		 map.put("couponAmount",coupon.getAmount());
+        		 map.put("couponName",value3);
+        		 list1.add(map);
+		 }
+	     }
 	     
 	     map1.put("couponTitle", value);
 	     map1.put("couponList",list1 );
@@ -557,7 +562,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	     //注册(自营商城)
 	     List<AfCouponDo> rigsetCoupon = getCommonCouponMap(CouponScene.REGIST);
 	     if(rigsetCoupon.size()>0){
-		for(int i=0;i<3;i++){
+		for(int i=0;i<rigsetCoupon.size();i++){
 		    AfCouponDo shop = rigsetCoupon.get(i);
 		     HashMap<String,Object> shopMap =new HashMap<>();
 		     shopMap.put("threshold", shop.getLimitAmount());
