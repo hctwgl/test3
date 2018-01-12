@@ -50,6 +50,9 @@ public class GetMyBorrowV1Api implements ApiHandle {
     @Resource
     AfResourceService afResourceService;
 
+    @Resource
+    AfUserAccountSenceService afUserAccountSenceService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -100,6 +103,20 @@ public class GetMyBorrowV1Api implements ApiHandle {
             } else {
                 map.put("floatType", 0);//未开启悬浮窗
             }
+            //加入线上额度(即购物额度) add by caowu 2018/1/10 15:25
+            AfUserAccountSenceDo afUserAccountSenceDo = afUserAccountSenceService.getByUserIdAndScene("ONLINE",userId);
+            // AfUserAccountSenceDo afUserAccountSenceDo1 = afUserAccountSenceService.getByUserIdAndScene("TRAIN",userId);
+            // 线上信用额度
+            BigDecimal onlineAuAmount = BigDecimal.ZERO;
+            // 线上可用额度
+            BigDecimal onlineAmount = BigDecimal.ZERO;
+            if(afUserAccountSenceDo!=null){
+                onlineAuAmount=afUserAccountSenceDo.getAuAmount();
+                onlineAmount=BigDecimalUtil.subtract(onlineAuAmount, afUserAccountSenceDo.getUsedAmount());
+            }
+            map.put("onlineAuAmount", onlineAuAmount.add(interimAmount));//线上授予额度
+            map.put("onlineAmount", onlineAmount.add(usableAmount));//线上可用额度
+
             if (StringUtil.equals(userAuth.getRiskStatus(), RiskStatus.YES.getCode())) {
                 // 获取用户额度
                 AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
@@ -178,8 +195,8 @@ public class GetMyBorrowV1Api implements ApiHandle {
                 }
 
 
-                map.put("auAmount", auAmount.add(interimAmount));
-                map.put("amount", amount.add(usableAmount));
+                map.put("auAmount", auAmount);
+                map.put("amount", amount);
                 map.put("overduedMonth", overduedMonth);
                 map.put("outMoney", outMoney);
                 map.put("notOutMoeny", notOutMoeny);

@@ -356,9 +356,9 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上"),
 
     //调用风控失败
-    CALL_RISK_FAIL("CALL_RISK_FAIL",7006,"call risk fail","调用风控失败!"),
-    //提交信用认证时,场景参数错误!
-    SCENE_PARAMETER_ERROR("SCENE_PARAMETER_ERROR",7007,"scene parameter error","未知的场景参数!"),
+    CALL_RISK_FAIL("FAIL_RISK_FAIL",7006,"call risk fail","调用风控失败!"),
+    //有过期数据
+    FAILURE_DATA_ERROR("FAILURE_DATA_ERROR",7007,"failure data error","有过期数据!"),
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用该功能");
 
 

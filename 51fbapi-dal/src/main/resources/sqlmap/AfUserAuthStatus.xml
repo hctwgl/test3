@@ -79,6 +79,7 @@
     <insert id="addAfUserAuthStatus" parameterType="com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo" keyProperty="rid">
         INSERT INTO af_user_auth_status
         <trim prefix="(" suffix=")" suffixOverrides="," >
+
             <if test="scene != null">
                 scene,
             </if>
@@ -94,8 +95,6 @@
         </trim>
 
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-                NOW(),
-                NOW(),
             <if test="scene != null" >
                 #{scene,jdbcType=VARCHAR},
             </if>

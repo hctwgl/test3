@@ -1149,21 +1149,38 @@ public class RiskUtil extends AbstractThird {
 	      			/*如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
 	                                                如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度*/
                     AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNo);
-                    if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
-                        AfUserAccountDo accountDo = new AfUserAccountDo();
-                        accountDo.setUserId(consumerNo);
-                        accountDo.setAuAmount(au_amount);
-                        afUserAccountService.updateUserAccount(accountDo);
+                    if(au_amount.compareTo(new BigDecimal(0))>0) {
+                        if (userAccountDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || userAccountDo.getUsedAmount().compareTo(au_amount) < 0) {
+                            AfUserAccountDo accountDo = new AfUserAccountDo();
+                            accountDo.setUserId(consumerNo);
+                            accountDo.setAuAmount(au_amount);
+                            afUserAccountService.updateUserAccount(accountDo);
+                        }
                     }
-                    AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNo);
-                    if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
+
+                    if(onlineAmount.compareTo(new BigDecimal(0))>0) {
+                        AfUserAccountSenceDo afUserAccountOnlineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), consumerNo);
+                        if(afUserAccountOnlineDo!=null) {
+                            if (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
+                            }
+                        }
+                        else{
+                            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo, onlineAmount);
+                        }
                     }
-                    AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNo);
-                    if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
-                        afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
+                    if(offlineAmount.compareTo(new BigDecimal(0))>0) {
+                        AfUserAccountSenceDo afUserAccountOfflineDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(), consumerNo);
+                        if(afUserAccountOfflineDo!=null) {
+                            if (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO) == 0 || afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0) {
+                                afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
+                            }
+                        }
+                        else
+                        {
+                            afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo, offlineAmount);
+                        }
                     }
-                    
                     jpushService.strongRiskSuccess(userAccountDo.getUserName());
                     smsUtil.sendRiskSuccess(userAccountDo.getUserName());
                 } else if (StringUtils.equals("30", result)) {
@@ -2348,34 +2365,34 @@ public class RiskUtil extends AbstractThird {
      */
     public JSONObject authDataCheck(Long userId,String riskScene) {
         HashMap<String, String> reqBo = new HashMap<String, String>();
-        JSONObject data =null;//返回结果
-        try {
-            //获取风控单号
-            //AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
-            //String cardNo = card.getCardNumber();
-           // String riskOrderNo = riskUtil.getOrderNo("tmqa", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-            //风控申请临时额度参数
-            reqBo.put("consumerNo", userId.toString());
-           // reqBo.put("orderNo", riskOrderNo);
-            reqBo.put("scene", riskScene);
-            reqBo.put("signInfo", SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+        JSONObject data =new JSONObject();//返回结果
+            try {
+                //获取风控单号
+                //AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
+                //String cardNo = card.getCardNumber();
+                // String riskOrderNo = riskUtil.getOrderNo("tmqa", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+                // reqBo.put("orderNo", riskOrderNo);
+                //风控申请临时额度参数
+                reqBo.put("consumerNo", userId.toString());
+                reqBo.put("scene", riskScene);
+                reqBo.put("signInfo", SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 
-            String url = getUrl() + "/modules/api/risk/checkData.htm";
-            String reqResult = requestProxy.post(url, reqBo);
-
-            JSONObject riskResp = JSONObject.parseObject(reqResult);
-            if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getString("code"))) {
-                data = JSONObject.parseObject(riskResp.getString("data"));
-                if(data!=null){
-                    data.put("success","55");//有过期数据
-                }else{
-                    data.put("success","0");//无过期数据
+                String url = getUrl() + "/modules/api/risk/checkData.htm";
+                String reqResult = requestProxy.post(url, reqBo);
+                JSONObject riskResp = JSONObject.parseObject(reqResult);
+                    if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getString("code"))) {
+                        String failureData = riskResp.getString("data");
+                    if(failureData!=null&&!"".equals(failureData)){
+                        data.put("success","55");//有过期数据
+                    }else{
+                        data.put("success","0");//无过期数据
+                    }
+                    data.put("failureData",failureData);
+                    return data;
+                } else {
+                    data.put("success","1");//失败
+                    return data;
                 }
-                return data;
-            } else {
-                data.put("success","1");//失败
-                return data;
-            }
         } catch (Exception e) {
             logger.error("authDataCheck", e, reqBo);
             data.put("success","2");//程序异常

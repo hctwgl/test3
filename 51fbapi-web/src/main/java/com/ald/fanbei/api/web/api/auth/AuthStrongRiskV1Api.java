@@ -98,29 +98,47 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 		//认证场景 20（现金），21（线上），22（线下）
 		String scene = ObjectUtils.toString(requestDataVo.getParams().get("scene"));//场景
-		String noviceGuidance = ObjectUtils.toString(requestDataVo.getParams().get("noviceGuidance"));//新手引导过来
-		String riskScene ="";
-		if("CASH".equals(scene)){
-			riskScene="20";
-		}else if("ONLINE".equals(scene)){
-			riskScene="21";
-		}else if("TRAIN".equals(scene)){
-			riskScene="22";
-		}else{
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SCENE_PARAMETER_ERROR);
+		if("".equals(scene)){
+			scene="CASH";//如果前端所传为空,默认为现金贷
 		}
+		boolean numberOfAuth = false;//是否是新手引导过来
+		String [] sceneArray =scene.split(",");
+		String riskScene ="";
+		if(sceneArray.length>1){
+			numberOfAuth=true;
+		}
+		riskScene="22";
+//		if("CASH".equals(sceneArray[0])){
+//			riskScene="20";
+//		}else if("ONLINE".equals(sceneArray[0])){
+//			riskScene="21";
+//		}else if("TRAIN".equals(sceneArray[0])){
+//			riskScene="22";
+//		}else{
+//			riskScene="20";
+//			//return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SCENE_PARAMETER_ERROR);
+//		}
 		JSONObject riskCheckData =riskUtil.authDataCheck(userId,riskScene);
 		String riskCheckStatus = riskCheckData.getString("success");
 		//有数据过期了
 		if("55".equals(riskCheckStatus)){
-			ApiHandleResponse apiHandleResponse = new ApiHandleResponse();
-			apiHandleResponse.setResponseData(riskCheckData);
+			ApiHandleResponse apiHandleResponse = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILURE_DATA_ERROR);
+			String failureData= riskCheckData.get("failureData").toString();
+			String [] failureDataArray = failureData.split(",");
+			JSONArray jsonArray = new JSONArray();
+			for(int i=0;i<failureDataArray.length;i++){
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("auth",failureDataArray[i]);
+				jsonObject.put("status","invalid");//失效状态
+				jsonArray.add(jsonObject);
+			}
+			apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
 			return apiHandleResponse;
 		}
-		//调用风控失败了
-		if(!"0".equals(riskCheckStatus)){
-			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
-		}
+//		//调用风控失败了
+//		if(!"0".equals(riskCheckStatus)){
+//			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
+//		}
 
 		try {
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -176,7 +194,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
                     //用户认证信息场景
 					AfUserAuthStatusDo afUserAuthStatusDo = new AfUserAuthStatusDo();
 					afUserAuthStatusDo.setUserId(userId);
-					afUserAuthStatusDo.setScene(scene);
+					afUserAuthStatusDo.setScene(sceneArray[0]);
 
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
 							card.getCardNumber(), riskOrderNo,riskScene);
@@ -189,7 +207,6 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						afUserAuthService.updateUserAuth(authDo);
 
 						afUserAuthStatusDo.setStatus("C");
-						afUserAuthStatusDo.setCauseReason(riskResp.getMsg());
 						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
 						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_REGISTER_ERROR);
@@ -235,13 +252,19 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						}
 					}
 
-					boolean numberOfAuth = false;
-					if("noviceGuidance".equals(noviceGuidance)){
-						numberOfAuth=true;
-					}
+
 					if(numberOfAuth){//新手引导过来的二次调用
-						afUserAuthStatusDo.setScene("ONLINE");
-						riskScene="21";
+						if("CASH".equals(sceneArray[1])){
+							riskScene="20";
+						}else if("ONLINE".equals(sceneArray[1])){
+							riskScene="21";
+						}else if("TRAIN".equals(sceneArray[1])){
+							riskScene="22";
+						}else{
+							riskScene="20";
+							//return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SCENE_PARAMETER_ERROR);
+						}
+						afUserAuthStatusDo.setScene(sceneArray[1]);
 						RiskRespBo riskResp1 = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
 								card.getCardNumber(), riskOrderNo,riskScene);
 
@@ -253,7 +276,6 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 							afUserAuthService.updateUserAuth(authDo);
 							//插入失败认证场景
 							afUserAuthStatusDo.setStatus("C");
-							afUserAuthStatusDo.setCauseReason(riskResp1.getMsg());
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
 							return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_REGISTER_ERROR);
@@ -285,11 +307,10 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 							afUserAuthStatusDo.setStatus("Y");
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
-
-//							if (context.getAppVersion() > 367) {
-//								creditRebateMap.put("creditRebateMsg", creditRebateMsg);
-//								resp.setResponseData(creditRebateMap);
-//							}
+							if (context.getAppVersion() > 367) {
+								creditRebateMap.put("creditRebateMsg", creditRebateMsg);
+								resp.setResponseData(creditRebateMap);
+							}
 						}
 					}
 				} catch (Exception e) {
