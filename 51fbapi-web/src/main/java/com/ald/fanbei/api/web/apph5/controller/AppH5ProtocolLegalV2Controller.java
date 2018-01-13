@@ -34,10 +34,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @类描述：
@@ -489,7 +486,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		logger.info(JSON.toJSONString(model));
 	}
 
-
+	/**
+	 * 代买协议
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
 	@RequestMapping(value = { "protocolLegalAgentBuyServiceAgreement" }, method = RequestMethod.GET)
 	public void protocolLegalAgentBuyServiceAgreement(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
@@ -517,8 +519,57 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 	}
 
+	/**
+	 * 平台服务协议
+	 * @param request
+	 * @param model
+	 * @throws IOException
+	 */
 	@RequestMapping(value = { "platformServiceProtocol" }, method = RequestMethod.GET)
 	public void platformServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
+		if(userName == null || !webContext.isLogin() ) {
+			throw new FanbeiException("非法用户");
+		}
+		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
+		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
+
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+		if (afUserDo == null) {
+			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		Long userId = afUserDo.getRid();
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		if (accountDo == null) {
+			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
+		getResourceRate(model, type,afResourceDo,"borrow");
+		model.put("email", afUserDo.getEmail());//电子邮箱
+		model.put("mobile", afUserDo.getMobile());// 联系电话
+		Integer days = NumberUtil.objToIntDefault(type, 0);
+		BigDecimal serviceAmount = borrowAmount.multiply(new BigDecimal(days)).multiply(new BigDecimal(model.get("SERVICE_RATE").toString())).divide(BigDecimal.valueOf(360)).setScale(2,BigDecimal.ROUND_HALF_UP);
+		model.put("serviceAmount",serviceAmount);
+		if(borrowId > 0){
+			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
+			if(null != afBorrowCashDo){
+				model.put("borrowNo", afBorrowCashDo.getBorrowNo());//原始借款协议编号
+			}
+			Calendar c = Calendar.getInstance();
+			c.setTime(afBorrowCashDo.getGmtCreate());
+			int month = c.get(Calendar.MONTH)+1;
+			int day = c.get(Calendar.DATE);
+			int year = c.get(Calendar.YEAR);
+			model.put("year", year);// 年
+			model.put("month",month);//月
+			model.put("day",day);//日
+			GetSeal(model, afUserDo, accountDo);
+		}
 
 	}
 
