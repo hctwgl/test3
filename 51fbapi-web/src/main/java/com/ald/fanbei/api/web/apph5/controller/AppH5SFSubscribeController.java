@@ -108,13 +108,6 @@ public class AppH5SFSubscribeController extends BaseController {
 				// get goods to subscribe
 				List<AfSFgoodsVo> goodsList = afGoodsDoubleEggsService.getFivePictures(userId);
 				
-				//add fake number for each goods
-				AfResourceDo fakeDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY",
-						"FAKE_NUMBER");
-				if (fakeDo == null) {
-					result = H5CommonResponse.getNewInstance(false, "配置失败").toString();
-				}
-				
 				if (goodsList.size() != 5) {
 					result = H5CommonResponse.getNewInstance(false, "配置失败").toString();
 				}
