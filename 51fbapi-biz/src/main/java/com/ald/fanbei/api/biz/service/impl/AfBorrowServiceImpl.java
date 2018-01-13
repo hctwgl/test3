@@ -1549,4 +1549,9 @@ public class AfBorrowServiceImpl extends BaseService implements AfBorrowService,
 	public BigDecimal getUserNotInBorrowMoney(Long userId) {
 		return afBorrowDao.getUserNotInBorrowMoney(userId);
 	}
+
+	@Override
+	public Integer countNperRepaymentByBorrowId(Long rid) {
+		return afBorrowDao.countNperRepaymentByBorrowId(rid);
+	}
 }

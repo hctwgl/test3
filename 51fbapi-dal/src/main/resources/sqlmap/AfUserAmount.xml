@@ -69,6 +69,7 @@
 	
 	<select id="getBorrowDtoByAmountId" resultType="AfBorrowDto">
 		SELECT 
+			d.id rid,
 			c.sale_amount saleAmount,
 			c.bank_amount bankAmount,
 			d.nper nper,

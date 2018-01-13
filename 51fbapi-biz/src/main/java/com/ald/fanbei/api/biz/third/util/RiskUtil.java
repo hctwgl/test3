@@ -478,7 +478,7 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType,HashMap<String,HashMap> riskDataMap) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -519,7 +519,7 @@ public class RiskUtil extends AbstractThird {
         eventObj.put("ThirdSence", codeForThird == null ? "" : codeForThird);
         reqBo.setEventInfo(JSON.toJSONString(eventObj));
         //12-13 弱风控加入用户借款信息
-        HashMap summaryData = afBorrowDao.getUserSummary(userAuth.getUserId());
+        HashMap summaryData = riskDataMap.get("summaryData");
         if (summaryData == null) {
             summaryData = new HashMap();
             summaryData.put("hourBetweenVerifyBorrow", "0");
@@ -537,7 +537,7 @@ public class RiskUtil extends AbstractThird {
         //12-13 弱风控加入订单信息
         HashMap summaryOrderData = new HashMap();
         if(orderid > 0 ){
-            summaryOrderData = afBorrowDao.getUserSummaryOrderById(orderid);
+            summaryOrderData =  riskDataMap.get("summaryOrderData");
         }
         if(borrow != null){
             summaryOrderData.put("calculateMethod",borrow.getCalculateMethod());
@@ -697,12 +697,12 @@ public class RiskUtil extends AbstractThird {
      * @param virtualCode 虚拟值
      * @return
      */
-    public Map<String, Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final Map<String, Object> virtualMap) throws FanbeiException {
+    public Map<String, Object> payOrder(final Map<String, Object> resultMap, final AfBorrowDo borrow, final String orderNo, RiskVerifyRespBo verifybo, final Map<String, Object> virtualMap,AfOrderDo orderInfo) throws FanbeiException {
         String result = verifybo.getResult();
 
         logger.info("payOrder:borrow=" + borrow + ",orderNo=" + orderNo + ",result=" + result);
         // 添加一个根据风控号查找记录的方法
-        AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
+        //AfOrderDo orderInfo = orderDao.getOrderInfoByRiskOrderNo(orderNo);
         // 如果风控审核结果是不成功则关闭订单，修改订单状态是支付中
         logger.info("risk_result =" + result);
         AfUserAccountDo userAccountInfo = afUserAccountService.getUserAccountByUserId(orderInfo.getUserId());
@@ -746,11 +746,11 @@ public class RiskUtil extends AbstractThird {
                         afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
                     }
                 }
-                orderDao.updateOrder(orderInfo);
+                //orderDao.updateOrder(orderInfo);
             }
-            if (StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
+            //if (StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
                 orderDao.updateOrder(orderInfo);
-            }
+            //}
             jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
 //			}
             return resultMap;

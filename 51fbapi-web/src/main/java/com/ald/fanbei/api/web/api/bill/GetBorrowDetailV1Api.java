@@ -84,7 +84,7 @@ public class GetBorrowDetailV1Api implements ApiHandle{
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.BORROW_BILL_NOT_EXIST_ERROR);
 				return resp;
 			}
-			AfOrderDo queryOrderDo = afOrderService.getOrderById(queryBorrowDo.getOrderId());
+			AfOrderDo queryOrderDo = afOrderService.getOrderInfoByIdWithoutDeleted(queryBorrowDo.getOrderId(),userId);
 			if (queryOrderDo == null || queryOrderDo.getRid() == null) {
 				logger.info("getBorrowDetailV1Api borrow is null ,RequestDataVo id =" + requestDataVo.getId() + " ,userId=" + userId + " ,billId=" + billId);
 				resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.ORDER_NOT_EXIST);

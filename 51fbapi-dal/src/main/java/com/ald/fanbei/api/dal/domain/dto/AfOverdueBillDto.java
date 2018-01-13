@@ -61,6 +61,16 @@ public class AfOverdueBillDto extends AfBorrowBillDo{
 	private BigDecimal salePercent;
 	
 	private BigDecimal saleAmount;
+	
+	private Date lastRepayDay;
+
+	public Date getLastRepayDay() {
+		return lastRepayDay;
+	}
+
+	public void setLastRepayDay(Date lastRepayDay) {
+		this.lastRepayDay = lastRepayDay;
+	}
 
 	public Long getBorrowId() {
 		return borrowId;

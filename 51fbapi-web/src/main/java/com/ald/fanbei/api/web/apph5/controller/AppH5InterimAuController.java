@@ -136,9 +136,10 @@ public class AppH5InterimAuController extends BaseController {
                     int failureStatus =0;//0未失效,1失效
                     if(afInterimAuDo.getGmtFailuretime().getTime()< new Date().getTime()){
                         failureStatus=1;
+                    }else{
+                        interimAmount =afInterimAuDo.getInterimAmount();
                     }
                     data.put("failureStatus",failureStatus);
-                    interimAmount =afInterimAuDo.getInterimAmount();
                 }else{
                     //是否申请失败记录
                     List<AfInterimAuDo> applyFailList =afInterimAuService.selectApplyFailByUserId(userId);

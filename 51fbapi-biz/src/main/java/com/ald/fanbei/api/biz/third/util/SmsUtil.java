@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -15,6 +16,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -90,6 +92,9 @@ public class SmsUtil extends AbstractThird {
     @Resource
     AfUserOutDayDao afUserOutDayDao;
 
+    @Resource
+    private  BizCacheUtil bizCacheUtil;
+
     /**
      * 发送注册短信验证码
      *
@@ -109,7 +114,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.REGIST, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -133,7 +138,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -156,7 +161,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -180,7 +185,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -403,7 +408,7 @@ public class SmsUtil extends AbstractThird {
         }
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
-        SmsResult smsResult = sendSmsToDhst(mobile, content);
+        SmsResult smsResult = switchSmsSend(mobile, content);
         this.addSmsRecord(SmsType.FORGET_PASS, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -713,7 +718,7 @@ public class SmsUtil extends AbstractThird {
      * @param mobile
      * @param msg
      */
-    private static SmsResult sendSmsToDhst(String mobiles, String content) {
+    private SmsResult sendSmsToDhst(String mobiles, String content) {
         SmsResult result = new SmsResult();
         logger.info("sendSms params=|"+mobiles+"content="+content);
         if (StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
@@ -880,6 +885,35 @@ public class SmsUtil extends AbstractThird {
         } catch (Exception e) {
             logger.error("sendTenementNotify error:", e);
         }
+    }
+    private  SmsResult switchSmsSend(String mobile, String content){
+
+        if("YF".contains(this.rules(mobile))){
+            return YFSmsUtil.send(mobile, content,YFSmsUtil.VERIFYCODE);
+        }else{
+            return this.sendSmsToDhst(mobile, content);
+        }
+    }
+    public   String rules(String mobile){
+        String switchRule = (String)bizCacheUtil.getObject("sms_switch");
+        if(switchRule == null){
+            switchRule = "YF:01234,DH:56789";
+            List<AfResourceDo> resouces = afResourceService.getConfigByTypes("sms_switch");
+            if(resouces !=null || resouces.size()>0){
+                AfResourceDo resourceDo = resouces.get(0);
+                switchRule = resourceDo.getValue();
+            }
+            bizCacheUtil.saveObject("sms_switch",switchRule);
+        }
+        String[] rules = switchRule.split(",");
+        for(String rule : rules){
+
+            if(rule.split(":")[1].contains(mobile.substring(10,11))){
+                return rule.split(":")[0];
+            }
+        }
+
+        return "DH";
     }
 }
 

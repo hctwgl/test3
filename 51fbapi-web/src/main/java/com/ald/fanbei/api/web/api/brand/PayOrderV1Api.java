@@ -115,6 +115,11 @@ public class PayOrderV1Api implements ApiHandle {
         boolean fromCashier = true; //NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         String isCombinationPay = ObjectUtils.toString(requestDataVo.getParams().get("isCombinationPay"), "").toString();
+        String city = ObjectUtils.toString(requestDataVo.getParams().get("city"),"");
+        String county = ObjectUtils.toString(requestDataVo.getParams().get("county"),"");
+        String province = ObjectUtils.toString(requestDataVo.getParams().get("province"),"");
+        String gpsAddress = ObjectUtils.toString(requestDataVo.getParams().get("address"),"");
+        logger.info(province+":"+city+":"+county+":"+gpsAddress);
 
         VersionCheckUitl.setVersion( context.getAppVersion());//addby hongzhengpei
 
@@ -138,13 +143,13 @@ public class PayOrderV1Api implements ApiHandle {
             logger.error("orderId is invalid");
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
-
-        if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())){
-            AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
-                if(afResourceDo!=null&&afResourceDo.getValue().contains(orderInfo.getGoodsName()) ){
-                    logger.error("filter shop : "+orderInfo.getGoodsName());
-                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BOLUOME_UNTRUST_SHOPGOODS);
-                }
+        orderInfo.setGpsAddress(gpsAddress);
+        if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
+            AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
+            if (afResourceDo != null && afResourceDo.getValue().contains(orderInfo.getGoodsName())) {
+                logger.error("filter shop : " + orderInfo.getGoodsName());
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BOLUOME_UNTRUST_SHOPGOODS);
+            }
         }
         //双十一砍价添加
         if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
@@ -156,23 +161,23 @@ public class PayOrderV1Api implements ApiHandle {
         }
 
 
-        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) 
-        		&& afShareGoodsService.getCountByGoodsId(orderInfo.getGoodsId())!=0){
-        	
-    		if(afOrderService.getOverOrderByUserId(userId).size() >0){
+        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
+                && afShareGoodsService.getCountByGoodsId(orderInfo.getGoodsId()) != 0) {
 
-        		logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
+            if (afOrderService.getOverOrderByUserId(userId).size() > 0) {
+
+                logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the goods is buy.");
                 return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PRICE_BOUGHT);
-    		}
+            }
         }
-        
+
         //-------------mqp doubleEggs-------------
         doubleEggsGoodsCheck(userId, orderInfo.getGoodsId());
-        
+
         // 双十二秒杀新增逻辑+++++++++++++>
-		double12GoodsCheck(userId, orderInfo.getGoodsId());
-		// +++++++++++++++++++++++++<
-        
+        double12GoodsCheck(userId, orderInfo.getGoodsId());
+        // +++++++++++++++++++++++++<
+
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
@@ -236,7 +241,7 @@ public class PayOrderV1Api implements ApiHandle {
                         orderInfo.setRebateAmount(rebateAmount);
                     }
                 } else {
-                    borrowRate = afResourceService.borrowRateWithResource(nper,context.getUserName());
+                    borrowRate = afResourceService.borrowRateWithResource(nper, context.getUserName());
                     orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                 }
 
@@ -290,7 +295,7 @@ public class PayOrderV1Api implements ApiHandle {
             orderInfo.setLat(lat);
             orderInfo.setLng(lng);
         }
-        afOrderService.updateOrder(orderInfo);
+
 
         try {
             BigDecimal saleAmount = orderInfo.getSaleAmount();
@@ -317,7 +322,8 @@ public class PayOrderV1Api implements ApiHandle {
                 payType = PayType.COMBINATION_PAY.getCode();
                 //组合
             }
-
+            orderInfo.setPayType(payType);
+            afOrderService.updateOrder(orderInfo);
 
             // ----------------
 

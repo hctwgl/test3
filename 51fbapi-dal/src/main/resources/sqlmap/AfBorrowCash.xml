@@ -5,7 +5,7 @@
 		id
 		rid,gmt_create,gmt_modified,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_day,
 		overdue_amount,arrival_amount,gmt_arrival,review_name,review_user_name,review_details,gmt_review,poundage,rate_amount,repay_amount,latitude,longitude,province,city,county,overdue_status,review_status,address,gmt_close,rish_order_no,
-		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate,majiabao_name
+		gmt_plan_repayment,sum_rate,sum_overdue,sum_jfb,sum_rebate,sum_renewal_poundage,renewal_num,poundage_rate,base_bank_rate,majiabao_name,risk_daily_rate
 	</sql>
 
 	<insert id="addBorrowCash" parameterType="AfBorrowCashDo"
@@ -17,6 +17,9 @@
 		address, poundage_rate, base_bank_rate
 		<if test="majiabaoName != null">
 			,majiabao_name
+		</if>
+		<if test="riskDailyRate != null">
+			,risk_daily_rate
 		</if>
 		)
 		VALUES (
@@ -42,6 +45,9 @@
 		#{baseBankRate}
 		<if test="majiabaoName != null">
 			,#{majiabaoName}
+		</if>
+		<if test="riskDailyRate != null">
+			,#{riskDailyRate}
 		</if>
 		)
 	</insert>
@@ -144,6 +150,9 @@
 		</if>
 		<if test="finishDate != null and finishDate !=''">
 			,finish_date=#{finishDate}
+		</if>
+		<if test="riskDailyRate != null and riskDailyRate !=''">
+			,risk_daily_rate=#{riskDailyRate}
 		</if>
 		WHERE id = #{rid}
 	</update>

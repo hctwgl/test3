@@ -3,8 +3,12 @@
 <head>
     #set($version="2017083020")
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
-    <title>51返呗注册</title>
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
+    #if( $!{style}==9)
+        <title>51返呗-用不完注册</title>
+    #else
+        <title>51返呗注册</title>
+    #end
 </head>
 <body>
 <input type="hidden" id="channelCode" name="channelCode" value="$!{channelCode}">
