@@ -144,7 +144,7 @@ public class GeneratorClusterNo {
 	 */
 	private int getSequenceNum(String orderPre,String datePre) {
 		String orderNoPre = orderPre + datePre;
-		long inData= bizCacheUtil.incr(orderNoPre,10);//10秒后过期
+		long inData= bizCacheUtil.incr(orderNoPre,1000);//10秒后过期
 		return new Long(inData).intValue();
 	}
 	/**
