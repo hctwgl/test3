@@ -69,7 +69,6 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo, context.getAppVersion());
 		data.put("paidAmount", NumberUtil.objToBigDecimalDefault(paidAmount, BigDecimal.ZERO));
 		data.put("rebateAmount", account.getRebateAmount());
-		data.put("jfbAmount", account.getJfbAmount());
 
 		// 还款处理中金额处理
 		String existRepayingMoney = YesNoStatus.NO.getCode();
