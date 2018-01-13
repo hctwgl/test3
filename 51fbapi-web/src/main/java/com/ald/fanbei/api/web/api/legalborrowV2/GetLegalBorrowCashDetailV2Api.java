@@ -115,6 +115,7 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 		data.put("renewalStatus", "N");
 		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 		if (afRenewalDetailDo != null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
+			logger.info("renewalStatus = "+afRenewalDetailDo.getStatus());
 			data.put("renewalStatus", "P");
 		} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
 			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
