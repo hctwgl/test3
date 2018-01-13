@@ -321,7 +321,7 @@
 		WHERE
 			is_delete = 0
 		AND 
-			borrow_no = #{borrowNo}
+			borrow_no = #{borrowNo} and status='TRANSED'
 		LIMIT 1
 	</select>
 	
