@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfInterestFreeRulesService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.dal.dao.AfInterestFreeRulesDao;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 
@@ -20,9 +21,18 @@ public class AfInterestFreeRulesServiceImpl implements
 	@Resource
 	AfInterestFreeRulesDao afInterestFreeRulesDao;
 	
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	 
 	@Override
 	public AfInterestFreeRulesDo getById(Long id) {
-		return afInterestFreeRulesDao.getById(id);
+		String cacheKey = "GET_INTEREST_FREE_RULES_BY_ID" + id;
+		AfInterestFreeRulesDo freeRulesDo = (AfInterestFreeRulesDo)bizCacheUtil.getObject(cacheKey);
+		if(freeRulesDo == null) {
+			freeRulesDo = afInterestFreeRulesDao.getById(id);
+			bizCacheUtil.saveObject(cacheKey, freeRulesDo);
+		}
+		return freeRulesDo;
 	}
 
 }
