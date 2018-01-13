@@ -185,7 +185,7 @@ public class AppH5InvitationActivityController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getSigninInfo",method = RequestMethod.POST)
+    @RequestMapping(value = "getSigninInfo", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
     public String getSigninInfo(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         Long userId = -1l;
