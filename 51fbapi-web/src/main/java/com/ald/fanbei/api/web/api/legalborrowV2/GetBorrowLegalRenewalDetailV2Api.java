@@ -68,6 +68,7 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 		data.put("priorInterest", afRenewalDetailDo.getPriorInterest());//上期利息
 		data.put("priorOverdue", afRenewalDetailDo.getPriorOverdue());//上期滞纳金
 		data.put("nextPoundage", afRenewalDetailDo.getNextPoundage());//下期手续费
+		data.put("priorPoundage",afRenewalDetailDo.getPriorPoundage());//上期手续费
 		data.put("cardName", afRenewalDetailDo.getCardName());//支付方式（卡名称）
 		data.put("tradeNo", afRenewalDetailDo.getTradeNo());//支付编号
 		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());//创建时间
@@ -75,7 +76,8 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 		data.put("capital", afRenewalDetailDo.getCapital());//续借本金
 		AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afRenewalDetailDo.getBorrowId());
 		if(null != afBorrowLegalOrderDo){
-			data.put("type","V1");
+			data.put("goodsAmount",afBorrowLegalOrderDo.getPriceAmount());
+			data.put("type","V2");
 		}else {
 			data.put("type","V0");
 		}
