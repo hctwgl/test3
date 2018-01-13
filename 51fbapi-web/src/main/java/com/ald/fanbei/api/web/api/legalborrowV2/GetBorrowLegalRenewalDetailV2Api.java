@@ -55,7 +55,7 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 		}else {
 			data = objectWithAfRenewalDetailDo(afRenewalDetailDo, afBorrowLegalOrderCashDo);
 		}
-
+		logger.info("data = "+ data);
 		resp.setResponseData(data);
 
 		return resp;
