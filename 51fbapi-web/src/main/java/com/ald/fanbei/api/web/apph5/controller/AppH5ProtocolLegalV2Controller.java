@@ -554,7 +554,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		BigDecimal serviceAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("serviceAmount"), new BigDecimal(0));
+		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
 		if(userName == null || !webContext.isLogin() ) {
 			throw new FanbeiException("非法用户");
 		}
@@ -579,7 +579,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		model.put("mobile", afUserDo.getMobile());// 联系电话
 //		Integer days = NumberUtil.objToIntDefault(type, 0);
 //		BigDecimal serviceAmount = borrowAmount.multiply(new BigDecimal(days)).multiply(new BigDecimal(model.get("SERVICE_RATE").toString())).divide(BigDecimal.valueOf(360)).setScale(2,BigDecimal.ROUND_HALF_UP);
-		model.put("serviceAmount",serviceAmount);//手续费
+		model.put("poundage",poundage);//手续费
 		if(borrowId > 0){
 			AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if(null != afBorrowCashDo){
