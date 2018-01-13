@@ -63,10 +63,10 @@ public class CollectionSystemUtil extends AbstractThird {
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	@Resource
 	AfBorrowLegalRepaymentService afBorrowLegalRepaymentService;
-	
+
 	@Resource
 	AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
-	
+
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
@@ -266,17 +266,16 @@ public class CollectionSystemUtil extends AbstractThird {
 					
 					String respCode = FanbeiThirdRespCode.SUCCESS.getCode();
 					Long borrowId = afBorrowCashDo.getRid();
-					
+
 					//合规线下还款V1
 					if(afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId) != null) {
 						AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 						afBorrowLegalOrderCashService.checkOfflineRepayment(afBorrowCashDo, orderCashDo, repayAmount ,tradeNo);
 						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,isAdmin);
-					}
-					//合规线下还款V2
-					else if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
-						afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator,isAdmin);
-					}
+					}//合规线下还款V2
+                    else if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
+                        afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator,isAdmin);
+                    }
 					//旧版线下还款
 					else {
 						AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(borrowId, tradeNo);
