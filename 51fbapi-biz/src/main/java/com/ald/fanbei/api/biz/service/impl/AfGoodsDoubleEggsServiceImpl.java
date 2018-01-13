@@ -59,9 +59,9 @@ public class AfGoodsDoubleEggsServiceImpl extends ParentServiceImpl<AfGoodsDoubl
 		}
 
 		@Override
-		public List<GoodsForDate> getGOodsByDate(Date startDate) {
+		public List<GoodsForDate> getGOodsByDate(Date startDate,String tag) {
 			
-			return afGoodsDoubleEggsDao.getgoodsByDate(startDate);
+			return afGoodsDoubleEggsDao.getgoodsByDate(startDate,tag);
 		}
 
 		@Override

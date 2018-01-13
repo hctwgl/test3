@@ -175,25 +175,37 @@
     
     <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" parameterType="java.util.Date">
 		SELECT
-			de.id as double_goods_id,
-			case when CURRENT_DATE > date(de.start_time) then '4' when now() > de.start_time then '2' else '0' end as status,
-			de.goods_id,
-			g.stock_count,
-			g.stock_count - de.already_count AS count,
-			g.price_amount AS sale_amount,
-			g.sale_amount AS real_amount,
-			g.`name` AS goods_name,
-			g.goods_icon,
-			g.thumbnail_icon,
-			g.goods_url
+			de.id AS double_goods_id,
+			CASE
+		WHEN CURRENT_DATE > date(de.start_time) THEN
+			'4'
+		WHEN now() > de.start_time THEN
+			'2'
+		ELSE
+			'0'
+		END AS STATUS,
+		 de.goods_id,
+		 g.stock_count,
+		 g.stock_count - de.already_count AS count,
+		 g.price_amount AS sale_amount,
+		 g.sale_amount AS real_amount,
+		 g.`name` AS goods_name,
+		 g.goods_icon,
+		 g.thumbnail_icon,
+		 g.goods_url
 		FROM
 			af_goods_double_eggs de
 		INNER JOIN af_goods g ON g.id = de.goods_id
+		INNER JOIN af_activity a ON a.id = de.activity_id
 		WHERE
 			de.is_delete = 0
+		AND g.is_delete = 0
+		AND a.is_delete = 0
+		AND a.`status` = 2
+		AND a.`name` = #{tag}
 		AND DATE(de.start_time) = DATE(#{startDate})
-		ORDER BY
-			de.sort;
+			ORDER BY
+				de.sort;
     </select>
     
     <select id="isSubscribed" resultType="java.lang.Integer" parameterType="java.lang.Long">

@@ -22,7 +22,7 @@ public interface AfGoodsDoubleEggsService extends ParentService<AfGoodsDoubleEgg
 	
 	List<Date> getAvalibleDateList(String beginningDate);
 
-	List<GoodsForDate> getGOodsByDate(Date startDate);
+	List<GoodsForDate> getGOodsByDate(Date startDate, String tag);
 
 	void updateCountById(Long goodsId);
 	

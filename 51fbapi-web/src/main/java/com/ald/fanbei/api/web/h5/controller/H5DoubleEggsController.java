@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ald.fanbei.api.biz.service.AfActivityService;
 import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
 import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfGoodsCategoryService;
@@ -88,6 +89,8 @@ public class H5DoubleEggsController extends H5Controller {
 	AfSchemeGoodsService afSchemeGoodsService;
 	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
+	@Resource 
+	AfActivityService afActivityService;
 
 	/**
 	 * @Title: initCoupons
@@ -191,17 +194,30 @@ public class H5DoubleEggsController extends H5Controller {
 		try {
 
 			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
+			
+			//get tag from activityId then get goods from different tag
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			if (activityId == null) {
+				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
+			}
+			
+			//find the name from activityId
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+			if (StringUtil.isBlank(tag)) {
+				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
+			}
 
-	//get dateList start from the spring festival activity beginning date
+	/*//get dateList start from the spring festival activity beginning date
 			
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
 			if (resourceDo == null) {
 				return H5CommonResponse.getNewInstance(false, "活动没有配置活动起止时间！").toString();
 			}
 			
-			String beginningDate = resourceDo.getValue();
+			String beginningDate = resourceDo.getValue();*/
 			
-			List<Date> dateList = afGoodsDoubleEggsService.getAvalibleDateList(beginningDate);
+			//get dateList start from the config of specific activity
+			List<Date> dateList = afActivityService.getDateListByName(tag);
 			if (CollectionUtil.isNotEmpty(dateList)) {
 
 				log = log + String.format("middle params dateList.size() = %s", dateList.size());
@@ -212,7 +228,7 @@ public class H5DoubleEggsController extends H5Controller {
 
 				for (Date startDate : dateList) {
 
-					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate);
+					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate,tag);
 					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
 
 						AfGoodsBuffer goodsBuffer = new AfGoodsBuffer();
