@@ -286,7 +286,7 @@ public class AppH5InvitationActivityController extends BaseController {
     public String signin(HttpServletRequest request){
         FanbeiWebContext context = new FanbeiWebContext();
         Long userId = -1l;
-        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        H5CommonResponse resp = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.USER_SIGNIN_SUCCESS.getDesc(),"",null);
         AfUserDo afUser = null;
         try{
             context = doWebCheck(request, false);
