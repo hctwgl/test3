@@ -88,7 +88,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
 		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));//借款本金
 		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
-
+		AfResourceDo consumeDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsume.getCode());
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		Long userId = afUserDo.getRid();
 		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
@@ -109,12 +109,32 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			model.put("lateFeeMin", new BigDecimal(amounts[0]));
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
+		model.put("interest",consumeDo.getValue3());
 		Date date = new Date();
+		getResourceRate(model, type,afResourceDo,"instalment");
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo= afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
 			date= afBorrowDo.getGmtCreate();
+			getEdspayInfo(model, borrowId, (byte) 2);
+			BigDecimal nperAmount = afBorrowDo.getNperAmount();
+			model.put("nperAmount",nperAmount);
+			nper = afBorrowDo.getNper();
+			List repayPlan = new ArrayList();
+			if (nper != null){
+				BigDecimal money = afBorrowDo.getNperAmount().subtract(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
+				for (int i = 0; i < nper; i++) {
+					AfBorrowDo borrowDo = new AfBorrowDo();
+					borrowDo.setGmtCreate( DateUtil.addMonths(date, i));
+					borrowDo.setNperAmount(money);
+					borrowDo.setAmount(afBorrowDo.getAmount().divide(BigDecimal.valueOf(afBorrowDo.getNper())));
+					borrowDo.setNper(i+1);
+					repayPlan.add(borrowDo);
+				}
+				model.put("repayPlan",repayPlan);
+			}
+
 			/*AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
 			AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
 			if (afBorrowDo != null){
@@ -138,7 +158,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 //		model.put("poundage", consumeDo.getValue1());
 		model.put("poundage", poundage);
 
-		model.put("gmtStart", date);
+		/*model.put("gmtStart", date);
 		if ("SEVEN".equals(type)){
 			model.put("gmtEnd", DateUtil.addDays(date, 6));
 		}else if ("FOURTEEN".equals(type)){
@@ -150,7 +170,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		if(afUserOutDayDo !=null) {
 			repayDay = afUserOutDayDo.getPayDay();
 		}
-		model.put("repayDay", repayDay);
+		model.put("repayDay", repayDay);*/
 
 		logger.info(JSON.toJSONString(model));
 	}
@@ -199,16 +219,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		if (borrowId > 0) {
             afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowId);
 			if (afBorrowCashDo != null) {
-				AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
-				afContractPdfDo.setTypeId(borrowId);
-				afContractPdfDo.setType((byte) 1);
-				afContractPdfDo = afContractPdfDao.selectByTypeId(afContractPdfDo);
-				if (afContractPdfDo != null && afContractPdfDo.getUserSealId() != null){
-					AfUserSealDo afUserSealDo = afUserSealDao.selectById(afContractPdfDo.getUserSealId());
-					model.put("edspayUserCardId",afUserSealDo.getEdspayUserCardId());
-					model.put("edspayUserName",afUserSealDo.getUserName());
-					model.put("secondSeal",afUserSealDo.getUserSeal());
-				}
+				getEdspayInfo(model, borrowId, (byte) 1);
 				getResourceRate(model, type,afResourceDo,"borrow");
 				model.put("gmtCreate", afBorrowCashDo.getGmtCreate());// 出借时间
 				model.put("borrowNo", afBorrowCashDo.getBorrowNo());
@@ -234,6 +245,19 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 
 		logger.info(JSON.toJSONString(model));
+	}
+
+	private void getEdspayInfo(ModelMap model, Long borrowId,byte type) {
+		AfContractPdfDo afContractPdfDo = new AfContractPdfDo();
+		afContractPdfDo.setTypeId(borrowId);
+		afContractPdfDo.setType(type);
+		afContractPdfDo = afContractPdfDao.selectByTypeId(afContractPdfDo);
+		if (afContractPdfDo != null && afContractPdfDo.getUserSealId() != null){
+            AfUserSealDo afUserSealDo = afUserSealDao.selectById(afContractPdfDo.getUserSealId());
+            model.put("edspayUserCardId",afUserSealDo.getEdspayUserCardId());
+            model.put("edspayUserName",afUserSealDo.getUserName());
+            model.put("secondSeal",afUserSealDo.getUserSeal());
+        }
 	}
 
 	private void getResourceRate(ModelMap model, String type,AfResourceDo afResourceDo,String borrowType) {
