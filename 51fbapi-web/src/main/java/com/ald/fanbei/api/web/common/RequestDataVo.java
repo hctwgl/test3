@@ -44,7 +44,7 @@ public class RequestDataVo extends AbstractSerial{
     }
     
     public Map<String, Object> getParams() {
-        return params;
+         return params;
     }
     
     public void setParams(Map<String, Object> params) {

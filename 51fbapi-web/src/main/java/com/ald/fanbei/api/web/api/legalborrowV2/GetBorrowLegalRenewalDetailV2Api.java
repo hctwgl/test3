@@ -55,7 +55,7 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 		}else {
 			data = objectWithAfRenewalDetailDo(afRenewalDetailDo, afBorrowLegalOrderCashDo);
 		}
-		logger.info("data = "+ data);
+		logger.info("getBorrowLegalRenewalDetail data = "+ data);
 		resp.setResponseData(data);
 
 		return resp;
@@ -74,6 +74,7 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());//创建时间
 		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());//续借编号
 		data.put("capital", afRenewalDetailDo.getCapital());//续借本金
+		data.put("amount",afRenewalDetailDo.getActualAmount());// 续期金额
 		AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afRenewalDetailDo.getBorrowId());
 		if(null != afBorrowLegalOrderDo){
 			data.put("goodsAmount",afBorrowLegalOrderDo.getPriceAmount());
