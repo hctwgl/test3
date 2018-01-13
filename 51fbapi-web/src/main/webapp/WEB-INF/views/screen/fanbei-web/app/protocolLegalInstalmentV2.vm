@@ -54,7 +54,7 @@
     <ul>
         <li><i>借款本金</i><i>#if($!{amountLower})￥$!{amountLower}#end</i></li>
         <li><i>大写金额</i><i>#if($!{amountCapital})人民币$!{amountCapital}#end</i></li>
-        <li><i>借款利率（年化）</i><i>$!{yearRate}</i></li>
+        <li><i>借款利率（年化）</i><i>#if($!{interest})¥$!{interest}（平台补贴：¥$!{interest}）#end</i></li>
         <li><i>借款期限</i><i>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")#end</i></li>
         <li><i>还款方式</i><i>等本等息</i></li>
         <li><i>还款日</i><i>$dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")</i></li>
@@ -63,8 +63,9 @@
     <span>还款计划：</span><br>
     <table cellspacing="1">
         <tr><td>期数</td><td>还款日</td><td>本金</td><td>利息及手续费</td></tr>
-        <tr><td>1</td><td>三三四四</td><td>订单</td><td>蛐蛐儿</td></tr>
-        <tr><td>2</td><td>三三四四</td><td>订单</td><td>蛐蛐儿</td></tr>
+        #foreach($item in $!{repayPlan})
+            <tr><td>$!{item.nper}</td><td>$dateUtil.formatDate($!{item.gmtCreate},"yyyy-MM-dd")</td><td>#if($!{item.amount})￥$!{item.amount}#end</td><td>#if($!{item.nperAmount})￥$!{item.nperAmount}#end</td></tr>
+        #end
     </table>
     <br>
     <span>三、借款发放及还款方式及逾期还款</span><br>
@@ -177,7 +178,7 @@
     <br>
     丙方：浙江阿拉丁电子商务股份有限公司 #if($!{companyUserSeal})<img style="max-width: 2.5rem" src="$!{companyUserSeal}">#end<br>
     丁方：浙江楚橡信息科技股份有限公司 #if($!{thirdSeal})<img style="max-width: 2.5rem" src="$!{thirdSeal}">#end<br>
-    签署时间：$dateUtil.formatDate($!{gmtCreate},"yyyy-MM-dd")<br><br>
+    签署时间：#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd")#end<br><br>
     </p>
 </div>
 <script type="text/javascript">
