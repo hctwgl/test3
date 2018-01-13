@@ -85,6 +85,7 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 			existRepayingMoney = YesNoStatus.YES.getCode();
 		}
 		data.put("existRepayingMoney", existRepayingMoney);
+		logger.info("getLegalBorrowCashDetail, data = " + data);
 		resp.setResponseData(data);
 
 		return resp;
