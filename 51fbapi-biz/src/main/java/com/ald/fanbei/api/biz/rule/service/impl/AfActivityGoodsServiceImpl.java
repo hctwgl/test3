@@ -12,6 +12,7 @@ import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.dal.dao.AfActivityGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfActivityGoodsDo;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
@@ -28,6 +29,9 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 
 	@Resource
 	AfActivityGoodsDao afActivityGoodsDao;
+	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public List<AfActivityGoodsDto> listActivityGoodsByActivityId(
@@ -57,7 +61,13 @@ public class AfActivityGoodsServiceImpl  implements AfActivityGoodsService {
 
 	@Override
 	public List<AfEncoreGoodsDto> listHomeActivityGoodsByActivityId(Long activityId) {
-		return afActivityGoodsDao.listHomeActivityGoodsByActivityId(activityId);
+		String cacheKey = "LIST_HOME_ACTIVITY_GOODS_BY_ACTIVITY_ID" + activityId;
+		List<AfEncoreGoodsDto> goodsDtoList = bizCacheUtil.getObjectList(cacheKey);
+		if(goodsDtoList == null) {
+			goodsDtoList = afActivityGoodsDao.listHomeActivityGoodsByActivityId(activityId);
+			bizCacheUtil.saveObjectList(cacheKey, goodsDtoList);
+		}
+		return goodsDtoList;
 	}
 	
 	@Override
