@@ -94,7 +94,7 @@ public class GeneratorClusterNo {
 	public String getBorrowNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("jk");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum("jk",dateStr)));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowSequenceNum(currDate, "jk")));
 		return orderSb.toString();
 	}
 
@@ -107,7 +107,7 @@ public class GeneratorClusterNo {
 	public String getBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("jq");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum( "jq",dateStr)));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowCashSequenceNum(currDate, "jq")));
 		return orderSb.toString();
 	}
 
@@ -133,7 +133,7 @@ public class GeneratorClusterNo {
 	public String getRepaymentNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("hk");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum("hk",dateStr)));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentSequenceNum(currDate, "hk")));
 		return orderSb.toString();
 	}
 	/**
