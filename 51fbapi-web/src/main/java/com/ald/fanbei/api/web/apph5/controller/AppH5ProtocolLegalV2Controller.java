@@ -16,6 +16,7 @@ import com.ald.fanbei.api.dal.dao.AfUserSealDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -487,6 +488,42 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 
 		logger.info(JSON.toJSONString(model));
 	}
+
+
+	@RequestMapping(value = { "protocolLegalAgentBuyServiceAgreement" }, method = RequestMethod.GET)
+	public void protocolLegalAgentBuyServiceAgreement(HttpServletRequest request, ModelMap model) throws IOException {
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		if(userName == null || !webContext.isLogin() ) {
+			throw new FanbeiException("非法用户");
+		}
+		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+		if (afUserDo == null) {
+			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		Long userId = afUserDo.getRid();
+		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+		if (accountDo == null) {
+			logger.error("account not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+		}
+		if(!StringUtils.isEmpty(accountDo.getRealName())){
+			model.put("realName", accountDo.getRealName());//借款人
+		}else{
+			logger.error("realName not exist" + FanbeiExceptionCode.USER_REALNAME_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_REALNAME_NOT_EXIST_ERROR);
+		}
+
+	}
+
+	@RequestMapping(value = { "platformServiceProtocol" }, method = RequestMethod.GET)
+	public void platformServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
+
+	}
+
+
+
 
 	public static String ToBig(int num) {
 		String str[] = { "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖", "拾" };

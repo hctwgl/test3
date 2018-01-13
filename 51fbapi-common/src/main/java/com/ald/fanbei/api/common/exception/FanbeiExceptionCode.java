@@ -59,6 +59,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     CAN_NOT_APPLY_CASHED("CAN_NOT_APPLY_CASHED",1116,"can not apply cashed","系统维护中，暂不能申请提现"),
     APPLY_CASHED_AMOUNT_ERROR("APPLY_CASHED_AMOUNT_ERROR",1117,"apply cashed amount invalid","申请的金额无效"),
     USER_ACCOUNT_NOT_EXIST_ERROR("USER_ACCOUNT_NOT_EXIST_ERROR",1118,"user not exist error","账户不存在"),
+
     USER_ACCOUNT_IDNUMBER_INVALID_ERROR("USER_ACCOUNT_IDNUMBER_INVALID_ERROR",1119,"id number error","身份证输入有误"),
     USER_PAY_PASSWORD_INVALID_ERROR("USER_PAY_PASSWORD_INVALID_ERROR",1120,"pay password error","您的支付密码不正确或者尚未设置,请点击\"忘记密码\"找回或者重置"),
     APPLY_CASHED_AMOUNT_MORE_ACCOUNT("APPLY_CASHED_AMOUNT_MORE_ACCOUNT",1121,"apply cash amount more than account money","申请金额大于账户可提现金额"),
@@ -265,7 +266,7 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2005,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
     ORDER_BORROW_CASH_NOT_EXIST_ERROR("ORDER_BORROW_CASH_NOT_EXIST_ERROR",2006,"order borrow cash not exist","商品借款信息不存在"),
 
-
+    USER_REALNAME_NOT_EXIST_ERROR("USER_REALNAME_NOT_EXIST_ERROR",3008,"user realName not exist error","用户真实姓名不存在"),
 
     RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("RENEWAL_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",3005,"renewal cash repay more than borrow cash","续借金额大于借款金额"),
     RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED("RENEWAL_CASH_REPAY_AMOUNT_LESS_ONE_HUNDRED",3006,"renewal cash repay less one hundred","续借金额小于100"),
@@ -355,7 +356,10 @@ SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", 
     AMOUNT_IS_NULL("AMOUNT_IS_NULL",7004,"amount_is_null","对不起，您查询的退还款详情不存在，请刷新后重试"),
     ZZYH_ERROR("ZZYH_ERROR", 7006, "ZZYH_ERROR ", "种子用户不能使用该功能"),
     AMOUNT_COMPARE_ERROR("AMOUNT_COMPARE_ERROR",7005,"money error","提前结清金额对不上");
-	/**
+
+
+
+/**
     TENEMENT_ALREADY_AUDIT("TENEMENT_ALREADY_AUDIT",7003,"tenement_already_audit","对不起，您的审核已将完成，无法更改"),
 	//用户现金流不存在
 

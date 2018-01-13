@@ -1,11 +1,13 @@
 package com.ald.fanbei.api.web.api.legalborrowV2;
 
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -32,6 +34,9 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+
+	@Resource
+	AfBorrowLegalOrderService afBorrowLegalOrderService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -68,7 +73,13 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 		data.put("gmtCreate", afRenewalDetailDo.getGmtCreate().getTime());//创建时间
 		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());//续借编号
 		data.put("capital", afRenewalDetailDo.getCapital());//续借本金
-		data.put("type","old");
+		AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afRenewalDetailDo.getBorrowId());
+		if(null != afBorrowLegalOrderDo){
+			data.put("type","V1");
+		}else {
+			data.put("type","V0");
+		}
+
 		return data;
 	}
 
@@ -101,7 +112,7 @@ public class GetBorrowLegalRenewalDetailV2Api implements ApiHandle {
 		data.put("renewalNo", afRenewalDetailDo.getPayTradeNo());// 续借编号
 		data.put("lastRepaidamount", lastRepaidamount);// 上期待还金额
 		data.put("goodsAmount", goodsAmount);// 分期商品金额
-		data.put("type","new");
+		data.put("type","V1");
 		return data;
 	}
 

@@ -353,13 +353,12 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 
 	@Override
 	public void delegatePay(String consumerNo, String orderNo, String result,
-			final AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard) {
+			final AfBorrowLegalOrderDo afBorrowLegalOrderDo, AfUserBankcardDo mainCard,final AfBorrowCashDo afBorrowCashDo) {
 		Long userId = Long.parseLong(consumerNo);
 		final AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
 		Date currDate = new Date();
 		AfUserDo afUserDo = afUserService.getUserById(userId);
 		AfUserAccountDo accountInfo = afUserAccountService.getUserAccountByUserId(userId);
-		final AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByRishOrderNo(orderNo);
 		delegateBorrowCashDo.setRid(afBorrowCashDo.getRid());
 
 		List<String> whiteIdsList = new ArrayList<String>();
