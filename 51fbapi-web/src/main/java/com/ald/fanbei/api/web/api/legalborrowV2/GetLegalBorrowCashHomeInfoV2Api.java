@@ -211,7 +211,6 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			} else if (!StringUtils.equals(borrowStatus, AfBorrowCashStatus.transed.getCode()) && usableAmount.compareTo(minAmount) < 0 && StringUtils.equals(finishFlag, YesNoStatus.NO.getCode())) {
 				inRejectLoan = YesNoStatus.YES.getCode();
 			}
-			data.put("jfbAmount", userAccount.getJfbAmount());
 			data.put("rebateAmount", userAccount.getRebateAmount());
 			data.put("amount", afBorrowCashDo.getAmount());
 			data.put("arrivalAmount", afBorrowCashDo.getArrivalAmount());
