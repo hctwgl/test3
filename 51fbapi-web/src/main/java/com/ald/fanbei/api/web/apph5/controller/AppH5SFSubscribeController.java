@@ -192,7 +192,7 @@ public class AppH5SFSubscribeController extends BaseController {
 		java.util.Map<String, Object> data = new HashMap<>();
 
 		try {
-			context = doWebCheck(request, true);
+			context = doWebCheck(request, false);
 			if (context != null) {
 
 				Long shopId = NumberUtil.objToLongDefault(request.getParameter("shopId"), null);
@@ -208,14 +208,35 @@ public class AppH5SFSubscribeController extends BaseController {
 					return H5CommonResponse.getNewInstance(false, "参数shopId无效").toString();
 				}
 				String userName = context.getUserName();
-				Long userId = convertUserNameToUserId(userName);
-				String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(),
-						shopInfo.getType(), userId, userName);
+				if (StringUtil.isNotBlank(userName)) {
+					Long userId = convertUserNameToUserId(userName);
+					if (userId != null) {
+						String shopUrl = afShopService.parseBoluomeUrl(shopInfo.getShopUrl(), shopInfo.getPlatformName(),
+								shopInfo.getType(), userId, userName);
 
-				data.put("shopUrl", shopUrl);
-				logger.info("/appH5SF/getBrandUrl param: userId={} , shopUrl ={}", userId, shopUrl);
-				resultStr = H5CommonResponse.getNewInstance(true, "获取波罗蜜url成功", "", data).toString();
+						data.put("shopUrl", shopUrl);
+						logger.info("/appH5SF/getBrandUrl param: userId={} , shopUrl ={}", userId, shopUrl);
+						resultStr = H5CommonResponse.getNewInstance(true, "获取波罗蜜url成功", "", data).toString();
+					}else{
+						data = new HashMap<>();
+						String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+								+ H5OpenNativeType.AppLogin.getCode();
+						data.put("loginUrl", loginUrl);
+						resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+						return resultStr.toString();
+					}
+					
+				}else{
+					data = new HashMap<>();
+					String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+							+ H5OpenNativeType.AppLogin.getCode();
+					data.put("loginUrl", loginUrl);
+					resultStr = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+					return resultStr.toString();
+				}
+				
 			}
+			
 
 		} catch (FanbeiException e) {
 			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)) {
