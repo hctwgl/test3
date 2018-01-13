@@ -635,7 +635,7 @@ public class AppH5InvitationActivityController extends BaseController {
 		}
 		 NewbieTaskVo newbieTaskForThirdShopping =  assignment(thirdShoppingResource,count);
 		 if(acticityShopOrderList.size()<3){
-		     newbieTaskForThirdShopping.setValue1("已购物"+acticityShopOrderList.size()+"次");
+		     newbieTaskForThirdShopping.setValue1("已购物<i>"+acticityShopOrderList.size()+"</i>次");
 		     
 		 }else{
 		           BigDecimal doubleAmount = shopOrderList.get(2).getRebateAmount().multiply(new BigDecimal(2) );
