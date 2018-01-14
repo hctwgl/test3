@@ -205,4 +205,6 @@ public interface AfBorrowCashService {
 
 
 	AfBorrowCashDo getBorrowCashByUserIdDescById(Long userId);
+	
+	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo);
 }
