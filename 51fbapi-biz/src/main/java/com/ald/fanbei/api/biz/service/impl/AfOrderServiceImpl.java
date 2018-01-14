@@ -2469,24 +2469,29 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		return orderDao.getDouble12OrderByGoodsIdAndUserId(goodsId, userId);
 	}
 
-	@Override
-	public HashMap getCountShopOrderByUser(Long userid) {
-	    // TODO Auto-generated method stub
-	    return orderDao.getCountShopOrderByUser(userid);
-	}
 
 	
-	@Override
-	public List<AfOrderDo> getShopOrderByUserIdOrActivityTime(Long userId, String activityTime) {
-	    // TODO Auto-generated method stub
-	    return orderDao.getShopOrderByUserIdOrActivityTime(userId,activityTime);
-	}
 	
 	@Override
 	public int getAuthShoppingByUserId(Long userId, String activityTime) {
 	    // TODO Auto-generated method stub
 	    return orderDao.getAuthShoppingByUserId(userId,activityTime);
 	}
+
+	@Override
+	public HashMap getCountOrderByUserAndOrderType(Long userId, String orderType) {
+	    // TODO Auto-generated method stub
+	    return orderDao.getCountOrderByUserAndOrderType(userId,orderType);
+	}
+
+	@Override
+	public List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(Long userId, String activityTime) {
+	    // TODO Auto-generated method stub
+	    return orderDao.getSelfsupportOrderByUserIdOrActivityTime(userId,activityTime);
+	}
+
+	
+	
 
 
 	

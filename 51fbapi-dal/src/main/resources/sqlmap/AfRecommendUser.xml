@@ -14,7 +14,12 @@
 				prize_money,
 				loan_user_count,
 				recommend_count,
-				gmt_modified
+				gmt_modified,
+				type,
+				is_selfsupport_rebate,
+				first_selfsupport_order,
+				first_boluome_order
+				
 	</sql>
 
 
@@ -205,5 +210,15 @@
 		  AND ru.is_delete = 0
 		  AND ru.parentId = #{pid}
 	</select>
+	
+	<update id="updateRecommendUserById" parameterType="AfRecommendUserDo">
+		UPDATE af_recommend_user
+		set
+		<if test="firstBoluomeOrder != null">
+			first_boluome_order = #{firstBoluomeOrder}
+		</if>
+		where id = #{id}
+	</update>
+	
 	
 </mapper>

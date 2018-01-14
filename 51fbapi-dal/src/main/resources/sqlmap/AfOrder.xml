@@ -1089,6 +1089,19 @@
 		AND ao.`status` in ('FINISHED','REBATED');
 	</select>
 	
+	<select id="getCountFinishBoluomeOrderByUserId" parameterType="java.lang.Long" resultType = "java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_order 
+			where order_type = 'BOLUOME'
+			AND user_id = #{userId} 
+			AND is_delete = 0
+			AND status in ('FINISHED','REBATED');
+			
+	</select>
+	
+	
 	<select id="getOverOrderByUserId" parameterType="java.lang.Long" resultType="AfOrderDo">
 		SELECT
 		<include refid="queryFields"/>
@@ -1133,15 +1146,15 @@
 		AND
 			user_id=#{userId}
 	</select>
-	<select id="getCountShopOrderByUser" resultType="HashMap">
+	<select id="getCountOrderByUserAndOrderType" resultType="HashMap">
 		 SELECT 	
 		 COUNT(1) 'count' FROM 
 		 af_order WHERE 
-		 user_id = #{userid}
-		 AND order_type IN('AGENTBUY','SELFSUPPORT')
+		 user_id = #{userId}
+		 AND order_type = #{orderType}
 		 AND is_delete = 0
 	</select>
-	<select id="getShopOrderByUserIdOrActivityTime" resultType="AfOrderDo">
+	<select id="getSelfsupportOrderByUserIdOrActivityTime" resultType="AfOrderDo">
 		 SELECT 	
 		<include refid="queryAllFields"/>
 		 FROM 
@@ -1162,7 +1175,7 @@
 		 FROM 
 		 af_order WHERE 
 		 user_id = #{userId}
-		 AND order_type IN('AGENTBUY','SELFSUPPORT')
+		 AND order_type ='SELFSUPPORT'
 		 AND is_delete = 0
 		 and pay_status = 'P' 
 		 and pay_type in('AP','CP')

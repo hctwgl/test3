@@ -118,4 +118,9 @@ public interface AfRecommendUserService {
     List<AfRecommendUserDo> getListByParentIdAndType(AfRecommendUserDo queryRecommendUser);
 
     Long findRefUserId(AfRecommendUserDo queryRecommendUser);
+
+
+    int updateRecommendUserById(AfRecommendUserDo afRecommendUserDo);
+
+    AfRecommendUserDo getARecommendUserById(Long userId);
 }

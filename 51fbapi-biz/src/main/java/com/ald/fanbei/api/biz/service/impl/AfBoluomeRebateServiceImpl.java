@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserCouponSource;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -35,6 +35,7 @@ import com.ald.fanbei.api.dal.domain.AfBoluomeRebateDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketDo;
 import com.ald.fanbei.api.dal.domain.AfBoluomeRedpacketThresholdDo;
 import com.ald.fanbei.api.dal.domain.AfRebateDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
@@ -74,6 +75,9 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	AfUserCouponService afUserCouponService;
 	@Resource
 	AfResourceService afResourceService;
+	@Resource
+	AfRecommendUserService afRecommendUserService;
+	
 
 	@Override
 	public BaseDao<AfBoluomeRebateDo, Long> getDao() {
@@ -110,6 +114,19 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 					log = log + String.format("Middle business params : orderTimes = %s ", orderTimes);
 					logger.info(log);
 					if (orderTimes == 0) {
+    					     int boluomeFinishOrderTimes =  afOrderDao.getCountFinishBoluomeOrderByUserId(userId);
+    					     if(boluomeFinishOrderTimes == 0){
+            					     //邀请有礼记录用户订单id
+            					    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(userId);
+            					     if(afRecommendUserDo != null){
+            						 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
+            						     afRecommendUserDo.setFirstBoluomeOrder(orderId);
+            						     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
+            						     log = log + String.format("updateRecommend = %s ", updateRecommend);
+         						     logger.info(log);
+            						 }
+            					     }
+    					     }
 						rebateDo.setFirstOrder(1);
 
 						// check if the order times for red packet

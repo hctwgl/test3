@@ -366,12 +366,12 @@ public class PayOrderV1Api implements ApiHandle {
                         afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
                     }
                     //首次信用购物（自营或代买信用支付）送还款券
-                       if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) || OrderType.AGENTBUY.getCode().equals(orderInfo.getOrderType()) ){
-                	   if("AP".equals(orderInfo.getPayType()) || "CP".equals(orderInfo.getPayType()))
+                       if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) ){
+                	   if(payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
         		       try{
         		           afUserCouponService.sentUserCoupon(orderInfo);
         		         }catch(Exception e){
-        		           logger.error("first shopping sentUserCoupon error:"+e+orderInfo.toString());
+        		           logger.error("first selesupport shopping sentUserCoupon error:"+e+orderInfo.toString());
         		       }
 		    
                        }

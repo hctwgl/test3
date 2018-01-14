@@ -545,7 +545,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 	        			String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
 	        			//是否是第一次借款
 	        			afUserCouponService.sentUserCoupon(userId,tag,sourceType);
-	        			
 				}catch(Exception e){
 				    logger.error("first borrow sentUserCoupon error", e);
 				}

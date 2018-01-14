@@ -572,7 +572,7 @@ public class AppH5InvitationActivityController extends BaseController {
 	        int shopShopping = 0;
 	        //afOrderService.getRebateShopOrderByUserId(userId);
 	        //自营商城
-	       List<AfOrderDo> shopOrderList =   afOrderService.getShopOrderByUserIdOrActivityTime(userId,null);
+	       List<AfOrderDo> shopOrderList =   afOrderService.getSelfsupportOrderByUserIdOrActivityTime(userId,null);
 	       int firstShopping = 0; 
 	       if(shopOrderList.size()>0){
 		   firstShopping =1;
@@ -628,7 +628,7 @@ public class AppH5InvitationActivityController extends BaseController {
 		 //活动期间三次商城购物。（自营）
 		 //活动期间商城购物数据
 		 
-		 List<AfOrderDo> acticityShopOrderList = afOrderService.getShopOrderByUserIdOrActivityTime(userId,activityTime);
+		 List<AfOrderDo> acticityShopOrderList = afOrderService.getSelfsupportOrderByUserIdOrActivityTime(userId,activityTime);
 		 int count = 0;
 		 if(acticityShopOrderList.size()>=3){
 		     count = acticityShopOrderList.size();

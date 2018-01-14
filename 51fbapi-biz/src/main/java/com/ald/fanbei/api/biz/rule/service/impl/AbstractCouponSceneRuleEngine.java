@@ -208,10 +208,6 @@ public abstract class AbstractCouponSceneRuleEngine implements CouponSceneRuleEn
 			afCouponDao.updateCouponquotaAlreadyById(couponDoT);
 			
 		}
-		
-		
-
-		
 	}
 	
 	

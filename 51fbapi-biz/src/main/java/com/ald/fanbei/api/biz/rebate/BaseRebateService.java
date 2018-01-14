@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
@@ -18,6 +19,7 @@ import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountLogDao;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfRecommendUserDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountLogDo;
 
@@ -31,6 +33,8 @@ public abstract class BaseRebateService {
     SmsUtil smsUtil;
     @Resource
     AfOrderDao afOrderDao;
+    @Resource
+    AfRecommendUserService afRecommendUserService;
     /**
      * 是否可以进行返利的前置数据验证
      *
@@ -96,8 +100,19 @@ public abstract class BaseRebateService {
         accountLog.setRefId(orderInfo.getRid() + StringUtils.EMPTY);
         accountLog.setUserId(orderInfo.getUserId());
         
-        List<AfOrderDo> shopOrderList =   afOrderDao.getShopOrderByUserIdOrActivityTime(orderInfo.getUserId(),null);
-	//自营商城活动第三单双倍返利
+        List<AfOrderDo> shopOrderList =   afOrderDao.getSelfsupportOrderByUserIdOrActivityTime(orderInfo.getUserId(),null);
+	
+        //订单首次完成，邀请有礼记录用户订单id
+        if(shopOrderList.size() == 1 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+	    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(orderInfo.getUserId());
+	     if(afRecommendUserDo != null){
+		 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
+		     afRecommendUserDo.setFirstBoluomeOrder(orderInfo.getRid());
+		     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
+		 }
+	     }
+        }
+        //自营商城活动第三单双倍返利
         if(shopOrderList.size() == 3 && OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
                 //用户账户操作
                 accountInfo.setRebateAmount(rebateAmount.multiply(new BigDecimal(2)));

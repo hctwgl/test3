@@ -163,6 +163,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 							// 发放优惠劵工作
 							// creditRebateMsg = getCreditAuthMsg(context,
 							// creditRebateMsg);
+						    
 						    	//给该认证用户送还款券
 							couponSceneRuleEnginerUtil.creditAuth(context.getUserId());
 							// 随机发放奖品

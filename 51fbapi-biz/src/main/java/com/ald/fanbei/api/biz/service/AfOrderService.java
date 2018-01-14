@@ -369,18 +369,22 @@ public interface AfOrderService {
 	/**
 	 * 
 	* author chenqiwei
-	* @Title: getShopOrderByUser 
-	* @Description: 统计用户自营或分期
+	* @Title: getCountOrderByUserAndOrderType 
+	* @Description: 统计订单根据用户和订单类型
 	* @param userId
 	* @return     
 	* return HashMap 返回类型 
 	* @throws
 	 */
-	HashMap getCountShopOrderByUser(Long userid);
+	HashMap getCountOrderByUserAndOrderType(Long userId, String orderType);
 
-	List<AfOrderDo> getShopOrderByUserIdOrActivityTime(Long userId, String activityTime);
+	List<AfOrderDo> getSelfsupportOrderByUserIdOrActivityTime(Long userId, String activityTime);
 	
 	int getAuthShoppingByUserId(Long userId, String activityTime);
+
+
+
+	
 
 
 

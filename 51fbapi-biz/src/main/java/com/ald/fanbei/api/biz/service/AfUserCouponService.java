@@ -137,8 +137,9 @@ public interface AfUserCouponService {
 
 	void grantCouponForRedRain(Long userId, Long couponId, String sourceType, String sourceRef);
 
-	public int sentUserCoupon(AfOrderDo afOrder);
 
 	void sentUserCoupon(Long userId, String tag, String sourceType);
+
+	int sentUserCoupon(AfOrderDo orderInfo);
 
 }

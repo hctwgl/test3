@@ -211,14 +211,7 @@ public class SubmitAgencyBuyOrderApi implements ApiHandle {
 
 
 		if (afAgentOrderService.insertAgentOrderAndNper(afAgentOrderDo, afOrder, nper) > 0) {
-		   
-//		    	//首次信用购物,送优惠券
-//		       try{
-//		           afUserCouponService.sentUserCoupon(afOrder);
-//		         }catch(Exception e){
-//		           logger.error("first shopping sentUserCoupon error:"+e+afOrder.toString());
-//		       }
-//		    
+	    
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("orderId", afOrder.getRid());
 			data.put("isEnoughAmount", isEnoughAmount);

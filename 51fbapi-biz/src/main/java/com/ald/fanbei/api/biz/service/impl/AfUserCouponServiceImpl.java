@@ -212,9 +212,9 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	
 	public int sentUserCoupon(AfOrderDo afOrder){
 	        Long count = 0L;
-		HashMap map = afOrderService.getCountShopOrderByUser(afOrder.getUserId());
+		HashMap map = afOrderService.getCountOrderByUserAndOrderType(afOrder.getUserId(),afOrder.getOrderType());
 	
-		logger.info("sentUserCoupon for new user userId=" + afOrder);
+		
 		
 		try {
 			count = (Long) map.get("count");
@@ -226,6 +226,7 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 		
 		String tag = "_FIRST_SHOPPING_";
 		String sourceType = "FIRST_SHOPPING";
+		logger.info("sentUserCoupon for new user userId=" + afOrder.toString());
 	        sentUserCoupon(afOrder.getUserId(),tag,sourceType);
 		return 1;
 		

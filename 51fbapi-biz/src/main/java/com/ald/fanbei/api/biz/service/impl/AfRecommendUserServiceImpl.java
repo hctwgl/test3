@@ -542,4 +542,17 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	    	return afRecommendUserDao.findRefUserId(queryRecommendUser);
 	}
 
+	@Override
+	public int updateRecommendUserById(AfRecommendUserDo afRecommendUserDo) {
+	      return afRecommendUserDao.updateRecommendUserById(afRecommendUserDo);
+	    // TODO Auto-generated method stub
+	    
+	}
+
+	@Override
+	public AfRecommendUserDo getARecommendUserById(Long userId) {
+	    // TODO Auto-generated method stub
+	    return afRecommendUserDao.getARecommendUserById(userId);
+	}
+
 }
