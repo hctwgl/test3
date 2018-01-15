@@ -185,7 +185,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString(tag + "Tag");
 			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
+				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
 					interestRate = info.getDouble(tag + "SevenDay");
 					totalRate += interestRate;
 				} else {
@@ -194,7 +194,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 				}
 			}
 			if (StringUtils.equals("SERVICE_RATE", borrowTag)) {
-				if (StringUtils.equals(AfBorrowCashType.SEVEN.getName(), borrowType)) {
+				if (StringUtils.equals(AfBorrowCashType.SEVEN.getCode(), borrowType)) {
 					serviceRate = info.getDouble(tag + "SevenDay");
 					totalRate += serviceRate;
 				} else {
