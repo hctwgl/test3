@@ -85,6 +85,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		Integer appVersion = context.getAppVersion();
 
 		String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
@@ -147,7 +148,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 					afUserAuthService.updateUserAuth(authDo);
 
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
-							card.getCardNumber(), riskOrderNo);
+							card.getCardNumber(), riskOrderNo,bqsBlackBox);
 					if (!riskResp.isSuccess()) {
 						if(!StringUtil.equals(afUserAuthDo.getRiskStatus(),RiskStatus.YES.getCode())){
 							authDo.setRiskStatus(RiskStatus.A.getCode());

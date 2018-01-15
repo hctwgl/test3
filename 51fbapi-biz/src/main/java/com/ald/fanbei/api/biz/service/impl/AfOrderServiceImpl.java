@@ -604,7 +604,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	private AfOrderDo buildOrder(Date now, String orderNo, String payTradeNo, Long userId, AfUserCouponDto couponDto,
 			BigDecimal money, BigDecimal saleAmount, String mobile, BigDecimal rebateAmount, String orderType,
             BigDecimal actualAmount,Long goodsId, String openId, String goodsName, String goodsIcon, int count,
-			 String shopName, Long bankId,String clientIp,String blackBox) {
+			 String shopName, Long bankId,String clientIp,String blackBox,String bqsBlackBox) {
 		AfOrderDo orderDo = new AfOrderDo();
 		orderDo.setGmtCreate(now);
 		orderDo.setUserId(userId);
@@ -622,6 +622,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 		//新增下单时记录 IP 、设备指纹 2017年12月12日13:28:59 cxk
         orderDo.setIp(clientIp);//用户ip地址
         orderDo.setBlackBox(blackBox);//加入同盾设备指纹
+		orderDo.setBqsBlackBox(bqsBlackBox);//加入白骑士设备指纹
 		if (null == couponDto) {
 			orderDo.setUserCouponId(0l);
 
@@ -721,14 +722,14 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 	@Override
 	public Map<String, Object> createMobileChargeOrder(AfUserBankcardDo card, String userName, Long userId,
 			AfUserCouponDto couponDto, BigDecimal money, String mobile, BigDecimal rebateAmount, Long bankId,
-			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox) {
+			String clientIp, AfUserAccountDo afUserAccountDo, String blackBox,String bqsBlackBox) {
 		final Date now = new Date();
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.MOBILE);
 		final BigDecimal actualAmount = couponDto == null ? money : money.subtract(couponDto.getAmount());
 		Map<String, Object> map;
 		// 订单创建
 		orderDao.createOrder(buildOrder(now, orderNo, orderNo, userId, couponDto, money, money, mobile, rebateAmount,
-                OrderType.MOBILE.getCode(), actualAmount, 0l, "", Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "", bankId,clientIp,blackBox));
+                OrderType.MOBILE.getCode(), actualAmount, 0l, "", Constants.DEFAULT_MOBILE_CHARGE_NAME, "", 1, "", bankId,clientIp,blackBox,bqsBlackBox));
 		if (bankId < 0) {// 微信支付
 			map = UpsUtil.buildWxpayTradeOrder(orderNo, userId, Constants.DEFAULT_MOBILE_CHARGE_NAME, actualAmount,
 					PayOrderSource.ORDER.getCode());
@@ -1069,7 +1070,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName,
 								ipAddress, orderInfo.getBlackBox(), riskOrderNo, userAccountInfo.getUserName(),
 								orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode,
-								orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid(),card.getBankName(),borrow,payType);
+								orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid(),card.getBankName(),borrow,payType,orderInfo.getBqsBlackBox());
 						logger.info("verybo=" + verybo);
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
@@ -1149,7 +1150,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
 								BigDecimal.ZERO, borrowTime,
 								OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())
 										? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(),
-								getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid(),card.getBankName(),borrow,payType);
+								getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(),orderInfo.getRid(),card.getBankName(),borrow,payType,orderInfo.getBqsBlackBox());
 						if (verybo.isSuccess()) {
 							logger.info("combination_pay result is true");
 							orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());

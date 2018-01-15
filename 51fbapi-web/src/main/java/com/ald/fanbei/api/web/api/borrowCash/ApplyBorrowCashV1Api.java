@@ -151,13 +151,13 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 				"address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get(
 				"blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String couponId = ObjectUtils.toString(requestDataVo.getParams().get(
 				"couponId"));
 		if (StringUtils.isBlank(amountStr)
 				|| AfBorrowCashType.findRoleTypeByCode(type) == null
 				|| StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
-				|| StringUtils.isBlank(longitude)
-				|| StringUtils.isBlank(blackBox)) {
+				|| StringUtils.isBlank(longitude)) {
 			return new ApiHandleResponse(requestDataVo.getId(),
 					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
@@ -390,7 +390,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 						afBorrowCashDo.getCardNumber(), appName, ipAddress,
 						blackBox, riskOrderNo, accountDo.getUserName(), amount,
 						afBorrowCashDo.getPoundage(), borrowTime, "借钱",
-						StringUtil.EMPTY_STRING, null, null,0l,card.getBankName(),null,"");
+						StringUtil.EMPTY_STRING, null, null,0l,card.getBankName(),null,"",bqsBlackBox);
 
 				if (verybo.isSuccess()) {
 					delegatePay(verybo.getConsumerNo(), verybo.getOrderNo(),

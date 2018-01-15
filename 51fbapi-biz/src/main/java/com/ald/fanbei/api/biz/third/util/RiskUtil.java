@@ -411,7 +411,7 @@ public class RiskUtil extends AbstractThird {
      *
      * @return
      */
-    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo) {
+    public RiskRespBo registerStrongRiskV1(String consumerNo, String event, AfUserDo afUserDo, AfUserAuthDo afUserAuthDo, String appName, String ipAddress, AfUserAccountDto accountDo, String blackBox, String cardNum, String riskOrderNo,String bqsBlackBox) {
         Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + consumerNo);
         String directory = "";
         if (directoryCache != null) {
@@ -478,7 +478,8 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo verifyNew(String consumerNo, String borrowNo, String borrowType,
                                       String scene, String cardNo, String appName, String ipAddress,
                                       String blackBox, String orderNo, String phone, BigDecimal amount,
-                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,AfBorrowDo borrow,String payType) {
+                                      BigDecimal poundage, String time, String productName, String virtualCode, String SecSence, String ThirdSence,long orderid,String cardName,
+                                      AfBorrowDo borrow,String payType,String bqsBlackBox) {
         AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
         if (!"Y".equals(userAuth.getRiskStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
@@ -496,6 +497,7 @@ public class RiskUtil extends AbstractThird {
         obj.put("appName", appName);
         obj.put("ipAddress", ipAddress);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
 
         reqBo.setDatas(Base64.encodeString(JSON.toJSONString(obj)));
 
@@ -2072,7 +2074,7 @@ public class RiskUtil extends AbstractThird {
      * @return
      */
     public boolean verifySynLogin(String consumerNo, String phone, String blackBox, String deviceUuid, String loginType, String loginTime,
-                                  String ip, String phoneType, String networkType, String osType) {
+                                  String ip, String phoneType, String networkType, String osType,String bqsBlackBox) {
 
 //		RiskTrustReqBo reqBo = new RiskTrustReqBo();
         Map<String, String> map = new HashMap<String, String>();
@@ -2082,6 +2084,7 @@ public class RiskUtil extends AbstractThird {
         JSONObject obj = new JSONObject();
         obj.put("phone", phone);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
         obj.put("deviceUuid", deviceUuid);
         obj.put("loginType", loginType);
         obj.put("loginTime", loginTime);
@@ -2131,7 +2134,7 @@ public class RiskUtil extends AbstractThird {
      * @return
      */
     public void verifyASyLogin(String consumerNo, String phone, String blackBox, String deviceUuid, String loginType, String loginTime,
-                               String ip, String phoneType, String networkType, String osType, String result, String event) {
+                               String ip, String phoneType, String networkType, String osType, String result, String event,String bqsBlackBox) {
 
         Map<String, String> map = new HashMap<String, String>();
         map.put("consumerNo", consumerNo);
@@ -2140,6 +2143,7 @@ public class RiskUtil extends AbstractThird {
         JSONObject obj = new JSONObject();
         obj.put("phone", phone);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
         obj.put("deviceUuid", deviceUuid);
         obj.put("loginResult", result);
         obj.put("loginType", loginType);
@@ -2172,7 +2176,7 @@ public class RiskUtil extends AbstractThird {
      * @param event
      */
     public void verifyASyRegister(String consumerNo, String phone, String blackBox, String deviceUuid, String registerTime,
-                                  String ip, String phoneType, String networkType, String osType, String event) {
+                                  String ip, String phoneType, String networkType, String osType, String event,String bqsBlackBox) {
 
         Map<String, String> map = new HashMap<String, String>();
         map.put("consumerNo", consumerNo);
@@ -2181,6 +2185,7 @@ public class RiskUtil extends AbstractThird {
         JSONObject obj = new JSONObject();
         obj.put("phone", phone);
         obj.put("blackBox", blackBox);
+        obj.put("bqsBlackBox", bqsBlackBox);
         obj.put("deviceUuid", deviceUuid);
         obj.put("registerResult", "1");
         obj.put("registerTime", registerTime);

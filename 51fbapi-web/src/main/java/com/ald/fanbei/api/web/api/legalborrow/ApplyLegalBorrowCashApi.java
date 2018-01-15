@@ -163,6 +163,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		String county = ObjectUtils.toString(requestDataVo.getParams().get("county"));
 		String address = ObjectUtils.toString(requestDataVo.getParams().get("address"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
+		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		String borrowRemark = ObjectUtils.toString(requestDataVo.getParams().get("borrowRemark"));
 		String refundRemark = ObjectUtils.toString(requestDataVo.getParams().get("refundRemark"));
 		// 获取销售商品信息
@@ -175,7 +176,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 		String deliveryPhone = ObjectUtils.toString(requestDataVo.getParams().get("deliveryPhone"));
 
 		if (StringUtils.isBlank(amountStr) || StringUtils.isBlank(pwd) || StringUtils.isBlank(latitude)
-				|| StringUtils.isBlank(longitude) || StringUtils.isBlank(blackBox) || StringUtils.isBlank(goodsId)
+				|| StringUtils.isBlank(longitude)  || StringUtils.isBlank(goodsId)
 				|| AfBorrowCashType.findRoleTypeByCode(type) == null) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
@@ -346,7 +347,7 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 						afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress,
 						blackBox, riskOrderNo, accountDo.getUserName(), riskReviewAmount, afBorrowCashDo.getPoundage(),
 						borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null, 0l, afBorrowCashDo.getCardName(), null,
-						"");
+						"",bqsBlackBox);
 
 				if (verifyBo.isSuccess()) {
 					delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(), verifyBo.getResult(),
