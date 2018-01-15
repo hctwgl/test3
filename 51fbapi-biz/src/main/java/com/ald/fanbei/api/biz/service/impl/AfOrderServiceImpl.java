@@ -1545,7 +1545,7 @@ public class AfOrderServiceImpl extends BaseService implements AfOrderService {
         if (result == 1) {
 			
 		  	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
-        	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "INIT_HOME_PAGE");
+        	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
         	if (resourceDo != null) {
         		Date current = new Date();
         		SimpleDateFormat sFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
