@@ -32,7 +32,8 @@ public class AgentBuyHintsV2Api  implements ApiHandle {
 
     @Resource
     AfResourceService afResourceService;
-
+    @Resource
+    ProtocolUtil protocolUtil;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -45,7 +46,12 @@ public class AgentBuyHintsV2Api  implements ApiHandle {
                 data.put("hint",afResourceDo.getValue());
             }
         }
-
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("userName",context.getUserName());
+        List<AfResourceDo> agentBuyList = protocolUtil.getProtocolList("agentbuy",map);
+        data.put("agentBuyList",agentBuyList);
+        resp.setResponseData(data);
+        logger.info("agentBuyHintsV2Api = agentBuyHintsV2Api");
         return resp;
     }
 }
