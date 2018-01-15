@@ -37,6 +37,9 @@ public class ProtocolUtil {
         BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(map.get("renewalAmount"), BigDecimal.ZERO);
         BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(map.get("borrowAmount"), BigDecimal.ZERO);
         BigDecimal poundage = NumberUtil.objToBigDecimalDefault(map.get("poundage"), BigDecimal.ZERO);
+        if (afResourceDoList.size() == 0){
+            return resourceDoList;
+        }
         for (AfResourceDo afResourceDo : afResourceDoList) {
             if (afResourceDo.getValue1().contains(type)) {
                 if ("RENEWAL_CONTRACT".equals(afResourceDo.getSecType())) {
