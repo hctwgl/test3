@@ -10,6 +10,9 @@ import com.ald.fanbei.api.web.api.borrowCash.GetBorrowCashBase;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.Validator;
+import com.ald.fanbei.api.web.validator.bean.ApplyLegalBorrowCashParam;
+import com.ald.fanbei.api.web.validator.bean.GetCashLoanProtocolParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +28,9 @@ import java.util.Map;
  * @类描述：展示商品代买提示语
  * @注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("agentBuyHintsV2Api")
-public class AgentBuyHintsV2Api extends GetBorrowCashBase implements ApiHandle {
+@Component("getCashLoanProtocolV2Api")
+@Validator("getCashLoanProtocolParam")
+public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHandle {
 
     private static final String RESOURCE_TYPE = "AGENTBUY_HINTS";
 
@@ -38,17 +42,17 @@ public class AgentBuyHintsV2Api extends GetBorrowCashBase implements ApiHandle {
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(RESOURCE_TYPE);
+        // 获取客户端请求参数
+        GetCashLoanProtocolParam param = (GetCashLoanProtocolParam) requestDataVo.getParamObj();
         Map<String, Object> data = new HashMap<>();
-        if(null != afResourceDo){
-            if(StringUtils.equals(afResourceDo.getValue1(),"1")){
-                data.put("hint",afResourceDo.getValue());
-            }
-        }
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("userName",context.getUserName());
-        List<AfResourceDo> agentBuyList = protocolUtil.getProtocolList("agentbuy",map);
-        data.put("agentBuyList",agentBuyList);
+        map.put("type",param.getType());
+        map.put("borrowId","");
+        map.put("poundage",param.getPoundage());
+        map.put("borrowAmount",param.getBorrowAmount());
+        List<AfResourceDo> cashLoanList = protocolUtil.getProtocolList("cashLoan",map);
+        data.put("cashLoanList",cashLoanList);
         resp.setResponseData(data);
         return resp;
     }

@@ -55,7 +55,7 @@ public class ProtocolUtil {
                 }
                 else if ("PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())){
                     afResourceDo.setValue("/fanbei-web/app/platformServiceProtocol?userName=" +userName+
-                            "&type="+dayType+"&borrowId="+borrowId+"&borrowAmount="+borrowAmount);
+                            "&type="+dayType+"&borrowId="+borrowId+"&poundage="+poundage);
                 }
                 else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())){
                     afResourceDo.setValue("/fanbei-web/app/numProtocol?userName=" +userName);
