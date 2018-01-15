@@ -314,6 +314,10 @@ public class HuichaoUtility implements ThirdInterface {
 
             if(result.containsKey("code")){
                 afHuicaoOrderDao.updateHuicaoOrderStatusLock(5,afHuicaoOrderDo.getId(),afHuicaoOrderDo.getGmtModified());
+                AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentByPayTradeNo(afHuicaoOrderDo.getOrderNo());
+                if(afRepaymentDo != null){
+                    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL,afRepaymentDo);
+                }
                 return null;
             }
             else{
