@@ -422,6 +422,11 @@ public class BuySelfGoodsApi implements ApiHandle {
 				
 				AfGoodsDoubleEggsDo doubleEggsDo = afGoodsDoubleEggsService.getByGoodsId(goodsId);
 				if(doubleEggsDo != null){
+					if (doubleEggsDo.getStartTime().after(new Date())) {
+						//before start
+						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_WITHOUT_START);
+					}
+					
 					if (doubleEggsDo.getEndTime().before(new Date())) {
 						//expire
 						throw new FanbeiException(FanbeiExceptionCode.DOUBLE_EGGS_EXPIRE);
