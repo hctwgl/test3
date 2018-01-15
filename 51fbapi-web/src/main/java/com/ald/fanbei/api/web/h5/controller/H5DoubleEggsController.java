@@ -203,7 +203,15 @@ public class H5DoubleEggsController extends H5Controller {
 			}
 
 			// get dateList start from the config of specific activity
-			List<Date> dateList = afActivityService.getDateListByName(tag);
+			List<Date> dateListe = afActivityService.getDateListByName(tag);
+			List<String> dateList = new ArrayList<String>();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			if(CollectionUtil.isNotEmpty(dateListe)){
+				for(Date date:dateListe){
+					String dateStr = sdf.format(date);
+					dateList.add(dateStr);
+				}
+			}
 
 			java.util.Map<String, Object> data = new HashMap<>();
 

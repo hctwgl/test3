@@ -58,7 +58,7 @@ public class AfUserCouponTigerMachineServiceImpl extends ParentServiceImpl<AfUse
 				public Boolean doInTransaction(TransactionStatus status) {
 					Boolean result = false;
 					try {
-						String log = String.format("afUserCouponTigerMachineService.grandCoupon() params: couponId = %L , userId = %L", couponId,userId);
+						String log = String.format("afUserCouponTigerMachineService.grandCoupon() params: couponId = %d , userId = %d", couponId,userId);
 						logger.info(log);
 						//decrease time 
 						int result1 = afUserCouponTigerMachineDao.decreaseOnce(userId);
