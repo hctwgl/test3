@@ -52,7 +52,7 @@
 
     #if( $!{style}==6 )
         <div class="progress" id="progress">
-            <div class="text">￥500</div>
+            <div class="text">￥20000</div>
             <div class="progress_bg">
                 <div class="progress_bar"></div>
             </div>
