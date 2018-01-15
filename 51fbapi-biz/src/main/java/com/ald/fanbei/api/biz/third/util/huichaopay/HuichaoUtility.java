@@ -448,6 +448,10 @@ public class HuichaoUtility implements ThirdInterface {
             Map<String, String> result  = getHuiCaoOrder(afHuicaoOrderDo.getThirdOrderNo());
             if(result.containsKey("code")){
                 afHuicaoOrderDao.updateHuicaoOrderStatusLock(5,afHuicaoOrderDo.getId(),afHuicaoOrderDo.getGmtModified());
+                AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentByPayTradeNo(afHuicaoOrderDo.getOrderNo());
+                if(afRepaymentDo != null){
+                    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL,afRepaymentDo);
+                }
                 continue;
             }
             else{
