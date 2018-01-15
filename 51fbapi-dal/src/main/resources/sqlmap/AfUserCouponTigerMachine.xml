@@ -126,7 +126,7 @@
 		FROM
 			af_user_coupon_tiger_machine
 		WHERE
-			is_delete = 0 user_id = #{userId}
+			is_delete = 0 and user_id = #{userId}
     </select>
     
     <select id="decreaseOnce" parameterType="java.lang.Long" resultType="java.lang.Integer">
