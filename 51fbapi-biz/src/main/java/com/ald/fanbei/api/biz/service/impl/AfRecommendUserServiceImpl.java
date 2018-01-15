@@ -407,9 +407,9 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String createTime = sdf.format(afUserDo.getGmtCreate());
 				af.setCreateTime(createTime);
-				af.setIsShoppingRebate(afRecommendUserDto.getIsShoppingRebate());
 				af.setIsloan(afRecommendUserDto.getIsloan());
 				af.setRiskStatus(afUseAuthrDo.getRiskStatus());
+				af.setIsSelfsupportRebate(afRecommendUserDto.getIsSelfsupportRebate());
 			}
 		}
 		return listData;

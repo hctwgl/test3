@@ -7,6 +7,11 @@ import java.util.Date;
 
 public class AfRecommendUserDo extends AbstractSerial {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * 主键
      */
     private int id ;
