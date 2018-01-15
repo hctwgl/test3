@@ -220,4 +220,6 @@ public interface AfBorrowCashDao {
 	List<AfBorrowCashDo> getListByUserId(@Param("userId")Long userId, @Param("rows")Long rows);
 
 	AfBorrowCashDo getBorrowCashByUserIdDescById(@Param("userId")Long userId);
+	
+	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
 }
