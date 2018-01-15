@@ -471,6 +471,8 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     // 变更还款记录为已还款
                     afRepaymentDao.updateRepayment(RepaymentStatus.YES.getCode(), tradeNo, repayment.getRid());
                     AfBorrowBillDo billDo = afBorrowBillService.getBillAmountByIds(repayment.getBillIds());
+                    //获取培训账单
+                    AfBorrowBillDo trainBill = afBorrowBillDao.getBillTrainAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
                     AfUserDo userDo = afUserService.getUserById(repayment.getUserId());
                     // 变更账单 借款表状态
                     afBorrowBillService.updateBorrowBillStatusByIds(repayment.getBillIds(), BorrowBillStatus.YES.getCode(), repayment.getRid(),
@@ -503,8 +505,6 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     AfBorrowBillDo houseBill = afBorrowBillDao.getBillHouseAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
                     BigDecimal houseAmount = houseBill == null ? BigDecimal.ZERO : houseBill.getPrincipleAmount();
                     BigDecimal backAmount = billDo.getPrincipleAmount().subtract(houseAmount);
-                    //获取培训账单
-                    AfBorrowBillDo trainBill = afBorrowBillDao.getBillTrainAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
                     BigDecimal trainAmount = trainBill == null ? BigDecimal.ZERO : trainBill.getPrincipleAmount();
                     //还培训额度
                     if(trainAmount.compareTo(BigDecimal.ZERO) == 1) {
