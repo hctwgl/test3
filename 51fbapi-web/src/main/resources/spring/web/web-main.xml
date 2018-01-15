@@ -159,7 +159,7 @@
 				<value>/legalborrowV2/getCashPageType</value>
 				<value>/legalborrowV2/getOverdueStatus</value>
 				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
-				<value>/legalborrowV2/agentBuyHints</value>
+
 				
 				<value>/order/dmNperEnabled</value>
 			</list>
@@ -506,8 +506,8 @@
 				
 				<!-- legalborrowV2 -->
 				<entry key="/legalborrowV2/applyLegalBorrowCash" value-ref="applyLegalBorrowCashV2Api" />
-				
-				
+
+				<entry key="/legalborrowV2/getCashLoanProtocol" value-ref="getCashLoanProtocolV2Api" />
 				<entry key="/legalborrowV2/applyLegalRenewal" value-ref="applyLegalRenewalV2Api" />
 				<entry key="/legalborrowV2/repayDo" value-ref="repayDoV2Api" />
 				<entry key="/legalborrowV2/getBorrowLegalChargeInfo" value-ref="getBorrowLegalChargeInfoV2Api" />
