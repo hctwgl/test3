@@ -9,14 +9,12 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.ProtocolUtil;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
-import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -24,10 +22,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfRenewalDetailDo;
-import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -54,6 +48,10 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 	AfRenewalDetailService afRenewalDetailService;
 	@Resource
 	AfRenewalLegalDetailService afRenewalLegalDetailService;
+	@Resource
+	ProtocolUtil protocolUtil;
+	@Resource
+	AfUserService afUserService;
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -138,7 +136,20 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 		data.put("renewalAmount", waitPaidAmount);	// 续期金额
 		data.put("renewalDay", allowRenewalDay);	// 续期天数
 		data.put("allRenewalAmount", allRenewalAmount);	//所有续借的金额
-		
+		Map map = new HashMap();
+		AfUserDo afUserDo = afUserService.getUserById(afBorrowCashDo.getUserId());
+		if (allowRenewalDay.compareTo(BigDecimal.valueOf(7)) == 0){
+			map.put("type","SEVEN");
+		}else {
+			map.put("type","FOURTEEN");
+		}
+		map.put("userName",afUserDo.getUserName());
+		map.put("borrowId",afBorrowCashDo.getRid());
+		map.put("renewalId","");
+		map.put("renewalDay",allowRenewalDay);
+		map.put("renewalAmount",waitPaidAmount);
+		List<AfResourceDo> resourceDoList = protocolUtil.getProtocolList("renewal",map);
+		data.put("resourceDoList",resourceDoList);
 		return data;
 	}
 
