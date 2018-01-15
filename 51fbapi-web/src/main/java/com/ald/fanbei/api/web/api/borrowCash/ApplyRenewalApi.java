@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -128,7 +129,8 @@ public class ApplyRenewalApi implements ApiHandle {
 
 		// 续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-		riskUtil.getPayCaptal(afBorrowCashDo,"40",allAmount);
+		JSONObject response = riskUtil.getPayCaptal(afBorrowCashDo,"40",allAmount);
+		capital = new BigDecimal(response.getJSONObject("data").getString("money"));
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 
 		BigDecimal allRenewalAmount= BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount());

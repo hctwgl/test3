@@ -2433,20 +2433,12 @@ public class RiskUtil extends AbstractThird {
         }
 
     }
-    public RiskVerifyRespBo getPayCaptal(AfBorrowCashDo afBorrowCashDo, String scene,BigDecimal amountBorrow) {
+    public JSONObject getPayCaptal(AfBorrowCashDo afBorrowCashDo, String scene,BigDecimal amountBorrow) {
         // 查卡号，用于调用风控接口
         AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(afBorrowCashDo.getUserId());
         String cardNo = card.getCardNumber();
         String orderNo = riskUtil.getOrderNo("rise", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-        RiskSynBorrowInfoReqBo reqBo = new RiskSynBorrowInfoReqBo();
-        reqBo.setOrderNo(orderNo);
-        reqBo.setConsumerNo(afBorrowCashDo.getUserId()+"");
-        reqBo.setScene(scene);
-        JSONObject obj = new JSONObject();
-        obj.put("cardNo", cardNo);
-        reqBo.setDetails(Base64.encodeString(JSON.toJSONString(obj)));
 
-        reqBo.setReqExt("");
         HashMap summaryData = afBorrowDao.getUserSummaryForCapital(afBorrowCashDo.getUserId());
         if (summaryData != null){
             summaryData.put("borrowAmout",amountBorrow.toString());
@@ -2463,25 +2455,24 @@ public class RiskUtil extends AbstractThird {
             summaryData.put("amount1",sumRenewalPoundage.compareTo(BigDecimal.ZERO)>0?sumRenewalPoundage.add(poundage).add(amount).add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount)
                                         :amount.add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount));
             summaryData.put("borrowAmout",amountBorrow.toString());
+            summaryData.put("signInfo",SignUtil.sign(createLinkString(summaryData), PRIVATE_KEY));
+            summaryData.put("orderNo",orderNo);
         }
-        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
 
         String url = getUrl() + "/modules/api/xj/renew.htm";
 
-        String reqResult = requestProxy.post(url, reqBo);
+        String reqResult = requestProxy.post(url, summaryData);
 
-        logThird(reqResult, "transferBorrow", reqBo);
+        logThird(reqResult, "transferBorrow", summaryData);
         if (StringUtil.isBlank(reqResult)) {
             throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
         }
-        RiskVerifyRespBo riskResp = JSONObject.parseObject(reqResult, RiskVerifyRespBo.class);
-        riskResp.setOrderNo(reqBo.getOrderNo());
-        if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
-            riskResp.setSuccess(true);
-            return riskResp;
-        } else {
+        JSONObject riskResp = JSONObject.parseObject(reqResult);
+        if(!"100".equals(riskResp.getString("code"))){
             throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
         }
+        return riskResp;
     }
 
 }
