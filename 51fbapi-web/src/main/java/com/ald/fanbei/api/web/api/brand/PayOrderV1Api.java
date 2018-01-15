@@ -450,7 +450,7 @@ public class PayOrderV1Api implements ApiHandle {
 			//根据goodsId查询商品信息
 			AfGoodsDo afGoodsDo = afGoodsService.getGoodsById(goodsId);
 			int goodsDouble12Count = (int) (Integer.parseInt(afGoodsDo.getStockCount())-doubleEggsDo.getAlreadyCount());//秒杀商品余量
-			if(goodsDouble12Count<0){
+			if(goodsDouble12Count <= 0){
 				//报错提示秒杀商品已售空
 				throw new FanbeiException(FanbeiExceptionCode.NO_DOUBLE12GOODS_ACCEPTED);
 			}
