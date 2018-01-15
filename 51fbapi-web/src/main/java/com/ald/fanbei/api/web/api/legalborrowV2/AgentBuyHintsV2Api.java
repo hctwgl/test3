@@ -26,7 +26,7 @@ import java.util.Map;
  * @注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("agentBuyHintsV2Api")
-public class AgentBuyHintsV2Api extends GetBorrowCashBase implements ApiHandle {
+public class AgentBuyHintsV2Api  implements ApiHandle {
 
     private static final String RESOURCE_TYPE = "AGENTBUY_HINTS";
 
@@ -37,6 +37,7 @@ public class AgentBuyHintsV2Api extends GetBorrowCashBase implements ApiHandle {
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+        logger.info("agentBuyHintsV2Api = ");
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(RESOURCE_TYPE);
         Map<String, Object> data = new HashMap<>();
@@ -50,6 +51,7 @@ public class AgentBuyHintsV2Api extends GetBorrowCashBase implements ApiHandle {
         List<AfResourceDo> agentBuyList = protocolUtil.getProtocolList("agentbuy",map);
         data.put("agentBuyList",agentBuyList);
         resp.setResponseData(data);
+        logger.info("agentBuyHintsV2Api = agentBuyHintsV2Api");
         return resp;
     }
 }

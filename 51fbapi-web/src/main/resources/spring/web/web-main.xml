@@ -160,7 +160,7 @@
 				<value>/legalborrowV2/getOverdueStatus</value>
 				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
 
-				
+
 				<value>/order/dmNperEnabled</value>
 			</list>
 		</constructor-arg>
