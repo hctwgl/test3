@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
-@Component("applyLegalBorrowCashParam")
+@Component("getCashLoanProtocolParam")
 public class GetCashLoanProtocolParam {
 
 	@NotNull
