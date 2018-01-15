@@ -9,10 +9,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.dao.AfContractPdfDao;
-import com.ald.fanbei.api.dal.dao.AfRenewalDetailDao;
-import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.dao.AfUserSealDao;
+import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -76,6 +73,42 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	AfBorrowService afBorrowService;
 	@Resource
 	AfContractPdfDao afContractPdfDao;
+	@Resource
+	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
+
+	@RequestMapping(value = {"getProtocolUrlByVersion"}, method = RequestMethod.GET)
+	public String getProtocolUrlByVersion(HttpServletRequest request){
+		String protocolType = ObjectUtils.toString(request.getParameter("protocolType"), "").toString();
+		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
+		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
+		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
+		BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(request.getParameter("borrowAmount"), new BigDecimal(0));
+		Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
+		BigDecimal poundage = NumberUtil.objToBigDecimalDefault(request.getParameter("poundage"), new BigDecimal(0));
+		ModelMap model = new ModelMap();
+		if ("instalment".equals(protocolType)){
+			getEdspayInfo(model, borrowId, (byte) 2);
+			if (model.get("edspayUserName") != null){
+				return "redirect:/fanbei-web/app/protocolLegalInstalmentV2?userName=" +userName+
+						"&type="+type+"&borrowId="+borrowId+"&nper="+nper+"&amount="+borrowAmount+
+						"&poundage="+poundage;
+			}else {
+				return "redirect:/fanbei-web/app/protocolFenqiService?userName=" +userName+
+						"&borrowId="+borrowId+"&nper="+nper+"&amount="+borrowAmount+
+						"&poundage="+poundage;
+			}
+		}else if ("cashLoan".equals(protocolType)){
+			if(afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId) != null) {
+				return "redirect:/fanbei-web/app/protocolLegalCashLoan?userName="+userName+"&borrowId="+borrowId+"&borrowAmount="+borrowAmount+"&type="+type;
+			}//合规线下还款V2
+			else if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
+				return "redirect:/fanbei-web/app/protocolLegalCashLoanV2?userName="+userName+"&borrowId="+borrowId+"&borrowAmount="+borrowAmount+"&type="+type;
+			}else {
+				return "redirect:/fanbei-web/app/protocolCashLoan?userName="+userName+"&borrowId="+borrowId+"&borrowAmount="+borrowAmount;
+			}
+		}
+		return "";
+	}
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public void protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
@@ -363,7 +396,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			}
 			AfUserSealDo afUserSealDo = afESdkService.getSealPersonal(afUserDo, accountDo);
 			if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
-				logger.error("创建个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+				logger.error("获取个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
 			}
 			map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
@@ -371,7 +404,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("thirdSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			}else {
-				logger.error("创建钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 		}catch (Exception e){
