@@ -209,7 +209,7 @@ public class H5DoubleEggsController extends H5Controller {
 			
 			String paramDate = request.getParameter("startDate");
 			
-			String log = String.format("/h5DoubleEggs/getSecondKillGoodsList parameter : activityId = %L , startDate = s%", activityId,paramDate);
+			String log = String.format("/h5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
 			
 			Date startDate = new Date();
 			
@@ -224,6 +224,10 @@ public class H5DoubleEggsController extends H5Controller {
 				log = log + String.format("middle params dateList.size() = %s", dateList.size());
 				logger.info(log);
 
+				if(startDate.before(dateList.get(0))){
+					startDate = dateList.get(0);
+				}
+				
 				//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
 

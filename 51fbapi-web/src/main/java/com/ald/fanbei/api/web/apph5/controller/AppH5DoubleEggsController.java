@@ -515,14 +515,14 @@ public class AppH5DoubleEggsController extends BaseController {
 			
 			String paramDate = request.getParameter("startDate");
 			
-			String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %L , startDate = s%", activityId,paramDate);
+			
 			
 			Date startDate = new Date();
 			
 			if (StringUtil.isNotBlank(paramDate)) {
 				startDate = sdf.parse(paramDate);
 			}
-			
+			String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %d", activityId);
 			//find the name from activityId
 			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
 			if (StringUtil.isBlank(tag)) {
@@ -540,6 +540,12 @@ public class AppH5DoubleEggsController extends BaseController {
 				
 				log = log + String.format("middle params dateList.size() = %s", dateList.size());
 				logger.info(log);
+				
+				if(startDate.before(dateList.get(0))){
+					startDate = dateList.get(0);
+				}
+				
+				
 				
 			//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
