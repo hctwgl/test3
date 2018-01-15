@@ -165,28 +165,24 @@ public class GetTabbarInforApi implements ApiHandle {
 		 Map<String, Object> params = requestDataVo.getParams();
 	        String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
 	        if (resourceInfo == null) {
-	        	data.put("title", "借钱");
+	        	return;
 	        } 
 		 //需要打开为了审核的相关版本
         //VALUE是为了IOS审核
         if(requestDataVo.getId().startsWith("i")) {
         	String iosCheckVersion = resourceInfo.getValue();
-        	if (StringUtils.isBlank(iosCheckVersion)) {
-        		data.put("title", "借钱");
-        	} else {
+        	if (!StringUtils.isBlank(iosCheckVersion)) {
         		List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
         		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-        		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
+        		data.put("title", array.contains(desVersion) ? "搜呗" : data.get("title"));
         	}
         } else {
         //VALUE2是为了Android审核
         	String androidCheckVersion = resourceInfo.getValue2();
-        	if (StringUtils.isBlank(androidCheckVersion)) {
-        		data.put("title", "借钱");
-        	} else {
+        	if (!StringUtils.isBlank(androidCheckVersion)) {
         		List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
         		CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-        		data.put("title", array.contains(desVersion) ? "搜呗" : "借钱");
+        		data.put("title", array.contains(desVersion) ? "搜呗" : data.get("title"));
         	}
         }
 	}
@@ -196,28 +192,23 @@ public class GetTabbarInforApi implements ApiHandle {
 		Map<String, Object> params = requestDataVo.getParams();
 		String channelCode = ObjectUtils.toString(params.get("channelCode"), null);
 		if (resourceInfo == null) {
-			data.put("title", "分期");
-		}
+        	return;
+        } 
 		//需要打开为了审核的相关版本
 		//VALUE是为了IOS审核
 		if(requestDataVo.getId().startsWith("i")) {
 			String iosCheckVersion = resourceInfo.getValue();
-			if (StringUtils.isBlank(iosCheckVersion)) {
-				data.put("title", "分期");
-			} else {
+			if (!StringUtils.isBlank(iosCheckVersion)) {
 				List<CheckVersionBo> array = JSONArray.parseArray(iosCheckVersion, CheckVersionBo.class);
 				CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-				data.put("title", array.contains(desVersion) ? "服务" : "分期");
+				data.put("title", array.contains(desVersion) ? "服务" : data.get("title"));
 			}
 		} else {
 			//VALUE2是为了Android审核
 			String androidCheckVersion = resourceInfo.getValue2();
-			if (StringUtils.isBlank(androidCheckVersion)) {
-				data.put("title", "分期");
-			} else {
-				List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
+			if (!StringUtils.isBlank(androidCheckVersion)) {List<CheckVersionBo> array = JSONArray.parseArray(androidCheckVersion, CheckVersionBo.class);
 				CheckVersionBo desVersion = new CheckVersionBo(channelCode, context.getAppVersion());
-				data.put("title", array.contains(desVersion) ? "服务" : "分期");
+				data.put("title", array.contains(desVersion) ? "服务" : data.get("title"));
 			}
 		}
 	}

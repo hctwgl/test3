@@ -121,7 +121,7 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 		List<Long> allGoodsId = afBorrowLegalGoodsService.getGoodsIdByProfitAmoutForV2(profitAmount);
 		List<Map<String,Object>> goodsInfoList = Lists.newArrayList();
 		for (Long goodsId : allGoodsId) {
-			// 应还金额 = 借款金额 + 手续费 + 利息 + 商品借款金额 + 商品手续费 + 商品利息
+			// 应还金额 = 借款金额 + 手续费 + 利息
 			BigDecimal repayAmount = new BigDecimal(0);
 			AfGoodsDo goodsInfo = afGoodsService.getGoodsById(goodsId);
 			if (goodsInfo != null) {
@@ -152,7 +152,6 @@ public class GetBorrowCashGoodInfoV2Api extends GetBorrowCashBase implements Api
 				goodsInfoMap.put("serviceFee", serviceFee);
 				goodsInfoMap.put("interestFee", interestFee);
 				repayAmount = BigDecimalUtil.add(serviceFee, interestFee, borrowAmount);
-				repayAmount = repayAmount.add(goodsServiceFee).add(goodsInterestFee).add(saleAmount);
 				goodsInfoMap.put("repayAmount", repayAmount);
 				// 查询商品默认规格
 				AfGoodsPriceDo afGoodsProperty = afGoodsPriceService.getGoodsPriceByGoodsId(goodsId);

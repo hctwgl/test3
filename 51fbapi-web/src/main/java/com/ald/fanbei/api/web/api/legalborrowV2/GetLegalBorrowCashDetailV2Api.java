@@ -69,7 +69,6 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 		Map<String, Object> data = objectWithAfBorrowCashDo(afBorrowCashDo, context.getAppVersion());
 		data.put("paidAmount", NumberUtil.objToBigDecimalDefault(paidAmount, BigDecimal.ZERO));
 		data.put("rebateAmount", account.getRebateAmount());
-		data.put("jfbAmount", account.getJfbAmount());
 
 		// 还款处理中金额处理
 		String existRepayingMoney = YesNoStatus.NO.getCode();
@@ -85,6 +84,7 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 			existRepayingMoney = YesNoStatus.YES.getCode();
 		}
 		data.put("existRepayingMoney", existRepayingMoney);
+		logger.info("getLegalBorrowCashDetail, data = " + data);
 		resp.setResponseData(data);
 
 		return resp;
@@ -114,6 +114,7 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 		data.put("renewalStatus", "N");
 		AfRenewalDetailDo afRenewalDetailDo = afRenewalDetailService.getRenewalDetailByBorrowId(afBorrowCashDo.getRid());
 		if (afRenewalDetailDo != null && StringUtils.equals(afRenewalDetailDo.getStatus(), "P")) {
+			logger.info("renewalStatus = "+afRenewalDetailDo.getStatus());
 			data.put("renewalStatus", "P");
 		} else if (StringUtils.equals(afBorrowCashDo.getStatus(), "TRANSED")) {
 			AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_RENEWAL_DAY_LIMIT, Constants.RES_ALLOW_RENEWAL_DAY);
@@ -131,7 +132,7 @@ public class GetLegalBorrowCashDetailV2Api extends GetBorrowCashBase implements 
 			Date nowDate = DateUtil.getEndOfDate(new Date());
 			long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(nowDate, afBorrowCashDo.getGmtPlanRepayment());
 
-			BigDecimal waitPaidAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate()).subtract(afBorrowCashDo.getRepayAmount());
+			BigDecimal waitPaidAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getOverdueAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getRateAmount(), afBorrowCashDo.getSumRate(), afBorrowCashDo.getPoundage(), afBorrowCashDo.getSumRenewalPoundage()).subtract(afBorrowCashDo.getRepayAmount());
 			// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 			if (betweenDuedate.compareTo(new BigDecimal(betweenGmtPlanRepayment)) > 0 && waitPaidAmount.compareTo(amountLimit) >= 0) {
 				data.put("renewalDay", allowRenewalDay);
