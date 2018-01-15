@@ -148,7 +148,8 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 		map.put("renewalId","");
 		map.put("renewalDay",allowRenewalDay);
 		map.put("renewalAmount",waitPaidAmount);
-		protocolUtil.getProtocolList("renewal",map);
+		List<AfResourceDo> resourceDoList = protocolUtil.getProtocolList("renewal",map);
+		data.put("resourceDoList",resourceDoList);
 		return data;
 	}
 
