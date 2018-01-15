@@ -549,13 +549,13 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	 * @param model
 	 * @throws IOException
 	 */
-	@RequestMapping(value = { "protocolLegalAgentBuyServiceAgreement" }, method = RequestMethod.GET)
-	public void protocolLegalAgentBuyServiceAgreement(HttpServletRequest request, ModelMap model) throws IOException {
-		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+	@RequestMapping(value = { "protocolAgentBuyService" }, method = RequestMethod.GET)
+	public void protocolAgentBuyService(HttpServletRequest request, ModelMap model) throws IOException {
+//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		if(userName == null || !webContext.isLogin() ) {
-			throw new FanbeiException("非法用户");
-		}
+//		if(userName == null || !webContext.isLogin() ) {
+//			throw new FanbeiException("非法用户");
+//		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
 			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -573,7 +573,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			logger.error("realName not exist" + FanbeiExceptionCode.USER_REALNAME_NOT_EXIST_ERROR);
 			throw new FanbeiException(FanbeiExceptionCode.USER_REALNAME_NOT_EXIST_ERROR);
 		}
-
 	}
 
 	/**
