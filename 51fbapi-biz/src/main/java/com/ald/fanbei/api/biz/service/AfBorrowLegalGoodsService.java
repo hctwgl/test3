@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalGoodsDo;
 
@@ -15,5 +16,7 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalGoodsDo;
 public interface AfBorrowLegalGoodsService extends ParentService<AfBorrowLegalGoodsDo, Long>{
 
 	Long getGoodsIdByProfitAmout(BigDecimal profitAmout);
+
+	List<Long> getGoodsIdByProfitAmoutForV2(BigDecimal profitAmount);
 
 }

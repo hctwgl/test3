@@ -18,6 +18,7 @@ import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.BaseService;
 import com.ald.fanbei.api.dal.dao.AfGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.alibaba.fastjson.JSONObject;
 
@@ -155,6 +156,11 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 	public List<AfGoodsDo> listGoodsListBySubjectId(Long subjectId) {
 	    // TODO Auto-generated method stub
 	    return afGoodsDao.listGoodsListBySubjectId(subjectId);
+	}
+	@Override
+	public List<AfGoodsDo> getAvaliableSelfGoods(AfGoodsDoQuery query) {
+		
+		return afGoodsDao.getAvaliableSelfGoods(query);
 	}
 
 }

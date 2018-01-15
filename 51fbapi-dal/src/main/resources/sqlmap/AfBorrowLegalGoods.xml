@@ -145,5 +145,17 @@
         LIMIT 1
     </select>
     
+    <select id="getGoodsIdByProfitAmoutForV2" resultType="java.lang.Long" >
+        SELECT
+        goods_id
+        FROM af_borrow_legal_goods
+        WHERE
+        end_profit_amount > #{profitAmout}
+        AND
+        #{profitAmout} >= start_profit_amount
+        AND
+        is_delete = 0
+    </select>
+    
     
 </mapper>
