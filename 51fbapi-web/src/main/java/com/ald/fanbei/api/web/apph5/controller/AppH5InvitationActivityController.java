@@ -934,15 +934,15 @@ public class AppH5InvitationActivityController extends BaseController {
         AfUserDo afUser = null;
         try{
             context = doWebCheck(request, false);
-          /*  if(context.isLogin()){*/
-                afUser = afUserService.getUserByUserName("18850843825");
+            if(context.isLogin()){
+                afUser = afUserService.getUserByUserName(context.getUserName());
                 if(afUser != null){
                     userId = afUser.getRid();
                 }
-//            }else{  
-//                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
-//                return resp.toString();
-//            }
+            }else{  
+                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
+                return resp.toString();
+            }
         }catch  (Exception e) {
             logger.error("commitChannelRegister", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
