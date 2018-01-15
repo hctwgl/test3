@@ -30,7 +30,9 @@ import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
+import com.ald.fanbei.api.common.enums.SpringFestivalActivityEnum;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
@@ -100,15 +102,26 @@ public class H5DoubleEggsController extends H5Controller {
 		String result = "";
 
 		try {
-
+			
+			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
+			
+			if (activityId == null ) {
+				return H5CommonResponse.getNewInstance(false, "参数会场id获取失败").toString();
+			}
+			
 			// 未登录初始化数据
-			String tag = "_DOUBLE_EGGS_";
+			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);  
+			
+			
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
 			String coupons = couponCategory.getCoupons();
+			if(StringUtil.isBlank(coupons)){
+				return H5CommonResponse.getNewInstance(false, "改会场没有优惠券").toString();
+			}
 			JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
 
 			List<AfCouponDouble12Vo> couponVoList = new ArrayList<AfCouponDouble12Vo>();
-
+			
 			for (int i = 0; i < couponsArray.size(); i++) {
 				String couponId = (String) couponsArray.getString(i);
 				AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
@@ -123,43 +136,34 @@ public class H5DoubleEggsController extends H5Controller {
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					// 当前时间
 					Date currentTime = new Date();
+					
+					//new way to get Field isShow
 
-					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("DOUBLE_EGGS",
-							"COUPON_TIME");
+					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
 					if (afResourceDo == null) {
 						return H5CommonResponse.getNewInstance(false, "获取活动时间失败").toString();
 					}
-					String[] times = afResourceDo.getValue3().split(",");
-
-					if (currentTime.before(dateFormat.parse(times[0]))) {
-						// 2017-12-5 10:00号之前
+					
+					String startTime = afResourceDo.getValue();
+					String endTime = afResourceDo.getValue1();
+					
+					if (currentTime.before(dateFormat.parse(startTime))) {
 						afCouponDouble12Vo.setIsShow("N");// 活动未开始
 					}
-
-					if (afCouponDouble12Vo.getIsShow() == null) {
-						for (int j = 0; j < times.length - 1; j = j + 2) {
-							if (afCouponDouble12Vo.getIsShow() == null) {
-								if (currentTime.after(dateFormat.parse(times[times.length - 1]))) {
-									afCouponDouble12Vo.setIsShow("E");// 活动已结束
-								}
-							}
-							if (afCouponDouble12Vo.getIsShow() == null) {
-								if (currentTime.after(dateFormat.parse(times[j]))
-										&& currentTime.before(dateFormat.parse(times[j + 1]))) {
-									afCouponDouble12Vo.setIsShow("Y");// 在活动时间内
-								}
-							}
-							if (afCouponDouble12Vo.getIsShow() == null) {
-								if (currentTime.after(dateFormat.parse(times[j + 1]))
-										&& currentTime.before(dateFormat.parse(times[j + 2]))) {
-									afCouponDouble12Vo.setIsShow("N");// 活动未开始
-								}
-							}
-						}
+					
+					if (currentTime.after(dateFormat.parse(endTime))) {
+						afCouponDouble12Vo.setIsShow("E");// 活动已经结束
 					}
-
-					afCouponDouble12Vo.setIsGet("N");// 未领取
-
+					
+					String tenMinute = startTime.split(" ")[1];
+					String currentHourMinute = DateUtil.convertDateToString(DateUtil.SHORT_MATCH_PATTERN,currentTime);
+					
+					if(currentHourMinute.compareTo(tenMinute) < 0 ){
+						afCouponDouble12Vo.setIsShow("N");// 活动未开始
+					}else{
+						afCouponDouble12Vo.setIsShow("Y");// 在活动时间内
+					}
+					
 					if (afCouponDo.getQuota() > afCouponDo.getQuotaAlready()) {
 						afCouponDouble12Vo.setIshas("Y");// 优惠券还有
 					} else {
@@ -172,8 +176,9 @@ public class H5DoubleEggsController extends H5Controller {
 			logger.info(JSON.toJSONString(couponVoList));
 			data.put("couponList", couponVoList);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
-
-		} catch (Exception e) {
+		
+		} 
+		catch (Exception e) {
 			logger.error("/appH5DoubleEggs/initCoupons error = {}", e.getStackTrace());
 			return H5CommonResponse.getNewInstance(false, "获取优惠券列表失败", null, "").toString();
 		}
