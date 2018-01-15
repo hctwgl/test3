@@ -67,7 +67,7 @@ public class ProtocolUtil {
                     afResourceDo.setValue("/app/sys/riskWarning");
                 }
                 else if ("BUYING_RELATED_AGREEMENTS".equals(afResourceDo.getSecType())){
-                    afResourceDo.setValue("/fanbei-web/app/protocolLegalAgentBuyServiceAgreement?userName=" +userName);
+                    afResourceDo.setValue("/fanbei-web/app/protocolAgentBuyService?userName=" +userName);
                 }
                 resourceDoList.add(afResourceDo);
             }
