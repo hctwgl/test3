@@ -16,7 +16,7 @@ public class GetCashLoanProtocolParam {
 	private BigDecimal borrowAmount;
 	@NotNull
 	@Pattern(regexp = "(7|14)")
-	private String type;
+	private String borrowType;
 	@NotNull
 	private BigDecimal poundage;
 
@@ -28,12 +28,12 @@ public class GetCashLoanProtocolParam {
 		this.borrowAmount = borrowAmount;
 	}
 
-	public String getType() {
-		return type;
+	public String getBorrowType() {
+		return borrowType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setBorrowType(String borrowType) {
+		this.borrowType = borrowType;
 	}
 
 	public BigDecimal getPoundage() {

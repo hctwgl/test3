@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,11 @@ public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHa
         Map<String, Object> data = new HashMap<>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("userName",context.getUserName());
-        map.put("type",param.getType());
+        if (new BigDecimal(param.getBorrowType()).compareTo(BigDecimal.valueOf(7)) == 0){
+            map.put("type","SEVEN");
+        }else {
+            map.put("type","FOURTEEN");
+        }
         map.put("borrowId","");
         map.put("poundage",param.getPoundage());
         map.put("borrowAmount",param.getBorrowAmount());
@@ -56,4 +61,7 @@ public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHa
         resp.setResponseData(data);
         return resp;
     }
+
+
+
 }
