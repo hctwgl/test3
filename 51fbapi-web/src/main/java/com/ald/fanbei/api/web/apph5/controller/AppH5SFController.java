@@ -175,10 +175,8 @@ public class AppH5SFController extends BaseController {
 			
 			Long userId = convertUserNameToUserId(context.getUserName());
 
-			Long activityId = 10L;
-			
 			//get conpons
-			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+			String tag = "_TIGER_MACHINE_";
 
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
 			if(couponCategory == null){
