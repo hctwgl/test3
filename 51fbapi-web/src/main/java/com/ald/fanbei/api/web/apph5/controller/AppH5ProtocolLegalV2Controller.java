@@ -399,9 +399,9 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
 		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
-		if (userName == null || !webContext.isLogin()) {
+		/*if (userName == null || !webContext.isLogin()) {
 			throw new FanbeiException("非法用户");
-		}
+		}*/
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		Long renewalId = NumberUtil.objToLongDefault(request.getParameter("renewalId"), 0l);
 		int renewalDay = NumberUtil.objToIntDefault(request.getParameter("renewalDay"), 0);
