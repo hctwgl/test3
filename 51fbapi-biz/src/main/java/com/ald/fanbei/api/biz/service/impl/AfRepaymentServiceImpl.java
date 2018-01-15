@@ -505,7 +505,7 @@ public class AfRepaymentServiceImpl extends BaseService implements AfRepaymentSe
                     AfBorrowBillDo houseBill = afBorrowBillDao.getBillHouseAmountByIds(StringUtil.splitToList(repayment.getBillIds(), ","));
                     BigDecimal houseAmount = houseBill == null ? BigDecimal.ZERO : houseBill.getPrincipleAmount();
                     BigDecimal backAmount = billDo.getPrincipleAmount().subtract(houseAmount);
-                    BigDecimal trainAmount = trainBill == null ? BigDecimal.ZERO : trainBill.getPrincipleAmount();
+                    BigDecimal trainAmount = trainBill.getPrincipleAmount() == null ? BigDecimal.ZERO : trainBill.getPrincipleAmount();
                     //还培训额度
                     if(trainAmount.compareTo(BigDecimal.ZERO) == 1) {
                         //减少培训使用额度
