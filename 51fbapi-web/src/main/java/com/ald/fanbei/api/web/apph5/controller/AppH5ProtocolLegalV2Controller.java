@@ -551,11 +551,11 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	 */
 	@RequestMapping(value = { "protocolAgentBuyService" }, method = RequestMethod.GET)
 	public void protocolAgentBuyService(HttpServletRequest request, ModelMap model) throws IOException {
-//		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
+		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-//		if(userName == null || !webContext.isLogin() ) {
-//			throw new FanbeiException("非法用户");
-//		}
+		if(userName == null || !webContext.isLogin() ) {
+			throw new FanbeiException("非法用户");
+		}
 		AfUserDo afUserDo = afUserService.getUserByUserName(userName);
 		if (afUserDo == null) {
 			logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
