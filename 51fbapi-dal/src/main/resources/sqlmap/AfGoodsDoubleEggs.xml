@@ -173,7 +173,7 @@
 	GROUP BY start_time ORDER BY start_time ;
     </select>
     
-    <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" parameterType="java.util.Date">
+    <select id="getgoodsByDate" resultType="com.ald.fanbei.api.dal.domain.GoodsForDate" >
 		SELECT
 			de.id AS double_goods_id,
 			CASE
