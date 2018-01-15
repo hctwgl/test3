@@ -214,15 +214,17 @@ public class H5DoubleEggsController extends H5Controller {
 					vo.setStartDate(dateStr);
 					vo.setStartTime(date);
 					
-					Date temStartDate = DateUtil.formatDateToYYYYMMdd(date);
+					
 					Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
-					if (DateUtil.afterDay(temStartDate, temNow)) {
+					if (DateUtil.afterDay(date, temNow)) {
 						vo.setStatus(0);
-					}else if (DateUtil.beforeDay(temStartDate, temNow)){
+					}else if (DateUtil.beforeDay(date, temNow)){
 						vo.setStatus(2);
 					}else {
 						vo.setStatus(1);
 					}
+					
+					dateList.add(vo);
 					
 					
 				}
@@ -231,6 +233,7 @@ public class H5DoubleEggsController extends H5Controller {
 			java.util.Map<String, Object> data = new HashMap<>();
 
 			data.put("dateList", dateList);
+			data.put("serviceDate", new Date());
 
 			return H5CommonResponse.getNewInstance(true, "初始化成功", "", data).toString();
 
