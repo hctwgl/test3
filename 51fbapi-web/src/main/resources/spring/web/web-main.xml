@@ -159,8 +159,8 @@
 				<value>/legalborrowV2/getCashPageType</value>
 				<value>/legalborrowV2/getOverdueStatus</value>
 				<value>/legalborrowV2/getBorrowLegalChargeInfo</value>
+				<value>/legalborrowV2/agentBuyHints</value>
 
-				
 				<value>/order/dmNperEnabled</value>
 			</list>
 		</constructor-arg>
