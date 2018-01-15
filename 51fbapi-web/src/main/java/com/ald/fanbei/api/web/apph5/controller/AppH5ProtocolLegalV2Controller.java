@@ -177,7 +177,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		model.put("repayDay", repayDay);*/
 
 		logger.info(JSON.toJSONString(model));
-		return "protocolLegalInstalmentV2";
+		return "/fanbei-web/app/protocolLegalInstalmentV2";
 	}
 
 	/**
@@ -259,7 +259,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 
 		logger.info(JSON.toJSONString(model));
-		return "protocolLegalCashLoanV2";
+		return "/fanbei-web/app/protocolLegalCashLoanV2";
 	}
 
 	private void getEdspayInfo(ModelMap model, Long borrowId, byte type) {
