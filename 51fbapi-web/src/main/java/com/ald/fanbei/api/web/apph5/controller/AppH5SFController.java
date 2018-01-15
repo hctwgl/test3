@@ -181,6 +181,9 @@ public class AppH5SFController extends BaseController {
 			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
 
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+			if(couponCategory == null){
+				return H5CommonResponse.getNewInstance(false, "老虎机优惠券没有配置").toString();
+			}
 			String coupons = couponCategory.getCoupons();
 			if (StringUtil.isBlank(coupons)) {
 				return H5CommonResponse.getNewInstance(false, "次活动奖品已经领完").toString();
