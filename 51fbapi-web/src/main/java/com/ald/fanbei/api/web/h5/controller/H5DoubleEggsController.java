@@ -49,6 +49,7 @@ import com.ald.fanbei.api.dal.domain.GoodsForDate;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.AfCouponDouble12Vo;
+import com.ald.fanbei.api.web.vo.SecondKillDateVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
@@ -204,12 +205,26 @@ public class H5DoubleEggsController extends H5Controller {
 
 			// get dateList start from the config of specific activity
 			List<Date> dateListe = afActivityService.getDateListByName(tag);
-			List<String> dateList = new ArrayList<String>();
+			List<SecondKillDateVo> dateList = new ArrayList<SecondKillDateVo>();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			if(CollectionUtil.isNotEmpty(dateListe)){
 				for(Date date:dateListe){
 					String dateStr = sdf.format(date);
-					dateList.add(dateStr);
+					SecondKillDateVo vo = new SecondKillDateVo();
+					vo.setStartDate(dateStr);
+					vo.setStartTime(date);
+					
+					Date temStartDate = DateUtil.formatDateToYYYYMMdd(date);
+					Date temNow = DateUtil.formatDateToYYYYMMdd(new Date());
+					if (DateUtil.afterDay(temStartDate, temNow)) {
+						vo.setStatus(0);
+					}else if (DateUtil.beforeDay(temStartDate, temNow)){
+						vo.setStatus(2);
+					}else {
+						vo.setStatus(1);
+					}
+					
+					
 				}
 			}
 
