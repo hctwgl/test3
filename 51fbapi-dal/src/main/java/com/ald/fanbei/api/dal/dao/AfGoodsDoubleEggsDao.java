@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.AfGoodsDoubleEggsDo;
+import com.ald.fanbei.api.dal.domain.AfSFgoodsVo;
 import com.ald.fanbei.api.dal.domain.GoodsForDate;
 
 /**
@@ -27,6 +28,8 @@ public interface AfGoodsDoubleEggsDao extends BaseDao<AfGoodsDoubleEggsDo, Long>
 	List<GoodsForDate> getgoodsByDate(@Param("startDate")Date startDate);
 
 	void updateCountById(@Param("goodsId")Long goodsId);
+	
+	List<AfSFgoodsVo> getFivePictures(@Param("userId") Long userId);
 
     
 

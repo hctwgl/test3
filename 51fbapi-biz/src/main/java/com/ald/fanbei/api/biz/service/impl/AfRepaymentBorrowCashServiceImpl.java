@@ -808,7 +808,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 try {
                     logger.info("dealOfflineRepaymentSucess begin repayNo=" + repayNo + ",borrowNo" + borrowNo + ",repayType" + repayType + ",repayTime" + repayTime
                             + ",repayAmount" + repayAmount + ",restAmount" + restAmount + ",tradeNo" + tradeNo + ",isBalance" + isBalance);
-                    AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
+                    AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNoV1(borrowNo);
                     if (afBorrowCashDo == null) {
                         logger.error("dealOfflineRepaymentSucess fail,borrowcash not exist,borrowNo=" + borrowNo);
                         return FanbeiThirdRespCode.BORROW_CASH_NOT_EXISTS.getCode();

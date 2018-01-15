@@ -460,9 +460,11 @@
        abb.overdue_interest_amount overdueInterestAmount,
        abb.poundage_amount poundageAmount,
        abb.overdue_poundage_amount overduePoundageAmount,
+       abbb.gmt_create repayDate,
        abb.gmt_pay_time lastRepayDay	
 	  FROM `af_borrow` ab 
 	  LEFT JOIN `af_borrow_bill` abb on abb.`borrow_id`= ab.`id`
+	  LEFT JOIN `af_repayment` abbb on abb.repayment_id=abbb.id
 	 WHERE ab.`is_delete`= 0
 	   AND abb.`is_delete`= 0
 	   AND abb.id IN
@@ -734,6 +736,7 @@
 		) b
 		on a.gmtOutDay = b.gmtOutDay
 		where  IFNULL(b.billAmount,0) = 0
+		ORDER BY gmtOutDay desc
 		LIMIT #{begin},#{pageSize}
 	</select>
 
