@@ -438,6 +438,8 @@ public class StartCashierApi implements ApiHandle {
                     return;
             }
         }
+
+        //专项额度控制
         Map<String, Object> virtualMap = afOrderService.getVirtualCodeAndAmount(orderInfo);
         BigDecimal useableAmount = BigDecimal.ZERO;
         //额度判断
