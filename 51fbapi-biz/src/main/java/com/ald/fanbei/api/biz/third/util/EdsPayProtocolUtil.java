@@ -115,12 +115,28 @@ public class EdsPayProtocolUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
+			if(investorName==null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+				return notifyRespBo;
+			}
+			if(investorCardId==null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+				return notifyRespBo;
+			}
+			if(investorPhone==null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+				return notifyRespBo;
+			}
+			if(protocolUrl==null){
+				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
+				return notifyRespBo;
+			}
 			//具体操作
 			String url = afLegalContractPdfCreateService.getProtocalLegalByType(debtType,orderNo,protocolUrl,investorPhone,
 					investorName,investorCardId);
 //			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
-			if(url == null){
-				logger.error("EdspayController giveBackCreditInfo exist error records,appId="+appId+ ",sendTime=" + timestamp);
+			if(url == null || "".equals(url)){
+				logger.error("EdspayController giveBackCreditInfo url exist error records,appId="+appId+ ",sendTime=" + timestamp);
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
 				return notifyRespBo;
 			}
