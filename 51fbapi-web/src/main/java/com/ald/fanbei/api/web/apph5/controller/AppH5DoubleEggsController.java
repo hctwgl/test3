@@ -510,6 +510,18 @@ public class AppH5DoubleEggsController extends BaseController {
 			if (activityId == null) {
 				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
 			}
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			String paramDate = request.getParameter("startDate");
+			
+			String log = String.format("/appH5DoubleEggs/getSecondKillGoodsList parameter : activityId = %L , startDate = s%", activityId,paramDate);
+			
+			Date startDate = new Date();
+			
+			if (StringUtil.isNotBlank(paramDate)) {
+				startDate = sdf.parse(paramDate);
+			}
 			
 			//find the name from activityId
 			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
@@ -519,11 +531,10 @@ public class AppH5DoubleEggsController extends BaseController {
 			
 			
 			Date now = new Date() ;
-			
-			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
-			
+
 			//get dateList start from the config of specific activity
 			List<Date> dateList = afActivityService.getDateListByName(tag);
+			
 			
 			if (CollectionUtil.isNotEmpty(dateList)) {
 				
@@ -533,7 +544,7 @@ public class AppH5DoubleEggsController extends BaseController {
 			//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
 				
-				for (Date startDate : dateList) {
+				//for (Date startDate : dateList) {
 					
 					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate,tag);
 					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
@@ -576,7 +587,7 @@ public class AppH5DoubleEggsController extends BaseController {
 							}
 
 							// format to the fix form
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							
 							goodsBuffer.setStartDate(sdf.format(startDate));
 							goodsBuffer.setStartTime(startDate);
 							goodsBuffer.setGoodsListForDate(goodsListForDate);
@@ -586,7 +597,7 @@ public class AppH5DoubleEggsController extends BaseController {
 						
 					}
 		
-				}
+				//}
 				
 				
 				java.util.Map<String, Object> data = new HashMap<>();

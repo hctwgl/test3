@@ -193,8 +193,6 @@ public class H5DoubleEggsController extends H5Controller {
 		String result = "";
 		try {
 
-			String log = "/appH5DoubleEggs/getSecondKillGoodsList";
-			
 			//get tag from activityId then get goods from different tag
 			Long activityId = NumberUtil.objToLong(request.getParameter("activityId"));
 			if (activityId == null) {
@@ -207,14 +205,17 @@ public class H5DoubleEggsController extends H5Controller {
 				return H5CommonResponse.getNewInstance(false, "没有配置此分会场！").toString();
 			}
 
-	/*//get dateList start from the spring festival activity beginning date
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			
-			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
-			if (resourceDo == null) {
-				return H5CommonResponse.getNewInstance(false, "活动没有配置活动起止时间！").toString();
+			String paramDate = request.getParameter("startDate");
+			
+			String log = String.format("/h5DoubleEggs/getSecondKillGoodsList parameter : activityId = %L , startDate = s%", activityId,paramDate);
+			
+			Date startDate = new Date();
+			
+			if (StringUtil.isNotBlank(paramDate)) {
+				startDate = sdf.parse(paramDate);
 			}
-			
-			String beginningDate = resourceDo.getValue();*/
 			
 			//get dateList start from the config of specific activity
 			List<Date> dateList = afActivityService.getDateListByName(tag);
@@ -226,7 +227,7 @@ public class H5DoubleEggsController extends H5Controller {
 				//AfGoodsForSecondKill afGoodsForSecondKill = new AfGoodsForSecondKill();
 				List<AfGoodsBuffer> goodsList = new ArrayList<>();
 
-				for (Date startDate : dateList) {
+				//for (Date startDate : dateList) {
 
 					List<GoodsForDate> goodsListForDate = afGoodsDoubleEggsService.getGOodsByDate(startDate,tag);
 					if (CollectionUtil.isNotEmpty(goodsListForDate)) {
@@ -250,7 +251,7 @@ public class H5DoubleEggsController extends H5Controller {
 							}
 
 							// format to the fix form
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							
 							goodsBuffer.setStartDate(sdf.format(startDate));
 							goodsBuffer.setStartTime(startDate);
 							goodsBuffer.setGoodsListForDate(goodsListForDate);
@@ -259,7 +260,7 @@ public class H5DoubleEggsController extends H5Controller {
 						}
 						
 					}
-				}
+				//}
 
 				java.util.Map<String, Object> data = new HashMap<>();
 
