@@ -30,7 +30,7 @@
             <p>用户187****0576 成功借款 6000元</p>
         </marquee>
     #end
-    #if($!{style}==8 ||$!{style}==9 || $!{style}==17)
+    #if($!{style}==8 || $!{style}==17)
         <img src="$commonUrl/channel17txt.jpg">
     #end
     <img class="background" src="$commonUrl/channel$!{style}_01.jpg">
@@ -52,7 +52,7 @@
 
     #if( $!{style}==6 )
         <div class="progress" id="progress">
-            <div class="text">￥500</div>
+            <div class="text">￥20000</div>
             <div class="progress_bg">
                 <div class="progress_bar"></div>
             </div>
