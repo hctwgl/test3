@@ -31,7 +31,7 @@
         <span style="position: relative;right:.1rem">协议编号：$!{borrowNo}</span><br>
         甲方：浙江阿拉丁电子商务股份有限公司<br>
         乙方（借款人）： $!{realName}<br>
-      联系电话： $!{phone}<br>
+      联系电话： $!{mobile}<br>
       电子邮箱： $!{email}<br><br>
       <span>鉴于：</span><br>
         甲方是一家在中国境内注册并经合法登记的公司；乙方为具有完全民事权利能力和民事行为能力、能独立行使和承担本协议项下权利义务的自然人，是经甲方居间介绍，与出借人签订《借款协议》的借款人，出借人和借款人之间形成民间借贷关系。甲方、乙方经平等协商，根据《中华人民共和国民法通则》、《中华人民共和国合同法》及其他有关法律法规的规定订立本协议。<br><br>
@@ -135,7 +135,7 @@
 ##    <span style="margin: 0 1rem">甲方：      #if($!{personUserSeal})<img style="max-width: 1.5rem" src="$!{personUserSeal}">#end</span>
 ##    <span>乙方：      #if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</span>
         甲方：$!{companyUserSeal}<br>
-        乙方：$!{realName}<br>
+        乙方：$!{personUserSeal}<br>
         签署时间：$!{time}<br><br>
     </p>
 </div>
