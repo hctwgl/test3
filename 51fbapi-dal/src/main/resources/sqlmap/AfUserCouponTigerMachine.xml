@@ -133,12 +133,12 @@
 		UPDATE af_user_coupon_tiger_machine SET gmt_modified = NOW(),
 		daily_time =
 		CASE ( SELECT * FROM(SELECT daily_time FROM af_user_coupon_tiger_machine WHERE user_id = #{userId}) a)
-		WHEN daily_time = 1 
+		WHEN 1 
 		THEN 0 ELSE daily_time
 		END
 		,shoping_time = 
 		CASE ( SELECT * FROM(SELECT daily_time FROM af_user_coupon_tiger_machine WHERE user_id = #{userId}) a)
-		WHEN daily_time = 0 
+		WHEN 0 
 		THEN  shoping_time - 1 ELSE shoping_time
 		END
 		WHERE user_id = #{userId};
