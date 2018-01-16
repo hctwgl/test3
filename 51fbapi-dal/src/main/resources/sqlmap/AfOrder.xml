@@ -137,10 +137,10 @@
 	            district,
 	        </if>
 	        <if test="blackBox != null">
-				bqs_black_box,
+				black_box,
 	        </if>
 		<if test="bqsBlackBox != null">
-			black_box,
+			bqs_black_box,
 		</if>
 	        <if test="ip != null">
 	            ip,
