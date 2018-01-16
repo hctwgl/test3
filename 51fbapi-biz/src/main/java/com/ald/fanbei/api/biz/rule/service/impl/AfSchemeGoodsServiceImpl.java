@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfSchemeGoodsService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.dal.dao.AfSchemeGoodsDao;
 import com.ald.fanbei.api.dal.domain.AfSchemeGoodsDo;
 
@@ -19,9 +20,20 @@ public class AfSchemeGoodsServiceImpl implements AfSchemeGoodsService {
 	@Resource
 	AfSchemeGoodsDao afSchemeGoodsDao;
 	
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	
+	
 	@Override
 	public AfSchemeGoodsDo getSchemeGoodsByGoodsId(Long goodsId) {
-		return afSchemeGoodsDao.getSchemeGoodsByGoodsId(goodsId);
+		// 每10分钟清除一次缓存
+		String schemeGoodsKey = "GET_SCHEME_GOODS_BY_GOODS_ID_" + goodsId;
+		AfSchemeGoodsDo schemeGoodsDo =  (AfSchemeGoodsDo)bizCacheUtil.getObject(schemeGoodsKey);
+		if(schemeGoodsDo == null) {
+			schemeGoodsDo = afSchemeGoodsDao.getSchemeGoodsByGoodsId(goodsId);
+			bizCacheUtil.saveObject(schemeGoodsKey, schemeGoodsDo);
+		}
+		return schemeGoodsDo;
 	}
 
 }

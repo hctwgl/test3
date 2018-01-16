@@ -230,7 +230,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		} catch (Exception e) {
 			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_RENEWAL.getCode(), borrowNo, json,
 					getUrl() + "/api/getway/repayment/renewalAchieve");
-			throw new FanbeiException("renewalNotify fail Exception is " + e + ",renewalNotify send again");
+			throw new FanbeiException( "renewalNotify fail Exception is " + e + ",renewalNotify send again"+",borrowNo="+borrowNo);
 		}
 
 	}

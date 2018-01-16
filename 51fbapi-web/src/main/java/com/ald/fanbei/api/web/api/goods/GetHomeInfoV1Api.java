@@ -272,36 +272,102 @@ public class GetHomeInfoV1Api implements ApiHandle {
             throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
         }
         //removeSecondNper(array);
-		List<AfActivityDo> activityList = afActivityService.listAllHomeActivity();
-		List<Map<String,Object>> activityInfoList = new ArrayList<Map<String,Object>>();
-		for(AfActivityDo afActivityDo : activityList) {
-			Map<String,Object> activityData = new HashMap<String,Object> ();
-			activityData.put("titleName", afActivityDo.getName());
-			activityData.put("imageUrl", afActivityDo.getIconUrl());
-			activityData.put("type", afActivityDo.getLinkType());
-			activityData.put("content", afActivityDo.getLinkContent());
-			// 活动商品
-			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
-			// 获取活动商品
-    		List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService.listHomeActivityGoodsByActivityId(afActivityDo.getId());
-    		for(AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
-    			Map<String, Object> goodsInfo = new HashMap<String, Object>();
-    			goodsInfo.put("goodName",goodsDo.getName());
-    			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-    			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-    			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-    			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-    			goodsInfo.put("goodsId", goodsDo.getRid());
-    			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-    			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-    			goodsInfo.put("source", goodsDo.getSource());
-    			String doubleRebate = goodsDo.getDoubleRebate();
-    			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
-    			goodsInfo.put("goodsType", "0");
-    			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+        String activityGoodsCacheKey = "GET_HOME_INFO_V1_ACTVIT_GOODS_LIST";
+        List<Map<String,Object>> tmpActivityInfoList = bizCacheUtil.getObjectList(activityGoodsCacheKey);
+        if(tmpActivityInfoList == null) {
+        	List<AfActivityDo> activityList = afActivityService.listAllHomeActivity();
+    		List<Map<String,Object>> activityInfoList = new ArrayList<Map<String,Object>>();
+    		for(AfActivityDo afActivityDo : activityList) {
+    			Map<String,Object> activityData = new HashMap<String,Object> ();
+    			activityData.put("titleName", afActivityDo.getName());
+    			activityData.put("imageUrl", afActivityDo.getIconUrl());
+    			activityData.put("type", afActivityDo.getLinkType());
+    			activityData.put("content", afActivityDo.getLinkContent());
+    			// 活动商品
+    			List<Map<String,Object>> goodsList = new ArrayList<Map<String,Object>>();
+    			// 获取活动商品
+        		List<AfEncoreGoodsDto> activityGoodsDoList = afActivityGoodsService.listHomeActivityGoodsByActivityId(afActivityDo.getId());
+        		for(AfEncoreGoodsDto goodsDo : activityGoodsDoList) {
+        			Map<String, Object> goodsInfo = new HashMap<String, Object>();
+        			goodsInfo.put("goodName",goodsDo.getName());
+        			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+        			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+        			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+        			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+        			goodsInfo.put("goodsId", goodsDo.getRid());
+        			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+        			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+        			goodsInfo.put("source", goodsDo.getSource());
+        			String doubleRebate = goodsDo.getDoubleRebate();
+        			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
+        			goodsInfo.put("goodsType", "0");
+        			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
+    				goodsInfo.put("isWorm", value);
+        			// 如果是分期免息商品，则计算分期
+        			Long goodsId = goodsDo.getRid();
+    				AfSchemeGoodsDo  schemeGoodsDo = null;
+    				try {
+    					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+    				} catch(Exception e){
+    					logger.error(e.toString());
+    				}
+    				JSONArray interestFreeArray = null;
+    				if(schemeGoodsDo != null){
+    					AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
+    					String interestFreeJson = interestFreeRulesDo.getRuleJson();
+    					if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+    						interestFreeArray = JSON.parseArray(interestFreeJson);
+    					}
+    				}
+    				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+    						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+    				if(nperList!= null){
+    					goodsInfo.put("goodsType", "1");
+    					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
+    					String isFree = (String)nperMap.get("isFree");
+    					if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
+    						nperMap.put("freeAmount", nperMap.get("amount"));
+    					}
+    					goodsInfo.put("nperMap", nperMap);
+    				}
+    				
+    				goodsList.add(goodsInfo);
+        		}
+        		activityData.put("goodsList", goodsList);
+        		activityInfoList.add(activityData);
+    		}
+    		tmpActivityInfoList = activityInfoList;
+    		bizCacheUtil.saveObjectList(activityGoodsCacheKey, activityInfoList);
+    		
+        }
+        
+		String moreGoodsCacheKey = "GET_HOME_INFO_V1_MORE_GOODS_INFO";
+		Map<String ,Object> tmpMoreGoodsInfo = (Map<String ,Object>)bizCacheUtil.getMap(moreGoodsCacheKey);
+		
+		if(tmpMoreGoodsInfo == null) {
+			// 更多商品
+			Map<String ,Object> moreGoodsInfo = new HashMap<String,Object>();
+			AfActivityDo moreActivity = afActivityService.getHomeMoreActivity();
+			List<Map<String,Object>> moreGoodsList = new ArrayList<Map<String,Object>>();
+			List<AfEncoreGoodsDto> moreGoodsDoList = afActivityGoodsService.listHomeActivityGoodsByActivityId(moreActivity.getId());
+			for(AfEncoreGoodsDto goodsDo : moreGoodsDoList) {
+				Map<String, Object> goodsInfo = new HashMap<String, Object>();
+				goodsInfo.put("goodName",goodsDo.getName());
+				goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+				goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+				goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+				goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+				goodsInfo.put("goodsId", goodsDo.getRid());
+				goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+				goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+				goodsInfo.put("source", goodsDo.getSource());
+				String doubleRebate = goodsDo.getDoubleRebate();
+				goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
+				goodsInfo.put("goodsType", "0");
+				goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
 				goodsInfo.put("isWorm", value);
-    			// 如果是分期免息商品，则计算分期
-    			Long goodsId = goodsDo.getRid();
+				// 如果是分期免息商品，则计算分期
+				Long goodsId = goodsDo.getRid();
 				AfSchemeGoodsDo  schemeGoodsDo = null;
 				try {
 					schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
@@ -318,6 +384,7 @@ public class GetHomeInfoV1Api implements ApiHandle {
 				}
 				List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
 						goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+				
 				if(nperList!= null){
 					goodsInfo.put("goodsType", "1");
 					Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
@@ -328,65 +395,15 @@ public class GetHomeInfoV1Api implements ApiHandle {
 					goodsInfo.put("nperMap", nperMap);
 				}
 				
-				goodsList.add(goodsInfo);
-    		}
-    		activityData.put("goodsList", goodsList);
-    		activityInfoList.add(activityData);
-		}
-		// 更多商品
-		Map<String ,Object> moreGoodsInfo = new HashMap<String,Object>();
-		AfActivityDo moreActivity = afActivityService.getHomeMoreActivity();
-		List<Map<String,Object>> moreGoodsList = new ArrayList<Map<String,Object>>();
-		List<AfEncoreGoodsDto> moreGoodsDoList = afActivityGoodsService.listHomeActivityGoodsByActivityId(moreActivity.getId());
-		for(AfEncoreGoodsDto goodsDo : moreGoodsDoList) {
-			Map<String, Object> goodsInfo = new HashMap<String, Object>();
-			goodsInfo.put("goodName",goodsDo.getName());
-			goodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-			goodsInfo.put("saleAmount", goodsDo.getSaleAmount());
-			goodsInfo.put("priceAmount", goodsDo.getPriceAmount());
-			goodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
-			goodsInfo.put("goodsId", goodsDo.getRid());
-			goodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
-			goodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
-			goodsInfo.put("source", goodsDo.getSource());
-			String doubleRebate = goodsDo.getDoubleRebate();
-			goodsInfo.put("doubleRebate","0".equals(doubleRebate)?"N":"Y" );
-			goodsInfo.put("goodsType", "0");
-			goodsInfo.put("remark", StringUtil.null2Str(goodsDo.getRemark()));
-			goodsInfo.put("isWorm", value);
-			// 如果是分期免息商品，则计算分期
-			Long goodsId = goodsDo.getRid();
-			AfSchemeGoodsDo  schemeGoodsDo = null;
-			try {
-				schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-			} catch(Exception e){
-				logger.error(e.toString());
+				moreGoodsList.add(goodsInfo);
 			}
-			JSONArray interestFreeArray = null;
-			if(schemeGoodsDo != null){
-				AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-				String interestFreeJson = interestFreeRulesDo.getRuleJson();
-				if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-					interestFreeArray = JSON.parseArray(interestFreeJson);
-				}
-			}
-			List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-					goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2());
+			moreGoodsInfo.put("moreGoodsList", moreGoodsList);
+			moreGoodsInfo.put("titleName", "更多商品");
+			tmpMoreGoodsInfo = moreGoodsInfo;
+			bizCacheUtil.saveMap(moreGoodsCacheKey, moreGoodsInfo);
 			
-			if(nperList!= null){
-				goodsInfo.put("goodsType", "1");
-				Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
-				String isFree = (String)nperMap.get("isFree");
-				if(InterestfreeCode.NO_FREE.getCode().equals(isFree)) {
-					nperMap.put("freeAmount", nperMap.get("amount"));
-				}
-				goodsInfo.put("nperMap", nperMap);
-			}
-			
-			moreGoodsList.add(goodsInfo);
 		}
-		moreGoodsInfo.put("moreGoodsList", moreGoodsList);
-		moreGoodsInfo.put("titleName", "更多商品");
+		
 		//背景图配置
 		List<AfResourceDo> backgroundList = afResourceService.getBackGroundByType(ResourceType.HOMEPAGE_BACKGROUND.getCode());
 
@@ -405,9 +422,9 @@ public class GetHomeInfoV1Api implements ApiHandle {
 		//  3/6/9运营位
 		data.put("manyPricutres", manyPricutres);
 		// 首页活动商品
-		data.put("activityInfoList", activityInfoList);
+		data.put("activityInfoList", tmpActivityInfoList);
 		// 更多商品
-		data.put("moreGoodsInfo", moreGoodsInfo);
+		data.put("moreGoodsInfo", tmpMoreGoodsInfo);
 		// 首页背景图
 		data.put("backgroundSet", backgroundList);
 		resp.setResponseData(data);
