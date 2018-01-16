@@ -369,6 +369,7 @@ public class AfESdkServiceImpl implements AfESdkService {
 		if (isNotLock) {
 			try {
 				num = afUserSealDao.insert(record);
+				logger.info("insertUserSeal num => {}", num);
 			} catch (Exception e) {
 				logger.error("insertUserSeal error => {}", e.getMessage());
 			} finally {
