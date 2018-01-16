@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>借款协议</title>
+    <title>分期协议</title>
     <style type="text/css">
         table{
             width:100%;
@@ -31,7 +31,7 @@
 </head>
 <body style="background-color: #fff;">
 <div class="protocol" id="fenqiServiceProtocol">
-    <h2>借款协议</h2>
+    <h2>分期协议</h2>
     <p>
         甲方（借款人）：$!{realName}<br>
         身份证号：$!{idNumber}<br>

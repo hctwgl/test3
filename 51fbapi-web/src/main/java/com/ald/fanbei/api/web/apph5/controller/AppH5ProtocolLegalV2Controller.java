@@ -79,7 +79,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
 		String userName = ObjectUtils.toString(request.getParameter("userName"), "").toString();
-		String type = ObjectUtils.toString(request.getParameter("type"), "").toString();
 		Long borrowId = NumberUtil.objToLongDefault(request.getParameter("borrowId"), 0l);
 		if (userName == null || !webContext.isLogin()) {
 			throw new FanbeiException("非法用户");
@@ -111,7 +110,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		}
 		model.put("interest", consumeDo.getValue3());
 		Date date = new Date();
-		getResourceRate(model, type, afResourceDo, "instalment");
+//		getResourceRate(model, type, afResourceDo, "instalment");
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
@@ -139,22 +138,6 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				}
 				model.put("repayPlan", repayPlan);
 			}
-
-			/*AfBorrowLegalOrderDo afBorrowLegalOrderDo = afBorrowLegalOrderService.getLastBorrowLegalOrderById(orderId);
-            AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowLegalOrderId(orderId);
-			if (afBorrowDo != null){
-				model.put("instalmentGmtCreate", afBorrowLegalOrderCashDo.getGmtCreate());
-				model.put("instalmentRepayDay", afBorrowLegalOrderCashDo.getGmtPlanRepay());
-				model.put("gmtEnd", afBorrowLegalOrderCashDo.getGmtPlanRepay());
-				model.put("poundageRate",afBorrowLegalOrderCashDo.getPoundageRate());//手续费率
-				model.put("yearRate",afBorrowLegalOrderCashDo.getInterestRate());//利率
-			}
-			if (afBorrowLegalOrderDo != null){
-				date = afBorrowLegalOrderDo.getGmtCreate();
-			}*/
-			model.put("overdueRate", "36");
-		} else {
-			getResourceRate(model, type, afResourceDo, "instalment");
 		}
 		model.put("gmtStart", date);
 		model.put("gmtEnd", DateUtil.addMonths(date, nper));
@@ -444,7 +427,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 					AfFundSideInfoDo fundSideInfo = afFundSideBorrowCashService.getLenderInfoByBorrowCashId(borrowId);
 					if (renewalId > 0) {
 						lender(model, fundSideInfo);
+						model.put("lender", "金泰嘉鼎（深圳）资产管理有限公司");
 						GetSeal(model, afUserDo, accountDo);
+						AfUserSealDo companyUserSealDo = afUserSealDao.selectByUserName(model.get("lender").toString());
+						if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+							model.put("secondSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+						}
 					}
 					/*if(fundSideInfo!=null && StringUtil.isNotBlank(fundSideInfo.getName())){
 						model.put("lender", fundSideInfo.getName());// 出借人

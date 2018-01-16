@@ -39,7 +39,7 @@
         甲方（借款人）： $!{realName}<br>
         身份证号：$!{idNumber}<br>
         手机号码： $!{mobile}<br><br>
-        乙方（出借人）：$!{edspayUserName}<br>
+        乙方（出借人）：#if($!{edspayUserName})$!{edspayUserName}#else e都市钱包投资人#end <br>
         丙方：浙江阿拉丁电子商务股份有限公司<br>
         丁方：浙江楚橡信息科技股份有限公司<br><br>
         <span>一、定义</span><br>
