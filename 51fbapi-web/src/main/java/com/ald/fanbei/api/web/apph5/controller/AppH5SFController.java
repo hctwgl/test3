@@ -252,21 +252,29 @@ public class AppH5SFController extends BaseController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		FanbeiWebContext context = new FanbeiWebContext();
 		String result = "";
-
+		
 		try {
 			context = doWebCheck(request, true);
 			Long userId = convertUserNameToUserId(context.getUserName());
-			Long activityId = 10L;
+		
 			
 			//get total userTimes
 			int times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
+			
+			String log = String.format("/appH5SFMain/pickUpTigerMachineCoupon middle params: times = %d", times);
+			logger.info(log);
+			
 			if (times < 1) {
 				return H5CommonResponse.getNewInstance(false, "您暂无抽奖机会，快去购物获取抽奖机会吧").toString();
 			}
 			//get conpons
-			String tag = SpringFestivalActivityEnum.findTagByActivityId(activityId);
+			String tag ="_TIGER_MACHINE_";
 
 			AfCouponCategoryDo couponCategory = afCouponCategoryService.getCouponCategoryByTag(tag);
+			
+			log = log + String.format(" couponCategory = %s", couponCategory.toString());
+			logger.info(log);
+			
 			String coupons = couponCategory.getCoupons();
 			if (StringUtil.isBlank(coupons)) {
 				return H5CommonResponse.getNewInstance(false, "次活动奖品已经领完").toString();
@@ -289,18 +297,33 @@ public class AppH5SFController extends BaseController {
 			//random get one coupon Id
 			int hitIndex = (int) (Math.random() * (avalibleCouponIdList.size() - 0) + 0);
 			
+			log = log + String.format("hitIndex = %d", hitIndex);
+			logger.info(log);
+			
 			Long couponId = avalibleCouponIdList.get(hitIndex);
+			
+			log = log + String.format("couponId = %d", couponId);
+			logger.info(log);
+			
 			data.put("couponId", couponId);
 			
 			//decrease the times for once.
 			//(fist decrease the daily time one then the shopping one)+grant coupons
 			
 			boolean isSuccess = afUserCouponTigerMachineService.grandCoupon(couponId,userId);
+			
+			log = log + String.format("isSuccess = %b", isSuccess);
+			logger.info(log);
+			
 			if (!isSuccess) {
 				return H5CommonResponse.getNewInstance(false, "老虎机抽取礼物失败，可以重新来一次哦~").toString();
 			}
 			
 			times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
+			
+			log = log + String.format("final times = %d", times);
+			logger.info(log);
+			
 			data.put("times", times);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 

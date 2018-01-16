@@ -62,6 +62,10 @@ public class AfUserCouponTigerMachineServiceImpl extends ParentServiceImpl<AfUse
 						logger.info(log);
 						//decrease time 
 						int result1 = afUserCouponTigerMachineDao.decreaseOnce(userId);
+						
+						log = log + String.format("afUserCouponTigerMachineDao.decreaseOnce(userId) result = %d ",result1);
+						logger.info(log);
+						
 						//grand coupon
 						afUserCouponService.grantCoupon(userId, couponId, "SPRING_FESTIVAL_ACTIVITY", " ");
 						if (result1 == 1) {
