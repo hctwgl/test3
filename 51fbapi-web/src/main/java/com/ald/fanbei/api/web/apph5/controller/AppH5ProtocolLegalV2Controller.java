@@ -101,7 +101,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		AfResourceDo consumeOverdueDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowConsumeOverdue.getCode());
 		AfResourceDo lenderDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLender.getCode());
 		model.put("lender", lenderDo.getValue());// 出借人
-		model.put("mobile", afUserDo.getMobile());// 联系电话
+		model.put("mobile", afUserDo.getUserName());// 联系电话
 		model.put("lateFeeRate", consumeOverdueDo.getValue1());
 		if (StringUtils.isNotBlank(consumeOverdueDo.getValue2())) {
 			String[] amounts = consumeOverdueDo.getValue2().split(",");
@@ -198,7 +198,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		model.put("idNumber", accountDo.getIdNumber());
 		model.put("realName", accountDo.getRealName());
 		model.put("email", afUserDo.getEmail());//电子邮箱
-		model.put("mobile", afUserDo.getMobile());// 联系电话
+		model.put("mobile", afUserDo.getUserName());// 联系电话
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		Map<String, Object> rate = getObjectWithResourceDolist(list, borrowId);
 		AfBorrowCashDo afBorrowCashDo = null;
@@ -407,7 +407,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		getResourceRate(model, type, afResourceDo, "borrow");
 		model.put("realName", accountDo.getRealName());//借款人
 		model.put("idNumber", accountDo.getIdNumber());//身份证号
-		model.put("mobile", afUserDo.getMobile());// 联系电话
+		model.put("mobile", afUserDo.getUserName());// 联系电话
 		model.put("email", afUserDo.getEmail());//电子邮箱
 		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
 		AfBorrowCashDo afBorrowCashDo = null;
@@ -579,7 +579,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL.getCode());
 		getResourceRate(model, type,afResourceDo,"borrow");
 		model.put("email", afUserDo.getEmail());//电子邮箱
-		model.put("mobile", afUserDo.getMobile());// 联系电话
+		model.put("mobile", afUserDo.getUserName());// 联系电话
+		model.put("realName",accountDo.getRealName());
 //		Integer days = NumberUtil.objToIntDefault(type, 0);
 //		BigDecimal serviceAmount = borrowAmount.multiply(new BigDecimal(days)).multiply(new BigDecimal(model.get("SERVICE_RATE").toString())).divide(BigDecimal.valueOf(360)).setScale(2,BigDecimal.ROUND_HALF_UP);
 		model.put("poundage",poundage);//手续费
