@@ -131,9 +131,9 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 						pageType = "V0";
 					}else if(null != borrowLegalOrder){
 						if(null != afBorrowLegalOrderCashDo){
-							pageType = "V2";
-						}else{
 							pageType = "V1";
+						}else{
+							pageType = "V2";
 						}
 					}
 				}
