@@ -215,7 +215,13 @@
 		UPDATE af_recommend_user
 		set
 		<if test="firstBoluomeOrder != null">
-			first_boluome_order = #{firstBoluomeOrder}
+			first_boluome_order = #{firstBoluomeOrder},
+		</if>
+		<if test="firstSelfsupportOrder != null">
+			first_selfsupport_order = #{firstSelfsupportOrder},
+		</if>
+		<if test="isSelfsupportRebate != null">
+			is_selfsupport_rebate = #{isSelfsupportRebate}
 		</if>
 		where id = #{id}
 	</update>

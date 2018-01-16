@@ -107,7 +107,7 @@ public abstract class BaseRebateService {
 	    AfRecommendUserDo  afRecommendUserDo  = afRecommendUserService.getARecommendUserById(orderInfo.getUserId());
 	     if(afRecommendUserDo != null){
 		 if(afRecommendUserDo.getFirstBoluomeOrder() == null){
-		     afRecommendUserDo.setFirstBoluomeOrder(orderInfo.getRid());
+		     afRecommendUserDo.setFirstSelfsupportOrder(orderInfo.getRid());
 		     int updateRecommend = afRecommendUserService.updateRecommendUserById(afRecommendUserDo);
 		 }
 	     }
