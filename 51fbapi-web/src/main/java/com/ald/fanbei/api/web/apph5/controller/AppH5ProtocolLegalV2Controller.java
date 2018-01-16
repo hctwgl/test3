@@ -74,6 +74,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 	@Resource
 	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 
+
 	@RequestMapping(value = {"protocolLegalInstalmentV2"}, method = RequestMethod.GET)
 	public String protocolLegalInstalment(HttpServletRequest request, ModelMap model) throws IOException {
 		FanbeiWebContext webContext = doWebCheckNoAjax(request, false);
@@ -117,7 +118,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			lender(model, null);
 			date = afBorrowDo.getGmtCreate();
 			getEdspayInfo(model, borrowId, (byte) 2);
-			if (model.get("edspayUserName") == null) {//老版分期
+			if (afBorrowDo.getVersion() == 0) {//老版分期
 				return "redirect:/fanbei-web/app/protocolFenqiService?userName=" + userName +
 						"&borrowId=" + borrowId + "&nper=" + nper + "&amount=" + borrowAmount +
 						"&poundage=" + poundage;
