@@ -7,6 +7,7 @@ import java.util.List;
 
 
 
+
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -141,5 +142,7 @@ public interface AfUserCouponService {
 	void sentUserCoupon(Long userId, String tag, String sourceType);
 
 	int sentUserCoupon(AfOrderDo orderInfo);
+
+	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 
 }

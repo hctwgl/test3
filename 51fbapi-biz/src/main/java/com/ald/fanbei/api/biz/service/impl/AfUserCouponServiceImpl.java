@@ -243,17 +243,18 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 				AfCouponDo couponDo = afCouponService.getCouponById(Long.parseLong(couponId));
 				if (couponDo != null) {
 				    //赠送优惠券
-				        Integer limitCount = couponDo.getLimitCount();
-					Integer myCount = afUserCouponService.getUserCouponByUserIdAndCouponId(userId,
-							NumberUtil.objToLongDefault(couponId, 1l));
-					if (limitCount <= myCount) {
+				        //Integer limitCount = couponDo.getLimitCount();
+				        //该用户是否拥有该类型优惠券
+				        
+					Integer myCount = afUserCouponService.getUserCouponByUserIdAndCouponCource(userId,sourceType);
+					if (1 <= myCount) {
 					    continue;
 					}
 					Long totalCount = couponDo.getQuota();
 					if (totalCount != -1 && totalCount != 0 && totalCount <= couponDo.getQuotaAlready()) {
 					    continue;
 					}
-
+					
 					AfUserCouponDo userCoupon = new AfUserCouponDo();
 					userCoupon.setCouponId(NumberUtil.objToLongDefault(couponId, 1l));
 					userCoupon.setGmtStart(new Date());
@@ -338,6 +339,12 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	@Override
 	public List<AfUserCouponDto> getActivitySpecialCouponByAmount(Long userId, BigDecimal amount,Long activityId, String activityType) {
 		return afUserCouponDao.getActivitySpecialCouponByAmount(userId, amount,activityId,activityType);
+	}
+
+	@Override
+	public Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType) {
+	    // TODO Auto-generated method stub
+	    	return afUserCouponDao.getUserCouponByUserIdAndCouponCource(userId,sourceType);
 	}
 
 	
