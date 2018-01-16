@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.api.legalborrowV2;
 
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.biz.util.ProtocolUtil;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -39,6 +40,8 @@ public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHa
     AfResourceService afResourceService;
     @Resource
     ProtocolUtil protocolUtil;
+    @Resource
+    NumberWordFormat numberWordFormat;
 
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -48,11 +51,8 @@ public class GetCashLoanProtocolV2Api extends GetBorrowCashBase implements ApiHa
         Map<String, Object> data = new HashMap<>();
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("userName",context.getUserName());
-        if (new BigDecimal(param.getBorrowType()).compareTo(BigDecimal.valueOf(7)) == 0){
-            map.put("type","SEVEN");
-        }else {
-            map.put("type","FOURTEEN");
-        }
+        String type = numberWordFormat.format(Integer.parseInt(param.getBorrowType())).toUpperCase();
+        map.put("type",type);
         map.put("borrowId","");
         map.put("poundage",param.getPoundage());
         map.put("borrowAmount",param.getBorrowAmount());
