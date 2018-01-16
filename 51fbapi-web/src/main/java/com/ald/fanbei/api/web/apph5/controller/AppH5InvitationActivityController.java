@@ -691,9 +691,9 @@ public class AppH5InvitationActivityController extends BaseController {
 	String titleName = resource.getValue();
 	String buttonName = resource.getTypeDesc();
 	String urlName = resource.getDescription();
-	String title[] = titleName.split("/");  
-	String button[] = buttonName.split("/");  
-	String url[] = urlName.split("/");  
+	String title[] = titleName.split("@");  
+	String button[] = buttonName.split("@");  
+	String url[] = urlName.split("@");  
 	
 	newbieTaskVo.setFinish(0);
 	newbieTaskVo.setTitle(title[0]);
