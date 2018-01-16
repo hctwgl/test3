@@ -24,6 +24,8 @@ public class ApplyLegalBorrowCashBo {
 	private String address;
 	
 	private String blackBox;
+
+	private String bqsBlackBox;
 	
 	private String borrowRemark;
 	
@@ -40,7 +42,15 @@ public class ApplyLegalBorrowCashBo {
 	private String deliveryUser;
 	
 	private String deliveryPhone;
-	
+
+	public String getBqsBlackBox() {
+		return bqsBlackBox;
+	}
+
+	public void setBqsBlackBox(String bqsBlackBox) {
+		this.bqsBlackBox = bqsBlackBox;
+	}
+
 	public BigDecimal getAmount() {
 		return amount;
 	}

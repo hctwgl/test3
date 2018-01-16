@@ -532,7 +532,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				riskOrderNo, accountDo.getUserName(), 
 				param.getAmount(), afBorrowCashDo.getPoundage(), 
 				borrowTime, "借钱", StringUtils.EMPTY, null, null, 0l,
-				afBorrowCashDo.getCardName(), null, "", riskDataMap);
+				afBorrowCashDo.getCardName(), null, "", riskDataMap,param.getBqsBlackBox());
 		return verifyBo;
 	}
 
