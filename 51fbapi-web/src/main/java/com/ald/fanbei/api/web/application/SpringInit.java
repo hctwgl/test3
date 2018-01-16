@@ -128,7 +128,7 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 logger.error("company seal error =>{}",addSealResult.getMsg());
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
-            logger.info("addSealResult => {},userId =>{}",addSealResult,map.get("userId"));
+            logger.info("addSealResult => {},userId =>{}",addSealResult.getMsg(),map.get("userId"));
             AfUserSealDo afUserSealDo1 = new AfUserSealDo();
             afUserSealDo1.setUserAccountId(accountId);
             afUserSealDo1.setUserType("1");
@@ -148,7 +148,7 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             afUserSealDo1.setId(afUserSealDo1.getId());
             afUserSealDo1.setUserId((Long)map.get("userId"));
             afUserSealDo1.setUserName((String)map.get("name"));
-            logger.info("addSealResult => {},userId =>{}",addSealResult,map.get("userId"));
+            logger.info("addSealResult => {},userId =>{}",addSealResult.getMsg(),map.get("userId"));
             if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()){
                 afUserSealDo1.setUserSeal(addSealResult.getSealData());
             }else {
