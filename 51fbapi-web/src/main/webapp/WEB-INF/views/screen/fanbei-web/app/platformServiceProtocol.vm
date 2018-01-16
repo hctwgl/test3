@@ -136,7 +136,7 @@
 ##    <span>乙方：      #if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</span>
         甲方：$!{companyUserSeal}<br>
         乙方：$!{realName}<br>
-        签署时间：$!{year}年$!{month}月$!{day}日<br><br>
+        签署时间：$!{time}<br><br>
     </p>
 </div>
 <script type="text/javascript">

@@ -593,9 +593,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			int month = c.get(Calendar.MONTH)+1;
 			int day = c.get(Calendar.DATE);
 			int year = c.get(Calendar.YEAR);
-			model.put("year", year);// 年
-			model.put("month",month);//月
-			model.put("day",day);//日
+			String time = year + "年" + month + "月" + day + "日";
+			model.put("time", time);// 签署日期
 			GetSeal(model, afUserDo, accountDo);
 		}
 
