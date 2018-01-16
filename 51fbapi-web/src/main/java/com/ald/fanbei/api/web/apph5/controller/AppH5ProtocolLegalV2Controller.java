@@ -108,7 +108,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			model.put("lateFeeMin", new BigDecimal(amounts[0]));
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
-		model.put("interest", BigDecimal.valueOf(Long.parseLong(consumeDo.getValue3())));
+		model.put("interest", BigDecimal.valueOf(Double.parseDouble(consumeDo.getValue3())));
 //		getResourceRate(model, type, afResourceDo, "instalment");
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
