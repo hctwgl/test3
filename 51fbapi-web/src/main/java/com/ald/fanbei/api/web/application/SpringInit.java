@@ -125,7 +125,7 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 addSealResult = afESdkService.createSealOrganize(accountId,
                         "STAR", "RED", "", "");
             }else {
-                logger.error("e签宝创建公司账户失败:");
+                logger.error("company seal error =>{}",addSealResult.getMsg());
                 throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
             logger.info("addSealResult => {},userId =>{}",addSealResult,map.get("userId"));

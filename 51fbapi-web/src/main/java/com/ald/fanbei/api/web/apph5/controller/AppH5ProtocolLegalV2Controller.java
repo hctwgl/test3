@@ -109,13 +109,12 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			model.put("lateFeeMax", new BigDecimal(amounts[1]));
 		}
 		model.put("interest", consumeDo.getValue3());
-		Date date = new Date();
 //		getResourceRate(model, type, afResourceDo, "instalment");
 		if (null != borrowId && 0 != borrowId) {
 			AfBorrowDo afBorrowDo = afBorrowService.getBorrowById(borrowId);
 			GetSeal(model, afUserDo, accountDo);
 			lender(model, null);
-			date = afBorrowDo.getGmtCreate();
+			Date date = afBorrowDo.getGmtCreate();
 			getEdspayInfo(model, borrowId, (byte) 2);
 			if (afBorrowDo.getVersion() == 0) {//老版分期
 				return "redirect:/fanbei-web/app/protocolFenqiService?userName=" + userName +
@@ -124,6 +123,8 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 			}
 			BigDecimal nperAmount = afBorrowDo.getNperAmount();
 			model.put("nperAmount", nperAmount);
+			model.put("gmtStart", date);
+			model.put("gmtEnd", DateUtil.addMonths(date, nper));
 			nper = afBorrowDo.getNper();
 			List repayPlan = new ArrayList();
 			if (nper != null) {
@@ -139,8 +140,7 @@ public class AppH5ProtocolLegalV2Controller extends BaseController {
 				model.put("repayPlan", repayPlan);
 			}
 		}
-		model.put("gmtStart", date);
-		model.put("gmtEnd", DateUtil.addMonths(date, nper));
+
 		model.put("amountCapital", toCapital(borrowAmount.doubleValue()));
 		model.put("amountLower", borrowAmount);
 //		model.put("poundage", consumeDo.getValue1());
