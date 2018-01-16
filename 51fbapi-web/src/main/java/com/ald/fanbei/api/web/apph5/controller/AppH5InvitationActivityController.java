@@ -44,6 +44,7 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.CouponScene;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -112,6 +113,7 @@ public class AppH5InvitationActivityController extends BaseController {
     JpushService jpushService;
     @Resource
     CouponSceneRuleEnginerUtil activeRuleEngineUtil;
+    String opennative = "/fanbei-web/opennative?name=";
     
     /**
      * 活动页面的基本信息
@@ -127,7 +129,7 @@ public class AppH5InvitationActivityController extends BaseController {
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         AfUserDo afUser = null;
         try{
-            context = doWebCheck(request, false);
+            context = doWebCheck(request, true);
             if(context.isLogin()){
                 afUser = afUserService.getUserByUserName(context.getUserName());
                 if(afUser != null){
@@ -390,18 +392,21 @@ public class AppH5InvitationActivityController extends BaseController {
         FanbeiWebContext context = new FanbeiWebContext();
         Long userId = -1l;
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
-        AfUserDo afUser = null;
-        try{
-            context = doWebCheck(request, false);
-            if(context.isLogin()){
-        	   afUser = afUserService.getUserByUserName(context.getUserName());
-                if(afUser != null){
-                    userId = afUser.getRid();
-                }
-            } else{
-                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
-               return resp.toString();
-            }
+        try {
+     			 context = doWebCheck(request, false);
+     			 String userName = context.getUserName();
+     			 userId = convertUserNameToUserId(userName);
+     	            }catch (FanbeiException e) {
+     				if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+     						|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+     					Map<String, Object> data = new HashMap<>();
+     					String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+     							+ H5OpenNativeType.AppLogin.getCode();
+     					data.put("loginUrl", loginUrl);
+     					logger.error("/fanbei-web/activityAndUserInfo" + context + "login error ");
+     				        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+     				}
+     		
         }catch  (Exception e) {
             logger.error("activityAndUserInfo error", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
@@ -503,25 +508,25 @@ public class AppH5InvitationActivityController extends BaseController {
     public String newbieTask(HttpServletRequest request){
 	 FanbeiWebContext context = new FanbeiWebContext();
 	        Long userId = -1l;
-	        H5CommonResponse resp = H5CommonResponse.getNewInstance();
-	        AfUserDo afUser = null;
-	        try{
-	            context = doWebCheck(request, false);
-	            if(context.isLogin()){
-	        	   afUser = afUserService.getUserByUserName(context.getUserName());
-	                if(afUser != null){
-	                    userId = afUser.getRid();
-	                }
-	                 
-	            }   else{   
-	                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
-	               return resp.toString();
-	            }
-	        }catch  (Exception e) {
-	            logger.error("activityHomeInfo error", e);
-	            resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
-	            return resp.toString();
-	        }
+//	        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+//	        AfUserDo afUser = null;
+	        try {
+			context = doWebCheck(request, true);
+			 String userName = context.getUserName();
+			 userId = convertUserNameToUserId(userName);
+	            }catch (FanbeiException e) {
+				if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+						|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+					Map<String, Object> data = new HashMap<>();
+					String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+							+ H5OpenNativeType.AppLogin.getCode();
+					data.put("loginUrl", loginUrl);
+					logger.error("/fanbei-web/newbieTask" + context + "login error ");
+				        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+				}
+			} catch (Exception e) {
+				logger.error("/fanbei-web/newbieTask" + context + "error = {}", e.getStackTrace());
+		}
 	        HashMap<String,Object> map =new HashMap<>();
 	        List<HashMap> hashMapList =new ArrayList<>();
 	        List  newbieTaskList = new ArrayList();
@@ -651,7 +656,23 @@ public class AppH5InvitationActivityController extends BaseController {
         return ret;
     }
     
-    
+
+	/**
+	 * 
+	 * @Title: convertUserNameToUserId @Description: @param userName @return
+	 *         Long @throws
+	 */
+	private Long convertUserNameToUserId(String userName) {
+		Long userId = null;
+		if (!StringUtil.isBlank(userName)) {
+			AfUserDo user = afUserService.getUserByUserName(userName);
+			if (user != null) {
+				userId = user.getRid();
+			}
+
+		}
+		return userId;
+	}
     
 
     private NewbieTaskVo assignment(AfResourceDo resource,int count) {
@@ -932,17 +953,20 @@ public class AppH5InvitationActivityController extends BaseController {
         //Long userId = 73772l;
         H5CommonResponse resp = H5CommonResponse.getNewInstance();
         AfUserDo afUser = null;
-        try{
-            context = doWebCheck(request, false);
-            if(context.isLogin()){
-                afUser = afUserService.getUserByUserName(context.getUserName());
-                if(afUser != null){
-                    userId = afUser.getRid();
-                }
-            }else{  
-                resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR.getDesc(), "", null);
-                return resp.toString();
-            }
+        try {
+		context = doWebCheck(request, true);
+		 String userName = context.getUserName();
+		 userId = convertUserNameToUserId(userName);
+        }catch (FanbeiException e) {
+			if (e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR)
+					|| e.getErrorCode().equals(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR)) {
+				Map<String, Object> data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				logger.error("/fanbei-web/rewardQuery" + context + "login error ");
+			        return	 H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			}
         }catch  (Exception e) {
             logger.error("commitChannelRegister", e);
             resp = H5CommonResponse.getNewInstance(false, e.getMessage(), "", null);
