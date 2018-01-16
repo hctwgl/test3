@@ -3,15 +3,12 @@ package com.ald.fanbei.api.web.api.legalborrow;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -147,7 +144,9 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 	AfBorrowLegalGoodsService afBorrowLegalGoodsService;
 	@Resource
 	AfGoodsService afGoodsService;
-	// [end] 
+	@Resource
+	AfBorrowDao afBorrowDao;
+	// [end]
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
@@ -343,11 +342,15 @@ public class ApplyLegalBorrowCashApi extends GetBorrowCashBase implements ApiHan
 				BigDecimal riskReviewAmount = borrowAmount.add(new BigDecimal(goodsAmount));
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String borrowTime = sdf.format(new Date());
+				HashMap<String, HashMap> riskDataMap = new HashMap();
+				HashMap summaryData = afBorrowDao.getUserSummary(userId);
+				riskDataMap.put("summaryData", summaryData);
+				riskDataMap.put("summaryOrderData", new HashMap<>());
 				RiskVerifyRespBo verifyBo = riskUtil.verifyNew(ObjectUtils.toString(userId, ""),
 						afBorrowCashDo.getBorrowNo(), type, "50", afBorrowCashDo.getCardNumber(), appName, ipAddress,
 						blackBox, riskOrderNo, accountDo.getUserName(), riskReviewAmount, afBorrowCashDo.getPoundage(),
 						borrowTime, "借钱", StringUtil.EMPTY_STRING, null, null, 0l, afBorrowCashDo.getCardName(), null,
-						"",bqsBlackBox);
+						"",riskDataMap,bqsBlackBox);
 
 				if (verifyBo.isSuccess()) {
 					delegatePay(verifyBo.getConsumerNo(), verifyBo.getOrderNo(), verifyBo.getResult(),

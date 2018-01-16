@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -374,4 +375,9 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
     public AfBorrowCashDo getBorrowCashByUserIdDescById(Long userId) {
         return afBorrowCashDao.getBorrowCashByUserIdDescById(userId);
     }
+
+	@Override
+	public AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo) {
+		return afBorrowCashDao.getBorrowCashInfoByBorrowNoV1(borrowNo);
+	}
 }
