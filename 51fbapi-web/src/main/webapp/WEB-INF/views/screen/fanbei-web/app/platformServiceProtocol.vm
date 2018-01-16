@@ -134,8 +134,8 @@
     <br>
 ##    <span style="margin: 0 1rem">甲方：      #if($!{personUserSeal})<img style="max-width: 1.5rem" src="$!{personUserSeal}">#end</span>
 ##    <span>乙方：      #if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</span>
-        甲方：$!{realName}<br>
-        乙方：$!{companyUserSeal}<br>
+        甲方：$!{companyUserSeal}<br>
+        乙方：$!{realName}<br>
         签署时间：$!{year}年$!{month}月$!{day}日<br><br>
     </p>
 </div>
