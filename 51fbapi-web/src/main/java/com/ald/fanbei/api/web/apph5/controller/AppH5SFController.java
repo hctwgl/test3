@@ -300,8 +300,8 @@ public class AppH5SFController extends BaseController {
 				return H5CommonResponse.getNewInstance(false, "老虎机抽取礼物失败，可以重新来一次哦~").toString();
 			}
 			
-			
-			data.put("times", times-1);
+			times = afUserCouponTigerMachineService.getTotalTimesByUserId(userId);
+			data.put("times", times);
 			result = H5CommonResponse.getNewInstance(true, "获取优惠券列表成功", null, data).toString();
 
 		} catch (FanbeiException e) {
