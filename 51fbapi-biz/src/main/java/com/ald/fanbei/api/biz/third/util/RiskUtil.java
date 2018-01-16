@@ -181,7 +181,8 @@ public class RiskUtil extends AbstractThird {
 
     private static String getUrl() {
         if (url == null) {
-            url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+            //url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
+            url = "http://192.168.117.25:8080";
             return url;
         }
         return url;
@@ -2038,9 +2039,10 @@ public class RiskUtil extends AbstractThird {
     public RiskVerifyRespBo getUserLayRate(String consumerNo) {
         RiskVerifyReqBo reqBo = new RiskVerifyReqBo();
         reqBo.setConsumerNo(consumerNo);
-        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
         HashMap summaryData = afBorrowDao.getUserSummary(Long.parseLong(consumerNo));
         reqBo.setSummaryData(JSON.toJSONString(summaryData));
+        reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
         String url = getUrl() + "/modules/api/risk/userRate.htm";
 //		String url = "http://192.168.110.22:80/modules/api/risk/userRate.htm";
         String reqResult = requestProxy.post(url, reqBo);
@@ -2532,8 +2534,10 @@ public class RiskUtil extends AbstractThird {
 
         HashMap summaryData = afBorrowDao.getUserSummaryForCapital(afBorrowCashDo.getUserId());
         if (summaryData != null){
+            summaryData.put("allDays",summaryData.get("allDays")+"");
+            summaryData.put("allDays1",summaryData.get("allDays1")+"");
             summaryData.put("borrowAmout",amountBorrow.toString());
-            summaryData.put("over",afBorrowCashDo.getOverdueDay());
+            summaryData.put("over",afBorrowCashDo.getOverdueDay()+"");
             BigDecimal sumRenewalPoundage = afBorrowCashDo.getSumRenewalPoundage();
             BigDecimal poundage = afBorrowCashDo.getPoundage();
             BigDecimal amount = afBorrowCashDo.getAmount();
@@ -2543,11 +2547,13 @@ public class RiskUtil extends AbstractThird {
             BigDecimal sumRate = afBorrowCashDo.getSumRate();
             BigDecimal repayAmount = afBorrowCashDo.getRepayAmount();
 
-            summaryData.put("amount1",sumRenewalPoundage.compareTo(BigDecimal.ZERO)>0?sumRenewalPoundage.add(poundage).add(amount).add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount)
-                                        :amount.add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount));
-            summaryData.put("borrowAmout",amountBorrow.toString());
+            summaryData.put("amout1",(sumRenewalPoundage.compareTo(BigDecimal.ZERO)>0?sumRenewalPoundage.add(poundage).add(amount).add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount)
+                                        :amount.add(overdueAmount).add(sumOverdue).add(rateAmount).add(sumRate).subtract(repayAmount))+"");
+            summaryData.put("borrowAmout",(amountBorrow.toString())+"");
+            //summaryData.put("orderNo",orderNo);
+            summaryData.put("consumerNo",afBorrowCashDo.getUserId()+"");
             summaryData.put("signInfo",SignUtil.sign(createLinkString(summaryData), PRIVATE_KEY));
-            summaryData.put("orderNo",orderNo);
+
         }
 
 
@@ -2557,11 +2563,11 @@ public class RiskUtil extends AbstractThird {
 
         logThird(reqResult, "transferBorrow", summaryData);
         if (StringUtil.isBlank(reqResult)) {
-            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_CAPTIL_ERROR);
         }
         JSONObject riskResp = JSONObject.parseObject(reqResult);
         if(!"100".equals(riskResp.getString("code"))){
-            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_QUOTA_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.RISK_RAISE_CAPTIL_ERROR);
         }
         return riskResp;
     }
