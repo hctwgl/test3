@@ -8,7 +8,7 @@ import redis.clients.jedis.Jedis;
 
 @SuppressWarnings("resource")
 public class RedisClient {
-	static final String HOST = "192.168.106.76";
+	static final String HOST = "redistest.server.com";
 	static final int PORT = 6379;
 	static final String PASSWORD = "Hello1234";
 	

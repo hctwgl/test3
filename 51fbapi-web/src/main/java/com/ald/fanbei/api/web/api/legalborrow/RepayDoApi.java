@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
@@ -72,6 +73,8 @@ public class RepayDoApi implements ApiHandle {
 	AfBorrowLegalRepaymentService afBorrowLegalRepaymentService;
 	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
+	@Resource
+	AfBorrowLegalOrderService afBorrowLegalOrderService;
 	
 	@Resource
 	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
@@ -89,6 +92,9 @@ public class RepayDoApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		RepayBo bo = this.extractAndCheck(requestDataVo, context.getUserId());
 		bo.remoteIp = CommonUtil.getIpAddr(request);
+		
+		// 405以下版本，检查是否有进行中V2借款数据
+		afBorrowLegalOrderService.checkIllegalVersionInvoke(context.getAppVersion(), bo.borrowId);
 		
 		this.afBorrowLegalRepaymentService.repay(bo);
 		
