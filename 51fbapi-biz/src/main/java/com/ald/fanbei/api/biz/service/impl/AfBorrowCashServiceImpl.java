@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -77,6 +78,11 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
 
     @Resource
     ContractPdfThreadPool contractPdfThreadPool;
+    @Resource
+    AfUserCouponService afUserCouponService;
+    
+    
+    
 
     @Override
     public int addBorrowCash(AfBorrowCashDo afBorrowCashDo) {
@@ -204,6 +210,16 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         e);
             }
 
+            try{
+		//是否是第一次借款,给该用户送优惠券（还款券）
+		String tag = "_FIRST_LOAN_";
+		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
+		//是否是第一次借款
+		afUserCouponService.sentUserCoupon(afBorrowCashDo.getUserId(),tag,sourceType);
+	    }catch(Exception e){
+	        logger.error("first borrow sentUserCoupon error", e);
+	   }
+            
             AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(
                     ResourceType.FUND_SIDE_BORROW_CASH.getCode(),
                     AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());

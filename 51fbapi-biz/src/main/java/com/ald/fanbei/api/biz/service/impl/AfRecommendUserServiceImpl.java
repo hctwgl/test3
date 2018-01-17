@@ -207,6 +207,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				logger.info("{update begin} userId=" + userId);
 				try {
 					count = (Long) map.get("count");
+					logger.info("{update begin count} userId=" + userId);
 					if (count > 1)
 						return 1;
 				} catch (Exception e) {

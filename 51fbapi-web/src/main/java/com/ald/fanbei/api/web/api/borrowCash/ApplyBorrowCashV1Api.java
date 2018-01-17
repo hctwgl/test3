@@ -533,15 +533,6 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                                 afBorrowCashDo.getAmount(), userId,
                                 afBorrowCashDo.getRid());
                 afUserAccountLogDao.addUserAccountLog(accountLog);
-                try{
-			//是否是第一次借款,给该用户送优惠券（还款券）
-			String tag = "_FIRST_LOAN_";
-			String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
-			//是否是第一次借款
-			afUserCouponService.sentUserCoupon(userId,tag,sourceType);
-		}catch(Exception e){
-		    logger.error("first borrow sentUserCoupon error", e);
-		}
             }
 
             afBorrowCashService.updateBorrowCash(cashDo);

@@ -232,8 +232,7 @@
 	   	 where  is_delete = 0
 	   	 and user_id = #{userId}
 	   	 and to_days(gmt_create) = to_days(now())
-	   	 and type = 'RECOMMEND'
+	   	 and channel = 'RECOMMEND'
     </select>
-    
     
 </mapper>
