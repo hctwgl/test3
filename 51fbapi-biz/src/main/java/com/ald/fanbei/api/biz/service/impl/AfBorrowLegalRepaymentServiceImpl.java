@@ -188,13 +188,13 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
      * @param restAmount 
      */
 	@Override
-	public void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String borrowNo, 
-				String repayType, String repayTime, String repayAmount,
-				String restAmount, String outTradeNo, String isBalance) {
+	public void offlineRepay(AfBorrowLegalOrderCashDo orderCashDo, String borrowNo,
+							 String repayType, String repayTime, String repayAmount,
+							 String restAmount, String outTradeNo, String isBalance,String repayCardNum,String isAdmin) {
 		RepayBo bo = new RepayBo();
 		bo.userId = orderCashDo.getUserId();
 		bo.userDo = afUserAccountDao.getUserAccountInfoByUserId(bo.userId);
-		
+
 		bo.cardId = (long) -4;
 		bo.repaymentAmount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
 		bo.actualAmount =  bo.repaymentAmount;
@@ -202,15 +202,20 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
 		bo.borrowOrderCashId = orderCashDo.getRid();
 		bo.from = AfBorrowLegalRepayFromEnum.INDEX.name();
-		
+
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
-		bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;
+		if (isAdmin != null && "Y".equals(isAdmin)){
+			bo.name = Constants.BORROW_REPAYMENT_NAME_OFFLINE;//财务线下打款
+		}else {
+			bo.name = Constants.COLLECTION_BORROW_REPAYMENT_NAME_OFFLINE;//催收线下打款
+		}
 		bo.outTradeNo = outTradeNo;
-		
+		bo.repayType = repayType;
+		bo.cardNo = repayCardNum;
 		generateRepayRecords(bo);
-		
-		dealRepaymentSucess(bo.tradeNo, "", bo.borrowRepaymentDo, bo.orderRepaymentDo);
-		
+
+		dealRepaymentSucess(bo.tradeNo, null, bo.borrowRepaymentDo, bo.orderRepaymentDo);
+
 	}
 	
 	/**
@@ -238,6 +243,9 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
                     try {
                 		dealOrderRepay(repayDealBo, orderRepaymentDo);
                 		dealBorrowRepay(repayDealBo, repaymentDo);
+                		
+                		dealSum(repayDealBo);
+                		
                         dealCouponAndRebate(repayDealBo);
                         doAccountLog(repayDealBo);
                         
@@ -304,6 +312,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			}else{
 				errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repaymentDo.getUserId());
 				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+				String title = "本次还款支付失败";
+				String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
+				content = content.replace("&errorMsg",errorMsg);
+				pushService.pushUtil(title,content,afUserDo.getMobile());
 			}
 		}
 		
@@ -368,34 +380,34 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 						}
 					}
 				}
-				
-				borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, borrowRepayAmount, tradeNo, now, actualAmountForBorrow, bo.couponId, 
-							couponAmountForBorrow, rabateAmountForBorrow, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
+
+				borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, borrowRepayAmount, tradeNo, now, actualAmountForBorrow, bo.couponId,
+						couponAmountForBorrow, rabateAmountForBorrow, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 				afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
-				
+
 				if(!AfBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
 					orderRepaymentDo = buildOrderRepayment(bo, actualAmountForOrder, bo.couponId,
-							couponAmountForOrder, rabateAmountForOrder, orderRemainShouldRepayAmount);
+							couponAmountForOrder, rabateAmountForOrder, orderRemainShouldRepayAmount,bo.repayType,bo.outTradeNo,bo.cardNo);
 					afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 				}
 			} else { //还款全部进入订单欠款中
-				orderRepaymentDo = buildOrderRepayment(bo, bo.actualAmount, bo.couponId, 
-						bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.repaymentAmount);
+				orderRepaymentDo = buildOrderRepayment(bo, bo.actualAmount, bo.couponId,
+						bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.repaymentAmount,bo.repayType,bo.outTradeNo,bo.cardNo);
 				afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 			}
 		}
-		
+
 		else if (AfBorrowLegalRepayFromEnum.BORROW.name().equalsIgnoreCase(bo.from)) {
-			borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.couponId, 
-					bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, tradeNo, name, bo.userId);
+			borrowRepaymentDo = buildRepayment(BigDecimal.ZERO, bo.repaymentAmount, tradeNo, now, bo.actualAmount, bo.couponId,
+					bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.borrowId, bo.cardId, bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
 			afRepaymentBorrowCashDao.addRepaymentBorrowCash(borrowRepaymentDo);
 		}
-		
+
 		else if(AfBorrowLegalRepayFromEnum.ORDER.name().equalsIgnoreCase(bo.from)) {
 			AfBorrowLegalOrderDo orderDo = afBorrowLegalOrderDao.getById(bo.borrowOrderId);
 			bo.borrowId = orderDo.getBorrowId();
-			orderRepaymentDo = buildOrderRepayment(bo, bo.actualAmount, bo.couponId, 
-						bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.repaymentAmount);
+			orderRepaymentDo = buildOrderRepayment(bo, bo.actualAmount, bo.couponId,
+					bo.userCouponDto != null?bo.userCouponDto.getAmount():null, bo.rebateAmount, bo.repaymentAmount,bo.repayType,bo.outTradeNo,bo.cardNo);
 			afBorrowLegalOrderRepaymentDao.addBorrowLegalOrderRepayment(orderRepaymentDo);
 		}
 		
@@ -471,6 +483,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.curUserCouponId = orderRepaymentDo.getUserCouponId();
 		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(orderRepaymentDo.getRepayAmount());
 		repayDealBo.curCardNo = orderRepaymentDo.getCardNo();
+		repayDealBo.curCardName = orderRepaymentDo.getCardName();
 		repayDealBo.curName = orderRepaymentDo.getName();
 		
 		repayDealBo.cashDo = cashDo;
@@ -488,12 +501,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         afBorrowLegalOrderCashDao.updateById(orderCashDo);
         
         changOrderRepaymentStatus(repayDealBo.curOutTradeNo, AfBorrowLegalRepaymentStatus.YES.getCode(), orderRepaymentDo.getId());
-		
-		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
-        repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
-        repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage());
-        repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue());
-        repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
 	}
     
     /**
@@ -513,6 +520,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayDealBo.curUserCouponId = repaymentDo.getUserCouponId();
 		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(repaymentDo.getRepaymentAmount());
 		repayDealBo.curCardNo = repaymentDo.getCardNumber();
+		repayDealBo.curCardName = repaymentDo.getCardName();
 		repayDealBo.curName = repaymentDo.getName();
 		
 		repayDealBo.cashDo = cashDo;
@@ -531,12 +539,27 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
         cashDo.setSumRebate(BigDecimalUtil.add(cashDo.getSumRebate(), repaymentDo.getRebateAmount()));//余额使用
         dealBorrowRepayIfFinish(repayDealBo, repaymentDo, cashDo);
         afBorrowCashService.updateBorrowCash(cashDo);
-        
+	}
+	
+	private void dealSum(RepayDealBo repayDealBo){
+		AfBorrowLegalOrderCashDo orderCashDo = repayDealBo.orderCashDo;
+		AfBorrowCashDo cashDo = repayDealBo.cashDo;
+		
+		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(orderCashDo.getAmount());
+		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
+        repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
+        repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage());
+        repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue());
+        repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
+		
+		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(cashDo.getAmount());
         repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(cashDo.getRepayAmount());
         repayDealBo.sumInterest = repayDealBo.sumInterest.add(cashDo.getRateAmount()).add(cashDo.getSumRate());
         repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(cashDo.getPoundage()).add(cashDo.getSumRenewalPoundage());
         repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(cashDo.getOverdueAmount()).add(cashDo.getSumOverdue());
         repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
+	
+        repayDealBo.sumAmount = repayDealBo.sumBorrowAmount.add(repayDealBo.sumIncome);
 	}
 	
 	/**
@@ -604,9 +627,18 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
  		replaceMapData.put("repayMoney", repayMoney+"");
  		replaceMapData.put("remainAmount", notRepayMoney+"");
          if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
-             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+			 String title = "恭喜您，借款已还清！";
+			 String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
+			 content = content.replace("&repayMoney",repayMoney.toString());
+			 pushService.pushUtil(title,content,mobile);
+         	return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
          } else {
-             return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
+			 String title = "部分还款成功！";
+			 String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
+			 content = content.replace("&repayMoney",repayMoney.toString());
+			 content = content.replace("&remainAmount",notRepayMoney.toString());
+			 pushService.pushUtil(title,content,mobile);
+         	return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
          }
     }
     
@@ -729,7 +761,6 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 														orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue(),
 														orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidPoundage(),
 														orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidInterest());
-		repayDealBo.sumAmount = repayDealBo.sumAmount.add(sumAmount);
 		BigDecimal allRepayAmount = orderCashDo.getRepaidAmount().add(orderRepaymentBo.getRepayAmount());
 		Date now = new Date();
 		orderCashDo.setRepaidAmount(allRepayAmount);
@@ -796,11 +827,10 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 					cashDo.getOverdueAmount(), cashDo.getSumOverdue(),
 					cashDo.getRateAmount(), cashDo.getSumRate(),
 					cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
-		repayDealBo.sumAmount = repayDealBo.sumAmount.add(sumAmount);
 		BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
 		cashDo.setRepayAmount(allRepayAmount);
 		
-		if (sumAmount.compareTo(allRepayAmount) == 0) {
+		if (sumAmount.compareTo(allRepayAmount) <= 0) {
 			cashDo.setStatus(AfBorrowCashStatus.finsh.getCode());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
         }
@@ -836,16 +866,16 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		String key = tradeNo + "_success_legalRepay";
 		redisTemplate.delete(key);
 	}
-	
-	
-	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate, 
-			BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow, 
-			Long borrowId, Long cardId, String payTradeNo, String name, Long userId) {
+
+
+	private AfRepaymentBorrowCashDo buildRepayment(BigDecimal jfbAmount, BigDecimal repaymentAmount, String repayNo, Date gmtCreate,
+												   BigDecimal actualAmountForBorrow, Long userCouponId, BigDecimal couponAmountForBorrow, BigDecimal rebateAmountForBorrow,
+												   Long borrowId, Long cardId, String payTradeNo, String name, Long userId,String repayType,String cardNo) {
 		AfRepaymentBorrowCashDo repay = new AfRepaymentBorrowCashDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
 		repay.setJfbAmount(jfbAmount);
-		repay.setPayTradeNo(payTradeNo);
+		repay.setPayTradeNo(repayNo);
 		repay.setRebateAmount(rebateAmountForBorrow);
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
@@ -855,6 +885,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repay.setCouponAmount(couponAmountForBorrow);
 		repay.setName(name);
 		repay.setUserId(userId);
+		repay.setTradeNo(payTradeNo);
 		if (cardId == -2) {
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_USER_ACCOUNT);
@@ -865,8 +896,19 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			repay.setCardNumber("");
 			repay.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (cardId == -4) {
-			repay.setCardNumber("");
-			repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
+			if (cardNo == null){
+				cardNo = "";
+			}
+			repay.setCardNumber(cardNo);
+			if ("alipay".equals(repayType)){
+				repay.setCardName("支付宝");
+			}else if ("bank".equals(repayType)){
+				repay.setCardName("银行卡");
+			}else {
+				repay.setCardName("线下还款");
+			}
+//      repay.setCardNumber("");
+//      repay.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(cardId);
 			repay.setCardNumber(bank.getCardNumber());
@@ -874,11 +916,11 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		}
 		return repay;
 	}
-	
-	private AfBorrowLegalOrderRepaymentDo buildOrderRepayment(RepayBo bo, BigDecimal actualAmountForOrder, Long userCouponId, 
-				BigDecimal couponAmountForOrder, BigDecimal rebateAmountForOrder,BigDecimal repayAmount) {
+
+	private AfBorrowLegalOrderRepaymentDo buildOrderRepayment(RepayBo bo, BigDecimal actualAmountForOrder, Long userCouponId,
+															  BigDecimal couponAmountForOrder, BigDecimal rebateAmountForOrder,BigDecimal repayAmount,String repayType,String payTradeNo,String cardNo) {
 		AfBorrowLegalOrderRepaymentDo repayment = new AfBorrowLegalOrderRepaymentDo();
-		
+
 		repayment.setUserId(bo.userId);
 		repayment.setBorrowLegalOrderCashId(bo.borrowOrderId);
 		repayment.setRepayAmount(repayAmount);
@@ -889,7 +931,11 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		repayment.setCouponAmount(couponAmountForOrder);
 		repayment.setRebateAmount(rebateAmountForOrder);
 		repayment.setStatus(AfBorrowLegalRepaymentStatus.APPLY.getCode());
-		
+		if ("alipay".equals(repayType)){
+			repayment.setTradeNoZfb(payTradeNo);
+		}else if ("bank".equals(repayType)){
+			repayment.setTradeNoUps(payTradeNo);
+		}
 		if (bo.cardId == -2) {
 			repayment.setCardNo("");
 			repayment.setCardName(Constants.DEFAULT_USER_ACCOUNT);
@@ -900,19 +946,28 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 			repayment.setCardNo("");
 			repayment.setCardName(Constants.DEFAULT_ZFB_PAY_NAME);
 		} else if (bo.cardId == -4) {
-			repayment.setCardNo("");
-			repayment.setCardName(Constants.DEFAULT_OFFLINE_PAY_NAME);
+			if (cardNo == null){
+				cardNo = "";
+			}
+			repayment.setCardNo(cardNo);
+			if ("alipay".equals(repayType)){
+				repayment.setCardName("支付宝");
+			}else if ("bank".equals(repayType)){
+				repayment.setCardName("银行卡");
+			}else {
+				repayment.setCardName("线下还款");
+			}
 		} else {
 			AfBankUserBankDto bank = afUserBankcardDao.getUserBankcardByBankId(bo.cardId);
 			repayment.setCardNo(bank.getCardNumber());
 			repayment.setCardName(bank.getBankName());
 		}
-		
+
 		Date now = new Date();
 		repayment.setGmtCreate(now);
 		repayment.setGmtModified(now);
 		repayment.setBorrowId(bo.borrowId);
-		
+
 		return repayment;
 	}
 	
@@ -949,6 +1004,7 @@ public class AfBorrowLegalRepaymentServiceImpl extends ParentServiceImpl<AfBorro
 		public String cardNo;		//交易卡号
 		public String outTradeNo; 	//自己放交易流水号
 		public String tradeNo;		//我方交易流水号
+		public String repayType;    //交易类型
 		/* Response字段 */
 		
 		/* 错误码区域 */

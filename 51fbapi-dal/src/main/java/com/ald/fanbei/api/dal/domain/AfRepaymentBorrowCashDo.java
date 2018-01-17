@@ -37,7 +37,7 @@ public class AfRepaymentBorrowCashDo extends AbstractSerial {
 	private String cardNumber;
 	private String cardName;
 	private BigDecimal jfbAmount;
-
+	private String operator;
 	
 	public AfRepaymentBorrowCashDo() {
 		super();
@@ -69,6 +69,13 @@ public class AfRepaymentBorrowCashDo extends AbstractSerial {
 		this.jfbAmount = jfbAmount;
 	}
 
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
 
 	/**
 	 * @return the gmtCreate

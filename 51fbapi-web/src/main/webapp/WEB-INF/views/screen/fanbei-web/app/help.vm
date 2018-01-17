@@ -396,6 +396,15 @@
             <div class="itemContent itemContent3 hide">您好，还款券可在您还款的时候进行资金的抵扣。
             </div>
         </li>
+        <li data-tit="whatisahead">
+            <div class="itemTitle">
+                <div class="title">什么是提前结清?
+                <i class="arrow"></i>
+                </div>
+            </div>
+            <div class="itemContent itemContent3 hide">指提前还清该交易所产生的所有分期账单，且待还分期账单数是2个以上。提前结清未出账单，最多只收1期手续费，但不免除已出账单、逾期账单的手续费。退款中的交易不能提前结清。
+            </div>
+        </li>
 
     </ul>
     <ul id="fourthList" class="listMainContent hide">

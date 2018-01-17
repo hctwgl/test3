@@ -37,6 +37,8 @@ public interface AfRepaymentDao {
     AfRepaymentDo getRepaymentById(@Param("rid")Long rid);
     
     AfRepaymentDo getRepaymentByPayTradeNo(@Param("payTradeNo")String payTradeNo);
+
+    List<AfRepaymentDo> getRepaymentListByPayTradeNo(@Param("payTradeNo")String payTradeNo);
     
     /**
      * 通过payTradeNo获取详情

@@ -78,6 +78,9 @@ public class ApplyLegalRenewalApi implements ApiHandle {
 		//续借金额
 		BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(requestDataVo.getParams().get("renewalAmount"), BigDecimal.ZERO);
 		
+		// 对405版本借钱，在低版本续期情况做控制
+		afBorrowLegalOrderService.checkIllegalVersionInvoke(context.getAppVersion(), rid);
+		
 		//借款记录
 		AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(rid);
 		if (afBorrowCashDo == null) {

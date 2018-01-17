@@ -1,13 +1,14 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
+
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceBo;
+import com.ald.fanbei.api.biz.bo.barlyClearance.AllBarlyClearanceDetailBo;
+import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
+import com.ald.fanbei.api.dal.domain.*;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
@@ -24,14 +25,12 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowBillDao;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.AfUserOutDayDao;
-import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowTotalBillDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserOutDayDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBorrowBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueBillDto;
 import com.ald.fanbei.api.dal.domain.dto.AfOverdueOrderDto;
 import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQuery;
+import com.ald.fanbei.api.dal.domain.query.AfBorrowBillQueryNoPage;
 
 /**
  * 
@@ -262,6 +261,212 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	}
 
 	@Override
+	public int getOverduedMonthByUserId(Long userId) {
+		return afBorrowBillDao.getOverduedMonthByUserId(userId);
+	}
+
+	@Override
+	public Date getLastPayDayByUserId(Long userId) {
+		return afBorrowBillDao.getLastPayDayByUserId(userId);
+	}
+
+	@Override
+	public BigDecimal getUserBillMoneyByQuery(AfBorrowBillQueryNoPage query) {
+		return afBorrowBillDao.getUserBillMoneyByQuery(query);
+	}
+
+	@Override
+	public List<AfBorrowBillDo> getUserBillListByQuery(AfBorrowBillQueryNoPage query) {
+		return afBorrowBillDao.getUserBillListByQuery(query);
+	}
+
+	@Override
+	public int countBillByQuery(AfBorrowBillQueryNoPage query) {
+		return afBorrowBillDao.countBillByQuery(query);
+	}
+
+	@Override
+	public List<AfBorrowBillDto> getBillListByQuery(AfBorrowBillQueryNoPage query) {
+		return afBorrowBillDao.getBillListByQuery(query);
+	}
+
+	@Override
+	public BigDecimal getUserOverdeuInterestByQuery(AfBorrowBillQueryNoPage query) {
+		return afBorrowBillDao.getUserOverdeuInterestByQuery(query);
+	}
+
+	@Override
+	public BigDecimal getInterestByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getInterestByBorrowId(borrowId);
+	}
+
+	@Override
+	public BigDecimal getOverdueInterestByBorrowId(Long borrowId) {
+		return afBorrowBillDao.getOverdueInterestByBorrowId(borrowId);
+	}
+
+	@Override
+	public List<AfBorrowBillDo> getUserAllMonthBill(Long userId, int page,int pageSize) {
+		int begin = (page - 1) * pageSize;
+		return afBorrowBillDao.getUserAllMonthBill(userId,begin,pageSize);
+	}
+
+
+	/**
+	 * 全部结清
+	 * @param userId
+	 * @param billId  0 全部结清   期它 单个订单提前结清
+	 * @return
+	 */
+	public List<AllBarlyClearanceBo> getAllClear(Long userId,Long billId){
+		List<AfBorrowBillDo> list = new ArrayList<AfBorrowBillDo>();
+		if(billId ==0) {
+			list = afBorrowBillDao.getBorrowBillList("N", userId);
+		}else{
+			AfBorrowBillDo afBorrowBillDo = afBorrowBillDao.getBorrowBillById(billId);
+			list = afBorrowBillDao.getBillListByBorrowIdAndStatus(afBorrowBillDo.getBorrowId(),"N");
+		}
+
+
+		List<HashMap> mapLsit = new ArrayList<HashMap>();
+		AfUserOutDayDo afUserOutDayDo = afUserOutDayDao.getUserOutDayByUserId(userId);
+		int outDay = 10,payDay = 20;
+		if(afUserOutDayDo !=null){
+			outDay = afUserOutDayDo.getOutDay();
+			payDay = afUserOutDayDo.getPayDay();
+		}
+		Date out_day = getDay(outDay);
+		Date pay_day = getDay(payDay);
+
+		HashMap<Long,Boolean> m = new HashMap<Long,Boolean>();
+		List<AllBarlyClearanceBo> l = new ArrayList<AllBarlyClearanceBo>();
+		for(AfBorrowBillDo afBorrowBillDo :list) {
+			AllBarlyClearanceBo allBarlyClearanceBo = getAllBarlyBo(l, afBorrowBillDo.getBorrowId());
+			if (allBarlyClearanceBo == null) {
+				allBarlyClearanceBo = new AllBarlyClearanceBo();
+				allBarlyClearanceBo.setBorrowId(afBorrowBillDo.getBorrowId());
+				allBarlyClearanceBo.setNper(afBorrowBillDo.getNper());
+				allBarlyClearanceBo.setTitle(afBorrowBillDo.getName());
+				List<AllBarlyClearanceDetailBo> detailList = new ArrayList<AllBarlyClearanceDetailBo>();
+				allBarlyClearanceBo.setDetailList(detailList);
+				l.add(allBarlyClearanceBo);
+			}
+			if (afBorrowBillDo.getIsOut().intValue() == 1) {
+				//己出
+				BigDecimal amount = allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getBillAmount());
+				allBarlyClearanceBo.setAmount(amount);
+				allBarlyClearanceBo.setMinAdnMaxNper(afBorrowBillDo.getBillNper());
+				AllBarlyClearanceDetailBo allBarlyClearanceDetailBo = new AllBarlyClearanceDetailBo();
+				allBarlyClearanceDetailBo.setBillId(afBorrowBillDo.getRid());
+				allBarlyClearanceDetailBo.setNper(afBorrowBillDo.getBillNper());
+				allBarlyClearanceDetailBo.setAmount(afBorrowBillDo.getBillAmount());
+				allBarlyClearanceDetailBo.setFree(false);
+				allBarlyClearanceDetailBo.setStatus(1);
+				allBarlyClearanceDetailBo.setOverdue(afBorrowBillDo.getOverdueStatus().equals("Y")?1:0); //逾期
+				allBarlyClearanceDetailBo.setPoundAmount(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));
+				allBarlyClearanceDetailBo.setInterest(afBorrowBillDo.getOverdueInterestAmount().add(afBorrowBillDo.getOverduePoundageAmount()));
+				List<AllBarlyClearanceDetailBo> detailList = allBarlyClearanceBo.getDetailList();
+				detailList.add(allBarlyClearanceDetailBo);
+
+			} else {
+				//未出
+				boolean needPlusFree = true;
+				if (!m.containsKey(afBorrowBillDo.getBorrowId())) {
+					if (afBorrowBillDo.getBillNper().intValue() == 1) {
+						needPlusFree = false;
+						m.put(afBorrowBillDo.getBorrowId(), true);
+					}
+					else {
+						Calendar c = Calendar.getInstance();
+						c.set(Calendar.HOUR_OF_DAY, 0);
+						c.set(Calendar.MINUTE, 0);
+						c.set(Calendar.SECOND, 0);
+						if (pay_day.compareTo(c.getTime()) < 0) {
+							m.put(afBorrowBillDo.getBorrowId(), true);
+							needPlusFree = false;
+						}
+					}
+				}else{
+					needPlusFree = true;
+				}
+
+
+				BigDecimal amount = needPlusFree? allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getPrincipleAmount()):allBarlyClearanceBo.getAmount().add(afBorrowBillDo.getBillAmount());
+				allBarlyClearanceBo.setAmount(amount);
+				allBarlyClearanceBo.setMinAdnMaxNper(afBorrowBillDo.getBillNper());
+				AllBarlyClearanceDetailBo allBarlyClearanceDetailBo = new AllBarlyClearanceDetailBo();
+				allBarlyClearanceDetailBo.setBillId(afBorrowBillDo.getRid());
+				allBarlyClearanceDetailBo.setNper(afBorrowBillDo.getBillNper());
+				allBarlyClearanceDetailBo.setAmount(afBorrowBillDo.getBillAmount());
+				allBarlyClearanceDetailBo.setFree(needPlusFree ? true : false);
+				allBarlyClearanceDetailBo.setStatus(0);
+				allBarlyClearanceDetailBo.setOverdue(afBorrowBillDo.getOverdueStatus().equals("Y") ? 1 : 0);
+				allBarlyClearanceDetailBo.setPoundAmount(afBorrowBillDo.getPoundageAmount().add(afBorrowBillDo.getInterestAmount()));
+				allBarlyClearanceDetailBo.setInterest(afBorrowBillDo.getOverdueInterestAmount().add(afBorrowBillDo.getOverduePoundageAmount()));
+				List<AllBarlyClearanceDetailBo> detailList = allBarlyClearanceBo.getDetailList();
+				detailList.add(allBarlyClearanceDetailBo);
+			}
+		}
+		orderBynper(l); //排序
+		return  l;
+	}
+
+	private void orderBynper(List<AllBarlyClearanceBo> list){
+		for(AllBarlyClearanceBo allBarlyClearanceBo:list){
+			List<AllBarlyClearanceDetailBo> dlist = allBarlyClearanceBo.getDetailList();
+			Collections.sort(dlist,new Comparator<AllBarlyClearanceDetailBo>(){
+				public int compare(AllBarlyClearanceDetailBo arg0, AllBarlyClearanceDetailBo arg1) {
+					if(arg0.getNper()> arg1.getNper()) return 1;
+					if(arg0.getNper()< arg1.getNper()) return -1;
+					return 0;
+				}
+			});
+			allBarlyClearanceBo.setDetailList(dlist);
+		}
+	}
+
+
+
+	private AllBarlyClearanceBo getAllBarlyBo(List<AllBarlyClearanceBo> list,Long borrowId){
+		AllBarlyClearanceBo allBarlyClearanceBo = null;
+		for(AllBarlyClearanceBo allBarlyClearanceBo1: list){
+			if(allBarlyClearanceBo1.getBorrowId().intValue() == borrowId.intValue()){
+				allBarlyClearanceBo = allBarlyClearanceBo1;
+				break;
+			}
+		}
+		return allBarlyClearanceBo;
+	}
+
+
+
+	/**
+	 * 单个订单结清
+	 * @param user
+	 * @param billId
+	 * @return
+	 */
+	public HashMap getOrderClear(Long user,Long billId){
+		HashMap map = new HashMap();
+		AfBorrowBillDo afBorrowBillDo = afBorrowBillDao.getBorrowBillById(billId);
+		List<AfBorrowBillDo> list = afBorrowBillDao.getBillListByBorrowIdAndStatus(afBorrowBillDo.getBorrowId(),"N");
+
+		return map;
+	}
+
+	private Date getDay(int day){
+		Calendar out = Calendar.getInstance();
+		out.set(Calendar.DAY_OF_MONTH,day);
+		out.set(Calendar.HOUR_OF_DAY,0);
+		out.set(Calendar.MINUTE,0);
+		out.set(Calendar.SECOND,0);
+		return out.getTime();
+	}
+
+
+
+
+	@Override
 	public int countNotPayOverdueBill(Long userId) {
 		return afBorrowBillDao.countNotPayOverdueBill(userId);
 	}
@@ -424,5 +629,20 @@ public class AfBorrowBillServiceImpl implements AfBorrowBillService {
 	@Override
 	public int updateBorrowBillUnLockByIds(String billIds) {
 		return  afBorrowBillDao.updateBorrowBillUnLockByIds(StringUtil.splitToList(billIds, ","));
+	}
+
+	@Override
+	public Date getPayDayByYearAndMonth(Long userId, int billYear, int billMonth) {
+		return afBorrowBillDao.getPayDayByYearAndMonth(userId,billYear,billMonth);
+	}
+
+	@Override
+	public AfInterimAuDo selectInterimAmountByUserId(Long userId) {
+		return afBorrowBillDao.selectInterimAmountByUserId(userId);
+	}
+
+	@Override
+	public List<Long> getBillIdListByQuery(AfBorrowBillQueryNoPage query) {
+		return afBorrowBillDao.getBillIdListByQuery(query);
 	}
 }

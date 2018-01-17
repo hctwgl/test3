@@ -495,4 +495,14 @@
 		type = #{type} AND is_delete = 0 and value_4 ='O'
 	</select>
 
+	<select id="getConfigByTypesAndValue" resultType="AfResourceDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM
+		af_resource
+		WHERE
+		is_delete = 0 AND type = #{type} AND  value= #{value}
+		LIMIT 1
+	</select>
+
 </mapper>

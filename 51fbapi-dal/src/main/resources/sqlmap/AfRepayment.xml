@@ -70,6 +70,15 @@
 			<include refid="queryFields"/>,name
 		from af_repayment WHERE is_delete=0 and pay_trade_no=#{payTradeNo};
 	</select>
+
+
+	<select id="getRepaymentListByPayTradeNo" resultType="AfRepaymentDo">
+		select
+		<include refid="queryFields"/>,name
+		from af_repayment WHERE is_delete=0 and pay_trade_no=#{payTradeNo};
+	</select>
+
+
 	
 	<update id="updateRepayment">
 	update af_repayment set gmt_modified=NOW(),status=#{status}

@@ -15,13 +15,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -31,16 +28,20 @@ import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
 import com.ald.fanbei.api.biz.service.AfBorrowService;
 import com.ald.fanbei.api.biz.service.AfOrderRefundService;
 import com.ald.fanbei.api.biz.service.AfOrderService;
 import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
 import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
+import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailV2Service;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.AfSupplierOrderSettlementService;
 import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
 import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAmountService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
@@ -54,6 +55,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.AfBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.BorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.BorrowStatus;
+import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.PayType;
@@ -61,14 +64,31 @@ import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WxTradeState;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBankDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.dao.AfCashRecordDao;
 import com.ald.fanbei.api.dal.dao.AfHuicaoOrderDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUpsLogDao;
+import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
 import com.ald.fanbei.api.dal.dao.AfYibaoOrderDao;
+import com.ald.fanbei.api.dal.domain.AfBorrowBillDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
+import com.ald.fanbei.api.dal.domain.AfHuicaoOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderDo;
+import com.ald.fanbei.api.dal.domain.AfOrderRefundDo;
+import com.ald.fanbei.api.dal.domain.AfSupplierOrderSettlementDo;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.dal.domain.AfYibaoOrderDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -115,7 +135,11 @@ public class PayRoutController {
 	@Resource
 	AfRenewalLegalDetailService afRenewalLegalDetailService;
 	@Resource
+	AfRenewalLegalDetailV2Service afRenewalLegalDetailV2Service;
+	@Resource
 	AfBorrowLegalRepaymentService afBorrowLegalRepaymentService;
+	@Resource
+	AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
 
 	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
@@ -135,12 +159,25 @@ public class PayRoutController {
 
 	@Resource
 	private ThirdPayUtility thirdPayUtility;
+    @Resource
+    private AfUserAmountService afUserAmountService;
+
+
+
+    @Resource
+    private AfUserAccountDao afUserAccountDao;
+
+    @Resource
+    private AfBorrowDao afBorrowDao;
 
 	@Resource
 	private AfTradeCodeInfoService afTradeCodeInfoService;
 
 	@Resource
 	private AfBankDao afBankDao;
+
+	@Resource
+	private AfBorrowExtendDao afBorrowExtendDao;
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
@@ -364,7 +401,7 @@ public class PayRoutController {
 				}
 			} else {
 				if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId, false, "");
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, transactionId, false, "",null);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, transactionId, "");
 				} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
@@ -393,6 +430,7 @@ public class PayRoutController {
 		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
 		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
+
 		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
 				+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
 				+ respDesc);
@@ -419,19 +457,33 @@ public class PayRoutController {
 						return "ERROR";
 					}
 				} else if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
+					try{
+						long result =  afRepaymentBorrowCashService.dealRepaymentSucess(outTradeNo, tradeNo);
+						if (result <= 0) {
+							return "ERROR";
+						}
+					}catch (Exception e){
+						logger.info("repayment cash error:merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
+								+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
+								+ respDesc,e);
+						return "ERROR";
+					}
+
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalSucess(outTradeNo, tradeNo);
 				} else if (PayOrderSource.REPAY_CASH_LEGAL.getCode().equals(merPriv)) { // 合规还款
-					afBorrowLegalRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo); // ourTradeNo
-																							// 为我方还款交易流水号
+					afBorrowLegalRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo); // ourTradeNo 为我方还款交易流水号
 				} else if (PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期
 					afRenewalLegalDetailService.dealLegalRenewalSucess(outTradeNo, tradeNo);
+				} else if (PayOrderSource.REPAY_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规还款V2
+					afBorrowLegalRepaymentV2Service.dealRepaymentSucess(outTradeNo, tradeNo); // ourTradeNo 为我方还款交易流水号
+				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2
+					afRenewalLegalDetailV2Service.dealLegalRenewalSucess(outTradeNo, tradeNo);
 				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				String errorWarnMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respCode);
 				if (UserAccountLogType.REPAYMENTCASH.getCode().equals(merPriv)) {
-					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
+					afRepaymentBorrowCashService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg,null);
 				} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(merPriv)) {
 					afRenewalDetailService.dealRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				} else if (UserAccountLogType.REPAYMENT.getCode().equals(merPriv)) { // 分期还款失败
@@ -454,6 +506,10 @@ public class PayRoutController {
 					afBorrowLegalRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
 				} else if (PayOrderSource.RENEW_CASH_LEGAL.getCode().equals(merPriv)) { // 合规续期失败
 					afRenewalLegalDetailService.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
+				} else if (PayOrderSource.REPAY_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规还款V2失败
+					afBorrowLegalRepaymentV2Service.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg); // ourTradeNo 为我方还款交易流水号
+				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2失败
+					afRenewalLegalDetailV2Service.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				}
 			}
 			return "SUCCESS";
@@ -503,7 +559,7 @@ public class PayRoutController {
 			thirdLog.info("yibaoresonse fail: " + "status=" + status + ",orderNo=" + orderId);
 
 			if (PayOrderSource.REPAYMENTCASH.getCode().equals(attach)) {
-				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo, false, "");
+				afRepaymentBorrowCashService.dealRepaymentFail(orderId, uniqueOrderNo, false, "",null);
 			} else if (PayOrderSource.RENEWAL_PAY.getCode().equals(attach)) {
 				afRenewalDetailService.dealRenewalFail(orderId, uniqueOrderNo, "");
 			} else if (PayOrderSource.BRAND_ORDER.getCode().equals(attach)
@@ -761,4 +817,95 @@ public class PayRoutController {
 		return JSON.toJSONString(jsonObject);
 	}
 
+
+	/**
+	 * 生成退款详情
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value = {"/addRefundDetail"})
+	@ResponseBody
+	public int addRefundDetail(long orderId){
+		logger.info("addRefundDetail orderId="+orderId);
+		return afUserAmountService.refundOrder(orderId);
+	}
+
+
+	/**
+	 *
+	 * @param orderId
+	 * @param sigin
+	 * @return
+	 */
+	/**
+	 * 订单自动收货
+	 */
+	@RequestMapping(value = {"/autoCompleteOrder"})
+	@ResponseBody
+	public String autoCompleteOrder(Long orderId,String sign) throws Exception{
+		thirdLog.info("autoCompleteOrder: orderId="+orderId + ",sign="+sign);
+		try {
+			String data = "orderId=" + orderId + "&vcode=0123654aa";
+			String salt = ConfigProperties.get("fbapi.orderfinish.key");
+			byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			String sign1 = DigestUtil.encodeHex(pd);
+			if (!sign.equals(sign1)) {
+				return "false";
+			}
+
+
+			AfOrderDo afOrder = afOrderDao.getOrderById(orderId);
+			AfBorrowDo afBorrowDo = afBorrowService.getBorrowByOrderId(orderId);
+
+			if(afBorrowDo !=null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+				//查询是否己产生
+				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+				if (borrowList == null || borrowList.size() == 0) {
+					AfBorrowExtendDo _aa = afBorrowExtendDao.getAfBorrowExtendDoByBorrowId(afBorrowDo.getRid());
+					if (_aa == null) {
+						AfBorrowExtendDo afBorrowExtendDo = new AfBorrowExtendDo();
+						afBorrowExtendDo.setId(afBorrowDo.getRid());
+						afBorrowExtendDo.setInBill(1);
+						afBorrowExtendDao.addBorrowExtend(afBorrowExtendDo);
+					} else {
+						_aa.setInBill(1);
+						afBorrowExtendDao.updateBorrowExtend(_aa);
+					}
+					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+					for(AfBorrowBillDo _afBorrowExtendDo:billList){
+						_afBorrowExtendDo.setStatus("N");
+					}
+					afBorrowService.addBorrowBill(billList);
+
+					AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afOrder.getUserId());
+					afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afOrder.getUserId());
+				}
+			}
+
+
+//			if (afBorrowDo != null && !(afBorrowDo.getStatus().equals(BorrowStatus.CLOSED) || afBorrowDo.getStatus().equals(BorrowStatus.FINISH))) {
+//
+//				AfUserAccountDo afUserAccountDo = afUserAccountDao.getUserAccountInfoByUserId(afBorrowDo.getUserId());
+//
+//				afBorrowService.updateBorrowStatus(afBorrowDo, afUserAccountDo.getUserName(), afBorrowDo.getUserId());
+//				List<AfBorrowBillDo> borrowList = afBorrowBillService.getAllBorrowBillByBorrowId(afBorrowDo.getRid());
+//				if (borrowList == null || borrowList.size() == 0) {
+//					List<AfBorrowBillDo> billList = afBorrowService.buildBorrowBillForNewInterest(afBorrowDo, afOrder.getPayType());
+//					afBorrowDao.addBorrowBill(billList);
+//				}
+//			}
+			AfOrderDo orderDoUpdate = new AfOrderDo();
+			orderDoUpdate.setRid(orderId);
+			orderDoUpdate.setStatus(OrderStatus.FINISHED.getCode());
+			orderDoUpdate.setGmtFinished(new Date());
+			orderDoUpdate.setLogisticsInfo("已签收");
+			afOrderService.updateOrder(orderDoUpdate);
+
+			return "success";
+		}
+		catch (Exception e){
+			thirdLog.error("autoCompleteOrder error=",e);
+			return "false";
+		}
+	}
 }

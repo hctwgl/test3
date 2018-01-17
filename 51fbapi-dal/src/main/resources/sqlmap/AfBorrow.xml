@@ -3,7 +3,7 @@
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfBorrowDao">
 	<sql id="queryFields">
 		id rid,gmt_create, gmt_modified,borrow_no,user_id,type,name,amount,status,remark,nper,nper_repayment,overdue_num,order_id,
-		nper_amount,repay_prin_amount,order_no,card_number,card_name,borrow_rate,calculate_method,free_nper
+		nper_amount,repay_prin_amount,order_no,card_number,card_name,borrow_rate,calculate_method,free_nper,version
 	</sql>
 	
 	<select id="getBorrowById" resultType="AfBorrowDo">
@@ -174,6 +174,16 @@
 		WHERE
 			id = #{id}
 	</update>
+
+	<update id="updateBorrowVersion">
+		UPDATE
+		af_borrow
+		SET
+		gmt_modified = NOW(),
+		version = #{version}
+		WHERE
+		id = #{id}
+	</update>
 	
 	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
 		select borrow_no from af_borrow WHERE borrow_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
@@ -199,6 +209,23 @@
 		FROM af_borrow WHERE is_delete = 0 AND borrow_no = #{borrowNo} LIMIT 1
 	</select>
 
+	<select id="getUserNotInBorrow" resultType="AfBorrowDto">
+		SELECT
+			a.id rid,
+			a.NAME name,
+			a.amount amount,
+			c.gmt_pay payDate
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND b.in_bill = 0
+		AND a.status = 'TRANSED'
+		order by a.gmt_create desc
+	</select>
 
 	<select id="getUserSummary" resultType="java.util.HashMap">
 		SELECT IFNULL(TIMESTAMPDIFF(HOUR,(SELECT gmt_risk  FROM af_user_auth WHERE user_id =c.user_id   LIMIT 1 ),(SELECT min(gmt_create)  FROM af_borrow_cash WHERE user_id =c.user_id  and `status`='FINSH' )),0) hourBetweenVerifyBorrow,
@@ -210,10 +237,83 @@ IFNULL(sum(c.repay_amount),0)  totalAmount  ,
 COUNT(if(overdue_status='Y',true,null))   countOverdue  ,
 IFNULL((SELECT  c1.amount    FROM  af_borrow_cash c1 WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  ) ,0) lastAmount,
 IFNULL((SELECT  c1.overdue_day    FROM  af_borrow_cash c1  WHERE  c1.user_id  =c.user_id    and  c1.`status`='FINSH'    order  by  c1.gmt_create  desc  LIMIT  1  ),0)  lastOverdueDay,
-IFNULL(MAX(c.overdue_day  ),0)  maxOverdueDay
+IFNULL(MAX(c.overdue_day  ),0)  maxOverdueDay,
+DATE_FORMAT(min(c.gmt_create),'%Y-%m-%d %H:%i:%s') firstBorrowTime
 FROM af_borrow_cash c WHERE  `status`='FINSH' and user_id =#{userId};
 	</select>
+	<select id="getUserNotInBorrowCount" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND a.status = 'TRANSED'
+		AND b.in_bill = 0
+	</select>
 
+	<select id="getUserNotInBorrowMoney" resultType="java.math.BigDecimal">
+		SELECT
+			COALESCE (SUM(a.amount), 0)
+		FROM
+			af_borrow a
+		LEFT JOIN af_borrow_extend b ON a.id = b.id
+		LEFT JOIN af_order c on c.id = a.order_id
+		WHERE
+			a.is_delete = 0
+		AND a.user_id = #{userId}
+		AND a.status = 'TRANSED'
+		AND b.in_bill = 0
+	</select>
 
+	<select id="getUserSummaryOrderById" resultType="java.util.HashMap">
+		SELECT (SELECT DATE_FORMAT(MIN(bi.`gmt_pay_time`), '%Y-%m-%d')  FROM `af_borrow_bill` bi WHERE  bi.`status`!='C' and bi.`user_id` =o.`user_id`) firstDueDate,o.`order_type` orderType,o.`pay_type` payType,o.`sec_type` secType,o.`order_no` orderNo,o.`user_coupon_id` userCouponId,o.`goods_id` goodsId,o.`goods_name` goodsName,o.`count` count,o.`actual_amount` actualAmount,o.`borrow_amount` borrowAmount,o.`bank_amount` bankAmount
+, o.`shop_name`  shopName
+,o.`rebate_amount` rebateAmount ,o.`commission_amount`  commissionAmount,o.`rebate_allowance_amount` rebateAllowanceAmount,o.`nper` nper,o.`borrow_rate` borrowRate,o.`coupon_amount` couponAmount,o.`au_amount` auAmount,o.`used_amount` usedAmount ,
+(SELECT c.`name`  FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`primary_category_id`  = c.`id` WHERE g.`id` = o.`goods_id`     LIMIT 1) categoryOne,
+(SELECT c.`name`  FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`category_id`   = c.`id` WHERE g.`id` = o.`goods_id`    LIMIT 1 ) categoryTwo,
+(SELECT (SELECT s.`name`  FROM `af_goods_category` s WHERE s.`id`  = c.`parent_id`   LIMIT 1) FROM `af_goods` g LEFT JOIN `af_goods_category` c on g.`category_id`  = c.`id` WHERE g.`id` = o.`goods_id`   ) categoryThree,
+'' typeName,
+o.`ip` ,o.`lat` ,o.`lng`
+,  o.`address`  address
+,  o.`province`   province
+, o.`city`   city
+, o.`district`   district
+,  o.`consignee_mobile`   consigneeMobile
+, o.`consignee`  consignee,o.`gmt_deliver` ,
+'' area,
+'' phone,
+
+''  quantity,
+'' gasPhone,
+(SELECT br.`calculate_method`  FROM `af_borrow` br WHERE br.`order_id` = o.`id`   LIMIT 1 ) calculateMethod,
+(SELECT br.`free_nper`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) freeNper,
+(SELECT br.`nper_amount`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) nperAmount,
+(SELECT br.`card_number`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardNumber,
+(SELECT br.`card_name`   FROM `af_borrow` br WHERE br.`order_id` = o.`id`    LIMIT 1) cardName
+FROM `af_order` o  WHERE o.`id`  =#{id}
+	</select>
+	<select id="getBolumeSumDataById" resultType="java.util.HashMap">
+		SELECT wm.`restaurant_name` shopName,wm.`contact_addr` address, wm.`contact_mobile` consigneeMobile,wm.`contact_name` consignee ,wm.`quantity`   quantity,
+(SELECT sh.`area`  FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = wm.`third_order_no`   LIMIT 1) area,
+(SELECT sh.`phone`   FROM `af_boluome_shouji` sh WHERE sh.`third_order_no` = wm.`third_order_no`   LIMIT 1) phone,
+(SELECT jy.`phone`  FROM `af_boluome_jiayouka` jy WHERE jy.`third_order_no` = wm.`third_order_no`   LIMIT 1) gasPhone,
+(SELECT fo.`type`  FROM `af_trade_order` tr LEFT JOIN `af_trade_business_info` fo on tr.`business_id`   = fo.`business_id` WHERE  tr.`order_id` = #{id}   LIMIT 1 ) typeName
+FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =(SELECT o.`third_order_no`  FROM `af_order` o WHERE `id` =#{id})  LIMIT 1
+	</select>
+
+	<select id="countNperRepaymentByBorrowId" resultType="java.lang.Integer">
+		SELECT
+			COUNT(1)
+		FROM
+			af_borrow_bill
+		WHERE
+			borrow_id = #{id}
+		AND is_delete = 0
+		AND `status` = 'Y'
+	</select>
 
 </mapper>

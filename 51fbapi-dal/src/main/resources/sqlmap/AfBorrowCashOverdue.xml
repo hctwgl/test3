@@ -81,4 +81,8 @@
 		
 	</select>
 
+	<select id="getAfBorrowCashOverdueDoByBorrowId" resultType="java.math.BigDecimal">
+		SELECT SUM(a.`interest`) FROM ( select `interest`   from  `af_borrow_cash_overdue`  WHERE is_delete=0 and `borrow_cash_id` =#{borrowId}  ORDER BY `gmt_create` ASC limit #{days}) a;
+	</select>
+
 </mapper>

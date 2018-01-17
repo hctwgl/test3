@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.annotation.Resource;
 
@@ -29,7 +32,6 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
  */
 @Service("jPushService")
 public class JpushServiceimpl extends BaseService implements JpushService {
-
 	@Resource
 	JpushUtil jpushUtil;
         @Resource 
@@ -55,6 +57,7 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 			extras.put(PUSH_JUMP_TYPE, "200");
 			extras.put(DATA, "");
 			msgContext = msgContext.replace("{mobile}", StringUtil.strToSecret(mobile, 3, 4));
+
 			jpushUtil.pushNotifyByAlias("邀请好友注册成功", msgContext, extras, new String[] { userName });
 		} catch (Exception e) {
 			logger.info("userInviteSuccess error:", e);
@@ -934,4 +937,20 @@ public class JpushServiceimpl extends BaseService implements JpushService {
 		}
 		
 	}
+
+	/**
+	 * 新版借款流程消息和通知推送
+	 */
+	@Override
+	public void pushUtil(String title,String msgContent,String userName){
+		String pid =userName + System.currentTimeMillis();
+		logger.info(StringUtil.appendStrs("pushUtil,pid=", pid, "userName=", userName));
+		logger.info("msgcontent="+msgContent+",userName="+userName+",title="+title);
+		Map<String,String> extras = new HashMap<String,String>();
+		extras.put(PID, pid);
+		extras.put(TIMESTAMP, System.currentTimeMillis() + "");
+		extras.put(PUSH_JUMP_TYPE, "1");
+		jpushUtil.pushNotifyByAlias(title,msgContent,extras,new String[]{userName},"1","","3");
+	}
+
 }

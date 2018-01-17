@@ -221,6 +221,11 @@ public interface AfBorrowCashDao {
 
 	AfBorrowCashDo getBorrowCashByUserIdDescById(@Param("userId")Long userId);
 
+
 	int getCashBorrowSuccessByUserId(@Param("userId") Long userId,@Param("activityTime") String activityTime);
+
+
+	
+	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(@Param("borrowNo")String borrowNo);
 
 }

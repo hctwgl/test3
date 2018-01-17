@@ -15,7 +15,9 @@ import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
+import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
 import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
@@ -33,6 +35,7 @@ import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
@@ -53,9 +56,17 @@ public class CollectionSystemUtil extends AbstractThird {
 	@Resource
 	AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 	@Resource
+	AfBorrowLegalOrderDao afBorrowLegalOrderDao;
+	@Resource
+	AfBorrowLegalOrderService afBorrowLegalOrderService;
+	@Resource
 	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
 	@Resource
 	AfBorrowLegalRepaymentService afBorrowLegalRepaymentService;
+
+	@Resource
+	AfBorrowLegalRepaymentV2Service afBorrowLegalRepaymentV2Service;
+
 	@Resource
 	AfBorrowCashService afBorrowCashService;
 	@Resource
@@ -126,10 +137,10 @@ public class CollectionSystemUtil extends AbstractThird {
 		// APP还款类型写3 , 线下还款写4
 		data.setChannel(AfRepayCollectionType.APP.getCode());
 		try {
-			logger.info("repaymentAchieve request :", JSON.toJSONString(data));
+			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
 			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
 					getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(data));
-			logger.info("repaymentAchieve response :", reqResult);
+			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("consumerRepayment fail , reqResult is null");
 			} else {
@@ -219,7 +230,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		} catch (Exception e) {
 			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_RENEWAL.getCode(), borrowNo, json,
 					getUrl() + "/api/getway/repayment/renewalAchieve");
-			throw new FanbeiException("renewalNotify fail Exception is " + e + ",renewalNotify send again");
+			throw new FanbeiException( "renewalNotify fail Exception is " + e + ",renewalNotify send again"+",borrowNo="+borrowNo);
 		}
 
 	}
@@ -240,9 +251,12 @@ public class CollectionSystemUtil extends AbstractThird {
 				String repayTime = obj.getString("repay_time");
 				String repayAmount = obj.getString("repay_amount");
 				String restAmount = obj.getString("rest_amount");
+				String repayCardNum = obj.getString("repay_cardNum");
+				String operator = obj.getString("operator");
 				String tradeNo = obj.getString("trade_no"); // 三方交易流水号
 				String isBalance = obj.getString("is_balance");
-				
+				String isAdmin = obj.getString("is_admin");
+
 				if (StringUtil.isAllNotEmpty(repayNo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance)) {
 					AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(borrowNo);
 					if(afBorrowCashDo == null) {
@@ -251,14 +265,20 @@ public class CollectionSystemUtil extends AbstractThird {
 					}
 					
 					String respCode = FanbeiThirdRespCode.SUCCESS.getCode();
-					
-					//合规线下还款
-					if(afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo.getRid()) != null) {
+					Long borrowId = afBorrowCashDo.getRid();
+
+					//合规线下还款V1
+					if(afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId) != null) {
 						AfBorrowLegalOrderCashDo orderCashDo = afBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(afBorrowCashDo.getRid());
 						afBorrowLegalOrderCashService.checkOfflineRepayment(afBorrowCashDo, orderCashDo, repayAmount ,tradeNo);
-						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance);
-					} else {//旧版线下还款
-						AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(afBorrowCashDo.getRid(), tradeNo);
+						afBorrowLegalRepaymentService.offlineRepay(orderCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,isAdmin);
+					}//合规线下还款V2
+                    else if(afBorrowLegalOrderService.isV2BorrowCash(borrowId)) {
+                        afBorrowLegalRepaymentV2Service.offlineRepay(afBorrowCashDo, borrowNo, repayType, repayTime, repayAmount, restAmount, tradeNo, isBalance,repayCardNum,operator,isAdmin);
+                    }
+					//旧版线下还款
+					else {
+						AfRepaymentBorrowCashDo existItem = afRepaymentBorrowCashService.getRepaymentBorrowCashByTradeNo(borrowId, tradeNo);
 						if (existItem != null) {
 							logger.error("offlineRepaymentNotify exist trade_no");
 							notifyRespBo.resetMsgInfo(FanbeiThirdRespCode.COLLECTION_THIRD_NO_EXIST);

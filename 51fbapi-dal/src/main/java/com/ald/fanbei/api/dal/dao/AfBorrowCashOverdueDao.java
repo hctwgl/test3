@@ -3,6 +3,7 @@
  */
 package com.ald.fanbei.api.dal.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -47,6 +48,12 @@ public interface AfBorrowCashOverdueDao {
 	     */
 	    AfBorrowCashOverdueDo getBorrowCashOverdueByrid(@Param("rid")Long rid);
 
-	    
+	    /**
+	     * 根据天数查询逾期数据
+	     * 
+	     * @param borrowId
+	     * @return 
+	     * **/
+	    BigDecimal getAfBorrowCashOverdueDoByBorrowId(@Param("borrowId")long borrowId,@Param("days")long days);
 	    
 } 

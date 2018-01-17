@@ -207,8 +207,9 @@ public interface AfBorrowCashService {
 	AfBorrowCashDo getBorrowCashByUserIdDescById(Long userId);
 
 
-
 	int getCashBorrowSuccessByUserId(Long userId, String activityTime);
 
+	
+	AfBorrowCashDo getBorrowCashInfoByBorrowNoV1(String borrowNo);
 
 }

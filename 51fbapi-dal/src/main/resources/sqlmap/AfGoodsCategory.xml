@@ -62,7 +62,7 @@
 	<select id="selectOneLevel" resultType="AfGoodsCategoryDo">
 		SELECT
 			<include refid="activitySqlField"></include>
-		FROM af_goods_category where level = 1 and is_delete = 0 and is_show = 'Y' ORDER BY sort
+		FROM af_goods_category where level = 1 and is_delete = 0 and is_show = 'Y' and id != 307 ORDER BY sort
 	</select>
 
 	<select id="selectSecondLevel" resultType="AfGoodsCategoryDo" parameterType="java.lang.Long">

@@ -44,7 +44,8 @@ public class GeneratorClusterNo {
 	AfOrderRefundService afOrderRefundService;
 	@Resource
 	AfAftersaleApplyService afAftersaleApplyService;
-	
+	@Resource
+	BizCacheUtil bizCacheUtil;
 	/**
 	 * 获取订单号
 	 * 
@@ -109,10 +110,10 @@ public class GeneratorClusterNo {
 		orderSb.append(dateStr).append(getOrderSeqStr(this.getBorrowCashSequenceNum(currDate, "jq")));
 		return orderSb.toString();
 	}
-	
+
 	/**
 	 * 获取购买搭售商品借款编号
-	 * 
+	 *
 	 * @param currDate
 	 * @return
 	 */
@@ -135,7 +136,17 @@ public class GeneratorClusterNo {
 		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentSequenceNum(currDate, "hk")));
 		return orderSb.toString();
 	}
-
+	/**
+	 * 根据前缀与秒级别前缀生成自增序号，之前并发会有问题。支持秒级并发w
+	 * @param orderPre 订单前缀
+	 * @param datePre 秒级时间前缀
+	 * @return redis 原子性自增序号
+	 */
+	private int getSequenceNum(String orderPre,String datePre) {
+		String orderNoPre = orderPre + datePre;
+		long inData= bizCacheUtil.incr(orderNoPre,1000);//10秒后过期
+		return new Long(inData).intValue();
+	}
 	/**
 	 * 获取现金还款编号
 	 * 
@@ -150,10 +161,10 @@ public class GeneratorClusterNo {
 			return orderSb.toString();
 		}
 	}
-	
+
 	/**
 	 * 获取现金还款编号
-	 * 
+	 *
 	 * @param currDate
 	 * @return
 	 */
@@ -161,6 +172,9 @@ public class GeneratorClusterNo {
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("offline");
 		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "offline")));
+//		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+//		StringBuffer orderSb = new StringBuffer("hq");
+//		orderSb.append(dateStr).append(getOrderSeqStr(this.getSequenceNum( "hq",dateStr)));
 		return orderSb.toString();
 	}
 

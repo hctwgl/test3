@@ -331,6 +331,7 @@ public class YiBaoUtility  implements ThirdInterface{
      */
     public void type0Proess(long id,Date updateTime,String orderNo,String thirdOrderNo,String resultStatus,int orderStatus){
 //        AfYibaoOrderDo afYibaoOrderDo ,String status
+        AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(orderNo);
         if(resultStatus.equals("PROCESSING")){
             //处理中
             if(orderStatus == 3) {
@@ -338,7 +339,7 @@ public class YiBaoUtility  implements ThirdInterface{
             }
             int ret = afYibaoOrderDao.updateYiBaoOrderStatusLock(3,id,updateTime);
             if(ret >0) {
-                AfRepaymentBorrowCashDo repayment = afRepaymentBorrowCashDao.getRepaymentByPayTradeNo(orderNo);
+
                 repayment.setStatus("P");
                 afRepaymentBorrowCashDao.updateRepaymentBorrowCash(repayment);
             }
@@ -352,7 +353,7 @@ public class YiBaoUtility  implements ThirdInterface{
         }
         else{
             //关闭
-            afRepaymentBorrowCashService.dealRepaymentFail(orderNo,thirdOrderNo,false,"");
+            afRepaymentBorrowCashService.dealRepaymentFail(orderNo,thirdOrderNo,false,"",null);
         }
     }
 
