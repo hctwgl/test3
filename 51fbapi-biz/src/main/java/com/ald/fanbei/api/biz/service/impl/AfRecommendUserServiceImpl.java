@@ -207,7 +207,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 				logger.info("{update begin} userId=" + userId);
 				try {
 					count = (Long) map.get("count");
-					logger.info("{update begin count} userId=" + userId);
+					logger.info("{update begin count} count="+count+"userId=" + userId);
 					if (count > 1)
 						return 1;
 				} catch (Exception e) {
@@ -228,6 +228,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
         					return 1;
         				}
 				}
+				logger.info("{updateLoanById begin } afBorrowCashDo=,afResourceDo="+afBorrowCashDo.toString(),afResourceDo.toString());
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 					@Override
 					protected void doInTransactionWithoutResult(TransactionStatus status) {
@@ -237,6 +238,8 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 							_afu.setLoan_time(createTime);
 							BigDecimal addMoney = getAddMoney();
 							_afu.setPrize_money(addMoney);
+							logger.info("{update begin afRecommendUserDo} afRecommendUserDo="+afRecommendUserDo.toString());
+							
 							afRecommendUserDao.updateLoanById(afRecommendUserDo);
 							// 修改返现金额
 							addRecommendBorrowMoney(afResourceDo,afBorrowCashDo,afRecommendUserDo,0,afRecommendUserDo.getUserId());
