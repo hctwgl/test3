@@ -242,6 +242,9 @@ public class AppH5SFController extends BaseController {
 
 		try {
 			context = doWebCheck(request, false);
+			
+			logger.info("initTigerMachine finished doWebCheck and the context is {}",context.toString());
+			
 			String userName = context.getUserName();
 			if (StringUtil.isBlank(userName)) {
 				data = new HashMap<>();
