@@ -912,11 +912,9 @@ public class RiskUtil extends AbstractThird {
                             afUserCouponService.updateUserCouponSatusExpireById(afAgentOrderDo.getCouponId());
                         }
                     }
-                    orderDao.updateOrder(orderInfo);
+
                 }
-                if (StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode())) {
-                    orderDao.updateOrder(orderInfo);
-                }
+                orderDao.updateOrder(orderInfo);
             }
             jpushService.dealBorrowApplyFail(userAccountInfo.getUserName(), new Date());
             return resultMap;
