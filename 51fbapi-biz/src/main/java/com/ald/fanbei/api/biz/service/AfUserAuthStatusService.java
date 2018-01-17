@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 
+import java.util.List;
+
 /**
  * @类现描述：
  * @author caowu 2017年1月5日 下午17:25:56
@@ -27,5 +29,5 @@ public interface AfUserAuthStatusService {
 
 
 
-    AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);
+    List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status);
 }

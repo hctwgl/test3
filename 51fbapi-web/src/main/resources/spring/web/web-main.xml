@@ -318,6 +318,7 @@
 
 				<entry key="/auth/bindingBankcard" value-ref="bindingBankcardApi" />
 				<entry key="/auth/checkMessages" value-ref="checkMessagesApi" />
+				<entry key="/auth/lookAllQuota" value-ref="lookAllQuotaApi" />
 				<!-- borrow -->
 				<entry key="/borrow/getBorrowHomeInfo" value-ref="getBorrowHomeInfoApi" />
 				<entry key="/borrow/getCashConfirmInfo" value-ref="getCashConfirmInfoApi" />

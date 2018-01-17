@@ -11,6 +11,8 @@ import com.ald.fanbei.api.dal.dao.AfUserAuthStatusDao;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
 
+import java.util.List;
+
 /**
  * 额度拆分多场景认证状体记录ServiceImpl
  * 
@@ -49,7 +51,7 @@ public class AfUserAuthStatusServiceImpl extends ParentServiceImpl<AfUserAuthSta
     }
 
     @Override
-    public AfUserAuthStatusDo selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status) {
+    public List<AfUserAuthStatusDo> selectAfUserAuthStatusByUserIdAndStatus(Long userId, String status) {
         return afUserAuthStatusDao.selectAfUserAuthStatusByUserIdAndStatus(userId,status);
     }
 }

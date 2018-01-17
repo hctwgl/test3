@@ -180,6 +180,8 @@ public class RiskUtil extends AbstractThird {
     
     @Autowired
     AfUserAccountSenceService afUserAccountSenceService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
 
     private static String getUrl() {
         if (url == null) {
@@ -1324,6 +1326,10 @@ public class RiskUtil extends AbstractThird {
             if (StringUtil.equals("10", result)) {
                 auth.setMobileStatus(MobileStatus.YES.getCode());
                 jpushService.mobileRiskSuccess(accountInfo.getUserName());
+                //成功时将运营商的失效状态改变
+                syncOperator(Long.parseLong(consumerNo));
+
+
             } else {
                 auth.setMobileStatus(MobileStatus.NO.getCode());
                 //推送打开,且短信推送
@@ -2519,4 +2525,38 @@ public class RiskUtil extends AbstractThird {
 
     }
 
+    /**
+     *回调时将af_user_auth_status中运营商过期状态改变
+     */
+    public void syncOperator(Long userId){
+        List <AfUserAuthStatusDo> afUserAuthStatusDos= afUserAuthStatusService.selectAfUserAuthStatusByUserIdAndStatus(userId,"C");
+        if(afUserAuthStatusDos!=null&&afUserAuthStatusDos.size()>0){
+            for (AfUserAuthStatusDo afUserAuthStatusDo: afUserAuthStatusDos) {
+                if(afUserAuthStatusDo!=null){
+                    String causeReason = afUserAuthStatusDo.getCauseReason();
+                    if(causeReason!=null&&!"".equals(causeReason)){
+                        JSONArray jsonArray = JSON.parseArray(causeReason);
+                        boolean judge=true;
+                        for(int i =0;i<jsonArray.size();i++){
+                            if(judge){
+                                JSONObject jsonObject =jsonArray.getJSONObject(i);
+                                String authItem = jsonObject.getString("auth");
+                                if("operator".equals(authItem)){
+                                    jsonObject.put("status","Y");
+                                    jsonArray.remove(i);
+                                    jsonArray.add(jsonObject);
+                                    afUserAuthStatusDo.setCauseReason(jsonArray.toString());
+                                    afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+                                    judge=false;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+
+    }
 }
