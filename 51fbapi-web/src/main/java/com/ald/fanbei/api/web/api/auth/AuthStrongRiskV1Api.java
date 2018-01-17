@@ -246,7 +246,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						authDo.setRiskStatus(RiskStatus.PROCESS.getCode());
 					}
 					authDo.setBasicStatus(RiskStatus.PROCESS.getCode());
-					afUserAuthService.updateUserAuth(authDo);
+					for(int i=0;i<sceneArray.length;i++){
+						if("CASH".equals(sceneArray[i])){
+							afUserAuthService.updateUserAuth(authDo);
+						}
+					}
 
 					RiskRespBo riskResp = riskUtil.registerStrongRiskV1(idNumberDo.getUserId() + "", "ALL", afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox,
 							card.getCardNumber(), riskOrderNo,riskScene);
@@ -256,8 +260,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 							authDo.setRiskStatus(RiskStatus.A.getCode());
 						}
 						authDo.setBasicStatus(RiskStatus.A.getCode());
-						afUserAuthService.updateUserAuth(authDo);
-
+						for(int i=0;i<sceneArray.length;i++){
+							if("CASH".equals(sceneArray[i])){
+								afUserAuthService.updateUserAuth(authDo);
+							}
+						}
 						afUserAuthStatusDo.setStatus("C");
 						afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
 
@@ -326,7 +333,11 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 								authDo.setRiskStatus(RiskStatus.A.getCode());
 							}
 							authDo.setBasicStatus(RiskStatus.A.getCode());
-							afUserAuthService.updateUserAuth(authDo);
+							for(int i=0;i<sceneArray.length;i++){//只有现金贷才改变状态
+								if("CASH".equals(sceneArray[i])){
+									afUserAuthService.updateUserAuth(authDo);
+								}
+							}
 							//插入失败认证场景
 							afUserAuthStatusDo.setStatus("C");
 							afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
@@ -372,8 +383,12 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						authDo.setRiskStatus(RiskStatus.A.getCode());
 					}
 					authDo.setBasicStatus(RiskStatus.A.getCode());
-					afUserAuthService.updateUserAuth(authDo);
-					logger.error("提交用户认证信息到风控失败：" + idNumberDo.getUserId());
+					for(int i=0;i<sceneArray.length;i++){
+						if("CASH".equals(sceneArray[i])){
+							afUserAuthService.updateUserAuth(authDo);
+						}
+					}
+					logger.error("提交用户认证信息到风控失败,场景" + idNumberDo.getUserId()+","+scene);
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 				}
 				return resp;
