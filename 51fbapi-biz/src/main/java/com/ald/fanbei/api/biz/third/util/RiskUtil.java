@@ -2537,7 +2537,7 @@ public class RiskUtil extends AbstractThird {
             summaryData.put("allDays",summaryData.get("allDays")+"");
             summaryData.put("allDays1",summaryData.get("allDays1")+"");
             summaryData.put("borrowAmout",amountBorrow.toString());
-            summaryData.put("over",afBorrowCashDo.getOverdueDay()+"");
+            summaryData.put("over",afBorrowCashDo.getOverdueDay()>0?"true":"false");
             BigDecimal sumRenewalPoundage = afBorrowCashDo.getSumRenewalPoundage();
             BigDecimal poundage = afBorrowCashDo.getPoundage();
             BigDecimal amount = afBorrowCashDo.getAmount();

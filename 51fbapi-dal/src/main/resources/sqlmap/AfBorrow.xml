@@ -306,7 +306,7 @@ FROM `af_boluome_waimai` wm WHERE wm.`third_order_no` =(SELECT o.`third_order_no
 		AND `status` = 'Y'
 	</select>
 	<select id="getUserSummaryForCapital" resultType="java.util.HashMap">
-		SELECT IF(sum(renewal_num)>0,'true','false') first,IFNULL(sum(overdue_day ),0) allDays,IFNULL(SUM(IF(renewal_num>0,overdue_day,0)),0) allDays1 FROM af_borrow_cash
+		SELECT IF(sum(renewal_num)>0,'false','true') first,IFNULL(sum(overdue_day ),0) allDays,IFNULL(SUM(IF(renewal_num>0,overdue_day,0)),0) allDays1 FROM af_borrow_cash
 		WHERE user_id =#{userId} AND `status`='FINSH'
 	</select>
 </mapper>
