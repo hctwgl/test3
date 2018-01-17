@@ -129,7 +129,7 @@ public class ApplyRenewalApi implements ApiHandle {
 
 		// 续借本金
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(), afBorrowCashDo.getSumRate());
-		JSONObject response = riskUtil.getPayCaptal(afBorrowCashDo,"40",allAmount);
+		JSONObject response = riskUtil.getPayCaptal(afBorrowCashDo,"40",afBorrowCashDo.getAmount());
 		capital = new BigDecimal(response.getJSONObject("data").getString("money"));
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
 

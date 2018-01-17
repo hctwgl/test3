@@ -123,7 +123,7 @@ public class ApplyLegalRenewalV2Api implements ApiHandle {
 		
 		// 本金（总） 
 		BigDecimal allAmount = BigDecimalUtil.add(afBorrowCashDo.getAmount(), afBorrowCashDo.getSumOverdue(),afBorrowCashDo.getSumRate(),afBorrowCashDo.getSumRenewalPoundage());
-		JSONObject response = riskUtil.getPayCaptal(afBorrowCashDo,"40",allAmount);
+		JSONObject response = riskUtil.getPayCaptal(afBorrowCashDo,"40",afBorrowCashDo.getAmount());
 		BigDecimal capital = new BigDecimal(response.getJSONObject("data").getString("money"));
 		// 续期金额 = 续借本金（总）  - 借款已还金额 - 续借需要支付本金
 		BigDecimal waitPaidAmount = BigDecimalUtil.subtract(allAmount, afBorrowCashDo.getRepayAmount()).subtract(capital);
