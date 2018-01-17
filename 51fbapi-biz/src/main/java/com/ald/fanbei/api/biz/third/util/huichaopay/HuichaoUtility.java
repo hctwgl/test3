@@ -1,12 +1,10 @@
 package com.ald.fanbei.api.biz.third.util.huichaopay;
 
 import com.ald.fanbei.api.biz.bo.thirdpay.ResulitCheck;
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdInterface;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfUserAmountProcessStatus;
 import com.ald.fanbei.api.common.enums.BorrowBillStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -83,6 +81,10 @@ public class HuichaoUtility implements ThirdInterface {
 
     @Resource
     private AfRepaymentService afRepaymentService;
+
+    @Resource
+    private AfUserAmountService afUserAmountService;
+
 
     public HashMap<String,String > createOrderZFB(String orderNo, String orderMoney, long userId, PayOrderSource payOrderSource){
 
@@ -312,6 +314,10 @@ public class HuichaoUtility implements ThirdInterface {
 
             if(result.containsKey("code")){
                 afHuicaoOrderDao.updateHuicaoOrderStatusLock(5,afHuicaoOrderDo.getId(),afHuicaoOrderDo.getGmtModified());
+                AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentByPayTradeNo(afHuicaoOrderDo.getOrderNo());
+                if(afRepaymentDo != null){
+                    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL,afRepaymentDo);
+                }
                 return null;
             }
             else{
@@ -446,6 +452,10 @@ public class HuichaoUtility implements ThirdInterface {
             Map<String, String> result  = getHuiCaoOrder(afHuicaoOrderDo.getThirdOrderNo());
             if(result.containsKey("code")){
                 afHuicaoOrderDao.updateHuicaoOrderStatusLock(5,afHuicaoOrderDo.getId(),afHuicaoOrderDo.getGmtModified());
+                AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentByPayTradeNo(afHuicaoOrderDo.getOrderNo());
+                if(afRepaymentDo != null){
+                    afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL,afRepaymentDo);
+                }
                 continue;
             }
             else{
@@ -616,6 +626,10 @@ public class HuichaoUtility implements ThirdInterface {
                 String sendStatus = HuiCaoOrderStatus.PROCESSING.getCode();
                 if (result.containsKey("code")) {
                     afHuicaoOrderDao.updateHuicaoOrderStatusLock(5, afHuicaoOrderDo.getId(), afHuicaoOrderDo.getGmtModified());
+                    AfRepaymentDo afRepaymentDo = afRepaymentDao.getRepaymentByPayTradeNo(afHuicaoOrderDo.getOrderNo());
+                    if(afRepaymentDo != null){
+                        afUserAmountService.updateUserAmount(AfUserAmountProcessStatus.FAIL,afRepaymentDo);
+                    }
                 } else {
 
                     String _payResult = String.valueOf(result.get("payResult"));

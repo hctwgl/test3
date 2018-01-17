@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
@@ -28,6 +31,8 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 
 	@Resource
 	private AfBorrowLegalOrderDao afBorrowLegalOrderDao;
+	@Resource
+	private AfBorrowLegalOrderCashDao afBorrowLegalOrderCashDao;
 
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
@@ -54,10 +59,26 @@ public class AfBorrowLegalOrderServiceImpl extends ParentServiceImpl<AfBorrowLeg
 		return afBorrowLegalOrderDao.saveRecord(afBorrowLegalOrderDo);
 	}
 
-
 	@Override
 	public List<AfBorrowLegalOrderDo> getUserBorrowLegalOrderList(AfBorrowLegalOrderQuery query) {
 		return afBorrowLegalOrderDao.getUserBorrowLegalOrderList(query);
+	}
+	
+	public boolean isV2BorrowCash(Long borrowId) {
+		Long orderId = afBorrowLegalOrderDao.tuchByBorrowId(borrowId);
+		if(orderId != null) {
+			Long orderCashId = afBorrowLegalOrderCashDao.tuchByBorrowId(borrowId);
+			if(orderCashId == null) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void checkIllegalVersionInvoke(Integer version, Long borrowId) {
+		if (version < 405 && isV2BorrowCash(borrowId)) {
+			throw new FanbeiException(FanbeiExceptionCode.MUST_UPGRADE_NEW_VERSION_REPAY);
+		}
+		
 	}
 
 }

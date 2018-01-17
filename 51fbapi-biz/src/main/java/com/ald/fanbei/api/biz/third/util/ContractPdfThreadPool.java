@@ -33,16 +33,16 @@ public class ContractPdfThreadPool{
         logger.info("contractPdfThreadPool nThreads num is " + nThreads);
     }
     public void protocolCashLoanPdf(Long borrowId,BigDecimal borrowAmount,Long userId ){
-        ProtocolCashLoanTask protocolCashLoanTask = new ProtocolCashLoanTask(borrowId,borrowAmount,userId);
-        service.execute(protocolCashLoanTask);
+//        ProtocolCashLoanTask protocolCashLoanTask = new ProtocolCashLoanTask(borrowId,borrowAmount,userId);
+//        service.execute(protocolCashLoanTask);
     }
     public void protocolRenewalPdf(long userId,Long borrowId,Long renewalId,int renewalDay ,BigDecimal renewalAmount){
-        ProtocolRenewalTask protocolRenewalTask = new ProtocolRenewalTask(userId,renewalId,renewalAmount,renewalDay,borrowId);
-        service.execute(protocolRenewalTask);
+//        ProtocolRenewalTask protocolRenewalTask = new ProtocolRenewalTask(userId,renewalId,renewalAmount,renewalDay,borrowId);
+//        service.execute(protocolRenewalTask);
     }
     public void protocolInstalmentPdf(Long userId,Integer nper,BigDecimal amount,Long borrowId){
-        ProtocolInstalmentTask protocolInstalmentTask = new ProtocolInstalmentTask(userId,nper,amount,borrowId);
-        service.execute(protocolInstalmentTask);
+//        ProtocolInstalmentTask protocolInstalmentTask = new ProtocolInstalmentTask(userId,nper,amount,borrowId);
+//        service.execute(protocolInstalmentTask);
     }
 
     class ProtocolCashLoanTask implements Runnable {
