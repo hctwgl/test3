@@ -63,7 +63,7 @@
 
 	<select id="getARecommendUserByIdAndType" resultType="AfRecommendUserDto">
 		SELECT
-		ru.user_id,ru.is_loan,ru.loan_time,ru.origin,ru.parentId,ru.type,ru.recommend_count,ru.gmt_create,ru.is_selfsupport_rebate,au.risk_status
+		ru.id,ru.user_id,ru.is_loan,ru.loan_time,ru.origin,ru.parentId,ru.type,ru.recommend_count,ru.gmt_create,ru.is_selfsupport_rebate,au.risk_status
 		FROM af_recommend_user  ru
 		INNER JOIN af_user_auth au ON  au.user_id = ru.user_id	
 		WHERE ru.user_id = #{user_id} AND ru.type = #{type}

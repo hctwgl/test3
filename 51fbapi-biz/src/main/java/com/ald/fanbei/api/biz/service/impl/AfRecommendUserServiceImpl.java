@@ -239,9 +239,8 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 							_afu.setLoan_time(createTime);
 							BigDecimal addMoney = getAddMoney();
 							_afu.setPrize_money(addMoney);
-							logger.info("{update begin afRecommendUserDo} afRecommendUserDo="+afRecommendUserDo.toString());
 							
-							afRecommendUserDao.updateLoanById(afRecommendUserDo);
+							afRecommendUserDao.updateLoanById(_afu);
 							// 修改返现金额
 							addRecommendBorrowMoney(afResourceDo,afBorrowCashDo,afRecommendUserDo,0,afRecommendUserDo.getUserId());
 						}
