@@ -241,10 +241,24 @@ public class AppH5SFController extends BaseController {
 		String result = "";
 
 		try {
-			context = doWebCheck(request, true);
+			context = doWebCheck(request, false);
+			String userName = context.getUserName();
+			if (StringUtil.isBlank(userName)) {
+				data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			}
+			Long userId = convertUserNameToUserId(userName);
+			if (userId == null) {
+				data = new HashMap<>();
+				String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
+						+ H5OpenNativeType.AppLogin.getCode();
+				data.put("loginUrl", loginUrl);
+				return result = H5CommonResponse.getNewInstance(false, "没有登录", "", data).toString();
+			}
 			
-			Long userId = convertUserNameToUserId(context.getUserName());
-
 			//get conpons
 			String tag = "_TIGER_MACHINE_";
 
