@@ -146,7 +146,15 @@ public class AfBorrowCashServiceImpl extends BaseService implements AfBorrowCash
                         "afRecommendUserService.updateRecommendByBorrow error，borrowCashId=" + afBorrowCashDo.getRid(),
                         e);
             }
-
+            try{
+          		//是否是第一次借款,给该用户送优惠券（还款券）
+          		String tag = "_FIRST_LOAN_";
+          		String sourceType = CouponSenceRuleType.FIRST_LOAN.getCode();
+          		//是否是第一次借款
+          		afUserCouponService.sentUserCoupon(afBorrowCashDo.getUserId(),tag,sourceType);
+          	    }catch(Exception e){
+          	        logger.error("first borrow sentUserCoupon error", e);
+          	   }
             AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(
                     ResourceType.FUND_SIDE_BORROW_CASH.getCode(),
                     AfResourceSecType.FUND_SIDE_BORROW_CASH_ONOFF.getCode());
