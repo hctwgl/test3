@@ -38,6 +38,7 @@ import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -62,7 +63,6 @@ import com.ald.fanbei.api.dal.domain.AfSigninDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfRecommendUserDto;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -113,6 +113,8 @@ public class AppH5InvitationActivityController extends BaseController {
     JpushService jpushService;
     @Resource
     CouponSceneRuleEnginerUtil activeRuleEngineUtil;
+    @Resource
+    BizCacheUtil bizCacheUtil;
     String opennative = "/fanbei-web/opennative?name=";
     
     /**
@@ -148,10 +150,10 @@ public class AppH5InvitationActivityController extends BaseController {
         HashMap<String,Object> map =new HashMap<>();
         List<HashMap> hashMapList =new ArrayList<>();
         //查看活动规则,图片,标题,描述
-        List listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
-        List listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
-        List listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
-        List listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
+        List<String> listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
+        List<String> listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
+        List<String> listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
+        List<String> listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
         //用户的邀请码
         String invitationCode=afRecommendUserService.getUserRecommendCode(userId);
         if(invitationCode.equals("0")){
@@ -421,10 +423,34 @@ public class AppH5InvitationActivityController extends BaseController {
 //        List  preferentialList = new ArrayList();
         
         //查看活动规则,图片,标题,描述
-        List listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
-        List listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
-        List listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
-        List listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
+      	List<String> listRule = bizCacheUtil.getObjectList("recommend:activity:rule");
+      	if (listRule == null) {
+      	    listRule=afRecommendUserService.getActivityRule("RECOMMEND_RULE");
+      	  //并且加入redis
+      	   bizCacheUtil.saveObjectListExpire("recommend:activity:rule", listRule, Constants.SECOND_OF_TEN_MINITS);
+      	 }
+
+	List<String> listPic = bizCacheUtil.getObjectList("recommend:activity:picture");
+      	if (listPic == null) {
+      	listPic=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_IMG");
+      	  //并且加入redis
+      	   bizCacheUtil.saveObjectListExpire("recommend:activity:picture", listPic, Constants.SECOND_OF_TEN_MINITS);
+      	 }
+         
+      	List<String> listTitle = bizCacheUtil.getObjectList("recommend:activity:title");
+      	if (listTitle == null) {
+      	listTitle=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_TITLE");
+      	  //并且加入redis
+      	   bizCacheUtil.saveObjectListExpire("recommend:activity:title", listTitle, Constants.SECOND_OF_TEN_MINITS);
+      	 }
+        
+	List<String> listDesc = bizCacheUtil.getObjectList("recommend:activity:description");
+      	if (listDesc == null) {
+      	listDesc=afRecommendUserService.getActivityRule("RECOMMEND_SHARED_DESCRIPTION");
+      	  //并且加入redis
+      	   bizCacheUtil.saveObjectListExpire("recommend:activity:description", listDesc, Constants.SECOND_OF_TEN_MINITS);
+      	 }
+       
     
         
         //用户的邀请码
@@ -484,7 +510,7 @@ public class AppH5InvitationActivityController extends BaseController {
         HashMap<String,Object> map =new HashMap<>();
         List<HashMap> hashMapList =new ArrayList<>();
 
-        List  giftPackageList = new ArrayList();
+        List  giftPackageList = new ArrayList<Object>();
         List  preferentialList = new ArrayList();
         //大礼包
          giftPackageList = getGiftPackageList();
@@ -529,14 +555,56 @@ public class AppH5InvitationActivityController extends BaseController {
 		}
 	        HashMap<String,Object> map =new HashMap<>();
 	        List<HashMap> hashMapList =new ArrayList<>();
-	        List  newbieTaskList = new ArrayList();
-	        AfResourceDo foodResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "FOOD");
-	        AfResourceDo authResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "AUTH");
-	        AfResourceDo shoppingResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "SHOPPING");
-	        AfResourceDo creditShoppingResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "CREDIT_SHOPPING");
-	        AfResourceDo borrowResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "BORROW");
-	        AfResourceDo thirdShoppingResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "THIRD_SHOPPING");
-	        AfResourceDo onlineTime = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "ONLINE_TIME");
+	        List<NewbieTaskVo>  newbieTaskList = new ArrayList<NewbieTaskVo>();
+	        
+	        
+	  	AfResourceDo foodResource = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:newbie_task");
+	      	if (foodResource == null) {
+	      	  //并且加入redis
+	      	   foodResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "FOOD");
+	      	   bizCacheUtil.saveObject("recommend:activity:newbie_task", foodResource, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
+	        
+	  	AfResourceDo authResource = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:newbie_auth");
+	      	if (authResource == null) {
+	      	  //并且加入redis
+	      	   authResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "AUTH");
+	      	   bizCacheUtil.saveObject("recommend:activity:newbie_auth", authResource, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
+	      	 
+	  	AfResourceDo shoppingResource = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:newbie_shopping");
+	      	if (shoppingResource == null) {
+	      	  //并且加入redis
+	      	   shoppingResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "SHOPPING");
+	      	   bizCacheUtil.saveObject("recommend:activity:newbie_shopping", shoppingResource, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
+	      	
+	      	AfResourceDo creditShoppingResource = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:newbie_creditshopping");
+	      	if (creditShoppingResource == null) {
+	      	  //并且加入redis
+	           creditShoppingResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "CREDIT_SHOPPING");
+	      	   bizCacheUtil.saveObject("recommend:activity:newbie_creditshopping", creditShoppingResource, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
+	      	
+	      	AfResourceDo borrowResource = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:newbie_borrow");
+	      	if (borrowResource == null) {
+	      	  //并且加入redis
+	      	   borrowResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "BORROW");
+	      	   bizCacheUtil.saveObject("recommend:activity:newbie_borrow", borrowResource, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
+	       	AfResourceDo thirdShoppingResource = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:newbie_thridshopping");
+	      	if (thirdShoppingResource == null) {
+	      	  //并且加入redis
+	      	   thirdShoppingResource = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "THIRD_SHOPPING");
+	      	   bizCacheUtil.saveObject("recommend:activity:newbie_thridshopping", thirdShoppingResource, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
+	      	
+		AfResourceDo onlineTime = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:newbie_onlinetime");
+	      	if (onlineTime == null) {
+	      	  //并且加入redis
+	      	    onlineTime = afResourceService.getConfigByTypesAndSecType("RECOMMEND_MEWBIE_TASK", "ONLINE_TIME");
+	      	   bizCacheUtil.saveObject("recommend:activity:newbie_onlinetime", onlineTime, Constants.SECOND_OF_TEN_MINITS);
+	      	 }
 	        String activityTime = "";
 	        if(onlineTime != null){
 	            activityTime = onlineTime.getValue();
@@ -714,11 +782,28 @@ public class AppH5InvitationActivityController extends BaseController {
 	return newbieTaskVo;
     }
 
-    private List getWelfareTableList(){
-        List  welfareTableList = new ArrayList();
-        AfResourceDo firstAward = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "FIRST_AWARD");
-        AfResourceDo secondAward = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "SECOND_AWARD");
-        AfResourceDo preferential = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
+    private List<AfResourceDo> getWelfareTableList(){
+        List<AfResourceDo>  welfareTableList = new ArrayList<AfResourceDo>();
+        
+        AfResourceDo firstAward = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:table_firstaward");
+      	if (firstAward == null) {
+      	  //并且加入redis
+       	   firstAward = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "FIRST_AWARD");
+      	   bizCacheUtil.saveObject("recommend:activity:table_firstaward", firstAward, Constants.SECOND_OF_TEN_MINITS);
+      	 }
+        AfResourceDo secondAward = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:table_secondaward");
+      	if (secondAward == null) {
+      	  //并且加入redis
+           secondAward = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "SECOND_AWARD");
+      	   bizCacheUtil.saveObject("recommend:activity:table_secondaward", secondAward, Constants.SECOND_OF_TEN_MINITS);
+      	 }
+      	 AfResourceDo preferential = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:table_preferential");
+       	if (preferential == null) {
+       	  //并且加入redis
+       	   preferential = afResourceService.getConfigByTypesAndSecType("RECOMMEND_TABLE", "PREFERENTIAL");
+       	   bizCacheUtil.saveObject("recommend:activity:table_preferential", preferential, Constants.SECOND_OF_TEN_MINITS);
+       	 }
+      	
         welfareTableList.add(firstAward);
         welfareTableList.add(secondAward);
         welfareTableList.add(preferential);
@@ -726,12 +811,35 @@ public class AppH5InvitationActivityController extends BaseController {
 }
     
     
-    private List getWelfareExampleList(){
-        List  welfareExampleList = new ArrayList();
-        AfResourceDo auth = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "AUTH");
-        AfResourceDo borrow = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "BORROW");
-        AfResourceDo shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "SHOP");
-        AfResourceDo stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "STROLL");
+    private List<AfResourceDo> getWelfareExampleList(){
+        List<AfResourceDo>  welfareExampleList = new ArrayList<AfResourceDo>();
+        AfResourceDo auth = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:example_auth");
+       	if (auth == null) {
+       	  //并且加入redis
+       	   auth = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "AUTH");
+       	   bizCacheUtil.saveObject("recommend:activity:example_auth", auth, Constants.SECOND_OF_TEN_MINITS);
+       	 }
+        
+       	AfResourceDo borrow = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:example_borrow");
+       	if (borrow == null) {
+       	  //并且加入redis
+       	   borrow = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "BORROW");
+       	   bizCacheUtil.saveObject("recommend:activity:example_borrow", borrow, Constants.SECOND_OF_TEN_MINITS);
+       	 }
+        
+	AfResourceDo shop = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:example_shop");
+       	if (shop == null) {
+       	  //并且加入redis
+       	   shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "SHOP");
+       	   bizCacheUtil.saveObject("recommend:activity:example_shop", shop, Constants.SECOND_OF_TEN_MINITS);
+       	 }
+       	AfResourceDo stroll = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:example_stroll");
+       	if (stroll == null) {
+       	  //并且加入redis
+       	   stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_EXAMPLE", "STROLL");
+       	   bizCacheUtil.saveObject("recommend:activity:example_stroll", stroll, Constants.SECOND_OF_TEN_MINITS);
+       	 }
+       	
         welfareExampleList.add(auth);
         welfareExampleList.add(borrow);
         welfareExampleList.add(shop);
@@ -739,12 +847,36 @@ public class AppH5InvitationActivityController extends BaseController {
 	return welfareExampleList;
     }
     
-    private List  getPreferentialList(){
-	         List  preferentialList = new ArrayList();
-	        AfResourceDo superValue = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "SUPER_VALUE");
-	        AfResourceDo fullCut = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "FULL_CUT");
-	        AfResourceDo shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "SHOP");
-	        AfResourceDo stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "STROLL");
+    private List<AfResourceDo>  getPreferentialList(){
+	         List<AfResourceDo>  preferentialList = new ArrayList<AfResourceDo>();
+	         
+	         
+	         
+	         AfResourceDo superValue = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:preferential_supervalue");
+	         if (superValue == null) {
+	         //并且加入redis
+	             superValue = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "SUPER_VALUE");
+	            bizCacheUtil.saveObject("recommend:activity:preferential_supervalue", superValue, Constants.SECOND_OF_TEN_MINITS);
+	         }
+	         AfResourceDo fullCut = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:preferential_fullcut");
+	         if (fullCut == null) {
+	         //并且加入redis
+	             fullCut = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "FULL_CUT");
+	            bizCacheUtil.saveObject("recommend:activity:preferential_fullcut", fullCut, Constants.SECOND_OF_TEN_MINITS);
+	         }
+	         AfResourceDo shop = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:preferential_shop");
+	         if (shop == null) {
+		         //并且加入redis
+	             shop = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "SHOP");
+		     bizCacheUtil.saveObject("recommend:activity:preferential_shop", shop, Constants.SECOND_OF_TEN_MINITS);
+		 }
+	         AfResourceDo stroll = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:preferential_stroll");
+	         if (stroll == null) {
+		         //并且加入redis
+	             stroll = afResourceService.getConfigByTypesAndSecType("RECOMMEND_PREFERENTIAL", "STROLL");
+		     bizCacheUtil.saveObject("recommend:activity:preferential_stroll", stroll, Constants.SECOND_OF_TEN_MINITS);
+		 }
+	         
 	        preferentialList.add(superValue);
 	        preferentialList.add(fullCut);
 	        preferentialList.add(shop);
@@ -752,19 +884,24 @@ public class AppH5InvitationActivityController extends BaseController {
 	        return preferentialList;
   }
     
-    private List getGiftPackageList(){
-	     List  giftPackageList = new ArrayList();
-	     List  titleList = new ArrayList();
+    private List<HashMap<String, Object>> getGiftPackageList(){
+	     List<HashMap<String, Object>>  giftPackageList = new ArrayList<HashMap<String, Object>>();
 	     HashMap<String,Object> map1 =new HashMap<>();
 	     HashMap<String,Object> map2 =new HashMap<>();
 	     HashMap<String,Object> map3 =new HashMap<>();
-	     HashMap<String,Object> titleMap =new HashMap<>();
-	     List  list1 = new ArrayList();
-	     List  list2 = new ArrayList();
-	     List  list3 = new ArrayList();
+	     List<HashMap<String, Object>>  list1 = new ArrayList<HashMap<String, Object>>();
+	     List<HashMap<String, Object>>  list2 = new ArrayList<HashMap<String, Object>>();
+	     List<HashMap<String, Object>>  list3 = new ArrayList<HashMap<String, Object>>();
 	     //实名认证
+	     AfResourceDo resourceDo = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:type:name");
+	     if (resourceDo == null) {
+		         //并且加入redis
+	             resourceDo = afResourceService.getConfigByTypesAndSecType("RECOMMEND_COUPON", "TYPE_NAME");
+		     bizCacheUtil.saveObject("recommend:activity:type:name", resourceDo, Constants.SECOND_OF_TEN_MINITS);
+	     }
+		
+	     
 	     List<AfCouponDo> authCoupon = getCommonCouponMap(CouponScene.CREDIT_AUTH);
-	     AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("RECOMMEND_COUPON", "TYPE_NAME");
 	     String value = "借钱";
 	     String value1 = "商城";
 	     String value2 = "吃完住行";
@@ -886,9 +1023,15 @@ public class AppH5InvitationActivityController extends BaseController {
 		return couponUrl;
 	}
     private List<BoluomeCouponResponseExtBo> boluomeCouponList(){
-	List<BoluomeCouponResponseExtBo> boluomeCouponList = new ArrayList<>();
+	 List<BoluomeCouponResponseExtBo> boluomeCouponList = new ArrayList<>();
 
-	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
+	 AfResourceDo resourceDo = (AfResourceDo)bizCacheUtil.getObject("recommend:activity:boluome_coupon");
+         if (resourceDo == null) {
+	         //并且加入redis
+             resourceDo = afResourceService.getConfigByTypesAndSecType("GG_ACTIVITY", "BOLUOME_COUPON");
+	     bizCacheUtil.saveObject("recommend:activity:boluome_coupon", resourceDo, Constants.SECOND_OF_TEN_MINITS);
+	 }
+	
 	if (resourceDo != null) {
 		List<String> bList = new ArrayList<>();
 		bList.add(resourceDo.getValue());
